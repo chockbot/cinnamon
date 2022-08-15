@@ -19,7 +19,7 @@ namespace Cinnamon.Web.Resources {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "17.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class App {
@@ -115,7 +115,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Becoma a.
+        ///   Looks up a localized string similar to Become a.
         /// </summary>
         internal static string becomeA {
             get {
@@ -291,6 +291,15 @@ namespace Cinnamon.Web.Resources {
         internal static string experience {
             get {
                 return ResourceManager.GetString("experience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Explore Experiences.
+        /// </summary>
+        internal static string exploreExperiences {
+            get {
+                return ResourceManager.GetString("exploreExperiences", resourceCulture);
             }
         }
         

@@ -2,7 +2,8 @@
     background-color: white;
     border-bottom: 1px solid var(--lineColor);
     justify-content: flex-start;
-    height: 74px;
+    aspect-ratio: 1600/74;
+    width: 100%;
     display: flex;
     align-items: center;
 }
@@ -20,9 +21,36 @@
 .app-name {
     color: var(--primary);
     font-family: 'Backline';
-    font-size: 32px;
+    font-size: 1.6vw;
     text-decoration: none;
 }
+
+.btn-link {
+    text-decoration: none;
+    color: black;
+    text-align: end;
+}
+
+.btn:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.menu {
+    position: relative;
+    height: 32%;
+}
+
+    .menu img {
+        aspect-ratio: 1;
+        width: 15%;
+        margin-right: 12px;
+    }
+
+    .menu span {
+        font-family: 'Nunito-Bold';
+        font-size: 1vw;
+    }
 
 @media (max-width: 640.98px) {
     .top-row:not(.auth) {

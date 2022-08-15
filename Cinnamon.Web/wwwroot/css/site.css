@@ -6,6 +6,10 @@
     font-family: 'Nunito';
     src: url('../fonts/nunito-cufonfonts/Nunito-Regular.ttf');
 }
+@font-face {
+    font-family: 'Nunito-Bold';
+    src: url('../fonts/nunito-cufonfonts/Nunito-Bold.ttf');
+}
 @import url('open-iconic/font/css/open-iconic-bootstrap.min.css');
 
 :root {
@@ -13,6 +17,7 @@
     --secondary: #343D4C;
     --gray: #F3F6FC;
     --lineColor: #F5F5F5;
+    --black: #717171
 }
 
 h1 {
@@ -33,8 +38,14 @@ a, .btn-link {
 
 .btn-primary {
     color: #fff;
-    background-color: #1b6ec2;
-    border-color: #1861ac;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    height: 3vw;
+    padding-left: 2.5vw;
+    padding-right: 2.5vw;
+    font-size: 1vw;
+    font-family: 'Nunito-Bold';
+    border-width: 0px;
 }
 
 .valid.modified:not([type=checkbox]) {
@@ -77,4 +88,8 @@ a, .btn-link {
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.color-primary {
+    color: var(--primary);
+}
 

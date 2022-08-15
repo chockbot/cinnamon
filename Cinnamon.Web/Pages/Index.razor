@@ -1,32 +1,71 @@
 ﻿@page "/"
+@inject NavigationManager NavigationManager
 
-<PageTitle>Cinnamon</PageTitle>
+<PageTitle>@Resources.App.appName</PageTitle>
 
 <!--Section 1-->
 <div class="section-1">
     <img src="images/landing_image1.png" />
     <span class="landing-header">@Resources.App.landingHeader</span>
     <span class="landing-subheader">@Resources.App.landingSubHeader</span>
+    <button class="btn-primary rounded-pill shadow-sm" @onclick="NavigateToExplorePage">@Resources.App.exploreExperiences</button>
 </div>
 
 <!--Section 2-->
-<div class="section-2">
-    <img src="images/landing_image2.png"/>
+<div class="section-2 row">
+    <div class="col-6 landing-text">
+        <span class="landing-header">@Resources.App.whatIs</span>
+        <span>&nbsp;</span>
+        <span class="landing-header color-primary">@(String.Format("{0}{1}",@Resources.App.appName, "?"))</span>
+        <br /><br />
+        <span class="landing-subheader">@Resources.App.whatIsCinnamon</span>
+    </div>
+
+    <div class="col-6">
+        <img src="images/landing_image2.png"/>
+    </div>
 </div>
 
 <!--Section 3-->
-<div class="section-3">
+<div class="section-3 row">
+    <div class="col-12 landing-text">
+        <span class="landing-header">@Resources.App.our</span>
+        <span>&nbsp;</span>
+        <span class="landing-header color-primary">@Resources.App.appName</span>
+        <span>&nbsp;</span>
+        <span class="landing-header">@Resources.App.journey</span>
+    </div>
+    <div class="col-12">
 
+    </div>
 </div>
 
 <!--Section 4-->
-<div class="section-4">
-    <img src="images/landing_image3.png" />
+<div class="section-4 row">
+    <div class="col-5">
+        <img src="images/landing_image3.png" />
+    </div>
+    <div class="col-7 landing-text">
+        <span class="landing-header">@Resources.App.becomeA</span>
+        <span>&nbsp;</span>
+        <span class="landing-header color-primary">@Resources.App.appName</span>
+        <span>&nbsp;</span>
+        <span class="landing-header">@Resources.App.maker!</span>
+    </div>
 </div>
 
 <!--Footer-->
 <div class="footer">
 
 </div>
+
+@code{
+
+    private void NavigateToExplorePage()
+    {
+        NavigationManager.NavigateTo("explore");
+    }
+
+}
 
 
