@@ -1,0 +1,19 @@
+﻿@namespace Cinnamon.Web.Components
+
+<div class="card">
+    <div class="card-img-top">
+        <img src="@ImageSource"  alt="Landing Overview Card"/>
+    </div>
+    <span class="color-primary title">@Title</span>
+    <br/>
+    <span class="description">@Text</span>
+</div>
+
+@code {
+    [Parameter]
+    public string ImageSource { get; set; } = "images/search.png";
+    [Parameter]
+    public string Title { get; set; } = "Landing Overview";
+    [Parameter]
+    public string Text { get; set; } = "Landing Overview Description";
+}

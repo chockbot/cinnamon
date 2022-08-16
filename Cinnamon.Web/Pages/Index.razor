@@ -1,6 +1,8 @@
 ﻿@page "/"
 @inject NavigationManager NavigationManager
 
+@using Cinnamon.Web.Components
+
 <PageTitle>@Resources.App.appName</PageTitle>
 
 <!--Section 1-->
@@ -8,7 +10,9 @@
     <img src="images/landing_image1.png" />
     <span class="landing-header">@Resources.App.landingHeader</span>
     <span class="landing-subheader">@Resources.App.landingSubHeader</span>
-    <button class="btn-primary rounded-pill shadow-sm" @onclick="NavigateToExplorePage">@Resources.App.exploreExperiences</button>
+    <div class="btn-explore">
+        <PrimaryButton OnClick="NavigateToExplorePage" Text=@Resources.App.exploreExperiences/>
+    </div>
 </div>
 
 <!--Section 2-->
@@ -28,16 +32,35 @@
 
 <!--Section 3-->
 <div class="section-3 row">
-    <div class="col-12 landing-text">
+    <div class="landing-text">
         <span class="landing-header">@Resources.App.our</span>
         <span>&nbsp;</span>
         <span class="landing-header color-primary">@Resources.App.appName</span>
         <span>&nbsp;</span>
         <span class="landing-header">@Resources.App.journey</span>
-    </div>
-    <div class="col-12">
 
+        <div class="col-12 overview-cards row">
+            <div class="col-sm-12 col-lg-4 overview-card">
+                <OverviewCard 
+                    ImageSource="images/search.png" 
+                    Title=@Resources.App.search 
+                    Text=@Resources.App.searchDescription/>
+            </div>
+            <div class="col-sm-12 col-lg-4 overview-card">
+                <OverviewCard 
+                    ImageSource="images/book.png"
+                    Title=@Resources.App.book
+                    Text=@Resources.App.bookDescription/>
+            </div>
+            <div class="col-sm-12 col-lg-4 overview-card">
+                <OverviewCard 
+                    ImageSource="images/attend.png"
+                    Title=@Resources.App.attend
+                    Text=@Resources.App.attendDescription/>
+            </div>
+        </div>
     </div>
+    
 </div>
 
 <!--Section 4-->
@@ -51,12 +74,23 @@
         <span class="landing-header color-primary">@Resources.App.appName</span>
         <span>&nbsp;</span>
         <span class="landing-header">@Resources.App.maker!</span>
+        <br/> <br/>
+        <div class="landing-subheader">
+            <span >@Resources.App.makerDescription</span>
+        </div>
+        <div class="btn-explore">
+            <PrimaryButton OnClick="NavigateToExplorePage" Text=@Resources.App.exploreExperiences/>
+        </div>
     </div>
 </div>
 
 <!--Footer-->
 <div class="footer">
-
+    <div class="footer-content">
+        <span class="footer-appname color-primary">@Resources.App.appName</span>
+        <br/><br/>
+        <span class="footer-text">@Resources.App.footer</span>
+    </div>
 </div>
 
 @code{
