@@ -1,14 +1,27 @@
 ﻿<div class="top-row px-4">
     <a href="#" class="app-name">@Resources.App.appName</a>
     <div class="flex-fill"></div>
-    <button type="button" class="btn btn-link">
+ @*   <button type="button" class="btn btn-default dropdown-toggle">
         <div class="menu">
-            
             <img src="images/menu.png"/>
             <span>@Resources.App.menu</span>
-        
         </div>
-    </button>
-</div>
+    </button>*@
 
+    <div class="dropdown">
+        
+        <button class="btn" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none">
+            <div class="menu">
+                <img src="images/menu.png">
+                <span>@Resources.App.menu</span>
+            </div>   
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+            <li><a class="dropdown-item" href="#">Sign-up</a></li>
+            <li><a class="dropdown-item" href="#">FAQ</a></li>
+            <li><a class="dropdown-item" href="#">Privacy Policy</a></li>
+            <li><a class="dropdown-item" href="#">Terms of Use</a></li>
+        </ul>
+    </div>
+</div>
 
