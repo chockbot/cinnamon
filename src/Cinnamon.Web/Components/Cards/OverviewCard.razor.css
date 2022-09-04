@@ -1,6 +1,6 @@
 ﻿.card {
     height: 100%;
-    padding: 1.8vw;
+    padding: 1.5vw;
 }
 .card img {
     align-content: center;
@@ -11,11 +11,30 @@
 
 .card .title {
     font-family: 'Backline';
-    font-size: 1.5vw;
+    font-size: 1.3rem;
 }
 
 .card .description {
-        font-family: 'Nunito';
-        font-size: 1vw;
-        color: var(--black);
+    font-family: 'Nunito';
+    font-size: 1rem;
+    color: var(--black);
 }
+
+@media screen and (max-width: 767px) {
+    .card .description {
+        font-size: 0.8rem;
+    }
+}
+
+@media screen and (min-width: 767px) {
+    .card .description {
+        font-size: 0.75rem;
+    }
+}
+
+@media screen and (min-width: 1000px) {
+    .card .description {
+        font-size: 1rem;
+    }
+}
+
