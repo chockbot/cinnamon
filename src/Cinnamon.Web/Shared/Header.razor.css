@@ -40,6 +40,18 @@
     position: relative;
     height: 32%;
 }
+.dropdown {
+    font-family: 'Nunito';
+    font-size: 0.5vw;
+}
+a.dropdown-item {
+    margin-left: auto;
+}
+    .menu img {
+        aspect-ratio: 1;
+        width: 15%;
+        margin-right: 12px;
+    }
 
 .menu img {
     aspect-ratio: 1;
@@ -47,10 +59,10 @@
     margin-right: 12px;
 }
 
-.menu span {
-    font-family: 'Nunito-Bold';
-    font-size: 1vw;
-}
+    .menu span {
+        font-family: 'Nunito-Bold';
+        font-size: 1vw;
+    }
 
 @media screen and (max-width: 767px) {
 /*    .top-row:not(.auth){
@@ -126,3 +138,40 @@
         padding-right: 1.5rem !important;
     }
 }
+body {
+    font-family: 'Varela Round', sans-serif;
+}
+label.radio {
+    cursor: pointer;
+    width: 50%;
+    margin-left: 3px;
+}
+
+    label.radio input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        visibility: hidden;
+        pointer-events: none
+    }
+
+    label.radio span {
+        padding: 15px 15px;
+        border: 2px solid #ffa942;
+        display: inline-block;
+        color: black;
+        border-radius: 5px;
+        text-transform: uppercase;
+        width: 100%;
+        margin-top: 10px;
+        margin-right: 10px;
+        text-align: center;
+    }
+
+    label.radio input:checked + span {
+        border-color: #ffa942;
+        background-color: #ffa942;
+        color: #fff;
+        width: 100%;
+        text-align: center;
+    }
