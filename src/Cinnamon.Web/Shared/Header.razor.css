@@ -8,15 +8,15 @@
     align-items: center;
 }
 
-    .top-row ::deep a, .top-row .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-    }
+.top-row ::deep a, .top-row .btn-link {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+}
 
-    .top-row a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.top-row a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .app-name {
     color: var(--primary);
@@ -53,15 +53,42 @@ a.dropdown-item {
         margin-right: 12px;
     }
 
+.menu img {
+    aspect-ratio: 1;
+    width: 15%;
+    margin-right: 12px;
+}
+
     .menu span {
         font-family: 'Nunito-Bold';
-       
         font-size: 1vw;
     }
 
-@media (max-width: 640.98px) {
-    .top-row:not(.auth) {
+@media screen and (max-width: 767px) {
+/*    .top-row:not(.auth){
         display: none;
+    }*/
+
+    .menu {
+        display: none;
+    }
+
+    .menu img {
+        margin-right: 0;
+        width: 20%;
+    }
+
+    .app-name {
+        font-size: 7vw;
+    }
+
+    .px-4{
+        padding-right: 0.5rem!important;
+        padding-left: 0.8rem!important;
+    }
+
+    .top-row {
+        padding: 5px 0;
     }
 
     .top-row.auth {
@@ -73,11 +100,37 @@ a.dropdown-item {
     }
 }
 
-@media (min-width: 641px) {
+@media screen and (min-width: 767px) {
+    .app-name {
+        font-size: 3vw;
+    }
+
     .top-row {
         position: sticky;
         top: 0;
         z-index: 1;
+    }
+
+    .px-4 {
+        padding-right:0 !important;
+        padding-left: 0 !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+    .top-row a, .top-row .btn-link {
+        margin-left: 0;
+    }
+
+    .menu img {
+        margin-right: 0;
+        width: 20%;
+    }
+
+    .menu span{
+        font-size:12px;
     }
 
     .top-row, article {
