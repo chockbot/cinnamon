@@ -1,8 +1,7 @@
 ﻿@page "/"
 @*@using Microsoft.JSInterop*@
 @inject NavigationManager NavigationManager
-@*@inject IJSRuntime jsRuntime
-@inject IJSObjectReference _jsModule;*@
+@inject IJSRuntime jsRuntime
 
 @using Cinnamon.Web.Components
 <PageTitle>@Resources.App.appName</PageTitle>
@@ -213,8 +212,10 @@
     {
         NavigationManager.NavigateTo("explore");
     }
-   
 
+    protected override void OnInitialized() { 
+        jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+    }
     //protected override async Task OnAfterRenderAsync(bool firstRender)
     //{
     //    if (firstRender)

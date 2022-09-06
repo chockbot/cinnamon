@@ -645,3 +645,9 @@
     </div>
 </div>
 </html>
+
+@code{
+    protected override void OnInitialized() { 
+        JsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
+    }
+}
