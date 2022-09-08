@@ -1,0 +1,196 @@
+﻿@page "/Explore/DetailActivity"
+@using Cinnamon.Web.Components
+@inject IJSRuntime jsRuntime
+
+
+<div class="d-flex flex-column align-items-center mt-5">
+    <div class="section-1 d-flex flex-column pb-4 border-bottom w-75">
+        <div class="activity-image-container text-center d-flex position-relative bg-black" style="border-radius:10px;">
+            <div id="carouselSection3" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-indicators">
+                    <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                    <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                    <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                </div>
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="col-md-12">
+                            <img class="img-fluid" style="object-fit: cover;height: 400px;opacity:0.6;border-radius:10px;" src="images/baking2.jpg" />
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="col-md-12">
+                            <img class="img-fluid" style="object-fit: cover;width: 100%;height: 400px;opacity:0.6;border-radius:10px;" src="images/activitydetail_image1.png" />
+                        </div>
+
+                    </div>
+                    <div class="carousel-item">
+                        <div class="col-md-12">
+                            <img class="img-fluid" style="object-fit: cover;width: 100%;height: 400px;opacity:0.6;border-radius:10px;" src="images/activitydetail_image1.png" />
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselSection3" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselSection3" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            <div class="position-absolute w-100 d-flex justify-content-between p-4">
+                <div class="flex-grow-1 d-flex flex-column align-items-start">
+                    @*  <span class="fw-bold fs-5">NEW Luxury Romantic Cottage - Idyllic Rural Bliss</span>*@
+                    <div class="d-flex gap-3 fs-6">
+                        <span class="review">4.99 · <u>150 reviews</u></span>
+                        <span><u>Alabang, Muntinlupa</u></span>
+                    </div>
+                </div>
+                @*                <div class="d-flex gap-2" id="radio-button-container">
+                <div>
+                <input type="radio" id="share" name="activity" value="Share" />
+                <label for="share">Share</label>
+                </div>
+                <div>
+                <input type="radio" id="save" name="activity" value="Save" />
+                <label for="save">Save</label>
+                </div>
+                </div>*@
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-3">
+            <div class="activity-title">
+                <h3 class="fw-bold">A unique baking experience</h3>
+                @* <span>PHP 2500 / person / 4 sessions</span>*@
+            </div>
+            <div class="image-container d-flex justify-content-end gap-3">
+                <img style="border-radius:10px;" src="images/activitydetail_image2.png" />
+                <img style="border-radius:10px;" src="images/activitydetail_image3.png" />
+            </div>
+        </div>
+    </div>
+    <div class="description-container py-4 d-flex flex-row w-75">
+        <div class="flex-fill w-50 d-flex flex-column">
+            <div class="description-container">
+                <p>
+                    This program is especially designed for your kids dynamic imagination and enless curiosity. Your children will both learn and have fun in the kitchen. We are passionate about teaching kids and has been formally trained in child development, primary education and special education.
+                    <br />
+                    <br />
+                    <h6 class="fw-bold">Program highlights:</h6>
+                    - To provide children with fun and creative activities at home
+                    - To incorporate lessons for your children and get them to make friend
+                    <br />
+                    <br />
+                    <label class="fw-bold">Overview</label>
+                    <br />
+                    <ul class="list-unstyled">
+                        <li>
+                            Session 1 - Tuna Sub Sandwich
+                        </li>
+                        <li>
+                            Session 2 - Baggie Vanilla Ice Cream
+                        </li>
+                        <li>
+                            Session 3 - Banana Nut Oatleal
+                        </li>
+                        <li>
+                            Session 4 - My signature pizza
+                        </li>
+                    </ul>
+                </p>
+                @*    <div class="d-flex flex-row my-3">
+                <div class="circle me-3 align-self-start"></div>
+                <div class="description-content flex-fill d-flex flex-column">
+                <span class="fw-bold">Self check-in</span>
+                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore</span>
+                </div>
+                </div>
+                <div class="d-flex flex-row my-3">
+                <div class="circle me-3 align-self-start"></div>
+                <div class="description-content flex-fill d-flex flex-column">
+                <span class="fw-bold">Self check-in</span>
+                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore</span>
+                </div>
+                </div>
+                <div class="d-flex flex-row my-3">
+                <div class="circle me-3 align-self-start"></div>
+                <div class="description-content flex-fill d-flex flex-column">
+                <span class="fw-bold">Self check-in</span>
+                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore</span>
+                </div>
+                </div>*@
+            </div>
+            <div class="calendar-container d-flex flex-column mt-5">
+                @*<label class="fw-bold">7 Nights in northamptonshire</label>
+                <input type="text" name="datetimes" />*@
+                <img class="w-100" src="images/calendar-pictures.png" />
+            </div>
+            <hr />
+            <div class="d-flex flex-column align-items-start">
+                <label class="fw-bold">Where you’ll be</label>
+                <img class="w-100" style="margin-left:-15px;" src="images/map_picture.png" />
+                @*           <span class="fw-bold">Northamptonshire, England, United Kingdom</span>
+                <p>Lorem ipsum dolor sit amet, vide mundi neglegentur eos et. Nobis vivendum sed te, enim veri per icula at vis, amet vocibus at nam. Vix omneahabemus.</p>
+                <a href="#" style="color:black">Show more</a>*@
+                @* <div id="googleMap" style="width:100%;height:400px;"></div>*@
+                <span>
+                    Restaurant - Las Flores in Festival
+                </span>
+            </div>
+            <hr />
+            <div class="end-container d-flex flex-column">
+                <span class="landing-header color-primary fs-2">@Resources.App.appName</span>
+                <span>
+                    Not happy with the experience? <br /> Contact us and we'll solve the problem for you.
+                </span>
+                @*   <div class="d-flex flex-column">
+                <div class="">
+                <img class="w-50" style="margin-left:-20px;" src="images/recommended_picture1.png" />
+                </div>
+                <div>
+                <span>Mv, Maldives</span>
+                <p>5,350 Kilometers away</p>
+                <span>Aug 18-23</span>
+                <span>$34,</span>
+                </div>
+                </div>*@
+            </div>
+        </div>
+        <div class="flex-fill w-50 d-flex gap-4 flex-column align-items-end my-5">
+            <div class="w-75 shadow rounded-3 d-flex" style="background:#F3F6FC">
+                <img class="rounded-2 rounded-circle m-3" src="images/profile_picture.png" width="60" height="60" />
+                <div class="d-flex flex-column m-2">
+                    <span>Owner</span>
+                    <span>David Watson</span>
+                    <a href="#">View Profile</a>
+                </div>
+                <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
+                    <img class="px-3" src="images/check.svg" />
+                </div>
+            </div>
+            <div class="w-75 shadow rounded-3 p-3">
+                <SignUpCard></SignUpCard>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Footer-->
+<div class="container">
+    <div class="footer">
+        <div class="footer-content">
+            <span class="footer-appname color-primary">@Resources.App.appName</span>
+            <br /><br />
+            <span class="footer-text">2022 Cinnamon.Inc &nbsp;&nbsp; <a href="#">Contact Us</a> &nbsp;&nbsp; Experiences listed are samples only</span>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    protected override void OnInitialized()
+    {
+        jsRuntime.InvokeVoidAsync("DetailActivity.razor.js", "Landing Page Loaded");
+    }
+}

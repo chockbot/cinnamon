@@ -1,6 +1,6 @@
 ﻿@namespace Cinnamon.Web.Components
 
-<button class="btn-primary rounded-pill shadow-sm" @onclick="OnClick">
+<button class="btn-primary rounded-pill shadow-sm" style="width:@Width" data-bs-toggle=@ModalBsToggle data-bs-target=@ModalTarget @onclick="OnClick">
     @Text
 </button>
 
@@ -9,4 +9,10 @@
     public EventCallback<MouseEventArgs> OnClick { get; set; }
     [Parameter]
     public string Text { get; set; } = "Primary Button";
+    [Parameter]
+    public string ModalTarget { get; set; } = "";
+    [Parameter]
+    public string ModalBsToggle { get; set; } = "";
+    [Parameter]
+    public string Width { get; set; } = "100%";
 }

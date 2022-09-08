@@ -1,0 +1,159 @@
+﻿.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+}
+
+.top-row {
+background-color: white;
+border-bottom: 1px solid var(--lineColor);
+justify-content: flex-start;
+aspect-ratio: 1600/74;
+width: 100%;
+display: flex;
+align-items: center;
+}
+
+.top-row ::deep a {
+    white-space: nowrap;
+    margin-left: 1.5rem;
+}
+
+.top-row a:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.app-name {
+color: var(--primary);
+font-family: 'Backline';
+font-size: 1.6vw;
+text-decoration: none;
+}
+
+@media screen and (max-width: 767px) {
+/*    .top-row:not(.auth){
+    display: none;
+}*/
+
+.menu {
+    display: none;
+}
+
+.menu img {
+    margin-right: 0;
+    width: 20%;
+}
+
+.app-name {
+    font-size: 7vw;
+}
+
+.px-4 {
+    padding-right: 0.5rem !important;
+    padding-left: 0.8rem !important;
+}
+
+.top-row {
+    padding: 5px 0;
+}
+
+.top-row.auth {
+    justify-content: space-between;
+}
+
+.top-row a{
+    margin-left: 0;
+}
+}
+
+@media screen and (min-width: 767px) {
+.app-name {
+    font-size: 3vw;
+}
+
+.top-row {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.px-4 {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+}
+
+.top-row {
+    padding: 5px 0;
+}
+
+.top-row a {
+    margin-left: 0;
+}
+
+.top-row {
+    padding-left: 2rem !important;
+    padding-right: 1.5rem !important;
+}
+}
+
+body {
+font-family: 'Varela Round', sans-serif;
+}
+
+
+label.radio {
+    cursor: pointer;
+    width: 50%;
+    margin-left: 3px;
+}
+
+    label.radio input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        visibility: hidden;
+        pointer-events: none
+    }
+
+    label.radio span {
+        padding: 15px 15px;
+        border: 2px solid #ffa942;
+        display: inline-block;
+        color: black;
+        border-radius: 5px;
+        text-transform: uppercase;
+        width: 100%;
+        margin-top: 10px;
+        margin-right: 10px;
+        text-align: center;
+    }
+
+    label.radio input:checked + span {
+        border-color: #ffa942;
+        background-color: #ffa942;
+        color: #fff;
+        width: 100%;
+        text-align: center;
+    }

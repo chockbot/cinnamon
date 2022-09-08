@@ -322,7 +322,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Copyright © 2022 LLC. All rights reserved.
+        ///   Looks up a localized string similar to Copyright © 2022. All rights reserved.
         /// </summary>
         internal static string footer {
             get {
