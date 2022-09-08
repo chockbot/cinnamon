@@ -3,6 +3,10 @@
     padding-top: 50px;
     text-decoration: none;
 }
+.carousel-list {
+    text-decoration: none;
+    padding: 0 !important;
+}
 img.img-icon {
     height: 30%
 }
@@ -37,6 +41,7 @@ img.img-icon {
 .filter {
     text-decoration: none;
     padding-top: 10px;
+    font-family:'Nunito';
 }
 .list-menu {
     list-style: none;
@@ -46,57 +51,6 @@ img.img-icon {
     .list-menu a {
         color: #343a40;
     }
-.card-modal {
-    width: 400px;
-    border: none;
-    border-radius: 6px;
-    box-shadow: 5px 6px 6px 2px #e9ecef;
-}
-label.radio {
-    cursor: pointer;
-    width: 100%;
-    margin-left: 3px;
-}
-    label.radio input {
-        position: absolute;
-        top: 0;
-        left: 0;
-        visibility: hidden;
-        pointer-events: none
-    }
-
-    label.radio span {
-        padding: 15px 15px;
-        border: 2px solid #0d6efd;
-        display: inline-block;
-        color: #0d6efd;
-        border-radius: 3px;
-        text-transform: uppercase;
-        width: 100%;
-        margin-top: 10px;
-        margin-right: 10px;
-        text-align: center;
-    }
-
-    label.radio input:checked + span {
-        border-color: #0d6efd;
-        background-color: #0d6efd;
-        color: #fff;
-        width: 100%;
-        text-align: center;
-    }
-
-.form-check-label {
-    text-align: left;
-}
-
-.dollar {
-    top: -1.2em !important;
-}
-.amount {
-    font-size: 36px;
-    font-weight: 500;
-}
 .row-1 {
  display: flex;
 }
@@ -105,14 +59,14 @@ label.radio {
     border: 1px;
 }
 .card-title1 {
-    font-size: 12px;
+    font-size: 16px;
     font-family: 'Nunito-Bold';
     text-align: left;
     margin: 0 1.5em;
 }
 
 .card-title2 {
-    font-size: 12px;
+    font-size: 14px;
     font-family: 'Nunito';
     text-align: left;
     margin: 0 1.5em;
@@ -120,7 +74,7 @@ label.radio {
 }
 
 .card-title3 {
-    font-size: 12px;
+    font-size: 14px;
     font-family: 'Nunito';
     text-align: left;
     margin: 0 1.5em;
@@ -137,24 +91,9 @@ label.radio {
     border-radius: 100%;
     width: 5px;
 }
-.cookie-consent {
-    position: fixed;
-    bottom: 8px;
-    left: 20px;
-    width: 400px;
-    height: 180px;
-    padding: 20px;
-    color: #fff;
-    line-height: 20px;
-    font-size: 14px;
-    font-family: 'Nunito';
-    background: #292929;
-    z-index: 120;
-    cursor: pointer;
-    border-radius: 3px;
-    opacity: 90%;
+.modal-content{
+    font-family:'Nunito';
 }
-
 .allow-button {
     height: 30px;
     width: 120px;
@@ -167,10 +106,9 @@ label.radio {
 }
 
 .footer {
-    height: 128px;
+    height: 100px;
     width: 100%;
-    margin-top: 60px;
-    margin-bottom: 60px;
+    margin-top: 30px;
     background-color: white;
     position: relative;
 }
@@ -183,11 +121,58 @@ label.radio {
 }
 
 .footer-appname {
-    font-family: 'Backline';
+    font-family: 'Backline'; 
     font-size: 2vw;
 }
 
 .footer-text {
     font-family: 'Inter';
     font-size: 1vw;
+}
+.cookiealert {
+    width: 100%;
+    border-radius: 0;
+    color: black;
+    background-color: #ffa942;
+    text-decoration: none;
+    z-index: 999;
+/*    opacity: 0;
+    visibility: hidden;*/
+    border-radius: 0;
+    transform: translateY(100%);
+    transition: all 500ms ease-out;
+}
+    .cookiealert.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0%);
+        transition-delay: 1000ms;
+    }
+    .cookiealert a {
+        text-decoration: underline
+    }
+
+    .cookiealert .acceptcookies {
+        margin-left: 10px;
+        vertical-align: baseline;
+    }
+@media screen and (max-width: 767px) {
+    .filter {
+        visibility: hidden;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .row-1 {
+        display: block;
+    }
+    .row {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    .col-md-2 {
+        display: none;
+    }
+    
+}
+@media screen and (min-width: 767px) {
 }

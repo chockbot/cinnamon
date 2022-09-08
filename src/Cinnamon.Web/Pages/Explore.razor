@@ -1,7 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @namespace Cinnamon.Web.Pages
 @page "/explore"
-@inject Microsoft.JSInterop.IJSRuntime JsRuntime;
+@inject IJSRuntime jsRuntime
 <PageTitle>@Resources.App.appName - Explore</PageTitle>
 
 <!DOCTYPE html>
@@ -18,17 +18,15 @@
 <!--List of service offered-->
     <div class=" container">
         <div class="row">
-            <div class="col-sm-10 p-2">
-                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+            <div class="col-sm-10">
+                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="false">
                     <div class="carousel-inner">
                         <div class="carousel-item active">
                             <div class="cards-wrapper">
-
                                 <a class="button carousel-list text-center p-0 " href="#" >
                                     <img src="images/Category/Baking.png" class="img-icon">
                                     <p class="card-title">Baking</p>
                                 </a>
-
                                 <a class="button carousel-list text-center p-0" href="#">
                                     <img src="images/Category/Ballet.png" alt="..." class="img-icon">
                                     <p class="card-title">Ballet</p>
@@ -141,7 +139,7 @@
                 </div>
             </div>
         <!--Filter-->
-            <div class="col-lg-2 p-4">
+            <div class="col-sm-2">
                 <div class="filter">
                     <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
                         <img src="images/filter.png" / alt="" class="card-img-top">
@@ -157,73 +155,21 @@
                                     <div class="card-filter">
                                         <ul class="list-group list-group-flush">
                                             <li class="list-group-item">
-                                                <h5 class="font-weight-bold align-items-start">Set Price Range</h5>
-                                                <div class="d-flex flex-row">
-                                                    <label class="radio"> <input type="radio" name="pricing" value="Hourly" checked> <span><i class="fa fa-clock-o"></i> Hourly</span> </label> <label class="radio"> <input type="radio" name="pricing" value="Fixed"> <span><i class="fa fa-file-text"></i> Fixed</span> </label>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="mt-5">
-                                                        <sup class="text-muted dollar">$</sup>
-                                                        <span class="amount">90</span>
-                                                        <span class="text-muted">/ hour</span>
-                                                    </div>
-                                                    <div class="mt-2">
-                                                        <input type="range" class="form-range" min="0" max="5" step="0.5" id="customRange3">
-                                                        <div class="d-flex justify-content-between">
-                                                            <small class="text-muted">$29</small>
-                                                            <small class="text-muted">$90</small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                            <div class="form-check form-switch">
-                                                        <input class="form-check-input opacity-10 bg-warning border border-warning" type="checkbox" role="switch" id="flexSwitchCheckDefault">
-                                                        <label class="form-check-label" for="flexSwitchCheckDefault">First class offered free</label>
-                                                    </div>
-                                            </li>
-                                            <li class="list-group-item">
-                                                <h5 class="font-weight-bold align-items-start">Set Level</h5>
-                                                <div class="row">
-                                                    <div class="col-sm-3">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-                                                            <label class="form-check-label" for="flexRadioDefault1">
-                                                                All Level
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-                                                            <label class="form-check-label" for="flexRadioDefault2">
-                                                                Beginner
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" checked>
-                                                            <label class="form-check-label" for="flexRadioDefault3">
-                                                                Intermidiate
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault4" checked>
-                                                            <label class="form-check-label" for="flexRadioDefault4">
-                                                                Advanced
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault5" checked>
-                                                            <label class="form-check-label" for="flexRadioDefault5">
-                                                                Proficiency
-                                                            </label>
-                                                        </div>
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault6" checked>
-                                                            <label class="form-check-label" for="flexRadioDefault6">
-                                                                children
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </div>
+                                                <h5 class="font-weight-bold align-items-start">Location</h5>
+                                                <select class="form-select" aria-label="Default select example">
+                                                    <option selected>All Location</option>
+                                                    <option value="1">Mandaluyong City</option>
+                                                    <option value="2">Marikina City</option>
+                                                    <option value="3">Quezon City</option>
+                                                    <option value="4">San Juan City</option>
+                                                    <option value="5">Caloocan City</option>
+                                                    <option value="6">Malabon City</option>
+                                                    <option value="7">Navotas City</option>
+                                                    <option value="8">Makati City</option>
+                                                    <option value="9">Muntinlupa City</option>
+                                                    <option value="10">Parañaque City</option>
+                                                </select>
+                                                <br/>
                                             </li>
                                             <li class="list-group-item">
                                                 <h5 class="font-weight-bold align-items-start">Categories</h5>
@@ -310,8 +256,7 @@
                                     </div>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-primary">Apply</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    <button type="button" class="btn" style="background-color:#ffa942;color:white">Apply</button>
                                 </div>
                             </div>
                         </div>
@@ -319,12 +264,12 @@
                 </div>
             </div>
         </div>
-        <!--1st Slider-->
+             <!--1st Slider-->
             <div class="row-1">
                 <div class="col-md-3 p-2">
                      <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                            <div id="carousel1" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                            <div id="carousel1" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false"> 
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -332,7 +277,6 @@
                                 </div>
                                 <div class="carousel-inner1">
                                     <div class="carousel-item active">
-                                        <span class="wish-icon"><i class="fa fa-heart-o"></i></span>
                                         <img src="images/In-person - fun play.jpg" alt="First slide" class="card-img-top">
                                     </div>
                                     <div class="carousel-item">
@@ -362,7 +306,7 @@
                 <div class="col-md-3 p-2">
                     <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                            <div id="carousel2" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carousel2" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                     <div class="carousel-indicators">
                                         <button type="button" data-bs-target="#carouselExampleIndicators1" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                         <button type="button" data-bs-target="#carouselExampleIndicators1" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -399,7 +343,7 @@
                 <div class="col-md-3 p-2">
                     <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                        <div id="carousel3" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carousel3" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators2" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                     <button type="button" data-bs-target="#carouselExampleIndicators2" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -436,7 +380,7 @@
                 <div class="col-md-3 p-2">
                     <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                        <div id="carousel4" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carousel4" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators3" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                     <button type="button" data-bs-target="#carouselExampleIndicators3" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -476,7 +420,7 @@
                 <div class="col-md-3 p-2">
                     <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                        <div id="carousel5" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carousel5" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators4" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                     <button type="button" data-bs-target="#carouselExampleIndicators4" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -513,7 +457,7 @@
                 <div class="col-md-3 p-2">
                     <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                        <div id="carousel6" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carousel6" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators5" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                     <button type="button" data-bs-target="#carouselExampleIndicators5" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -550,7 +494,7 @@
                 <div class="col-md-3 p-2">
                     <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                        <div id="carousel7" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carousel7" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators6" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                     <button type="button" data-bs-target="#carouselExampleIndicators6" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -587,7 +531,7 @@
                 <div class="col-md-3 p-2">
                     <a class="button carousel-list text-center" href="#">
                         <div class="card" style="width: 20rem">
-                        <div id="carousel8" class="carousel slide carousel-fade" data-bs-ride="carousel">
+                        <div id="carousel8" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-indicators">
                                     <button type="button" data-bs-target="#carouselExampleIndicators7" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                     <button type="button" data-bs-target="#carouselExampleIndicators7" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -622,16 +566,6 @@
                     </a>
                 </div>
             </div>
-        <!--Cookies Popup-->
-        <div class="cookie-consent" id="cookies">
-            <span> We use cookies on this website to distinguish you from other users. We use this data to enhance your experience and for targeted advertising. By continuing to use this website you consent to our use of cookies. &nbsp; For more information, please see our <a href="#" class="ml-1 text-decoration-none">Privacy policy</a> </span>
-            <div class="mt-2 d-flex align-items-center justify-content-center g-2">
-                <br />
-                <button class="allow-button mr-1" id="accept">Allow Cookies</button>
-                &nbsp&nbsp;
-                <button class="allow-button">Decline</button>
-            </div>
-        </div>
     </div>
 </body>
 <!--Footer-->
@@ -640,8 +574,23 @@
         <div class="footer-content">
             <span class="footer-appname color-primary">@Resources.App.appName</span>
             <br /><br />
-            <span class="footer-text">2022 Cinnamon.Inc &nbsp;&nbsp; <a href="#">Contact Us</a> &nbsp;&nbsp; Experiences listed are samples only</span>
+            <span class="footer-text">
+                2022 Cinnamon.Inc &nbsp;&nbsp; <a href="mailto:support@cinnamon.ph">Contact Us</a> &nbsp;&nbsp; Experiences listed are samples only
+            </span>
         </div>
     </div>
 </div>
+<!--Cookies-->
+        <div class="alert text-center cookiealert" role="alert">
+            <b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="http://cookiesandyou.com/" target="_blank">Learn more</a>
+            <button type="button" class="btn btn-primary btn-sm acceptcookies" aria-label="Close">
+                I agree
+            </button>
+        </div>
 </html>
+@code {
+    protected override void OnInitialized()
+    {
+        jsRuntime.InvokeVoidAsync("Explore.razor.js", "Activity Page Loaded");
+    }
+}
