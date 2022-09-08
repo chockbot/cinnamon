@@ -19,3 +19,10 @@ Start the Project inside Docker Container
 ```
 docker-compose up -d
 ```
+
+Start the Database for Local Development
+
+```
+cd database
+docker-compose up -d
+```
