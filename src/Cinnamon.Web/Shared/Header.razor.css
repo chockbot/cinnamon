@@ -38,17 +38,6 @@ main {
     text-decoration: none;
 }
 
-.btn-link {
-    text-decoration: none;
-    color: black;
-    text-align: end;
-}
-
-.btn:focus {
-    outline: none;
-    box-shadow: none;
-}
-
 .menu {
     position: relative;
     height: 32%;
@@ -57,7 +46,7 @@ main {
 .dropdown {
     font-family: 'Nunito';
     font-size: 0.5vw;
-    text-align: right;
+    text-align:right;
 }
 
 a.dropdown-item {
@@ -80,8 +69,10 @@ a.dropdown-item {
 }
 
 .nav {
+    position: relative;
+    height: 32%;
     font-family: 'Nunito';
-    font-size: 1vw;
+    font-size: 0.5vw;
     text-align: right;
 }
 
@@ -91,11 +82,25 @@ a.dropdown-item {
     }
 
 .input-group {
-    width: 100%;
+    width: 20rem;
+    margin-right:12px;
 }
-
-body {
-    font-family: 'Varela Round', sans-serif;
+.btn-primary {
+    width: 50%;
+    background-color: #ffa942;
+    color: black;
+    font-family: 'Nunito';
+    padding: 15px 15px;
+    border: none;
+}
+.form-control {
+    width: 70%;
+    border-color: #ffa942;
+    border: 2px solid #ffa942;
+    border-radius: 10px;
+    color: black;
+    font-family: 'Nunito';
+    margin: auto;
 }
 
 @media (min-width: 641px) {
@@ -122,7 +127,7 @@ body {
         }
 
     .app-name {
-        font-size: 7vw;
+        display: none;
     }
 
     .px-4 {
