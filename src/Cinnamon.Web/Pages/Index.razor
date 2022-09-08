@@ -1,4 +1,6 @@
-﻿@page "/"
+﻿@layout LandingMainLayout
+
+@page "/"
 @*@using Microsoft.JSInterop*@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
@@ -107,11 +109,11 @@
     </div>
 
     <div class="landing-text landing-sm">
-        <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div id="carouselSection3" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-indicators">
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="2" aria-label="Slide 3"></button>
             </div>
             <div class="carousel-inner">
                 <div class="carousel-item active">
@@ -137,11 +139,11 @@
                     </div>
                 </div>
             </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselSection3" data-bs-slide="prev">
                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Previous</span>
             </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselSection3" data-bs-slide="next">
                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                 <span class="visually-hidden">Next</span>
             </button>
@@ -171,7 +173,7 @@
         <br/> <br/>
         <span class="landing-subheader" >@Resources.App.makerDescription</span>
         <div class="btn-explore">
-            <PrimaryButton OnClick="NavigateToExplorePage" Text=@Resources.App.cinnamonMakerSignup />
+            <PrimaryButton ModalTarget="#sigupModal" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />
         </div>
     </div>
 </div>
@@ -207,6 +209,8 @@
     </div>
 </div>
 
+<ModalSignUp></ModalSignUp>
+
 @code{
     private void NavigateToExplorePage()
     {
@@ -215,14 +219,8 @@
 
     protected override void OnInitialized() { 
         jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+        jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Index.js");
     }
-    //protected override async Task OnAfterRenderAsync(bool firstRender)
-    //{
-    //    if (firstRender)
-    //    {
-    //        _jsModule = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./scripts/scripts.js");
-    //    }
-    //}
 
     //public async Task ShowAlertWindow()
     //{
