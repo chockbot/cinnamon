@@ -1,4 +1,4 @@
-﻿namespace Cinnamon.Core.Models
+﻿namespace Cinnamon.Core
 {
     public class ResultModel
     {
@@ -10,6 +10,18 @@
         {
             Type = t;
             Message = msg;
+        }
+
+        public static ResultModel error(string msg) {
+            ResultModel result = new ResultModel(); 
+            result.setMessage(MessageType.Error, msg);
+            return result;
+        }
+
+        public static ResultModel success(string msg) {
+            ResultModel result = new ResultModel();
+            result.setMessage(MessageType.Success, msg);
+            return result;
         }
     }
 }

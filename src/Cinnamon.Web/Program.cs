@@ -1,25 +1,34 @@
-﻿using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
-using Microsoft.AspNetCore.Components.Authorization;
+﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.EntityFrameworkCore;
+using Dna;
 using Cinnamon.Web.Areas.Identity;
-using Cinnamon.Web.Data;
+using Cinnamon.Data;
+using Cinnamon.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Application Setup
+Framework.Construct<DefaultFrameworkConstruction>()
+    .AddFileLogger()
+    .UseClientDataStore()
+    .AddViewModels()
+    .AddClientServices()
+    .Build();
+
+// Ensure the client data store 
+await Framework.Service<IDataStore>().EnsuredataStoreAsync();
+
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString));
+var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
+builder.Services.AddDbContext<DataStoreDbContext>(options =>
+    options.UseNpgsql(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<DataStoreDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-builder.Services.AddSingleton<WeatherForecastService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
