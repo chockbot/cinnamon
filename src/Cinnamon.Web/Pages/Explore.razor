@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
+@using Cinnamon.Web.Components;
 @namespace Cinnamon.Web.Pages
 @page "/explore"
 @inject IJSRuntime jsRuntime
@@ -267,7 +268,7 @@
              <!--1st Slider-->
             <div class="row-1">
                 <div class="col-md-3 p-2">
-                     <a class="button carousel-list text-center" href="#">
+                     <a class="button carousel-list text-center" href="/explore/DetailActivity">
                         <div class="card" style="width: 20rem">
                             <div id="carousel1" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false"> 
                                 <div class="carousel-indicators">
@@ -569,17 +570,7 @@
     </div>
 </body>
 <!--Footer-->
-<div class="container">
-    <div class="footer">
-        <div class="footer-content">
-            <span class="footer-appname color-primary">@Resources.App.appName</span>
-            <br /><br />
-            <span class="footer-text">
-                2022 Cinnamon.Inc &nbsp;&nbsp; <a href="mailto:support@cinnamon.ph">Contact Us</a> &nbsp;&nbsp; Experiences listed are samples only
-            </span>
-        </div>
-    </div>
-</div>
+<Footer></Footer>
 <!--Cookies-->
 <div class="alert text-center cookiealert" role="alert">
     <b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
