@@ -42,17 +42,13 @@ a.dropdown-item {
     aspect-ratio: 1;
     width: 15%;
 }
-
-.menu img {
-    aspect-ratio: 1;
-    width: 15%;
-}
-
 .menu span {
     font-family: 'Nunito-Bold';
     font-size: 1vw;
 }
-
+.input-group {
+    width: 50%;
+}
 .nav {
     position: relative;
     height: 32%;
@@ -65,9 +61,6 @@ a.dropdown-item {
         aspect-ratio: 1;
         width: 10%;
     }
-
-
-
 .btn-primary {
     width: 50%;
     background-color: #ffa942;
@@ -86,35 +79,131 @@ a.dropdown-item {
     margin: auto;
 }
 
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
+/* For Desktop View */
+@media screen and (min-width: 1024px) {
+    .top-row {
+        background-color: white;
+        border-bottom: 1px solid var(--lineColor);
+        justify-content: flex-start;
+        aspect-ratio: 1600/74;
+        width: 100%;
+        display: flex;
+        align-items: center;
     }
 
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
-}
+        .top-row ::deep a {
+            white-space: nowrap;
+            margin-left: 1.5rem;
+        }
 
-@media screen and (min-width: 768px) {
+        .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .app-name {
+        color: var(--primary);
+        font-family: 'Backline';
+        font-size: 1.6vw;
+        text-decoration: none;
+    }
+
+    .menu {
+        position: relative;
+        height: 32%;
+    }
+
+    .dropdown {
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+    }
+
+    a.dropdown-item {
+        margin-left: auto;
+    }
+
+    .menu img {
+        aspect-ratio: 1;
+        width: 15%;
+    }
+
+    .menu span {
+        font-family: 'Nunito-Bold';
+        font-size: 1vw;
+    }
+
     .input-group {
         width: 50%;
     }
-}
 
-@media screen and (max-width: 767px) {
+    .nav {
+        position: relative;
+        height: 32%;
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+        text-align: right;
+    }
+
+        .nav img {
+            aspect-ratio: 1;
+            width: 10%;
+        }
+}
+/* For Tablet View */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .app-name {
+        font-size: 3vw;
+    }
+
+    .input-group {
+        width: 80%;
+    }
+    .become {
+        display:none;
+    }
+    .menu img {
+        margin-right: 0;
+        width: 20%;
+        text-align:right;
+    }
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .px-4 {
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+        .top-row a {
+            margin-left: 0;
+        }
+
+    .top-row {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
+}
+/* For Mobile Portrait View */
+@media screen and (max-width: 767px) and (orientation: portrait) {
     .input-group {
         width: 100%;
     }
-    .app-name{
+
+    .app-name {
         display: none;
     }
+
     .become {
         display: none;
     }
+
     .menu-label {
         display: none;
     }
@@ -141,64 +230,4 @@ a.dropdown-item {
             margin-left: 0;
         }
 }
-
-@media screen and (min-width: 767px) {
-    .app-name {
-        font-size: 3vw;
-    }
-
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
-
-    .px-4 {
-        padding-right: 0 !important;
-        padding-left: 0 !important;
-    }
-
-    .top-row {
-        padding: 5px 0;
-    }
-
-        .top-row a {
-            margin-left: 0;
-        }
-
-    .top-row {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
-}
-body {
-    font-family: 'Varela Round', sans-serif;
-}
-
-label.radio {
-    cursor: pointer;
-    width: 50%;
-    margin-left: 3px;
-}
-
-    label.radio input {
-        position: absolute;
-        top: 0;
-        left: 0;
-        visibility: hidden;
-        pointer-events: none
-    }
-
-    label.radio span {
-        padding: 15px 15px;
-        border: 2px solid #ffa942;
-        display: inline-block;
-        color: black;
-        border-radius: 5px;
-        text-transform: uppercase;
-        width: 100%;
-        margin-top: 10px;
-        margin-right: 10px;
-        text-align: center;
-    }
-
+ 
