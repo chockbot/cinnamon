@@ -19,5 +19,7 @@ namespace Cinnamon.Core
         /// </summary>
         public static ApplicationViewModel ViewModelApplication => Framework.Service<ApplicationViewModel>();
         #endregion
+
+        public static IDataStore DataStore => Framework.Service<IDataStore>();
     }
 }

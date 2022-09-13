@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cinnamon.Core;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cinnamon.Data
 {
-    internal class Activities
+    public class Activities : BaseDbSet<ActivityModel>, IActivities
     {
+        public Activities(DataStoreDbContext dbContext) : base(dbContext) { }
+        protected override DbSet<ActivityModel> Table => mDbContext.Activities;
     }
 }
