@@ -2,7 +2,7 @@
     height: 128px;
     width: 100%;
     margin-top: 60px;
-    margin-bottom: 60px;
+    margin-bottom: 20px;
     background-color: white;
     position: relative;
 }
@@ -13,13 +13,35 @@
     width: 100%;
     top: 10%;
 }
+
 .footer-appname {
     font-family: 'Backline';
-    font-size: 1.8rem;
+    font-size: 2vw;
 }
 
 .footer-text {
     font-family: 'Inter';
-    font-size: 1.1rem;
+    font-size: 1vw;
 }
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    .footer-appname {
+        font-family: 'Backline';
+        font-size: 5vw;
+    }
 
+    .footer-text {
+        font-family: 'Inter';
+        font-size: 2.5vw;
+    }
+}
+@media screen and (min-width: 768px) and (max-width: 1023px){
+    .footer-appname {
+        font-family: 'Backline';
+        font-size: 4vw;
+    }
+
+    .footer-text {
+        font-family: 'Inter';
+        font-size: 2vw;
+    }
+}

@@ -152,17 +152,15 @@ img.img-icon {
     border: 1px solid black;
     background-color: #FFA942;
 }
-
 .cookiealert {
-    width: 100%;
-    border-radius: 0;
+    width: 50%;
     color: black;
     background-color: #ffa942;
     text-decoration: none;
     z-index: 999;
     /*    opacity: 0;
     visibility: hidden;*/
-    border-radius: 0;
+    border-radius: 10px;
     transform: translateY(100%);
     transition: all 500ms ease-out;
 }
@@ -198,7 +196,16 @@ img.img-icon {
 }
 
 /* For Mobile Portrait View */
-@media screen and (max-width: 767px) and (orientation: portrait) {
+@media screen and (max-width: 767px){
+    .cookiealert {
+        width: 100%;
+        color: black;
+        background-color: #ffa942;
+        text-decoration: none;
+        z-index: 999;
+        transform: translateY(100%);
+        transition: all 500ms ease-out;
+    }
     .activity-lg {
         display: none;
     }
@@ -209,6 +216,10 @@ img.img-icon {
 
     .row-1-lg {
         display: block;
+    }
+    .row-2-lg {
+        display: block;
+        text-align: center;
     }
 
     .row {

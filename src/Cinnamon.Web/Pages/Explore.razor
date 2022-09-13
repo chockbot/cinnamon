@@ -1,5 +1,5 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
-@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Components
 @namespace Cinnamon.Web.Pages
 @page "/explore"
 @inject IJSRuntime jsRuntime
@@ -362,7 +362,7 @@
         </div>
     <!--Section 2-->
         <div class="section-2 row-1-lg">
-        <div class="col-lg-3">
+        <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="/explore/DetailActivity">
                     <div class="card" style="width: 20rem">
                         <div id="carousel1" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -392,14 +392,14 @@
                             </button>
                         </div>
                         <div class="card-body1">
-                            <h4 class="card-title1"> A unique baking experience</h4>
-                            <p class="card-title2"> Alabang, Muntinlupa</p>
-                            <p class="card-title3"> PHP 2500 / person / 4 sessions</p>
+                            <h4 class="card-title1">A unique baking experience</h4>
+                            <p class="card-title2">Alabang, Muntinlupa</p>
+                            <p class="card-title3">PHP 2500 / person / 4 sessions</p>
                         </div>
                     </div>
                 </a>
             </div>
-        <div class="col-lg-3">
+        <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="#">
                     <div class="card" style="width: 20rem">
                         <div id="carousel2" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -436,7 +436,7 @@
                     </div>
                 </a>
             </div>
-        <div class="col-lg-3">
+        <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="#">
                     <div class="card" style="width: 20rem">
                         <div id="carousel3" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -473,7 +473,7 @@
                     </div>
                 </a>
             </div>
-        <div class="col-lg-3">
+        <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="#">
                     <div class="card" style="width: 20rem">
                         <div id="carousel4" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -542,9 +542,9 @@
                             </button>
                         </div>
                         <div class="card-body1">
-                            <h4 class="card-title1"> A unique baking experience</h4>
-                            <p class="card-title2"> Alabang, Muntinlupa</p>
-                            <p class="card-title3"> PHP 2500 / person / 4 sessions</p>
+                            <h4 class="card-title1">A unique baking experience</h4>
+                            <p class="card-title2">Alabang, Muntinlupa</p>
+                            <p class="card-title3">PHP 2500 / person / 4 sessions</p>
                         </div>
                     </div>
                 </a>
@@ -666,7 +666,7 @@
 
     <!--Section 3-->
         <div class="section-3 row-2-lg">
-            <div class="col-lg-3">
+            <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="#">
                     <div class="card" style="width: 20rem">
                         <div id="carousel5" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -703,7 +703,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="#">
                     <div class="card" style="width: 20rem">
                         <div id="carousel6" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -740,7 +740,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="#">
                     <div class="card" style="width: 20rem">
                         <div id="carousel7" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -777,7 +777,7 @@
                     </div>
                 </a>
             </div>
-            <div class="col-lg-3">
+            <div class="col-lg-3 d-flex justify-content-center">
                 <a class="button carousel-card text-center" href="#">
                     <div class="card" style="width: 20rem">
                         <div id="carousel8" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -972,12 +972,14 @@
 <!--Footer-->
 <Footer></Footer>
 <!--Cookies-->
-<div class="alert text-center cookiealert" role="alert">
-    <b>Do you like cookies?</b> &#x1F36A; We use cookies to ensure you get the best experience on our website. <a href="https://cookiesandyou.com/" target="_blank">Learn more</a>
-    <button type="button" class="btn btn-primary btn-sm acceptcookies">
-        Agree
-    </button>
-</div>
+    <div class="col-12-lg d-flex justify-content-center">
+        <div class="alert text-center cookiealert" role="alert">
+            We use cookies to ensure you get the best experience on our website.
+            <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="alert" aria-label="Close">
+                Agree
+            </button>
+        </div>
+    </div>
 </html>
 @code {
     protected override void OnInitialized()
