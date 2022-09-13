@@ -22,6 +22,11 @@ namespace Cinnamon.Data
         /// Mostly used for testing purposes only
         /// </summary>
         public DataStoreDbContext dbContext => mDbContext;
+
+        public IActivities Activities => new Activities(mDbContext);
+        public IActivityTypes ActivityTypes => new ActivityTypes(mDbContext);
+        public IExperienceTypes ExperienceTypes => new ExperienceTypes(mDbContext);
+        public IWaitList WaitList => new WaitLists(mDbContext);
         #endregion
 
         #region Constructor

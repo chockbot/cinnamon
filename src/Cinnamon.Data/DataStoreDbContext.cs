@@ -13,6 +13,7 @@ namespace Cinnamon.Data
         public DbSet<ActivityTypeModel> ActivityTypes { get; set; }
         public DbSet<ActivityModel> Activities { get; set; }
         public DbSet<ExperienceTypeModel> ExperienceTypes { get; set; }
+        public DbSet<WaitListModel> WaitLists { get; set; }
         #endregion
 
         #region Constructor
@@ -54,7 +55,8 @@ namespace Cinnamon.Data
                 .HasOne(a => a.ExperienceType)
                 .WithMany(e => e.Activities)
                 .HasForeignKey(a => a.ExperienceTypeId);
-                
+
+            modelBuilder.Entity<WaitListModel>().HasKey(w => new { w.Id });
         }
         #endregion
 

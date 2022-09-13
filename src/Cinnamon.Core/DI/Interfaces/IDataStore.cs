@@ -2,6 +2,10 @@
 {
     public interface IDataStore
     {
+        IActivities Activities { get; }
+        IActivityTypes ActivityTypes { get; }
+        IExperienceTypes ExperienceTypes { get; }
+        IWaitList WaitList { get; }
         /// <summary>
         /// Makes sure the client data store is correctly setup
         /// </summary>
