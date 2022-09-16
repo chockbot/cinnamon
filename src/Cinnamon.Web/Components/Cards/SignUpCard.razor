@@ -61,19 +61,22 @@
     public void OnSelect(ChangeEventArgs args) => TypeValue = (UserType)args.Value;
 
     protected override async void OnInitialized() {
-      module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
     }
 
     public void Submit(){
-        module.InvokeVoidAsync("onClickSignup");
-        Email = Email;
-        var model = new WaitListModel() { Type = TypeValue, Email = Email, CreatedOn = DateTime.UtcNow  };
-        waitList.WaitLists.Add(model);
-        var res = waitList.SaveChanges();
-        if(res > 0)
+        if (!string.IsNullOrEmpty(Email))
         {
-            isSubmit = true;
-            module.InvokeVoidAsync("onDoneSignup");
+            module.InvokeVoidAsync("onClickSignup");
+            Email = Email;
+            var model = new WaitListModel() { Type = TypeValue, Email = Email, CreatedOn = DateTime.UtcNow };
+            waitList.WaitLists.Add(model);
+            var res = waitList.SaveChanges();
+            if (res > 0)
+            {
+                isSubmit = true;
+                module.InvokeVoidAsync("onDoneSignup");
+            }
         }
     }
 }
