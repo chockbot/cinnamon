@@ -1,23 +1,28 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @using Cinnamon.Web.Components
+@using Cinnamon.Core
+@using Cinnamon.Data
 
 <PageTitle>Cinnamon.Web</PageTitle>
 
 <div class="page">
     <main>
     <div class="top-row px-4">
+        <!--App Name-->
             <div class="app-name col-lg-3 col-md-2">
                 <a href="" class="app-name">@Resources.App.appName</a>
         </div>
+        <!--Search Lcation and Experience-->
             <div class="search col-lg-5 col-md-4 col-sm-8 d-flex justify-content-center col-xs-8 d-flex justify-content-center">
             <div class="input-group border rounded-pill p-1">
-                <input type="search" placeholder="Location | Experience" aria-describedby="button-addon3" class="form-control bg-none border-0">
+                <input type="text" placeholder="Location | Experience" aria-describedby="button-addon3" class="form-control bg-none border-0">
                 <div class="input-group-append border-0">
                     <button id="button-addon3" type="button" class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
                 </div>
             </div>
         </div>
+        <!--Menu-->
             <div class="col-lg-4 col-md-7 d-flex flex-row justify-content-start col-sm-4 d-flex flex-row col-xs-4 d-flex flex-row">
                 <div class="become">
                         <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
@@ -56,6 +61,8 @@
             </div>
         </div>
     </div>
+
+    <!--Modal Signup-->
     <div class="modal fade" id="sigupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-scrollable">
             <div class="modal-content">
@@ -74,6 +81,8 @@
     </main>
 </div>
 @code {
+    List<ActivityModel> activity = new List<ActivityModel>();
+    string searchValue = string.Empty;
     private void NavigateToFAQPage()
     {
         NavigationManager.NavigateTo("FAQ");
