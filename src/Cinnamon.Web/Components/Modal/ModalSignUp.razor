@@ -1,16 +1,20 @@
 ﻿@namespace Cinnamon.Web.Components
-<div class="modal fade" id="sigupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+@using Cinnamon.Core.Enums
+<div class="modal fade" id="sigupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-body">
                 <div class="card-filter text-center">
-                    <h1> Welcome to @Resources.App.appName</h1>
-                     <SignUpCard></SignUpCard>
+                    <h1> Welcome to <span style="color:#ffa942">@Resources.App.appName</span></h1>
+                    <SignUpCard OnClick="OnClick" TypeValue="@TypeValue"></SignUpCard>
                 </div>
             </div>
         </div>
     </div>
 </div>
 @code {
-
+    [Parameter]
+    public UserType TypeValue { get; set; }
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
 }

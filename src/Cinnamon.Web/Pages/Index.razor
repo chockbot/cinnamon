@@ -1,10 +1,10 @@
 ﻿@layout LandingMainLayout
 
 @page "/"
-@*@using Microsoft.JSInterop*@
+@using Microsoft.JSInterop
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-
+@using Cinnamon.Core.Enums
 @using Cinnamon.Web.Components
 <PageTitle>@Resources.App.appName</PageTitle>
 
@@ -173,7 +173,7 @@
         <br/> <br/>
         <span class="landing-subheader" >@Resources.App.makerDescription</span>
         <div class="btn-explore">
-            <PrimaryButton ModalTarget="#sigupModal" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />
+            <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />
         </div>
     </div>
 </div>
@@ -209,23 +209,26 @@
     </div>
 </div>
 
-<ModalSignUp></ModalSignUp>
+<ModalSignUp OnClick="OnClickFAQ" TypeValue="@UserType.Maker"></ModalSignUp>
 
 @code{
+
+    IJSObjectReference module;
+
     private void NavigateToExplorePage()
     {
         NavigationManager.NavigateTo("explore");
     }
 
-    protected override void OnInitialized() { 
-        jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
-        jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Index.js");
+    protected override async void OnInitialized() { 
+       await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+      module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Index.js");
     }
 
-    //public async Task ShowAlertWindow()
-    //{
-    //     await _jsModule.InvokeVoidAsync("showAlert", "JS function called from .NET");
-    //}
+    public async Task OnClickFAQ()
+    {
+        await module.InvokeVoidAsync("HideModal");
+    }
 }
 
 

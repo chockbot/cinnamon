@@ -1,77 +1,76 @@
 ﻿@page "/Explore/DetailActivity"
 @using Cinnamon.Web.Components
+@using Cinnamon.Core.Enums
 @inject IJSRuntime jsRuntime
 
 
-<div class="d-flex flex-column align-items-center mt-5">
-    <div class="section-1 d-flex flex-column pb-4 border-bottom w-75">
-        <div class="activity-image-container text-center d-flex position-relative bg-black" style="border-radius:10px;">
-            <div id="carouselSection3" class="carousel slide" data-bs-ride="carousel">
-                <div class="carousel-indicators">
-                    <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                    <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                    <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                </div>
-                <div class="carousel-inner">
-                    <div class="carousel-item active">
-                        <div class="col-md-12">
-                            <img class="img-fluid" style="object-fit: cover;height: 400px;opacity:0.6;border-radius:10px;" src="images/baking2.jpg" />
-                        </div>
-                    </div>
-                    <div class="carousel-item">
-                        <div class="col-md-12">
-                            <img class="img-fluid" style="object-fit: cover;width: 100%;height: 400px;opacity:0.6;border-radius:10px;" src="images/activitydetail_image1.png" />
-                        </div>
-
-                    </div>
-                    <div class="carousel-item">
-                        <div class="col-md-12">
-                            <img class="img-fluid" style="object-fit: cover;width: 100%;height: 400px;opacity:0.6;border-radius:10px;" src="images/activitydetail_image1.png" />
-                        </div>
-                    </div>
-                </div>
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselSection3" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Previous</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselSection3" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Next</span>
-                </button>
+<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
+    <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 col-md-10 col-sm-12 col-12">
+        <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
+          <div class="images-gallery order-lg-last order-md-last order-sm-first d-flex gap-3">
+            <div class="d-flex flex-row gap-2 detail-lg">
+                <img class="img-fluid shadow rounded" style="width:50%" src="images/Baking/Baking2.jpg" />
+                <img class="img-fluid shadow rounded" style="width:22%" src="images/Baking/Baking1.jpg" alt="1 adult and 2 children baking" />
+                <img class="img-fluid shadow rounded" style="width:22%" src="images/baking/baking3.jpg" />
             </div>
-            <div class="position-absolute w-100 d-flex justify-content-between p-4">
-                <div class="flex-grow-1 d-flex flex-column align-items-start">
-                    @*  <span class="fw-bold fs-5">NEW Luxury Romantic Cottage - Idyllic Rural Bliss</span>*@
-                    <div class="d-flex gap-3 fs-6">
+             <div class="d-flex flex-row gap-2 detail-md">
+                <img class="img-fluid shadow rounded" style="width:48%" src="images/Baking/Baking2.jpg" />
+                <img class="img-fluid shadow rounded" style="width:21.3%" src="images/Baking/Baking1.jpg" alt="1 adult and 2 children baking" />
+                <img class="img-fluid shadow rounded" style="width:21.3%" src="images/baking/baking3.jpg" />
+            </div>
+             <div class="d-flex flex-row detail-sm">
+                  <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="col-sm-12">
+                                    <img class="img-fluid shadsow rounded" style="width:100%" src="images/Baking/Baking2.jpg" />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <img class="img-fluid w-100 shadow rounded" src="images/Baking/Baking1.jpg" alt="1 adult and 2 children baking" />
+                                </div>
+
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <img class="img-fluid w-100 shadow rounded" src="images/baking/baking3.jpg" />
+                                </div>
+                            </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+            </div>
+          </div>
+            <div class="w-100 order-lg-first order-md-first order-sm-last">
+                <div class="text-black">
+                    <div class="d-flex gap-1 fs-6">
                         <span class="review">4.99 · <u>150 reviews</u></span>
                         <span><u>Alabang, Muntinlupa</u></span>
                     </div>
                 </div>
-                @*                <div class="d-flex gap-2" id="radio-button-container">
-                <div>
-                <input type="radio" id="share" name="activity" value="Share" />
-                <label for="share">Share</label>
-                </div>
-                <div>
-                <input type="radio" id="save" name="activity" value="Save" />
-                <label for="save">Save</label>
-                </div>
-                </div>*@
             </div>
         </div>
         <div class="d-flex justify-content-between mt-3">
             <div class="activity-title">
                 <h3 class="fw-bold">A unique baking experience</h3>
-                @* <span>PHP 2500 / person / 4 sessions</span>*@
-            </div>
-            <div class="image-container d-flex justify-content-end gap-3">
-                <img style="border-radius:10px;" src="images/activitydetail_image2.png" />
-                <img style="border-radius:10px;" src="images/activitydetail_image3.png" />
             </div>
         </div>
     </div>
-    <div class="description-container py-4 d-flex flex-row w-75">
-        <div class="flex-fill w-50 d-flex flex-column">
+    <div class="description-container py-4 d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12">
+        <div class="flex-fill col-lg-6 col-md-6 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last d-flex flex-column">
             <div class="description-container">
                 <p>
                     This program is especially designed for your kids dynamic imagination and enless curiosity. Your children will both learn and have fun in the kitchen. We are passionate about teaching kids and has been formally trained in child development, primary education and special education.
@@ -99,41 +98,101 @@
                         </li>
                     </ul>
                 </p>
-                @*    <div class="d-flex flex-row my-3">
-                <div class="circle me-3 align-self-start"></div>
-                <div class="description-content flex-fill d-flex flex-column">
-                <span class="fw-bold">Self check-in</span>
-                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore</span>
-                </div>
-                </div>
-                <div class="d-flex flex-row my-3">
-                <div class="circle me-3 align-self-start"></div>
-                <div class="description-content flex-fill d-flex flex-column">
-                <span class="fw-bold">Self check-in</span>
-                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore</span>
-                </div>
-                </div>
-                <div class="d-flex flex-row my-3">
-                <div class="circle me-3 align-self-start"></div>
-                <div class="description-content flex-fill d-flex flex-column">
-                <span class="fw-bold">Self check-in</span>
-                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore</span>
-                </div>
-                </div>*@
             </div>
-            <div class="calendar-container d-flex flex-column mt-5">
-                @*<label class="fw-bold">7 Nights in northamptonshire</label>
-                <input type="text" name="datetimes" />*@
-                <img class="w-100" src="images/calendar-pictures.png" />
+            <hr />
+            <div class="col-12">
+                <div class="">
+                    <h5>Schedule of activities</h5>
+                    <div class="row mx-auto my-auto justify-content-center" id="activitydates-container">
+                        <div id="recipeCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner p-3" role="listbox" style="width:85%;margin:0 auto;">
+                                <div class="carousel-item active">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card shadow p-3 mr-5" style="font-size:0.9rem">
+                                            <span class="col-12">Sat, Aug 20</span>
+                                            <span class="col-12">8:00 AM - 10:30 AM</span>
+                                            <br />
+                                            <span class="col-12">P2,000 / person</span>
+                                            <br />
+                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card shadow p-3" style="font-size:0.9rem">
+                                            <span class="col-12">Sat, Aug 21</span>
+                                            <span class="col-12">8:00 AM - 10:30 AM</span>
+                                            <br />
+                                            <span class="col-12">P2,000 / person</span>
+                                              <br />
+                                            <PrimaryButton Text="Choose" Width="fit-content" ></PrimaryButton>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card shadow p-3" style="font-size:0.9rem">
+                                            <span class="col-12">Sat, Aug 22</span>
+                                            <span class="col-12">8:00 AM - 10:30 AM</span>
+                                            <br />
+                                            <span class="col-12">P2,000 / person</span>
+                                            <br />
+                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card shadow p-3" style="font-size:0.9rem">
+                                            <span class="col-12">Sat, Aug 23</span>
+                                            <span class="col-12">8:00 AM - 10:30 AM</span>
+                                            <br />
+                                            <span class="col-12">P2,000 / person</span>
+                                              <br />
+                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card shadow p-3" style="font-size:0.9rem">
+                                            <span class="col-12">Sat, Aug 24</span>
+                                            <span class="col-12">8:00 AM - 10:30 AM</span>
+                                            <br />
+                                            <span class="col-12">P2,000 / person</span>
+                                              <br />
+                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                        <div class="card shadow p-3" style="font-size:0.9rem">
+                                            <span class="col-12">Sat, Aug 25</span>
+                                            <span class="col-12">8:00 AM - 10:30 AM</span>
+                                            <br />
+                                            <span class="col-12">P2,000 / person</span>
+                                            <br />
+                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <a class="carousel-control-prev bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="prev">
+                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            </a>
+                            <a class="carousel-control-next bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="next">
+                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <hr />
             <div class="d-flex flex-column align-items-start">
                 <label class="fw-bold">Where you’ll be</label>
                 <img class="w-100" style="margin-left:-15px;" src="images/map_picture.png" />
-                @*           <span class="fw-bold">Northamptonshire, England, United Kingdom</span>
-                <p>Lorem ipsum dolor sit amet, vide mundi neglegentur eos et. Nobis vivendum sed te, enim veri per icula at vis, amet vocibus at nam. Vix omneahabemus.</p>
-                <a href="#" style="color:black">Show more</a>*@
-                @* <div id="googleMap" style="width:100%;height:400px;"></div>*@
                 <span>
                     Restaurant - Las Flores in Festival
                 </span>
@@ -144,21 +203,10 @@
                 <span>
                     Not happy with the experience? <br /> Contact us and we'll solve the problem for you.
                 </span>
-                @*   <div class="d-flex flex-column">
-                <div class="">
-                <img class="w-50" style="margin-left:-20px;" src="images/recommended_picture1.png" />
-                </div>
-                <div>
-                <span>Mv, Maldives</span>
-                <p>5,350 Kilometers away</p>
-                <span>Aug 18-23</span>
-                <span>$34,</span>
-                </div>
-                </div>*@
             </div>
         </div>
-        <div class="flex-fill w-50 d-flex gap-4 flex-column align-items-end my-5">
-            <div class="w-75 shadow rounded-3 d-flex" style="background:#F3F6FC">
+        <div class="flex-fill col-lg-6 col-md-6 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first d-flex gap-4 flex-column align-items-lg-end align-items-md-end align-items-sm-center align-items-center mb-3">
+            <div class="profile-container w-75 shadow rounded-3 d-flex" style="background:#F3F6FC">
                 <img class="rounded-2 rounded-circle m-3" src="images/profile_picture.png" width="60" height="60" />
                 <div class="d-flex flex-column m-2">
                     <span>Owner</span>
@@ -169,28 +217,29 @@
                     <img class="px-3" src="images/check.svg" />
                 </div>
             </div>
-            <div class="w-75 shadow rounded-3 p-3">
-                <SignUpCard></SignUpCard>
+            <div class="w-75 shadow rounded-3 p-3 detail-lg">
+                <SignUpCard TypeValue="UserType.Customer"></SignUpCard>
+            </div>
+            <div class="w-75 shadow rounded-3 p-3 detail-md">
+                <SignUpCard TypeValue="UserType.Customer"></SignUpCard>
+            </div>
+            <div class="detail-sm">
+                <div class="shadow border-3 border-top" style="position:fixed;bottom:0;left:0;width:100%;height:120px;background-color:white;padding:10px;z-index:9999">
+                    <span class="fw-bold">Order Summary</span>
+                    <PrimaryButton Text="Reserve" Width="100%"></PrimaryButton>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!--Footer-->
-<div class="container">
-    <div class="footer">
-        <div class="footer-content">
-            <span class="footer-appname color-primary">@Resources.App.appName</span>
-            <br /><br />
-            <span class="footer-text">2022 Cinnamon.Inc &nbsp;&nbsp; <a href="#">Contact Us</a> &nbsp;&nbsp; Experiences listed are samples only</span>
-        </div>
-    </div>
-</div>
+<Footer></Footer>
 
 
 @code {
     protected override void OnInitialized()
     {
-        jsRuntime.InvokeVoidAsync("DetailActivity.razor.js", "Landing Page Loaded");
+        jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
     }
 }
