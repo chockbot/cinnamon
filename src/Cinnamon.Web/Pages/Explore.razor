@@ -1,11 +1,12 @@
-﻿@namespace Cinnamon.Web.Pages
-@using Microsoft.AspNetCore.Components.Web
+﻿@inject NavigationManager NavigationManager
 @using Cinnamon.Web.Components
 @using Cinnamon.Data
 @using Cinnamon.Core
+@using System.Text
+@using System.Globalization
 @page "/explore"
 @inject IJSRuntime jsRuntime
-<PageTitle>@Resources.App.appName - Explore</PageTitle>
+@layout EmptyLayout
 
 <!DOCTYPE html>
 <html lang="en">
@@ -18,6 +19,60 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 </head>
 <body>
+     <!--Search-->
+    <div class="top-row px-4">
+        <!--App Name-->
+        <div class="app-name col-lg-3 col-md-2">
+            <a href="" class="app-name">@Resources.App.appName</a>
+        </div>
+        <!--Search Lcation and Experience-->
+            <div class="search col-lg-5 col-md-4 col-sm-8 d-flex justify-content-center col-xs-8 d-flex justify-content-center">
+            <div class="input-group border rounded-pill p-1">
+                <input type="text" placeholder="Location | Experience" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
+                <div class="input-group-append border-0">
+                    <button id="button-addon3" type="button" @onclick="SearchActivities"  class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
+                </div>
+            </div>
+        </div>
+        <!--Menu-->
+            <div class="col-lg-4 col-md-7 d-flex flex-row justify-content-start col-sm-4 d-flex flex-row col-xs-4 d-flex flex-row">
+                <div class="become">
+                        <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
+                            Become a Cinnamon Maker
+                        </button>
+                </div>
+                <div class="dropdown">
+                <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none">
+                    <div class="menu">
+                        <img src="images/menu.png">
+                        <span class="menu-label">@Resources.App.menu</span>
+                    </div>
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                    <li>
+                        <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
+                            Sign-up
+                        </button>
+                    </li>
+                    <li>
+                        <div class="btn-faq">
+                            <NavButton OnClick="NavigateToFAQPage" Text=FAQ />
+                        </div>
+                    </li>
+                    <li>
+                        <div class="btn-policy">
+                            <NavButton OnClick="NavigateToPolicyPage" Text="Privacy Policy" />
+                        </div>
+                    </li>
+                    <li>
+                        <div class="btn-terms">
+                            <NavButton OnClick="NavigateToTermsPage" Text="Terms of Use" />
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     <div class="container">
     <!--Section 1-->
         <div class="section-1 row">
@@ -127,7 +182,7 @@
                 <div class="col-lg-2 col-md-2">
                 <div class="filter">
                     <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                        <img src="images/filter.png" alt="" class="card-img-top">
+                        <img src="images/filter.png" alt="" class="card-img">
                     </button>
                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable">
@@ -378,14 +433,8 @@
                             </div>
                             <div class="carousel-inner1">
                                 <div class="carousel-item active">
-                                    <img src=@act.Remarks alt="First slide" class="card-img-top">
-                                </div>
-                                <div class="carousel-item active">
-                                    <img src=@act.Remarks alt="First slide" class="card-img-top">
-                                </div>
-                                <div class="carousel-item active">
-                                    <img src=@act.Remarks alt="First slide" class="card-img-top">
-                                </div>
+                                    <img src=@act.Remarks alt="First slide" class="card-img">
+                                </div>                                                                               
                             </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -407,6 +456,7 @@
                 }
             </div>
         </div>
+    <!--Section 3-->
         <div class="section-3-md">
                 <div class="row md-12">
                 @foreach (var act in activity)
@@ -453,6 +503,8 @@
         </div>
     </div>
 </body>
+<!--Signup->
+<ModalSignUp></ModalSignUp>
 <!--Footer-->
 <Footer></Footer>
 <!--Cookies-->
@@ -466,52 +518,103 @@
     </div>
 </html>
 @code {
-    List<ActivityModel> activity = new List<ActivityModel>();
-    int cnt = 0;
+
+    public List<ActivityModel> activity = new List<ActivityModel>();
+    public string searchValue = string.Empty;
+
+    private void NavigateToFAQPage()
+    {
+        NavigationManager.NavigateTo("FAQ");
+    }
+    private void NavigateToPolicyPage()
+    {
+        NavigationManager.NavigateTo("policy");
+    }
+    private void NavigateToTermsPage()
+    {
+        NavigationManager.NavigateTo("terms");
+    }
     protected override Task OnInitializedAsync()
     {
-        LoadActivities();
+        SearchActivities();
         return base.OnInitializedAsync();
     }
 
-    private void LoadActivities()
+    private void SearchActivities()
     {
-        ActivityModel e1 = new ActivityModel
+        try
+        {
+            ActivityModel e1 = new ActivityModel
                 {
                     Title = "A unique baking experience",
                     Location = "Alabang, Muntinlupa",
                     Price = "PHP 2500 / person / 4 sessions",
-                    Remarks = "images/In-person - math tutor.jpg"
+                    Remarks = "images/Activities/In-person - baking.jpg"
                 };
-        ActivityModel e2 = new ActivityModel
+            ActivityModel e2 = new ActivityModel
                 {
-                Title = "Twinkle Toes Ballet Class",
-                Location = "Alabang, Muntinlupa",
-                Price = "PHP 500 / person / session",
-                Remarks = "images/In-person - math tutor.jpg"
+                    Title = "Twinkle Toes Ballet Class",
+                    Location = "Alabang, Muntinlupa",
+                    Price = "PHP 500 / person / session",
+                    Remarks = "images/Activities/In-person - Ballet.jpg"
                 };
-        ActivityModel e3 = new ActivityModel
+            ActivityModel e3 = new ActivityModel
                 {
-                Title = "Kids Gymnastics",
-                Location = "Alabang, Muntinlupa",
-                Price = "PHP 7500 / person / 10 session",
-                Remarks = "images/In-person - sports (biking).jpg"
+                    Title = "Kids Gymnastics",
+                    Location = "Alabang, Muntinlupa",
+                    Price = "PHP 7500 / person / 10 session",
+                    Remarks = "images/Activities/In-person - basic gymnastics.jpg"
                 };
-        ActivityModel e4 = new ActivityModel
+            ActivityModel e4 = new ActivityModel
                 {
-                Title = "Gymboree - kids fun play",
-                Location = "Alabang, Muntinlupa",
-                Price = "PHP 6000 / person / 10 session",
-                Remarks = "images/In-person - sports (swimming).jpg"
+                    Title = "Gymboree - kids fun play",
+                    Location = "Alabang, Muntinlupa",
+                    Price = "PHP 6000 / person / 10 session",
+                    Remarks = "images/Activities/In-person - fun play.jpg"
                 };
-        ActivityModel e5 = new ActivityModel
+            ActivityModel e5 = new ActivityModel
                 {
-                Title = "Horse Riding Lessons",
-                Location = "Cavite",
-                Price = "PHP 11,200 / person / 4 session",
-                Remarks = "images/In-person - sports (swimming).jpg"
+                    Title = "Horse Riding Lessons",
+                    Location = "Cavite",
+                    Price = "PHP 11,200 / person / 4 session",
+                    Remarks = "images/Activities/In-person - horseback riding lessons.jpg"
                 };
+            ActivityModel e6 = new ActivityModel
+                {
+                    Title = "Filipino Language Tutor for kids",
+                    Location = "Metro Manila",
+                    Price = "PHP 500 / person / session",
+                    Remarks = "images/Activities/In-person - math tutor.jpg"
+                };
+            ActivityModel e7 = new ActivityModel
+                {
+                    Title = "Basketball Coaching",
+                    Location = "Bicutan, Paranaque",
+                    Price = "PHP 600 / person / session",
+                    Remarks = "images/Activities/In-person - sports (basketball).jpg"
+                };
+            ActivityModel e8 = new ActivityModel
+                {
+                    Title = "Biking group ride for kids",
+                    Location = "Alabang, Muntinlupa",
+                    Price = "PHP 600 / person / session",
+                    Remarks = "images/Activities/In-person - sports (biking).jpg"
+                };
+            if(searchValue==string.Empty)
+            {
+                activity = new List<ActivityModel> { e1, e2, e3, e4, e5, e6, e7, e8 };
+            }
+            else
+            {
+                 activity = activity.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Location, 
+                 searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title, 
+                 searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
+            }  
+        }
+        catch (Exception e)
+        {
 
-        activity = new List<ActivityModel> { e1, e2, e3, e4, e5 };
+            e.Message.ToString();
+        }
     }
 }

@@ -1,4 +1,77 @@
-﻿.cards-wrapper {
+﻿.top-row {
+    background-color: white;
+    border-bottom: 1px solid var(--lineColor);
+    justify-content: flex-start;
+    aspect-ratio: 1600/74;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+    .top-row ::deep a {
+        white-space: nowrap;
+        margin-left: 1.5rem;
+    }
+
+    .top-row a:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+.app-name {
+    color: var(--primary);
+    font-family: 'Backline';
+    font-size: 1.6vw;
+    text-decoration: none;
+}
+.menu {
+    position: relative;
+    height: 32%;
+}
+
+.dropdown {
+    font-family: 'Nunito';
+    font-size: 0.5vw;
+}
+
+a.dropdown-item {
+    margin-left: auto;
+}
+
+.menu img {
+    aspect-ratio: 1;
+    width: 15%;
+}
+
+.menu span {
+    font-family: 'Nunito-Bold';
+    font-size: 1vw;
+}
+
+.input-group {
+    width: 50%;
+}
+
+.btn-primary {
+    width: 50%;
+    background-color: #ffa942;
+    color: black;
+    font-family: 'Nunito';
+    padding: 15px 15px;
+    border: none;
+}
+
+.form-control {
+    width: 70%;
+    border-color: #ffa942;
+    border: 2px solid #ffa942;
+    border-radius: 10px;
+    color: black;
+    font-family: 'Nunito';
+    margin: auto;
+}
+
+.cards-wrapper {
     display: flex;
     padding-top: 30px;
 }
@@ -43,7 +116,6 @@ img.img-icon {
     text-decoration: none;
     color: inherit;
 }
-
 .carousel-list:hover {
     color: #fff;
     background-color: #FFA942;
@@ -80,9 +152,16 @@ img.img-icon {
 .section-3-md {
     display: none;
 }
+
 .card {
     margin: 0 1em;
     border: 1px;
+}
+
+.card img {
+    height:12rem;
+    width: 17rem;
+    border-radius: 10px;
 }
 
 .card-title1 {
@@ -141,6 +220,7 @@ img.img-icon {
     border: 1px solid black;
     background-color: #FFA942;
 }
+
 .cookiealert {
     width: 50%;
     color: black;
@@ -177,6 +257,73 @@ img.img-icon {
 
 /* For Desktop View */
 @media screen and (min-width: 1024px) {
+    .top-row {
+        background-color: white;
+        border-bottom: 1px solid var(--lineColor);
+        justify-content: flex-start;
+        aspect-ratio: 1600/74;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+        .top-row ::deep a {
+            white-space: nowrap;
+            margin-left: 1.5rem;
+        }
+
+        .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .app-name {
+        color: var(--primary);
+        font-family: 'Backline';
+        font-size: 1.6vw;
+        text-decoration: none;
+    }
+
+    .menu {
+        position: relative;
+        height: 32%;
+    }
+
+    .dropdown {
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+    }
+
+    a.dropdown-item {
+        margin-left: auto;
+    }
+
+    .menu img {
+        aspect-ratio: 1;
+        width: 15%;
+    }
+
+    .menu span {
+        font-family: 'Nunito-Bold';
+        font-size: 1vw;
+    }
+
+    .input-group {
+        width: 50%;
+    }
+
+    .nav {
+        position: relative;
+        height: 32%;
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+        text-align: right;
+    }
+
+        .nav img {
+            aspect-ratio: 1;
+            width: 10%;
+        }
     .activity-sm {
         display: none;
     }
@@ -187,6 +334,43 @@ img.img-icon {
 
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px){
+    .input-group {
+        width: 100%;
+    }
+
+    .app-name {
+        display: none;
+    }
+
+    .become {
+        display: none;
+    }
+
+    .menu-label {
+        display: none;
+    }
+
+    .menu img {
+        margin-right: 0;
+        width: 20%;
+    }
+
+    .px-4 {
+        padding-right: 0.5rem !important;
+        padding-left: 0.8rem !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+        .top-row.auth {
+            justify-content: space-between;
+        }
+
+        .top-row a {
+            margin-left: 0;
+        }
     .cookiealert {
         width: 100%;
         color: black;
@@ -221,6 +405,46 @@ img.img-icon {
 
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
+    .app-name {
+        font-size: 3vw;
+    }
+
+    .input-group {
+        width: 100%;
+    }
+
+    .become {
+        font-size: 1vw;
+    }
+
+    .menu img {
+        width: 20%;
+        text-align: right;
+    }
+
+    .top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .px-4 {
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+        .top-row a {
+            margin-left: 0;
+        }
+
+    .top-row {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }
     .activity-sm {
         display: none;
     }
