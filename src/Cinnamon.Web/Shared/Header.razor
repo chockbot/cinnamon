@@ -1,7 +1,7 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @using Cinnamon.Web.Components
-
+@using Cinnamon.Core.Enums
 <PageTitle>Cinnamon.Web</PageTitle>
 
 <div class="page">
@@ -56,18 +56,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="sigupModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <div class="card-filter text-center">
-                        <h1> Welcome to <span style="color:#ffa942">@Resources.App.appName</span></h1>
-                         <SignUpCard></SignUpCard>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+        <ModalSignUp TypeValue="@UserType.Maker"></ModalSignUp>
         <article class="content">
             @Body
         </article>
