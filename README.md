@@ -26,3 +26,13 @@ Start the Database for Local Development
 cd database
 docker-compose up -d
 ```
+
+## Production Commands
+
+Start the prod container instance  
+**Make sure that .env.prod file is created**  
+**Make sure SSL Certificates are in proper folder**
+
+```
+docker-compose --env-file .env.prod up -d
+```

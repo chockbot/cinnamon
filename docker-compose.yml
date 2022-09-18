@@ -9,11 +9,11 @@ services:
       - "80:80"
       - "443:443"
     env_file:
-      - ./.env.prod
+      - .env.prod
     environment:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_PASSWORD}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/cinnamon.ph.pfx
     volumes:
       - ${SSL_FOLDER_PATH}:/https:ro
     networks: 
@@ -27,7 +27,7 @@ services:
     volumes:
       - ./database/data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_PASSWORD: postgres
       POSTGRES_USER: postgres
       POSTGRES_DB: CINNAMON
 
