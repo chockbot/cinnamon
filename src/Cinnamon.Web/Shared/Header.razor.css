@@ -8,7 +8,7 @@
     align-items: center;
 }
 
-    .top-row ::deep a, .top-row .btn-link {
+    .top-row ::deep a {
         white-space: nowrap;
         margin-left: 1.5rem;
     }
@@ -17,7 +17,6 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
-
 .app-name {
     color: var(--primary);
     font-family: 'Backline';
@@ -25,26 +24,95 @@
     text-decoration: none;
 }
 
-.btn-link {
-    text-decoration: none;
-    color: black;
-    text-align: end;
-}
-
-.btn:focus {
-    outline: none;
-    box-shadow: none;
-}
-
 .menu {
     position: relative;
     height: 32%;
 }
 
+.dropdown {
+    font-family: 'Nunito';
+    font-size: 0.5vw;
+}
+
+a.dropdown-item {
+    margin-left: auto;
+}
+
+.menu img {
+    aspect-ratio: 1;
+    width: 15%;
+}
+.menu span {
+    font-family: 'Nunito-Bold';
+    font-size: 1vw;
+}
+.input-group {
+    width: 50%;
+}
+.btn-primary {
+    width: 50%;
+    background-color: #ffa942;
+    color: black;
+    font-family: 'Nunito';
+    padding: 15px 15px;
+    border: none;
+}
+.form-control {
+    width: 70%;
+    border-color: #ffa942;
+    border: 2px solid #ffa942;
+    border-radius: 10px;
+    color: black;
+    font-family: 'Nunito';
+    margin: auto;
+}
+
+/* For Desktop View */
+@media screen and (min-width: 1024px) {
+    .top-row {
+        background-color: white;
+        border-bottom: 1px solid var(--lineColor);
+        justify-content: flex-start;
+        aspect-ratio: 1600/74;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+
+        .top-row ::deep a {
+            white-space: nowrap;
+            margin-left: 1.5rem;
+        }
+
+        .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    .app-name {
+        color: var(--primary);
+        font-family: 'Backline';
+        font-size: 1.6vw;
+        text-decoration: none;
+    }
+
+    .menu {
+        position: relative;
+        height: 32%;
+    }
+
+    .dropdown {
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+    }
+
+    a.dropdown-item {
+        margin-left: auto;
+    }
+
     .menu img {
         aspect-ratio: 1;
         width: 15%;
-        margin-right: 12px;
     }
 
     .menu span {
@@ -52,29 +120,101 @@
         font-size: 1vw;
     }
 
-@media (max-width: 640.98px) {
-    .top-row:not(.auth) {
-        display: none;
+    .input-group {
+        width: 50%;
     }
 
-    .top-row.auth {
-        justify-content: space-between;
+    .nav {
+        position: relative;
+        height: 32%;
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+        text-align: right;
     }
 
-    .top-row a, .top-row .btn-link {
-        margin-left: 0;
-    }
+        .nav img {
+            aspect-ratio: 1;
+            width: 10%;
+        }
 }
+/* For Tablet View */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+    .app-name {
+        font-size: 3vw;
+    }
 
-@media (min-width: 641px) {
+    .input-group {
+        width: 100%;
+    }
+    .become {
+        font-size: 1vw;
+    }
+    .menu img {
+        width: 20%;
+        text-align:right;
+    }
     .top-row {
         position: sticky;
         top: 0;
         z-index: 1;
     }
 
-    .top-row, article {
+    .px-4 {
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+        .top-row a {
+            margin-left: 0;
+        }
+
+    .top-row {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
 }
+/* For Mobile Portrait View */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+    .input-group {
+        width: 100%;
+    }
+
+    .app-name {
+        display: none;
+    }
+
+    .become {
+        display: none;
+    }
+
+    .menu-label {
+        display: none;
+    }
+
+    .menu img {
+        margin-right: 0;
+        width: 20%;
+    }
+
+    .px-4 {
+        padding-right: 0.5rem !important;
+        padding-left: 0.8rem !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+        .top-row.auth {
+            justify-content: space-between;
+        }
+
+        .top-row a {
+            margin-left: 0;
+        }
+}
+ 

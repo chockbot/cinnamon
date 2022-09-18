@@ -1,0 +1,137 @@
+﻿* {
+    font-family: 'Nunito';
+}
+
+.activity-image-container {
+    color: white;
+}
+
+.circle {
+    width: 70px;
+    height: 40px;
+    background-color: white;
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
+    -moz-box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
+    -o-box-shadow: 5px 5px 10px rgba(0,0,0,0.1);
+    border-radius: 100px;
+}
+
+.landing-header {
+    font-family: 'Backline';
+}
+
+.footer {
+    height: 128px;
+    width: 100%;
+    margin-top: 60px;
+    margin-bottom: 20px;
+    background-color: white;
+    position: relative;
+}
+
+.footer-content {
+    text-align: left;
+    position: absolute;
+    width: 100%;
+    top: 10%;
+}
+
+.footer-appname {
+    font-family: 'Backline';
+    font-size: 2vw;
+}
+
+.footer-text {
+    font-family: 'Inter';
+    font-size: 1vw;
+}
+
+
+@media (max-width: 767px) {
+    .carousel-inner .carousel-item > div {
+        display: none;
+    }
+
+    .carousel-inner .carousel-item > div:first-child {
+        display: block;
+    }
+}
+
+.carousel-inner .carousel-item.active,
+.carousel-inner .carousel-item-next,
+.carousel-inner .carousel-item-prev {
+    display: flex;
+    gap:5px;
+}
+
+/* medium and up screens */
+@media (min-width: 768px) {
+
+    .carousel-inner .carousel-item-end.active,
+    .carousel-inner .carousel-item-next {
+        transform: translateX(25%);
+    }
+
+    .carousel-inner .carousel-item-start.active,
+    .carousel-inner .carousel-item-prev {
+        transform: translateX(-25%);
+    }
+}
+
+.carousel-inner .carousel-item-end,
+.carousel-inner .carousel-item-start {
+    transform: translateX(0);
+}
+
+.carousel-control-next,
+.carousel-control-prev /*, .carousel-indicators */ {
+    filter: invert(100%);
+}
+
+@media screen and (max-width: 767px) {
+    .detail-sm {
+        display: block !important;
+    }
+
+    .detail-lg {
+        display: none !important;
+    }
+
+    .detail-md {
+        display: none !important;
+    }
+
+    .profile-container{
+        width:100% !important;
+    }
+}
+
+@media screen and (min-width: 767px) {
+    .detail-sm {
+        display: none !important;
+    }
+
+    .detail-lg {
+        display: none !important;
+    }
+
+    .detail-md {
+        display: block !important;
+    }
+}
+
+
+@media (min-width: 1200px) {
+    .detail-sm {
+        display: none !important;
+    }
+
+    .detail-lg {
+        display: block !important;
+    }
+
+    .detail-md {
+        display: none !important;
+    }
+}
