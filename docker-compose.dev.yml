@@ -1,26 +1,17 @@
 version: "3.1"
 services:
   app:
-    container_name: cinnamon_app
+    container_name: cinnamon_app_dev
     build:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
-    env_file:
-      - .env.prod
-    environment:
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_PASSWORD}
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/cinnamon.ph.pfx
-    volumes:
-      - ${SSL_FOLDER_PATH}:/https:ro
+      - "8080:80"
     networks: 
       - internal
   
   db:
-    container_name: cinnamon_db
+    container_name: cinnamon_db_dev
     image: postgres:14.5-alpine
     networks:
       - internal

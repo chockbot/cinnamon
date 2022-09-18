@@ -1,19 +1,82 @@
 ﻿@namespace Cinnamon.Web.Components
-<div class="w-100 text-center">
-    <span style="font-size:0.9rem;">Join our waiting list to get notified when we go live!</span>
-    <hr />
-    <div class="d-flex flex-column gap-3 align-items-center">
-        <div class="d-flex gap-3">
-            <div>
-                <input type="radio" value="customer" id="customer" name="signup-value" checked />
-                <label class="fw-bold" for="customer">Customer</label>
+@using Cinnamon.Core
+@using Cinnamon.Core.Enums
+@using Cinnamon.Data
+@inject DataStoreDbContext waitList
+@inject IJSRuntime jsRuntime
+
+ <div class="w-100 text-center">
+    @if (!isSubmit)
+    {
+        <span style="font-size:0.9rem;">Join our waiting list to get notified when we go live!</span>
+        <hr />
+        <div class="d-flex flex-column gap-3 align-items-center">
+            <div class="d-flex gap-3">
+                <div>
+                    @if (TypeValue == UserType.Customer)
+                    {
+                        <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" checked @onchange="OnSelect"/>
+                    }
+                    else
+                    {
+                        <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" @onchange="OnSelect" />
+                    }
+                    <label class="fw-bold" for="customer">Customer</label>
+                </div>
+                <div>
+                    @if (TypeValue == UserType.Maker)
+                    {
+                        <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" checked @onchange="OnSelect" />
+                    }
+                    else
+                    {
+                        <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" @onchange="OnSelect" />
+                    }
+                    <label class="fw-bold text-nowrap" for="maker">Cinnamon Maker</label>
+                </div>
             </div>
-            <div>
-                <input type="radio" value="maker" id="maker" name="signup-value" />
-                <label class="fw-bold text-nowrap" for="maker">Cinnamon Maker</label>
-            </div>
+
+            <input id="email-signup" class="input-group fs-5" type="email" style="border-radius:5px;border:0.5px solid black;padding:10px;" placeholder="Email" @bind="Email"/>
+            <SignupButton id="signup-waiting" OnClick="Submit" Text="Sign-up" />
         </div>
-        <input class="input-group fs-5" style="border-radius:5px;border:0.5px solid black;padding:10px;" cla placeholder="Email" />
-        <PrimaryButton Text="Sign-up" />
-    </div>
+    }
+    else
+    {
+        <p>Thank you for joining us! <br> For more details, kindly refer to our <a onclick="@OnClick" href="FAQ">FAQ</a></p>
+    }
 </div>
+
+
+@code {
+    IJSObjectReference module;
+
+    [Parameter]
+    public UserType TypeValue { get; set; }
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClick { get; set; }
+
+    public string Email { get; set; }
+    public bool isSubmit { get; set; } = false;
+
+    public void OnSelect(ChangeEventArgs args) => TypeValue = (UserType)args.Value;
+
+    protected override async void OnInitialized() {
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+    }
+
+    public void Submit(){
+        if (!string.IsNullOrEmpty(Email))
+        {
+            module.InvokeVoidAsync("onClickSignup");
+            Email = Email;
+            var model = new WaitListModel() { Type = TypeValue, Email = Email, CreatedOn = DateTime.UtcNow };
+            waitList.WaitLists.Add(model);
+            var res = waitList.SaveChanges();
+            if (res > 0)
+            {
+                isSubmit = true;
+                module.InvokeVoidAsync("onDoneSignup");
+            }
+        }
+    }
+}
