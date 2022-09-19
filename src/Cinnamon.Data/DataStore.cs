@@ -52,7 +52,7 @@ namespace Cinnamon.Data
             //bool result = await mDbContext.Database.EnsureCreatedAsync();
 
             // Migrate Changes
-            //await mDbContext.Database.MigrateAsync();
+            await mDbContext.Database.MigrateAsync();
         }
 
         /// <summary>

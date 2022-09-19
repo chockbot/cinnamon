@@ -19,6 +19,9 @@ Framework.Construct<DefaultFrameworkConstruction>()
 // Ensure the client data store 
 await Framework.Service<IDataStore>().EnsuredataStoreAsync();
 
+// Apply Seed Data
+await Framework.Service<ApplicationViewModel>().applySeedDemoData();
+
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
 builder.Services.AddDbContext<DataStoreDbContext>(options =>
