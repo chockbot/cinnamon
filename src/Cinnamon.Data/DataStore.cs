@@ -49,10 +49,10 @@ namespace Cinnamon.Data
         public async Task EnsuredataStoreAsync()
         {
             // Make sure the database exist and is created
-            //bool result = await mDbContext.Database.EnsureCreatedAsync();
+            bool result = await mDbContext.Database.EnsureCreatedAsync();
 
             // Migrate Changes
-            //await mDbContext.Database.MigrateAsync();
+            await mDbContext.Database.MigrateAsync();
         }
 
         /// <summary>
