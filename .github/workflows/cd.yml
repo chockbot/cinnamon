@@ -41,5 +41,5 @@ jobs:
         run: ls
 
       - name: Run Test Script
-        run: bash ./scripts/test.sh
+        run: bash ./scripts/test.sh ${{ secrets.SERVER_SSH_KEY }}
       
