@@ -26,10 +26,10 @@ jobs:
         run: dotnet restore src/Cinnamon.Data/Cinnamon.Data.csproj
       
       - name: Build Project
-        run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o ./output/build
+        run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o /output/build
 
       - name: Public Project
-        run: dotnet public src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o ./output/publish
+        run: dotnet public src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o /output/publish
       
       - name: Save Artifact
         uses: actions/upload-artifact@v3
