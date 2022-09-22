@@ -70,7 +70,6 @@ a.dropdown-item {
     font-family: 'Nunito';
     margin: auto;
 }
-
 .cards-wrapper {
     display: flex;
     padding-top: 30px;
@@ -144,11 +143,11 @@ img.img-icon {
     .list-menu a {
         color: #343a40;
     }
-
+/*
 .section-2-lg {
     display: flex;
     padding-right: 1px;
-}
+}*/
 .section-3-md {
     display: none;
 }
@@ -167,34 +166,23 @@ img.img-icon {
 .card-title1 {
     font-size: 16px;
     font-family: 'Nunito-Bold';
-    text-align: left;
-    margin: 0 1.5em;
 }
 
 .card-title2 {
     font-size: 14px;
     font-family: 'Nunito';
-    text-align: left;
-    margin: 0 1.5em;
     color: gray;
 }
 
 .card-title3 {
     font-size: 14px;
     font-family: 'Nunito';
-    text-align: left;
-    margin: 0 1.5em;
 }
 
 .card-body1 {
-    text-align: center;
     margin-top: 0.5em;
 }
 
-.carousel-inner1 {
-    padding: 1.5em;
-    width: 20em;
-}
 
 .carousel-indicators button {
     border-radius: 100%;
@@ -327,8 +315,22 @@ img.img-icon {
     .activity-sm {
         display: none;
     }
+    .activity-md {
+        display: none;
+    }
     .activity-lg {
         display: flex;
+    }
+    .activity-lg .carousel-control-prev, .carousel-control-next {
+        background-color: #757474;
+        width: 3vh;
+        height: 3vh;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: 30px;
+        margin-left: 10px;
+        filter: invert(100%);
     }
 }
 
@@ -351,8 +353,8 @@ img.img-icon {
     }
 
     .menu img {
-        margin-right: 0;
-        width: 20%;
+        text-align: right;
+        width: 30%;
     }
 
     .px-4 {
@@ -384,6 +386,9 @@ img.img-icon {
     .activity-lg {
         display: none;
     }
+    .activity-md {
+        display: none;
+    }
 
     .filter {
         display: none;
@@ -391,6 +396,11 @@ img.img-icon {
 
     .section-2-lg {
         display: block;
+    }
+    .carousel-inner1
+    {
+        margin: 0px;
+        padding: 0px;
     }
 
     .row {
@@ -401,6 +411,28 @@ img.img-icon {
     .col-md-2 {
         display: none;
     }
+    .activity-sm .carousel-control-prev{
+        background-color: #757474;
+        width: 3vh;
+        height: 3vh;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: 0px;
+        margin-left: 0px;
+        filter: invert(100%);
+    }
+    .activity-sm .carousel-control-next {
+        background-color: #757474;
+        width: 3vh;
+        height: 3vh;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: 0px;
+        margin-left: 0px;
+        filter: invert(100%);
+    }
 }
 
 /* For Tablet View */
@@ -410,11 +442,11 @@ img.img-icon {
     }
 
     .input-group {
-        width: 100%;
+        width: 70%;
     }
 
     .become {
-        font-size: 1vw;
+        display: none;
     }
 
     .menu img {
@@ -423,7 +455,7 @@ img.img-icon {
     }
 
     .top-row {
-        position: sticky;
+        position: relative;
         top: 0;
         z-index: 1;
     }
@@ -445,14 +477,51 @@ img.img-icon {
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
+    .activity-md .carousel-control-prev{
+        background-color: #757474;
+        width: 2vh;
+        height: 2vh;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: 0px;
+        margin-left: 0px;
+        filter: invert(100%);
+    }
+    .activity-md .carousel-control-next {
+        background-color: #757474;
+        width: 2vh;
+        height: 2vh;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: 0px;
+        margin-left: 0px;
+        filter: invert(100%);
+    }
+    .section-3-md .carousel-control-prev, .carousel-control-next {
+        background-color: #757474;
+        width: 2vh;
+        height: 2vh;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: 20px;
+        margin-left: 30px;
+        filter: invert(100%);
+    }
     .activity-sm {
         display: none;
     }
+    .activity-lg {
+        display: none;
+    }
+    .activity-md {
+        display: flex;
+    }
     .filter {
         text-decoration: none;
-        padding-top: 30px;
+        padding-top: 50px;
         font-family: 'Nunito';
-        width: 100%;
+        width: 130px;
     }
     .cookiealert {
         width: 80%;
@@ -469,5 +538,15 @@ img.img-icon {
     }
     .section-2-lg{
         display: none;
+    }
+    .section-3-md .card {
+        margin: 0 1em;
+        border: 0.5px;
+
+    }
+    .section-3-md .card img {
+        height: 12rem;
+        width: 18rem;
+        border-radius: 10px;
     }
 }
