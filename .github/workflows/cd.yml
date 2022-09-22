@@ -43,10 +43,10 @@ jobs:
           SSH_KNOWN_HOSTS: ${{secrets.SERVER_SSH_KNOWN_HOSTS}}
       
       - name: Run LS
-        run: |
-          ls
-          ls ~/.ssh/
-        shell: bash
+        run: ls
+      
+      - name: Run LS in SSH
+        run: ls ~/.ssh/
 
       - name: Run LS from DEV Server
         run: ssh -i key.pem cinnamon@20.39.197.187 "ls"
