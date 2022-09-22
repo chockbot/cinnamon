@@ -1,12 +1,13 @@
 ﻿@inject NavigationManager NavigationManager
+@inject DataStore dataStore
+@inject IJSRuntime jsRuntime
+@page "/explore"
+@layout EmptyLayout
 @using Cinnamon.Web.Components
 @using Cinnamon.Data
 @using Cinnamon.Core
 @using System.Text
 @using System.Globalization
-@page "/explore"
-@inject IJSRuntime jsRuntime
-@layout EmptyLayout
 
 <!DOCTYPE html>
 <html lang="en">
@@ -30,7 +31,7 @@
             <div class="input-group border rounded-pill p-1">
                 <input type="text" placeholder="Location | Experience" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
                 <div class="input-group-append border-0">
-                    <button id="button-addon3" type="button" @onclick="SearchActivities"  class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
+                    <button id="button-addon3" type="button" @onclick="Search" class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
                 </div>
             </div>
         </div>
@@ -82,92 +83,46 @@
                         <div class="carousel-inner"> 
                             <div class="carousel-item active">
                                 <div class="cards-wrapper">
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Baking.png" class="img-icon text-center">
-                                    <p class="card-title">Baking</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Ballet.png" alt="..." class="img-icon">
-                                    <p class="card-title">Ballet</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Gymnastics.png" alt="..." class="img-icon">
-                                    <p class="card-title">Kids Gymnastics</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Play.png" alt="..." class="img-icon">
-                                    <p class="card-title">Fun Play</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Horseback.png" alt="..." class="img-icon">
-                                    <p class="card-title">Horseback Riding Lessons</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Language.png" alt="..." class="img-icon">
-                                    <p class="card-title">Kids Language Tutor</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Basketball.png" alt="..." class="img-icon">
-                                    <p class="card-title">Basketball Lessons</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Biking.png" alt="..." class="img-icon">
-                                    <p class="card-title">Biking Group Activity</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Golf.png" alt="..." class="img-icon">
-                                    <p class="card-title">Golf Lessons</p>
-                                </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                    <img src="images/Category/Swimming.png" alt="..." class="img-icon">
-                                    <p class="card-title">Swimming Lessons</p>
-                                </a>
+                                @foreach(var category in activityTypes)
+                                {
+                                    if(category.Id <= 10)
+                                    {
+                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id))">
+                                            <img src=@category.Icon class="img-icon text-center">
+                                            <p class="card-title">@category.Name</p>
+                                        </a>
+                                    }
+                                }
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <div class="cards-wrapper">
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Taekwondo.png" class="img-icon text-center">
-                                        <p class="card-title">Taekwondo Lessons</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Tennis.png" alt="..." class="img-icon">
-                                        <p class="card-title">Tennis Lessons</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Gymnastics.png" alt="..." class="img-icon">
-                                        <p class="card-title">Kids Gymnastics</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Play.png" alt="..." class="img-icon">
-                                        <p class="card-title">Fun Play</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Horseback.png" alt="..." class="img-icon">
-                                        <p class="card-title">Horseback Riding Lessons</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Language.png" alt="..." class="img-icon">
-                                        <p class="card-title">Kids Language Tutor</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Basketball.png" alt="..." class="img-icon">
-                                        <p class="card-title">Basketball Lessons</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Biking.png" alt="..." class="img-icon">
-                                        <p class="card-title">Biking Group Activity</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Golf.png" alt="..." class="img-icon">
-                                        <p class="card-title">Golf Lessons</p>
-                                    </a>
-                                    <a class="button carousel-list text-center" href="#">
-                                        <img src="images/Category/Swimming.png" alt="..." class="img-icon">
-                                        <p class="card-title">Swimming Lessons</p>
-                                    </a>
+                                @foreach(var category in activityTypes)
+                                {
+                                    if(category.Id > 10 && category.Id <= 20)
+                                    {
+                                        <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id))">
+                                            <img src=@category.Icon class="img-icon text-center">
+                                            <p class="card-title">@category.Name</p>
+                                        </a>
+                                    }
+                                }
                                 </div>
-                        </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="cards-wrapper">
+                                @foreach(var category in activityTypes)
+                                {
+                                    if(category.Id > 20 && category.Id <= 30)
+                                    {
+                                        <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id))">
+                                            <img src=@category.Icon class="img-icon text-center">
+                                            <p class="card-title">@category.Name</p>
+                                        </a>
+                                    }
+                                }
+                                </div>
+                            </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
@@ -304,7 +259,7 @@
                 </div>
             </div>
             </div>
-            <div class="activity-sm">
+           @* <div class="activity-sm">
                 <div class="col-sm-12">
                     <div id="carouselExampleControls1" class="carousel slide" data-ride="carousel" data-interval="0">
                         <div class="carousel-inner">
@@ -415,26 +370,51 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div>*@
         </div>
     <!--Section 2-->
         <div class="section-2-lg">
             <div class="row lg-12">
                 @foreach (var act in activity)
                 {
-                <div class="col-lg-3">
-                <a class="button carousel-card text-center" href="/explore/DetailActivity">
+                 cnt = 0;
+                 images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
+                 <div class="col-lg-3">
+                 <a class="button carousel-card text-center" href="/explore/DetailActivity">
                     <div class="card" style="width: 20rem">
                         <div id="carousel1" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                             <div class="carousel-indicators">
                                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
-                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                <button type="button" data-bs-target="#carouselExampleIndicat    ors" data-bs-slide-to="1" aria-label="Slide 2"></button>
                                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
                             </div>
                             <div class="carousel-inner1">
-                                <div class="carousel-item active">
-                                    <img src=@act.Remarks alt="First slide" class="card-img">
-                                </div>                                                                               
+                                @foreach(var item in images)
+                                {
+                                    cnt++;
+                                    if (item.ImageId == act.Id && cnt == 1)
+                                    {
+                                        <div class="carousel-item active">
+                                        <img src=@item.ImageLocation alt="First slide" class="card-img">
+                                        </div>
+                                    }
+                                    else if (item.ImageId == act.Id && cnt == 2)
+                                    {
+                                        <div class="carousel-item">
+                                        <img src=@item.ImageLocation alt="Second slide" class="card-img">
+                                        </div>
+                                    }
+                                    else if(item.ImageId == act.Id && cnt == 3)
+                                    {
+                                        <div class="carousel-item">
+                                        <img src=@item.ImageLocation alt="Third slide" class="card-img">
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        break;
+                                    }
+                                }
                             </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carousel1" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -444,7 +424,7 @@
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
                             </button>
-                        </div>
+                        </div>  
                         <div class="card-body1">
                             <h4 class="card-title1" >@act.Title</h4>
                             <p class="card-title2">@act.Location</p>
@@ -453,11 +433,11 @@
                     </div>
                 </a>
             </div>
-                }
+            }
             </div>
         </div>
     <!--Section 3-->
-        <div class="section-3-md">
+        @*<div class="section-3-md">
                 <div class="row md-12">
                 @foreach (var act in activity)
                 {
@@ -500,7 +480,7 @@
                 </div>
                 }
             </div>
-        </div>
+        </div>*@
     </div>
 </body>
 <!--Signup->
@@ -518,10 +498,19 @@
     </div>
 </html>
 @code {
-
-    public List<ActivityModel> activity = new List<ActivityModel>();
-    public string searchValue = string.Empty;
-
+    public List<ActivityModel> activity              = new List<ActivityModel>();
+    public List<ActivityTypeModel> activityTypes     = new List<ActivityTypeModel>();
+    public List<ActivityImagesModels> activityImages = new List<ActivityImagesModels>();
+    public List<ActivityImagesModels> images         = new List<ActivityImagesModels>();
+    public string searchValue                        = string.Empty;
+    public string filterId                           = string.Empty;
+    public int cnt                                   = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        activity        = await dataStore.GetAllActivityAsync();
+        activityImages  = await dataStore.GetActivityImage();
+        activityTypes   = await dataStore.GetAllActivityTypesAsync();
+    }
     private void NavigateToFAQPage()
     {
         NavigationManager.NavigateTo("FAQ");
@@ -534,87 +523,23 @@
     {
         NavigationManager.NavigateTo("terms");
     }
-    protected override Task OnInitializedAsync()
+    public async Task Search()
     {
-        SearchActivities();
-        return base.OnInitializedAsync();
+        activity       = await dataStore.GetAllActivityAsync();
+        if(searchValue!= string.Empty)
+        {
+            activity   = activity.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Location,
+            searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
+            searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
+        }
+        else
+        {
+            activity  = await dataStore.GetAllActivityAsync();
+        }
     }
-
-    private void SearchActivities()
+    public async Task Filter(int id)
     {
-        try
-        {
-            ActivityModel e1 = new ActivityModel
-                {
-                    Title = "A unique baking experience",
-                    Location = "Alabang, Muntinlupa",
-                    Price = "PHP 2500 / person / 4 sessions",
-                    Remarks = "images/Activities/In-person - baking.jpg"
-                };
-            ActivityModel e2 = new ActivityModel
-                {
-                    Title = "Twinkle Toes Ballet Class",
-                    Location = "Alabang, Muntinlupa",
-                    Price = "PHP 500 / person / session",
-                    Remarks = "images/Activities/In-person - Ballet.jpg"
-                };
-            ActivityModel e3 = new ActivityModel
-                {
-                    Title = "Kids Gymnastics",
-                    Location = "Alabang, Muntinlupa",
-                    Price = "PHP 7500 / person / 10 session",
-                    Remarks = "images/Activities/In-person - basic gymnastics.jpg"
-                };
-            ActivityModel e4 = new ActivityModel
-                {
-                    Title = "Gymboree - kids fun play",
-                    Location = "Alabang, Muntinlupa",
-                    Price = "PHP 6000 / person / 10 session",
-                    Remarks = "images/Activities/In-person - fun play.jpg"
-                };
-            ActivityModel e5 = new ActivityModel
-                {
-                    Title = "Horse Riding Lessons",
-                    Location = "Cavite",
-                    Price = "PHP 11,200 / person / 4 session",
-                    Remarks = "images/Activities/In-person - horseback riding lessons.jpg"
-                };
-            ActivityModel e6 = new ActivityModel
-                {
-                    Title = "Filipino Language Tutor for kids",
-                    Location = "Metro Manila",
-                    Price = "PHP 500 / person / session",
-                    Remarks = "images/Activities/In-person - math tutor.jpg"
-                };
-            ActivityModel e7 = new ActivityModel
-                {
-                    Title = "Basketball Coaching",
-                    Location = "Bicutan, Paranaque",
-                    Price = "PHP 600 / person / session",
-                    Remarks = "images/Activities/In-person - sports (basketball).jpg"
-                };
-            ActivityModel e8 = new ActivityModel
-                {
-                    Title = "Biking group ride for kids",
-                    Location = "Alabang, Muntinlupa",
-                    Price = "PHP 600 / person / session",
-                    Remarks = "images/Activities/In-person - sports (biking).jpg"
-                };
-            if(searchValue==string.Empty)
-            {
-                activity = new List<ActivityModel> { e1, e2, e3, e4, e5, e6, e7, e8 };
-            }
-            else
-            {
-                 activity = activity.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Location, 
-                 searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title, 
-                 searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
-            }  
-        }
-        catch (Exception e)
-        {
-
-            e.Message.ToString();
-        }
+        activity = await dataStore.GetAllActivityAsync();
+        activity = activity.Where(p=> p.Id == id).ToList();
     }
 }
