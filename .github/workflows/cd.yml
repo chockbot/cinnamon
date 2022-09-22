@@ -34,8 +34,8 @@ jobs:
       - name: Create SSH key
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_PRIVATE_KEY" > key.pem
-          sudo chmod 600 key.pem
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > key.pem
+          chmod 400 key.pem
           echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
         shell: bash
         env:
