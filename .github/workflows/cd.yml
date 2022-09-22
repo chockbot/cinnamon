@@ -28,8 +28,8 @@ jobs:
       - name: Build Project
         run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/build
 
-      - name: Public Project
-        run: dotnet public src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish
+      - name: Publish Project
+        run: dotnet publish src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish
       
       - name: Save Artifact
         uses: actions/upload-artifact@v3
