@@ -37,8 +37,11 @@ jobs:
           name: dev-build
           path: output/publish/
 
-      - name: Run Test Script
-        run: scripts/test.sh ${{ secrets.SERVER_SSH_KEY }}
+      - name: Create PEM File
+        run: echo "${{ secrets.SERVER_SSH_KEY }}" | tr -d '\r' > key.pem
       
       - name: Run LS
         run: ls
+      
+      - name: Display PEM
+        run: cat key.pem
