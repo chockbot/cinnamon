@@ -41,12 +41,12 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{secrets.SERVER_SSH_PRIVATE_KEY}}
           SSH_KNOWN_HOSTS: ${{secrets.SERVER_SSH_KNOWN_HOSTS}}
+
+      - name: Run LS from DEV Server
+        run: ssh -i key.pem cinnamon@20.39.197.187 "ls"
       
       - name: Copy Artifacts to DEV Server
         run: scp output/publish/ -i key.pem cinnamon@20.39.197.187:/home/cinnamon/test/from_github/
-      
-      - name: Run LS from DEV Server
-        run: ssh -i key.pem cinnamon@20.39.197.187 "ls"
 
       - name: Save Artifact
         uses: actions/upload-artifact@v3
