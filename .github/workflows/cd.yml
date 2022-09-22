@@ -1,0 +1,62 @@
+name: Build - develop
+
+on:
+  push:
+    branches: [develop]
+
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Dotnet Core
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '6.0.x'
+
+      - name: Restore Web
+        run: dotnet restore src/Cinnamon.Web/Cinnamon.Web.csproj
+      
+      - name: Restore Core
+        run: dotnet restore src/Cinnamon.Core/Cinnamon.Core.csproj
+
+      - name: Restore Data
+        run: dotnet restore src/Cinnamon.Data/Cinnamon.Data.csproj
+      
+      - name: Build Project
+        run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/build
+
+      - name: Publish Project
+        run: dotnet publish src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish
+      
+      - name: Create SSH key
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > key.pem
+          chmod 400 key.pem
+          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{secrets.SERVER_SSH_PRIVATE_KEY}}
+          SSH_KNOWN_HOSTS: ${{secrets.SERVER_SSH_KNOWN_HOSTS}}
+      
+      - name: Run LS
+        run: ls
+      
+      - name: Run LS in SSH
+        run: ls ~/.ssh/
+
+      - name: Run LS from DEV Server
+        run: ssh -i key.pem cinnamon@20.39.197.187 "ls"
+      
+      - name: Copy Artifacts to DEV Server
+        run: scp output/publish/ -i key.pem cinnamon@20.39.197.187:/home/cinnamon/test/from_github/
+
+      - name: Save Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: dev-build
+          path: output/publish/
+      
