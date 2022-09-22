@@ -37,9 +37,8 @@ jobs:
           name: dev-build
           path: output/publish/
 
-      - name: Run LS
-        run: ls
-
       - name: Run Test Script
         run: bash ./scripts/test.sh ${{ secrets.SERVER_SSH_KEY }}
       
+      - name: Run LS
+        run: ls
