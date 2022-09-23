@@ -10,6 +10,7 @@
         public string Price { get; set; } = "";
         public string Subtitle { get; set; } = "";
         public string Description { get; set; } = "";
+        public string ScheduleIndicator { get; set; } = "";
         public string Schedules { get; set; } = "";
         public string MapDetails { get; set; } = "";
         public string Guarantee { get; set; } = "";
