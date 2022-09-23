@@ -81,6 +81,7 @@
             var res = waitList.SaveChanges();
             if (res > 0)
             {
+                jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
                 isSubmit = true;
                 module.InvokeVoidAsync("onDoneSignup");
             }
