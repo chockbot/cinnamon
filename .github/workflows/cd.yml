@@ -41,7 +41,7 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
       
       - name: Copy Artifacts to DEV Server
-        run: rsync -avz output/publish cinnamon@${{ secrets.SERVER_IP }}:build-dev/src
+        run: rsync -avz output/publish/ cinnamon@${{ secrets.SERVER_IP }}:build-dev/src
 
       - name: Copy docker-compose
         run: rsync -avz output/docker-compose.dev.yml cinnamon@${{ secrets.SERVER_IP }}:build-dev/docker-compose.yml
