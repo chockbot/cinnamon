@@ -34,7 +34,7 @@ jobs:
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SERVER_SSH_PRIVATE_KEY }} 
+          key: ${{ secrets.SERVER_SSH_KEY }} 
           known_hosts: ${{ secrets.SERVER_SSH_KNOWN_HOSTS }}
       
       - name: Run LS
@@ -44,7 +44,7 @@ jobs:
         run: ls ~/.ssh/
 
       - name: Run LS from DEV Server
-        run: ssh cinnamon@20.39.197.187 "ls"
+        run: ssh cinnamon@${{ secrets.SERVER_IP }} "ls"
       
       - name: Copy Artifacts to DEV Server
         run: scp output/publish/ cinnamon@20.39.197.187:/home/cinnamon/test/from_github/
