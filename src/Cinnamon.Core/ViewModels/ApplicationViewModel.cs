@@ -452,6 +452,391 @@
                 });
 
             }
+            //Create Activity Image
+            var activityImages = await CoreDI.DataStore.ActivityImages.GetAllAsync();
+            if (activityImages.Count == 0)
+            {
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 1,
+                    ImageId = 1,
+                    ImageLocation = "images/Activities/Baking1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 2,
+                    ImageId = 1,
+                    ImageLocation = "images/Activities/Baking2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 3,
+                    ImageId = 1,
+                    ImageLocation = "images/Activities/Baking3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 4,
+                    ImageId = 2,
+                    ImageLocation = "images/Activities/Ballet1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 5,
+                    ImageId = 2,
+                    ImageLocation = "images/Activities/Ballet2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 6,
+                    ImageId = 2,
+                    ImageLocation = "images/Activities/Ballet3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 7,
+                    ImageId = 3,
+                    ImageLocation = "images/Activities/Gymnastics1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 8,
+                    ImageId = 3,
+                    ImageLocation = "images/Activities/Gymnastics2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 9,
+                    ImageId = 3,
+                    ImageLocation = "images/Activities/Gymnastics3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 10,
+                    ImageId = 4,
+                    ImageLocation = "images/Activities/Play1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 11,
+                    ImageId = 4,
+                    ImageLocation = "images/Activities/Play2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 12,
+                    ImageId = 4,
+                    ImageLocation = "images/Activities/Play3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 13,
+                    ImageId = 5,
+                    ImageLocation = "images/Activities/Horseback1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 14,
+                    ImageId = 5,
+                    ImageLocation = "images/Activities/Horseback2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 15,
+                    ImageId = 5,
+                    ImageLocation = "images/Activities/Horseback3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 16,
+                    ImageId = 6,
+                    ImageLocation = "images/Activities/Language1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 17,
+                    ImageId = 6,
+                    ImageLocation = "images/Activities/Language2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 18,
+                    ImageId = 6,
+                    ImageLocation = "images/Activities/Language3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 19,
+                    ImageId = 7,
+                    ImageLocation = "images/Activities/Basketball1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 20,
+                    ImageId = 7,
+                    ImageLocation = "images/Activities/Basketball2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 21,
+                    ImageId = 7,
+                    ImageLocation = "images/Activities/Basketball3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 22,
+                    ImageId = 8,
+                    ImageLocation = "images/Activities/Biking1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 23,
+                    ImageId = 8,
+                    ImageLocation = "images/Activities/Biking2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 24,
+                    ImageId = 8,
+                    ImageLocation = "images/Activities/Biking3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 25,
+                    ImageId = 9,
+                    ImageLocation = "images/Activities/Golf1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 26,
+                    ImageId = 9,
+                    ImageLocation = "images/Activities/Golf2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 27,
+                    ImageId = 9,
+                    ImageLocation = "images/Activities/Golf3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 28,
+                    ImageId = 10,
+                    ImageLocation = "images/Activities/Swimming1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 29,
+                    ImageId = 10,
+                    ImageLocation = "images/Activities/Swimming2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 30,
+                    ImageId = 10,
+                    ImageLocation = "images/Activities/Swimming3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 31,
+                    ImageId = 11,
+                    ImageLocation = "images/Activities/Tennis1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 32,
+                    ImageId = 11,
+                    ImageLocation = "images/Activities/Tennis2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 33,
+                    ImageId = 11,
+                    ImageLocation = "images/Activities/Tennis3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 34,
+                    ImageId = 12,
+                    ImageLocation = "images/Activities/Taekwondo1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 35,
+                    ImageId = 12,
+                    ImageLocation = "images/Activities/Taekwondo2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 36,
+                    ImageId = 12,
+                    ImageLocation = "images/Activities/Taekwondo3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 37,
+                    ImageId = 13,
+                    ImageLocation = "images/Activities/Theater1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 38,
+                    ImageId = 13,
+                    ImageLocation = "images/Activities/Theater2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 39,
+                    ImageId = 13,
+                    ImageLocation = "images/Activities/Theater3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 40,
+                    ImageId = 14,
+                    ImageLocation = "images/Activities/Art1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 41,
+                    ImageId = 14,
+                    ImageLocation = "images/Activities/Art2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 42,
+                    ImageId = 14,
+                    ImageLocation = "images/Activities/Art3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 43,
+                    ImageId = 15,
+                    ImageLocation = "images/Activities/Online-Ballet1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 44,
+                    ImageId = 15,
+                    ImageLocation = "images/Activities/Online-Ballet2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 45,
+                    ImageId = 15,
+                    ImageLocation = "images/Activities/Online-Ballet3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 46,
+                    ImageId = 16,
+                    ImageLocation = "images/Activities/Coding1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 47,
+                    ImageId = 16,
+                    ImageLocation = "images/Activities/Coding2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 48,
+                    ImageId = 16,
+                    ImageLocation = "images/Activities/Coding3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 49,
+                    ImageId = 17,
+                    ImageLocation = "images/Activities/Chess1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 50,
+                    ImageId = 17,
+                    ImageLocation = "images/Activities/Chess2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 51,
+                    ImageId = 17,
+                    ImageLocation = "images/Activities/Chess3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 52,
+                    ImageId = 18,
+                    ImageLocation = "images/Activities/Yoga1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 53,
+                    ImageId = 18,
+                    ImageLocation = "images/Activities/Yoga2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 54,
+                    ImageId = 18,
+                    ImageLocation = "images/Activities/Yoga3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 55,
+                    ImageId = 19,
+                    ImageLocation = "images/Activities/Guitar1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 56,
+                    ImageId = 19,
+                    ImageLocation = "images/Activities/Guitar2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 57,
+                    ImageId = 19,
+                    ImageLocation = "images/Activities/Guitar3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 58,
+                    ImageId = 20,
+                    ImageLocation = "images/Activities/Violin1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 59,
+                    ImageId = 20,
+                    ImageLocation = "images/Activities/Violin2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 60,
+                    ImageId = 20,
+                    ImageLocation = "images/Activities/Violin3.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 61,
+                    ImageId = 21,
+                    ImageLocation = "images/Activities/Piano1.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 62,
+                    ImageId = 21,
+                    ImageLocation = "images/Activities/Piano2.jpg"
+                });
+                await CoreDI.DataStore.ActivityImages.SaveDataAsync(new ActivityImagesModels
+                {
+                    Id = 63,
+                    ImageId = 21,
+                    ImageLocation = "images/Activities/Piano3.jpg"
+                });
+
+            }
         }
+
     }
 }

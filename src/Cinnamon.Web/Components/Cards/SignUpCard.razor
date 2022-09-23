@@ -61,7 +61,7 @@
     public void OnSelect(ChangeEventArgs args) => TypeValue = (UserType)args.Value;
 
     protected override async void OnInitialized() {
-        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+        //module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
     }
 
     public void Submit(){
