@@ -22,41 +22,6 @@ namespace Cinnamon.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Cinnamon.Core.ActivityImagesModels", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("DeletionFlag")
-                        .HasColumnType("boolean");
-
-                    b.Property<int>("ImageId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ImageLocation")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActivityImages");
-                });
-
             modelBuilder.Entity("Cinnamon.Core.ActivityModel", b =>
                 {
                     b.Property<int>("Id")
@@ -153,10 +118,6 @@ namespace Cinnamon.Data.Migrations
 
                     b.Property<bool>("DeletionFlag")
                         .HasColumnType("boolean");
-
-                    b.Property<string>("Icon")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("Name")
                         .IsRequired()
