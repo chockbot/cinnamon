@@ -42,7 +42,7 @@
     }
     else
     {
-        <p>Thank you for joining us! <br> For more details, kindly refer to our <a onclick="@OnClick" href="FAQ">FAQ</a></p>
+        <p>Thank you for joining us! <br> For more details, kindly refer to our <a @onclick="OnClickFAQ" href="FAQ">FAQ</a></p>
     }
 </div>
 
@@ -52,16 +52,23 @@
 
     [Parameter]
     public UserType TypeValue { get; set; }
-    [Parameter]
-    public EventCallback<MouseEventArgs> OnClick { get; set; }
 
     public string Email { get; set; }
     public bool isSubmit { get; set; } = false;
 
-    public void OnSelect(ChangeEventArgs args) => TypeValue = (UserType)args.Value;
+    public void OnSelect(ChangeEventArgs args)
+    {
+        UserType usertype;
+        Enum.TryParse(args.Value.ToString(), out usertype);
+        TypeValue = usertype;
+    }
 
     protected override async void OnInitialized() {
-        //module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+    }
+
+    public void OnClickFAQ(){
+        module.InvokeVoidAsync("HideModal");
     }
 
     public void Submit(){
