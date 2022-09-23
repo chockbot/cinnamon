@@ -11,3 +11,7 @@ export function onDoneSignup() {
     $("input[name=signup-value]").attr("disabled", false);
     $("#spinner-loading").css("visibility", "hidden");
 }
+
+export function HideModal() {
+    $("#sigupModal").modal('hide');
+}
