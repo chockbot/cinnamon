@@ -1,3 +1,4 @@
+[![Build - develop](https://github.com/chockbot/cinnamon/actions/workflows/cd.yml/badge.svg)](https://github.com/chockbot/cinnamon/actions/workflows/cd.yml)
 # Cinnamon Project
 
 ## Tech Stack Used:
