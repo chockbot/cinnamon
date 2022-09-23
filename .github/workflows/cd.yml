@@ -44,7 +44,7 @@ jobs:
         run: ssh cinnamon@${{ secrets.SERVER_IP }} "ls"
       
       - name: Copy Artifacts to DEV Server
-        run: scp -r output/publish/ cinnamon@20.39.197.187:/build_dev/
+        run: scp -r output/publish cinnamon@20.39.197.187:/build_dev
 
       - name: Save Artifact
         uses: actions/upload-artifact@v3
