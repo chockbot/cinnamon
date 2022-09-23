@@ -4,6 +4,11 @@ on:
   push:
     branches: [main]
 
+# This allows a subsequently queued workflow run to interrupt previous runs
+concurrency:
+  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: [ubuntu-latest]
@@ -41,7 +46,7 @@ jobs:
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
       - name: Add Environment Variables
-        run: echo ${{ secrets.ENV_PROD }} >> .env.prod
+        run: echo "${{ secrets.ENV_PROD }}" >> .env.prod
       
       - name: Copy Artifacts to DEV Server
         run: rsync -avz output/publish/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src
