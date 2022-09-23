@@ -37,6 +37,9 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }} 
           known_hosts: ${{ secrets.SERVER_SSH_KNOWN_HOSTS }}
       
+      - name: Adding Known Hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      
       - name: Run LS
         run: ls
       
