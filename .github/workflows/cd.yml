@@ -37,10 +37,10 @@ jobs:
         
       - name: Build JS Library
         run: |
-        cd src/Cinnamon.Web/JsLib
-        echo "mixPanelProjectKey=${{ secrets.MIXPANEL_DEV_KEY }}" >> .env 
-        npm install
-        npm run build
+          cd src/Cinnamon.Web/JsLib
+          echo "mixPanelProjectKey=${{ secrets.MIXPANEL_DEV_KEY }}" >> .env 
+          npm install
+          npm run build
 
       - name: Build Project
         run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/build
