@@ -1,4 +1,4 @@
-[![Build - develop](https://github.com/chockbot/cinnamon/actions/workflows/cd.yml/badge.svg)](https://github.com/chockbot/cinnamon/actions/workflows/cd.yml)
+[![Build - develop](https://github.com/chockbot/cinnamon/actions/workflows/cd.yml/badge.svg)](https://github.com/chockbot/cinnamon/actions/workflows/cd.yml) [![Build - release](https://github.com/chockbot/cinnamon/actions/workflows/release.yml/badge.svg)](https://github.com/chockbot/cinnamon/actions/workflows/release.yml)
 # Cinnamon Project
 
 ## Tech Stack Used:
