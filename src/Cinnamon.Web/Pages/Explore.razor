@@ -1,5 +1,4 @@
 ﻿@inject NavigationManager NavigationManager
-@inject DataStore dataStore
 @inject IJSRuntime jsRuntime
 @page "/explore"
 @layout EmptyLayout
@@ -451,9 +450,9 @@
     public int cnt                                   = 0;
     protected override async Task OnInitializedAsync()
     {
-        activity        = await dataStore.GetAllActivityAsync();
-        activityImages  = await dataStore.GetActivityImage();
-        activityTypes   = await dataStore.GetAllActivityTypesAsync();
+        activity = await CoreDI.DataStore.Activities.GetAllAsync();
+        activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
+        activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
     }
     private void NavigateToFAQPage()
     {
@@ -469,7 +468,7 @@
     }
     public async Task Search()
     {
-        activity       = await dataStore.GetAllActivityAsync();
+        activity       = await CoreDI.DataStore.Activities.GetAllAsync();
         if(searchValue!= string.Empty)
         {
             activity   = activity.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Location,
@@ -478,12 +477,12 @@
         }
         else
         {
-            activity  = await dataStore.GetAllActivityAsync();
+            activity  = await CoreDI.DataStore.Activities.GetAllAsync();
         }
     }
     public async Task Filter(int id)
     {
-        activity = await dataStore.GetAllActivityAsync();
+        activity = await CoreDI.DataStore.Activities.GetAllAsync();
         activity = activity.Where(p=> p.Id == id).ToList();
     }
 }

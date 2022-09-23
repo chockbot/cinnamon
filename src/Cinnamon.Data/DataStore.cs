@@ -73,17 +73,5 @@ namespace Cinnamon.Data
             return Task.CompletedTask;
         }
         #endregion
-        public async Task<List<ActivityModel>> GetAllActivityAsync()
-        {
-            return await mDbContext.Activities.ToListAsync();
-        }
-        public async Task<List<ActivityTypeModel>> GetAllActivityTypesAsync()
-        {
-            return await mDbContext.ActivityTypes.ToListAsync();
-        }
-        public async Task<List<ActivityImagesModels>> GetActivityImage()
-        {
-            return await mDbContext.ActivityImages.ToListAsync();
-        }
     }
 }

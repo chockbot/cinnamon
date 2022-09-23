@@ -26,7 +26,6 @@ await Framework.Service<ApplicationViewModel>().applySeedDemoData();
 var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
 builder.Services.AddDbContext<DataStoreDbContext>(options =>
     options.UseNpgsql(connectionString),ServiceLifetime.Transient);
-builder.Services.AddScoped<DataStore>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<DataStoreDbContext>();
