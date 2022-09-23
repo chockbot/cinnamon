@@ -6,7 +6,7 @@ on:
 
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
-  group: '${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}'
+  group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
   cancel-in-progress: true
 
 jobs:
@@ -19,47 +19,40 @@ jobs:
       - name: Setup Dotnet Core
         uses: actions/setup-dotnet@v2
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: "6.0.x"
 
       - name: Restore Web
         run: dotnet restore src/Cinnamon.Web/Cinnamon.Web.csproj
-      
+
       - name: Restore Core
         run: dotnet restore src/Cinnamon.Core/Cinnamon.Core.csproj
 
       - name: Restore Data
         run: dotnet restore src/Cinnamon.Data/Cinnamon.Data.csproj
-      
+
       - name: Build Project
         run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/build
 
       - name: Publish Project
         run: dotnet publish src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish
-      
+
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ secrets.SERVER_SSH_KEY }} 
+          key: ${{ secrets.SERVER_SSH_KEY }}
           known_hosts: ${{ secrets.SERVER_SSH_KNOWN_HOSTS }}
-      
+
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
-      
+
       - name: Copy Artifacts to DEV Server
         run: rsync -avz output/publish/ cinnamon@${{ secrets.SERVER_IP }}:build-dev/src
 
       - name: Copy docker-compose
         run: rsync -avz output/docker-compose.dev.yml cinnamon@${{ secrets.SERVER_IP }}:build-dev/docker-compose.yml
-      
+
       - name: Copy Dockerfile
         run: rsync -avz output/Dockerfile cinnamon@${{ secrets.SERVER_IP }}:build-dev/Dockerfile
-      
+
       - name: Run Server Script
         run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-dev && sudo docker-compose down && sudo docker-compose up -d'
-
-      - name: Save Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: dev-build
-          path: output/publish/
-      
