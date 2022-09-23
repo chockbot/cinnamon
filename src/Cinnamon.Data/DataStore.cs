@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Core;
+using Cinnamon.Data.DbSets;
 using Microsoft.EntityFrameworkCore;
 
 namespace Cinnamon.Data
@@ -25,6 +26,7 @@ namespace Cinnamon.Data
 
         public IActivities Activities => new Activities(mDbContext);
         public IActivityTypes ActivityTypes => new ActivityTypes(mDbContext);
+        public IActivityImages ActivityImages => new ActivityImages(mDbContext);
         public IExperienceTypes ExperienceTypes => new ExperienceTypes(mDbContext);
         public IWaitList WaitList => new WaitLists(mDbContext);
         #endregion
@@ -71,5 +73,17 @@ namespace Cinnamon.Data
             return Task.CompletedTask;
         }
         #endregion
+        public async Task<List<ActivityModel>> GetAllActivityAsync()
+        {
+            return await mDbContext.Activities.ToListAsync();
+        }
+        public async Task<List<ActivityTypeModel>> GetAllActivityTypesAsync()
+        {
+            return await mDbContext.ActivityTypes.ToListAsync();
+        }
+        public async Task<List<ActivityImagesModels>> GetActivityImage()
+        {
+            return await mDbContext.ActivityImages.ToListAsync();
+        }
     }
 }
