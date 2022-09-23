@@ -4,7 +4,6 @@
     {
         IActivities Activities { get; }
         IActivityTypes ActivityTypes { get; }
-        IActivityImages ActivityImages { get; }
         IExperienceTypes ExperienceTypes { get; }
         IWaitList WaitList { get; }
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿using Cinnamon.Core;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Cinnamon.Data
 {
@@ -12,7 +12,6 @@ namespace Cinnamon.Data
         #region DbSets
         public DbSet<ActivityTypeModel> ActivityTypes { get; set; }
         public DbSet<ActivityModel> Activities { get; set; }
-        public DbSet<ActivityImagesModels> ActivityImages { get; set; }
         public DbSet<ExperienceTypeModel> ExperienceTypes { get; set; }
         public DbSet<WaitListModel> WaitLists { get; set; }
         #endregion
@@ -52,16 +51,12 @@ namespace Cinnamon.Data
                 .HasOne(a => a.ActivityType)
                 .WithMany(a => a.Activities)
                 .HasForeignKey(a => a.ActivityTypeId);
-
             modelBuilder.Entity<ActivityModel>()
                 .HasOne(a => a.ExperienceType)
                 .WithMany(e => e.Activities)
                 .HasForeignKey(a => a.ExperienceTypeId);
 
             modelBuilder.Entity<WaitListModel>().HasKey(w => new { w.Id });
-
-            modelBuilder.Entity<ActivityImagesModels>().HasKey(b => new { b.Id });
-
         }
         #endregion
 
