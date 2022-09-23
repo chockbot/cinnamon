@@ -28,107 +28,130 @@
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 1,
-                    Name = "Baking"
+                    Name = "Baking",
+                    Icon = "images/Category/Baking.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 2,
-                    Name = "Ballet"
+                    Name = "Ballet",
+                    Icon = "images/Category/Ballet.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 3,
-                    Name = "Kids Gymnastics"
+                    Name = "Kids Gymnastics",
+                    Icon = "images/Category/Gymnastics.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 4,
-                    Name = "Fun Play"
+                    Name = "Fun Play",
+                    Icon = "images/Category/Play.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 5,
-                    Name = "Horseback Riding Lesson"
+                    Name = "Horseback Riding Lesson",
+                    Icon = "images/Category/Horseback.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 6,
-                    Name = "Kids Language Tutor"
+                    Name = "Kids Language Tutor",
+                    Icon = "images/Category/Language.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 7,
-                    Name = "Basketball Lessons"
+                    Name = "Basketball Lessons",
+                    Icon = "images/Category/Basketball.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 8,
-                    Name = "Biking Group Activity"
+                    Name = "Biking Group Activity",
+                    Icon= "images/Category/Biking.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 9,
-                    Name = "Golf Lessons"
+                    Name = "Golf Lessons",
+                    Icon = "images/Category/Golf.png"
+
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 10,
-                    Name = "Swimming Lessons"
+                    Name = "Swimming Lessons",
+                    Icon = "images/Category/Swimming.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 11,
-                    Name = "Tennis Lessons"
+                    Name = "Tennis Lessons",
+                    Icon = "images/Category/Tennis.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 12,
-                    Name = "Taekwondo Lessons"
+                    Name = "Taekwondo Lessons",
+                    Icon = "images/Category/Taekwondo.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 13,
-                    Name = "Theatre Acting Lessons"
+                    Name = "Theatre Acting Lessons",
+                    Icon = "images/Category/Theater.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 14,
-                    Name = "Art Classes"
+                    Name = "Art Classes",
+                    Icon = "images/Category/Art.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 15,
-                    Name = "Ballet Classes"
+                    Name = "Ballet Classes",
+                    Icon = "images/Category/Online-Ballet.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 16,
-                    Name = "Coding"
+                    Name = "Coding",
+                    Icon = "images/Category/Coding.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 17,
-                    Name = "Chess Lessons - Kids"
+                    Name = "Chess Lessons - Kids",
+                    Icon = "images/Category/Chess.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 18,
-                    Name = "Yoga for Kids"
+                    Name = "Yoga for Kids",
+                    Icon = "images/Category/Yoga.png"
+
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 19,
-                    Name = "Guitar Lessons"
+                    Name = "Guitar Lessons",
+                    Icon = "images/Category/Guitar.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 20,
-                    Name = "Violin Lessons"
+                    Name = "Violin Lessons",
+                    Icon = "images/Category/Violin.png"
                 });
                 await CoreDI.DataStore.ActivityTypes.SaveDataAsync(new ActivityTypeModel
                 {
                     Id = 21,
-                    Name = "Piano Lessons"
+                    Name = "Piano Lessons",
+                    Icon = "images/Category/Piano.png"
                 });
             }
 
