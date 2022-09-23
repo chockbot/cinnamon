@@ -40,17 +40,11 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
       
-      - name: Run LS
-        run: ls
-      
-      - name: Run LS in SSH
-        run: ls ~/.ssh/
-
       - name: Run LS from DEV Server
         run: ssh cinnamon@${{ secrets.SERVER_IP }} "ls"
       
       - name: Copy Artifacts to DEV Server
-        run: scp output/publish/ cinnamon@20.39.197.187:/home/cinnamon/test/from_github/
+        run: scp -r output/publish/ cinnamon@20.39.197.187:/home/cinnamon/test/from_github/
 
       - name: Save Artifact
         uses: actions/upload-artifact@v3
