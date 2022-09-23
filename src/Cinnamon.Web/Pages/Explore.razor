@@ -982,8 +982,11 @@
     </div>
 </html>
 @code {
-    protected override void OnInitialized()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        jsRuntime.InvokeVoidAsync("Explore.razor.js", "Explore Page Loaded");
+        if (firstRender)
+        {
+           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
+        }
     }
 }

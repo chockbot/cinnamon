@@ -221,8 +221,15 @@
     }
 
     protected override async void OnInitialized() { 
-       await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
       module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Index.js");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+        }
     }
 
     public async Task OnClickFAQ()

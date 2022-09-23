@@ -73,13 +73,13 @@ namespace Cinnamon.Data
             {
                 UserID = 0;
             }
-            var CurrentTime = DateTime.Now;
+            var CurrentTime = DateTime.UtcNow;
 
             AddedEntities.ForEach(E =>
             {
-                //E.Property("CreatedOn").CurrentValue = CurrentTime;
+                E.Property("CreatedOn").CurrentValue = CurrentTime;
                 //E.Property("CreatedBy").CurrentValue = UserID;
-                //E.Property("ChangedOn").CurrentValue = CurrentTime;
+                E.Property("ChangedOn").CurrentValue = CurrentTime;
                 //E.Property("ChangedBy").CurrentValue = UserID;
             });
 
@@ -87,7 +87,7 @@ namespace Cinnamon.Data
 
             EditedEntities.ForEach(E =>
             {
-                //E.Property("ChangedOn").CurrentValue = CurrentTime;
+                E.Property("ChangedOn").CurrentValue = CurrentTime;
                 //E.Property("ChangedBy").CurrentValue = UserID;
             });
 
