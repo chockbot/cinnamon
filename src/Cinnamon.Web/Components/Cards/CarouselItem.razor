@@ -1,0 +1,13 @@
+﻿@namespace Cinnamon.Web.Components
+
+
+<div class="card shadow p-3 mr-5" style="font-size:0.9rem">
+    @((MarkupString)Text.Replace(Environment.NewLine, "<br>").Replace("\r\n\r\n","<br>"))
+    <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
+</div>
+
+
+@code {
+    [Parameter]
+    public string Text { get; set; } = "";
+}

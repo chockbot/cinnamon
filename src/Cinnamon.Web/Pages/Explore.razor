@@ -303,8 +303,8 @@
                 {
                  cnt = 0;
                  images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
-                 <div class="col-lg-3 col-sm-12 col-xs-12">
-                 <a class="button carousel-card text-center" href="/explore/DetailActivity">
+                 <div class="col-lg-3 col-xs-12">
+                 <a class="button carousel-card text-center" href="/explore/@act.Id">
                     <div class="card">
                         <div id="carousel1" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                             <div class="carousel-indicators">
@@ -458,6 +458,27 @@
         activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
         activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
+        }
+    }
+
+    private void NavigateToFAQPage()
+    {
+        NavigationManager.NavigateTo("FAQ");
+    }
+    private void NavigateToPolicyPage()
+    {
+        NavigationManager.NavigateTo("policy");
+    }
+    private void NavigateToTermsPage()
+    {
+        NavigationManager.NavigateTo("terms");
+    }
     public async Task Search()
     {
         activity       = await CoreDI.DataStore.Activities.GetAllAsync();
@@ -477,21 +498,4 @@
         activity = await CoreDI.DataStore.Activities.GetAllAsync();
         activity = activity.Where(p=> p.Id == id).ToList();
     }
-        private void NavigateToFAQPage()
-    {
-        NavigationManager.NavigateTo("FAQ");
-    }
-    private void NavigateToPolicyPage()
-    {
-        NavigationManager.NavigateTo("policy");
-    }
-    private void NavigateToTermsPage()
-    {
-        NavigationManager.NavigateTo("terms");
-    }
-    public async Task OnClickFAQ()
-    {
-        await module.InvokeVoidAsync("HideModal");
-    }
-
 }

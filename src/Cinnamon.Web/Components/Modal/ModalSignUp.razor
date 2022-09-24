@@ -6,7 +6,7 @@
             <div class="modal-body">
                 <div class="card-filter text-center">
                     <h1> Welcome to <span style="color:#ffa942">@Resources.App.appName</span></h1>
-                    <SignUpCard OnClick="OnClick" TypeValue="@TypeValue"></SignUpCard>
+                    <SignUpCard TypeValue="@TypeValue"></SignUpCard>
                 </div>
             </div>
         </div>
@@ -15,6 +15,4 @@
 @code {
     [Parameter]
     public UserType TypeValue { get; set; }
-    [Parameter]
-    public EventCallback<MouseEventArgs> OnClick { get; set; }
 }

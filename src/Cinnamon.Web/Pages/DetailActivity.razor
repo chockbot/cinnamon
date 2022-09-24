@@ -1,22 +1,40 @@
-﻿@page "/Explore/DetailActivity"
+﻿@page "/Explore/{Id:int}"
 @using Cinnamon.Web.Components
+@using Cinnamon.Core
 @using Cinnamon.Core.Enums
+@using Cinnamon.Data
 @inject IJSRuntime jsRuntime
-
+@inject DataStoreDbContext _detailActivity
 
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
     <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 col-md-10 col-sm-12 col-12">
         <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
           <div class="images-gallery order-lg-last order-md-last order-sm-first d-flex gap-3">
-            <div class="d-flex flex-row gap-2 detail-lg">
-                <img class="img-fluid shadow rounded" style="width:50%" src="images/Baking/Baking2.jpg" />
-                <img class="img-fluid shadow rounded" style="width:22%" src="images/Baking/Baking1.jpg" alt="1 adult and 2 children baking" />
-                <img class="img-fluid shadow rounded" style="width:22%" src="images/baking/baking3.jpg" />
+            <div class="detail-lg">
+                <div class="gallery">
+                    <figure class="gallery__item gallery__item--1">
+                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(1).ImageLocation" />
+                    </figure>
+                    <figure class="gallery__item gallery__item--2">
+                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(0).ImageLocation" />
+                    </figure>
+                    <figure class="gallery__item gallery__item--3">
+                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(2).ImageLocation" />
+                    </figure>
+                </div>
             </div>
-             <div class="d-flex flex-row gap-2 detail-md">
-                <img class="img-fluid shadow rounded" style="width:48%" src="images/Baking/Baking2.jpg" />
-                <img class="img-fluid shadow rounded" style="width:21.3%" src="images/Baking/Baking1.jpg" alt="1 adult and 2 children baking" />
-                <img class="img-fluid shadow rounded" style="width:21.3%" src="images/baking/baking3.jpg" />
+             <div class="detail-md">
+                <div class="gallery">
+                    <figure class="gallery__item gallery__item--1">
+                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(1).ImageLocation" />
+                    </figure>
+                    <figure class="gallery__item gallery__item--2">
+                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(0).ImageLocation" />
+                    </figure>
+                    <figure class="gallery__item gallery__item--3">
+                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(2).ImageLocation" />
+                    </figure>
+                </div>
             </div>
              <div class="d-flex flex-row detail-sm">
                   <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
@@ -28,18 +46,18 @@
                         <div class="carousel-inner">
                             <div class="carousel-item active">
                                 <div class="col-sm-12">
-                                    <img class="img-fluid shadsow rounded" style="width:100%" src="images/Baking/Baking2.jpg" />
+                                    <img class="img-fluid shadsow rounded" style="width:100%" src="@_Images.ElementAt(1).ImageLocation" />
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <div class="col-sm-12">
-                                    <img class="img-fluid w-100 shadow rounded" src="images/Baking/Baking1.jpg" alt="1 adult and 2 children baking" />
+                                    <img class="img-fluid w-100 shadow rounded" src="@_Images.ElementAt(0).ImageLocation" />
                                 </div>
 
                             </div>
                             <div class="carousel-item">
                                 <div class="col-sm-12">
-                                    <img class="img-fluid w-100 shadow rounded" src="images/baking/baking3.jpg" />
+                                    <img class="img-fluid w-100 shadow rounded" src="@_Images.ElementAt(2).ImageLocation" />
                                 </div>
                             </div>
                         </div>
@@ -58,14 +76,14 @@
                 <div class="text-black">
                     <div class="d-flex gap-1 fs-6">
                         <span class="review">4.99 · <u>150 reviews</u></span>
-                        <span><u>Alabang, Muntinlupa</u></span>
+                        <span><u>@activityModel.Location</u></span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="d-flex justify-content-between mt-3">
             <div class="activity-title">
-                <h3 class="fw-bold">A unique baking experience</h3>
+                <h3 class="fw-bold">@activityModel.Title</h3>
             </div>
         </div>
     </div>
@@ -73,120 +91,43 @@
         <div class="flex-fill col-lg-6 col-md-6 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last d-flex flex-column">
             <div class="description-container">
                 <p>
-                    This program is especially designed for your kids dynamic imagination and enless curiosity. Your children will both learn and have fun in the kitchen. We are passionate about teaching kids and has been formally trained in child development, primary education and special education.
-                    <br />
-                    <br />
-                    <h6 class="fw-bold">Program highlights:</h6>
-                    - To provide children with fun and creative activities at home
-                    - To incorporate lessons for your children and get them to make friend
-                    <br />
-                    <br />
-                    <label class="fw-bold">Overview</label>
-                    <br />
-                    <ul class="list-unstyled">
-                        <li>
-                            Session 1 - Tuna Sub Sandwich
-                        </li>
-                        <li>
-                            Session 2 - Baggie Vanilla Ice Cream
-                        </li>
-                        <li>
-                            Session 3 - Banana Nut Oatleal
-                        </li>
-                        <li>
-                            Session 4 - My signature pizza
-                        </li>
-                    </ul>
+                    @((MarkupString)activityModel.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n","<br>"))
                 </p>
             </div>
             <hr />
             <div class="col-12">
                 <div class="">
                     <h5>Schedule of activities</h5>
-                    <div class="row mx-auto my-auto justify-content-center" id="activitydates-container">
-                        <div id="recipeCarousel" class="carousel slide" data-bs-ride="carousel">
-                            <div class="carousel-inner p-3" role="listbox" style="width:85%;margin:0 auto;">
-                                <div class="carousel-item active">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                                        <div class="card shadow p-3 mr-5" style="font-size:0.9rem">
-                                            <span class="col-12">Sat, Aug 20</span>
-                                            <span class="col-12">8:00 AM - 10:30 AM</span>
-                                            <br />
-                                            <span class="col-12">P2,000 / person</span>
-                                            <br />
-                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
+                    @if (activityModel.ScheduleIndicator == "selection")
+                    {
+                        <div class="row mx-auto my-auto justify-content-center" id="activitydates-container">
+                            <div id="recipeCarousel" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner p-3" role="listbox" style="width:85%;margin:0 auto;">
+                                    @foreach(var sched in activityModel.Schedules.Split("\r\n\r\n"))
+                                    {
+                                        <div class="carousel-item active">
+                                            <div class="col-lg-6 col-md-6 col-sm-12 col-12">
+                                            <CarouselItem Text="@sched"></CarouselItem>
+                                            </div>
                                         </div>
-                                    </div>
+                                    }
                                 </div>
-                                <div class="carousel-item">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                                        <div class="card shadow p-3" style="font-size:0.9rem">
-                                            <span class="col-12">Sat, Aug 21</span>
-                                            <span class="col-12">8:00 AM - 10:30 AM</span>
-                                            <br />
-                                            <span class="col-12">P2,000 / person</span>
-                                              <br />
-                                            <PrimaryButton Text="Choose" Width="fit-content" ></PrimaryButton>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                                        <div class="card shadow p-3" style="font-size:0.9rem">
-                                            <span class="col-12">Sat, Aug 22</span>
-                                            <span class="col-12">8:00 AM - 10:30 AM</span>
-                                            <br />
-                                            <span class="col-12">P2,000 / person</span>
-                                            <br />
-                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                                        <div class="card shadow p-3" style="font-size:0.9rem">
-                                            <span class="col-12">Sat, Aug 23</span>
-                                            <span class="col-12">8:00 AM - 10:30 AM</span>
-                                            <br />
-                                            <span class="col-12">P2,000 / person</span>
-                                              <br />
-                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                                        <div class="card shadow p-3" style="font-size:0.9rem">
-                                            <span class="col-12">Sat, Aug 24</span>
-                                            <span class="col-12">8:00 AM - 10:30 AM</span>
-                                            <br />
-                                            <span class="col-12">P2,000 / person</span>
-                                              <br />
-                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12">
-                                        <div class="card shadow p-3" style="font-size:0.9rem">
-                                            <span class="col-12">Sat, Aug 25</span>
-                                            <span class="col-12">8:00 AM - 10:30 AM</span>
-                                            <br />
-                                            <span class="col-12">P2,000 / person</span>
-                                            <br />
-                                            <PrimaryButton Text="Choose" Width="fit-content"></PrimaryButton>
-                                        </div>
-                                    </div>
-                                </div>
+                                <a class="carousel-control-prev bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                </a>
+                                <a class="carousel-control-next bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                </a>
                             </div>
-                            <a class="carousel-control-prev bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            </a>
-                            <a class="carousel-control-next bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            </a>
                         </div>
-                    </div>
+                    }
+                    else{
+                        <div class="px-4">
+                            <span>
+                                @((MarkupString)activityModel.Schedules.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
+                            </span
+                        </div>
+                    }
                 </div>
             </div>
             <hr />
@@ -194,7 +135,7 @@
                 <label class="fw-bold">Where you’ll be</label>
                 <img class="w-100" style="margin-left:-15px;" src="images/map_picture.png" />
                 <span>
-                    Restaurant - Las Flores in Festival
+                    @activityModel.MapDetails
                 </span>
             </div>
             <hr />
@@ -220,12 +161,9 @@
             <div class="w-75 shadow rounded-3 p-3 detail-lg">
                 <SignUpCard TypeValue="UserType.Customer"></SignUpCard>
             </div>
-            <div class="w-75 shadow rounded-3 p-3 detail-md">
-                <SignUpCard TypeValue="UserType.Customer"></SignUpCard>
-            </div>
             <div class="detail-sm">
                 <div class="shadow border-3 border-top" style="position:fixed;bottom:0;left:0;width:100%;height:120px;background-color:white;padding:10px;z-index:9999">
-                    <PrimaryButton Text="Reserve" Width="100%"></PrimaryButton>
+                    <PrimaryButton ModalTarget="#sigupModal" Id="reserve-button" ModalBsToggle="modal" Text="Reserve" Width="100%"></PrimaryButton>
                 </div>
             </div>
         </div>
@@ -235,10 +173,25 @@
 <!--Footer-->
 <Footer></Footer>
 
-
 @code {
-    protected override void OnInitialized()
+    [Parameter]
+    public int Id { get; set; }
+    public ActivityModel activityModel { get; set; }
+    public List<ActivityImagesModels> _Images { get; set; }
+    IJSObjectReference module;
+    protected override async void OnInitialized()
     {
-        jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
+        activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
+        _Images = _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToList();
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+        }
     }
 }

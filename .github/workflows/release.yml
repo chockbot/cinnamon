@@ -30,6 +30,18 @@ jobs:
       - name: Restore Data
         run: dotnet restore src/Cinnamon.Data/Cinnamon.Data.csproj
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+        
+      - name: Build JS Library
+        run: |
+          cd src/Cinnamon.Web/JsLib
+          echo "mixPanelProjectKey=${{ secrets.MIXPANEL_PRD_KEY }}" >> .env 
+          npm install
+          npm run build
+
       - name: Build Project
         run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/build
 
