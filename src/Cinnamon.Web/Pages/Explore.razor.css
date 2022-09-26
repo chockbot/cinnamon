@@ -139,15 +139,9 @@ img.img-icon {
     margin: 0;
     padding-left: 0;
 }
-
-    .list-menu a {
-        color: #343a40;
-    }
-/*
-.section-2-lg {
-    display: flex;
-    padding-right: 1px;
-}*/
+.list-menu a {
+    color: #343a40;
+}
 .section-3-md {
     display: none;
 }
@@ -187,6 +181,8 @@ img.img-icon {
 .carousel-indicators button {
     border-radius: 100%;
     width: 5px;
+    width: 7.5px;
+    height: 6px;
 }
 
 .carousel-card {
@@ -242,7 +238,30 @@ img.img-icon {
 .activity-lg{
     display: flex;
 }
-
+.section-2-lg .wish-icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 99;
+    cursor: pointer;
+    font-size: 16px;
+    color: #abb0b8;
+}
+.wish-icon .fa-heart-o{
+    color: white;
+}
+.btn-star {
+    position: absolute;
+    width: 50px;
+    height: 20px;
+    border-radius: 10px;
+    text-align: left;
+    font-size: 12px;
+    margin-left: 80%;
+    background-color: #F3F6FC;
+    border: none;
+    font-family: 'Nunito';
+}
 /* For Desktop View */
 @media screen and (min-width: 1024px) {
     .top-row {
@@ -365,13 +384,34 @@ img.img-icon {
         margin-left: 0px;
         filter: invert(100%);
     }
+    .section-2-lg .wish-icon {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        z-index: 99;
+        cursor: pointer;
+        font-size: 16px;
+        color: #abb0b8;
+    }
+
+    .btn-star {
+        position: absolute;
+        width: 50px;
+        height: 20px;
+        border-radius: 10px;
+        text-align: left;
+        font-size: 12px;
+        margin-left: 80%;
+        background-color: #F3F6FC;
+        border: none;
+        font-family: 'Nunito';
+    }
 
 }
-
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px){
     .input-group {
-        width: 100%;
+        width: 270px;
     }
 
     .app-name {
@@ -387,13 +427,13 @@ img.img-icon {
     }
 
     .menu img {
-        text-align: right;
-        width: 30%;
+        margin-right: 0;
+        width: 20px;
     }
 
     .px-4 {
         padding-right: 0.5rem !important;
-        padding-left: 0.8rem !important;
+        padding-left: 0rem !important;
     }
 
     .top-row {
@@ -434,11 +474,6 @@ img.img-icon {
     .section-2-lg {
         display: block;
     }
-    .carousel-inner1
-    {
-        margin: 0px;
-        padding: 0px;
-    }
 
     .row {
         padding: 0 !important;
@@ -449,7 +484,7 @@ img.img-icon {
         display: none;
     }
     .activity-sm .carousel-control-prev{
-        background-color: #757474;
+        background-color: black;
         width: 3vh;
         height: 3vh;
         border-radius: 50%;
@@ -460,7 +495,7 @@ img.img-icon {
         filter: invert(100%);
     }
     .activity-sm .carousel-control-next {
-        background-color: #757474;
+        background-color: black;
         width: 3vh;
         height: 3vh;
         border-radius: 50%;
@@ -469,6 +504,60 @@ img.img-icon {
         margin-right: 0px;
         margin-left: 0px;
         filter: invert(100%);
+    }
+    .section-2-lg .carousel-control-prev {
+        background-color: #757474;
+        width: 2.5vh;
+        height: 2.5vh;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: 0px;
+        margin-left: 10px;
+        filter: invert(100%);
+    }
+
+    .section-2-lg .carousel-control-next {
+        background-color: #757474;
+        width: 2.5vh;
+        height: 2.5vh;
+        border-radius: 50%;
+        top: 50%;
+        transform: translateY(-50%);
+        margin-right: -15px;
+        margin-left: 0px;
+        filter: invert(100%);
+    }
+    .section-2-lg .carousel-indicators {
+        text-align: center;
+        margin-right: 10px;
+    }
+    .section-2-lg .carousel-indicators button {
+        border-radius: 100%;
+        width: 8px;
+        height: 6px;
+    }
+    .section-2-lg .wish-icon {
+        position: absolute;
+        right: -10px;
+        top: 10px;
+        z-index: 99;
+        cursor: pointer;
+        font-size: 16px;
+        color: #abb0b8;
+    }
+
+    .btn-star {
+        position: absolute;
+        width: 50px;
+        height: 20px;
+        border-radius: 10px;
+        text-align: left;
+        font-size: 12px;
+        margin-left: 90%;
+        background-color: #F3F6FC;
+        border: none;
+        font-family: 'Nunito';
     }
 }
 
@@ -545,6 +634,12 @@ img.img-icon {
         margin-left: 10px;
         filter: invert(100%);
     }
+    .section-3-md .carousel-indicators button {
+        border-radius: 100%;
+        width: 5px;
+        width: 8px;
+        height: 6px;
+    }
     .activity-sm {
         display: none;
     }
@@ -585,5 +680,14 @@ img.img-icon {
         height: 14rem;
         width: 20rem;
         border-radius: 10px;
+    }
+    .section-3-md .wish-icon {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        z-index: 99;
+        cursor: pointer;
+        font-size: 16px;
+        color: #abb0b8;
     }
 }
