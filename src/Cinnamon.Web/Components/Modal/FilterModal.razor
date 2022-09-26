@@ -1,4 +1,11 @@
 ﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core.Enums
+@using Cinnamon.Web.Components
+@using Cinnamon.Data
+@using Cinnamon.Core
+@using System.Text
+@using System.Globalization
+
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
@@ -11,100 +18,45 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <h5 class="font-weight-bold align-items-start">Location</h5>
-                            <select class="form-select" aria-label="Default select example">
+                            <select class="form-select" aria-label="Default select example" value="@selectedValue">
                                 <option selected>All Location</option>
-                                <option value="1">Mandaluyong City</option>
-                                <option value="2">Marikina City</option>
-                                <option value="3">Quezon City</option>
-                                <option value="4">San Juan City</option>
-                                <option value="5">Caloocan City</option>
-                                <option value="6">Malabon City</option>
-                                <option value="7">Navotas City</option>
-                                <option value="8">Makati City</option>
-                                <option value="9">Muntinlupa City</option>
-                                <option value="10">Parañaque City</option>
+                                @foreach (var act in distinctActivity)
+                                {
+                                    cnt++;
+                                    <option value=@cnt>@act.Location</option>
+                                }
                             </select>
                             <br />
                         </li>
                         <li class="list-group-item">
                             <h5 class="font-weight-bold align-items-start">Categories</h5>
                             <div class="row">
-                                <div class="col-sm-6 p-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked>
-                                        <label class="form-check-label" for="flexCheckDefault">
-                                            Online
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked1">
-                                        <label class="form-check-label" for="flexCheckChecked1">
-                                            Art
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked2">
-                                        <label class="form-check-label" for="flexCheckChecked2">
-                                            Basketball
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked3">
-                                        <label class="form-check-label" for="flexCheckChecked3">
-                                            Baking
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked4">
-                                        <label class="form-check-label" for="flexCheckChecked4">
-                                            Language
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked5">
-                                        <label class="form-check-label" for="flexCheckChecked5">
-                                            Basketball
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6 p-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked6">
-                                        <label class="form-check-label" for="flexCheckDefault6">
-                                            Tennis
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked7">
-                                        <label class="form-check-label" for="flexCheckChecked7">
-                                            Biking
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked8">
-                                        <label class="form-check-label" for="flexCheckChecked8">
-                                            Taekwondo
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked9">
-                                        <label class="form-check-label" for="flexCheckChecked9">
-                                            Golf
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked10">
-                                        <label class="form-check-label" for="flexCheckChecked10">
-                                            Fun Play
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked11">
-                                        <label class="form-check-label" for="flexCheckChecked11">
-                                            Coding
-                                        </label>
-                                    </div>
-                                </div>
+                                @foreach(var type in activityTypes)
+                                {
+                                    if(type.Id%2==0)
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-sm-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked+@type.Id">
+                                                <label class="form-check-label" for="flexCheckChecked1">
+                                                    @type.Name
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-6 col-md-6 col-sm-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked+@type.Id">
+                                                <label class="form-check-label" for="flexCheckChecked1">
+                                                    @type.Name
+                                                </label>
+                                            </div>
+                                        </div>
+                                    }
+                                    cnt++;
+                                }
                             </div>
                         </li>
                     </ul>
@@ -117,4 +69,17 @@
     </div>
 </div>
 @code {
+    public List<ActivityModel> activity              = new List<ActivityModel>();
+    public List<ActivityModel> distinctActivity      = new List<ActivityModel>();
+    public List<ActivityTypeModel> activityTypes     = new List<ActivityTypeModel>();
+    public int cnt                                   = 0;
+    private int selectedValue { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        activity         = await CoreDI.DataStore.Activities.GetAllAsync();
+        activityTypes    = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
+        distinctActivity = activity.GroupBy(p => p.Location).Select(grp => grp.First()).ToList();
+    }
+
+
 }
