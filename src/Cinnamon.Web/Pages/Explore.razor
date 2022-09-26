@@ -26,7 +26,7 @@
         <div class="app-name col-lg-3 col-md-2">
             <a href="" class="app-name">@Resources.App.appName</a>
         </div>
-        <!--Search Lcation and Experience-->
+        <!--Search Location and Experience-->
         <div class="search col-lg-5 d-flex justify-content-center col-md-8 d-flex justify-content-center col-sm-11 d-flex justify-content-start col-xs-11 d-flex justify-content-start">
             <div class="input-group border rounded-pill p-1">
                 <input type="text" placeholder="Location | Experience" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
@@ -505,8 +505,8 @@
     public async Task Filter(int id, string type)
     {
         searchValue = type;
-        activity = await CoreDI.DataStore.Activities.GetAllAsync();
-        activity = activity.Where(p=> p.Id == id).ToList();
+        activity    = await CoreDI.DataStore.Activities.GetAllAsync();
+        activity    = activity.Where(p=> p.Id == id).ToList();
 
     }
     public async Task Clear()
