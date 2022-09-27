@@ -199,12 +199,4 @@
        activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
        _Images = _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToList();
     }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-        }
-    }
 }

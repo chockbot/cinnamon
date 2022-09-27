@@ -27,7 +27,7 @@
             <a href="" class="app-name">@Resources.App.appName</a>
         </div>
         <!--Search Location and Experience-->
-        <div class="search col-lg-5 d-flex justify-content-center col-md-8 d-flex justify-content-center col-sm-11 d-flex justify-content-start col-xs-11 d-flex justify-content-start">
+        <div class="search col-lg-5 d-flex justify-content-center col-md-8 d-flex justify-content-center col-sm-11 d-flex justify-content-start col-11 d-flex justify-content-start">
             <div class="input-group border rounded-pill p-1">
                 <input type="text" placeholder="Location | Experience" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
                 <div class="input-group-append border-0">
@@ -37,7 +37,7 @@
             </div>
         </div>
         <!--Menu-->
-            <div class="col-lg-4 col-md-2 d-flex flex-row justify-content-start col-sm-1 d-flex justify-content-center col-xs-1 d-flex justify-content-center">
+            <div class="col-lg-4 col-md-2 d-flex flex-row justify-content-start col-sm-1 d-flex justify-content-center col-1 d-flex justify-content-center">
                 <div class="become">
                         <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
                             Become a Cinnamon Maker
@@ -211,7 +211,7 @@
             </div>
 
             <div class="activity-sm">
-                <div class="col-sm-12">
+                <div class="col-sm-12 col-12">
                     <div id="carouselExampleControls1" class="carousel slide" data-ride="carousel" data-interval="0">
                         <div class="carousel-inner">
                             <div class="carousel-item active">
@@ -304,7 +304,7 @@
                 {
                  cnt = 0;
                  images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
-                 <div class="col-lg-3 col-xs-12">
+                 <div class="col-lg-3 col-sm-12 col-12">
                  <a class="button carousel-card text-center" href="/explore/@act.Id">
                     <div class="card">
                         <div id="carousel1-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -374,7 +374,7 @@
                  images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
                  <div class="col-md-6">
                  <a class="button carousel-card text-center" href="/explore/DetailActivity">
-                    <div class="card" style="width: 20rem">
+                    <div class="card">
                         <div id="carousel2-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                             <div class="carousel-indicators">
                                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
