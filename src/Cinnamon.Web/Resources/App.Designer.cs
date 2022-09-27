@@ -691,7 +691,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cinnamon is an activity, learning and events marketplace. Our main focus in Cinnamon is to help everyone spend their time in meaningful and fun experiences by connecting you to people who are passionate in sharing their skills and knowledge. We would be honored to partner with you in expriencing life and creating moments!.
+        ///   Looks up a localized string similar to Cinnamon is an activity, learning and events marketplace. Our main focus in Cinnamon is to help everyone spend their time in meaningful and fun experiences by connecting you to people who are passionate in sharing their skills and knowledge. We would be honored to partner with you in experiencing life and creating moments!.
         /// </summary>
         internal static string whatIsCinnamon {
             get {
