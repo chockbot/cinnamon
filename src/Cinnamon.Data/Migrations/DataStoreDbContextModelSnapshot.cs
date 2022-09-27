@@ -54,7 +54,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivityImages");
+                    b.ToTable("ActivityImages", (string)null);
                 });
 
             modelBuilder.Entity("Cinnamon.Core.ActivityModel", b =>
@@ -128,7 +128,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasIndex("ExperienceTypeId");
 
-                    b.ToTable("Activities");
+                    b.ToTable("Activities", (string)null);
                 });
 
             modelBuilder.Entity("Cinnamon.Core.ActivityTypeModel", b =>
@@ -164,7 +164,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivityTypes");
+                    b.ToTable("ActivityTypes", (string)null);
                 });
 
             modelBuilder.Entity("Cinnamon.Core.ExperienceTypeModel", b =>
@@ -196,7 +196,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExperienceTypes");
+                    b.ToTable("ExperienceTypes", (string)null);
                 });
 
             modelBuilder.Entity("Cinnamon.Core.WaitListModel", b =>
@@ -231,7 +231,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WaitLists");
+                    b.ToTable("WaitLists", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
