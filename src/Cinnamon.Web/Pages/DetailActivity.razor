@@ -184,11 +184,19 @@
     public ActivityModel activityModel { get; set; }
     public List<ActivityImagesModels> _Images { get; set; }
     IJSObjectReference module;
-    protected override async void OnInitialized()
-    {
-        activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
-        _Images = _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToList();
-        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+       activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
+       _Images = _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToList();
     }
 }
