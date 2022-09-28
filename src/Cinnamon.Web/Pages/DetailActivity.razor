@@ -189,11 +189,10 @@
     {
         if(firstRender)
         {
-            
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
         }
     }
-
     protected override void OnInitialized()
     {
        activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
