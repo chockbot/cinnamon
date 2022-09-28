@@ -75,9 +75,9 @@
             </div>
         </div>
     </div>
-    <div class="container">
     <!--Section 1-->
-        <div class="section-1 row">
+    <div class="container">
+    <div class="section-1 row">
             <div class="activity-lg">
                 <div class="col-lg-10 p-4">
                     <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="0">
@@ -304,7 +304,7 @@
                 {
                  cnt = 0;
                  images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
-                 <div class="col-lg-3 col-sm-12 col-12">
+                 <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center">
                  <a class="button carousel-card text-center" href="/explore/@act.Id">
                     <div class="card">
                         <div id="carousel1-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -372,7 +372,7 @@
                 {
                  cnt = 0;
                  images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
-                 <div class="col-md-6">
+                 <div class="col-md-6 d-flex flex-column align-items-center">
                  <a class="button carousel-card text-center" href="/explore/DetailActivity">
                     <div class="card">
                         <div id="carousel2-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
