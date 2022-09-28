@@ -142,7 +142,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Its quick and easy, once you find your experience, just click book and you&apos;re all set! You can even contact the Cinnamon Maker if you have some questions about the experience.
+        ///   Looks up a localized string similar to It&apos;s quick and easy. Once you find your experience, just click book and you&apos;re all set! You can even contact the Cinnamon Maker if you have some questions about the experience..
         /// </summary>
         internal static string bookDescription {
             get {
@@ -439,7 +439,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Live your passion, share your knowledge and leave a mark in people&apos;s lives! A Cinnamon Maker is someone who provides experiences in the Cinnamon platform.
+        ///   Looks up a localized string similar to Live your passion, share your knowledge, and leave a mark on people&apos;s lives! A Cinnamon Maker is someone who provides experiences on the Cinnamon platform..
         /// </summary>
         internal static string makerDescription {
             get {
@@ -691,7 +691,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Cinnamon is an activity, learning and events marketplace. Our main focus in Cinnamon is to help everyone spend their time in meaningful and fun experiences by connecting you to people who are passionate in sharing their skills and knowledge. We would be honored to partner with you in experiencing life and creating moments!.
+        ///   Looks up a localized string similar to Cinnamon is an activity, learning, and events marketplace. Our main focus in Cinnamon is to help everyone spend their time on meaningful and fun experiences by connecting you to people who are passionate about sharing their skills and knowledge. We would be honored to partner with you in experiencing life and creating moments!.
         /// </summary>
         internal static string whatIsCinnamon {
             get {
