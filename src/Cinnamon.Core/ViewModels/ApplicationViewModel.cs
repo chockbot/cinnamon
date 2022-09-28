@@ -187,9 +187,9 @@ namespace Cinnamon.Core
                     if (item.Title != "Paul Stiga Soccer Training")
                     {
                         act = await CoreDI.DataStore.Activities.GetAllAsync();
-                        foreach (var items in type)
+                        foreach (var items in act)
                         {
-                            await CoreDI.DataStore.ActivityTypes.DeleteDataAsync(items);
+                            await CoreDI.DataStore.Activities.DeleteDataAsync(items);
                         }
                         await CoreDI.DataStore.Activities.SaveDataAsync(new ActivityModel
                         {
