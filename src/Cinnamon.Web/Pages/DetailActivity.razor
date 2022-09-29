@@ -10,19 +10,6 @@
     <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 col-md-10 col-sm-12 col-12">
         <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
           <div class="images-gallery order-lg-last order-md-last order-sm-first d-flex gap-3">
-            <div class="detail-lg">
-                <div class="gallery">
-                    <figure class="gallery__item gallery__item--1">
-                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(1).ImageLocation" />
-                    </figure>
-                    <figure class="gallery__item gallery__item--2">
-                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(0).ImageLocation" />
-                    </figure>
-                    <figure class="gallery__item gallery__item--3">
-                        <img class="img-fluid shadow rounded gallery__img" src="@_Images.ElementAt(2).ImageLocation" />
-                    </figure>
-                </div>
-            </div>
              <div class="detail-md">
                 <div class="gallery">
                     <figure class="gallery__item gallery__item--1">
@@ -37,7 +24,7 @@
                 </div>
             </div>
              <div class="d-flex flex-row detail-sm">
-                  <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
+                  <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
                         <div class="carousel-indicators">
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -75,7 +62,12 @@
             <div class="w-100 order-lg-first order-md-first order-sm-last">
                 <div class="text-black">
                     <div class="d-flex gap-1 fs-6">
-                        <span class="review">4.99 · <u>150 reviews</u></span>
+                        <span class="review">
+                         <span>
+                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-star" viewBox="0 0 20 22">
+                                <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
+                            </svg>
+                        </span>4.99 · <u>150 reviews</u></span>
                         <span><u>@activityModel.Location</u></span>
                     </div>
                 </div>
@@ -101,21 +93,21 @@
                     @if (activityModel.ScheduleIndicator == "selection")
                     {
                         <div class="row mx-auto my-auto justify-content-center" id="activitydates-container">
-                            <div id="recipeCarousel" class="carousel slide" data-bs-ride="carousel">
+                            <div id="carouselSchedule" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-inner p-3" role="listbox" style="width:85%;margin:0 auto;">
                                     @foreach(var sched in activityModel.Schedules.Split("\r\n\r\n"))
                                     {
-                                        <div class="carousel-item active">
+                                        <div class="carousel-item">
                                             <div class="col-lg-6 col-md-6 col-sm-12 col-12">
                                             <CarouselItem Text="@sched"></CarouselItem>
                                             </div>
                                         </div>
                                     }
                                 </div>
-                                <a class="carousel-control-prev bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="prev">
+                                <a class="carousel-control-prev bg-transparent w-aut" href="#carouselSchedule" role="button" data-bs-slide="prev">
                                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 </a>
-                                <a class="carousel-control-next bg-transparent w-aut" href="#recipeCarousel" role="button" data-bs-slide="next">
+                                <a class="carousel-control-next bg-transparent w-aut" href="#carouselSchedule" role="button" data-bs-slide="next">
                                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 </a>
                             </div>
@@ -158,12 +150,12 @@
                     <img class="px-3" src="images/check.svg" />
                 </div>
             </div>
-            <div class="w-75 shadow rounded-3 p-3 detail-lg">
+            <div class="w-75 shadow rounded-3 p-3 detail-md">
                 <SignUpCard TypeValue="UserType.Customer"></SignUpCard>
             </div>
             <div class="detail-sm">
                 <div class="shadow border-3 border-top" style="position:fixed;bottom:0;left:0;width:100%;height:120px;background-color:white;padding:10px;z-index:9999">
-                    <PrimaryButton ModalTarget="#sigupModal" Id="reserve-button" ModalBsToggle="modal" Text="Reserve" Width="100%"></PrimaryButton>
+                    <PrimaryButton ModalTarget="#sigupModal" Id="reserve-button" ModalBsToggle="modal" Text="Signup" Width="100%"></PrimaryButton>
                 </div>
             </div>
         </div>
@@ -179,19 +171,18 @@
     public ActivityModel activityModel { get; set; }
     public List<ActivityImagesModels> _Images { get; set; }
     IJSObjectReference module;
-    protected override async void OnInitialized()
-    {
-        activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
-        _Images = _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToList();
-        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
-
-    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if(firstRender)
         {
-           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
         }
+    }
+    protected override void OnInitialized()
+    {
+       activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
+       _Images = _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToList();
     }
 }

@@ -21,7 +21,7 @@
                     {
                         <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" @onchange="OnSelect" />
                     }
-                    <label class="fw-bold" for="customer">Customer</label>
+                    <label class="fw-bold" style="padding:5px" for="customer">Customer</label>
                 </div>
                 <div>
                     @if (TypeValue == UserType.Maker)
@@ -32,7 +32,7 @@
                     {
                         <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" @onchange="OnSelect" />
                     }
-                    <label class="fw-bold text-nowrap" for="maker">Cinnamon Maker</label>
+                    <label class="fw-bold text-nowrap" style="padding:5px" for="maker">Cinnamon Maker</label>
                 </div>
             </div>
 
@@ -63,8 +63,12 @@
         TypeValue = usertype;
     }
 
-    protected override async void OnInitialized() {
-        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+        }
     }
 
     public void OnClickFAQ(){

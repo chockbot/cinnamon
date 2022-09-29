@@ -20,7 +20,7 @@
 .app-name {
     color: var(--primary);
     font-family: 'Backline';
-    font-size: 1.8vw;
+    font-size: 1.6vw;
     text-decoration: none;
 }
 
@@ -47,10 +47,7 @@
         }
 
     .app-name {
-        color: var(--primary);
-        font-family: 'Backline';
-        font-size: 1.8vw;
-        text-decoration: none;
+        font-size: 3vw;
     }
 
     .menu {
@@ -100,33 +97,74 @@
         font-size: 3vw;
     }
     .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
+        background-color: white;
+        border-bottom: 1px solid var(--lineColor);
+        justify-content: space-between;
+        aspect-ratio: 1600/74;
+        width: 100%;
+        display: flex;
+        align-items: center;
     }
 
-    .px-4 {
-        padding-right: 0 !important;
-        padding-left: 0 !important;
-    }
-
-    .top-row {
-        padding: 5px 0;
-    }
-
-        .top-row a {
-            margin-left: 0;
+        .top-row ::deep a {
+            white-space: nowrap;
+            margin-left: 1.5rem;
         }
 
-    .top-row {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
+        .top-row a:first-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    .become {
+        display: none;
     }
+
+
+    .menu {
+        position: relative;
+        height: 50%;
+    }
+
+    .dropdown {
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+    }
+
+    a.dropdown-item {
+        margin-left: auto;
+    }
+
+    .menu img {
+        aspect-ratio: 1;
+        width: 20%;
+    }
+
+    .menu span {
+        font-family: 'Nunito-Bold';
+        font-size: 1vw;
+    }
+
+    .input-group {
+        width: 50%;
+    }
+
+    .nav {
+        position: relative;
+        height: 32%;
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+        text-align: right;
+    }
+
+        .nav img {
+            aspect-ratio: 1;
+            width: 10%;
+        }
 }
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) and (orientation: portrait) {
     .app-name {
-        font-size: 8vw;
+        font-size: 7vw;
     }
 
     .menu-label{
