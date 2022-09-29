@@ -170,14 +170,13 @@
     public int Id { get; set; }
     public ActivityModel activityModel { get; set; }
     public List<ActivityImagesModels> _Images { get; set; }
-    IJSObjectReference module;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
+            await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
         }
     }
     protected override void OnInitialized()

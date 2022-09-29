@@ -1,8 +1,8 @@
 ﻿$(document).ready(function () {
-    if (document.getElementById("activitydates-container") != null) {
-        let items = document.getElementById("activitydates-container").querySelectorAll('.carousel .carousel-item')
+    if (document.getElementById("carouselSchedule") != null) {
+        let items = document.getElementById("carouselSchedule").querySelectorAll('.carousel .carousel-item')
 
-        items.forEach((el,i) => {
+        items.forEach((el, i) => {
             if (i == 0) {
                 $(el).addClass("active");
             }
