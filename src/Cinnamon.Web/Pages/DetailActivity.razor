@@ -166,11 +166,11 @@
 <Footer></Footer>
 
 @code {
+     IJSObjectReference module;
     [Parameter]
     public int Id { get; set; }
     public ActivityModel activityModel { get; set; }
     public List<ActivityImagesModels> _Images { get; set; }
-    IJSObjectReference module;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -179,6 +179,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/DetailActivity.js");
         }
+        await module.InvokeVoidAsync("OnLoadJavascript");
     }
     protected override void OnInitialized()
     {
