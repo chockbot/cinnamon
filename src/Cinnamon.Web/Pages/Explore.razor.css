@@ -51,7 +51,9 @@ a.dropdown-item {
 .input-group {
     width: 50%;
 }
-
+.home-logo {
+    display: none;
+}
 .btn-primary {
     width: 50%;
     background-color: #ffa942;
@@ -72,7 +74,7 @@ a.dropdown-item {
 }
 .cards-wrapper {
     display: flex;
-    padding-top: 30px;
+    padding-top: 10px;
 }
 
 .cards-wrapper a{
@@ -261,6 +263,27 @@ img.img-icon {
     border: none;
     font-family: 'Nunito';
 }
+.btn-join {
+    margin-left: 5rem;
+    background-color: #FFA942;
+    border-radius: 20px;
+    width: 30%;
+    height: 100%;
+    text-align: center;
+    font-family: 'Nunito';
+}
+.become {
+    background-color: #FFA942;
+    border-radius: 20px;
+    width: 35%;
+    height:100%;
+    text-align: center;
+    font-family: 'Nunito';
+}
+.input-group {
+    width: 25rem;
+    margin-left: 10rem;
+}
 /* For Desktop View */
 @media screen and (min-width: 1024px) {
     .top-row {
@@ -286,7 +309,9 @@ img.img-icon {
     .app-name {
         font-size: 3vw;
     }
-
+    .home-logo {
+        display: none;
+    }
     .menu {
         position: relative;
         height: 32%;
@@ -309,10 +334,6 @@ img.img-icon {
     .menu span {
         font-family: 'Nunito-Bold';
         font-size: 1vw;
-    }
-
-    .input-group {
-        width: 60%;
     }
 
     .nav {
@@ -408,21 +429,32 @@ img.img-icon {
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) {
     .input-group {
-        width: 270px;
+        margin: 0px;
+        margin-top: 0.5rem !important;
+        height: 100%;
+        width: 80%;
     }
-
     .app-name {
         display: none;
     }
-
+    .home-logo {
+        display: flex;
+        margin-top: 0.5rem !important;
+        margin-right: 1rem !important;
+    }
+    .home-logo .img-icon{
+        height: 10vw;
+    }
     .become {
+        display: none;
+    }
+    .btn-join {
         display: none;
     }
 
     .menu-label {
         display: none;
     }
-
     .menu img {
         width: 2rem;
         margin-left: 0.5rem !important;
@@ -463,11 +495,18 @@ img.img-icon {
     .activity-md {
         display: none;
     }
-
-    .activity-sm {
-        padding-bottom: 10px;
+    .activity-sm .btn-family {
+        background-color: #FFA942;
+        border-radius: 20px;
+        text-align: center;
+        font-family: 'Nunito';
+        padding: 5px;
+        width: 100%;
+        margin-top: 0.5rem !important;
     }
-
+    .activity-sm .btn-family:hover{
+        color: white;
+    }
     .filter {
         display: none;
     }
@@ -543,7 +582,7 @@ img.img-icon {
 
     .btn-star {
         position: absolute;
-        width: 50px;
+        width: 60px;
         height: 20px;
         border-radius: 10px;
         text-align: left;
@@ -561,13 +600,18 @@ img.img-icon {
         font-size: 3vw;
     }
     .input-group {
+        margin: 0px;
         width: 70%;
     }
-
+    .home-logo{
+        display:none;
+    }
     .become {
         display: none;
     }
-
+    .btn-join {
+        display: none;
+    }
     .menu img {
         width: 30%;
         text-align: right;
