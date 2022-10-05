@@ -3,6 +3,7 @@
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
 @using Cinnamon.Data
+@using Microsoft.EntityFrameworkCore
 @inject IJSRuntime jsRuntime
 @inject DataStoreDbContext _detailActivity
 
@@ -142,9 +143,9 @@
             <div class="profile-container w-75 shadow rounded-3 d-flex" style="background:#F3F6FC">
                 <img class="rounded-2 rounded-circle m-3" src="images/profile_picture.png" width="60" height="60" />
                 <div class="d-flex flex-column m-2">
-                    <span>Owner</span>
+                    <span>Sample Owner</span>
                     <span>David Watson</span>
-                    <a href="#">View Profile</a>
+                    <label>View Profile</label>
                 </div>
                 <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
                     <img class="px-3" src="images/check.svg" />
@@ -181,9 +182,9 @@
         }
         await module.InvokeVoidAsync("OnLoadJavascript");
     }
-    protected override void OnInitialized()
+    protected override async void OnInitialized()   
     {
        activityModel = _detailActivity.Activities.Where(c => c.Id == Id).ToList().ElementAt(0);
-       _Images = _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToList();
+       _Images = await _detailActivity.ActivityImages.Where(c => c.ImageId == Id).ToListAsync();
     }
 }
