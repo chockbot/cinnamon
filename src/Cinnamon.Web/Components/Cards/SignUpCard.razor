@@ -2,6 +2,8 @@
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
 @using Cinnamon.Data
+@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
 @inject DataStoreDbContext waitList
 @inject IJSRuntime jsRuntime
 
@@ -10,36 +12,41 @@
     {
         <span style="font-size:0.9rem;">Join our waiting list to get notified when we go live!</span>
         <hr />
-        <div class="d-flex flex-column gap-3 align-items-center">
-            <div class="d-flex gap-3">
-                <div>
-                    @if (TypeValue == UserType.Customer)
-                    {
-                        <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" checked @onchange="OnSelect"/>
-                    }
-                    else
-                    {
-                        <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" @onchange="OnSelect" />
-                    }
-                    <label class="fw-bold" style="padding:5px" for="customer">Customer</label>
+        <EditForm Model=@waitListModel OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <div class="d-flex flex-column gap-3 align-items-center">
+                <div class="d-flex gap-3">
+                    <div>
+                        @if (TypeValue == UserType.Customer)
+                        {
+                            <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" checked @onchange="OnSelect"/>
+                        }
+                        else
+                        {
+                            <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" @onchange="OnSelect" />
+                        }
+                        <label class="fw-bold" style="padding:5px" for="customer">Customer</label>
+                    </div>
+                    <div>
+                        @if (TypeValue == UserType.Maker)
+                        {
+                            <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" checked @onchange="OnSelect" />
+                        }
+                        else
+                        {
+                            <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" @onchange="OnSelect" />
+                        }
+                        <label class="fw-bold text-nowrap" style="padding:5px" for="maker">Cinnamon Maker</label>
+                    </div>
                 </div>
-                <div>
-                    @if (TypeValue == UserType.Maker)
-                    {
-                        <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" checked @onchange="OnSelect" />
-                    }
-                    else
-                    {
-                        <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" @onchange="OnSelect" />
-                    }
-                    <label class="fw-bold text-nowrap" style="padding:5px" for="maker">Cinnamon Maker</label>
+                <div class="col-12">
+                    <InputText id="email-signup" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:10px;" placeholder="Email" @bind-Value=waitListModel.Email/>
+                    <ValidationMessage style="text-align:left" For="() => waitListModel.Email" />
                 </div>
+                <SignupButton id="signup-waiting" Text="Sign-up" />
             </div>
-
-            <input id="email-signup" class="input-group fs-5" type="email" style="border-radius:5px;border:0.5px solid black;padding:10px;" placeholder="Email" @bind="Email"/>
-            <SignupButton id="signup-waiting" OnClick="Submit" Text="Sign-up" />
-        </div>
-    }
+        </EditForm>
+    }       
     else
     {
         <p>Thank you for joining us! <br> For more details, kindly refer to our <a @onclick="OnClickFAQ" href="FAQ">FAQ</a></p>
@@ -53,8 +60,12 @@
     [Parameter]
     public UserType TypeValue { get; set; }
 
-    public string Email { get; set; }
+    [Parameter] 
+    public Expression<Func<string>>? For { get; set; }
+
     public bool isSubmit { get; set; } = false;
+
+    WaitListModel waitListModel = new WaitListModel();
 
     public void OnSelect(ChangeEventArgs args)
     {
@@ -75,19 +86,18 @@
         module.InvokeVoidAsync("HideModal");
     }
 
-    public void Submit(){
-        if (!string.IsNullOrEmpty(Email))
+    public async Task Submit(){
+        if (!string.IsNullOrEmpty(waitListModel.Email))
         {
-            module.InvokeVoidAsync("onClickSignup");
-            Email = Email;
-            var model = new WaitListModel() { Type = TypeValue, Email = Email, CreatedOn = DateTime.UtcNow };
-            waitList.WaitLists.Add(model);
-            var res = waitList.SaveChanges();
+            await module.InvokeVoidAsync("onClickSignup");
+            waitListModel.Type = TypeValue;
+            waitList.WaitLists.Add(waitListModel);
+            var res = await waitList.SaveChangesAsync();
             if (res > 0)
             {
-                jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
+                await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
                 isSubmit = true;
-                module.InvokeVoidAsync("onDoneSignup");
+                await module.InvokeVoidAsync("onDoneSignup");
             }
         }
     }
