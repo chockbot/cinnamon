@@ -1,0 +1,139 @@
+﻿/* Style the form */
+
+* {
+    font-family: 'Varela Round', sans-serif;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    height: auto;
+    padding: 5px;
+    font-size: 1.2vw;
+    font-family: 'Nunito-Bold';
+    border-width: 0px;
+    margin: 0 auto;
+    border-radius:5px;
+}
+
+#regForm {
+    width: 100%;
+    padding: 30px;
+    padding-top:130px;
+    margin: 5px auto;
+    margin-bottom:1000px;
+}
+
+/* Style the input fields */
+input {
+    padding: 10px;  
+    width: 100%;
+    font-size: 17px;
+    font-family: Raleway;
+    border: 1px solid #aaaaaa;
+}
+
+    /* Mark input boxes that gets an error on validation: */
+input.invalid {
+    background-color: #ffdddd;
+}
+
+/* Hide all steps by default: */
+.tab {
+    display:none;
+}
+
+/* Make circles that indicate the steps of the form: */
+.step {
+    opacity: 1;
+    display:flex;
+    align-items:center;
+}
+
+.icon-step {
+    height: 23px;
+    width: 23px;
+    margin: 0 2px;
+    background-color: #bbbbbb;
+    border: none;
+    border-radius: 50%;
+    display: inline-block;
+    opacity: 0.5;
+    text-align:center;
+    font-size:1rem;
+}
+
+.progress-container {
+    width: 100%;
+    font-size: 1.3rem;
+    background-color: white;
+    padding: 20px;
+    margin: 3px auto;
+    position:fixed;
+}
+
+.progress-bar {
+    background-color: #FFA942;
+}
+
+/* Mark the active step: */
+.icon-step.active {
+    opacity: 1;
+    background-color: #FFA942;
+}
+
+/* Mark the steps that are finished and valid: */
+.icon-step.finish {
+    background-color: #2cef0d;
+    color: black;
+    opacity: 1;
+}
+
+.nav-breadcrumbs{
+    width:100%;
+    font-size:1.3rem;
+    background-color:white; 
+    padding:20px 50px;
+    position: fixed;
+}
+
+.breadcrumb{
+    display:flex;
+    gap:10px;
+    margin-bottom: 0px !important;
+}
+
+.step-yellow {
+    padding:5px;
+    border-radius:5px;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+}
+
+@media screen and (max-width: 767px) {
+    .landing-sm {
+        display: block;
+    }
+
+    .landing-md {
+        display: none;
+    }
+}
+
+@media screen and (min-width: 767px) {
+    .landing-sm {
+        display: none;
+    }
+
+    .landing-md {
+        display: block;
+    }
+}
+
+@media (min-width: 1200px) {
+
+}
