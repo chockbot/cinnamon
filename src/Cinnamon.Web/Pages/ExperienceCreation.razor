@@ -1,6 +1,7 @@
 ﻿@layout CreationLayout
 @page "/Creation"
 @using Cinnamon.Core
+@using Cinnamon.Web.Components.Wizard
 @inject IJSRuntime jsRuntime
 
 <!-- Circles which indicates the steps of the form: -->
@@ -23,9 +24,8 @@
     <EditForm Model="@activityModel">
     <!-- One "tab" for each step in the form: -->
         <!--Overview-->
-    <div class="tab">Name:
-      <p><input placeholder="First name..." oninput="this.className = ''"></p>
-      <p><input placeholder="Last name..." oninput="this.className = ''"></p>
+    <div class="tab">
+       <Overview></Overview>
     </div>
         <!--Experience Creation-->
     <div class="tab">

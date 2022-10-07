@@ -2558,3 +2558,81 @@ INFORMATION: [2022-10-06 10:02:53] Entity Framework Core 6.0.8 initialized 'Data
 INFORMATION: [2022-10-06 10:02:53] Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
 SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."ImageId", a."ImageLocation"
 FROM "ActivityImages" AS a
+INFORMATION: [2022-10-07 09:01:34] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:01:37] Executed DbCommand (216ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-10-07 09:01:38] Executed DbCommand (63ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-10-07 09:01:38] Executed DbCommand (47ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-10-07 09:01:38] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-10-07 09:01:38] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:01:38] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-10-07 09:01:38] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:01:38] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-10-07 09:01:38] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:01:38] Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ActivityTypeId", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Description", a."ExperienceTypeId", a."Guarantee", a."Location", a."MapDetails", a."Price", a."Remarks", a."ScheduleIndicator", a."Schedules", a."Subtitle", a."Title"
+FROM "Activities" AS a
+INFORMATION: [2022-10-07 09:01:39] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:01:39] Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."ImageId", a."ImageLocation"
+FROM "ActivityImages" AS a
+INFORMATION: [2022-10-07 09:05:29] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:05:31] Executed DbCommand (102ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-10-07 09:05:32] Executed DbCommand (47ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-10-07 09:05:32] Executed DbCommand (97ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-10-07 09:05:32] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-10-07 09:05:32] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:05:33] Executed DbCommand (146ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-10-07 09:05:33] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:05:33] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-10-07 09:05:33] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:05:33] Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ActivityTypeId", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Description", a."ExperienceTypeId", a."Guarantee", a."Location", a."MapDetails", a."Price", a."Remarks", a."ScheduleIndicator", a."Schedules", a."Subtitle", a."Title"
+FROM "Activities" AS a
+INFORMATION: [2022-10-07 09:05:33] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:05:33] Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."ImageId", a."ImageLocation"
+FROM "ActivityImages" AS a
+INFORMATION: [2022-10-07 09:19:29] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:19:33] Executed DbCommand (156ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-10-07 09:19:33] Executed DbCommand (273ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-10-07 09:19:33] Executed DbCommand (24ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-10-07 09:19:33] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-10-07 09:19:33] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:19:34] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-10-07 09:19:34] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:19:34] Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-10-07 09:19:34] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:19:34] Executed DbCommand (9ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ActivityTypeId", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Description", a."ExperienceTypeId", a."Guarantee", a."Location", a."MapDetails", a."Price", a."Remarks", a."ScheduleIndicator", a."Schedules", a."Subtitle", a."Title"
+FROM "Activities" AS a
+INFORMATION: [2022-10-07 09:19:34] Entity Framework Core 6.0.8 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-10-07 09:19:34] Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."ImageId", a."ImageLocation"
+FROM "ActivityImages" AS a
