@@ -4,22 +4,22 @@
 @inject IJSRuntime jsRuntime
 
 <!-- Circles which indicates the steps of the form: -->
-<nav class="nav-breadcrumbs shadow-lg landing-md" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+<nav class="nav-breadcrumbs landing-md" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="step breadcrumb-item"><span class="icon-step">&nbsp</span>Overview</li>
+        <li class="step breadcrumb-item"><span class="icon-step">&nbsp</span><span class="step-yellow">Overview</span></li>
         <li class="step breadcrumb-item" aria-current="page"><span class="icon-step">2</span><span class="step-yellow">Experience Creation</span></li>
         <li class="step breadcrumb-item" aria-current="page"><span class="icon-step">3</span><span class="step-yellow">Setup</span></li>
         <li class="step breadcrumb-item" aria-current="page"><span class="icon-step">4</span><span class="step-yellow">Publish</span></li>
     </ol>
 </nav>
 
-<div class="progress-container landing-sm shadow-lg">
+<div class="progress-container landing-sm shadow-sm">
     <div class="progress mx-4">
       <div id="myBar" class="progress-bar" role="progressbar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
     </div>
 </div>
 
-<div id="regForm">
+<div id="regForm" class="shadow-lg">
     <EditForm Model="@activityModel">
     <!-- One "tab" for each step in the form: -->
         <!--Overview-->
@@ -28,19 +28,41 @@
       <p><input placeholder="Last name..." oninput="this.className = ''"></p>
     </div>
         <!--Experience Creation-->
-    <div class="tab">
-        <div class="content-creation col-lg-12 col-md-12 col-sm-12 col-12 px-5">
-            <div class="d-flex">
-                <div class="flex-grow-1 text-center w-25">
-                    <label>
+        <div class="tab">
+            <h3 class="fw-bold mb-5">Experience Creation</h3>
+        <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+            <div class="row">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section1 text-lg-start text-md-start text-sm-center">
+                    <label class="fw-bold title-description">
                         Let's name that experience!
                     </label>
-                    <p class="w-50">Make it informative and distinctive so that your customers
+                    <p>Make it informative and distinctive so that your customers
                        may understand what you are offering
                     </p>
                 </div>
-                <div class="flex-grow-1 text-center">
-                    <textarea style="width:400px;height:100px;" maxlength="80"></textarea>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                    <textarea maxlength="80"></textarea>
+                </div>
+            </div>
+                <div class="row mrow">
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section1 text-lg-start text-md-start text-sm-center">
+                    <label class="fw-bold title-description">
+                        What type of experience are you sharing?
+                    </label>
+                </div>
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="experience-type" id="in-person" value="inPerson">
+                        <label class="form-check-label" for="in-person">
+                            In-persion - join in the real world to participate actively
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="experience-type" id="online" value="Online">
+                            <label class="form-check-label" for="online">
+                                Online - join via video conferencing software (provided by Cinnamon Maker).
+                        </label>
+                    </div>
                 </div>
             </div> 
         </div>
