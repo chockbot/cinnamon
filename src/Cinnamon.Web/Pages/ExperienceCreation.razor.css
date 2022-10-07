@@ -18,27 +18,20 @@
 }
 
 #regForm {
-    width: 100%;
+    width: 80%;
     padding: 30px;
-    padding-top:130px;
-    margin: 5px auto;
-    margin-bottom:1000px;
+    margin: 0 auto;
+    margin-top:100px;
+    background-color: white;  
+    border-radius:10px;
 }
 
-/* Style the input fields */
-input {
-    padding: 10px;  
-    width: 100%;
-    font-size: 17px;
-    font-family: Raleway;
-    border: 1px solid #aaaaaa;
-}
 
     /* Mark input boxes that gets an error on validation: */
 input.invalid {
     background-color: #ffdddd;
 }
-
+    
 /* Hide all steps by default: */
 .tab {
     display:none;
@@ -46,7 +39,7 @@ input.invalid {
 
 /* Make circles that indicate the steps of the form: */
 .step {
-    opacity: 1;
+    opacity: 0.5;
     display:flex;
     align-items:center;
 }
@@ -62,6 +55,7 @@ input.invalid {
     opacity: 0.5;
     text-align:center;
     font-size:1rem;
+    margin-left:10px;
 }
 
 .progress-container {
@@ -69,8 +63,9 @@ input.invalid {
     font-size: 1.3rem;
     background-color: white;
     padding: 20px;
-    margin: 3px auto;
-    position:fixed;
+    margin: 1px auto;
+    position: fixed;
+    top: 60px;
 }
 
 .progress-bar {
@@ -81,6 +76,15 @@ input.invalid {
 .icon-step.active {
     opacity: 1;
     background-color: #FFA942;
+}
+
+.step.active {
+   opacity: 1;
+}
+
+.step.finish {
+    color: black;
+    opacity: 1;
 }
 
 /* Mark the steps that are finished and valid: */
@@ -94,24 +98,49 @@ input.invalid {
     width:100%;
     font-size:1.3rem;
     background-color:white; 
-    padding:20px 50px;
+    padding:15px 50px;
     position: fixed;
+    top:70px;
+    border-bottom:1px solid rgba(0,0,0,0.2);
 }
 
 .breadcrumb{
     display:flex;
-    gap:10px;
     margin-bottom: 0px !important;
 }
 
 .step-yellow {
     padding:5px;
     border-radius:5px;
+    font-weight:bold;
+    margin-right:10px;
 }
 
 .button-container {
     display: flex;
     justify-content: center;
+    margin-top:40px;
+}
+
+
+.content-creation .mrow{
+    margin-top:60px;
+}
+
+.content-creation textarea {
+    border: 2px solid #bbbbbb;
+    border-radius: 10px;
+    width: 450px;
+    height: 150px;
+    font-size: 2rem
+}
+
+.title-description {
+    font-size: 1.1rem;
+}
+
+.label-container-section1 > p {
+    font-size: 0.8rem;
 }
 
 @media screen and (max-width: 767px) {
@@ -121,6 +150,21 @@ input.invalid {
 
     .landing-md {
         display: none;
+    }
+
+    .btn-primary {
+        font-size: 3.5vw;
+    }
+
+    #regForm{
+        margin-top:50px;
+        width:100%;
+    }
+
+    .content-creation textarea {
+        width: 320px;
+        height: 150px;
+        font-size: 2rem
     }
 }
 
