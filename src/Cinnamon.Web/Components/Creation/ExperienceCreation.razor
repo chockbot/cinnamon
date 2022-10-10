@@ -1,0 +1,122 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core
+@using Cinnamon.Data
+@using Microsoft.EntityFrameworkCore
+@inject IJSRuntime jsRuntime
+
+<h3 class="fw-bold mb-5">Experience creation</h3>
+<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Let's name that experience!
+            </label>
+            <p>
+                Make it informative and distinctive so that your customers
+                may understand what you are offering
+            </p>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <textarea maxlength="80" @bind="activityModel.Title"></textarea>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                What type of experience are you sharing?
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="experience-type" id="in-person" value="inPerson" checked @oninput="CheckboxChanged">
+                <label class="form-check-label" for="in-person">
+                    In-person - join in the real world to participate actively
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="experience-type" id="online" value="Online" @oninput="CheckboxChanged">
+                <label class="form-check-label" for="online">
+                    Online - join via video conferencing software (provided by Cinnamon Maker)
+                </label>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Where is your experience located?
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @if(IsChecked)
+            {
+                <input class="form-control" placeholder="Address 1" disabled/>
+                <input class="form-control my-3" placeholder="Address 2" disabled />
+                <input class="form-control my-3" placeholder="District" disabled />
+                <input class="form-control my-3" placeholder="City" disabled />
+            }
+            else{
+                <input class="form-control" placeholder="Address 1" />
+                <input class="form-control my-3" placeholder="Address 2" />
+                <input class="form-control my-3" placeholder="District" />
+                <input class="form-control my-3" placeholder="City" />
+            }
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Experience Category
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <select class="form-control" >
+                <option disabled selected>Select Category</option>
+               
+            </select>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Search Tags
+            </label>
+        </div>
+        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <input id="tagTest" class="form-control" type="text" name="tags" value="pfTag1,pfTag2,pfTag3" data-role="tagsinput" />
+        </div>
+    </div>
+</div>
+
+@code {
+    IJSObjectReference module;
+    [Parameter]
+    public ActivityModel activityModel { get; set; }
+    public string DisableAddress { get; set; }
+    public bool IsChecked { get; set; } = true;
+    private bool isChecked;
+
+    // updates the internal value whwenever the component is updated
+    // You may not want that??
+    protected override void OnParametersSet()
+    {
+        this.IsChecked = isChecked;
+    }
+
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        isChecked = !this.IsChecked;
+        OnParametersSet();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ExperienceCreation.js");
+        }
+        await module.InvokeVoidAsync("TagsInputInit");
+    }
+}
+    
