@@ -1,0 +1,81 @@
+﻿@layout CreationLayout
+@using Cinnamon.Web.Components
+@page "/Creation"
+@using Cinnamon.Core
+@inject IJSRuntime jsRuntime
+
+<!-- Circles which indicates the steps of the form: -->
+<nav class="nav-breadcrumbs landing-md" style="--bs-breadcrumb-divider: url(&#34;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8'%3E%3Cpath d='M2.5 0L1 1.5 3.5 4 1 6.5 2.5 8l4-4-4-4z' fill='currentColor'/%3E%3C/svg%3E&#34;);" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="step breadcrumb-item"><span class="icon-step">&nbsp</span><span class="step-yellow">Overview</span></li>
+        <li class="step breadcrumb-item" aria-current="page"><span class="icon-step">2</span><span class="step-yellow">Experience creation</span></li>
+        <li class="step breadcrumb-item" aria-current="page"><span class="icon-step">3</span><span class="step-yellow">Setup</span></li>
+        <li class="step breadcrumb-item" aria-current="page"><span class="icon-step">4</span><span class="step-yellow">Publish</span></li>
+    </ol>
+</nav>
+
+<div class="progress-container landing-sm shadow-sm">
+    <div class="progress mx-4">
+      <div id="myBar" class="progress-bar" role="progressbar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+    </div>
+</div>
+
+<div id="regForm" class="shadow-lg">
+    <EditForm Model="@activityModel">
+    <!-- One "tab" for each step in the form: -->
+        <!--Overview-->
+    <div class="tab">
+
+    </div>
+
+        <!--Experience Creation-->
+    <div class="tab">
+       <ExperienceCreation activityModel="activityModel"></ExperienceCreation>
+    </div>
+
+        <!--Set up-->
+    <div class="tab">
+
+    </div>
+
+        <!--Publish-->
+    <div class="tab">
+
+    </div>
+
+    <div class="button-container" style="overflow:auto;">
+      <div style="float:right;">
+        <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=Prev>Back</button>
+        <button class="btn-primary" type="button" id="nextBtn" @onclick=Next>Continue</button>
+      </div>
+    </div>
+
+    </EditForm>
+</div>
+
+@code {
+    IJSObjectReference module;
+
+    public int NexPrevVal { get; set; }
+    ActivityModel activityModel = new ActivityModel();
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
+        }
+        await module.InvokeVoidAsync("showTabInit");
+    }
+
+    private async Task Prev()
+    {
+        await module.InvokeVoidAsync("nextPrev",-1);
+    }
+
+    private async Task Next()
+    {
+        await module.InvokeVoidAsync("nextPrev", 1);
+    }
+}
