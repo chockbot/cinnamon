@@ -1,5 +1,6 @@
 ﻿@page "/Explore/{Id:int}"
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Alert
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
 @using Cinnamon.Data
@@ -33,18 +34,18 @@
                         <div class="carousel-inner">
                             <div class="carousel-item active">
                                 <div class="col-sm-12">
-                                    <img class="img-fluid shadsow rounded" style="width:100%" src="@_Images.ElementAt(1).ImageLocation" />
+                                    <img class="card-img shadow rounded" src="@_Images.ElementAt(1).ImageLocation" />
                                 </div>
                             </div>
                             <div class="carousel-item">
                                 <div class="col-sm-12">
-                                    <img class="img-fluid w-100 shadow rounded" src="@_Images.ElementAt(0).ImageLocation" />
+                                    <img class="card-img shadow rounded" src="@_Images.ElementAt(0).ImageLocation" />
                                 </div>
 
                             </div>
                             <div class="carousel-item">
                                 <div class="col-sm-12">
-                                    <img class="img-fluid w-100 shadow rounded" src="@_Images.ElementAt(2).ImageLocation" />
+                                    <img class="card-img shadow rounded" src="@_Images.ElementAt(2).ImageLocation" />
                                 </div>
                             </div>
                         </div>
@@ -164,7 +165,13 @@
 
 <!--Footer-->
 <Footer></Footer>
-
+<!--Beta Alert-->
+<div class="col-12-lg justify-content-center col-md-12 justify-content-center col-sm-12 justify-content-center col-12 d-flex justify-content-center">
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <p>We are still in BETA! All experiences listed are samples only!</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</div>
 @code {
     IJSObjectReference module;
     [Parameter]

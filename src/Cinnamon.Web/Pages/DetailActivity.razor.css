@@ -84,6 +84,30 @@
     grid-column-end: 4;
 }
 
+.alert {
+    color: black;
+    z-index: 9999;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'Nunito';
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 24px;
+    z-index: 999;
+    display: block;
+    height: auto;
+    max-width: 500px;
+    margin-right: auto;
+    margin-left: auto;
+    padding-top: 16px;
+    padding-bottom: 6px;
+    padding-left: 16px;
+    border: 1px solid #c1c1c1;
+    border-radius: 8px;
+    background-color: #fff;
+    bottom: 24px;
+}
 
 @media (max-width: 767px) {
     .carousel-inner .carousel-item > div {
@@ -123,7 +147,16 @@
 
 .carousel-control-next,
 .carousel-control-prev /*, .carousel-indicators */ {
+    background-color: black;
+    width: 3vh;
+    height: 3vh;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 15px;
+    margin-left: 15px;
     filter: invert(100%);
+    border: 1px solid white;
 }
 
 @media screen and (max-width: 767px) {
@@ -141,6 +174,15 @@
 
     .profile-container{
         width:100% !important;
+    }
+    .alert {
+        margin-bottom: 100px;
+        max-width: 450px;
+        font-size: 14px;
+    }
+    .detail-sm .card-img {
+        width: 28.5rem;
+        height: 20rem;
     }
 }
 

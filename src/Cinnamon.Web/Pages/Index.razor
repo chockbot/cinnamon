@@ -4,6 +4,8 @@
 @inject IJSRuntime jsRuntime
 @using Cinnamon.Core.Enums
 @using Cinnamon.Web.Components
+@using System.Globalization
+@using Cinnamon.Web.Components.Alert
 <PageTitle>@Resources.App.appName</PageTitle>
 
 <!--Section 1-->
@@ -209,6 +211,8 @@
 </div>
 
 <ModalSignUp TypeValue="@UserType.Maker"></ModalSignUp>
+<!--Beta Alert-->
+<BetaAlert></BetaAlert>
 
 @code{
 
