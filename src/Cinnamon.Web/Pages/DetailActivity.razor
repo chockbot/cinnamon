@@ -124,9 +124,17 @@
             </div>
             <hr />
             <div class="d-flex flex-column align-items-start">
-                <label class="fw-bold">Where you’ll be</label>
-                <img class="w-100" style="margin-left:-15px;" src="images/map_picture.png" />
-                <span>
+                <label class="fw-bold mb-3">Where you’ll be</label>
+                @if (!actModel.MapDetails.Contains("Online"))
+                {
+                    var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q="+actModel.MapDetails.Replace(" ","+");
+                    <iframe id="mapframe"
+                      frameborder="0" style="border:0"
+                      src="@map"
+                      allowfullscreen>
+                    </iframe>
+                }
+                <span class="mt-3">
                     @actModel.MapDetails
                 </span>
             </div>
