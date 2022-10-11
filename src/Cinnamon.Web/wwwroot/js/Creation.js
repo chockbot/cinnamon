@@ -39,6 +39,7 @@ function fixStepIndicator(n) {
 }
 
 export function nextPrev(n) {
+    window.scrollTo(0, 0);
     // This function will figure out which tab to display
     var x = document.getElementsByClassName("tab");
     var progress = document.getElementById("myBar");
