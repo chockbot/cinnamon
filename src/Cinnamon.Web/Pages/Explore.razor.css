@@ -332,18 +332,7 @@ img.img-icon {
     .activity-lg {
         display: flex;
     }
-    .activity-lg .carousel-control-prev{
-        background-color: black;
-        width: 2vh;
-        height: 2vh;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-right: 0px;
-        margin-left: 0px;
-        filter: invert(100%);
-    }
-    .activity-lg .carousel-control-next {
+    .activity-lg .carousel-control-next, .activity-lg .carousel-control-prev {
         background-color: black;
         width: 2vh;
         height: 2vh;
@@ -351,8 +340,11 @@ img.img-icon {
         top: 50%;
         transform: translateY(-50%);
         margin-right: 20px;
-        margin-left: 0px;
+        margin-left: -5px;
         filter: invert(100%);
+    }
+    .activity-lg .carousel-control-next-icon, .activity-lg .carousel-control-prev-icon {
+        width: 1.5vh;
     }
     .section-2-lg .carousel-control-prev, .section-2-lg .carousel-control-next {
         background-color: black;
@@ -363,10 +355,10 @@ img.img-icon {
         transform: translateY(-50%);
         margin-right: 10px;
         margin-left: 10px;
-        border: 1px solid white;
+        border: 1px solid black;
     }
     .section-2-lg .carousel-control-next-icon, .section-2-lg .carousel-control-prev-icon {
-        width: 1vh;
+        width: 1.2vh;
     }
     .section-2-lg .wish-icon {
         position: absolute;
@@ -480,18 +472,7 @@ img.img-icon {
         display: none;
     }
 
-    .activity-sm .carousel-control-prev {
-        background-color: transparent;
-        width: 3vh;
-        height: 3vh;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-right: 0px;
-        margin-left: -15px;
-        filter: invert(100%);
-    }
-    .activity-sm .carousel-control-next {
+    .activity-sm .carousel-control-prev, .activity-sm .carousel-control-next {
         background-color: transparent;
         width: 3vh;
         height: 3vh;
@@ -499,10 +480,12 @@ img.img-icon {
         top: 50%;
         transform: translateY(-50%);
         margin-right: -15px;
-        margin-left: 0px;
+        margin-left: -15px;
         filter: invert(100%);
     }
-
+    .activity-sm .carousel-control-next-icon, .activity-sm .carousel-control-prev-icon {
+        width: 2.5vh;
+    }
     .section-2-lg .carousel-control-prev, .section-2-lg .carousel-control-next {
         background-color: black;
         width: 3vh;
@@ -513,10 +496,10 @@ img.img-icon {
         margin-right: 10px;
         margin-left: 10px;
         filter: invert(100%);
-        border: 1px solid white;
+        border: 1px solid black;
     }
     .section-2-lg .carousel-control-next-icon, .section-2-lg .carousel-control-prev-icon {
-        width: 1.5vh;
+        width: 2vh;
     }
     .section-2-lg .carousel-indicators button {
         border-radius: 100%;
