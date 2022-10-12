@@ -1,5 +1,6 @@
 ﻿@page "/Explore/{Id:int}"
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Alert
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
 @using Cinnamon.Data
@@ -24,7 +25,7 @@
                 </div>
             </div>
              <div class="d-flex flex-row detail-sm">
-                  <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
                         <div class="carousel-indicators">
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -163,7 +164,7 @@
             </div>
             <div class="detail-sm">
                 <div class="shadow border-3 border-top" style="position:fixed;bottom:0;left:0;width:100%;height:120px;background-color:white;padding:10px;z-index:9999">
-                    <PrimaryButton ModalTarget="#sigupModal" Id="reserve-button" ModalBsToggle="modal" Text="Signup" Width="100%"></PrimaryButton>
+                    <PrimaryButton ModalTarget="#sigupModal" Id="reserve-button" ModalBsToggle="modal" Text="Signup and join us!" Width="100%"></PrimaryButton>
                 </div>
             </div>
         </div>
@@ -172,7 +173,13 @@
 
 <!--Footer-->
 <Footer></Footer>
-
+<!--Beta Alert-->
+<div class="col-12-lg justify-content-center col-md-12 justify-content-center col-sm-12 justify-content-center col-12 d-flex justify-content-center">
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        <p>We are still in BETA! All experiences listed are samples only!</p>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+</div>
 @code {
     IJSObjectReference module;
     [Parameter]

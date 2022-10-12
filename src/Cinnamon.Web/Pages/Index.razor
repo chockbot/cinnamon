@@ -4,6 +4,8 @@
 @inject IJSRuntime jsRuntime
 @using Cinnamon.Core.Enums
 @using Cinnamon.Web.Components
+@using System.Globalization
+@using Cinnamon.Web.Components.Alert
 <PageTitle>@Resources.App.appName</PageTitle>
 
 <!--Section 1-->
@@ -25,7 +27,7 @@
         <span class="landing-subheader">@Resources.App.landingSubHeader</span>
         <div class="btn-explore btn-explore-section1">
             <PrimaryButton OnClick="NavigateToExplorePage" Width="fit-content" Text=@Resources.App.exploreExperiences/>
-            <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Join the community!" />
+            <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Signup and join us!" />
         </div>
     </div>
 </div>
@@ -209,6 +211,8 @@
 </div>
 
 <ModalSignUp TypeValue="@UserType.Maker"></ModalSignUp>
+<!--Beta Alert-->
+<BetaAlert></BetaAlert>
 
 @code{
 
