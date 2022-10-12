@@ -8,6 +8,7 @@
 @using Cinnamon.Core
 @using System.Text
 @using System.Globalization
+@using Cinnamon.Web.Components.Alert
 
 <!DOCTYPE html>
 <html lang="en">
@@ -45,7 +46,7 @@
         <div class="col-lg-6 d-flex flex-row justify-content-start col-md-2 d-flex flex-row justify-content-start col-sm-1 d-flex justify-content-center col-1 d-flex justify-content-center">
                 <div class="btn-join">
                      <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
-                        Join the community!
+                    Signup and join us!
                      </button>
                 </div>
                 &nbsp;
@@ -87,6 +88,102 @@
         </div>
     </div>
     <!--Section 1-->
+    <div class="activity-sm">
+                <div class="row d-flex justify-content-start">
+                    <div class="col-sm-12 col-12 d-flex justify-content-center p-2">
+                        <div class="btn-family">
+                            <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
+                                Signup and join us!
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-sm-12 col-12">
+                        <div id="carouselExampleControls1" class="carousel slide" data-ride="carousel" data-interval="0">
+                            <div class="carousel-inner">
+                                <div class="carousel-item active">
+                                    <div class="cards-wrapper">
+                                        @foreach (var category in activityTypes)
+                                        {
+                                            if (category.Id <= 5)
+                                            {
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
+                                                    <img src=@category.Icon class="img-icon text-center">
+                                                    <p class="card-title">@category.Name</p>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="cards-wrapper">
+                                        @foreach (var category in activityTypes)
+                                        {
+                                            if (category.Id > 5 && category.Id <= 10)
+                                            {
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
+                                                    <img src=@category.Icon class="img-icon text-center">
+                                                    <p class="card-title">@category.Name</p>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="cards-wrapper">
+                                        @foreach (var category in activityTypes)
+                                        {
+                                            if (category.Id > 10 && category.Id <= 15)
+                                            {
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
+                                                    <img src=@category.Icon class="img-icon text-center">
+                                                    <p class="card-title">@category.Name</p>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="cards-wrapper">
+                                        @foreach (var category in activityTypes)
+                                        {
+                                            if (category.Id > 15 && category.Id <= 20)
+                                            {
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
+                                                    <img src=@category.Icon class="img-icon text-center">
+                                                    <p class="card-title">@category.Name</p>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                                <div class="carousel-item">
+                                    <div class="cards-wrapper">
+                                        @foreach (var category in activityTypes)
+                                        {
+                                            if (category.Id > 20 && category.Id <= 25)
+                                            {
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
+                                                    <img src=@category.Icon class="img-icon text-center">
+                                                    <p class="card-title">@category.Name</p>
+                                                </a>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls1" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls1" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden"></span>
+                                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
     <div class="container">
         <div class="section-1 row">
             <div class="activity-lg">
@@ -221,102 +318,6 @@
                     </div>
             </div>
 
-            <div class="activity-sm">
-                <div class="row d-flex justify-content-start">
-                    <div class="col-sm-12 col-12 d-flex justify-content-center">
-                        <div class="btn-family">
-                            <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
-                               Join the community!
-                            </button>
-                        </div>
-                    </div>
-                    <div class="col-sm-12 col-12">
-                        <div id="carouselExampleControls1" class="carousel slide" data-ride="carousel" data-interval="0">
-                            <div class="carousel-inner">
-                                <div class="carousel-item active">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id <= 5)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 5 && category.Id <= 10)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 10 && category.Id <= 15)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 15 && category.Id <= 20)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 20 && category.Id <= 25)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls1" data-bs-slide="prev">
-                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden"></span>
-                                </button>
-                                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls1" data-bs-slide="next">
-                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                    <span class="visually-hidden"></span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-               
-            </div>
         </div>
     <!--Section 2-->
         <div class="section-2-lg">
@@ -462,15 +463,8 @@
 <FilterModal></FilterModal>
 <!--Footer-->
 <Footer></Footer>
-<!--Cookies-->
-    <div class="col-12-lg d-flex justify-content-center">
-        <div class="alert text-center cookiealert" role="alert">
-            We use cookies to ensure you get the best experience on our website.
-            <button type="button" class="btn btn-light btn-sm" data-bs-dismiss="alert" aria-label="Close">
-                Agree
-            </button>
-        </div>
-    </div>
+<!--Beta Alert-->
+<BetaAlert></BetaAlert>
 </html>
 @code {
     IJSObjectReference module;
