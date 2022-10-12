@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221012021517_added ExperienceCategory Table")]
+    partial class addedExperienceCategoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -54,7 +56,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivityImages", (string)null);
+                    b.ToTable("ActivityImages");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.ActivityModel", b =>
@@ -110,6 +112,10 @@ namespace Cinnamon.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ScheduleIndicator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("Schedules")
                         .IsRequired()
                         .HasColumnType("text");
@@ -128,7 +134,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasIndex("ExperienceTypeId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.ActivityTypeModel", b =>
@@ -164,7 +170,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivityTypes", (string)null);
+                    b.ToTable("ActivityTypes");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.ExperienceTypeModel", b =>
@@ -196,7 +202,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExperienceTypes", (string)null);
+                    b.ToTable("ExperienceTypes");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.Models.ExperienceCategoryModel", b =>
@@ -263,7 +269,7 @@ namespace Cinnamon.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("WaitLists", (string)null);
+                    b.ToTable("WaitLists");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -1,4 +1,5 @@
-﻿using System.Reflection.PortableExecutable;
+﻿using Cinnamon.Core.Models;
+using System.Reflection.PortableExecutable;
 
 namespace Cinnamon.Core
 {
@@ -1315,6 +1316,65 @@ namespace Cinnamon.Core
                         });
                     }
                 }
+            }
+
+
+            var ExperienceCategory = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
+            if (activityImages.Count != 0)
+            {
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 1,
+                    Category = "Sports"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 2,
+                    Category = "Academics"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 3,
+                    Category = "Toddler Experience"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 4,
+                    Category = "Language"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 5,
+                    Category = "Music"
+                });
+            }
+            else
+            {
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 1,
+                    Category = "Sports"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 2,
+                    Category = "Academics"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 3,
+                    Category = "Toddler Experience"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 4,
+                    Category = "Language"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 5,
+                    Category = "Music"
+                });
             }
         }  
 
