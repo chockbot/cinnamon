@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Core;
+using Cinnamon.Core.DI.Interfaces.Tables;
 using Cinnamon.Data.DbSets;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,6 +30,8 @@ namespace Cinnamon.Data
         public IActivityImages ActivityImages => new ActivityImages(mDbContext);
         public IExperienceTypes ExperienceTypes => new ExperienceTypes(mDbContext);
         public IWaitList WaitList => new WaitLists(mDbContext);
+
+        public IExperienceCategory ExperienceCategory => new ExperienceCategory(mDbContext);
         #endregion
 
         #region Constructor

@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Core
+﻿using Cinnamon.Core.DI.Interfaces.Tables;
+
+namespace Cinnamon.Core
 {
     public interface IDataStore
     {
@@ -7,6 +9,7 @@
         IActivityImages ActivityImages { get; }
         IExperienceTypes ExperienceTypes { get; }
         IWaitList WaitList { get; }
+        IExperienceCategory ExperienceCategory { get; }
         /// <summary>
         /// Makes sure the client data store is correctly setup
         /// </summary>

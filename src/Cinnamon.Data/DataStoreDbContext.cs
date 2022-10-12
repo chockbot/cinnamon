@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Core;
+using Cinnamon.Core.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +16,7 @@ namespace Cinnamon.Data
         public DbSet<ActivityImagesModels> ActivityImages { get; set; }
         public DbSet<ExperienceTypeModel> ExperienceTypes { get; set; }
         public DbSet<WaitListModel> WaitLists { get; set; }
+        public DbSet<ExperienceCategoryModel> ExperienceCategories { get; set; }
         #endregion
 
         #region Constructor

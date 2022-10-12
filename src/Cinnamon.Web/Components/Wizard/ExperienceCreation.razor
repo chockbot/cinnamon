@@ -1,10 +1,17 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
+@using Cinnamon.Core.Models
 @using Cinnamon.Data
+@using Cinnamon.Data.DbSets
 @using Microsoft.EntityFrameworkCore
 @inject IJSRuntime jsRuntime
 
-<h3 class="fw-bold mb-5">Experience creation</h3>
+<h3 class="fw-bold mb-2">Experience creation</h3>
+<div id="error-message-container" class="mb-4" style="display:none;">
+    <ul id="error-list" class="fw-bold">
+
+    </ul>
+</div>
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
@@ -16,8 +23,11 @@
                 may understand what you are offering
             </p>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <textarea maxlength="80" @bind="activityModel.Title"></textarea>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea maxlength="80" @bind="activityModel.Title"></textarea>
+                <label>80 Max</label>
+            </div>
         </div>
     </div>
     <div class="row mrow">
@@ -56,10 +66,10 @@
                 <input class="form-control my-3" placeholder="City" disabled />
             }
             else{
-                <input class="form-control" placeholder="Address 1" />
-                <input class="form-control my-3" placeholder="Address 2" />
-                <input class="form-control my-3" placeholder="District" />
-                <input class="form-control my-3" placeholder="City" />
+                <input class="form-control" placeholder="Address 1" required/>
+                <input class="form-control my-3" placeholder="Address 2" required />
+                <input class="form-control my-3" placeholder="District" required/>
+                <input class="form-control my-3" placeholder="City" required />
             }
         </div>
     </div>
@@ -72,7 +82,10 @@
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <select class="form-control" >
                 <option disabled selected>Select Category</option>
-               
+               @foreach(var cat in ExperienceModel)
+               {
+                   <option value="@cat.Category">@cat.Category</option>
+               }
             </select>
         </div>
     </div>
@@ -83,12 +96,12 @@
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <input id="tagTest" class="form-control" type="text" name="tags" value="" data-role="tagsinput" />
+            <input id="tagsSearch" class="form-control" type="text" name="tags" value="" data-role="tagsinput" />
         </div>
     </div>
 </div>
 
-@code {
+    @code {
     IJSObjectReference module;
     [Parameter]
     public ActivityModel activityModel { get; set; }
@@ -96,6 +109,7 @@
     public bool IsChecked { get; set; } = true;
     private bool isChecked;
 
+    public List<ExperienceCategoryModel> ExperienceModel = new List<ExperienceCategoryModel>();
     // updates the internal value whwenever the component is updated
     // You may not want that??
     protected override void OnParametersSet()
@@ -117,6 +131,11 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ExperienceCreation.js");
         }
         await module.InvokeVoidAsync("TagsInputInit");
+    }
+
+    protected override async void OnInitialized()
+    {
+        ExperienceModel = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
     }
 }
     
