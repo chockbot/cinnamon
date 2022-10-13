@@ -1,5 +1,6 @@
 export function TagsInputInit() {
-    $('#tagTest').tagsinput({
-        allowDuplicates: true
+    $('#tagsSearch').tagsinput({
+        allowDuplicates: true,
+        maxTags: 5
     });
 }
