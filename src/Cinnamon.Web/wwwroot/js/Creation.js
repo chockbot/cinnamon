@@ -103,3 +103,7 @@ function validateForm() {
 
     return valid; // return the valid status
 }
+export function getCurrentTab() {
+    var x = currentTab;
+    return x;
+}
