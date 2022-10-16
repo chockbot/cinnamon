@@ -12,7 +12,7 @@
             CreationStep.Complete
         };
 
-        private int _currentStepIndex = 2;
+        private int _currentStepIndex = 0;
 
         private int currentStepIndex {
             get { return _currentStepIndex;  }
