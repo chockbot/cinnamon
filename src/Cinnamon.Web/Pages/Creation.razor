@@ -7,27 +7,27 @@
 <!-- Circles which indicates the steps of the form: -->
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="step breadcrumb-item">
-            <a class="button" @onclick="@(() => Link(0))">
-                <span class="icon-step">1</span>
+        <li class="step breadcrumb-item @ActiveStep(CreationStep.Overview)">
+            <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.Overview))">
+                <span class="icon-step @ActiveStep(CreationStep.Overview)">1</span>
                 <span class="step-yellow">Overview</span>
             </a>
         </li>
-        <li class="step breadcrumb-item" aria-current="page">
-             <a class="button" @onclick="@(() => Link(1))">
-                <span class="icon-step">2</span>
+        <li class="step breadcrumb-item @ActiveStep(CreationStep.ExperienceCreation)" aria-current="page">
+             <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.ExperienceCreation))">
+                <span class="icon-step @ActiveStep(CreationStep.ExperienceCreation)">2</span>
                 <span class="step-yellow">Experience creation</span>
             </a>
         </li>
-        <li class="step breadcrumb-item" aria-current="page">
-             <a class="button" @onclick="@(() => Link(2))">
-                <span class="icon-step">3</span>
+        <li class="step breadcrumb-item @ActiveStep(CreationStep.ExperienceSetup)" aria-current="page">
+             <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.ExperienceSetup))">
+                <span class="icon-step @ActiveStep(CreationStep.ExperienceSetup)">3</span>
                 <span class="step-yellow">Setup</span>
             </a>
         </li>
-        <li class="step breadcrumb-item" aria-current="page">
-            <a class="button" @onclick="@(() => Link(3))">
-                <span class="icon-step">4</span>
+        <li class="step breadcrumb-item @ActiveStep(CreationStep.Publish)" aria-current="page">
+            <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.Publish))">
+                <span class="icon-step @ActiveStep(CreationStep.Publish)">4</span>
                 <span class="step-yellow">Publish</span>
             </a>
         </li>
@@ -41,32 +41,32 @@
 </div>
 
 <div id="regForm" class="shadow-lg">
-    <EditForm Model="@activityModel">
+    <EditForm Model="@_viewModel.activity">
     <!-- One "tab" for each step in the form: -->
         <!--Overview-->
-    <div class="tab">
+    <div class="tab @ActiveTab(CreationStep.Overview)">
         <Overview></Overview>
     </div>
 
         <!--Experience Creation-->
-    <div class="tab">
-       <ExperienceCreation activityModel="activityModel"></ExperienceCreation>
+    <div class="tab @ActiveTab(CreationStep.ExperienceCreation)">
+       <ExperienceCreation activityModel="_viewModel.activity"></ExperienceCreation>
     </div>
 
         <!--Set up-->
-    <div class="tab">
+    <div class="tab @ActiveTab(CreationStep.ExperienceSetup)">
 
     </div>
 
         <!--Publish-->
-    <div class="tab">
+    <div class="tab @ActiveTab(CreationStep.Publish)">
 
     </div>
 
     <div class="button-container" style="overflow:auto;">
       <div style="float:right;">
-        <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=Prev>Back</button>
-        <button class="btn-primary" type="button" id="nextBtn" @onclick=Next>Continue</button>
+        <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
+        <button class="btn-primary" type="button" id="nextBtn" @onclick=_viewModel.NextStep>@MainButtonText()</button>
       </div>
     </div>
 
@@ -74,40 +74,25 @@
 </div>
 
 @code {
-    IJSObjectReference module;
-    public int NexPrevVal { get; set; }
-    public int currentId { get; set; }
-    ActivityModel activityModel = new ActivityModel();
+    private CreationViewModel _viewModel = new CreationViewModel();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
-        await module.InvokeVoidAsync("showTabInit");
     }
 
-    private async Task Prev()
-    {
-        await module.InvokeVoidAsync("nextPrev",-1);
+    private String ActiveTab(CreationStep step) {
+        return _viewModel.currentStep == step ? "show" : "";
     }
 
-    private async Task Next()
-    {
-        await module.InvokeVoidAsync("nextPrev", 1);
+    private String ActiveStep(CreationStep step) {
+        return _viewModel.currentStep == step ? "active" : "";
     }
-    private async Task Link(int Id)
-    {
-        currentId = await module.InvokeAsync<int>("getCurrentTab");
 
-        if(currentId > Id){
-            await module.InvokeVoidAsync("nextPrev", -1);
-        }
-        else{
-            await module.InvokeVoidAsync("nextPrev", 1);
-        }
-      
+    private String MainButtonText(){
+        return _viewModel.IsLastStep ? "Submit" : "Continue";
     }
 }
