@@ -1,0 +1,308 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core
+
+<h3 class="fw-bold mb-2">Experience setup</h3>
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>Fill in required field</li>
+    </ul>
+</div>
+<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Let's describe your experience!
+            </label>
+            <p>
+                What are you and your clients going to do?
+                <br/><br/>
+                - Give detailed plans from beginning to end, not a bunch of ideas or options.<br/>
+                - Describe what makes your experience unique—something that guests wouldn't do on their own.<br/>
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(activityModel.Description)" maxlength="80" @bind="activityModel.Description"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Create your experience schedule!
+            </label>
+            <p>
+                Breakdown your experience by type, age group and time, this will be 
+                reflected in your experience details for customers to choose and book.
+            </p>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @foreach (var schedule in viewModel.Schedules)
+            {
+                <ScheduleItem @key="schedule" scheduleModel="schedule" parentViewModel="viewModel"></ScheduleItem>
+            }
+            <div class="button-container" style="overflow:auto; margin-top: 20px;">
+                <div style="float:left;">
+                    <button class="btn-primary" type="button" id="addScheduleBtn" @onclick=viewModel.AddSchedule>Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Include specifics on what you will provide
+            </label>
+            <p>
+                You can make your guests feel at home by giving them food and drinks, special 
+                equipment, concert tickets, or anything else unique.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(viewModel.SpecificsYouWillProvide)" maxlength="80" @bind="viewModel.SpecificsYouWillProvide"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                What customers must bring with them
+            </label>
+            <p>
+                Help them get ready by being specific and writing each thing down on its own list.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(viewModel.CustomerBringWithThem)" maxlength="80" @bind="viewModel.CustomerBringWithThem"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Customer Requirements
+            </label>
+            <p>
+                Remember that the person who books your experience may also book spots for other people. Put them here if there are strict rules about age, skill level, or certifications.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold">
+                Minimum Age:
+            </label>   
+            <select class="form-control @RequiredCheck(viewModel.MinimumAge)" @bind="@viewModel.MinimumAge">
+                <option disabled selected>Select Minimum Age</option>
+                @foreach (var minAge in viewModel.MinimumAgeList)
+                {
+                    <option value="@minAge">@minAge</option>
+                }
+            </select>
+            <label class="fw-bold">
+                Can adults join?:
+            </label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value=true checked @oninput="CheckboxChanged">
+                <label class="form-check-label" for="yes">
+                    Yes
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value=false @oninput="CheckboxChanged">
+                <label class="form-check-label" for="no">
+                    No
+                </label>
+            </div>
+            <label class="fw-bold">
+                Levels of Activity:
+            </label>
+            <select class="form-control @RequiredCheck(viewModel.ActivityLevel)" @bind="@viewModel.ActivityLevel">
+                <option disabled selected>Select Activity Level</option>
+                @foreach (var activityLevel in viewModel.LevelOfActivityList)
+                {
+                    <option value="@activityLevel">@activityLevel</option>
+                }
+            </select>
+             <label class="fw-bold">
+                 Required skill level
+            </label>
+            <select class="form-control @RequiredCheck(viewModel.SkillLevel)" @bind="@viewModel.SkillLevel">
+                <option disabled selected>Select Skill Level</option>
+                @foreach (var skillLevel in viewModel.SkillLevelList)
+                {
+                    <option value="@skillLevel">@skillLevel</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Additional requirements (optional):
+            </label>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea maxlength="80" @bind="viewModel.AdditionalRequirements"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Post pictures!
+            </label>
+            <p>
+                Pictures must have:<br/>
+                -Different angles and details, including photos of people at work<br/>
+                -Innocent, yet illuminating, snippets from the experience<br/>
+                -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br/>
+            </p>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <div>
+                <img class="experience-image" src="@CoverPhotoSource()" />
+                <p>This is your cover photo</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <div>
+                <img class="experience-image" src="@SupportingImageSource(1)" />
+                <p>Supporting photo</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+             <div>
+                <img class="experience-image" src="@SupportingImageSource(2)" />
+                <p>Supporting photo</p>
+            </div>
+        </div>
+
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-6 col-6 text-lg-start text-md-start text-sm-center">
+            <div>Upload 3 photos (2MB)</div>
+        </div>
+        @if (!viewModel.maxImageUploaded)
+        {
+            <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center">
+                <label for="fileinput">
+                    <button class="btn-primary" style="pointer-events: none;" type="button">Upload</button>
+                </label>
+                <div class="custom-input-hide">
+                <InputFile id="fileinput" OnChange="@LoadFiles"/>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Private / Do Not Publish
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <input class="form-check-input" type="checkbox" name="private-flag" @bind="@viewModel.IsPrivate">
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ActivityModel activityModel { get; set; }
+    [Parameter]
+    public ExperienceSetupViewModel viewModel { get; set; }
+
+    private List<IBrowserFile> loadedFiles = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        viewModel.Changed = StateHasChanged;
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (viewModel.Images.Count >= 3) {
+            return; 
+        }
+
+        loadedFiles.Clear();
+
+        foreach (var file in e.GetMultipleFiles(viewModel.maxAllowedFiles))
+        {
+            try
+            {
+                loadedFiles.Add(file);
+                MemoryStream ms = new MemoryStream();
+                await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
+                viewModel.AddImage(ms.ToArray());
+                ms.Dispose();
+            }
+            catch (Exception ex)
+            {
+                //Logger.LogError("File: {Filename} Error: {Error}",
+                //    file.Name, ex.Message);
+            }
+        }
+    }
+
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            bool value = bool.Parse(e.Value.ToString());
+            viewModel.CanAdultsJoin = value;
+        }
+    }
+
+    private string RequiredCheck(String? value)
+    {
+        if (viewModel.HasErrors && String.IsNullOrEmpty(value))
+        {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    private string ShowErrorMessage()
+    {
+        return viewModel.HasErrors ? "block" : "none";
+    }
+
+    private string CoverPhotoSource() {
+        if (viewModel.Images.Count == 0) {
+            return "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+        }
+
+        var imagesrc = Convert.ToBase64String(viewModel.Images[0].ImageData);
+        var imageUrl = string.Format("data:image/jpeg;base64,{0}", imagesrc);
+
+        return imageUrl;
+    }
+
+    private string SupportingImageSource(int i = 1)
+    {
+        if (viewModel.Images.Count == i || viewModel.Images.Count < i + 1)
+        {
+            return "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+        }
+
+        var imagesrc = Convert.ToBase64String(viewModel.Images[i].ImageData);
+        var imageUrl = string.Format("data:image/jpeg;base64,{0}", imagesrc);
+
+        return imageUrl;
+    }
+
+}

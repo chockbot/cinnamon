@@ -1,15 +1,11 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
-@using Cinnamon.Core.Models
-@using Cinnamon.Data
-@using Cinnamon.Data.DbSets
-@using Microsoft.EntityFrameworkCore
 @inject IJSRuntime jsRuntime
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
-<div id="error-message-container" class="mb-4" style="display:none;">
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
-
+        <li>Fill in required field</li>
     </ul>
 </div>
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
@@ -38,13 +34,13 @@
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="experience-type" id="in-person" value="inPerson" checked @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="experience-type" id="in-person" value=1 checked @oninput="CheckboxChanged">
                 <label class="form-check-label" for="in-person">
                     In-person - join in the real world to participate actively
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="experience-type" id="online" value="Online" @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="experience-type" id="online" value=2 @oninput="CheckboxChanged">
                 <label class="form-check-label" for="online">
                     Online - join via video conferencing software (provided by Cinnamon Maker)
                 </label>
@@ -58,7 +54,7 @@
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if(IsChecked)
+            @if(viewModel.AddressDisable(activityModel.ExperienceTypeId))
             {
                 <input class="form-control" placeholder="Address 1" disabled/>
                 <input class="form-control my-3" placeholder="Address 2" disabled />
@@ -66,10 +62,10 @@
                 <input class="form-control my-3" placeholder="City" disabled />
             }
             else{
-                <input class="form-control" placeholder="Address 1" required/>
-                <input class="form-control my-3" placeholder="Address 2" required />
-                <input class="form-control my-3" placeholder="District" required/>
-                <input class="form-control my-3" placeholder="City" required />
+                <input class="form-control @RequiredCheck(viewModel.Address1)" placeholder="Address 1" required @bind="viewModel.Address1"/>
+                <input class="form-control my-3 @RequiredCheck(viewModel.Address2)" placeholder="Address 2" required @bind="viewModel.Address2"/>
+                <input class="form-control my-3 @RequiredCheck(viewModel.District)" placeholder="District" required @bind="viewModel.District"/>
+                <input class="form-control my-3 @RequiredCheck(viewModel.City)" placeholder="City" required @bind="viewModel.City"/>
             }
         </div>
     </div>
@@ -82,7 +78,7 @@
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <select class="form-control" >
                 <option disabled selected>Select Category</option>
-               @foreach(var cat in ExperienceModel)
+               @foreach(var cat in viewModel.ExperienceCategory)
                {
                    <option value="@cat.Category">@cat.Category</option>
                }
@@ -101,26 +97,32 @@
     </div>
 </div>
 
-    @code {
+@code {
     IJSObjectReference module;
     [Parameter]
     public ActivityModel activityModel { get; set; }
-    public string DisableAddress { get; set; }
-    public bool IsChecked { get; set; } = true;
-    private bool isChecked;
-
-    public List<ExperienceCategoryModel> ExperienceModel = new List<ExperienceCategoryModel>();
-    // updates the internal value whwenever the component is updated
-    // You may not want that??
-    protected override void OnParametersSet()
-    {
-        this.IsChecked = isChecked;
-    }
+    [Parameter]
+    public ExperienceCreationViewModel viewModel { get; set; }
 
     private void CheckboxChanged(ChangeEventArgs e)
     {
-        isChecked = !this.IsChecked;
-        OnParametersSet();
+        if (e.Value != null)
+        {
+            int value = int.Parse(e.Value.ToString());
+            activityModel.ExperienceTypeId = value;
+        }
+    }
+
+    private string RequiredCheck(String? value) {
+        if (viewModel.HasError && String.IsNullOrEmpty(value)) {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    private string ShowErrorMessage() {
+        return viewModel.HasError ? "block" : "none";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -131,11 +133,6 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ExperienceCreation.js");
         }
         await module.InvokeVoidAsync("TagsInputInit");
-    }
-
-    protected override async void OnInitialized()
-    {
-        ExperienceModel = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
     }
 }
     

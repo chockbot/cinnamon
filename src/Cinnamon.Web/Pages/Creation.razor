@@ -36,7 +36,7 @@
 
 <div class="progress-container landing-sm shadow-sm">
     <div class="progress mx-4">
-      <div id="myBar" class="progress-bar" role="progressbar" style="width: 0;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        <div id="myBar" class="progress-bar" role="progressbar" style="width: @PercentageCompletionString();" aria-valuenow="@_viewModel.PercentageCompletion" aria-valuemin="0" aria-valuemax="100">@PercentageCompletionString()</div>
     </div>
 </div>
 
@@ -50,12 +50,12 @@
 
         <!--Experience Creation-->
     <div class="tab @ActiveTab(CreationStep.ExperienceCreation)">
-       <ExperienceCreation activityModel="_viewModel.activity"></ExperienceCreation>
+       <ExperienceCreation activityModel="_viewModel.activity" viewModel="_viewModel.ExperienceCreationViewModel"></ExperienceCreation>
     </div>
 
         <!--Set up-->
     <div class="tab @ActiveTab(CreationStep.ExperienceSetup)">
-
+        <ExperienceSetup activityModel="_viewModel.activity" viewModel="_viewModel.ExperienceSetupViewModel"></ExperienceSetup>
     </div>
 
         <!--Publish-->
@@ -84,15 +84,27 @@
         }
     }
 
-    private String ActiveTab(CreationStep step) {
+    private string ActiveTab(CreationStep step) {
         return _viewModel.currentStep == step ? "show" : "";
     }
 
-    private String ActiveStep(CreationStep step) {
-        return _viewModel.currentStep == step ? "active" : "";
+    private string ActiveStep(CreationStep step) {
+        if (_viewModel.currentStep == step) {
+            return "active";
+        }
+
+        if ((int)_viewModel.currentStep > (int)step) {
+            return "finish";
+        }
+
+        return "";
     }
 
-    private String MainButtonText(){
+    private string MainButtonText(){
         return _viewModel.IsLastStep ? "Submit" : "Continue";
+    }
+
+    private string PercentageCompletionString() {
+        return $"{@_viewModel.PercentageCompletion}%";
     }
 }

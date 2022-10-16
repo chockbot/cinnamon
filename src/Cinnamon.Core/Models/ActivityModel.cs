@@ -3,8 +3,9 @@
     public class ActivityModel : BaseModel
     {
         public int Id { get; set; }
-        public int ActivityTypeId { get; set; }
-        public int ExperienceTypeId { get; set; }
+        // Default Value is InPerson
+        public int ActivityTypeId { get; set; } = 1;
+        public int ExperienceTypeId { get; set; } = 1;
         public string Title { get; set; } = "";
         public string Location { get; set; } = "";
         public string Price { get; set; } = "";
