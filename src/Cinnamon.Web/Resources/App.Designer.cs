@@ -304,6 +304,24 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Experience Category.
+        /// </summary>
+        internal static string experienceCategory {
+            get {
+                return ResourceManager.GetString("experienceCategory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Where is your experience located?.
+        /// </summary>
+        internal static string experienceLocated {
+            get {
+                return ResourceManager.GetString("experienceLocated", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Explore Experiences.
         /// </summary>
         internal static string exploreExperiences {
@@ -372,6 +390,15 @@ namespace Cinnamon.Web.Resources {
         internal static string identityVerification {
             get {
                 return ResourceManager.GetString("identityVerification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to In-person - join in the real world to participate actively.
+        /// </summary>
+        internal static string inPersonType {
+            get {
+                return ResourceManager.GetString("inPersonType", resourceCulture);
             }
         }
         
@@ -453,6 +480,34 @@ namespace Cinnamon.Web.Resources {
         internal static string menu {
             get {
                 return ResourceManager.GetString("menu", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Let&apos;s name that experience!.
+        /// </summary>
+        internal static string nameThatExperience {
+            get {
+                return ResourceManager.GetString("nameThatExperience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make it informative and distinctive so that your customers
+        ///                may understand what you are offering.
+        /// </summary>
+        internal static string nameThatExperienceParagraph {
+            get {
+                return ResourceManager.GetString("nameThatExperienceParagraph", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Online - join via video conferencing software (provided by Cinnamon Maker).
+        /// </summary>
+        internal static string onlineType {
+            get {
+                return ResourceManager.GetString("onlineType", resourceCulture);
             }
         }
         
@@ -592,6 +647,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Search Tags.
+        /// </summary>
+        internal static string searchTags {
+            get {
+                return ResourceManager.GetString("searchTags", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Share.
         /// </summary>
         internal static string share {
@@ -646,6 +710,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 80 Max.
+        /// </summary>
+        internal static string textAreaExperienceMax {
+            get {
+                return ResourceManager.GetString("textAreaExperienceMax", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Title.
         /// </summary>
         internal static string title {
@@ -660,6 +733,15 @@ namespace Cinnamon.Web.Resources {
         internal static string totalCurrency {
             get {
                 return ResourceManager.GetString("totalCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What type of experience are you sharing?.
+        /// </summary>
+        internal static string typeofExperience {
+            get {
+                return ResourceManager.GetString("typeofExperience", resourceCulture);
             }
         }
         
