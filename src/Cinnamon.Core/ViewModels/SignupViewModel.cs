@@ -1,0 +1,26 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Cinnamon.Core.ViewModels
+{
+    public class SignupViewModel
+    {
+        public WaitListModel waitListModel = new WaitListModel();
+        public bool isSubmit { get; set; } = false;
+        public bool isClickButton { get; set; } = false;
+
+
+        public bool isValid(string email)
+        {
+            if(!string.IsNullOrEmpty(email))
+            {
+                isClickButton = true;
+                return true;
+            }
+            return false;
+        }
+    }
+}
