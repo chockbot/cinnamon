@@ -22,5 +22,16 @@ namespace Cinnamon.Core.ViewModels
             }
             return false;
         }
+
+        public async Task<bool> SaveEmail(WaitListModel waitListModel)
+        {
+            var res = await CoreDI.DataStore.WaitList.SaveDataAsync(waitListModel);
+            if (res.Message.Contains("Saved"))
+            {
+                return true;
+            }
+            isClickButton = false;
+            return false;
+        }
     }
 }
