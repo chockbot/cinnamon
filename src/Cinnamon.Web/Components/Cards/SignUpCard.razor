@@ -5,7 +5,6 @@
 @using Cinnamon.Data
 @using System.ComponentModel.DataAnnotations
 @using System.Linq.Expressions
-@inject DataStoreDbContext waitList
 @inject IJSRuntime jsRuntime
 
  <div class="w-100 text-center">
@@ -97,9 +96,8 @@
         if(viewModel.isValid(viewModel.waitListModel.Email))
         {
             viewModel.waitListModel.Type = TypeValue;
-            waitList.WaitLists.Add(viewModel.waitListModel);
-            var res = await waitList.SaveChangesAsync();
-            if (res > 0)
+            var res =  await viewModel.SaveEmail(viewModel.waitListModel);
+            if (res)
             {
                 await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
                 viewModel.isSubmit = true;
