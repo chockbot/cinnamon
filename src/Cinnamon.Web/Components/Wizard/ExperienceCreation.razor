@@ -12,37 +12,36 @@
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Let's name that experience!
+                @Resources.App.nameThatExperience
             </label>
             <p>
-                Make it informative and distinctive so that your customers
-                may understand what you are offering
+                @Resources.App.nameThatExperienceParagraph
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <textarea maxlength="80" @bind="activityModel.Title"></textarea>
-                <label>80 Max</label>
+                <label>@Resources.App.textAreaExperienceMax</label>
             </div>
         </div>
     </div>
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                What type of experience are you sharing?
+                @Resources.App.typeofExperience
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="experience-type" id="in-person" value=1 checked @oninput="CheckboxChanged">
                 <label class="form-check-label" for="in-person">
-                    In-person - join in the real world to participate actively
+                    @Resources.App.inPersonType
                 </label>
             </div>
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="experience-type" id="online" value=2 @oninput="CheckboxChanged">
                 <label class="form-check-label" for="online">
-                    Online - join via video conferencing software (provided by Cinnamon Maker)
+                    @Resources.App.onlineType
                 </label>
             </div>
         </div>
@@ -50,7 +49,7 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Where is your experience located?
+                @Resources.App.experienceLocated
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -72,7 +71,7 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Experience Category
+               @Resources.App.experienceCategory
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -88,7 +87,7 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Search Tags
+                @Resources.App.searchTags
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
