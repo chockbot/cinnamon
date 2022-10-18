@@ -601,6 +601,25 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Let&apos;s name that experience!.
+        /// </summary>
+        internal static string nameThatExperience {
+            get {
+                return ResourceManager.GetString("nameThatExperience", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Make it informative and distinctive so that your customers
+        ///                may understand what you are offering.
+        /// </summary>
+        internal static string nameThatExperienceParagraph {
+            get {
+                return ResourceManager.GetString("nameThatExperienceParagraph", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to - Neighborly:Is a good “neighbor” by creating a safe space for the customer.
         /// </summary>
         internal static string Neighborly {
@@ -637,30 +656,20 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Open:Has a listening ear to his/her customers. Able to receive feedback well, whether positive or negative.
+        ///   Looks up a localized string similar to Grow your business and lead people on activities you love.
         /// </summary>
-        internal static string Open {
+        internal static string onboardingHeader {
             get {
-                return ResourceManager.GetString("Open", resourceCulture);
+                return ResourceManager.GetString("onboardingHeader", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Let&apos;s name that experience!.
+        ///   Looks up a localized string similar to Live your passion, share your knowledge and leave a mark in people&apos;s lives!.
         /// </summary>
-        internal static string nameThatExperience {
+        internal static string onboardingSubHeader {
             get {
-                return ResourceManager.GetString("nameThatExperience", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Make it informative and distinctive so that your customers
-        ///                may understand what you are offering.
-        /// </summary>
-        internal static string nameThatExperienceParagraph {
-            get {
-                return ResourceManager.GetString("nameThatExperienceParagraph", resourceCulture);
+                return ResourceManager.GetString("onboardingSubHeader", resourceCulture);
             }
         }
         
@@ -670,6 +679,15 @@ namespace Cinnamon.Web.Resources {
         internal static string onlineType {
             get {
                 return ResourceManager.GetString("onlineType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to - Open:Has a listening ear to his/her customers. Able to receive feedback well, whether positive or negative.
+        /// </summary>
+        internal static string Open {
+            get {
+                return ResourceManager.GetString("Open", resourceCulture);
             }
         }
         
@@ -863,6 +881,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Steps to become a Cinnamon Maker.
+        /// </summary>
+        internal static string stepsToBecome {
+            get {
+                return ResourceManager.GetString("stepsToBecome", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Street address.
         /// </summary>
         internal static string streetAddress {
@@ -949,6 +976,15 @@ namespace Cinnamon.Web.Resources {
         internal static string totalCurrency {
             get {
                 return ResourceManager.GetString("totalCurrency", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Try Cinnamon Making.
+        /// </summary>
+        internal static string tryCinnamon {
+            get {
+                return ResourceManager.GetString("tryCinnamon", resourceCulture);
             }
         }
         
