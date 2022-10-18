@@ -1,0 +1,22 @@
+﻿@namespace Cinnamon.Web.Components
+
+<div class="card card-profile">
+    <div class="card-avatar">
+        <img class="img" src=@ImageSource1>
+    </div>
+    <div class="table">
+        <h4 class="card-caption">@Title1</h4>
+        <h6 class="category text-muted">@Subtitle1</h6>
+        <p class="card-description"> @Description1</p>
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string ImageSource1 { get; set; } = "images/onboarding-icon-1.png";
+    [Parameter]
+    public string Title1 { get; set; } = "Title";
+    [Parameter]
+    public string Subtitle1 { get; set; } = "Subtitle";
+    [Parameter]
+    public string Description1 { get; set; } = "Onboarding Description";
+}
