@@ -268,6 +268,24 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Breakdown your experience by type, age group and time, this will be reflected in your experience details for customers to choose and book..
+        /// </summary>
+        internal static string createExperienceDescription {
+            get {
+                return ResourceManager.GetString("createExperienceDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create your experience schedule!.
+        /// </summary>
+        internal static string createExperienceSchedule {
+            get {
+                return ResourceManager.GetString("createExperienceSchedule", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to - Creative:Able to deliver unique and creative experiences.
         /// </summary>
         internal static string Creative {
@@ -367,11 +385,29 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Experience setup.
+        /// </summary>
+        internal static string experienceSetup {
+            get {
+                return ResourceManager.GetString("experienceSetup", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Explore Experiences.
         /// </summary>
         internal static string exploreExperiences {
             get {
                 return ResourceManager.GetString("exploreExperiences", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Fill in required field.
+        /// </summary>
+        internal static string fillRequiredField {
+            get {
+                return ResourceManager.GetString("fillRequiredField", resourceCulture);
             }
         }
         
@@ -552,6 +588,15 @@ namespace Cinnamon.Web.Resources {
         internal static string learnMore {
             get {
                 return ResourceManager.GetString("learnMore", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Let&apos;s describe your experience!.
+        /// </summary>
+        internal static string letsDescribeExperience {
+            get {
+                return ResourceManager.GetString("letsDescribeExperience", resourceCulture);
             }
         }
         
@@ -1012,6 +1057,33 @@ namespace Cinnamon.Web.Resources {
         internal static string welcomeTo {
             get {
                 return ResourceManager.GetString("welcomeTo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to What are you and your clients going to do?.
+        /// </summary>
+        internal static string whatClientsGoingToDo {
+            get {
+                return ResourceManager.GetString("whatClientsGoingToDo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to - Give detailed plans from beginning to end, not a bunch of ideas or options..
+        /// </summary>
+        internal static string whatClientsGoingToDoItem1 {
+            get {
+                return ResourceManager.GetString("whatClientsGoingToDoItem1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to - Describe what makes your experience unique—something that guests wouldn&apos;t do on their own..
+        /// </summary>
+        internal static string whatClientsGoingToDoItem2 {
+            get {
+                return ResourceManager.GetString("whatClientsGoingToDoItem2", resourceCulture);
             }
         }
         

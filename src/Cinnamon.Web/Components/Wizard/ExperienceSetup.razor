@@ -1,23 +1,23 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
 
-<h3 class="fw-bold mb-2">Experience setup</h3>
+<h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
-        <li>Fill in required field</li>
+        <li>@Resources.App.fillRequiredField</li>
     </ul>
 </div>
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Let's describe your experience!
+               @Resources.App.letsDescribeExperience 
             </label>
             <p>
-                What are you and your clients going to do?
+                @Resources.App.whatClientsGoingToDo
                 <br/><br/>
-                - Give detailed plans from beginning to end, not a bunch of ideas or options.<br/>
-                - Describe what makes your experience unique—something that guests wouldn't do on their own.<br/>
+                @Resources.App.whatClientsGoingToDoItem1<br/>
+                @Resources.App.whatClientsGoingToDoItem2<br/>
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -30,11 +30,10 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Create your experience schedule!
+              @Resources.App.createExperienceSchedule 
             </label>
             <p>
-                Breakdown your experience by type, age group and time, this will be 
-                reflected in your experience details for customers to choose and book.
+                @Resources.App.createExperienceDescription
             </p>
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -96,13 +95,7 @@
             <label class="fw-bold">
                 Minimum Age:
             </label>   
-            <select class="form-control @RequiredCheck(viewModel.MinimumAge)" @bind="@viewModel.MinimumAge">
-                <option disabled selected>Select Minimum Age</option>
-                @foreach (var minAge in viewModel.MinimumAgeList)
-                {
-                    <option value="@minAge">@minAge</option>
-                }
-            </select>
+            <input type="number" class="form-control @RequiredCheck(viewModel.MinimumAge)" placeholder="Minimum Age" required @bind="@viewModel.MinimumAge" />
             <label class="fw-bold">
                 Can adults join?:
             </label>

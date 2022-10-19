@@ -7,15 +7,12 @@
         public List<ImageCacheModel> Images { get; set; } = new List<ImageCacheModel>();
         public bool IsPrivate { get; set; } = true;
 
-        public List<string> MinimumAgeList { get; set; } = new List<string> {
-            "3+", "5+", "8+", "10+", "12+", "18+", "25+", "30+" 
-        };
         public bool CanAdultsJoin { get; set; } = false;
         public List<string> LevelOfActivityList { get; set; } = new List<string> { 
-            "Sedentary" , "Lightly Active", "Moderately Active", "Very Active"
+            "Beginner" , "Intermediate", "Advance"
         };
         public List<string> SkillLevelList { get; set; } = new List<string> { 
-            "Novice" , "Advanced Beginner", "Competent", "Proficient", "Expert"
+            "No experience" , "Little experience", "Expert"
         };
         public Action Changed;
         public string SpecificsYouWillProvide { get; set; }
