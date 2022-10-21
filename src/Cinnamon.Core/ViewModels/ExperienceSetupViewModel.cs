@@ -4,7 +4,9 @@
     {
         private bool _isValid = false;
         public List<ScheduleModel> Schedules { get; set; } = new List<ScheduleModel> { new ScheduleModel() };
-        public List<ImageCacheModel> Images { get; set; } = new List<ImageCacheModel>();
+        public List<ImageCacheModel> Images { get; set; } = new List<ImageCacheModel> { 
+            new ImageCacheModel{ Id = 1 }, new ImageCacheModel{ Id = 2} , new ImageCacheModel{ Id = 3}
+        };
         public bool IsPrivate { get; set; } = true;
 
         public bool CanAdultsJoin { get; set; } = false;
@@ -24,9 +26,10 @@
         public string MinimumAge { get; set; }
         public bool HasErrors { get; set; } = false;
 
-        public long maxFileSize = 2000000;
+        public long maxFileSize = 10000000;
         public int maxAllowedFiles = 3;
-        public bool maxImageUploaded => Images.Count == maxAllowedFiles;
+        public bool maxImageUploaded { get; set; } = false;
+        public int currentImageId => _currentImageId();
 
         public bool IsValid
         {
@@ -39,6 +42,41 @@
             }     
         }
 
+        private int _currentImageId() {
+            foreach (var image in Images) {
+                if (image.IsBlank()) {
+                    return image.Id; 
+                } 
+            }
+            return 1;
+        }
+
+        private void _maxImageUploaded() {
+            foreach (var image in Images) {
+                if (image.IsBlank()) {
+                    maxImageUploaded = false;
+                    return;
+                }
+            }
+            maxImageUploaded = true; 
+        }
+
+        public void setImage(int imageIndex, byte[] imageData)
+        {
+            Images[imageIndex].ImageData = imageData; 
+            Images[imageIndex].Status = ResultModel.success("");
+            _maxImageUploaded();
+            Changed.Invoke();
+        }
+
+        public void ClearImage(ImageCacheModel image)
+        {
+            Images[image.Id - 1].ImageData = null;
+            Images[image.Id - 1].Status = null;
+            _maxImageUploaded();
+            Changed.Invoke();
+        }
+
         public void AddSchedule() {
             Schedules.Add(new ScheduleModel());
         }
@@ -46,13 +84,6 @@
         public void RemoveSchedule(ScheduleModel itemToRemove) {
             Schedules.Remove(itemToRemove);
             Changed.Invoke();
-        }
-
-        public void AddImage(byte[] imageData) {
-            Images.Add(new ImageCacheModel {
-                Id = Images.Count + 1,
-                ImageData = imageData
-            }); 
         }
 
         public void ValidateForm(ActivityModel activity) {

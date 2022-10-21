@@ -163,39 +163,36 @@
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
             <div>
-                <img class="experience-image" src="@CoverPhotoSource()" />
+                <ImageCacheItem @key="@viewModel.Images[0]" image="@viewModel.Images[0]" DeleteAction="@DeleteImage" /> 
                 <p>This is your cover photo</p>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
             <div>
-                <img class="experience-image" src="@SupportingImageSource(1)" />
+                <ImageCacheItem @key="@viewModel.Images[1]" image="@viewModel.Images[1]" DeleteAction="@DeleteImage" /> 
                 <p>Supporting photo</p>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
              <div>
-                <img class="experience-image" src="@SupportingImageSource(2)" />
+                <ImageCacheItem @key="@viewModel.Images[2]" image="@viewModel.Images[2]" DeleteAction="@DeleteImage" /> 
                 <p>Supporting photo</p>
             </div>
         </div>
 
         <div class="textarea-container col-lg-6 col-md-6 col-sm-6 col-6 text-lg-start text-md-start text-sm-center">
-            <div>Upload 3 photos (2MB)</div>
+            <div>Upload 3 photos (10MB)</div>
         </div>
-        @if (!viewModel.maxImageUploaded)
-        {
-            <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center">
+            <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center" hidden="@viewModel.maxImageUploaded">
                 <label for="fileinput">
                     <button class="btn-primary" style="pointer-events: none;" type="button">Upload</button>
                 </label>
                 <div class="custom-input-hide">
-                <InputFile id="fileinput" OnChange="@LoadFiles"/>
+                <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadFiles"/>
                 </div>
             </div>
-        }
     </div>
 
     <div class="row mrow">
@@ -226,28 +223,48 @@
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
     {
-        if (viewModel.Images.Count >= 3) {
+        if (viewModel.maxImageUploaded) {
             return; 
         }
 
         loadedFiles.Clear();
 
+        int currentImageIndex = viewModel.currentImageId - 1;
+        viewModel.Images[currentImageIndex].isLoading = true;
+
         foreach (var file in e.GetMultipleFiles(viewModel.maxAllowedFiles))
         {
+            // Check if File is Image
+            if (!file.ContentType.Contains("image")) {
+                // Show Error Message 
+                viewModel.Images[currentImageIndex].Status = ResultModel.error("Invalid File Type");
+                viewModel.Images[currentImageIndex].isLoading = false; 
+                viewModel.Changed.Invoke();
+                return;
+            }
             try
             {
                 loadedFiles.Add(file);
                 MemoryStream ms = new MemoryStream();
                 await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
-                viewModel.AddImage(ms.ToArray());
+                // Update Image
+                viewModel.setImage(currentImageIndex, ms.ToArray());
                 ms.Dispose();
             }
             catch (Exception ex)
             {
+                viewModel.Images[currentImageIndex].Status = ResultModel.error(ex.Message);
                 //Logger.LogError("File: {Filename} Error: {Error}",
                 //    file.Name, ex.Message);
             }
+            finally {
+                viewModel.Images[currentImageIndex].isLoading = false; 
+            }
         }
+    }
+
+    private void DeleteImage(ImageCacheModel image) {
+        viewModel.ClearImage(image);
     }
 
     private void CheckboxChanged(ChangeEventArgs e)
@@ -273,29 +290,4 @@
     {
         return viewModel.HasErrors ? "block" : "none";
     }
-
-    private string CoverPhotoSource() {
-        if (viewModel.Images.Count == 0) {
-            return "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
-        }
-
-        var imagesrc = Convert.ToBase64String(viewModel.Images[0].ImageData);
-        var imageUrl = string.Format("data:image/jpeg;base64,{0}", imagesrc);
-
-        return imageUrl;
-    }
-
-    private string SupportingImageSource(int i = 1)
-    {
-        if (viewModel.Images.Count == i || viewModel.Images.Count < i + 1)
-        {
-            return "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
-        }
-
-        var imagesrc = Convert.ToBase64String(viewModel.Images[i].ImageData);
-        var imageUrl = string.Format("data:image/jpeg;base64,{0}", imagesrc);
-
-        return imageUrl;
-    }
-
 }
