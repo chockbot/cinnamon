@@ -28,6 +28,10 @@ namespace Cinnamon.Core
         }
 
         public bool IsBlank() {
+            if (isLoading) {
+                return false; 
+            }
+
             if (ImageData == null)
             {
                 return true;
