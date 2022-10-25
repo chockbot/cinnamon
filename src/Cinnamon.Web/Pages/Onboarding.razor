@@ -25,7 +25,7 @@
         <span class="onboarding-header">@Resources.App.onboardingHeader</span>
         <span class="onboarding-subheader">@Resources.App.onboardingSubHeader</span>
         <div class="btn-cinnamon btn-cinnamon-section1">
-            <PrimaryButton OnClick="NavigateToExplorePage" Width="fit-content" Text=@Resources.App.tryCinnamon/>
+            <PrimaryButton ModalTarget="#loginModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Try Cinnamon Making" />
         </div>
     </div>
 </div>
@@ -133,26 +133,22 @@
         </div>
     </div>
 </div>
-
-<ModalSignUp TypeValue="@UserType.Maker"></ModalSignUp>
+<!--Modal-->
+<ModalLogin TypeValue="@UserType.Maker"></ModalLogin>
 <!--Beta Alert-->
 <BetaAlert></BetaAlert>
+<!--Footer-->
 <Footer></Footer>
 
 @code{
 
     IJSObjectReference module;
 
-    private void NavigateToExplorePage()
-    {
-        NavigationManager.NavigateTo("explore");
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
        if(firstRender)
        {
-           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Onboarding Page Loaded");
        }
     }
 }
