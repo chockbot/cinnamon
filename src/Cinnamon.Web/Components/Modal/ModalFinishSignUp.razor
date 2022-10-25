@@ -1,0 +1,63 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core
+@using Cinnamon.Core.Enums
+@using Cinnamon.Core.ViewModels
+@using Cinnamon.Data
+@using System.ComponentModel.DataAnnotations
+@using System.Linq.Expressions
+@inject DataStoreDbContext waitList
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<div class="modal fade" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Finish signing up</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-filter">
+                    <EditForm Model=viewModel.waitListModel OnValidSubmit="Submit">
+                        <DataAnnotationsValidator />
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <div class="col-12">
+                                <InputText id="email-signup" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Email />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Email" />
+                            </div>
+                        </div>
+                    </EditForm>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>
+@code {
+    IJSObjectReference module;
+
+    [Parameter]
+    public UserType TypeValue { get; set; }
+
+    [Parameter]
+    public Expression<Func<string>>? For { get; set; }
+
+    SignupViewModel viewModel = new SignupViewModel();
+    public void OnSelect(ChangeEventArgs args)
+    {
+        UserType usertype;
+        Enum.TryParse(args.Value.ToString(), out usertype);
+        TypeValue = usertype;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("FinishSignUp", "./js/Signup.js");
+        }
+    }
+    public async Task Submit()
+    {
+       
+    }
+}
