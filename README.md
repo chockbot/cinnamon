@@ -5,6 +5,11 @@
 
 - .Net 6 using Blazor
 - Postgres for Database
+- Docker for Containers
+- Github Actions for CI/CD
+- Azure for Hosting
+
+For Mobile (Explore MAUI)
 
 ## Getting Started
 
