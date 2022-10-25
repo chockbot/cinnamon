@@ -1,0 +1,89 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core
+
+<div class="image-container">
+    <img class="experience-image" src="@image.imageSource()" />
+    <div class="image-delete-icon" @onclick="@InvokeDelete" hidden="@ShowDelete()">
+        <i class="fa fa-trash" id="delete-icon"></i>
+    </div>
+    <div class="error-message" hidden="@IsError()">
+        @ErrorMessage()
+    </div>
+</div>
+
+<style>
+    .experience-image {
+        width: 100%;
+        height: auto;
+    }
+
+    .image-container {
+        position: relative;
+    }
+
+    .image-delete-icon {
+        position: absolute;
+        z-index: 3;
+        border-radius: 50%;
+        top: 10px;
+        right: 10px;
+        width: 25px;
+        height: 25px;
+        background-color: white;
+    }
+
+    .error-message {
+        position: absolute;
+        z-index: 2; 
+        width: 100%;
+        top: 10px;
+        left: 0px;
+        margin-top: auto;
+        margin-bottom: auto;
+        font-weight: bold;
+        color: red;
+        text-align: center;
+    }
+
+    .image-delete-icon .fa-trash {
+        position: center;
+        color: gray;
+        display: block;
+        margin-left: 6px;
+        margin-top: 4px;
+        width: 50%;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public ImageCacheModel image { get; set; }
+    [Parameter]
+    public Action<ImageCacheModel> DeleteAction { get; set; }
+
+    private void InvokeDelete() {
+        DeleteAction?.Invoke(image);
+    }
+
+    private bool ShowDelete() {
+        if (image.IsBlank()) {
+            return true; 
+        }
+        return false; 
+    }
+
+    private bool IsError() {
+        if (image.Status != null && image.Status.Type == MessageType.Error) {
+            return false; 
+        }
+        return false;
+    }
+
+    private string ErrorMessage() {
+        var errorMessage = "";
+        if (!IsError() && image.Status != null) {
+            errorMessage = image.Status.Message; 
+        }
+        return errorMessage ?? "";
+    }
+}
