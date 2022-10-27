@@ -23,5 +23,7 @@ namespace Cinnamon.Core
         public static IDataStore DataStore => Framework.Service<IDataStore>();
 
         public static IEmailVerification EmailVerificationHandler => Framework.Service<IEmailVerification>();
+
+        public static IWelcomeNotification WelcomeNotificationHandler => Framework.Service<IWelcomeNotification>();
     }
 }
