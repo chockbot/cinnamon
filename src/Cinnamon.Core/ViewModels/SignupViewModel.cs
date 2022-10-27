@@ -10,10 +10,9 @@ namespace Cinnamon.Core.ViewModels
     {
         public WaitListModel waitListModel = new WaitListModel();
 
-        public UserModel userModel = new UserModel();
+        public UserListModel userModel = new UserListModel();
         public bool isSubmit { get; set; } = false;
         public bool isClickButton { get; set; } = false;
-
 
         public bool isValid(string email)
         {

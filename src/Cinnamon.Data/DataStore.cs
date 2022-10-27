@@ -32,6 +32,8 @@ namespace Cinnamon.Data
         public IWaitList WaitList => new WaitLists(mDbContext);
 
         public IExperienceCategory ExperienceCategory => new ExperienceCategory(mDbContext);
+        public IUser User => new UserList(mDbContext);
+
         #endregion
 
         #region Constructor

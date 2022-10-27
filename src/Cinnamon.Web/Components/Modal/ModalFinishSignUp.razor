@@ -18,7 +18,7 @@
             </div>
             <div class="modal-body">
                 <div class="card-filter">
-                    <EditForm Model=viewModel OnValidSubmit="Submit">
+                    <EditForm Model=viewModel.userModel OnValidSubmit="Submit">
                         <DataAnnotationsValidator />
                         <div class="d-flex flex-column gap-3 align-items-center">
                             <div class="col-12">
@@ -33,7 +33,7 @@
                                 <p>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Email />
+                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.userModel.Email />
                                 <p>For email confirmations, and receipts.</p>
                             </div>
                             <div class="col-12">
@@ -71,6 +71,7 @@
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
+
     public void OnSelect(ChangeEventArgs args)
     {
         UserType usertype;
@@ -82,7 +83,7 @@
     {
         if (firstRender)
         {
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("FinishSignUp", "./js/Signup.js");
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
         }
     }
     public async Task Submit()

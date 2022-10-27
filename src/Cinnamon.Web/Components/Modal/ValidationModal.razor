@@ -1,7 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core.Enums
 
-<div class="modal fade" ref=@Modal id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
+<div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -12,14 +12,17 @@
                 <div class="card-filter">
                     <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
                     <br />
-                    <h6> Verification Code </h6>
-                    <VerificationCard></VerificationCard>
+                    <h6> Verification Email </h6>
+                    <br/>
+                    <div class="col-12 text-center">
+                        <p>We've sent an email to your inboc. Please check and click verify.</p>
+                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942">Resend</a></p>
+                    </div>
                 </div>
             </div>
         </div> 
     </div>
 </div>
 @code {
-    [Parameter]
-    public ValidationModal Modal { get; set; }
+
 }
