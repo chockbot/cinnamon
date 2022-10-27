@@ -3,7 +3,7 @@
     public class ExperienceSetupViewModel
     {
         private bool _isValid = false;
-        public List<ScheduleModel> Schedules { get; set; } = new List<ScheduleModel> { new ScheduleModel() };
+        public List<ScheduleModel> Schedules { get; set; } = new List<ScheduleModel> { new ScheduleModel { Id = 1} };
         public List<ImageCacheModel> Images { get; set; } = new List<ImageCacheModel> { 
             new ImageCacheModel{ Id = 1 }, new ImageCacheModel{ Id = 2} , new ImageCacheModel{ Id = 3}
         };
@@ -78,7 +78,13 @@
         }
 
         public void AddSchedule() {
-            Schedules.Add(new ScheduleModel());
+            // Get Next Number
+            var maxIdItem = Schedules.MaxBy(x => x.Id);
+            var maxId = 0;
+            if (maxIdItem != null) {
+                maxId = maxIdItem.Id; 
+            }
+            Schedules.Add(new ScheduleModel { Id = maxId + 1 });
         }
 
         public void RemoveSchedule(ScheduleModel itemToRemove) {

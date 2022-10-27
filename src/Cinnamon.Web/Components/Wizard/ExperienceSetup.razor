@@ -39,8 +39,21 @@
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             @foreach (var schedule in viewModel.Schedules)
             {
-                <ScheduleItem @key="schedule" scheduleModel="schedule" parentViewModel="viewModel"></ScheduleItem>
+                <div draggable="true" @key=@schedule.Id id="@schedule.Id"
+                    ondragover="event.preventDefault();" 
+                    @ondragstart="@( (e) => HandleDragStart(e, schedule))"
+                    @ondrop="@(() => HandleOnDrop(schedule))"
+                    @ondragenter="@( () => HandleDragEnter(schedule))"
+                    @ondragend="HandleDragEnd"
+                >
+                    <ScheduleItem @key="schedule" scheduleModel="schedule" parentViewModel="viewModel"></ScheduleItem>
+                </div>
             }
+            <div style="height: 1.5em;" 
+                ondragover="event.preventDefault();" 
+                @ondrop="HandleDropBottom"
+                @ondragenter="HandleDragEnterBottom"
+            />
             <div class="button-container" style="overflow:auto; margin-top: 20px;">
                 <div style="float:left;">
                     <button class="btn-primary" type="button" id="addScheduleBtn" @onclick=viewModel.AddSchedule>Add</button>
@@ -290,4 +303,45 @@
     {
         return viewModel.HasErrors ? "block" : "none";
     }
+
+    public void HandleOnDrop(ScheduleModel item)
+    {
+        DragEnter = null;
+        if (DraggedItem == null) return;
+        if (DraggedItem == item) return;
+        var itemPosition = viewModel.Schedules.IndexOf(item);
+        viewModel.Schedules.Insert(itemPosition, DraggedItem!);
+        DraggedItem = null;
+    }
+    public void HandleDropBottom()
+    {
+        DragEnter = null;
+        if (DraggedItem == null) return;
+        viewModel.Schedules.Add(DraggedItem!);
+        DraggedItem = null;
+    }
+    public void HandleDragStart(DragEventArgs e, ScheduleModel item)
+    {
+        e.DataTransfer.EffectAllowed = "move"; //does't run
+        DraggedItem = item;
+        DraggedItemPosition = viewModel.Schedules.IndexOf(item);
+        viewModel.Schedules.Remove(DraggedItem!);
+    }
+
+    public void HandleDragEnter(ScheduleModel item)
+        =>
+        DragEnter = item;
+    public void HandleDragEnterBottom()
+        =>
+        DragEnter = null;
+    public void HandleDragEnd()
+    {
+        // never fired IDK why
+        if (DraggedItem == null) return;
+        DragEnter = null;
+        viewModel.Schedules.Insert(DraggedItemPosition, DraggedItem!);
+    }
+    private ScheduleModel? DraggedItem;
+    private int DraggedItemPosition;
+    private ScheduleModel? DragEnter;
 }

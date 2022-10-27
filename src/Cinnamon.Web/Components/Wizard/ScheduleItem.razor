@@ -1,8 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
 
-<div class="row">
-    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
+<div class="row"> <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
         <input class="form-control @RequiredCheck(scheduleModel.Name)" id="name-input" placeholder="Detailed Activity Breakdown" required @bind="scheduleModel.Name" />
        <i class="fa fa-trash" id="delete-icon" @onclick=DeleteSchedule></i>
    
@@ -33,6 +32,10 @@
     public ScheduleModel scheduleModel { get; set; }
     [Parameter]
     public ExperienceSetupViewModel parentViewModel { get; set; }
+
+    private ScheduleModel? DraggedItem;
+    private int DraggedItemPosition;
+    private ScheduleModel? DragEnter;
 
     private void DeleteSchedule() {
         parentViewModel.RemoveSchedule(scheduleModel);
