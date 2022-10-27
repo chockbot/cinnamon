@@ -10,13 +10,6 @@ namespace Cinnamon.Data.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<string>(
-                name: "ScheduleIndicator",
-                table: "Activities",
-                type: "text",
-                nullable: false,
-                defaultValue: "");
-
             migrationBuilder.CreateTable(
                 name: "UserList",
                 columns: table => new
