@@ -5,7 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using Microsoft.Extensions.Configuration;
+using Cinnamon.Core.Config;
+using Cinnamon.Core.Services;
+using Cinnamon.Core.Services.DefaultJsonSerialization;
+using Cinnamon.Core.Module.EmailService.Handler;
+using Cinnamon.Core.Module.EmailService.Handler.MicrosoftGraph;
 namespace Cinnamon.Core
 {
     /// <summary>
@@ -40,6 +45,43 @@ namespace Cinnamon.Core
             construction.Services.AddTransient<ITaskManager, BaseTaskManager>();
 
             // Return the construction for chaining
+            return construction;
+        }
+
+        /// <summary>
+        /// Inject Cinnamon core configuration from ICongif
+        /// </summary>
+        /// <param name="construction"></param>
+        /// <returns></returns>
+        public static FrameworkConstruction AddCoreConfiguration(this FrameworkConstruction construction)
+        {
+            CoreConfig coreConfig = new CoreConfig();
+            
+            // add core configuration
+            construction.Configuration.GetSection("AppConfig").Bind(coreConfig);
+            construction.Services.AddSingleton(coreConfig);
+
+            // Return the construction for chaining
+            return construction;
+        }
+
+        /// <summary>
+        /// Inject default json serialization
+        /// </summary>
+        /// <param name="construction"></param>
+        /// <returns></returns>
+        public static FrameworkConstruction AddDefaultJsonSerialization(this FrameworkConstruction construction)
+        {
+            construction.Services.AddTransient<IJsonSerializationService, DefaultJsonSerializationService>();
+
+            // Return the construction for chaining
+            return construction;
+        }
+
+        public static FrameworkConstruction AddApplicationServices(this FrameworkConstruction construction)
+        {
+            construction.Services.AddTransient<ISendMailHandler, SendMailHandler>();
+
             return construction;
         }
     }
