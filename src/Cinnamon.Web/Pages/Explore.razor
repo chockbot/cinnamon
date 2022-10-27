@@ -50,9 +50,7 @@
                 </div>
                 &nbsp;
                 <div class="become">
-                    <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
-                       @Resources.App.Become
-                    </button>
+                     <NavButton OnClick="NavigateToOnboardingPage" Text=@Resources.App.Become/>
                 </div>
                 <div class="dropdown">
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none">
@@ -61,7 +59,7 @@
                         <span class="menu-label">@Resources.App.menu</span>
                     </div>
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">  
                     <li>
                         <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
                              @Resources.App.Sign
@@ -500,6 +498,10 @@
     private void NavigateToTermsPage()
     {
         NavigationManager.NavigateTo("terms");
+    }
+     private void NavigateToOnboardingPage()
+    {
+        NavigationManager.NavigateTo("Onboarding");
     }
     public async Task Search()
     {

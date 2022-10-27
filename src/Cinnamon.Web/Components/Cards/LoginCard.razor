@@ -25,21 +25,17 @@
                     <hr class="left" />or<hr class="right" />
                 </div>
                  <div class="col-12">
-                    <a class="btn btn-md btn-google" href="#"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon"/> Continue with Gmail</a>
+                    <a class="btn btn-md btn-google" href="#"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" onclick="@LoginwithEmail()"/> Continue with Gmail</a>
                  </div>
             </div>
         </EditForm>
-    }       
-    else
-
-    {
-        <p>Thank you for joining us! <br> For more details, kindly refer to our <a @onclick="OnClickFAQ" href="FAQ">FAQ</a></p>
-    }
+    }      
 </div>
-
 
 @code {
     IJSObjectReference module;
+
+    public List<WaitListModel>  userList  = new List<WaitListModel>();
 
     [Parameter]
     public UserType TypeValue { get; set; }
@@ -48,6 +44,11 @@
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        userList = await CoreDI.DataStore.WaitList.GetAllAsync();
+    }
     public void OnSelect(ChangeEventArgs args)
     {
         UserType usertype;
@@ -62,11 +63,6 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
         }
     }
-
-    public void OnClickFAQ(){
-        module.InvokeVoidAsync("HideModal");
-    }
-
     public bool ButtonIsClicked(){
         return viewModel.isClickButton ? true: false;
     }
@@ -74,19 +70,27 @@
     public string showSpinner(){
         return viewModel.isClickButton ? "visible" : "hidden";
     }
-
+    public async Task LoginwithEmail()
+    {
+        //Login with Email
+    }
     public async Task Submit(){
         if(viewModel.isValid(viewModel.waitListModel.Email))
         {
-            viewModel.waitListModel.Type = TypeValue;
-            waitList.WaitLists.Add(viewModel.waitListModel);
-            var res = await waitList.SaveChangesAsync();
-            if (res > 0)
+            var result = userList.Where(a => a.Email == viewModel.waitListModel.Email).FirstOrDefault();
+            if(result != null)  
             {
-                await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
-                viewModel.isSubmit = true;
-                viewModel.isClickButton = false;
+                //Already have an Account
+                //Go to Creation Page
+                NavigationManager.NavigateTo("Creation", true);
+            }
+            else
+            {
+                //Verify Account 
+                //Go to Verification Modal = > ValidationModal
+
             }
         }
     }
+
 }
