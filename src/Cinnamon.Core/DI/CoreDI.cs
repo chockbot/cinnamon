@@ -1,4 +1,4 @@
-﻿using Cinnamon.Core.Module.EmailService.Handler;
+﻿using Cinnamon.Core.Module.NotificationService.Handler;
 using Dna;
 namespace Cinnamon.Core
 {
@@ -22,6 +22,6 @@ namespace Cinnamon.Core
 
         public static IDataStore DataStore => Framework.Service<IDataStore>();
 
-        public static ISendMailHandler SendMailHandler => Framework.Service<ISendMailHandler>();
+        public static IEmailVerification EmailVerificationHandler => Framework.Service<IEmailVerification>();
     }
 }

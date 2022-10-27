@@ -120,7 +120,7 @@ public class SendMailHandler : ISendMailHandler
             // set body payload to send
             var payload = new BodyPayload();
             payload.message.subject = args.Subject;
-            payload.message.body.contentType = "text";
+            payload.message.body.contentType = args.ContentType;
             payload.message.body.content = args.Body;
 
             // construct recipients data

@@ -9,4 +9,6 @@ public class SendMail : IInteractor
     public string Subject {get; set;}
     public string Body {get; set;}
     public string From {get; set;}
+    // content type default to text
+    public string ContentType { get; set; } = "text";
 }

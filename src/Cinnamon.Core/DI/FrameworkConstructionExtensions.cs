@@ -11,6 +11,8 @@ using Cinnamon.Core.Services;
 using Cinnamon.Core.Services.DefaultJsonSerialization;
 using Cinnamon.Core.Module.EmailService.Handler;
 using Cinnamon.Core.Module.EmailService.Handler.MicrosoftGraph;
+using Cinnamon.Core.Module.NotificationService.Handler;
+using Cinnamon.Core.Module.NotificationService.Handler.VerifyEmail;
 namespace Cinnamon.Core
 {
     /// <summary>
@@ -81,6 +83,7 @@ namespace Cinnamon.Core
         public static FrameworkConstruction AddApplicationServices(this FrameworkConstruction construction)
         {
             construction.Services.AddTransient<ISendMailHandler, SendMailHandler>();
+            construction.Services.AddTransient<IEmailVerification, EmailVerificationHandler>();
 
             return construction;
         }

@@ -63,7 +63,6 @@ namespace Cinnamon.Data
             modelBuilder.Entity<WaitListModel>().HasKey(w => new { w.Id });
 
             modelBuilder.Entity<ActivityImagesModels>().HasKey(b => new { b.Id });
-
         }
         #endregion
 
