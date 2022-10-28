@@ -14,6 +14,9 @@ using Cinnamon.Core.Module.EmailService.Handler.MicrosoftGraph;
 using Cinnamon.Core.Module.NotificationService.Handler;
 using Cinnamon.Core.Module.NotificationService.Handler.VerifyEmail;
 using Cinnamon.Core.Module.NotificationService.Handler.WelcomeNotifiy;
+using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+using Cinnamon.Core.Module.CinnamonMakerService.Handler.EmailConfirm;
+using Cinnamon.Core.Module.CinnamonMakerService.Handler.Register;
 namespace Cinnamon.Core
 {
     /// <summary>
@@ -86,6 +89,8 @@ namespace Cinnamon.Core
             construction.Services.AddTransient<ISendMailHandler, SendMailHandler>();
             construction.Services.AddTransient<IEmailVerification, EmailVerificationHandler>();
             construction.Services.AddTransient<IWelcomeNotification, WelcomeNotificationHandler>();
+            construction.Services.AddTransient<IRegisterMaker, RegisterMakerHandler>();
+            construction.Services.AddTransient<IEmailVerification, EmailVerificationHandler>();
 
             return construction;
         }
