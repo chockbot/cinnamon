@@ -67,7 +67,6 @@ public class RegisterMakerHandler : IRegisterMaker
         {
             return AppResult<RegisterMakerResult>.CreateFailed(ex, "An error occured in RegisterMakerHandler");
         }
-        throw new NotImplementedException();
     }
 
     private IdentityUser CreateUser()
