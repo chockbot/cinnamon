@@ -5,6 +5,7 @@ namespace Cinnamon.Core
     public class ImageCacheModel : BaseModel
     {
         public int Id { get; set; }
+        public string ImageName { get; set; }
         public byte[]? ImageData { get; set; }
         public string blankImageSource => "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
         public bool isLoading { get; set; } = false;

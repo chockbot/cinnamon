@@ -22,7 +22,7 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(activityModel.Description)" maxlength="80" @bind="activityModel.Description"></textarea>
+                <textarea class="@RequiredCheck(viewModel.DescriptionSection.Description)" maxlength="80" @bind="viewModel.DescriptionSection.Description"></textarea>
                 <label>200 Max</label>
             </div>
         </div>
@@ -60,7 +60,7 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(viewModel.SpecificsYouWillProvide)" maxlength="80" @bind="viewModel.SpecificsYouWillProvide"></textarea>
+                <textarea class="@RequiredCheck(viewModel.DescriptionSection.SpecificsYouWillProvide)" maxlength="80" @bind="viewModel.DescriptionSection.SpecificsYouWillProvide"></textarea>
                 <label>200 Max</label>
             </div>
         </div>
@@ -76,7 +76,7 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(viewModel.CustomerBringWithThem)" maxlength="80" @bind="viewModel.CustomerBringWithThem"></textarea>
+                <textarea class="@RequiredCheck(viewModel.DescriptionSection.CustomerBringWithThem)" maxlength="80" @bind="viewModel.DescriptionSection.CustomerBringWithThem"></textarea>
                 <label>200 Max</label>
             </div>
         </div>
@@ -95,18 +95,18 @@
             <label class="fw-bold">
                 Minimum Age:
             </label>   
-            <input type="number" class="form-control @RequiredCheck(viewModel.MinimumAge)" placeholder="Minimum Age" required @bind="@viewModel.MinimumAge" />
+            <input type="number" class="form-control @RequiredCheck(viewModel.DescriptionSection.MinimumAge)" placeholder="Minimum Age" required @bind="@viewModel.DescriptionSection.MinimumAge" />
             <label class="fw-bold">
                 Can adults join?:
             </label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value=true checked @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value="true" checked @oninput="CheckboxChanged">
                 <label class="form-check-label" for="yes">
                     Yes
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value=false @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value="false" @oninput="CheckboxChanged">
                 <label class="form-check-label" for="no">
                     No
                 </label>
@@ -114,7 +114,7 @@
             <label class="fw-bold">
                 Levels of Activity:
             </label>
-            <select class="form-control @RequiredCheck(viewModel.ActivityLevel)" @bind="@viewModel.ActivityLevel">
+            <select class="form-control @RequiredCheck(viewModel.DescriptionSection.ActivityLevel)" @bind="@viewModel.DescriptionSection.ActivityLevel">
                 <option disabled selected>Select Activity Level</option>
                 @foreach (var activityLevel in viewModel.LevelOfActivityList)
                 {
@@ -124,7 +124,7 @@
              <label class="fw-bold">
                  Required skill level
             </label>
-            <select class="form-control @RequiredCheck(viewModel.SkillLevel)" @bind="@viewModel.SkillLevel">
+            <select class="form-control @RequiredCheck(viewModel.DescriptionSection.SkillLevel)" @bind="@viewModel.DescriptionSection.SkillLevel">
                 <option disabled selected>Select Skill Level</option>
                 @foreach (var skillLevel in viewModel.SkillLevelList)
                 {
@@ -142,7 +142,7 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea maxlength="80" @bind="viewModel.AdditionalRequirements"></textarea>
+                <textarea maxlength="80" @bind="viewModel.DescriptionSection.AdditionalRequirements"></textarea>
                 <label>200 Max</label>
             </div>
         </div>
@@ -272,7 +272,7 @@
         if (e.Value != null)
         {
             bool value = bool.Parse(e.Value.ToString());
-            viewModel.CanAdultsJoin = value;
+            viewModel.DescriptionSection.CanAdultsJoin = value;
         }
     }
 

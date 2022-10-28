@@ -10,6 +10,10 @@ namespace Cinnamon.Core
         IExperienceTypes ExperienceTypes { get; }
         IWaitList WaitList { get; }
         IExperienceCategory ExperienceCategory { get; }
+        ISchedules Schedules { get; }
+        IAddresses Addresses { get; }
+        IDescriptions Descriptions { get; }
+        ISearchTags SearchTags { get; }
         /// <summary>
         /// Makes sure the client data store is correctly setup
         /// </summary>
