@@ -47,6 +47,10 @@
                     @ondragend="HandleDragEnd"
                 >
                     <ScheduleItem @key="schedule" scheduleModel="schedule" parentViewModel="viewModel"></ScheduleItem>
+                    <div class="center" style="width:100%;">
+                        <img class="drag-icon" draggable="false" src="/images//reorder-icon.png"/>
+                    </div>
+                    <hr class="solid"/>
                 </div>
             }
             <div style="height: 1.5em;" 
@@ -310,13 +314,18 @@
         if (DraggedItem == null) return;
         if (DraggedItem == item) return;
         var itemPosition = viewModel.Schedules.IndexOf(item);
-        viewModel.Schedules.Insert(itemPosition, DraggedItem!);
+        if (itemPosition != DraggedItemPosition)
+        {
+            viewModel.Schedules.Remove(DraggedItem!);
+            viewModel.Schedules.Insert(itemPosition, DraggedItem!);
+        }
         DraggedItem = null;
     }
     public void HandleDropBottom()
     {
         DragEnter = null;
         if (DraggedItem == null) return;
+        viewModel.Schedules.Remove(DraggedItem!);
         viewModel.Schedules.Add(DraggedItem!);
         DraggedItem = null;
     }
@@ -325,7 +334,7 @@
         e.DataTransfer.EffectAllowed = "move"; //does't run
         DraggedItem = item;
         DraggedItemPosition = viewModel.Schedules.IndexOf(item);
-        viewModel.Schedules.Remove(DraggedItem!);
+        //viewModel.Schedules.Remove(DraggedItem!);
     }
 
     public void HandleDragEnter(ScheduleModel item)
@@ -337,9 +346,9 @@
     public void HandleDragEnd()
     {
         // never fired IDK why
-        if (DraggedItem == null) return;
-        DragEnter = null;
-        viewModel.Schedules.Insert(DraggedItemPosition, DraggedItem!);
+        //if (DraggedItem == null) return;
+        //DragEnter = null;
+        //viewModel.Schedules.Insert(DraggedItemPosition, DraggedItem!);
     }
     private ScheduleModel? DraggedItem;
     private int DraggedItemPosition;
