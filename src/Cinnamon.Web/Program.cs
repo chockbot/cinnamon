@@ -5,6 +5,9 @@ using Dna;
 using Cinnamon.Web.Areas.Identity;
 using Cinnamon.Data;
 using Cinnamon.Core;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +36,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 var app = builder.Build();
+// Add Blazorise
+builder.Services.AddBlazorise(options =>{ options.Immediate = true;})
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
