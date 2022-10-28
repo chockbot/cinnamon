@@ -1,7 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core.Enums
 
-<div class="modal fade" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
+<div class="modal fade @modalClass" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display=@modalDisplay">
     <div class="modal-dialog" role="document" style="z-index:1055">
         <div class="modal-content">
             <div class="modal-header">
@@ -23,5 +23,14 @@
 </div>
 
 @code {
-  
+    private string modalDisplay = "";
+
+    private string modalClass = "show";
+
+    public void OpenModal()
+    {
+        modalDisplay = "block;";
+        modalClass = "show";
+        StateHasChanged();
+    }
 }

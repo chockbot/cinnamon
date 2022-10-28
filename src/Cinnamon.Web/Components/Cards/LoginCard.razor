@@ -32,14 +32,11 @@
     }    
 </div>
 <ValidationModal @ref=Modal></ValidationModal>
-<ModalLogin @ref=loginModal></ModalLogin>
-@code {
+@code{
 
     IJSObjectReference module;
 
     private ValidationModal Modal { get; set; }
-
-    private ModalLogin loginModal { get; set; }
 
     public List<WaitListModel>  userList  = new List<WaitListModel>();
 
@@ -87,7 +84,6 @@
             {
                 //Verify Account 
                 //Go to Verification Modal = > ValidationModal
-                loginModal.CloseModal();
                 Modal.OpenModal();
             }
         }

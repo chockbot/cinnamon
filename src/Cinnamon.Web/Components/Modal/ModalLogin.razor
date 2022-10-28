@@ -1,7 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core.Enums
 
-<div class="modal fade @modalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@modalDisplay">
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -22,17 +22,4 @@
 @code {
     [Parameter]
     public UserType TypeValue { get; set; }
-
-    private string modalDisplay = "block;";
-
-    private string modalClass = "show";
-
-    private bool showBackdrop = false;
-
-    public void CloseModal()
-    {
-        modalDisplay = "";
-        modalClass = "none;";
-        StateHasChanged();
-    }
 }
