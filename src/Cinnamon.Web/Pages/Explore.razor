@@ -480,9 +480,6 @@
         activity        = await CoreDI.DataStore.Activities.GetAllAsync();
         activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
         activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
-        
-        var data = new Core.Module.NotificationService.Interactors.EmailVerification() {Email = "dechalico.dev@gmail.com", VerificationLink = "link"};
-        await CoreDI.EmailVerificationHandler.ExecuteAsync(data);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
