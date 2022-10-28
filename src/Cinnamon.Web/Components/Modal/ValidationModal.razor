@@ -2,7 +2,7 @@
 @using Cinnamon.Core.Enums
 
 <div class="modal fade @modalClass" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display=@modalDisplay">
-    <div class="modal-dialog" role="document" style="z-index:1055">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <p class="col-11 modal-title text-center">Verification Email</p>
@@ -11,14 +11,14 @@
             <div class="modal-body">
                 <div class="card-filter">
                     <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
-                    <br/>
+                    <br />
                     <div class="col-12 text-center">
                         <p>We've sent an email to your inbox. Please check and click verify.</p>
                         <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
                     </div>
                 </div>
             </div>
-        </div> 
+        </div>
     </div>
 </div>
 @if (showBackdrop)
@@ -30,11 +30,12 @@
     private string modalClass = "";
     private bool showBackdrop = false;
 
-    public void Open()
+    public void OpenModal()
     {
         modalDisplay = "block;";
+        Task.Delay(100);//Delay allows bootstrap to perform nice fade animation
         modalClass = "show";
-        showBackdrop = true;
+        StateHasChanged();
     }
 
 }
