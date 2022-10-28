@@ -1,0 +1,40 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core.Enums
+
+<div class="modal fade @modalClass" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display=@modalDisplay">
+    <div class="modal-dialog" role="document" style="z-index:1055">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Verification Email</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-filter">
+                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
+                    <br/>
+                    <div class="col-12 text-center">
+                        <p>We've sent an email to your inbox. Please check and click verify.</p>
+                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
+                    </div>
+                </div>
+            </div>
+        </div> 
+    </div>
+</div>
+@if (showBackdrop)
+{
+    <div class="modal fade show"></div>
+}
+@code {
+    private string modalDisplay = "none;";
+    private string modalClass = "";
+    private bool showBackdrop = false;
+
+    public void Open()
+    {
+        modalDisplay = "block;";
+        modalClass = "show";
+        showBackdrop = true;
+    }
+
+}

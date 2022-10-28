@@ -1,6 +1,7 @@
 ﻿namespace Cinnamon.Core
 {
-    public class UserModel
+    public class ExploreViewModel
     {
+
     }
 }

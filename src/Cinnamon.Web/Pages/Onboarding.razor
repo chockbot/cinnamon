@@ -1,0 +1,153 @@
+﻿@layout LandingMainLayout
+@page "/onboarding"
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@using Cinnamon.Core.Enums
+@using Cinnamon.Web.Components
+@using System.Globalization
+<PageTitle>@Resources.App.appName</PageTitle>
+
+<!--Section 1-->
+<div class="section-1 row">
+    <div class="onboarding-image-container col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12 order-lg-last order-md-last order-first order-sm-first">
+        <div class="onboarding-lg">
+            <img id="onboarding-page-image" src="images/onboarding_image1.png" />
+        </div>
+        <div class="onboarding-md">
+            <img id="onboarding-page-image" src="images/onboarding_image1.png" />
+        </div>
+        <div class="onboarding-sm">
+            <img id="onboarding-page-image" src="images/onboarding_image1-mobile.png" />
+        </div>
+    </div>
+
+    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-12 order-lg-last order-md-last order-first order-sm-first">
+        <span class="onboarding-header">@Resources.App.onboardingHeader</span>
+        <span class="onboarding-subheader">@Resources.App.onboardingSubHeader</span>
+        <div class="btn-cinnamon btn-cinnamon-section1">
+            <PrimaryButton ModalTarget="#loginModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Try Cinnamon Making" />
+        </div>
+    </div>
+</div>
+<!--Section 2-->
+<div class="section-2 row">
+    <span class="onboarding-header">@Resources.App.stepsToBecome</span>
+    <div class="onboarding-text onboarding-lg">
+        <div class="col-12 onboarding-cards row mx-auto">
+            <div class="col-lg-3 col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-1.png"
+                            Title1="Step 1"
+                            Subtitle1="Onboarding"
+                            Description1="Follow our step by step guide on how you can maximize Cinnamon" />
+            </div>
+            <div class="col-lg-3 col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-2.png"
+                            Title1="Step 2"
+                            Subtitle1="Create"
+                            Description1="Follow our step by step guide on how you can maximize Cinnamon" />
+            </div>
+            <div class="col-lg-3 col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-3.png"
+                            Title1="Step 3"
+                            Subtitle1="Setup "
+                            Description1="Setup your personal experience page by uploading photos or short videos. " />
+            </div>
+            <div class="col-lg-3 col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-4.png"
+                            Title1="Step 4"
+                            Subtitle1="Go all out"
+                            Description1="Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!" />
+             </div>
+        </div>
+    </div>
+    <div class="onboarding-text onboarding-md">
+        <div class="col-12 onboarding-cards row">
+            <div class="col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-1.png"
+                            Title1="Step 1"
+                            Subtitle1="Onboarding"
+                            Description1="Follow our step by step guide on how you can maximize Cinnamon" />
+            </div>
+            <div class="col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-2.png"
+                            Title1="Step 2"
+                            Subtitle1="Create"
+                            Description1="Follow our step by step guide on how you can maximize Cinnamon" />
+            </div>
+            <div class="col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-3.png"
+                            Title1="Step 3"
+                            Subtitle1="Setup "
+                            Description1="Setup your personal experience page by uploading photos or short videos. " />
+            </div>
+            <div class="col-md-3 onboarding-card">
+                <OnboardingCard ImageSource1="images/onboarding-icon-4.png"
+                            Title1="Step 4"
+                            Subtitle1="Go all out"
+                            Description1="Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!" />
+             </div>
+        </div>
+    </div>
+    <div class="onboarding-text onboarding-sm">
+        <div id="carouselSection2" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#carouselSection2" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#carouselSection2" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#carouselSection2" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                <button type="button" data-bs-target="#carouselSection2" data-bs-slide-to="3" aria-label="Slide 4"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <div class="col-sm-12">
+                            <OnboardingCard ImageSource1="images/onboarding-icon-1.png"
+                            Title1="Step 1"
+                            Subtitle1="Onboarding"
+                            Description1="Follow our step by step guide on how you can maximize Cinnamon" />
+                     </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="col-sm-12">
+                            <OnboardingCard ImageSource1="images/onboarding-icon-2.png"
+                            Title1="Step 2"
+                            Subtitle1="Create"
+                            Description1="Follow our step by step guide on how you can maximize Cinnamon" />
+                     </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="col-sm-12">
+                            <OnboardingCard ImageSource1="images/onboarding-icon-3.png"
+                            Title1="Step 3"
+                            Subtitle1="Setup "
+                            Description1="Setup your personal experience page by uploading photos or short videos. " />
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="col-sm-12">
+                            <OnboardingCard ImageSource1="images/onboarding-icon-4.png"
+                            Title1="Step 4"
+                            Subtitle1="Go all out"
+                            Description1="Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!" />
+                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Modal-->
+<ModalLogin TypeValue="@UserType.Maker"></ModalLogin>
+<!--Beta Alert-->
+<BetaAlert></BetaAlert>
+<!--Footer-->
+<Footer></Footer>
+
+@code{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+       if(firstRender)
+       {
+           await jsRuntime.InvokeVoidAsync("MyLib.Track", "Onboarding Page Loaded");
+       }
+    }
+}
+
+

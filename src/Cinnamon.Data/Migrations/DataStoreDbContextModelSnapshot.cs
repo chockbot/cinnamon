@@ -235,6 +235,64 @@ namespace Cinnamon.Data.Migrations
                     b.ToTable("ExperienceCategories");
                 });
 
+            modelBuilder.Entity("Cinnamon.Core.UserListModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("AcceptFlag")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Birthdate")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ConfirmPassword")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("DeletionFlag")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserList");
+                });
+
             modelBuilder.Entity("Cinnamon.Core.WaitListModel", b =>
                 {
                     b.Property<int>("Id")

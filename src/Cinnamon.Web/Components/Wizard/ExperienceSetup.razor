@@ -1,0 +1,293 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core
+
+<h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>@Resources.App.fillRequiredField</li>
+    </ul>
+</div>
+<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+               @Resources.App.letsDescribeExperience 
+            </label>
+            <p>
+                @Resources.App.whatClientsGoingToDo
+                <br/><br/>
+                @Resources.App.whatClientsGoingToDoItem1<br/>
+                @Resources.App.whatClientsGoingToDoItem2<br/>
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(activityModel.Description)" maxlength="80" @bind="activityModel.Description"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+              @Resources.App.createExperienceSchedule 
+            </label>
+            <p>
+                @Resources.App.createExperienceDescription
+            </p>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @foreach (var schedule in viewModel.Schedules)
+            {
+                <ScheduleItem @key="schedule" scheduleModel="schedule" parentViewModel="viewModel"></ScheduleItem>
+            }
+            <div class="button-container" style="overflow:auto; margin-top: 20px;">
+                <div style="float:left;">
+                    <button class="btn-primary" type="button" id="addScheduleBtn" @onclick=viewModel.AddSchedule>Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Include specifics on what you will provide
+            </label>
+            <p>
+                You can make your guests feel at home by giving them food and drinks, special 
+                equipment, concert tickets, or anything else unique.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(viewModel.SpecificsYouWillProvide)" maxlength="80" @bind="viewModel.SpecificsYouWillProvide"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                What customers must bring with them
+            </label>
+            <p>
+                Help them get ready by being specific and writing each thing down on its own list.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(viewModel.CustomerBringWithThem)" maxlength="80" @bind="viewModel.CustomerBringWithThem"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Customer Requirements
+            </label>
+            <p>
+                Remember that the person who books your experience may also book spots for other people. Put them here if there are strict rules about age, skill level, or certifications.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold">
+                Minimum Age:
+            </label>   
+            <input type="number" class="form-control @RequiredCheck(viewModel.MinimumAge)" placeholder="Minimum Age" required @bind="@viewModel.MinimumAge" />
+            <label class="fw-bold">
+                Can adults join?:
+            </label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value=true checked @oninput="CheckboxChanged">
+                <label class="form-check-label" for="yes">
+                    Yes
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value=false @oninput="CheckboxChanged">
+                <label class="form-check-label" for="no">
+                    No
+                </label>
+            </div>
+            <label class="fw-bold">
+                Levels of Activity:
+            </label>
+            <select class="form-control @RequiredCheck(viewModel.ActivityLevel)" @bind="@viewModel.ActivityLevel">
+                <option disabled selected>Select Activity Level</option>
+                @foreach (var activityLevel in viewModel.LevelOfActivityList)
+                {
+                    <option value="@activityLevel">@activityLevel</option>
+                }
+            </select>
+             <label class="fw-bold">
+                 Required skill level
+            </label>
+            <select class="form-control @RequiredCheck(viewModel.SkillLevel)" @bind="@viewModel.SkillLevel">
+                <option disabled selected>Select Skill Level</option>
+                @foreach (var skillLevel in viewModel.SkillLevelList)
+                {
+                    <option value="@skillLevel">@skillLevel</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Additional requirements (optional):
+            </label>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea maxlength="80" @bind="viewModel.AdditionalRequirements"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Post pictures!
+            </label>
+            <p>
+                Pictures must have:<br/>
+                -Different angles and details, including photos of people at work<br/>
+                -Innocent, yet illuminating, snippets from the experience<br/>
+                -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br/>
+            </p>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <div>
+                <ImageCacheItem @key="@viewModel.Images[0]" image="@viewModel.Images[0]" DeleteAction="@DeleteImage" /> 
+                <p>This is your cover photo</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <div>
+                <ImageCacheItem @key="@viewModel.Images[1]" image="@viewModel.Images[1]" DeleteAction="@DeleteImage" /> 
+                <p>Supporting photo</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+             <div>
+                <ImageCacheItem @key="@viewModel.Images[2]" image="@viewModel.Images[2]" DeleteAction="@DeleteImage" /> 
+                <p>Supporting photo</p>
+            </div>
+        </div>
+
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-6 col-6 text-lg-start text-md-start text-sm-center">
+            <div>Upload 3 photos (10MB)</div>
+        </div>
+            <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center" hidden="@viewModel.maxImageUploaded">
+                <label for="fileinput">
+                    <button class="btn-primary" style="pointer-events: none;" type="button">Upload</button>
+                </label>
+                <div class="custom-input-hide">
+                <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadFiles"/>
+                </div>
+            </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Private / Do Not Publish
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <input class="form-check-input" type="checkbox" name="private-flag" @bind="@viewModel.IsPrivate">
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ActivityModel activityModel { get; set; }
+    [Parameter]
+    public ExperienceSetupViewModel viewModel { get; set; }
+
+    private List<IBrowserFile> loadedFiles = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        viewModel.Changed = StateHasChanged;
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        if (viewModel.maxImageUploaded) {
+            return; 
+        }
+
+        loadedFiles.Clear();
+
+        int currentImageIndex = viewModel.currentImageId - 1;
+        viewModel.Images[currentImageIndex].isLoading = true;
+
+        foreach (var file in e.GetMultipleFiles(viewModel.maxAllowedFiles))
+        {
+            // Check if File is Image
+            if (!file.ContentType.Contains("image")) {
+                // Show Error Message 
+                viewModel.Images[currentImageIndex].Status = ResultModel.error("Invalid File Type");
+                viewModel.Images[currentImageIndex].isLoading = false; 
+                viewModel.Changed.Invoke();
+                return;
+            }
+            try
+            {
+                loadedFiles.Add(file);
+                MemoryStream ms = new MemoryStream();
+                await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
+                // Update Image
+                viewModel.setImage(currentImageIndex, ms.ToArray());
+                ms.Dispose();
+            }
+            catch (Exception ex)
+            {
+                viewModel.Images[currentImageIndex].Status = ResultModel.error(ex.Message);
+                //Logger.LogError("File: {Filename} Error: {Error}",
+                //    file.Name, ex.Message);
+            }
+            finally {
+                viewModel.Images[currentImageIndex].isLoading = false; 
+            }
+        }
+    }
+
+    private void DeleteImage(ImageCacheModel image) {
+        viewModel.ClearImage(image);
+    }
+
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            bool value = bool.Parse(e.Value.ToString());
+            viewModel.CanAdultsJoin = value;
+        }
+    }
+
+    private string RequiredCheck(String? value)
+    {
+        if (viewModel.HasErrors && String.IsNullOrEmpty(value))
+        {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    private string ShowErrorMessage()
+    {
+        return viewModel.HasErrors ? "block" : "none";
+    }
+}

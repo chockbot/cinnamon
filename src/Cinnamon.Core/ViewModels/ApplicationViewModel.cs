@@ -1,14 +1,9 @@
 ﻿using Cinnamon.Core.Models;
-using System.Reflection.PortableExecutable;
 
 namespace Cinnamon.Core
 {
     public class ApplicationViewModel
     {
-        void test() {
-            // Test Call for Database
-            CoreDI.DataStore.Activities.GetAllAsync();
-        }
         public List<ActivityTypeModel> type;
         public List<ActivityModel> act;
         public List<ActivityImagesModels> images;

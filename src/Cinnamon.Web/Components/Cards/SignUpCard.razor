@@ -1,49 +1,49 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
+@using Cinnamon.Core.ViewModels
 @using Cinnamon.Data
 @using System.ComponentModel.DataAnnotations
 @using System.Linq.Expressions
-@inject DataStoreDbContext waitList
 @inject IJSRuntime jsRuntime
 
  <div class="w-100 text-center">
-    @if (!isSubmit)
+    @if (!viewModel.isSubmit)
     {
         <span style="font-size:0.9rem;font-weight:bold">Join our waiting list to get notified when we go live!</span>
         <hr />
-        <EditForm Model=@waitListModel OnValidSubmit="Submit">
+        <EditForm Model=viewModel.waitListModel OnValidSubmit="Submit">
             <DataAnnotationsValidator />
             <div class="d-flex flex-column gap-3 align-items-center">
                 <div class="d-flex gap-3">
                     <div>
                         @if (TypeValue == UserType.Customer)
                         {
-                            <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" checked @onchange="OnSelect"/>
+                            <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" checked @onchange="OnSelect" disabled="@ButtonIsClicked()" />
                         }
                         else
                         {
-                            <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" @onchange="OnSelect" />
+                            <input type="radio" value="@UserType.Customer" id="customer" name="signup-value" @onchange="OnSelect" disabled="@ButtonIsClicked()" />
                         }
                         <label class="fw-bold" style="padding:5px" for="customer">Customer</label>
                     </div>
                     <div>
                         @if (TypeValue == UserType.Maker)
                         {
-                            <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" checked @onchange="OnSelect" />
+                            <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" checked @onchange="OnSelect" disabled="@ButtonIsClicked()" />
                         }
                         else
                         {
-                            <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" @onchange="OnSelect" />
+                            <input type="radio" value="@UserType.Maker" id="maker" name="signup-value" @onchange="OnSelect" disabled="@ButtonIsClicked()"/>
                         }
                         <label class="fw-bold text-nowrap" style="padding:5px" for="maker">Cinnamon Maker</label>
                     </div>
                 </div>
                 <div class="col-12">
-                    <InputText id="email-signup" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:10px;" placeholder="Email" @bind-Value=waitListModel.Email/>
-                    <ValidationMessage style="text-align:left" For="() => waitListModel.Email" />
+                    <InputText id="email-signup" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:10px;" placeholder="Email" @bind-Value=viewModel.waitListModel.Email/>
+                    <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Email" />
                 </div>
-                <SignupButton id="signup-waiting" Text="Sign-up" />
+                <SignupButton id="signup-waiting" Text="Sign-up" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()"/>
             </div>
         </EditForm>
     }       
@@ -63,9 +63,7 @@
     [Parameter] 
     public Expression<Func<string>>? For { get; set; }
 
-    public bool isSubmit { get; set; } = false;
-
-    WaitListModel waitListModel = new WaitListModel();
+    SignupViewModel viewModel = new SignupViewModel();
 
     public void OnSelect(ChangeEventArgs args)
     {
@@ -86,18 +84,24 @@
         module.InvokeVoidAsync("HideModal");
     }
 
+    public bool ButtonIsClicked(){
+        return viewModel.isClickButton ? true: false;
+    }
+
+    public string showSpinner(){
+        return viewModel.isClickButton ? "visible" : "hidden";
+    }
+
     public async Task Submit(){
-        if (!string.IsNullOrEmpty(waitListModel.Email))
+        if(viewModel.isValid(viewModel.waitListModel.Email))
         {
-            await module.InvokeVoidAsync("onClickSignup");
-            waitListModel.Type = TypeValue;
-            waitList.WaitLists.Add(waitListModel);
-            var res = await waitList.SaveChangesAsync();
-            if (res > 0)
+            viewModel.waitListModel.Type = TypeValue;
+            var res =  await viewModel.SaveEmail(viewModel.waitListModel);
+            if (res)
             {
                 await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
-                isSubmit = true;
-                await module.InvokeVoidAsync("onDoneSignup");
+                viewModel.isSubmit = true;
+                viewModel.isClickButton = false;
             }
         }
     }
