@@ -31,12 +31,12 @@
         </EditForm>
     }    
 </div>
-<ValidationModal @ref=Modal></ValidationModal>
+<ValidationModal @ref="modal"></ValidationModal>
 @code{
 
     IJSObjectReference module;
 
-    private ValidationModal Modal { get; set; }
+    private ValidationModal modal { get; set; }
 
     public List<WaitListModel>  userList  = new List<WaitListModel>();
 
@@ -84,7 +84,7 @@
             {
                 //Verify Account 
                 //Go to Verification Modal = > ValidationModal
-                Modal.OpenModal();
+                modal.Open();
             }
         }
     }
