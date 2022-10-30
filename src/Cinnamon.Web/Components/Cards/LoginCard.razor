@@ -31,12 +31,29 @@
         </EditForm>
     }    
 </div>
-<ValidationModal @ref="modal"></ValidationModal>
+<!--Verify Modal-->
+<Modal @ref="modal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <Column ColumnSize="ColumnSize.Is11" TextAlignment="TextAlignment.Center">
+                <ModalTitle Style="font-family:'Nunito';font-size:18px;font-weight:700">Verification Email</ModalTitle>
+            </Column>
+            <CloseButton Style="border:none;background-color:transparent" />
+        </ModalHeader>
+        <ModalBody>
+            <Heading Size="HeadingSize.Is5">Welcome to <Span Style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</Span></Heading>
+            <br />
+            <Column ColumnSize="ColumnSize.Is12" TextAlignment="TextAlignment.Center">
+                <Paragraph Style="font-family:'Nunito';font-size:14px;font-weight: 400;color:#343D4C">We've sent an email to your inbox. Please check and click verify.</Paragraph>
+                <Paragraph Style="font-family:'Nunito';font-size:14px;font-weight: 400;color:#343D4C">Haven't received a verification email? <Link To="#" Style="color:#ffa942"> Resend</Link></Paragraph>
+            </Column>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 @code{
-
     IJSObjectReference module;
 
-    public ValidationModal modal {get;set;}
+    public Modal modal{ get; set; }
 
     public List<WaitListModel>  userList  = new List<WaitListModel>();
 
@@ -84,7 +101,9 @@
             {
                 //Verify Account 
                 //Go to Verification Modal = > ValidationModal
-                modal.OpenModal();
+                await modal.Show();
+                //Send Verification Email
+
             }
         }
     }

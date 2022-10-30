@@ -1,41 +1,29 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core.Enums
 
-<div class="modal fade @modalClass" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display=@modalDisplay">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center">Verification Email</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card-filter">
-                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
-                    <br />
-                    <div class="col-12 text-center">
-                        <p>We've sent an email to your inbox. Please check and click verify.</p>
-                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-@if (showBackdrop)
-{
-    <div class="modal fade show"></div>
-}
+<Modal @ref="modal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <Column ColumnSize="ColumnSize.Is11" TextAlignment="TextAlignment.Center">
+                <ModalTitle>Verification Email</ModalTitle>
+            </Column>
+            <CloseButton Style="border:none;background-color:transparent" />
+        </ModalHeader>
+        <ModalBody>
+            <Heading Size="HeadingSize.Is5">Welcome to <Span Style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</Span></Heading>
+            <br />
+            <Column ColumnSize="ColumnSize.Is12" TextAlignment="TextAlignment.Center">
+                <Paragraph>We've sent an email to your inbox. Please check and click verify.</Paragraph>
+                <Paragraph>Haven't received a verification email? <Link To="#" Style="color:#ffa942"> Resend</Link></Paragraph>
+            </Column>
+        </ModalBody>
+        <ModalFooter>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
 @code {
-    private string modalDisplay = "none;";
-    private string modalClass = "";
-    private bool showBackdrop = false;
 
-    public void OpenModal()
-    {
-        modalDisplay = "block;";
-        Task.Delay(100);//Delay allows bootstrap to perform nice fade animation
-        modalClass = "show";
-        StateHasChanged();
-    }
-
+    [Parameter]
+    public Modal modal{ get; set; }
 }
