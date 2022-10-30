@@ -17,6 +17,9 @@ Framework.Construct<DefaultFrameworkConstruction>()
     .UseClientDataStore()
     .AddViewModels()
     .AddClientServices()
+    .AddCoreConfiguration()
+    .AddDefaultJsonSerialization()
+    .AddApplicationServices()
     .Build();
 
 // Ensure the client data store 
@@ -27,6 +30,7 @@ await Framework.Service<ApplicationViewModel>().applySeedDemoData();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
+builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataStoreDbContext>(options =>
     options.UseNpgsql(connectionString),ServiceLifetime.Transient);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();

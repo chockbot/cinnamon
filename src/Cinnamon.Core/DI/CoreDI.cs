@@ -1,5 +1,5 @@
-﻿using Dna;
-
+﻿using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+using Dna;
 namespace Cinnamon.Core
 {
     /// <summary>
@@ -21,5 +21,9 @@ namespace Cinnamon.Core
         #endregion
 
         public static IDataStore DataStore => Framework.Service<IDataStore>();
+
+        public static IRegisterMaker RegisterMakerHandler => Framework.Service<IRegisterMaker>();
+
+        public static IConfirmEmailMaker ConfirmEmailMakerHandler => Framework.Service<IConfirmEmailMaker>();
     }
 }
