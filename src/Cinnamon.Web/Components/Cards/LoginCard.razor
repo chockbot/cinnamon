@@ -16,7 +16,7 @@
             <DataAnnotationsValidator />
             <div class="d-flex flex-column gap-3 align-items-center">
                 <div class="col-12">
-                    <InputText id="email-signup" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Email />
+                    <InputText id="email-signup" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.userListModel.Email />
                     <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Email" />
                 </div>
                 <SignupButton id="signup-waiting" Width="100%" Text="Continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()"/>
@@ -50,12 +50,13 @@
         </ModalBody>
     </ModalContent>
 </Modal>
+<ModalFinishSignUp></ModalFinishSignUp>
 @code{
     IJSObjectReference module;
 
     public Modal modal{ get; set; }
 
-    public List<WaitListModel>  userList  = new List<WaitListModel>();
+    public List<UserListModel>  userList  = new List<UserListModel>();
 
     [Parameter]
     public UserType TypeValue { get; set; }
@@ -67,7 +68,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        userList = await CoreDI.DataStore.WaitList.GetAllAsync();
+        userList = await CoreDI.DataStore.User.GetAllAsync();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -88,9 +89,9 @@
         //Login with Email
     }
     public async Task Submit(){
-        if(viewModel.isValid(viewModel.waitListModel.Email))
+        if(viewModel.isValid(viewModel.userListModel.Email))
         {
-            var result = userList.Where(a => a.Email == viewModel.waitListModel.Email).FirstOrDefault();
+            var result = userList.Where(a => a.Email == viewModel.userListModel.Email).FirstOrDefault();
             if(result != null)  
             {
                 //Already have an Account
@@ -100,12 +101,23 @@
             else
             {
                 //Verify Account 
-                //Go to Verification Modal = > ValidationModal
-                await modal.Show();
                 //Send Verification Email
 
-            }
+                var register = await CoreDI.RegisterMakerHandler.ExecuteAsync(new 
+                    Core.Module.CinnamonMakerService.Interactors.RegisterMaker 
+                    { Email = "email", Password = "strong password", Username = "username" });
+
+                var confirm = await CoreDI.ConfirmEmailMakerHandler.ExecuteAsync(new 
+                    Core.Module.CinnamonMakerService.Interactors.ConfirmEmail 
+                    { Token = "token", UserId = "userid" });
+
+                if(confirm.Succeeded)
+                {
+                    //Display Verification Modal
+                    await modal.Show();
+                }
+            }  
         }
     }
 
-}
+} 
