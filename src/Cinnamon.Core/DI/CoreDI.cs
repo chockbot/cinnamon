@@ -1,4 +1,4 @@
-﻿using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+﻿using Cinnamon.Core.Module.CinnamonMakerService;
 using Dna;
 namespace Cinnamon.Core
 {
@@ -22,8 +22,6 @@ namespace Cinnamon.Core
 
         public static IDataStore DataStore => Framework.Service<IDataStore>();
 
-        public static IRegisterMaker RegisterMakerHandler => Framework.Service<IRegisterMaker>();
-
-        public static IConfirmEmailMaker ConfirmEmailMakerHandler => Framework.Service<IConfirmEmailMaker>();
+        public static ICinnamonMakerService CinnamonMakerService => Framework.Service<ICinnamonMakerService>();
     }
 }

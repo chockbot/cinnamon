@@ -62,6 +62,7 @@ namespace Cinnamon.Data
                 .HasForeignKey(a => a.ExperienceTypeId);
 
             modelBuilder.Entity<WaitListModel>().HasKey(w => new { w.Id });
+            modelBuilder.Entity<WaitListModel>().HasIndex(w => w.Guid);
 
             modelBuilder.Entity<ActivityImagesModels>().HasKey(b => new { b.Id });
             modelBuilder.Entity<UserListModel>().HasKey(x => new { x.Id});
