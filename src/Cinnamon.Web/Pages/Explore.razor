@@ -3,6 +3,7 @@
 @page "/explore"
 @layout EmptyLayout
 @using Cinnamon.Core.Enums
+@using Cinnamon.Core.Models
 @using Cinnamon.Web.Components
 @using Cinnamon.Data
 @using Cinnamon.Core
@@ -377,7 +378,20 @@
                         <div class="card-body1 text-start">
                             <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
                             <h4 class="card-title1 mb-0" >@act.Title</h4>
-                            <p class="card-title2 mb-0">@act.Location</p>
+                            @if(act.ExperienceType.Id == 1)
+                            {
+                                if(String.IsNullOrEmpty(act.Location))
+                                {
+                                    <p class="card-title2 mb-0">@act.Address.City</p>
+                                }
+                                else{
+                                    <p class="card-title2 mb-0">@act.Location</p>
+                                }
+                            }
+                            else{
+                                 <p class="card-title2 mb-0">@act.ExperienceType.Name</p>
+                            }
+                           @* <p class="card-title2 mb-0">@act.Location</p>*@
                             <p class="card-title3">@act.Price</p>
                         </div>
                     </div>
@@ -445,7 +459,19 @@
                         <div class="card-body1 text-start">
                             <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
                             <h4 class="card-title1 mb-0" >@act.Title</h4>
-                            <p class="card-title2 mb-0">@act.Location</p>
+                           @if(act.ExperienceType.Id == 1)
+                            {
+                                if(String.IsNullOrEmpty(act.Location))
+                                {
+                                    <p class="card-title2 mb-0">@act.Address.City</p>
+                                }
+                                else{
+                                    <p class="card-title2 mb-0">@act.Location</p>
+                                }
+                            }
+                            else{
+                                 <p class="card-title2 mb-0">@act.ExperienceType.Name</p>
+                            }
                             <p class="card-title3">@act.Price</p>
                         </div>
                     </div>
@@ -470,6 +496,7 @@
     public List<ActivityTypeModel> activityTypes     = new List<ActivityTypeModel>();
     public List<ActivityImagesModels> activityImages = new List<ActivityImagesModels>();
     public List<ActivityImagesModels> images         = new List<ActivityImagesModels>();
+    public List<AddressModel> Address                = new List<AddressModel>();
     public string searchValue                        = string.Empty;
     public string filterId                           = string.Empty;
     public int cnt                                   = 0;
@@ -477,6 +504,7 @@
     protected override async Task OnInitializedAsync()
     {
         activity        = await CoreDI.DataStore.Activities.GetAllAsync();
+        Address         = await CoreDI.DataStore.Addresses.GetAllAsync();
         activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
         activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
     }

@@ -3,6 +3,7 @@
 @using Cinnamon.Core
 @using Cinnamon.Web.Components
 @inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
 
 <!-- Circles which indicates the steps of the form: -->
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
@@ -60,16 +61,30 @@
 
         <!--Publish-->
     <div class="tab @ActiveTab(CreationStep.Publish)">
-
+        @*<Publish ViewModel="_viewModel"></Publish>*@
+            <div class="text-center publish-container">
+                <div class="w-100 publish-text">
+                    <h2 class="fw-bold">You're all set!!</h2>
+                    <p>Live your passion, share your knowledge and leave a mark in people's lives!</p>
+                    <div class="button-container" style="overflow:auto;">
+                        <div class="w-100">
+                            <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
+                            <button class="btn-primary" type="button" id="nextBtn" @onclick=OnClickNext>@MainButtonText()</button>
+                        </div>
+                    </div>
+                    <img id="publish-image" class="img-fluid w-100" style="margin-left:-50px;" src="images/publishimage_mobile.png" />
+                </div>
+            </div>
     </div>
-
-    <div class="button-container" style="overflow:auto;">
-      <div style="float:right;">
-        <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
-        <button class="btn-primary" type="button" id="nextBtn" @onclick=_viewModel.NextStep>@MainButtonText()</button>
-      </div>
-    </div>
-
+    @if(_viewModel.currentStep != CreationStep.Publish)
+    {
+        <div class="button-container" style="overflow:auto;">
+          <div style="float:right;">
+            <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
+            <button class="btn-primary" type="button" id="nextBtn" @onclick=OnClickNext>@MainButtonText()</button>
+          </div>
+        </div>
+    }
     </EditForm>
 </div>
 
@@ -100,8 +115,29 @@
         return "";
     }
 
+    private void OnClickNext()
+    {
+        if (_viewModel.IsComplete)
+        {
+            var res = Task.Run(() => _viewModel.SaveActivity(_viewModel.activity)).Result;
+            if (res)
+            {
+                //Dashboard
+                navigationManager.NavigateTo("/");
+            }
+            else
+            {
+                //Do something
+            }
+        }
+        else
+        {
+            _viewModel.NextStep();
+        }
+    }
+
     private string MainButtonText(){
-        return _viewModel.IsLastStep ? "Submit" : "Continue";
+        return _viewModel.IsComplete ? "Publish" : "Continue";
     }
 
     private string PercentageCompletionString() {

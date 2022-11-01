@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221028085859_added searchtags table")]
+    partial class addedsearchtagstable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -386,18 +388,23 @@ namespace Cinnamon.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("SearchTag1")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag2")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag3")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag4")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag5")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

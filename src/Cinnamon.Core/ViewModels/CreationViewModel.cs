@@ -1,4 +1,11 @@
-﻿namespace Cinnamon.Core
+﻿using Cinnamon.Core.Models;
+using Newtonsoft.Json;
+using System;
+using System.Diagnostics;
+using System.Text.Json.Nodes;
+using static System.Net.Mime.MediaTypeNames;
+
+namespace Cinnamon.Core
 {
     public class CreationViewModel
     {
@@ -8,8 +15,7 @@
             CreationStep.Overview,
             CreationStep.ExperienceCreation,
             CreationStep.ExperienceSetup,
-            CreationStep.Publish,
-            CreationStep.Complete
+            CreationStep.Publish
         };
 
         private int _currentStepIndex = 0;
@@ -17,16 +23,14 @@
         private int currentStepIndex {
             get { return _currentStepIndex;  }
             set {
-                PercentageCompletion = value * 25;
+                PercentageCompletion = Convert.ToInt32(Math.Round(value * 33.33));
                 _currentStepIndex = value;
             }
         }
 
         public int PercentageCompletion { get; set; } = 0;
 
-        public bool IsLastStep => currentStepIndex == creationSteps.Count - 2;
         public bool IsComplete => currentStepIndex == creationSteps.Count - 1;
-
         public CreationStep currentStep => creationSteps[currentStepIndex];
 
         public ActivityModel activity { get; set; } = new ActivityModel();
@@ -41,6 +45,11 @@
             if (!ValidateExperienceSetup())
             {
                 // Do not go to next step 
+                return;
+            }
+
+            if (!ValidatePublishSetup())
+            {
                 return;
             }
 
@@ -60,10 +69,90 @@
                 return;
             }
 
+            if (!ValidatePublishSetup())
+            {
+                return;
+            }
+
             if (currentStepIndex < creationSteps.Count - 1)
             {
                 currentStepIndex++;
             }
+        }
+
+        private bool UploadImage(List<ImageCacheModel> Images)
+        {
+            try
+            {
+                foreach (var image in Images)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\Activities", image.ImageName + ".jpg");
+                    var fs = File.Create(filePath);
+                    fs.Write(image.ImageData, 0, image.ImageData.Length);
+                    fs.Close();
+                }
+                return true;
+            }
+            catch(Exception ex)
+            {
+                foreach (var image in Images)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\Activities", image.ImageName + ".jpg");
+                    if (File.Exists(filePath))
+                    {
+                        File.Delete(filePath);
+                    }
+                }
+                return false;
+            }
+        }
+
+        public async Task<bool> SaveActivity(ActivityModel activityModel)
+        {
+            var sortPrice = ExperienceSetupViewModel.Schedules.OrderBy(x => x.Price).ToList();
+            activityModel.Price = sortPrice.Count > 0 ? String.Format("{0} {1} - {2}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price, sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price.ToString());
+
+            if (activityModel.ExperienceTypeId == 1)
+            {
+                activityModel.Address = ExperienceCreationViewModel.Address;
+            }
+            else
+            {
+                activityModel.Address = null;
+            }
+
+            var images = new List<ActivityImagesModels>();
+            try
+            {
+                foreach (var image in ExperienceSetupViewModel.Images)
+                {
+                    var guid = Guid.NewGuid().ToString();
+                    images.Add(new ActivityImagesModels()
+                    {
+                        ImageLocation = "images/Activities/" + guid + ".jpg"
+                    });
+                    image.ImageName = guid;
+                }
+
+                activity.ActivityImages = images;
+
+                var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
+                if (res.Type == MessageType.Success)
+                {
+
+                    if (!UploadImage(ExperienceSetupViewModel.Images))
+                    {
+                        throw new Exception();
+                    }
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+            return false;
         }
 
         public void PrevStep()
@@ -91,6 +180,17 @@
 
             return true;
         }
-        
+
+        private bool ValidatePublishSetup()
+        {
+            if (currentStep == CreationStep.Publish)
+            {
+                ExperienceSetupViewModel.ValidateForm(activity);
+                return ExperienceSetupViewModel.IsValid;
+            }
+
+            return true;
+        }
+
     }
 }

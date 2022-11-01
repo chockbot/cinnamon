@@ -2,7 +2,7 @@
 @using Cinnamon.Core
 
 <div class="image-container">
-    <img class="experience-image" src="@image.imageSource()" />
+    <img class="experience-image @RequiredCheck()" src="@image.imageSource()" />
     <div class="image-delete-icon" @onclick="@InvokeDelete" hidden="@ShowDelete()">
         <i class="fa fa-trash" id="delete-icon"></i>
     </div>
@@ -70,6 +70,16 @@
             return true; 
         }
         return false; 
+    }
+
+    private string RequiredCheck()
+    {
+        if (image.IsBlank())
+        {
+            return "invalid";
+        }
+
+        return "";
     }
 
     private bool IsError() {
