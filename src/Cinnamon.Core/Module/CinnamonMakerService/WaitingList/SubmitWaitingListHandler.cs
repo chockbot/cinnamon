@@ -48,7 +48,7 @@ public class SubmitWaitingListHandler : ISubmitWaitngList
                     new ApplicationException("An error occured while saving to waiting list"), "An error occured while saving to waiting list");
             }
 
-            var verificationLink = $"{coreConfig.BaseUrl}/ConfirmEmail/?userid={guid.ToString()}&token={token}";
+            var verificationLink = $"{coreConfig.BaseUrl}/Confirm-Email/?userid={guid.ToString()}&token={token}";
             var emailRes = await emailVerification.ExecuteAsync(new EmailVerification { Email = args.Email, VerificationLink = verificationLink });
             if(!emailRes.Succeeded) 
             {
