@@ -4,8 +4,6 @@ namespace Cinnamon.Core.Module.CinnamonMakerService;
 
 public interface ICinnamonMakerService 
 {
-    IRegisterMaker RegisterMaker { get; }
-    IConfirmEmailMaker ConfirmEmailMaker { get; }
     ISubmitWaitngList SubmitWaitngList { get; }
     IVerifyEmail VerifyEmail { get; }
 }
