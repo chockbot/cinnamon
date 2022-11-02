@@ -6,7 +6,7 @@ namespace Cinnamon.Core
     public class ScheduleModel : BaseModel
     {
         [Key]
-        public int ScheduleId { get; set; }
+        public int? Id { get; set; } = null;
         [ForeignKey("Activity")]
         public int ActivityId { get; set; }
         public string Name { get; set; }

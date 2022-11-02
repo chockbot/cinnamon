@@ -11,7 +11,7 @@ namespace Cinnamon.Core.Models
     public class AddressModel : BaseModel
     {
         [Key]
-        public int AddressId { get; set; }
+        public int Id { get; set; }
         [ForeignKey("Activity")]
         public int ActivityId { get; set; }
         public string Address1 { get; set; }
