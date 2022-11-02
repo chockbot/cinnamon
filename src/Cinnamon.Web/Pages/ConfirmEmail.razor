@@ -1,0 +1,24 @@
+@page "/confirm-email"
+@using Microsoft.AspNetCore.WebUtilities;
+@using Cinnamon.Core
+@inject NavigationManager navigationManager
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
+        var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
+
+        if(userSuccess && tokenSuccess)
+        {
+            var res = await CoreDI.CinnamonMakerService.VerifyEmail
+                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.VerifyEmail {Token = token, UserId = userId});
+            
+            if(res.Succeeded)
+            {
+                // success token and userId goes here
+            }
+        }
+    }
+}
