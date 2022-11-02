@@ -17,6 +17,8 @@ using Cinnamon.Core.Module.NotificationService.Handler.WelcomeNotifiy;
 using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 using Cinnamon.Core.Module.CinnamonMakerService.Handler.EmailConfirm;
 using Cinnamon.Core.Module.CinnamonMakerService.Handler.Register;
+using Cinnamon.Core.Module.CinnamonMakerService.Handler.WaitingList;
+using Cinnamon.Core.Module.CinnamonMakerService;
 namespace Cinnamon.Core
 {
     /// <summary>
@@ -91,6 +93,9 @@ namespace Cinnamon.Core
             construction.Services.AddTransient<IWelcomeNotification, WelcomeNotificationHandler>();
             construction.Services.AddTransient<IRegisterMaker, RegisterMakerHandler>();
             construction.Services.AddTransient<IEmailVerification, EmailVerificationHandler>();
+            construction.Services.AddTransient<ISubmitWaitngList, SubmitWaitingListHandler>();
+            construction.Services.AddTransient<IVerifyEmail, VerifyEmailHandler>();
+            construction.Services.AddTransient<ICinnamonMakerService, CinnamonMakerServiceHandler>();
 
             return construction;
         }

@@ -11,5 +11,8 @@ namespace Cinnamon.Core
         public string Email { get; set; }
         [Required]
         public UserType Type { get; set; } = UserType.Maker;
+        public string Guid { get; set; }
+        public string Token { get; set; }
+        public bool IsVerified { get; set; }
     }
 }
