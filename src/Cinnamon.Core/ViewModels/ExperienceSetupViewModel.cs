@@ -1,6 +1,4 @@
 ﻿using Cinnamon.Core.Models;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 
 namespace Cinnamon.Core
 {
@@ -79,7 +77,7 @@ namespace Cinnamon.Core
             var maxIdItem = Schedules.MaxBy(x => x.Id);
             var maxId = 0;
             if (maxIdItem != null) {
-                maxId = maxIdItem.Id; 
+                maxId = (int)maxIdItem.Id; 
             }
             Schedules.Add(new ScheduleModel { Id = maxId + 1 });
         }
@@ -89,8 +87,17 @@ namespace Cinnamon.Core
             Changed.Invoke();
         }
 
-        public async void ValidateForm(ActivityModel activity) {
-            activity.ScheduleList = Schedules;
+        private List<ScheduleModel> ResetId(List<ScheduleModel> scheduleItems)
+        {
+            foreach (var schedule in scheduleItems)
+            {
+                schedule.Id = null;
+            }
+            return scheduleItems;
+        }
+        public void ValidateForm(ActivityModel activity) {
+            
+            activity.ScheduleList = ResetId(Schedules);
             activity.DescriptionSectionModel = DescriptionSection;
             if (activity.DescriptionSectionModel == null) {
                 IsValid = false;

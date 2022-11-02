@@ -92,15 +92,17 @@
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            @*<input id="tagsSearch" class="form-control" type="text" name="tags" data-role="tagsinput"/>*@
-            <ul>
-                @foreach(var tag in viewModel.SearchTags)
+            <div class="bootstrap-tagsinput @RequiredCheck(viewModel.SearchTags) d-flex flex-row flex-wrap ">
+                @foreach (var tag in viewModel.SearchTags)
                 {
-                    <li>@tag</li>
+                    <span class="tag label label-info m-1">
+                        @tag.Value<span data-role="remove" @onclick="(()=>RemoveSearchTag(tag.Key))">
+
+                        </span>
+                    </span>
                 }
-            </ul>
-            <input class="form-control @RequiredCheck(viewModel.SearchTags)" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter"></input>
-            <label>@Resources.App.searchTagMessage</label>
+                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
+            </div>
         </div>
     </div>
 </div>
@@ -112,6 +114,7 @@
     [Parameter]
     public ExperienceCreationViewModel viewModel { get; set; }
     public string SearchTag { get; set; }
+    public int SearchTagLength { get; set; } = 0;
     private void CheckboxChanged(int val)
     {
         activityModel.ExperienceTypeId = val;
@@ -121,22 +124,26 @@
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            if (viewModel.SearchTags.Count < 5)
+            if (viewModel.SearchTags.Count < 5 && (viewModel.SearchTags.Where(x=>x.Value == SearchTag).FirstOrDefault()) == null)
             {
-                viewModel.SearchTags.Add(SearchTag);
+                viewModel.SearchTags.Add(new ExperienceCreationViewModel.SearchTag(){ Key = viewModel.SearchTags.Count + 1, Value = SearchTag });
             }
             SearchTag = string.Empty;
         }
     }
 
-    private string RequiredCheck(List<string> value)
+    private string RequiredCheck(List<ExperienceCreationViewModel.SearchTag> searchTags)
     {
-        if (viewModel.HasError && value.Count == 0)
+        if (viewModel.HasError && searchTags.Count == 0)
         {
             return "invalid";
         }
 
         return "";
+    }
+
+    private void RemoveSearchTag(int Id){
+        viewModel.SearchTags = viewModel.SearchTags.Where(x => x.Key != Id).ToList();
     }
 
     private string RequiredCheck(String? value) {

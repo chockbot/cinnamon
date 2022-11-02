@@ -6,9 +6,13 @@ namespace Cinnamon.Core
     {
         public List<ExperienceCategoryModel> ExperienceCategory { get; set; } = new List<ExperienceCategoryModel>();
         public AddressModel Address { get; set; } = new AddressModel();
-        public List<string> SearchTags { get; set; } = new List<string>();
+        public List<SearchTag> SearchTags { get; set; } = new List<SearchTag>();
         public bool HasError { get; set; } = false;
 
+        public class SearchTag {
+            public int Key { get; set; }
+            public string Value { get; set; }
+        }
         public ExperienceCreationViewModel()
         {
             _ = GetInitialValues();
@@ -21,11 +25,11 @@ namespace Cinnamon.Core
         public bool IsValid(ActivityModel activity) {
             activity.SearchTagsModel = new SearchTagsModel()
             {
-                SearchTag1 = SearchTags.ElementAtOrDefault(0),
-                SearchTag2 = SearchTags.ElementAtOrDefault(1),
-                SearchTag3 = SearchTags.ElementAtOrDefault(2),
-                SearchTag4 = SearchTags.ElementAtOrDefault(3),
-                SearchTag5 = SearchTags.ElementAtOrDefault(4)
+                SearchTag1 = SearchTags?.ElementAtOrDefault(0)?.Value,
+                SearchTag2 = SearchTags?.ElementAtOrDefault(1)?.Value,
+                SearchTag3 = SearchTags?.ElementAtOrDefault(2)?.Value,
+                SearchTag4 = SearchTags?.ElementAtOrDefault(3)?.Value,
+                SearchTag5 = SearchTags?.ElementAtOrDefault(4)?.Value
             };
             // Address is Required
             if (!AddressDisable(activity.ExperienceTypeId)) {
