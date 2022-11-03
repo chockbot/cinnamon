@@ -103,6 +103,7 @@
                 }
                 <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
             </div>
+            <label>@Resources.App.searchTagMessage</label>
         </div>
     </div>
 </div>
@@ -173,9 +174,7 @@
         if (firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ExperienceCreation.js");
         }
-        await module.InvokeVoidAsync("TagsInputInit");
     }
 }
     
