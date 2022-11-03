@@ -5,6 +5,9 @@ using Dna;
 using Cinnamon.Web.Areas.Identity;
 using Cinnamon.Data;
 using Cinnamon.Core;
+using Blazorise;
+using Blazorise.Bootstrap;
+using Blazorise.Icons.FontAwesome;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +17,9 @@ Framework.Construct<DefaultFrameworkConstruction>()
     .UseClientDataStore()
     .AddViewModels()
     .AddClientServices()
+    .AddCoreConfiguration()
+    .AddDefaultJsonSerialization()
+    .AddApplicationServices()
     .Build();
 
 // Ensure the client data store 
@@ -24,6 +30,7 @@ await Framework.Service<ApplicationViewModel>().applySeedDemoData();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
+builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataStoreDbContext>(options =>
     options.UseNpgsql(connectionString),ServiceLifetime.Transient);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -32,8 +39,11 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-var app = builder.Build();
+builder.Services.AddBlazorise(options => { options.Immediate = true; })
+    .AddBootstrapProviders()
+    .AddFontAwesomeIcons();
 
+var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

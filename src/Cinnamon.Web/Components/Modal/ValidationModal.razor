@@ -1,0 +1,29 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core.Enums
+
+<Modal @ref="modal">
+    <ModalContent Centered>
+        <ModalHeader>
+            <Column ColumnSize="ColumnSize.Is11" TextAlignment="TextAlignment.Center">
+                <ModalTitle>Verification Email</ModalTitle>
+            </Column>
+            <CloseButton Style="border:none;background-color:transparent" />
+        </ModalHeader>
+        <ModalBody>
+            <Heading Size="HeadingSize.Is5">Welcome to <Span Style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</Span></Heading>
+            <br />
+            <Column ColumnSize="ColumnSize.Is12" TextAlignment="TextAlignment.Center">
+                <Paragraph>We've sent an email to your inbox. Please check and click verify.</Paragraph>
+                <Paragraph>Haven't received a verification email? <Link To="#" Style="color:#ffa942"> Resend</Link></Paragraph>
+            </Column>
+        </ModalBody>
+        <ModalFooter>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code {
+
+    [Parameter]
+    public Modal modal{ get; set; }
+}
