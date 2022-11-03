@@ -32,8 +32,6 @@ namespace Cinnamon.Data
         public IWaitList WaitList => new WaitLists(mDbContext);
         public IExperienceCategory ExperienceCategory => new ExperienceCategory(mDbContext);
         public IUser User => new UserList(mDbContext);
-
-        public IExperienceCategory ExperienceCategory => new ExperienceCategory(mDbContext);
         public IAddresses Addresses => new Addresses(mDbContext);
         public IDescriptions Descriptions => new DescriptionSection(mDbContext);
         public ISchedules Schedules => new Schedules(mDbContext);
