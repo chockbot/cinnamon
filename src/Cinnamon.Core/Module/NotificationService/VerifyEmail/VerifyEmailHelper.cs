@@ -46,6 +46,7 @@ public class VerifyEmailHelper
                 <p>Cinnamon Team</p>
                 <div style='font-size: 12px; font-weight: normal'>
                     <p>Trouble logging In? Paste this URL in to your browser:</p>
+                    <p>{link}</p>
                     <p>Didn't make this request? You can safety ignore and delete this email</p>
                 </div>
             </div>
