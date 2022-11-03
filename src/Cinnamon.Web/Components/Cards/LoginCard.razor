@@ -13,23 +13,23 @@
  <div class="w-100 text-center"> 
     @if (!viewModel.isSubmit)
     {
-        <EditForm Model=viewModel OnValidSubmit="Submit">
-            <DataAnnotationsValidator />
-            <div class="d-flex flex-column gap-3 align-items-center">
-                <div class="col-12">
-                    <InputText id="email-signup" placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.userListModel.Email />
-                    <ValidationMessage style="text-align:left" For="() => viewModel.userListModel.Email" />
+            <EditForm Model=viewModel OnValidSubmit="Submit">
+                <DataAnnotationsValidator />
+                <div class="d-flex flex-column gap-3 align-items-center">
+                    <div class="col-12">
+                    <InputText id="email-signup" placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Email />
+                        <ValidationMessage style="text-align:left" For="() => viewModel.userListModel.Email" />
+                    </div>
+                    <SignupButton id="signup-waiting" Width="100%" Text="Continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()"/>
+                    <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+                    <div class="divider">
+                        <hr class="left" />or<hr class="right" />
+                    </div>
+                     <div class="col-12">
+                        <a class="btn btn-md btn-google" href="#"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" onclick="@LoginwithEmail()"/> Continue with Gmail</a>
+                     </div>
                 </div>
-                <SignupButton id="signup-waiting" Width="100%" Text="Continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()"/>
-                <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
-                <div class="divider">
-                    <hr class="left" />or<hr class="right" />
-                </div>
-                 <div class="col-12">
-                    <a class="btn btn-md btn-google" href="#"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" onclick="@LoginwithEmail()"/> Continue with Gmail</a>
-                 </div>
-            </div>
-        </EditForm>
+            </EditForm>
     }    
 </div>
 <!--Verify Modal-->
@@ -52,37 +52,35 @@
     </ModalContent>
 </Modal>
 <ModalFinishSignUp></ModalFinishSignUp>
-@code{
+@code {
     IJSObjectReference module;
 
-    public Modal modal{ get; set; }
+    public Modal modal { get; set; }
 
-    public List<UserListModel>  userList  = new List<UserListModel>();
+    public List<WaitListModel> userList = new List<WaitListModel>();
 
     [Parameter]
     public UserType TypeValue { get; set; }
 
-    [Parameter] 
+    [Parameter]
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
 
-    protected override async Task OnInitializedAsync()
-    {
-        userList = await CoreDI.DataStore.User.GetAllAsync();
-    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
         }
     }
-    public bool ButtonIsClicked(){
-        return viewModel.isClickButton ? true: false;
+    public bool ButtonIsClicked()
+    {
+        return viewModel.isClickButton ? true : false;
     }
 
-    public string showSpinner(){
+    public string showSpinner()
+    {
         return viewModel.isClickButton ? "visible" : "hidden";
     }
     public async Task LoginwithEmail()
@@ -91,23 +89,29 @@
     }
     public async Task Submit()
     {
-        if(viewModel.isValid(viewModel.userListModel.Email))
+        if (viewModel.isValid(viewModel.waitListModel.Email))
         {
-            var result = userList.Where(a => a.Email == viewModel.userListModel.Email).FirstOrDefault();
-            if(result != null)  
+            userList = await CoreDI.DataStore.WaitList.GetAllAsync();
+            var result = userList.Where(a => a.Email == viewModel.waitListModel.Email).FirstOrDefault();
+            if (result != null)
             {
                 //Already have an Account
                 //Go to Creation Page
                 NavigationManager.NavigateTo("Creation", true);
             }
-            else  
+            else
             {
-                //Verify Account 
-                //Display Verification Modal
+                //Register Account
+                var register = await CoreDI.CinnamonMakerService.SubmitWaitngList
+                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitWaitingList
+                    { Email = viewModel.waitListModel.Email, UserType = UserType.Maker });
+
+                if (register.Succeeded)
+                {
+                    //Display Verification Modal
                     await modal.Show();
-                //Query
-    
-            }  
+                }
+            }
         }
     }
 } 
