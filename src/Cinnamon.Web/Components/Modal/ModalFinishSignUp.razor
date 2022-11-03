@@ -14,7 +14,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <p class="col-11 modal-title text-center">Finish signing up</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
             </div>
             <div class="modal-body">
                 <div class="card-filter">
@@ -22,25 +22,25 @@
                         <DataAnnotationsValidator />
                         <div class="d-flex flex-column gap-3 align-items-center">
                             <div class="col-12">
-                                <InputText id="firstname-signup" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.FirstName />
+                                <InputText id="firstname-signup" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.FirstName />
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="lastname-signup" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.LastName />
+                                <InputText id="lastname-signup" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.LastName />
                                 <p>Be sure it's the same as what appears on your government ID.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="birtdate-signup" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Birthdate />
+                                <InputText id="birtdate-signup" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Birthdate />
                                 <p>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Email />
+                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Email />
                                 <p>For email confirmations, and receipts.</p>
                             </div>
                             <div class="col-12">
-                                <InputText id="password-signup" type="password" class="input-group fs-12" placeholder="Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Password />
+                                <InputText id="password-signup" type="password" class="input-group fs-12" placeholder="Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Password />
                             </div>
                             <div class="col-12">
-                                <InputText id="confirm-signup" type="password" class="input-group fs-12" placeholder="Confirm Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.ConfirmPassword />
+                                <InputText id="confirm-signup" type="password" class="input-group fs-12" placeholder="Confirm Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.ConfirmPassword />
                             </div>
                             <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
                             <button class="btn-primary rounded-pill shadow-sm text-center" type="submit">
@@ -54,16 +54,12 @@
                                   </label>
                                 </div>
                             </div>
-                        </div> 
+                        </div>  
                     </EditForm>
                 </div>
             </div>
         </div>  
     </div>
-    @if (ShowBackdrop)
-    {
-        <div class="modal-backdrp foade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
-    }
 </div>
 @code {
     IJSObjectReference module;
@@ -73,10 +69,8 @@
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
-    public Guid Guid = Guid.NewGuid();
     public string ModalDisplay = "none;";
     public string ModalClass = "";
-    public bool ShowBackdrop = false;
     public void OnSelect(ChangeEventArgs args)
     {
         UserType usertype;

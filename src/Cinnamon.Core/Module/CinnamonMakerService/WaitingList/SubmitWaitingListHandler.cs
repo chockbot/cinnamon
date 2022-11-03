@@ -50,7 +50,7 @@ public class SubmitWaitingListHandler : ISubmitWaitngList
                     new ApplicationException("An error occured while saving to waiting list"), "An error occured while saving to waiting list");
             }
             string localhost = "https://localhost:7213";
-            var verificationLink = $"{localhost}/Confirm-Email/?userid={guid.ToString()}&token={token}";
+            var verificationLink = $"{localhost}/Confirm-Email/?userid={guid.ToString()}&token={token}&email={args.Email}";
             var emailRes = await emailVerification.ExecuteAsync(new EmailVerification { Email = args.Email, VerificationLink = verificationLink });
             if(!emailRes.Succeeded) 
             {
