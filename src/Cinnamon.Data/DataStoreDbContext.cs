@@ -21,6 +21,7 @@ namespace Cinnamon.Data
         public DbSet<DescriptionSectionModel> Descriptions { get; set; }
         public DbSet<ScheduleModel> Schedules { get; set; }
         public DbSet<SearchTagsModel> SearchTags { get; set; }
+        public DbSet<UserListModel> UserList { get; set; }
         #endregion
 
         #region Constructor
@@ -65,8 +66,10 @@ namespace Cinnamon.Data
                 .HasForeignKey(a => a.ExperienceTypeId);
 
             modelBuilder.Entity<WaitListModel>().HasKey(w => new { w.Id });
+            modelBuilder.Entity<WaitListModel>().HasIndex(w => w.Guid);
 
             modelBuilder.Entity<ActivityImagesModels>().HasKey(b => new { b.Id });
+            modelBuilder.Entity<UserListModel>().HasKey(x => new { x.Id});
 
         }
         #endregion
