@@ -17,7 +17,13 @@ public class VerifyEmailHelper
                     color: #545454;
                 '
                 >
-                <h1 style='color: #ffa942; margin-top: 0'>Cinnamon</h1>
+                <div style='margin-bottom: 2rem'>
+                    <img
+                    src='http://dev.cinnamon.ph/images/cinnamon-logo.png'
+                    alt='logo'
+                    style='width: 200px; height: auto'
+                    />
+                </div>
                 <p>Hi,</p>
                 <p>
                     Great to have you in Cinnamon! For us to verify your email address, please
