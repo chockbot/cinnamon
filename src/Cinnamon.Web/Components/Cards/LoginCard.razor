@@ -17,7 +17,7 @@
                 <DataAnnotationsValidator />
                 <div class="d-flex flex-column gap-3 align-items-center">
                     <div class="col-12">
-                    <InputText id="email-signup" placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8" @bind-Value=viewModel.waitListModel.Email />
+                    <InputText id="email-signup" placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family='Nunito';" @bind-Value=viewModel.waitListModel.Email />
                         <ValidationMessage style="text-align:left" For="() => viewModel.userListModel.Email" />
                     </div>
                     <SignupButton id="signup-waiting" Width="100%" Text="Continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()"/>
