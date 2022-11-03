@@ -1,0 +1,34 @@
+@page "/confirm-email"
+@layout LandingMainLayout
+@using Microsoft.AspNetCore.WebUtilities;
+@using Cinnamon.Core
+@using Cinnamon.Web.Components
+@inject NavigationManager NavigationManager
+@inject NavigationManager navigationManager
+
+<Onboarding></Onboarding>
+<ModalFinishSignUp @ref="modal"></ModalFinishSignUp>
+@code {
+
+    ModalFinishSignUp modal { get; set; }
+    public List<WaitListModel> list = new List<WaitListModel>();
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
+        var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
+
+        if(userSuccess && tokenSuccess)
+        {
+            var res = await CoreDI.CinnamonMakerService.VerifyEmail
+                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.VerifyEmail {Token = token, UserId = userId});
+
+            if(res.Succeeded)
+            {
+                await modal.OpenModal();
+                //Auto Populate Modal Finish Signing Up
+                
+            }
+        }
+    }
+}

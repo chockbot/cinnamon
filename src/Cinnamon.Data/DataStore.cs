@@ -30,6 +30,8 @@ namespace Cinnamon.Data
         public IActivityImages ActivityImages => new ActivityImages(mDbContext);
         public IExperienceTypes ExperienceTypes => new ExperienceTypes(mDbContext);
         public IWaitList WaitList => new WaitLists(mDbContext);
+        public IExperienceCategory ExperienceCategory => new ExperienceCategory(mDbContext);
+        public IUser User => new UserList(mDbContext);
 
         public IExperienceCategory ExperienceCategory => new ExperienceCategory(mDbContext);
         public IAddresses Addresses => new Addresses(mDbContext);
