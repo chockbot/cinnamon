@@ -1,0 +1,40 @@
+@page "/maker/dashboard"
+@using Cinnamon.Web.Components.Pages.Maker.Dashboard
+
+<section class="mt-5 maker-dashboard">
+    <div class="container">
+        <h3 class="text-capitalize fw-bold">experiences</h3>
+        <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+            <Items>
+                <Tab Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">active</Tab>
+                <Tab Name="change" TextTransform="TextTransform.Capitalize">change</Tab>
+                <Tab Name="attendance-monitoring" TextTransform="TextTransform.Capitalize">attendance monitoring</Tab>
+                <Tab Name="chat-room" TextTransform="TextTransform.Capitalize">chat room</Tab>
+            </Items>
+            <Content>
+                <TabPanel Name="active">
+                    <ExperienceList />
+                </TabPanel>
+                <TabPanel Name="change">
+                    Content for change experience
+                </TabPanel>
+                <TabPanel Name="attendance-monitoring">
+                    Content for attendance monitoring
+                </TabPanel>
+                <TabPanel Name="chat-room">
+                    Content for chat-room
+                </TabPanel>
+            </Content>
+        </Tabs>
+    </div>
+</section>
+
+@code{
+    string selectedTab = "active";
+
+    private Task OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+        return Task.CompletedTask;
+    }
+}
