@@ -1,4 +1,5 @@
 @using Cinnamon.Core
+@inject NavigationManager NavigationManager
 
 <TableRow>
     <TableRowCell>@Activity.Title</TableRowCell>
@@ -6,7 +7,7 @@
         <Check TValue="bool" Checked="Activity.IsPublished" CheckedChanged="OnPublishedChange"  />
     </TableRowCell>
     <TableRowHeader TextAlignment="TextAlignment.Center">
-        <Button TextColor="TextColor.White" Color="Color.Primary" Size="Size.ExtraSmall">Update</Button>
+        <Button @onclick="NavigateToCreation" TextColor="TextColor.White" Color="Color.Primary" Size="Size.ExtraSmall">Update</Button>
     </TableRowHeader>
 </TableRow>
 
@@ -29,4 +30,9 @@
 
     [Parameter]
     public EventCallback<int> OnPublishChanged {get; set;}
+
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo($"creation?action=update&activityid={Activity.Id}");
+    }
 }
