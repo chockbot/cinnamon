@@ -20,6 +20,7 @@ namespace Cinnamon.Core
         public string MapDetails { get; set; } = "";
         public string Guarantee { get; set; } = "";
         public string Remarks { get; set; } = "";
+        public bool IsPublished { get; set; }
 
         public virtual ActivityTypeModel? ActivityType { get; set; }
         public virtual ExperienceTypeModel? ExperienceType { get; set; }
