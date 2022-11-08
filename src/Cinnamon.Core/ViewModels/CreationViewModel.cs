@@ -86,7 +86,7 @@ namespace Cinnamon.Core
             {
                 foreach (var image in Images)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"app/wwwroot/images/Activities/", image.ImageName + ".jpg");
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"app\wwwroot\images\Activities\", image.ImageName + ".jpg");
                     var fs = File.Create(filePath);
                     fs.Write(image.ImageData, 0, image.ImageData.Length);
                     fs.Close();
@@ -97,7 +97,7 @@ namespace Cinnamon.Core
             {
                 foreach (var image in Images)
                 {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"app/wwwroot/images/Activities/", image.ImageName + ".jpg");
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"app\wwwroot\images\Activities\", image.ImageName + ".jpg");
                     if (File.Exists(filePath))
                     {
                         File.Delete(filePath);
