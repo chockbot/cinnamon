@@ -21,6 +21,7 @@ using Cinnamon.Core.Module.CinnamonMakerService.Handler.WaitingList;
 using Cinnamon.Core.Module.CinnamonMakerService;
 using Cinnamon.Core.Module.ActivityService.Handler;
 using Cinnamon.Core.Module.ActivityService.Handler.PublishActivity;
+using Cinnamon.Core.Module.ActivityService.Handler.UpdateActivityHandler;
 namespace Cinnamon.Core
 {
     /// <summary>
@@ -99,6 +100,7 @@ namespace Cinnamon.Core
             construction.Services.AddTransient<IVerifyEmail, VerifyEmailHandler>();
             construction.Services.AddTransient<ICinnamonMakerService, CinnamonMakerServiceHandler>();
             construction.Services.AddTransient<IPublishActivityHandler, PublishActivityHandler>();
+            construction.Services.AddTransient<IUpdateActivityHandler, UpdateActivityHandler>();
 
             return construction;
         }

@@ -1,5 +1,6 @@
 ﻿@layout CreationLayout
 @page "/Creation"
+@using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core
 @using Cinnamon.Web.Components
 @inject IJSRuntime jsRuntime
@@ -91,6 +92,26 @@
 @code {
     IJSObjectReference module;
     private CreationViewModel _viewModel = new CreationViewModel();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        var actionSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("action", out var action);
+        var activityIdSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityid", out var activityId);
+
+        if(actionSuccess && activityIdSuccess && action.ToString().ToLower() == "update")
+        {
+            if(int.TryParse(activityId, out int id))
+            {
+                var res = await CoreDI.DataStore.Activities.GetDataAsync(new ActivityModel {Id = id});
+                if(res != null)
+                {
+                    _viewModel.activity = res;
+                    _viewModel.UserActionType = Core.Enums.UserActionType.Update;
+                }
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
