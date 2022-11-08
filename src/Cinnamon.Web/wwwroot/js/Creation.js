@@ -1,13 +1,16 @@
 ﻿export function confirmation() {
-    window.onbeforeunload = function (e) {
-        e = e || window.event;
+    $(document).ready(function () {
 
-        // For IE and Firefox prior to version 4
-        if (e) {
-            e.returnValue = 'Sure?';
-        }
+        $('#regForm').on('mousedown', stopNavigate);
 
-        // For Safari
-        return 'Sure?';
-    };
+        $('#regForm').on('mouseleave', function () {
+            $(window).on('beforeunload', function () {
+                return 'Are you sure you want to leave?';
+            });
+        });
+    });
+
+    function stopNavigate() {
+        $(window).off('beforeunload');
+    }
 }
