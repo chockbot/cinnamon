@@ -5,8 +5,6 @@
         Overview = 0,
         ExperienceCreation = 1,
         ExperienceSetup = 2,
-        UserValidation = 3,
-        Publish = 4,
-        Complete = 5
+        Publish = 3
     }
 }

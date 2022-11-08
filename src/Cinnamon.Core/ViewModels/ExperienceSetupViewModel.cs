@@ -1,15 +1,16 @@
-﻿namespace Cinnamon.Core
+﻿using Cinnamon.Core.Models;
+
+namespace Cinnamon.Core
 {
     public class ExperienceSetupViewModel
     {
         private bool _isValid = false;
-        public List<ScheduleModel> Schedules { get; set; } = new List<ScheduleModel> { new ScheduleModel() };
+        public List<ScheduleModel> Schedules { get; set; } = new List<ScheduleModel> { new ScheduleModel { Id = 1} };
         public List<ImageCacheModel> Images { get; set; } = new List<ImageCacheModel> { 
             new ImageCacheModel{ Id = 1 }, new ImageCacheModel{ Id = 2} , new ImageCacheModel{ Id = 3}
         };
+        public DescriptionSectionModel DescriptionSection { get; set; } = new DescriptionSectionModel();
         public bool IsPrivate { get; set; } = true;
-
-        public bool CanAdultsJoin { get; set; } = false;
         public List<string> LevelOfActivityList { get; set; } = new List<string> { 
             "Beginner" , "Intermediate", "Advance"
         };
@@ -17,13 +18,7 @@
             "No experience" , "Little experience", "Expert"
         };
         public Action Changed;
-        public string SpecificsYouWillProvide { get; set; }
-        public string CustomerBringWithThem { get; set; }
-        public string AdditionalRequirements { get; set; }
-
-        public string ActivityLevel { get; set; }
-        public string SkillLevel { get; set; }
-        public string MinimumAge { get; set; }
+ 
         public bool HasErrors { get; set; } = false;
 
         public long maxFileSize = 10000000;
@@ -78,7 +73,13 @@
         }
 
         public void AddSchedule() {
-            Schedules.Add(new ScheduleModel());
+            // Get Next Number
+            var maxIdItem = Schedules.MaxBy(x => x.Id);
+            var maxId = 0;
+            if (maxIdItem != null) {
+                maxId = (int)maxIdItem.Id; 
+            }
+            Schedules.Add(new ScheduleModel { Id = maxId + 1 });
         }
 
         public void RemoveSchedule(ScheduleModel itemToRemove) {
@@ -86,9 +87,19 @@
             Changed.Invoke();
         }
 
+        private List<ScheduleModel> ResetId(List<ScheduleModel> scheduleItems)
+        {
+            foreach (var schedule in scheduleItems)
+            {
+                schedule.Id = null;
+            }
+            return scheduleItems;
+        }
         public void ValidateForm(ActivityModel activity) {
-            // Check If Description is Blank            
-            if (String.IsNullOrEmpty(activity.Description)) {
+            
+            activity.ScheduleList = ResetId(Schedules);
+            activity.DescriptionSectionModel = DescriptionSection;
+            if (activity.DescriptionSectionModel == null) {
                 IsValid = false;
                 return;
             }
@@ -102,32 +113,40 @@
                 } 
             }
 
-            if (String.IsNullOrEmpty(SpecificsYouWillProvide)) {
+            if (String.IsNullOrEmpty(DescriptionSection.SpecificsYouWillProvide)) {
                 IsValid = false;
                 return;
             }
 
-            if (String.IsNullOrEmpty(CustomerBringWithThem)) {
+            if (String.IsNullOrEmpty(DescriptionSection.CustomerBringWithThem)) {
                 IsValid = false;
                 return;
             }
 
 
-            if (String.IsNullOrEmpty(MinimumAge)) {
+            if (String.IsNullOrEmpty(DescriptionSection.MinimumAge)) {
                 IsValid = false;
                 return;
             }
 
-            if (String.IsNullOrEmpty(ActivityLevel)) {
+            if (String.IsNullOrEmpty(DescriptionSection.ActivityLevel)) {
                 IsValid = false;
                 return;
             }
 
-            if (String.IsNullOrEmpty(SkillLevel)) {
+            if (String.IsNullOrEmpty(DescriptionSection.SkillLevel)) {
                 IsValid = false;
                 return;
             }
 
+            foreach(var image in Images)
+            {
+                if(image.IsBlank())
+                {
+                    IsValid = false;
+                    return;
+                }
+            }
 
             IsValid = true;
         }

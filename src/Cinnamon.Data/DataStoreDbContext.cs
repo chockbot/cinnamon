@@ -17,6 +17,10 @@ namespace Cinnamon.Data
         public DbSet<ExperienceTypeModel> ExperienceTypes { get; set; }
         public DbSet<WaitListModel> WaitLists { get; set; }
         public DbSet<ExperienceCategoryModel> ExperienceCategories { get; set; }
+        public DbSet<AddressModel> Addresses { get; set; }
+        public DbSet<DescriptionSectionModel> Descriptions { get; set; }
+        public DbSet<ScheduleModel> Schedules { get; set; }
+        public DbSet<SearchTagsModel> SearchTags { get; set; }
         public DbSet<UserListModel> UserList { get; set; }
         #endregion
 

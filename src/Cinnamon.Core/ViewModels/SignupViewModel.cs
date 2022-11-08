@@ -29,7 +29,7 @@ namespace Cinnamon.Core.ViewModels
         public async Task<bool> SaveEmail(WaitListModel waitListModel)
         {
             var res = await CoreDI.DataStore.WaitList.SaveDataAsync(waitListModel);
-            if (res.Message.Contains("Saved"))
+            if (res.Type == MessageType.Success)
             {
                 return true;
             }

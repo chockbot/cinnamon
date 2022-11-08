@@ -52,7 +52,13 @@ namespace Cinnamon.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("ImageName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("ImageId");
 
                     b.ToTable("ActivityImages");
                 });
@@ -86,6 +92,9 @@ namespace Cinnamon.Data.Migrations
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int?>("ExperienceCategoryId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("ExperienceTypeId")
                         .HasColumnType("integer");
@@ -203,6 +212,121 @@ namespace Cinnamon.Data.Migrations
                     b.ToTable("ExperienceTypes");
                 });
 
+            modelBuilder.Entity("Cinnamon.Core.Models.AddressModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Address1")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Address2")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("DeletionFlag")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("District")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId")
+                        .IsUnique();
+
+                    b.ToTable("Addresses");
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.Models.DescriptionSectionModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ActivityLevel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("AdditionalRequirements")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("CanAdultsJoin")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CustomerBringWithThem")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("DeletionFlag")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("MinimumAge")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SkillLevel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SpecificsYouWillProvide")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId")
+                        .IsUnique();
+
+                    b.ToTable("Descriptions");
+                });
+
             modelBuilder.Entity("Cinnamon.Core.Models.ExperienceCategoryModel", b =>
                 {
                     b.Property<int>("Id")
@@ -233,6 +357,117 @@ namespace Cinnamon.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExperienceCategories");
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.Models.SearchTagsModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("DeletionFlag")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SearchTag1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag2")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag3")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag4")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag5")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId")
+                        .IsUnique();
+
+                    b.ToTable("SearchTags");
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.ScheduleModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DateTime")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("DeletionFlag")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PerUnit1")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PerUnit2")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("PriceUnit1")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PriceUnit2")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("UnitPrice")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.UserListModel", b =>
@@ -560,6 +795,17 @@ namespace Cinnamon.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Cinnamon.Core.ActivityImagesModels", b =>
+                {
+                    b.HasOne("Cinnamon.Core.ActivityModel", "Activity")
+                        .WithMany("ActivityImages")
+                        .HasForeignKey("ImageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
             modelBuilder.Entity("Cinnamon.Core.ActivityModel", b =>
                 {
                     b.HasOne("Cinnamon.Core.ActivityTypeModel", "ActivityType")
@@ -577,6 +823,50 @@ namespace Cinnamon.Data.Migrations
                     b.Navigation("ActivityType");
 
                     b.Navigation("ExperienceType");
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.Models.AddressModel", b =>
+                {
+                    b.HasOne("Cinnamon.Core.ActivityModel", "Activity")
+                        .WithOne("Address")
+                        .HasForeignKey("Cinnamon.Core.Models.AddressModel", "ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.Models.DescriptionSectionModel", b =>
+                {
+                    b.HasOne("Cinnamon.Core.ActivityModel", "Activity")
+                        .WithOne("DescriptionSectionModel")
+                        .HasForeignKey("Cinnamon.Core.Models.DescriptionSectionModel", "ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.Models.SearchTagsModel", b =>
+                {
+                    b.HasOne("Cinnamon.Core.ActivityModel", "Activity")
+                        .WithOne("SearchTagsModel")
+                        .HasForeignKey("Cinnamon.Core.Models.SearchTagsModel", "ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.ScheduleModel", b =>
+                {
+                    b.HasOne("Cinnamon.Core.ActivityModel", "Activity")
+                        .WithMany("ScheduleList")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -628,6 +918,19 @@ namespace Cinnamon.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Cinnamon.Core.ActivityModel", b =>
+                {
+                    b.Navigation("ActivityImages");
+
+                    b.Navigation("Address");
+
+                    b.Navigation("DescriptionSectionModel");
+
+                    b.Navigation("ScheduleList");
+
+                    b.Navigation("SearchTagsModel");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.ActivityTypeModel", b =>

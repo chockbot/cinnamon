@@ -1,5 +1,6 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
+@using Cinnamon.Core.Models
 @inject IJSRuntime jsRuntime
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
@@ -20,7 +21,7 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea maxlength="80" @bind="activityModel.Title"></textarea>
+                <textarea maxlength="80" @bind="activityModel.Title" class="@RequiredCheck(activityModel.Title)"></textarea>
                 <label>@Resources.App.textAreaExperienceMax</label>
             </div>
         </div>
@@ -33,13 +34,13 @@
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="experience-type" id="in-person" value=1 checked @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="experience-type" id="in-person" checked @onchange="@(()=>CheckboxChanged(1))">
                 <label class="form-check-label" for="in-person">
                     @Resources.App.inPersonType
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="experience-type" id="online" value=2 @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="experience-type" id="online" @onchange="@(()=>CheckboxChanged(2))">
                 <label class="form-check-label" for="online">
                     @Resources.App.onlineType
                 </label>
@@ -61,10 +62,10 @@
                 <input class="form-control my-3" placeholder="City" disabled />
             }
             else{
-                <input class="form-control @RequiredCheck(viewModel.Address1)" placeholder="Address 1" required @bind="viewModel.Address1"/>
-                <input class="form-control my-3 @RequiredCheck(viewModel.Address2)" placeholder="Address 2" required @bind="viewModel.Address2"/>
-                <input class="form-control my-3 @RequiredCheck(viewModel.District)" placeholder="District" required @bind="viewModel.District"/>
-                <input class="form-control my-3 @RequiredCheck(viewModel.City)" placeholder="City" required @bind="viewModel.City"/>
+                <input class="form-control @RequiredCheck(viewModel.Address.Address1)" placeholder="Address 1" required @bind="viewModel.Address.Address1"/>
+                <input class="form-control my-3 @RequiredCheck(viewModel.Address.Address2)" placeholder="Address 2" required @bind="viewModel.Address.Address2"/>
+                <input class="form-control my-3 @RequiredCheck(viewModel.Address.District)" placeholder="District" required @bind="viewModel.Address.District"/>
+                <input class="form-control my-3 @RequiredCheck(viewModel.Address.City)" placeholder="City" required @bind="viewModel.Address.City"/>
             }
         </div>
     </div>
@@ -75,13 +76,13 @@
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <select class="form-control" >
+            <select @bind="activityModel.ExperienceCategoryId" class="form-control @RequiredCheck(activityModel.ExperienceCategoryId)">
                 <option disabled selected>Select Category</option>
-               @foreach(var cat in viewModel.ExperienceCategory)
-               {
-                   <option value="@cat.Category">@cat.Category</option>
-               }
-            </select>
+                @foreach (var cat in viewModel.ExperienceCategory)
+                {
+                    <option value="@cat.Id">@cat.Category</option>
+                }
+           </select>
         </div>
     </div>
     <div class="row mrow">
@@ -90,8 +91,18 @@
                 @Resources.App.searchTags
             </label>
         </div>
-        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <input id="tagsSearch" class="form-control" type="text" name="tags" value="" data-role="tagsinput" />
+        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
+            <div class="bootstrap-tagsinput @RequiredCheck(viewModel.SearchTags) d-flex flex-row flex-wrap ">
+                @foreach (var tag in viewModel.SearchTags)
+                {
+                    <span class="tag label label-info m-1">
+                        @tag.Value<span data-role="remove" @onclick="(()=>RemoveSearchTag(tag.Key))">
+
+                        </span>
+                    </span>
+                }
+                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
+            </div>
         </div>
     </div>
 </div>
@@ -102,18 +113,51 @@
     public ActivityModel activityModel { get; set; }
     [Parameter]
     public ExperienceCreationViewModel viewModel { get; set; }
-
-    private void CheckboxChanged(ChangeEventArgs e)
+    public string SearchTag { get; set; }
+    public int SearchTagLength { get; set; } = 0;
+    private void CheckboxChanged(int val)
     {
-        if (e.Value != null)
+        activityModel.ExperienceTypeId = val;
+    }
+
+    public void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            int value = int.Parse(e.Value.ToString());
-            activityModel.ExperienceTypeId = value;
+            if (viewModel.SearchTags.Count < 5 && (viewModel.SearchTags.Where(x=>x.Value == SearchTag).FirstOrDefault()) == null)
+            {
+                viewModel.SearchTags.Add(new ExperienceCreationViewModel.SearchTag(){ Key = viewModel.SearchTags.Count + 1, Value = SearchTag });
+            }
+            SearchTag = string.Empty;
         }
+    }
+
+    private string RequiredCheck(List<ExperienceCreationViewModel.SearchTag> searchTags)
+    {
+        if (viewModel.HasError && searchTags.Count == 0)
+        {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    private void RemoveSearchTag(int Id){
+        viewModel.SearchTags = viewModel.SearchTags.Where(x => x.Key != Id).ToList();
     }
 
     private string RequiredCheck(String? value) {
         if (viewModel.HasError && String.IsNullOrEmpty(value)) {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (viewModel.HasError && value == null)
+        {
             return "invalid";
         }
 
