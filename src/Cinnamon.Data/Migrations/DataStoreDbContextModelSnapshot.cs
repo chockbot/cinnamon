@@ -325,6 +325,7 @@ namespace Cinnamon.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Descriptions");
+                    b.ToTable("ExperienceTypes");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.Models.ExperienceCategoryModel", b =>
