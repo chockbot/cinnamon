@@ -1,0 +1,32 @@
+@using Cinnamon.Core
+
+<TableRow>
+    <TableRowCell>@Activity.Title</TableRowCell>
+    <TableRowCell TextAlignment="TextAlignment.Center">
+        <Check TValue="bool" Checked="Activity.IsPublished" CheckedChanged="OnPublishedChange"  />
+    </TableRowCell>
+    <TableRowHeader TextAlignment="TextAlignment.Center">
+        <Button TextColor="TextColor.White" Color="Color.Primary" Size="Size.ExtraSmall">Update</Button>
+    </TableRowHeader>
+</TableRow>
+
+@code
+{
+    [Parameter]
+    public ActivityModel Activity {get; set;}
+
+    private async Task OnPublishedChange(bool value)
+    {
+        Activity.IsPublished = value;
+        var res = await CoreDI.PublishActivityHandler
+            .ExecuteAsync(new Core.Module.ActivityService.Interactors.Publish {ActivityId = Activity.Id, IsPublished = value});
+        if(!res.Succeeded){
+            throw res.Error.Exception;
+        }
+        
+        await OnPublishChanged.InvokeAsync(value ? -1 : 1);
+    }
+
+    [Parameter]
+    public EventCallback<int> OnPublishChanged {get; set;}
+}

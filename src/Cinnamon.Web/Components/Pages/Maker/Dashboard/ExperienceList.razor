@@ -1,0 +1,36 @@
+@using Cinnamon.Core
+
+<div class="mt-4 experience-list">
+    <Table Striped>
+        <TableHeader>
+            <TableRow>
+                <TableHeaderCell class="font-14">Experience Name</TableHeaderCell>
+                <TableHeaderCell class="font-14" TextAlignment="TextAlignment.Center">Deavtivate</TableHeaderCell>
+                <TableHeaderCell class="font-14" TextAlignment="TextAlignment.Center">Action</TableHeaderCell>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            @if(Activities != null)
+            {
+                foreach (var item in Activities)
+                {
+                    <ExperienceItem Activity="item" OnPublishChanged="PublishChanged" />
+                }
+            }
+        </TableBody>
+    </Table>
+</div>
+
+@code 
+{
+    [Parameter]
+    public IList<ActivityModel> Activities {get; set;}
+
+    [Parameter]
+    public EventCallback<int> OnPublishChanged {get; set;}
+
+    private void PublishChanged(int count)
+    {
+        OnPublishChanged.InvokeAsync(count);
+    }
+}
