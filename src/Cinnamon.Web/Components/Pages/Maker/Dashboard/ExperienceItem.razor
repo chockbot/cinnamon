@@ -1,0 +1,17 @@
+@using Cinnamon.Core
+
+<TableRow>
+    <TableRowCell>@Activity.Title</TableRowCell>
+    <TableRowCell TextAlignment="TextAlignment.Center">
+        <Check TValue="bool" />
+    </TableRowCell>
+    <TableRowHeader TextAlignment="TextAlignment.Center">
+        <Button TextColor="TextColor.White" Color="Color.Primary" Size="Size.ExtraSmall">Update</Button>
+    </TableRowHeader>
+</TableRow>
+
+@code
+{
+    [Parameter]
+    public ActivityModel Activity {get; set;}
+}

@@ -1,4 +1,5 @@
 @page "/maker/dashboard"
+@using Cinnamon.Core
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
 @inject NavigationManager NavigationManager
 
@@ -25,7 +26,7 @@
             </Items>
             <Content>
                 <TabPanel Name="active">
-                    <ExperienceList />
+                    <ExperienceList Activities="activities" />
                 </TabPanel>
                 <TabPanel Name="change">
                     Content for change experience
@@ -41,7 +42,15 @@
     </div>
 </section>
 
-@code{
+@code
+{
+    private IList<ActivityModel> activities;
+
+    protected override async Task OnInitializedAsync()
+    {
+        activities = await CoreDI.DataStore.Activities.GetAllAsync();
+    }
+
     string selectedTab = "active";
 
     private Task OnSelectedTabChanged(string name)
