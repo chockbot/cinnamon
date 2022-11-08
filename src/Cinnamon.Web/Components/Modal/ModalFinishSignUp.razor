@@ -1,4 +1,5 @@
 ﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core.Common;
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.ViewModels
@@ -9,43 +10,49 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
-<div class="modal fade @ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
+<div class="modal @ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <p class="col-11 modal-title text-center">Finish signing up</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" ></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="@(() => CloseModal())"></button>
             </div>
             <div class="modal-body">
                 <div class="card-filter">
+                    @if(!viewModel.isSubmit)
+                    {
                     <EditForm Model=viewModel OnValidSubmit="Submit">
                         <DataAnnotationsValidator />
                         <div class="d-flex flex-column gap-3 align-items-center">
                             <div class="col-12">
                                 <InputText id="firstname-signup" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.FirstName />
+                                    <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.FirstName" />
                             </div>
                             <div class="col-12 justify-content-start">
                                 <InputText id="lastname-signup" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.LastName />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.LastName" />
                                 <p>Be sure it's the same as what appears on your government ID.</p>
                             </div>
                             <div class="col-12 justify-content-start">
                                 <InputText id="birtdate-signup" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Birthdate />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Birthdate" />
                                 <p>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Email />
+                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Email disabled/>
+                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Email" />
                                 <p>For email confirmations, and receipts.</p>
                             </div>
                             <div class="col-12">
                                 <InputText id="password-signup" type="password" class="input-group fs-12" placeholder="Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Password />
+                                    <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Password" />
                             </div>
                             <div class="col-12">
                                 <InputText id="confirm-signup" type="password" class="input-group fs-12" placeholder="Confirm Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.ConfirmPassword />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.ConfirmPassword" />
                             </div>
                             <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
-                            <button class="btn-primary rounded-pill shadow-sm text-center" type="submit">
-                                <i id="spinner-loading" class="fa fa-spinner fa-spin" style="visibility:hidden"></i> Agree and continue
-                            </button>
+                            <SignupButton id="signup-waiting" Width="100%" Text="Agree and continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" />
                             <div class="col-12">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @bind=viewModel.waitListModel.AcceptFlag>
@@ -56,11 +63,16 @@
                             </div>
                         </div>  
                     </EditForm>
+                    }
                 </div>
             </div>
         </div>  
     </div>
 </div>
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
+}
 @code {
     IJSObjectReference module;
     [Parameter]
@@ -69,15 +81,21 @@
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
+
     public string ModalDisplay = "none;";
+
     public string ModalClass = "";
+
+    public bool ShowBackdrop = false;
+
+    public List<WaitListModel> userList = new List<WaitListModel>();
+
     public void OnSelect(ChangeEventArgs args)
     {
         UserType usertype;
         Enum.TryParse(args.Value.ToString(), out usertype);
         TypeValue = usertype;
     }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -85,21 +103,52 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
         }
     }
-    public async Task OpenModal()
+    public bool ButtonIsClicked()
     {
-        ModalDisplay = "block;";
-        ModalClass = "show";
-        StateHasChanged();
+        return viewModel.isClickButton ? true : false;
     }
 
+    public string showSpinner()
+    {
+        return viewModel.isClickButton ? "visible" : "hidden";
+    }
+    public async Task OpenModal(string Email)
+    {
+        ModalDisplay                  = "block;";
+        ModalClass                    = "show";
+        ShowBackdrop                  = true;
+        viewModel.waitListModel.Email = Email;
+        StateHasChanged();
+    }
     public async Task CloseModal()
     {
-        ModalClass = "";
-        ModalDisplay = "none;";
+        ModalClass      = "";
+        ModalDisplay    = "none;";
         StateHasChanged();
     }
     public async Task Submit()
     {
-       
+
+        userList = await CoreDI.DataStore.WaitList.GetAllAsync();
+        var result = userList.Where(p => p.Email == viewModel.waitListModel.Email).FirstOrDefault();
+
+        if (result != null)
+        {
+            result.FirstName        = viewModel.waitListModel.FirstName;
+            result.LastName         = viewModel.waitListModel.LastName;
+            result.Birthdate        = viewModel.waitListModel.Birthdate;
+            result.Password         = viewModel.waitListModel.Password;
+            result.ConfirmPassword  = viewModel.waitListModel.ConfirmPassword;
+            result.AcceptFlag       = viewModel.waitListModel.AcceptFlag;
+
+            var res = await CoreDI.DataStore.WaitList.SaveDataAsync(result);
+            if(res.Message.Contains("Saved"))
+            {
+                await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
+                viewModel.isSubmit = true;
+                viewModel.isClickButton = false;
+                NavigationManager.NavigateTo("Creation");
+            }
+        }
     }
 }

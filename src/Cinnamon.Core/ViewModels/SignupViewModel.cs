@@ -14,6 +14,8 @@ namespace Cinnamon.Core.ViewModels
         public bool isSubmit { get; set; } = false;
         public bool isClickButton { get; set; } = false;
 
+        public bool HasError { get; set; } = false;
+
         public bool isValid(string email)
         {
             if(!string.IsNullOrEmpty(email))

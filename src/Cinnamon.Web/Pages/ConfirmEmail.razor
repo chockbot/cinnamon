@@ -8,10 +8,16 @@
 
 <Onboarding></Onboarding>
 <ModalFinishSignUp @ref="modal"></ModalFinishSignUp>
+<ModalPassword @ref="modalPassword"></ModalPassword>
+
 @code {
 
     ModalFinishSignUp modal { get; set; }
+
+    ModalPassword modalPassword { get; set; }
+
     public List<WaitListModel> list = new List<WaitListModel>();
+
     protected override async Task OnInitializedAsync()
     {
         var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
@@ -19,16 +25,37 @@
         var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
         var emailSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("email", out var email);
 
-        if(userSuccess && tokenSuccess)
+        try
         {
-            var res = await CoreDI.CinnamonMakerService.VerifyEmail
-                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.VerifyEmail {Token = token, UserId = userId});
-
-            if(res.Succeeded)
+            if (userSuccess && tokenSuccess && emailSuccess)
             {
-                await modal.OpenModal();
-                //Auto Populate Modal Finish Signing Up
+                var res = await CoreDI.CinnamonMakerService.VerifyEmail
+                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId, Email = email });
+                if (res.Succeeded)
+                {
+                    // Checking if user has completed basic details
+                    list = await CoreDI.DataStore.WaitList.GetAllAsync();
+                    var result = list.Where(p => p.Email == email).FirstOrDefault();
+
+                    if (string.IsNullOrEmpty(result.FirstName) || string.IsNullOrEmpty(result.LastName)
+                    || string.IsNullOrEmpty(result.Birthdate) || string.IsNullOrEmpty(result.Password))
+                    {
+                        //Open Modal Finish Signing up and auto populate email
+                        await modal.OpenModal(email);
+                    }
+                    else
+                    {
+                        //Display the password input box to log in.
+                        await modalPassword.OpenModal(email);
+                    }
+                    
+                }
             }
+        }
+        catch (Exception e)
+        {
+
+            e.Message.ToString();
         }
     }
 }
