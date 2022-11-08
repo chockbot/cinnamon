@@ -1,7 +1,6 @@
 @page "/maker/dashboard"
 @using Cinnamon.Core
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
-@inject NavigationManager NavigationManager
 
 <section class="mt-5 maker-dashboard">
     <div class="container">
@@ -10,11 +9,6 @@
                 <h3 class="text-capitalize fw-bold">experiences</h3>
             </Column>
             <Column>
-                <Div Display="Display.Flex" Flex="Flex.JustifyContent.End.AlignItems.Center">
-                    <Button TextColor="TextColor.White" Size="Size.Small" Color="Color.Primary" Border="Border.RoundedPill" @onclick="NavigateToCreation">
-                        Create new experience
-                    </Button>
-                </Div>
             </Column>
         </Row>
         <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
@@ -63,10 +57,5 @@
     {
         selectedTab = name;
         return Task.CompletedTask;
-    }
-
-    private void NavigateToCreation()
-    {
-        NavigationManager.NavigateTo("creation");
     }
 }
