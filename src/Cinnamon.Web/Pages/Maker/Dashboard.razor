@@ -19,17 +19,16 @@
         </Row>
         <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
             <Items>
-                <Tab Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">active</Tab>
-                <Tab Name="change" TextTransform="TextTransform.Capitalize">change</Tab>
+                <Tab Display="Display.Flex" Flex="Flex.AlignItems.Center" Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">
+                    active
+                    <Badge TextColor="TextColor.White" Border="Border.RoundedCircle" Color="Color.Primary">@activeActivityCount</Badge>
+                </Tab>
                 <Tab Name="attendance-monitoring" TextTransform="TextTransform.Capitalize">attendance monitoring</Tab>
                 <Tab Name="chat-room" TextTransform="TextTransform.Capitalize">chat room</Tab>
             </Items>
             <Content>
                 <TabPanel Name="active">
-                    <ExperienceList Activities="activities" />
-                </TabPanel>
-                <TabPanel Name="change">
-                    Content for change experience
+                    <ExperienceList OnPublishChanged="ActiveCountChanged" Activities="activities" />
                 </TabPanel>
                 <TabPanel Name="attendance-monitoring">
                     Content for attendance monitoring
@@ -45,10 +44,17 @@
 @code
 {
     private IList<ActivityModel> activities;
+    private int activeActivityCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        activities = await CoreDI.DataStore.Activities.GetAllAsync();
+        activities = (await CoreDI.DataStore.Activities.GetAllAsync()).OrderBy(i => i.Id).ToList();
+        activeActivityCount = activities.Where(i => i.IsPublished).Count();
+    }
+
+    private void ActiveCountChanged(int count)
+    {
+        activeActivityCount-= count;
     }
 
     string selectedTab = "active";

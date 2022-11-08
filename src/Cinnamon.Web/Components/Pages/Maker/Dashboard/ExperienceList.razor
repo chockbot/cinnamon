@@ -14,7 +14,7 @@
             {
                 foreach (var item in Activities)
                 {
-                    <ExperienceItem Activity="item" />
+                    <ExperienceItem Activity="item" OnPublishChanged="PublishChanged" />
                 }
             }
         </TableBody>
@@ -25,4 +25,12 @@
 {
     [Parameter]
     public IList<ActivityModel> Activities {get; set;}
+
+    [Parameter]
+    public EventCallback<int> OnPublishChanged {get; set;}
+
+    private void PublishChanged(int count)
+    {
+        OnPublishChanged.InvokeAsync(count);
+    }
 }
