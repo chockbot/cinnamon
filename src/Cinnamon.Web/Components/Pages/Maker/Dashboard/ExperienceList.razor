@@ -1,0 +1,47 @@
+@using Cinnamon.Core
+@inject NavigationManager NavigationManager
+
+<div class="mt-4 experience-list">
+    <Div Margin="Margin.Is3.OnY">
+        <Button TextColor="TextColor.White" TextTransform="TextTransform.Capitalize" Color="Color.Primary" @onclick="NavigateToCreation">
+            Create new experience
+        </Button>
+    </Div>
+    <Table Striped>
+        <TableHeader>
+            <TableRow>
+                <TableHeaderCell class="font-14">Experience Name</TableHeaderCell>
+                <TableHeaderCell class="font-14" TextAlignment="TextAlignment.Center">Deavtivate</TableHeaderCell>
+                <TableHeaderCell class="font-14" TextAlignment="TextAlignment.Center">Action</TableHeaderCell>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            @if(Activities != null)
+            {
+                foreach (var item in Activities)
+                {
+                    <ExperienceItem Activity="item" OnPublishChanged="PublishChanged" />
+                }
+            }
+        </TableBody>
+    </Table>
+</div>
+
+@code 
+{
+    [Parameter]
+    public IList<ActivityModel> Activities {get; set;}
+
+    [Parameter]
+    public EventCallback<int> OnPublishChanged {get; set;}
+
+    private void PublishChanged(int count)
+    {
+        OnPublishChanged.InvokeAsync(count);
+    }
+
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo("creation");
+    }
+}
