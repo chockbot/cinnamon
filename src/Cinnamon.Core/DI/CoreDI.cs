@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Core.Module.CinnamonMakerService;
+using Cinnamon.Core.Module.ActivityService.Handler;
 using Dna;
 namespace Cinnamon.Core
 {
@@ -23,5 +24,9 @@ namespace Cinnamon.Core
         public static IDataStore DataStore => Framework.Service<IDataStore>();
 
         public static ICinnamonMakerService CinnamonMakerService => Framework.Service<ICinnamonMakerService>();
+
+        public static IPublishActivityHandler PublishActivityHandler => Framework.Service<IPublishActivityHandler>();
+
+        public static IUpdateActivityHandler UpdateActivityHandler => Framework.Service<IUpdateActivityHandler>();
     }
 }
