@@ -1,9 +1,6 @@
-﻿using Cinnamon.Core.Models;
-using Newtonsoft.Json;
-using System;
-using System.Diagnostics;
-using System.Text.Json.Nodes;
-using static System.Net.Mime.MediaTypeNames;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace Cinnamon.Core
 {
@@ -17,6 +14,8 @@ namespace Cinnamon.Core
             CreationStep.ExperienceSetup,
             CreationStep.Publish
         };
+
+        public Cinnamon.Core.Enums.UserActionType UserActionType { get; set; } = Enums.UserActionType.Create;
 
         private int _currentStepIndex = 0;
 
@@ -80,33 +79,6 @@ namespace Cinnamon.Core
             }
         }
 
-        private bool UploadImage(List<ImageCacheModel> Images)
-        {
-            try
-            {
-                foreach (var image in Images)
-                {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\Activities", image.ImageName + ".jpg");
-                    var fs = File.Create(filePath);
-                    fs.Write(image.ImageData, 0, image.ImageData.Length);
-                    fs.Close();
-                }
-                return true;
-            }
-            catch(Exception ex)
-            {
-                foreach (var image in Images)
-                {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\images\Activities", image.ImageName + ".jpg");
-                    if (File.Exists(filePath))
-                    {
-                        File.Delete(filePath);
-                    }
-                }
-                return false;
-            }
-        }
-
         public async Task<bool> SaveActivity(ActivityModel activityModel)
         {
             var sortPrice = ExperienceSetupViewModel.Schedules.OrderBy(x => x.Price).ToList();
@@ -121,28 +93,23 @@ namespace Cinnamon.Core
                 activityModel.Address = null;
             }
 
-            var images = new List<ActivityImagesModels>();
             try
             {
-                foreach (var image in ExperienceSetupViewModel.Images)
+                if(UserActionType == Enums.UserActionType.Create)
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    images.Add(new ActivityImagesModels()
+                    activity.ActivityImages = await Upload(ExperienceSetupViewModel.Images);
+                    var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
+                    if (res.Type == MessageType.Success)
                     {
-                        ImageLocation = "images/Activities/" + guid + ".jpg"
-                    });
-                    image.ImageName = guid;
+                        return true;
+                    }
                 }
-
-                activity.ActivityImages = images;
-
-                var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
-                if (res.Type == MessageType.Success)
+                else if(UserActionType == Enums.UserActionType.Update)
                 {
-
-                    if (!UploadImage(ExperienceSetupViewModel.Images))
+                    var res = await CoreDI.UpdateActivityHandler.ExecuteAsync(new Module.ActivityService.Interactors.UpdateActivity {Activity = activityModel});
+                    if(!res.Succeeded)
                     {
-                        throw new Exception();
+                       throw res.Error.Exception;
                     }
                     return true;
                 }
@@ -190,6 +157,45 @@ namespace Cinnamon.Core
             }
 
             return true;
+        }
+
+
+        public async Task<List<ActivityImagesModels>> Upload(List<ImageCacheModel> Images)
+        {
+            try
+            {
+                var images = new List<ActivityImagesModels>();
+
+                var configuration = new ConfigurationBuilder()
+                 .SetBasePath(Directory.GetCurrentDirectory())
+                 .AddJsonFile($"appsettings.json");
+
+                var config = configuration.Build();
+                var connectionString = config.GetConnectionString("AzureConnectionString");
+                foreach (var image in Images)
+                {
+                    var guid = Guid.NewGuid().ToString();
+
+                    CloudStorageAccount storageacc = CloudStorageAccount.Parse(connectionString);
+
+                    CloudBlobClient blobClient = storageacc.CreateCloudBlobClient();
+                    CloudBlobContainer container = blobClient.GetContainerReference("upload-container");
+
+                    CloudBlockBlob blockBlob = container.GetBlockBlobReference(guid + ".jpg");
+                    blockBlob.Properties.ContentType = "image/jpg";
+
+                    using (var ms = new MemoryStream(image.ImageData, false))
+                    {
+                        await blockBlob.UploadFromStreamAsync(ms);
+                    }
+                    images.Add(new ActivityImagesModels() { ImageLocation = blockBlob.Uri.ToString(), ImageName = guid });
+                }
+                return images;
+            }
+            catch (Exception ex)
+            {
+                return (List<ActivityImagesModels>)Enumerable.Empty<ActivityImagesModels>();
+            }
         }
 
     }

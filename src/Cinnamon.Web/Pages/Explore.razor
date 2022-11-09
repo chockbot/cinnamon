@@ -504,7 +504,7 @@
     private string value { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        activity        = await CoreDI.DataStore.Activities.GetAllAsync();
+        activity        = (await CoreDI.DataStore.Activities.GetAllAsync()).Where(i => i.IsPublished).ToList();
         Address         = await CoreDI.DataStore.Addresses.GetAllAsync();
         activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
         activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
@@ -546,18 +546,20 @@
         else
         {
             activity  = await CoreDI.DataStore.Activities.GetAllAsync();
+            activity = activity.Where(i => i.IsPublished).ToList();
         }
     }
     public async Task Filter(int id, string type)
     {
         searchValue = type;
         activity    = await CoreDI.DataStore.Activities.GetAllAsync();
-        activity    = activity.Where(p=> p.Id == id).ToList();
+        activity    = activity.Where(p=> p.Id == id && p.IsPublished).ToList();
 
     }
     public async Task Clear()
     {
         searchValue = string.Empty;
         activity    = await CoreDI.DataStore.Activities.GetAllAsync();
+        activity = activity.Where(p => p.IsPublished).ToList();
     }
 }

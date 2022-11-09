@@ -1,5 +1,6 @@
 ﻿@layout CreationLayout
 @page "/Creation"
+@using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core
 @using Cinnamon.Web.Components
 @inject IJSRuntime jsRuntime
@@ -72,7 +73,7 @@
                             <button class="btn-primary" type="button" id="nextBtn" @onclick=OnClickNext>@MainButtonText()</button>
                         </div>
                     </div>
-                    <img id="publish-image" class="img-fluid w-100" style="margin-left:-50px;" src="images/publishimage_mobile.png" />
+           @*         <img id="publish-image" class="img-fluid w-100" style="margin-left:-50px;" src="images/publishimage_mobile.png" />*@
                 </div>
             </div>
     </div>
@@ -88,15 +89,55 @@
     </EditForm>
 </div>
 
+@if(ShowErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+      <strong>Error!</strong> There was a problem publishing the experience creation. Please refresh the page and try again.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if(ShowSuccessMessage){
+    <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+      <strong>Success!</strong> You'll be redirected to the dashboard page.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 @code {
+    IJSObjectReference module;
     private CreationViewModel _viewModel = new CreationViewModel();
+    public bool ShowErrorMessage { get; set; }
+    public bool ShowSuccessMessage { get; set; } 
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
+        var actionSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("action", out var action);
+        var activityIdSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityid", out var activityId);
+
+        if(actionSuccess && activityIdSuccess && action.ToString().ToLower() == "update")
+        {
+            if(int.TryParse(activityId, out int id))
+            {
+                var res = await CoreDI.DataStore.Activities.GetDataAsync(new ActivityModel {Id = id});
+                if(res != null)
+                {
+                    _viewModel.activity = res;
+                    _viewModel.UserActionType = Core.Enums.UserActionType.Update;
+                }
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
+        Task.Run(()=>module.InvokeVoidAsync("confirmation"));
     }
 
     private string ActiveTab(CreationStep step) {
@@ -115,6 +156,14 @@
         return "";
     }
 
+    private async void HideMessageAfterDelay()
+    {
+        await Task.Delay(3000);
+        ShowErrorMessage = false;
+        ShowSuccessMessage = false;
+        StateHasChanged();
+    }
+
     private void OnClickNext()
     {
         if (_viewModel.IsComplete)
@@ -123,11 +172,15 @@
             if (res)
             {
                 //Dashboard
-                navigationManager.NavigateTo("/");
+                ShowSuccessMessage = true;
+                Task.Run(()=>module.InvokeVoidAsync("OffBeforeUnload"));
+                HideMessageAfterDelay();
+                navigationManager.NavigateTo("maker/Dashboard");
             }
             else
             {
-                //Do something
+                ShowErrorMessage = true;
+                HideMessageAfterDelay();
             }
         }
         else

@@ -13,49 +13,36 @@
  <div class="w-100 text-center"> 
     @if (!viewModel.isSubmit)
     {
-            <EditForm Model=viewModel OnValidSubmit="Submit">
-                <DataAnnotationsValidator />
-                <div class="d-flex flex-column gap-3 align-items-center">
-                    <div class="col-12">
-                    <InputText id="email-signup" placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family='Nunito';" @bind-Value=viewModel.waitListModel.Email />
-                        <ValidationMessage style="text-align:left" For="() => viewModel.userListModel.Email" />
-                    </div>
-                    <SignupButton id="signup-waiting" Width="100%" Text="Continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()"/>
-                    <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
-                    <div class="divider">
-                        <hr class="left" />or<hr class="right" />
-                    </div>
-                     <div class="col-12">
-                        <a class="btn btn-md btn-google" href="#"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" onclick="@LoginwithEmail()"/> Continue with Gmail</a>
-                     </div>
+        <EditForm Model=viewModel OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <div class="d-flex flex-column gap-3 align-items-center">
+                <div class="col-12">
+                <InputText id="email-signup" placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Email />
+                    <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Email" />
                 </div>
-            </EditForm>
+                <SignupButton id="signup-waiting" Width="100%" Text="Continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()"/>
+                <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+                <div class="divider">
+                    <hr class="left" />or<hr class="right" />
+                </div>
+                 <div class="col-12">
+                    <a class="btn btn-md btn-google" href="#"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" onclick="@LoginwithEmail()"/> Continue with Gmail</a>
+                 </div>
+            </div>
+        </EditForm>
     }    
 </div>
-<!--Verify Modal-->
-<Modal @ref="modal">
-    <ModalContent Centered>
-        <ModalHeader>
-            <Column ColumnSize="ColumnSize.Is11" TextAlignment="TextAlignment.Center">
-                <ModalTitle Style="font-family:'Nunito';font-size:18px;font-weight:700">Verification Email</ModalTitle>
-            </Column>
-            <CloseButton Style="border:none;background-color:transparent" />
-        </ModalHeader>
-        <ModalBody>
-            <Heading Size="HeadingSize.Is5">Welcome to <Span Style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</Span></Heading>
-            <br />
-            <Column ColumnSize="ColumnSize.Is12" TextAlignment="TextAlignment.Center">
-                <Paragraph Style="font-family:'Nunito';font-size:14px;font-weight: 400;color:#343D4C">We've sent an email to your inbox. Please check and click verify.</Paragraph>
-                <Paragraph Style="font-family:'Nunito';font-size:14px;font-weight: 400;color:#343D4C">Haven't received a verification email? <Link To="#" Style="color:#ffa942"> Resend</Link></Paragraph>
-            </Column>
-        </ModalBody>
-    </ModalContent>
-</Modal>
-<ModalFinishSignUp></ModalFinishSignUp>
+<ModalPassword @ref="modalPassword"></ModalPassword>
+<ValidationModal @ref="verify"></ValidationModal>
+
 @code {
     IJSObjectReference module;
 
     public Modal modal { get; set; }
+
+    ModalPassword modalPassword { get; set; }
+
+    ValidationModal verify { get; set; }
 
     public List<WaitListModel> userList = new List<WaitListModel>();
 
@@ -93,11 +80,12 @@
         {
             userList = await CoreDI.DataStore.WaitList.GetAllAsync();
             var result = userList.Where(a => a.Email == viewModel.waitListModel.Email).FirstOrDefault();
-            if (result != null)
+            //Check if Account is Verified
+            if (result!=null && result.IsVerified == true)
             {
-                //Already have an Account
-                //Go to Creation Page
-                NavigationManager.NavigateTo("Creation", true);
+                //If user is Verified display modal password
+                await modalPassword.OpenModal(result.Email);
+                viewModel.isClickButton = false;
             }
             else
             {
@@ -109,7 +97,8 @@
                 if (register.Succeeded)
                 {
                     //Display Verification Modal
-                    await modal.Show();
+                    await verify.OpenModal();
+                    viewModel.isClickButton = false;
                 }
             }
         }
