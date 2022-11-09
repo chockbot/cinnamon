@@ -14,3 +14,7 @@
         $(window).off('beforeunload');
     }
 }
+
+export function OffBeforeUnload() {
+   $(window).off('beforeunload');
+}
