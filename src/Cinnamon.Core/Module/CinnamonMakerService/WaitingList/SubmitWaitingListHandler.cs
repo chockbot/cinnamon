@@ -40,7 +40,7 @@ public class SubmitWaitingListHandler : ISubmitWaitngList
             byte[] key = guid.ToByteArray();
             var token = Convert.ToBase64String(time.Concat(key).ToArray());
 
-            var payload = new WaitListModel { Email = args.Email, IsVerified = false, Token = token, Type = args.UserType, Guid = guid.ToString(),
+            var payload = new WaitListModel { Email = args.Email, IsVerified = false, Token = token.ToString(), Type = args.UserType, Guid = guid.ToString(),
              AcceptFlag = false,Birthdate= String.Empty,ConfirmPassword= String.Empty,FirstName= String.Empty,LastName= String.Empty,Password= String.Empty
             };
             var waitingResult = await CoreDI.DataStore.WaitList.SaveDataAsync(payload);
@@ -50,7 +50,7 @@ public class SubmitWaitingListHandler : ISubmitWaitngList
                     new ApplicationException("An error occured while saving to waiting list"), "An error occured while saving to waiting list");
             }
             string localhost = "https://localhost:7213";
-            var verificationLink = $"{coreConfig.BaseUrl}/Confirm-Email/?userid={guid.ToString()}&token={token}";
+            var verificationLink = $"{coreConfig.BaseUrl}/Confirm-Email/?userid={guid.ToString()}&token={token}&email={args.Email}";
             var emailRes = await emailVerification.ExecuteAsync(new EmailVerification { Email = args.Email, VerificationLink = verificationLink });
             if(!emailRes.Succeeded) 
             {
