@@ -46,21 +46,24 @@
             <br />
             <Column ColumnSize="ColumnSize.Is12" TextAlignment="TextAlignment.Center">
                 <Paragraph Style="font-family:'Nunito';font-size:14px;font-weight: 400;color:#343D4C">We've sent an email to your inbox. Please check and click verify.</Paragraph>
-                <Paragraph Style="font-family:'Nunito';font-size:14px;font-weight: 400;color:#343D4C">Haven't received a verification email? <Link To="#" Style="color:#ffa942"> Resend</Link></Paragraph>
+                <Paragraph Style="font-family:'Nunito';font-size:14px;font-weight: 400;color:#343D4C">Haven't received a verification email? <link To="#" Style="color:#ffa942"/> Resend</Paragraph>
             </Column>
         </ModalBody>
     </ModalContent>
 </Modal>
 <ModalFinishSignUp></ModalFinishSignUp>
+<ModalPassword @ref="modalPassword"></ModalPassword>
 @code {
     IJSObjectReference module;
 
     public Modal modal { get; set; }
 
+    ModalPassword modalPassword { get; set; }
+
     public List<WaitListModel> userList = new List<WaitListModel>();
 
     [Parameter]
-     public UserType TypeValue { get; set; }
+    public UserType TypeValue { get; set; }
 
     [Parameter]
     public Expression<Func<string>>? For { get; set; }
@@ -93,11 +96,12 @@
         {
             userList = await CoreDI.DataStore.WaitList.GetAllAsync();
             var result = userList.Where(a => a.Email == viewModel.waitListModel.Email).FirstOrDefault();
-            if (result != null)
+            //Check if Account is Verified
+            if (result!=null && result.IsVerified == true)
             {
-                //Already have an Account
-                //Go to Creation Page
-                NavigationManager.NavigateTo("Creation", true);
+                //If user is Verified display modal password
+                await modalPassword.OpenModal(result.Email);
+                viewModel.isClickButton = false;
             }
             else
             {
