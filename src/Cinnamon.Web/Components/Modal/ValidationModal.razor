@@ -1,29 +1,52 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core.Enums
 
-<Modal @ref="modal">
-    <ModalContent Centered>
-        <ModalHeader>
-            <Column ColumnSize="ColumnSize.Is11" TextAlignment="TextAlignment.Center">
-                <ModalTitle>Verification Email</ModalTitle>
-            </Column>
-            <CloseButton Style="border:none;background-color:transparent" />
-        </ModalHeader>
-        <ModalBody>
-            <Heading Size="HeadingSize.Is5">Welcome to <Span Style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</Span></Heading>
-            <br />
-            <Column ColumnSize="ColumnSize.Is12" TextAlignment="TextAlignment.Center">
-                <Paragraph>We've sent an email to your inbox. Please check and click verify.</Paragraph>
-                <Paragraph>Haven't received a verification email? <Link To="#" Style="color:#ffa942"> Resend</Link></Paragraph>
-            </Column>
-        </ModalBody>
-        <ModalFooter>
-        </ModalFooter>
-    </ModalContent>
-</Modal>
-
+<div class="modal @ModalClass" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Verification Email</p>
+                <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-filter">
+                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
+                    <br />
+                    <div class="col-12 text-center">
+                        <p>We've sent an email to your inbox. Please check and click verify.</p>
+                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
+}
 @code {
-
     [Parameter]
     public Modal modal{ get; set; }
+
+    public string ModalDisplay = "none;";
+
+    public string ModalClass = "";
+
+    public bool ShowBackdrop = false;
+
+    public async Task OpenModal()
+    {
+        ModalDisplay = "block;";
+        ModalClass = "show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+    public async Task CloseModal()
+    {
+        ModalClass = "";
+        ModalDisplay = "none;";
+        ShowBackdrop = false;
+        StateHasChanged();
+    }
 }
