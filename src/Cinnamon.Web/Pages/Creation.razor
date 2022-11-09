@@ -88,10 +88,26 @@
     </EditForm>
 </div>
 
+@if(ShowErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+      <strong>Error!</strong> There was a problem publishing the experience creation. Please refresh the page and try again.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@if(ShowSuccessMessage){
+    <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+      <strong>Success!</strong> You'll be redirected to the dashboard page.
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 @code {
     IJSObjectReference module;
     private CreationViewModel _viewModel = new CreationViewModel();
-
+    public bool ShowErrorMessage { get; set; }
+    public bool ShowSuccessMessage { get; set; } 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
@@ -118,6 +134,14 @@
         return "";
     }
 
+    private async void HideMessageAfterDelay()
+    {
+        await Task.Delay(3000);
+        ShowErrorMessage = false;
+        ShowSuccessMessage = false;
+        StateHasChanged();
+    }
+
     private void OnClickNext()
     {
         if (_viewModel.IsComplete)
@@ -126,11 +150,15 @@
             if (res)
             {
                 //Dashboard
-                navigationManager.NavigateTo("/");
+                ShowSuccessMessage = true;
+                Task.Run(()=>module.InvokeVoidAsync("OffBeforeUnload"));
+                HideMessageAfterDelay();
+                navigationManager.NavigateTo("maker/Dashboard");
             }
             else
             {
-                //Do something
+                ShowErrorMessage = true;
+                HideMessageAfterDelay();
             }
         }
         else
