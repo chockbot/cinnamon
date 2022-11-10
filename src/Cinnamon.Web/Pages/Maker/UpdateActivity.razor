@@ -1,0 +1,67 @@
+@page "/maker/update-activity"
+@layout CreationLayout
+@using Cinnamon.Core;
+@using Cinnamon.Web.Components
+
+<nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="step breadcrumb-item" aria-current="page">
+             <a class="button">
+                <span class="icon-step">1</span>
+                <span class="step-yellow">Experience update</span>
+            </a>
+        </li>
+        <li class="step breadcrumb-item" aria-current="page">
+             <a class="button">
+                <span class="icon-step">2</span>
+                <span class="step-yellow">Setup</span>
+            </a>
+        </li>
+        <li class="step breadcrumb-item" aria-current="page">
+            <a class="button">
+                <span class="icon-step">3</span>
+                <span class="step-yellow">Publish</span>
+            </a>
+        </li>
+    </ol>
+</nav>
+
+<div class="progress-container landing-sm shadow-sm">
+    <div class="progress mx-4">
+        <div id="myBar" class="progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="100">1</div>
+    </div>
+</div>
+
+<div id="regForm" class="shadow-lg">
+    <EditForm Model="new ActivityModel()">
+            <!--Experience Creation-->
+        <div class="tab show">
+            <ExperienceCreation activityModel="new ActivityModel()" viewModel="new ExperienceCreationViewModel()" />
+        </div>
+            <!--Set up-->
+        <div class="tab">
+            <ExperienceSetup activityModel="new ActivityModel()" viewModel="new ExperienceSetupViewModel()" />
+        </div>
+            <!--Publish-->
+        <div class="tab">
+            <div class="text-center publish-container">
+                <div class="w-100 publish-text">
+                    <h2 class="fw-bold">You're all set!!</h2>
+                    <p>Live your passion, share your knowledge and leave a mark in people's lives!</p>
+                    <div class="button-container" style="overflow:auto;">
+                        <div class="w-100">
+                            <button type="button" id="prevBtn" style="border:none;background-color:transparent">Back</button>
+                            <button class="btn-primary" type="button" id="nextBtn">Next</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="button-container" style="overflow:auto;">
+            <div style="float:right;">
+                <button type="button" id="prevBtn" style="border:none;background-color:transparent">Back</button>
+                <button class="btn-primary" type="button" id="nextBtn">Next</button>
+            </div>
+        </div>
+    </EditForm>
+</div>
