@@ -1,3 +1,5 @@
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 using Cinnamon.Core.Common;
 using Cinnamon.Core.Config;
 using Cinnamon.Core.Module.NotificationService.Interactors;
@@ -20,7 +22,14 @@ public class SubmitWaitingListHandler : ISubmitWaitngList
 
     public AppResult<SubmitWaitingListResult> Execute(SubmitWaitingList args)
     {
-        throw new NotImplementedException();
+        try 
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubmitWaitingListResult>.CreateFailed(ex, "An error occured during SubmitWaitingListHandler");
+        }
     }
 
     public async Task<AppResult<SubmitWaitingListResult>> ExecuteAsync(SubmitWaitingList args)
@@ -39,18 +48,20 @@ public class SubmitWaitingListHandler : ISubmitWaitngList
             byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
             byte[] key = guid.ToByteArray();
             var token = Convert.ToBase64String(time.Concat(key).ToArray());
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
 
             var payload = new WaitListModel { Email = args.Email, IsVerified = false, Token = token.ToString(), Type = args.UserType, Guid = guid.ToString(),
              AcceptFlag = false,Birthdate= String.Empty,ConfirmPassword= String.Empty,FirstName= String.Empty,LastName= String.Empty,Password= String.Empty
             };
+
             var waitingResult = await CoreDI.DataStore.WaitList.SaveDataAsync(payload);
             if(!waitingResult.Message.ToLower().Contains("saved"))
             {
                 return AppResult<SubmitWaitingListResult>.CreateFailed(
                     new ApplicationException("An error occured while saving to waiting list"), "An error occured while saving to waiting list");
             }
-            string localhost = "https://localhost:7213";
-            var verificationLink = $"{coreConfig.BaseUrl}/Confirm-Email/?userid={guid.ToString()}&token={token}&email={args.Email}";
+
+            var verificationLink = $"{coreConfig.BaseUrl}/Confirm-Email/?userid={guid.ToString()}&token={encodedToken}&email={args.Email}";
             var emailRes = await emailVerification.ExecuteAsync(new EmailVerification { Email = args.Email, VerificationLink = verificationLink });
             if(!emailRes.Succeeded) 
             {
