@@ -1,3 +1,5 @@
+using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 using Cinnamon.Core.Common;
 using Cinnamon.Core.Module.CinnamonMakerService.Interactors;
 using Cinnamon.Core.Module.CinnamonMakerService.Interactors.Results;
@@ -8,7 +10,14 @@ public class VerifyEmailHandler : IVerifyEmail
 {
     public AppResult<VerifyEmailResult> Execute(VerifyEmail args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyEmailResult>.CreateFailed(ex, "An error occured during VerifyEmailHandler");
+        }
     }
 
     public async Task<AppResult<VerifyEmailResult>> ExecuteAsync(VerifyEmail args)
@@ -27,8 +36,10 @@ public class VerifyEmailHandler : IVerifyEmail
                 return AppResult<VerifyEmailResult>.CreateFailed(new ApplicationException("Provide valid token and userId"), "Provide valid token and userId");
             }
 
+            var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(args.Token));
+
             // invalid token
-            if(waitingRes.Token != args.Token)
+            if(waitingRes.Token != decodedToken)
             {
                 return AppResult<VerifyEmailResult>.CreateFailed(new ApplicationException("Provide valid token and userId"), "Provide valid token and userId");
             }
