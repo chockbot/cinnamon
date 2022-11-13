@@ -54,7 +54,7 @@
                                 <!--Error Message-->
                                 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
                                     <ul id="error-list" class="fw-bold">
-                                        <li style="font-family:'Nunito';font-size:14px;">Kindly, fill out the form to proceed signing up.</li>
+                                        <li style="font-family:'Nunito';font-size:14px;">@ErrorText</li>
                                     </ul>
                                 </div>
                             <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
@@ -81,6 +81,7 @@
 }
 @code {
     IJSObjectReference module;
+
     [Parameter]
     public UserType TypeValue { get; set; }
     [Parameter]
@@ -93,6 +94,8 @@
     public string ModalClass = "";
 
     public bool ShowBackdrop = false;
+
+    public string ErrorText { get; set; }
 
     public List<WaitListModel> userList = new List<WaitListModel>();
 
@@ -138,34 +141,43 @@
     }
     public async Task Submit()
     {
-        if (viewModel.isValid(viewModel.waitListModel.Email) && viewModel.isValid(viewModel.waitListModel.FirstName) && 
-        viewModel.isValid(viewModel.waitListModel.LastName) && viewModel.isValid(viewModel.waitListModel.Birthdate) &&
-        viewModel.isValidPassword(viewModel.waitListModel.Password,viewModel.waitListModel.ConfirmPassword))
+        if (viewModel.isValid(viewModel.waitListModel.Email) && viewModel.isValid(viewModel.waitListModel.FirstName) &&
+        viewModel.isValid(viewModel.waitListModel.LastName) && viewModel.isValid(viewModel.waitListModel.Birthdate))
         {
-            userList = await CoreDI.DataStore.WaitList.GetAllAsync();
-            var result = userList.Where(p => p.Email == viewModel.waitListModel.Email).FirstOrDefault();
-            if (result != null)
+            if (viewModel.isValidPassword(viewModel.waitListModel.Password, viewModel.waitListModel.ConfirmPassword))
             {
-                result.FirstName = viewModel.waitListModel.FirstName;
-                result.LastName = viewModel.waitListModel.LastName;
-                result.Birthdate = viewModel.waitListModel.Birthdate;
-                result.Password = viewModel.waitListModel.Password;
-                result.ConfirmPassword = viewModel.waitListModel.ConfirmPassword;
-                result.AcceptFlag = viewModel.waitListModel.AcceptFlag;
-
-                var res = await CoreDI.DataStore.WaitList.SaveDataAsync(result);
-                if (res.Message.Contains("Saved"))
+                userList = await CoreDI.DataStore.WaitList.GetAllAsync();
+                var result = userList.Where(p => p.Email == viewModel.waitListModel.Email).FirstOrDefault();
+                if (result != null)
                 {
-                    await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
-                    viewModel.isSubmit = true;
-                    viewModel.isClickButton = false;
-                    NavigationManager.NavigateTo("Creation");
+                    result.FirstName = viewModel.waitListModel.FirstName;
+                    result.LastName = viewModel.waitListModel.LastName;
+                    result.Birthdate = viewModel.waitListModel.Birthdate;
+                    result.Password = viewModel.waitListModel.Password;
+                    result.ConfirmPassword = viewModel.waitListModel.ConfirmPassword;
+                    result.AcceptFlag = viewModel.waitListModel.AcceptFlag;
+
+                    var res = await CoreDI.DataStore.WaitList.SaveDataAsync(result);
+                    if (res.Message.Contains("Saved"))
+                    {
+                        await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
+                        viewModel.isSubmit = true;
+                        viewModel.isClickButton = false;
+                        NavigationManager.NavigateTo("Creation");
+                    }
                 }
+            }
+            else
+            {
+                viewModel.HasError = true;
+                ErrorText = "Password and confirm password are not match.";
+                viewModel.isClickButton = false;
             }
         }
         else
         {
-            viewModel.HasError      = true;
+            viewModel.HasError = true;
+            ErrorText = "Kindly fill out the form to proceed signing up.";
             viewModel.isClickButton = false;
         }
     }
