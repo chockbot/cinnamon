@@ -8,7 +8,14 @@ public class UpdateActivityHandler : IUpdateActivityHandler
 {
     public AppResult<UpdateActivityResult> Execute(UpdateActivity args)
     {
-        throw new NotImplementedException();
+        try 
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateActivityResult>.CreateFailed(ex, "An error occured in UpdateActivityHandler.");
+        }
     }
 
     public async Task<AppResult<UpdateActivityResult>> ExecuteAsync(UpdateActivity args)
@@ -28,7 +35,13 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(update.Message), update.Message);
             }
 
-            return AppResult<UpdateActivityResult>.CreateSucceeded(new UpdateActivityResult {Activity = args.Activity}, "Activity successfully updated.");
+            var updatedActivity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(args.Activity.Id);
+            if(updatedActivity == null)
+            {
+                return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException("Can't find updated activity"), "Can't find updated activity");
+            }
+
+            return AppResult<UpdateActivityResult>.CreateSucceeded(new UpdateActivityResult {Activity = updatedActivity}, "Activity successfully updated.");
         }
         catch (Exception ex)
         {
