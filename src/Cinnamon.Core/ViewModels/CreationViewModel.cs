@@ -34,7 +34,12 @@ namespace Cinnamon.Core
 
         public ActivityModel activity { get; set; } = new ActivityModel();
 
-        public void GotoStep(CreationStep step) {
+        public void GotoStep(CreationStep step) 
+        {
+            if(!ValidateOverview())
+            {
+                return;
+            }
             // Check if you can jump to next step
             if (!ValidExperienceCreation()) {
                 return; 
@@ -159,6 +164,16 @@ namespace Cinnamon.Core
             return true;
         }
 
+
+        private bool ValidateOverview()
+        {
+            if (currentStep == CreationStep.Overview)
+            {
+                return ExperienceSetupViewModel.IsValid;
+            }
+
+            return true;
+        }
 
         public async Task<List<ActivityImagesModels>> Upload(List<ImageCacheModel> Images)
         {
