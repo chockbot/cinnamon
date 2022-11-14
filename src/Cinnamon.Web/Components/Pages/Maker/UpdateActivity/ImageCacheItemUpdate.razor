@@ -1,0 +1,103 @@
+@namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@using Cinnamon.Web.Models;
+
+<div class="image-container">
+    <img class="experience-image @RequiredCheck()" src="@GetImageSrc()" />
+    <div class="image-delete-icon" @onclick="@InvokeDelete" hidden="@ShowDelete()">
+        <i class="fa fa-trash" id="delete-icon"></i>
+    </div>
+    <div class="error-message" hidden="@IsError()">
+        @ErrorMessage()
+    </div>
+</div>
+
+<style scoped>
+    .experience-image {
+        width: 100%;
+        height: auto;
+    }
+
+    .image-container {
+        position: relative;
+    }
+
+    .image-delete-icon {
+        position: absolute;
+        z-index: 3;
+        border-radius: 50%;
+        top: 10px;
+        right: 10px;
+        width: 25px;
+        height: 25px;
+        background-color: white;
+    }
+
+    .error-message {
+        position: absolute;
+        z-index: 2; 
+        width: 100%;
+        top: 10px;
+        left: 0px;
+        margin-top: auto;
+        margin-bottom: auto;
+        font-weight: bold;
+        color: red;
+        text-align: center;
+    }
+
+    .image-delete-icon .fa-trash {
+        position: center;
+        color: gray;
+        display: block;
+        margin-left: 6px;
+        margin-top: 4px;
+        width: 50%;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public ExperienceUpdateModel.ActivityImage Image {get; set;}
+
+    [Parameter]
+    public int Index {get; set;}
+
+    [Parameter]
+    public EventCallback<int> OnImageDelete {get; set;}
+
+    private string LoadingImage = "/images/loading_indicator.gif";
+
+    private string BlankImage = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+
+    private void InvokeDelete() 
+    {
+        Image.ImageData = null;
+        Image.ImageSrc = null;
+        OnImageDelete.InvokeAsync(Index);
+    }
+
+    private bool ShowDelete() 
+        => !(Image.ImageData != null || !string.IsNullOrEmpty(Image.ImageSrc));
+
+    private string RequiredCheck()
+    {
+        if(!Image.IsLoading && Image.ImageData == null && string.IsNullOrEmpty(Image.ImageSrc)) return "invalid";
+        return "";
+    }
+
+    private bool IsError() => Image.HasError;
+
+    private string ErrorMessage() => Image.ErrorMessage;
+
+    private string GetImageSrc()
+    {
+        if(Image.IsLoading) return LoadingImage;
+        if(Image.ImageData != null) {
+            var imageSrc = Convert.ToBase64String(Image.ImageData);
+            return string.Format("data:image/jpeg;base64,{0}", imageSrc);
+        }
+        if(!string.IsNullOrEmpty(Image.ImageSrc)) return Image.ImageSrc;
+
+        return BlankImage;
+    }
+}

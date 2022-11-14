@@ -6,4 +6,5 @@ public interface ICinnamonMakerService
 {
     ISubmitWaitngList SubmitWaitngList { get; }
     IVerifyEmail VerifyEmail { get; }
+    ISubmitUpdatedActivity SubmitUpdatedActivity { get; }
 }

@@ -22,6 +22,10 @@ using Cinnamon.Core.Module.CinnamonMakerService;
 using Cinnamon.Core.Module.ActivityService.Handler;
 using Cinnamon.Core.Module.ActivityService.Handler.PublishActivity;
 using Cinnamon.Core.Module.ActivityService.Handler.UpdateActivityHandler;
+using Cinnamon.Core.Module.UploadService.Handler;
+using Cinnamon.Core.Module.UploadService.Handler.AzureBlob;
+using Cinnamon.Core.Module.CinnamonMakerService.Handler.Activity;
+
 namespace Cinnamon.Core
 {
     /// <summary>
@@ -91,6 +95,7 @@ namespace Cinnamon.Core
 
         public static FrameworkConstruction AddApplicationServices(this FrameworkConstruction construction)
         {
+            construction.Services.AddTransient<IUploadImages, UploadImagesHandler>();
             construction.Services.AddTransient<ISendMailHandler, SendMailHandler>();
             construction.Services.AddTransient<IEmailVerification, EmailVerificationHandler>();
             construction.Services.AddTransient<IWelcomeNotification, WelcomeNotificationHandler>();
@@ -98,6 +103,7 @@ namespace Cinnamon.Core
             construction.Services.AddTransient<IEmailVerification, EmailVerificationHandler>();
             construction.Services.AddTransient<ISubmitWaitngList, SubmitWaitingListHandler>();
             construction.Services.AddTransient<IVerifyEmail, VerifyEmailHandler>();
+            construction.Services.AddTransient<ISubmitUpdatedActivity, SubmitUpdatedActivityHandler>();
             construction.Services.AddTransient<ICinnamonMakerService, CinnamonMakerServiceHandler>();
             construction.Services.AddTransient<IPublishActivityHandler, PublishActivityHandler>();
             construction.Services.AddTransient<IUpdateActivityHandler, UpdateActivityHandler>();

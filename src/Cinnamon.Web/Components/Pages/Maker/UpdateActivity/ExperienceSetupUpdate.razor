@@ -1,0 +1,418 @@
+@namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@using Cinnamon.Core
+@using Cinnamon.Web.Models;
+
+<h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>@Resources.App.fillRequiredField</li>
+    </ul>
+</div>
+<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+               @Resources.App.letsDescribeExperience 
+            </label>
+            <p>
+                @Resources.App.whatClientsGoingToDo
+                <br/><br/>
+                @Resources.App.whatClientsGoingToDoItem1<br/>
+                @Resources.App.whatClientsGoingToDoItem2<br/>
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(Model.Activity.DescriptionSectionModel.Description)" maxlength="200" 
+                    @bind="Model.Activity.DescriptionSectionModel.Description"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+              @Resources.App.createExperienceSchedule 
+            </label>
+            <p>
+                @Resources.App.createExperienceDescription
+            </p>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @foreach (var schedule in Model.Activity.ScheduleList)
+            {
+                <div draggable="true" @key=@schedule.Id id="@schedule.Id"
+                    ondragover="event.preventDefault();" 
+                    @ondragstart="@( (e) => HandleDragStart(e, schedule))"
+                    @ondrop="@(() => HandleOnDrop(schedule))"
+                    @ondragenter="@( () => HandleDragEnter(schedule))"
+                    @ondragend="HandleDragEnd"
+                >
+                    <ScheduleItemUpdate @key="schedule" scheduleModel="schedule" OnScheduleRemoved="RemoveSchedule" />
+                    <div class="center" style="width:100%;">
+                        <img class="drag-icon" draggable="false" src="/images//reorder-icon.png"/>
+                    </div>
+                    <hr class="solid"/>
+                </div>
+            }
+            <div style="height: 1.5em;" 
+                ondragover="event.preventDefault();" 
+                @ondrop="HandleDropBottom"
+                @ondragenter="HandleDragEnterBottom"
+            />
+            <div class="button-container" style="overflow:auto; margin-top: 20px;">
+                <div style="float:left;">
+                    <button class="btn-primary" type="button" id="addScheduleBtn" @onclick="AddEmptySchedule">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Include specifics on what you will provide
+            </label>
+            <p>
+                You can make your guests feel at home by giving them food and drinks, special 
+                equipment, concert tickets, or anything else unique.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(Model.Activity.DescriptionSectionModel.SpecificsYouWillProvide)" 
+                    maxlength="200" @bind="Model.Activity.DescriptionSectionModel.SpecificsYouWillProvide"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                What customers must bring with them
+            </label>
+            <p>
+                Help them get ready by being specific and writing each thing down on its own list.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea class="@RequiredCheck(Model.Activity.DescriptionSectionModel.CustomerBringWithThem)" 
+                    maxlength="200" @bind="Model.Activity.DescriptionSectionModel.CustomerBringWithThem"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Customer Requirements
+            </label>
+            <p>
+                Remember that the person who books your experience may also book spots for other people. 
+                Put them here if there are strict rules about age, skill level, or certifications.
+            </p>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold">
+                Minimum Age:
+            </label>   
+            <input type="number" class="form-control @RequiredCheck(Model.Activity.DescriptionSectionModel.MinimumAge)" 
+                placeholder="Minimum Age" required @bind="Model.Activity.DescriptionSectionModel.MinimumAge" />
+            <label class="fw-bold">
+                Can adults join?:
+            </label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value="true" 
+                    checked="@Model.Activity.DescriptionSectionModel.CanAdultsJoin" @oninput="CheckboxChanged">
+                <label class="form-check-label" for="yes">
+                    Yes
+                </label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value="false" 
+                checked="@(!Model.Activity.DescriptionSectionModel.CanAdultsJoin)" @oninput="CheckboxChanged">
+                <label class="form-check-label" for="no">
+                    No
+                </label>
+            </div>
+            <label class="fw-bold">
+                Levels of Activity:
+            </label>
+            <select class="form-control @RequiredCheck(Model.Activity.DescriptionSectionModel.ActivityLevel)" 
+                @bind="Model.Activity.DescriptionSectionModel.ActivityLevel">
+                <option disabled selected>Select Activity Level</option>
+                @foreach (var activityLevel in Model.ActivityLevels)
+                {
+                    <option value="@activityLevel">@activityLevel</option>
+                }
+            </select>
+             <label class="fw-bold">
+                 Required skill level
+            </label>
+            <select class="form-control @RequiredCheck(Model.Activity.DescriptionSectionModel.SkillLevel)" 
+                @bind="Model.Activity.DescriptionSectionModel.SkillLevel">
+                <option disabled selected>Select Skill Level</option>
+                @foreach (var skillLevel in Model.SkillLevels)
+                {
+                    <option value="@skillLevel">@skillLevel</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Additional requirements (optional):
+            </label>
+        </div>
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea maxlength="200" @bind="Model.Activity.DescriptionSectionModel.AdditionalRequirements"></textarea>
+                <label>200 Max</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Post pictures!
+            </label>
+            <p>
+                Pictures must have:<br/>
+                -Different angles and details, including photos of people at work<br/>
+                -Innocent, yet illuminating, snippets from the experience<br/>
+                -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br/>
+            </p>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <div>
+                <ImageCacheItemUpdate Image="Model.Images.FirstImage" OnImageDelete="ImageDeleted" Index="0" /> 
+                <p>This is your cover photo</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <div>
+                <ImageCacheItemUpdate Image="Model.Images.SecondImage" OnImageDelete="ImageDeleted" Index="1" /> 
+                <p>Supporting photo</p>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
+             <div>
+                <ImageCacheItemUpdate Image="Model.Images.ThridImage" OnImageDelete="ImageDeleted" Index="2" /> 
+                <p>Supporting photo</p>
+            </div>
+        </div>
+
+        <div class="textarea-container col-lg-6 col-md-6 col-sm-6 col-6 text-lg-start text-md-start text-sm-center">
+            <div>Upload 3 photos (10MB)</div>
+        </div>
+            <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center">
+                <label for="fileinput">
+                    <button class="btn-primary" style="pointer-events: none;" type="button">Upload</button>
+                </label>
+                <div class="custom-input-hide">
+                <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadFiles"/>
+                </div>
+            </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Private / Do Not Publish
+            </label>
+            <input class="form-check-input" type="checkbox" name="private-flag" @bind="Model.Activity.IsPublished">
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ExperienceUpdateModel Model {get; set;}
+    
+    private int uploadedCount = 0;
+    private const int maxUpload = 3;
+    private int currentImageIndex = 0;
+    private const int maxFileSize = 10000000;
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        if(uploadedCount == maxUpload) return;
+
+        var selectedImage = currentImageIndex switch {
+            0 => Model.Images.FirstImage,
+            1 => Model.Images.SecondImage,
+            2 => Model.Images.ThridImage,
+            _ => Model.Images.FirstImage
+        };
+
+        selectedImage.IsLoading = true;
+
+        foreach (var file in e.GetMultipleFiles(maxUpload))
+        {
+            // Check if File is Image
+            if (!file.ContentType.Contains("image")) {
+                // Show Error Message
+                selectedImage.HasError = true;
+                selectedImage.ErrorMessage = "Invalid File Type";
+                selectedImage.IsLoading = false;
+                return;
+            }
+            try
+            {
+                using(MemoryStream ms = new MemoryStream())
+                {
+                    await file.OpenReadStream(maxFileSize).CopyToAsync(ms);
+                    selectedImage.ImageData = ms.ToArray();
+                }
+                selectedImage.HasError = false;
+                currentImageIndex++;
+                uploadedCount++;
+            }
+            catch (Exception ex)
+            {
+                selectedImage.HasError = true;
+                selectedImage.ErrorMessage = ex.Message;
+            }
+            finally {
+                selectedImage.IsLoading = false;
+            }
+        }
+    }
+
+    private void CheckboxChanged(ChangeEventArgs e)
+    {
+        if (e.Value != null)
+        {
+            bool value = bool.Parse(e.Value.ToString());
+            Model.Activity.DescriptionSectionModel.CanAdultsJoin = value;
+        }
+    }
+
+    private string RequiredCheck(string? value)
+    {
+        if (string.IsNullOrEmpty(value)) return "invalid";
+        return "";
+    }
+
+    private string ShowErrorMessage()
+    {
+        return "none";
+    }
+
+    public void HandleOnDrop(ScheduleModel item)
+    {
+        DragEnter = null;
+        if (DraggedItem == null) return;
+        if (DraggedItem == item) return;
+        var itemPosition = Model.Activity.ScheduleList.IndexOf(item);
+        if (itemPosition != DraggedItemPosition)
+        {
+            Model.Activity.ScheduleList.Remove(DraggedItem!);
+            Model.Activity.ScheduleList.Insert(itemPosition, DraggedItem!);
+        }
+        DraggedItem = null;
+    }
+
+    public void HandleDropBottom()
+    {
+        DragEnter = null;
+        if (DraggedItem == null) return;
+        Model.Activity.ScheduleList.Remove(DraggedItem!);
+        Model.Activity.ScheduleList.Add(DraggedItem!);
+        DraggedItem = null;
+    }
+
+    public void HandleDragStart(DragEventArgs e, ScheduleModel item)
+    {
+        e.DataTransfer.EffectAllowed = "move"; //does't run
+        DraggedItem = item;
+        DraggedItemPosition = Model.Activity.ScheduleList.IndexOf(item);
+        Model.Activity.ScheduleList.Remove(DraggedItem!);
+    }
+
+    public void HandleDragEnter(ScheduleModel item)
+        => DragEnter = item;
+
+    public void HandleDragEnterBottom()
+        => DragEnter = null;
+
+    public void HandleDragEnd()
+    {
+        // never fired IDK why
+        if (DraggedItem == null) return;
+        DragEnter = null;
+        Model.Activity.ScheduleList.Insert(DraggedItemPosition, DraggedItem!);
+    }
+
+    private ScheduleModel? DraggedItem;
+
+    private int DraggedItemPosition;
+    
+    private ScheduleModel? DragEnter;
+
+    private void AddEmptySchedule()
+        => Model.Activity.ScheduleList.Add(new ScheduleModel {});
+
+    private void RemoveSchedule(ScheduleModel schedule) 
+        => Model.Activity.ScheduleList.Remove(schedule);
+    
+    private void ImageDeleted(int index)
+    {
+        if(currentImageIndex > index)
+            currentImageIndex = index;
+        uploadedCount--;
+    }
+
+    public bool IsAllFieldsValidated()
+    {
+        if(string.IsNullOrEmpty(Model.Activity.DescriptionSectionModel.Description)) return false;
+        if(!IsAllSchedulesValid()) return false;
+        if(string.IsNullOrEmpty(Model.Activity.DescriptionSectionModel.SpecificsYouWillProvide)) return false;
+        if(string.IsNullOrEmpty(Model.Activity.DescriptionSectionModel.CustomerBringWithThem)) return false;
+        if(string.IsNullOrEmpty(Model.Activity.DescriptionSectionModel.MinimumAge)) return false;
+        if(string.IsNullOrEmpty(Model.Activity.DescriptionSectionModel.ActivityLevel)) return false;
+        if(string.IsNullOrEmpty(Model.Activity.DescriptionSectionModel.SkillLevel)) return false;
+        if(!IsAllImagesValid()) return false;
+        return true;
+    }
+
+    private bool IsAllSchedulesValid()
+    {
+        foreach(var schedule in Model.Activity.ScheduleList)
+        {
+            if(string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)) return false;
+        }
+        return true;
+    }
+
+    private bool IsAllImagesValid()
+    {
+        if(Model.Images.FirstImage.HasError || 
+            (Model.Images.FirstImage.ImageData == null && 
+            string.IsNullOrEmpty(Model.Images.FirstImage.ImageSrc))) return false;
+        
+        if(Model.Images.SecondImage.HasError || 
+            (Model.Images.SecondImage.ImageData == null && 
+            string.IsNullOrEmpty(Model.Images.SecondImage.ImageSrc))) return false;
+        
+        if(Model.Images.ThridImage.HasError || 
+            (Model.Images.ThridImage.ImageData == null &&
+            string.IsNullOrEmpty(Model.Images.ThridImage.ImageSrc))) return false;
+        
+        return true;
+    }
+}

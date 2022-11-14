@@ -27,7 +27,7 @@ namespace Cinnamon.Core
         public virtual AddressModel? Address { get; set; } = null;
         public virtual DescriptionSectionModel? DescriptionSectionModel { get; set; }
         public virtual SearchTagsModel? SearchTagsModel { get; set; }
-        public virtual ICollection<ScheduleModel> ScheduleList { get; set; }
+        public virtual IList<ScheduleModel> ScheduleList { get; set; }
         public virtual ICollection<ActivityImagesModels> ActivityImages { get; set; }
     }
 }
