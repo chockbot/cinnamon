@@ -1,0 +1,76 @@
+@page "/customer/profile"
+@using Cinnamon.Web.Components.Pages.Customer.Profile
+
+<section class="py-3 mt-5 profile-content">
+    <Container>
+        <Row>
+            <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is4.OnTablet.Is12.OnMobile">
+                <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
+                    <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
+                        <Figure Width="Width.Max100" Border="Border.RoundedCircle" Size="FigureSize.Is128x128" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
+                            <FigureImage Source="images/Profile/user.png" AlternateText="profile" />
+                        </Figure>
+                    </CardHeader>
+                    <CardBody Border="Border.Is0" Padding="Padding.Is1.OnY">
+                        <CardTitle TextAlignment="TextAlignment.Center">
+                            <p class="text-capitalize fw-bold m-0 mb-1 font-30">dexter echalico</p>
+                            <p class="text-color-8080 my-1 font-24">
+                               <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.ShieldAlt" IconStyle="IconStyle.Solid" />
+                               <span class="text-capitalize">verified user</span>
+                            </p>
+                            <p class="text-color-8080 font-16 mb-1">Lorem ipsum dolor sit, amet consectetur adipisicing elit</p>
+                        </CardTitle>
+                    </CardBody>
+                    <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
+                        <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18">Get the badge</Button>
+                    </CardFooter>
+                </Card>
+            </Column>
+            <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is8.OnTablet.Is12.OnMobile">
+                <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
+                    <Div>
+                        <p class="m-0 font-30 fw-bold">Hi, I'm Dexter</p>
+                        <p class="m-0 text-color-8080 font-14 text-capitalize">Joined in 2022</p>
+                    </Div>
+                    <p class="my-3 fw-bold font-18">About the maker</p>
+                    <p class="m-0 text-color-8080 font-16">Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda dolor quam dolore 
+                        accusantium neque nemo sit asperiores distinctio delectus rerum?</p>
+                    <p class="m-0 text-color-8080 font-16">Lorem ipsum dolor sit amet consectetur adipisicing elit. Earum aliquam cumque eos atque error
+                         mollitia voluptate non excepturi dolorem! Autem!</p>
+                    <p class="m-0 text-color-8080 font-16">Lorem ipsum, dolor sit amet consectetur adipisicing elit. Unde et veniam necessitatibus quam officia, 
+                        officiis exercitationem debitis alias similique rem!</p>
+                </Div>
+            </Column>
+        </Row>
+    </Container>
+</section>
+
+<section class="mt-5">
+    <Container>
+        <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+            <Items>
+                <Tab Name="experiences" TextTransform="TextTransform.Capitalize">experiences</Tab>
+                <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
+            </Items>
+            <Content>
+                <TabPanel Name="experiences">
+                    <Experiences />
+                </TabPanel>
+                <TabPanel Name="personal-info">
+                    <PersonalInfo />
+                </TabPanel>
+            </Content>
+        </Tabs>
+    </Container>
+</section>
+
+@code 
+{
+    private string selectedTab = "experiences";
+
+    private Task OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+        return Task.CompletedTask;
+    }
+}
