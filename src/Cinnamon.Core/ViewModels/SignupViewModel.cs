@@ -6,10 +6,10 @@ namespace Cinnamon.Core.ViewModels
     {
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
-        public CustomerModel Customer { get; set;}
+        // initiate customer and set default birthdate
+        public CustomerModel Customer { get; set; } = new CustomerModel {Birthdate = DateTime.Now.AddYears(-18)};
         public WaitListModel waitListModel = new WaitListModel();
 
-        public UserListModel userListModel = new UserListModel();
         public bool isSubmit { get; set; } = false;
         public bool isClickButton { get; set; } = false;
 

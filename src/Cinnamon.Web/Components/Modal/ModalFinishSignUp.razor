@@ -83,8 +83,6 @@
     IJSObjectReference module;
 
     [Parameter]
-    public UserType TypeValue { get; set; }
-    [Parameter]
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
@@ -101,7 +99,6 @@
     {
         UserType usertype;
         Enum.TryParse(args.Value.ToString(), out usertype);
-        TypeValue = usertype;
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -147,13 +144,16 @@
                 var customerInfo = await CoreDI.DataStore.Customer.GetCustomerByEmailAsync(viewModel.waitListModel.Email);
                 if(customerInfo == null)
                 {
-                    // set fields
-                    customerInfo.FirstName = viewModel.Customer.FirstName;
-                    customerInfo.LastName = viewModel.Customer.LastName;
-                    customerInfo.Birthdate = viewModel.Customer.Birthdate;
-                    customerInfo.AcceptFlag = viewModel.Customer.AcceptFlag;
-                    var res = await CoreDI.DataStore.Customer.SaveDataAsync(customerInfo);
-                    if(res.Message.ToLower().Contains("saved"))
+                    var registerRes = await CoreDI.CinnamonMakerService.RegisterMaker.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker 
+                        {
+                            AcceptFlag = viewModel.Customer.AcceptFlag,
+                            Birthdate = viewModel.Customer.Birthdate,
+                            Email = viewModel.Customer.Email,
+                            FirstName = viewModel.Customer.FirstName,
+                            LastName = viewModel.Customer.LastName,
+                            Password = viewModel.Password                            
+                        });
+                    if(registerRes.Succeeded)
                     {
                         await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
                         viewModel.isSubmit = true;
