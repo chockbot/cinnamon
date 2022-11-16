@@ -34,7 +34,7 @@ builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataStoreDbContext>(options =>
     options.UseNpgsql(connectionString),ServiceLifetime.Transient);
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<DataStoreDbContext>();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
