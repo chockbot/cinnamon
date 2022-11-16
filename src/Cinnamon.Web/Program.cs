@@ -5,6 +5,9 @@ using Dna;
 using Cinnamon.Web.Areas.Identity;
 using Cinnamon.Data;
 using Cinnamon.Core;
+using Cinnamon.Core.Models;
+using Cinnamon.Core.Config;
+using Cinnamon.Core.Extensions;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
@@ -17,9 +20,6 @@ Framework.Construct<DefaultFrameworkConstruction>()
     .UseClientDataStore()
     .AddViewModels()
     .AddClientServices()
-    .AddCoreConfiguration()
-    .AddDefaultJsonSerialization()
-    .AddApplicationServices()
     .Build();
 
 // Ensure the client data store 
@@ -33,15 +33,24 @@ var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
 builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataStoreDbContext>(options =>
     options.UseNpgsql(connectionString),ServiceLifetime.Transient);
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+
+builder.Services.AddIdentity<CustomerModel,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<DataStoreDbContext>();
+    
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<CustomerModel>>();
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
+
+CoreConfig coreConfig = new CoreConfig();
+// add core configuration
+builder.Configuration.GetSection("AppConfig").Bind(coreConfig);
+builder.Services.AddSingleton(coreConfig);
+builder.Services.ExtendServices();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.

@@ -36,7 +36,6 @@ namespace Cinnamon.Data
         public IDescriptions Descriptions => new DescriptionSection(mDbContext);
         public ISchedules Schedules => new Schedules(mDbContext);
         public ISearchTags SearchTags => new SearchTags(mDbContext);
-        public ICustomer Customer => new Customer(mDbContext);
         #endregion
 
         #region Constructor

@@ -5,7 +5,9 @@
 @using Cinnamon.Core.Models;
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @inject NavigationManager NavigationManager;
+@inject ISubmitUpdatedActivity submitUpdatedActivityHandler;
 
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -189,7 +191,7 @@
         // for submit action
         if(currentIndex == 2)
         {
-            var submit = await CoreDI.CinnamonMakerService.SubmitUpdatedActivity.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitUpdatedActivity 
+            var submit = await submitUpdatedActivityHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitUpdatedActivity 
                 {
                     Activity = ExperienceUpdateModel.Activity,
                     SearchTags = ExperienceUpdateModel.SearchTags

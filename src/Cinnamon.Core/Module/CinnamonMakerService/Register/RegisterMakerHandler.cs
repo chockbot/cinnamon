@@ -11,17 +11,14 @@ namespace Cinnamon.Core.Module.CinnamonMakerService.Handler.Register;
 public class RegisterMakerHandler : IRegisterMaker
 {
     private readonly CoreConfig coreConfig;
-    private readonly UserManager<IdentityUser> usermanager;
-    private readonly IUserStore<IdentityUser> userStore;
-    private readonly IUserEmailStore<IdentityUser> emailStore;
+    private readonly UserManager<CustomerModel> usermanager;
+    private readonly IUserStore<CustomerModel> userStore;
 
-    public RegisterMakerHandler(UserManager<IdentityUser> userManager, IUserStore<IdentityUser> userStore,
-        IUserEmailStore<IdentityUser> emailStore, CoreConfig coreConfig)
+    public RegisterMakerHandler(UserManager<CustomerModel> userManager, IUserStore<CustomerModel> userStore,CoreConfig coreConfig)
     {
         this.coreConfig = coreConfig;
         this.usermanager = userManager;
         this.userStore = userStore;
-        this.emailStore = emailStore;
     }
 
     public AppResult<RegisterMakerResult> Execute(RegisterMaker args)
@@ -41,10 +38,16 @@ public class RegisterMakerHandler : IRegisterMaker
         try
         {
             var user = CreateUser();
+            user.AcceptFlag = args.AcceptFlag;
+            user.Birthdate = args.Birthdate;
+            user.Email = args.Email;
+            user.FirstName = args.FirstName;
+            user.LastName = args.LastName;
+            user.IsMaker = false;
 
             // register user using identity framework
             await userStore.SetUserNameAsync(user, args.Email, CancellationToken.None);
-            await emailStore.SetEmailAsync(user, args.Email, CancellationToken.None);
+
             var createUserResult = await usermanager.CreateAsync(user, args.Password);
 
             if(!createUserResult.Succeeded)
@@ -56,26 +59,6 @@ public class RegisterMakerHandler : IRegisterMaker
 
             var userId = await usermanager.GetUserIdAsync(user);
 
-            // save customer information
-            var customer = new CustomerModel
-            {
-                AcceptFlag = args.AcceptFlag,
-                Birthdate = args.Birthdate,
-                Email = args.Email,
-                FirstName = args.FirstName,
-                LastName = args.LastName,
-                UserId = userId,
-                IsMaker = false
-            };
-
-            var customerRes = await CoreDI.DataStore.Customer.SaveDataAsync(customer);
-            if(!customerRes.Message.ToLower().Contains("saved"))
-            {
-                return AppResult<RegisterMakerResult>.CreateFailed(
-                    new ApplicationException
-                        ("An error occured when saving customer information"), "An error occured in RegisterMakerHandler");
-            }
-
             return AppResult<RegisterMakerResult>
                 .CreateSucceeded(new RegisterMakerResult { User = user }, "Customer successfully registered");
 
@@ -86,11 +69,11 @@ public class RegisterMakerHandler : IRegisterMaker
         }
     }
 
-    private IdentityUser CreateUser()
+    private CustomerModel CreateUser()
     {
         try
         {
-            return Activator.CreateInstance<IdentityUser>();
+            return Activator.CreateInstance<CustomerModel>();
         }
         catch
         {

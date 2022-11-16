@@ -1,11 +1,18 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Cinnamon.Core.Module.ActivityService.Handler;
 
 namespace Cinnamon.Core
 {
     public class CreationViewModel
     {
+        private readonly IUpdateActivityHandler updateActivityHandler;
+        public CreationViewModel(IUpdateActivityHandler updateActivityHandler)
+        {
+            this.updateActivityHandler = updateActivityHandler;
+        }
+
         public ExperienceCreationViewModel ExperienceCreationViewModel { get; set; } = new ExperienceCreationViewModel();
         public ExperienceSetupViewModel ExperienceSetupViewModel { get; set; } = new ExperienceSetupViewModel();    
         private List<CreationStep> creationSteps = new List<CreationStep> {
@@ -111,7 +118,7 @@ namespace Cinnamon.Core
                 }
                 else if(UserActionType == Enums.UserActionType.Update)
                 {
-                    var res = await CoreDI.UpdateActivityHandler.ExecuteAsync(new Module.ActivityService.Interactors.UpdateActivity {Activity = activityModel});
+                    var res = await updateActivityHandler.ExecuteAsync(new Module.ActivityService.Interactors.UpdateActivity {Activity = activityModel});
                     if(!res.Succeeded)
                     {
                        throw res.Error.Exception;

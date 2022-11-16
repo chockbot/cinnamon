@@ -1,14 +1,18 @@
 ﻿@namespace Cinnamon.Web.Components
+@using Microsoft.AspNetCore.Identity;
 @using Cinnamon.Core.Common;
 @using Cinnamon.Core
+@using Cinnamon.Core.Models;
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.ViewModels
 @using Cinnamon.Data
-@using System.ComponentModel.DataAnnotations
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @using System.Linq.Expressions
 @inject DataStoreDbContext user
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
+@inject IRegisterMaker registerMakerHandler;
+@inject UserManager<CustomerModel> userManager;
 
 <div class="modal @ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -141,10 +145,10 @@
         {
             if (viewModel.isValidPassword(viewModel.Password, viewModel.ConfirmPassword))
             {
-                var customerInfo = await CoreDI.DataStore.Customer.GetCustomerByEmailAsync(viewModel.waitListModel.Email);
-                if(customerInfo == null)
+                var user = await userManager.FindByEmailAsync(viewModel.waitListModel.Email);
+                if(user == null)
                 {
-                    var registerRes = await CoreDI.CinnamonMakerService.RegisterMaker.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker 
+                    var registerRes = await registerMakerHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker 
                         {
                             AcceptFlag = viewModel.Customer.AcceptFlag,
                             Birthdate = viewModel.Customer.Birthdate,

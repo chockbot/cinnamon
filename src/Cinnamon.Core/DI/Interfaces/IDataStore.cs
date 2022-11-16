@@ -14,7 +14,6 @@ namespace Cinnamon.Core
         IAddresses Addresses { get; }
         IDescriptions Descriptions { get; }
         ISearchTags SearchTags { get; }
-        ICustomer Customer { get; }
         IUser User { get; }
         /// <summary>
         /// Makes sure the client data store is correctly setup

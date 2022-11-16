@@ -4,8 +4,10 @@
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core
 @using Cinnamon.Web.Components
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @inject NavigationManager NavigationManager
 @inject NavigationManager navigationManager
+@inject IVerifyEmail verifyEmailHandler;
 
 <Onboarding></Onboarding>
 <ModalFinishSignUp @ref="modal"></ModalFinishSignUp>
@@ -40,8 +42,8 @@
                 if(!waitingRes.IsVerified)
                 {
                     // need to verified
-                    var verifyRes = await CoreDI.CinnamonMakerService.VerifyEmail
-                                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId });
+                    var verifyRes = await verifyEmailHandler.ExecuteAsync(
+                            new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId });
                     if(!verifyRes.Succeeded)
                     {
                         // invalid userid and token redirect to onboargin page
@@ -55,7 +57,7 @@
                 {
                     // email already verified. Need to check if customer info already populated. 
                     // if not open modal information
-                    var customerRes = await CoreDI.DataStore.Customer.GetCustomerByEmailAsync(waitingRes.Email);
+                    /**var customerRes = await CoreDI.DataStore.Customer.GetCustomerByEmailAsync(waitingRes.Email);
                     if(customerRes == null)
                     {
                         await modal.OpenModal(waitingRes.Email);
@@ -63,7 +65,7 @@
                     else 
                     {
                         await modalPassword.OpenModal(waitingRes.Email);
-                    }
+                    }**/
                 }
             }
         }

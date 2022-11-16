@@ -3,12 +3,12 @@
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.ViewModels
 @using Cinnamon.Data
-@using System.ComponentModel.DataAnnotations
 @using System.Linq.Expressions
-@using Microsoft.AspNetCore.Identity
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler
 @inject DataStoreDbContext waitList
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
+@inject ISubmitWaitngList submitWaitingListHandler;
 
  <div class="w-100 text-center"> 
     @if (!viewModel.isSubmit)
@@ -97,9 +97,9 @@
             else
             {
                 //Register Account
-                var register = await CoreDI.CinnamonMakerService.SubmitWaitngList
-                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitWaitingList
-                    { Email = viewModel.waitListModel.Email, UserType = UserType.Maker });
+                var register = await submitWaitingListHandler.ExecuteAsync(
+                        new Core.Module.CinnamonMakerService.Interactors.SubmitWaitingList
+                            { Email = viewModel.waitListModel.Email, UserType = UserType.Maker });
 
                 if (register.Succeeded)
                 {
