@@ -1,0 +1,56 @@
+﻿@namespace Cinnamon.Web.Components
+
+<div class="modal @ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Profile Photo</p>
+                <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+            </div>
+            <div class="modal-body">
+                <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                <div class="col-12-lg d-flex justify-content-center">
+                    <Card class="customer-profile-card" Border="Border.Is0" ColumnSize="ColumnSize.Is7" TextAlignment="TextAlignment.Center" Bac>
+                         <Figure Border="Border.RoundedCircle.White" Width="Width.Max100" Margin="Margin.Is4.OnY">
+                            <FigureImage Source="images/Profile/user1.png" AlternateText="profile" Width="Width.Max100"/>
+                         </Figure> 
+                    </Card>
+                </div>
+                <br/>
+                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18">Upload</Button>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+            </div>
+        </div>
+    </div>
+</div>
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
+}
+@code {
+    public string ModalDisplay = "none;";
+
+    public string ModalClass = "";
+
+    public bool ShowBackdrop = false;
+
+    public async Task OpenModal()
+    {
+        ModalDisplay    = "block;";
+        ModalClass      = "show";
+        ShowBackdrop    = true;
+        StateHasChanged();
+    }
+    public async Task CloseModal()
+    {
+        ModalClass      = "";
+        ModalDisplay    = "none;";
+        ShowBackdrop    = false;
+        StateHasChanged();
+    }
+}
