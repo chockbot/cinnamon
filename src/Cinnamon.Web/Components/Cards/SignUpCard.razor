@@ -95,7 +95,6 @@
     public async Task Submit(){
         if(viewModel.isValid(viewModel.waitListModel.Email))
         {
-            viewModel.waitListModel.Type = TypeValue;
             var res =  await viewModel.SaveEmail(viewModel.waitListModel);
             if (res)
             {

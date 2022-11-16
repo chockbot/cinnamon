@@ -1,13 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cinnamon.Core.Models;
 
 namespace Cinnamon.Core.ViewModels
 {
     public class SignupViewModel
     {
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
+        public CustomerModel Customer { get; set;}
         public WaitListModel waitListModel = new WaitListModel();
 
         public UserListModel userListModel = new UserListModel();

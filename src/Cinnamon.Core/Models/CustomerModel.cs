@@ -9,4 +9,5 @@ public class CustomerModel : BaseModel
     public string Email { get; set; }
     public bool IsMaker { get; set; }
     public DateTime Birthdate { get; set; }
+    public bool AcceptFlag { get; set; }
 }

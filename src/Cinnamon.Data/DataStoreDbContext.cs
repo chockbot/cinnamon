@@ -73,6 +73,7 @@ namespace Cinnamon.Data
             modelBuilder.Entity<UserListModel>().HasKey(x => new { x.Id});
 
             modelBuilder.Entity<CustomerModel>().HasIndex(i => i.UserId);
+            modelBuilder.Entity<CustomerModel>().HasIndex(i => i.Email);
         }
         #endregion
 

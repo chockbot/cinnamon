@@ -81,11 +81,18 @@
             userList = await CoreDI.DataStore.WaitList.GetAllAsync();
             var result = userList.Where(a => a.Email == viewModel.waitListModel.Email).FirstOrDefault();
             //Check if Account is Verified
-            if (result!=null && result.IsVerified == true)
+            if (result !=null && result.IsVerified)
             {
                 //If user is Verified display modal password
                 await modalPassword.OpenModal(result.Email);
                 viewModel.isClickButton = false;
+            }
+            // not yet verified the account but already submit an email
+            else if(result != null && !result.IsVerified)
+            {
+                //Display Verification Modal
+                    await verify.OpenModal();
+                    viewModel.isClickButton = false;
             }
             else
             {
