@@ -97,6 +97,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to By using this website, you agree to our cookie policy..
+        /// </summary>
+        internal static string AlertCookie {
+            get {
+                return ResourceManager.GetString("AlertCookie", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cinnamon.
         /// </summary>
         internal static string appName {
@@ -702,24 +711,18 @@ namespace Cinnamon.Web.Resources {
         
         /// <summary>
         ///   Looks up a localized string similar to Grow your business and lead people on activities you love.
-        ///   Looks up a localized string similar to Online - join via video conferencing software (provided by Cinnamon Maker).
         /// </summary>
-        internal static string onboardingHeader
-        {
-            get
-            {
+        internal static string onboardingHeader {
+            get {
                 return ResourceManager.GetString("onboardingHeader", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to Live your passion, share your knowledge and leave a mark in people&apos;s lives!.
-        ///   Looks up a localized string similar to - Open:Has a listening ear to his/her customers. Able to receive feedback well, whether positive or negative.
         /// </summary>
-        internal static string onboardingSubHeader
-        {
-            get
-            {
+        internal static string onboardingSubHeader {
+            get {
                 return ResourceManager.GetString("onboardingSubHeader", resourceCulture);
             }
         }
@@ -738,7 +741,6 @@ namespace Cinnamon.Web.Resources {
         /// </summary>
         internal static string Open {
             get {
-                return ResourceManager.GetString("Open", resourceCulture);
                 return ResourceManager.GetString("Open", resourceCulture);
             }
         }
