@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Dna;
@@ -8,6 +8,10 @@ using Cinnamon.Core;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Cinnamon.Core.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -43,6 +47,17 @@ builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
 
+builder.Services.AddScoped<TokenProvider>();
+
+builder.Services.AddAuthentication(GoogleDefaults.AuthenticationScheme).AddGoogle(o =>
+{
+    o.ClientId = builder.Configuration["AppConfig:Authentication:Google:ClientId"];
+    o.ClientSecret = builder.Configuration["AppConfig:Authentication:Google:ClientSecret"];
+    o.CallbackPath = builder.Configuration["AppConfig:Authentication:Google:CallbackPath"];
+    o.ClaimActions.MapJsonKey("urn:google:profile", "link");
+    o.ClaimActions.MapJsonKey("urn:google:image", "picture");
+});
+
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -64,7 +79,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
