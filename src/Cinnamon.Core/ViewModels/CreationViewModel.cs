@@ -22,6 +22,7 @@ namespace Cinnamon.Core
             CreationStep.Publish
         };
 
+        public UserListModel UserList { get; set; }
         public Cinnamon.Core.Enums.UserActionType UserActionType { get; set; } = Enums.UserActionType.Create;
 
         private int _currentStepIndex = 0;
@@ -110,9 +111,14 @@ namespace Cinnamon.Core
                 if(UserActionType == Enums.UserActionType.Create)
                 {
                     activity.ActivityImages = await Upload(ExperienceSetupViewModel.Images);
+                    activity.CreatedBy = UserList.Id;
+                    activity.CreatedOn = DateTime.UtcNow;
+                    activity.ChangedOn = DateTime.UtcNow;
                     var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
                     if (res.Type == MessageType.Success)
                     {
+                        UserList.isMaker = true;
+                        await CoreDI.DataStore.User.SaveDataAsync(UserList);
                         return true;
                     }
                 }

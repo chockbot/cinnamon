@@ -1,6 +1,8 @@
 @page "/maker/dashboard"
 @using Cinnamon.Core
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <section class="mt-5 maker-dashboard">
     <div class="container">
@@ -44,6 +46,11 @@
     {
         activities = (await CoreDI.DataStore.Activities.GetAllAsync()).OrderBy(i => i.Id).ToList();
         activeActivityCount = activities.Where(i => i.IsPublished).Count();
+        var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if(!auth.User.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("explore");
+        }
     }
 
     private void ActiveCountChanged(int count)
