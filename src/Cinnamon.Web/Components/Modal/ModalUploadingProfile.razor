@@ -1,4 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core.ViewModels
+@using Cinnamon.Core.Models
+@using System.Drawing.Imaging
 
 <div class="modal @ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog">
@@ -20,17 +23,16 @@
                             <Figure Border="Border.RoundedCircle" Width="Width.Max100">
                                 <FigureImage Source="images/Profile/user1.png" AlternateText="profile" Width="Width.Max100" Border="Border.RoundedCircle.Is2.White" />
                             </Figure> 
+                            <div class="round">
+                                <input type="file" />
+                                <i class="fa fa-camera" style="color: black;"></i>
+                            </div>
                        </div>
                     </Card>
                 </div>
-                <br/>
-                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18">Upload</Button>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
+                <div class="btn-upload">
+                    <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18">Upload</Button>
+                </div>
             </div>
         </div>
     </div>
@@ -59,5 +61,13 @@
         ModalDisplay    = "none;";
         ShowBackdrop    = false;
         StateHasChanged();
+    }
+    private async Task DeleteProfile()
+    {
+
+    }
+    private async Task Upload(IFormFile imgFile)
+    {
+
     }
 }
