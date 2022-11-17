@@ -4,18 +4,18 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="text-center mt-3">
-    <h4 id="external-login-title">Finish signing up</h4>
-    <hr />
-</div>
 @*<p id="external-login-description" class="text-info">
     You've successfully authenticated with <strong>@Model.ProviderDisplayName</strong>.
     Please enter an email address for this site below and click the Register button to finish
     logging in.
 </p>*@
 
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-4">
+        <div class="text-center mt-3">
+            <h4 id="external-login-title">Finish signing up</h4>
+            <hr />
+        </div>
         <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-floating">
@@ -28,7 +28,7 @@
                 <label asp-for="Input.LastName" class="form-label"></label>
                 <span asp-validation-for="Input.LastName" class="text-danger"></span>
             </div>
-            <span>Be sure it's the same as what appears on your government ID.</span>
+            <span class="font-11">Be sure it's the same as what appears on your government ID.</span>
             <br />
             <br />
             <div class="form-floating">
@@ -36,7 +36,7 @@
                 <label asp-for="Input.BirthDate" class="form-label"></label>
                 <span asp-validation-for="Input.BirthDate" class="text-danger"></span>
             </div>
-            <span>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</span>
+            <span class="font-11">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</span>
             <br />
             <br />
             <div class="form-floating">
@@ -44,11 +44,11 @@
                 <label asp-for="Input.Email" class="form-label"></label>
                 <span asp-validation-for="Input.Email" class="text-danger"></span>
             </div> 
-            <span>For email confirmations and receipts.</span>
+            <span class="font-11">For email confirmations and receipts.</span>
             <br />
             <br />
-            <span>By selecting <b>Agree and continue</b>, you agree to our <a>Terms and Conditions</a> and <a>Privacy Policy</a></span>
-            <button type="submit" class="w-100 btn btn-lg btn-primary">Agree and continue</button>
+            <span>By selecting <b>Agree and continue</b>, you agree to our <a style="color:#ffa942" href="#">Terms and Conditions</a> and <a href="#" style="color:#ffa942" >Privacy Policy</a></span>
+            <button type="submit" class="w-100 btn btn-lg btn-primary border-0 rounded-pill">Agree and continue</button>
         </form>
     </div>
 </div>

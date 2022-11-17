@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel;
+using Cinnamon.Core;
+using Cinnamon.Core.Enums;
 
 namespace Cinnamon.Web.Areas.Identity.Pages.Account
 {
@@ -81,30 +84,37 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+
+            public int Id { get; set; }
             [Required]
             [EmailAddress]
+            [DisplayName("Email")]
             public string Email { get; set; }
             [Required]
+            [DisplayName("First Name")]
             public string FirstName { get; set; }
             [Required]
+            [DisplayName("Last Name")]
             public string LastName { get; set; }
             [Required]
+            [DisplayName("Birthdate")]
             public DateTime? BirthDate { get; set; } = null;
+            public UserType UserType { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
 
-        public IActionResult OnPost(string provider, string returnUrl = null)
+        public IActionResult OnPost(string provider, UserType userType, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
-            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { userType, returnUrl });
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
 
-        public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
+        public async Task<IActionResult> OnGetCallbackAsync(UserType userType,string returnUrl = null, string remoteError = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/Explorer");
+            returnUrl = returnUrl ?? Url.Content("~/Explore");
             if (remoteError != null)
             {
                 ErrorMessage = $"Error from external provider: {remoteError}";
@@ -118,15 +128,25 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
             }
 
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
-            if (result.Succeeded)
+            var result = await CoreDI.DataStore.User.GetAllAsync();
+            var userData = result.Where(x => x.Email.Equals(info.Principal.FindFirstValue(ClaimTypes.Email).ToString())).FirstOrDefault();
+            if (userData != null)
             {
+                var user = CreateUser();
+
+                await _emailStore.SetUserNameAsync(user, userData.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, userData.Email, CancellationToken.None);
+
+                await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                return LocalRedirect(returnUrl);
-            }
-            if (result.IsLockedOut)
-            {
-                return LocalRedirect("/Error");
+                if (userType == UserType.Maker)
+                {
+                    return Redirect("/Creation");
+                }
+                else
+                {
+                    return Redirect("/Explore");
+                }
             }
             else
             {
@@ -139,7 +159,8 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
                     {
                         Email = info.Principal.FindFirstValue(ClaimTypes.Email),
                         FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                        LastName = info.Principal.FindFirstValue(ClaimTypes.Surname)
+                        LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                        UserType = userType
                     };
                 }
                 return Page();
@@ -148,64 +169,43 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
         {
-            returnUrl = returnUrl ?? Url.Content("~/");
             // Get the information about the user from the external login provider
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
                 ErrorMessage = "Error loading external login information during confirmation.";
-                return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
+                return LocalRedirect("/Error");
             }
 
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
+           
 
-                await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-
-                var result = await _userManager.CreateAsync(user);
-                if (result.Succeeded)
+                try
                 {
-                    //result = await _userManager.AddLoginAsync(user, info);
-                    //if (result.Succeeded)
-                    //{
-                    //    _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                    var result = await CoreDI.DataStore.User.SaveDataAsync(new UserListModel() { FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, Type = Core.Enums.UserType.Customer, Password = info.LoginProvider, ConfirmPassword = info.LoginProvider, ExternalLogin = true, isMaker = Input.UserType == UserType.Maker ? true:false });
+                    var user = CreateUser();
 
-                    //    var userId = await _userManager.GetUserIdAsync(user);
-                    //    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    //    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    //    var callbackUrl = Url.Page(
-                    //        "/Account/ConfirmEmail",
-                    //        pageHandler: null,
-                    //        values: new { area = "Identity", userId = userId, code = code },
-                    //        protocol: Request.Scheme);
-
-                    //    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                    //        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    //    // If account confirmation is required, we need to show the link if we don't have a real email sender
-                    //    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    //    {
-                    //        return RedirectToPage("./RegisterConfirmation", new { Email = Input.Email });
-                    //    }
-
-                    //    await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                    //    return LocalRedirect(returnUrl);
-                    //}
-
+                    await _emailStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                    await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                     await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                    return LocalRedirect(returnUrl);
                 }
-                foreach (var error in result.Errors)
+                catch(Exception ex)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    return LocalRedirect("/Error");
                 }
             }
+            
+            if(Input.UserType == UserType.Maker)
+            {
 
-            ProviderDisplayName = info.ProviderDisplayName;
-            ReturnUrl = returnUrl;
-            return Page();
+                return Redirect("/Creation");
+            }
+            else
+            {
+
+                return Redirect("/Explore");
+            }
         }
 
         private IdentityUser CreateUser()

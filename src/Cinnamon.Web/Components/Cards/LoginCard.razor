@@ -34,15 +34,14 @@
             <hr class="left" />or<hr class="right" />
         </div>
         <div class="col-12">
-            <form id="external-account" 
-                    target="print_popup" 
+              <form id="external-account" 
                     action="/Identity/Account/ExternalLogin" 
                     asp-route-returnUrl="/onboarding" 
-                    method="post"
-                    onsubmit="Directions=window.open('about:blank','print_popup','width=500,height=650,left={left},top={top}'.replace('{left}', screen.width/2-500/2).replace('{top}', screen.height/2-650/2));">
-
+                    method="post">
+                 <input type="hidden" name="provider" value="Google">
+                <input type="hidden" name="userType"  value="@TypeValue">
+                <input type="hidden" name="returnUrl" value="">
                 <button class="btn btn-md btn-google" type="submit"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail</button>
-                @*<button type="submit" class="nav-link btn btn-link text-dark">Logout</button>*@
                 <input name="__RequestVerificationToken" type="hidden" value="@_tokenProvider.AntiForgeryToken" />
             </form>
         </div>
