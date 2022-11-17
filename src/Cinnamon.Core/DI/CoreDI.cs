@@ -22,11 +22,5 @@ namespace Cinnamon.Core
         #endregion
 
         public static IDataStore DataStore => Framework.Service<IDataStore>();
-
-        public static ICinnamonMakerService CinnamonMakerService => Framework.Service<ICinnamonMakerService>();
-
-        public static IPublishActivityHandler PublishActivityHandler => Framework.Service<IPublishActivityHandler>();
-
-        public static IUpdateActivityHandler UpdateActivityHandler => Framework.Service<IUpdateActivityHandler>();
     }
 }

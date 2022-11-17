@@ -1,10 +1,15 @@
-﻿namespace Cinnamon.Core.ViewModels
+﻿using Cinnamon.Core.Models;
+
+namespace Cinnamon.Core.ViewModels
 {
     public class SignupViewModel
     {
+        public string Password { get; set; }
+        public string ConfirmPassword { get; set; }
+        // initiate customer and set default birthdate
+        public CustomerModel Customer { get; set; } = new CustomerModel {Birthdate = DateTime.Now.AddYears(-18).ToString()};
         public WaitListModel waitListModel = new WaitListModel();
 
-        public UserListModel userListModel = new UserListModel();
         public bool isSubmit { get; set; } = false;
         public bool isClickButton { get; set; } = false;
 

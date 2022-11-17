@@ -1,5 +1,7 @@
 @using Cinnamon.Core
+@using Cinnamon.Core.Module.ActivityService.Handler;
 @inject NavigationManager NavigationManager
+@inject IPublishActivityHandler publishedActivityHandler;
 
 <TableRow>
     <TableRowCell>@Activity.Title</TableRowCell>
@@ -19,8 +21,8 @@
     private async Task OnPublishedChange(bool value)
     {
         Activity.IsPublished = value;
-        var res = await CoreDI.PublishActivityHandler
-            .ExecuteAsync(new Core.Module.ActivityService.Interactors.Publish {ActivityId = Activity.Id, IsPublished = value});
+        var res = await publishedActivityHandler.ExecuteAsync(
+                new Core.Module.ActivityService.Interactors.Publish {ActivityId = Activity.Id, IsPublished = value});
         if(!res.Succeeded){
             throw res.Error.Exception;
         }
@@ -33,6 +35,6 @@
 
     private void NavigateToCreation()
     {
-        NavigationManager.NavigateTo($"creation?action=update&activityid={Activity.Id}");
+        NavigationManager.NavigateTo($"maker/update-activity?activityId={Activity.Id}");
     }
 }

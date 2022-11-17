@@ -1,25 +1,31 @@
-@page "/maker/update-activity"
-@layout CreationLayout
+@page "/maker/update-activity";
+@layout CreationLayout;
+@using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core;
-@using Cinnamon.Web.Components
+@using Cinnamon.Core.Models;
+@using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
+@using Cinnamon.Web.Models;
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+@inject NavigationManager NavigationManager;
+@inject ISubmitUpdatedActivity submitUpdatedActivityHandler;
 
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="step breadcrumb-item" aria-current="page">
-             <a class="button">
-                <span class="icon-step">1</span>
+        <li class='step breadcrumb-item @(currentIndex >= 0 ? "active" : "")' aria-current="page">
+             <a class="button cursor" @onclick="() => currentIndex = 0">
+                <span class='icon-step @(currentIndex >= 0 ? "active" : "")'>1</span>
                 <span class="step-yellow">Experience update</span>
             </a>
         </li>
-        <li class="step breadcrumb-item" aria-current="page">
-             <a class="button">
-                <span class="icon-step">2</span>
+        <li class='step breadcrumb-item @(currentIndex >= 1 ? "active" : "")' aria-current="page">
+             <a class="button cursor" @onclick="() => OnNextClick(1)">
+                <span class='icon-step @(currentIndex >= 1 ? "active" : "")'>2</span>
                 <span class="step-yellow">Setup</span>
             </a>
         </li>
-        <li class="step breadcrumb-item" aria-current="page">
-            <a class="button">
-                <span class="icon-step">3</span>
+        <li class='step breadcrumb-item @(currentIndex >= 2 ? "active" : "")' aria-current="page">
+            <a class="button cursor" @onclick="() => OnNextClick(2)">
+                <span class='icon-step @(currentIndex >= 2 ? "active" : "")'>3</span>
                 <span class="step-yellow">Publish</span>
             </a>
         </li>
@@ -28,40 +34,200 @@
 
 <div class="progress-container landing-sm shadow-sm">
     <div class="progress mx-4">
-        <div id="myBar" class="progress-bar" role="progressbar" aria-valuemin="1" aria-valuemax="100">1</div>
+        <div id="myBar" class="progress-bar" style='width: @(GetPerentCompletion)%;' role="progressbar" aria-valuemin="1" aria-valuemax="100">@GetPerentCompletion</div>
     </div>
 </div>
 
 <div id="regForm" class="shadow-lg">
-    <EditForm Model="new ActivityModel()">
-            <!--Experience Creation-->
-        <div class="tab show">
-            <ExperienceCreation activityModel="new ActivityModel()" viewModel="new ExperienceCreationViewModel()" />
-        </div>
-            <!--Set up-->
-        <div class="tab">
-            <ExperienceSetup activityModel="new ActivityModel()" viewModel="new ExperienceSetupViewModel()" />
-        </div>
-            <!--Publish-->
-        <div class="tab">
-            <div class="text-center publish-container">
-                <div class="w-100 publish-text">
-                    <h2 class="fw-bold">You're all set!!</h2>
-                    <p>Live your passion, share your knowledge and leave a mark in people's lives!</p>
-                    <div class="button-container" style="overflow:auto;">
-                        <div class="w-100">
-                            <button type="button" id="prevBtn" style="border:none;background-color:transparent">Back</button>
-                            <button class="btn-primary" type="button" id="nextBtn">Next</button>
-                        </div>
+    @if(ExperienceUpdateModel != null)
+    {
+        <EditForm Model="ExperienceUpdateModel.Activity">
+            <div class='tab @(currentIndex == 0 ? "show" : "")'>
+                <ExperienceUpdate @ref="experienceUpdateComponent" Model="ExperienceUpdateModel" />
+            </div>
+            <div class='tab @(currentIndex == 1 ? "show" : "")'>
+                <ExperienceSetupUpdate @ref="experienceSetupUpdateComponent" Model="ExperienceUpdateModel" />
+            </div>
+            <div class='tab @(currentIndex == 2 ? "show" : "")'>
+                <div class="text-center publish-container">
+                    <div class="w-100 publish-text">
+                        <h2 class="fw-bold">You're all set!!</h2>
+                        <p>Live your passion, share your knowledge and leave a mark in people's lives!</p>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="button-container" style="overflow:auto;">
-            <div style="float:right;">
-                <button type="button" id="prevBtn" style="border:none;background-color:transparent">Back</button>
-                <button class="btn-primary" type="button" id="nextBtn">Next</button>
+            <div class="button-container" style="overflow:auto;">
+                <div style="float:right;">
+                    @if(currentIndex > 0) 
+                    {
+                        <button type="button" id="prevBtn" @onclick="() => OnBackClick()" style="border:none;background-color:transparent">Back</button>
+                    }
+                    <button class="btn-primary" @onclick="() => OnNextClick()" type="button" id="nextBtn">
+                        @(currentIndex == 2 ? "Submit" : "Next")
+                    </button>
+                </div>
             </div>
-        </div>
-    </EditForm>
+        </EditForm>
+    }
 </div>
+
+@code 
+{
+    private ExperienceUpdateModel ExperienceUpdateModel;
+
+    private ExperienceUpdate experienceUpdateComponent {get; set;}
+
+    private ExperienceSetupUpdate experienceSetupUpdateComponent {get; set;}
+    
+    private int currentIndex = 0;
+
+    private int GetPerentCompletion {
+        get {
+            return currentIndex * 50;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var res = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityId", out var id);
+
+        // if cant find the activity id in the query string
+        int activityId = 0;
+        if(!res || !int.TryParse(id, out activityId))
+            NavigationManager.NavigateTo("/maker/dashboard");
+
+        var activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(activityId);
+        if(activity == null)
+            NavigationManager.NavigateTo("/maker/dashboard");
+
+        var experienceTypes = await CoreDI.DataStore.ExperienceTypes.GetAllAsync();
+        if(experienceTypes == null || experienceTypes.Count == 0)
+            NavigationManager.NavigateTo("/maker/dashboard");
+
+        var experienceCategories = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
+        if(experienceCategories == null || experienceCategories.Count == 0)
+            NavigationManager.NavigateTo("/maker/dashboard");
+
+        // initiate address if null
+        if(activity.Address == null)
+        {
+            activity.Address = new AddressModel {
+                Address1 = "",
+                Address2 = "",
+                City = "",
+                District = ""
+            };
+        };
+        // initiate search tag if null
+        if(activity.SearchTagsModel == null)
+        {
+            activity.SearchTagsModel = new SearchTagsModel();
+        }
+        // initiate description if null
+        if(activity.DescriptionSectionModel == null)
+        {
+            activity.DescriptionSectionModel = new DescriptionSectionModel();
+        }
+        // initiate schedules if null
+        if(activity.ScheduleList == null)
+        {
+            activity.ScheduleList = new List<ScheduleModel>();
+        }
+        // initiate images if null
+        if(activity.ActivityImages == null) 
+        {
+            activity.ActivityImages = new List<ActivityImagesModels>();
+        }
+        // initiate Images
+        ExperienceUpdateModel.ActivityImages images = new();
+        if(activity.ActivityImages.Count > 0)
+        {
+            images.FirstImage.Id = activity.ActivityImages.ElementAt(0).Id;
+            images.FirstImage.ImageSrc = activity.ActivityImages.ElementAt(0).ImageLocation;
+        }
+        if(activity.ActivityImages.Count > 1)
+        {
+            images.SecondImage.Id = activity.ActivityImages.ElementAt(1).Id;
+            images.SecondImage.ImageSrc = activity.ActivityImages.ElementAt(1).ImageLocation;
+        }
+        if(activity.ActivityImages.Count > 2)
+        {
+            images.ThridImage.Id = activity.ActivityImages.ElementAt(2).Id;
+            images.ThridImage.ImageSrc = activity.ActivityImages.ElementAt(2).ImageLocation;
+        }
+        // initialize search tags
+        IList<ExperienceUpdateModel.SearchTag> searchTags = new List<ExperienceUpdateModel.SearchTag>();
+        searchTags = new List<ExperienceUpdateModel.SearchTag>();
+        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag1))
+            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 1, Value = activity.SearchTagsModel.SearchTag1});
+        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag2))
+            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 2, Value = activity.SearchTagsModel.SearchTag2});
+        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag3))
+            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 3, Value = activity.SearchTagsModel.SearchTag3});
+        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag4))
+            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 4, Value = activity.SearchTagsModel.SearchTag4});
+        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag5))
+            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 5, Value = activity.SearchTagsModel.SearchTag5});
+
+        ExperienceUpdateModel = new ExperienceUpdateModel {
+            Activity = activity,
+            HasError = false,
+            ExperienceTypes = experienceTypes,
+            ExperienceCategories = experienceCategories,
+            Images = images,
+            SearchTags = searchTags
+        };
+    }
+
+    private void OnBackClick(int index = 0) 
+    {
+        if(currentIndex == 0) return;
+        currentIndex --;
+    }
+
+    private async Task OnNextClick(int index = 0)
+    {
+        // for submit action
+        if(currentIndex == 2)
+        {
+            var submit = await submitUpdatedActivityHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitUpdatedActivity 
+                {
+                    Activity = ExperienceUpdateModel.Activity,
+                    SearchTags = ExperienceUpdateModel.SearchTags
+                        .Select(i => new Tuple<int,string>(i.Key,i.Value)).ToList(),
+                    Images = new List<Tuple<int,byte[],string>>()
+                });
+            
+            if(!submit.Succeeded)
+            {
+                throw submit.Error.Exception;
+            }
+
+            NavigationManager.NavigateTo("/maker/dashboard");
+
+            return;
+        }
+
+        if(index != 0)
+        {
+            switch(index)
+            {
+                case 1:
+                    if(!experienceUpdateComponent.IsAllFieldsValidated()) return;
+                    currentIndex = 1;
+                    break;
+                case 2:
+                    if(!experienceUpdateComponent.IsAllFieldsValidated()) return;
+                    if(!experienceSetupUpdateComponent.IsAllFieldsValidated()) return;
+                    currentIndex = 2;
+                    break;
+            }
+            return;
+        }
+        if(currentIndex == 0 && !experienceUpdateComponent.IsAllFieldsValidated()) return;
+        if(currentIndex == 1 && !experienceSetupUpdateComponent.IsAllFieldsValidated()) return;
+
+        currentIndex++;
+    }
+}
