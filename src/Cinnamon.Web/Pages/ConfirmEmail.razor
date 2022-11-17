@@ -57,7 +57,7 @@
                 {
                     // email already verified. Need to check if customer info already populated. 
                     // if not open modal information
-                    /**var customerRes = await CoreDI.DataStore.Customer.GetCustomerByEmailAsync(waitingRes.Email);
+                    var customerRes = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(waitingRes.Email);
                     if(customerRes == null)
                     {
                         await modal.OpenModal(waitingRes.Email);
@@ -65,7 +65,7 @@
                     else 
                     {
                         await modalPassword.OpenModal(waitingRes.Email);
-                    }**/
+                    }
                 }
             }
         }

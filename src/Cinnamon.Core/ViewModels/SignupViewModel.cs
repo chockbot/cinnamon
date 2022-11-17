@@ -7,7 +7,7 @@ namespace Cinnamon.Core.ViewModels
         public string Password { get; set; }
         public string ConfirmPassword { get; set; }
         // initiate customer and set default birthdate
-        public CustomerModel Customer { get; set; } = new CustomerModel {Birthdate = DateTime.Now.AddYears(-18)};
+        public CustomerModel Customer { get; set; } = new CustomerModel {Birthdate = DateTime.Now.AddYears(-18).ToString()};
         public WaitListModel waitListModel = new WaitListModel();
 
         public bool isSubmit { get; set; } = false;

@@ -12,7 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @inject IRegisterMaker registerMakerHandler;
-@inject UserManager<CustomerModel> userManager;
+@inject UserManager<IdentityUser> userManager;
 
 <div class="modal @ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -38,13 +38,13 @@
                                 <p>Be sure it's the same as what appears on your government ID.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <input id="birtdate-signup" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind=viewModel.Customer.Birthdate />
+                                <InputText id="birtdate-signup" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.Birthdate />
                                 <ValidationMessage style="text-align:left" For="() => viewModel.Customer.Birthdate" />
                                 <p>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Email disabled/>
-                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Email" />
+                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.Email disabled/>
+                                <ValidationMessage style="text-align:left" For="() => viewModel.Customer.Email" />
                                 <p>For email confirmations, and receipts.</p>
                             </div>
                             <div class="col-12">
@@ -129,7 +129,7 @@
         ModalDisplay                  = "block;";
         ModalClass                    = "show";
         ShowBackdrop                  = true;
-        viewModel.waitListModel.Email = Email;
+        viewModel.Customer.Email = Email;
         StateHasChanged();
     }
     public async Task CloseModal()
@@ -140,12 +140,12 @@
     }
     public async Task Submit()
     {
-        if (viewModel.isValid(viewModel.waitListModel.Email) && viewModel.isValid(viewModel.Customer.FirstName) &&
+        if (viewModel.isValid(viewModel.Customer.Email) && viewModel.isValid(viewModel.Customer.FirstName) &&
         viewModel.isValid(viewModel.Customer.LastName) && viewModel.isValid(viewModel.Customer.Birthdate.ToString()))
         {
             if (viewModel.isValidPassword(viewModel.Password, viewModel.ConfirmPassword))
             {
-                var user = await userManager.FindByEmailAsync(viewModel.waitListModel.Email);
+                var user = await userManager.FindByEmailAsync(viewModel.Customer.Email);
                 if(user == null)
                 {
                     var registerRes = await registerMakerHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker 

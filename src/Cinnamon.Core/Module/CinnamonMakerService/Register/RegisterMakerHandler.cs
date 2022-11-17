@@ -11,14 +11,17 @@ namespace Cinnamon.Core.Module.CinnamonMakerService.Handler.Register;
 public class RegisterMakerHandler : IRegisterMaker
 {
     private readonly CoreConfig coreConfig;
-    private readonly UserManager<CustomerModel> usermanager;
-    private readonly IUserStore<CustomerModel> userStore;
+    private readonly UserManager<IdentityUser> usermanager;
+    private readonly IUserStore<IdentityUser> userStore;
+    private readonly IUserEmailStore<IdentityUser> emailStore;
 
-    public RegisterMakerHandler(UserManager<CustomerModel> userManager, IUserStore<CustomerModel> userStore,CoreConfig coreConfig)
+    public RegisterMakerHandler(UserManager<IdentityUser> userManager, 
+        IUserStore<IdentityUser> userStore,CoreConfig coreConfig)
     {
         this.coreConfig = coreConfig;
         this.usermanager = userManager;
         this.userStore = userStore;
+        emailStore = GetEmailStore();
     }
 
     public AppResult<RegisterMakerResult> Execute(RegisterMaker args)
@@ -38,26 +41,41 @@ public class RegisterMakerHandler : IRegisterMaker
         try
         {
             var user = CreateUser();
-            user.AcceptFlag = args.AcceptFlag;
-            user.Birthdate = args.Birthdate;
-            user.Email = args.Email;
-            user.FirstName = args.FirstName;
-            user.LastName = args.LastName;
-            user.IsMaker = false;
 
             // register user using identity framework
             await userStore.SetUserNameAsync(user, args.Email, CancellationToken.None);
-
+            await emailStore.SetEmailAsync(user, args.Email, CancellationToken.None);
             var createUserResult = await usermanager.CreateAsync(user, args.Password);
 
             if(!createUserResult.Succeeded)
             {
+                string errors = string.Empty;
+                foreach(var error in createUserResult.Errors)
+                {
+                    errors += error.Description + ". ";
+                }
                 return AppResult<RegisterMakerResult>
-                    .CreateFailed(new ApplicationException("An error occured when trying to create user"), 
-                        "An error occured in RegisterMakerHandler");
+                    .CreateFailed(new ApplicationException(errors),errors);
             }
 
             var userId = await usermanager.GetUserIdAsync(user);
+
+            var customer = new CustomerModel
+            {
+                AcceptFlag = args.AcceptFlag,
+                Birthdate = args.Birthdate,
+                Email = args.Email,
+                FirstName = args.FirstName,
+                LastName = args.LastName,
+                IsMaker = false,
+                UserId = userId
+            };
+
+            var customerRes = await CoreDI.DataStore.Customers.SaveDataAsync(customer);
+            if(!customerRes.Message.ToLower().Contains("saved"))
+            {
+                return AppResult<RegisterMakerResult>.CreateFailed(new ApplicationException("An error occured when saving customer information"), "An error occured in RegisterMakerHandler");
+            }
 
             return AppResult<RegisterMakerResult>
                 .CreateSucceeded(new RegisterMakerResult { User = user }, "Customer successfully registered");
@@ -69,11 +87,11 @@ public class RegisterMakerHandler : IRegisterMaker
         }
     }
 
-    private CustomerModel CreateUser()
+    private IdentityUser CreateUser()
     {
         try
         {
-            return Activator.CreateInstance<CustomerModel>();
+            return Activator.CreateInstance<IdentityUser>();
         }
         catch
         {
@@ -81,5 +99,14 @@ public class RegisterMakerHandler : IRegisterMaker
                 $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                 $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
         }
+    }
+
+    private IUserEmailStore<IdentityUser> GetEmailStore()
+    {
+        if (!usermanager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<IdentityUser>)userStore;
     }
 }

@@ -36,12 +36,12 @@ builder.Services.AddDbContext<DataStoreDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentity<CustomerModel,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = false)
+builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<DataStoreDbContext>();
     
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<CustomerModel>>();
+builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
@@ -52,7 +52,19 @@ builder.Configuration.GetSection("AppConfig").Bind(coreConfig);
 builder.Services.AddSingleton(coreConfig);
 builder.Services.ExtendServices();
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+
+    options.User.RequireUniqueEmail = true;
+});
+
 var app = builder.Build();
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

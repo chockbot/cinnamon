@@ -9,6 +9,6 @@ public class RegisterMaker : IInteractor
     public string Email { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public DateTime Birthdate { get; set; }
+    public string Birthdate { get; set; }
     public bool AcceptFlag { get; set; }
 }
