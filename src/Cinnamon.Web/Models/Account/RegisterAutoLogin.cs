@@ -1,0 +1,24 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Cinnamon.Web.Models.Account;
+
+public class RegisterAutoLogin 
+{
+    [Required]
+    public string FirstName { get; set; }
+
+    [Required]
+    public string LastName { get; set; }
+
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+
+    [Required]
+    public string Birthdate { get; set; }
+
+    [Required]
+    public string Password { get; set; }
+
+    public bool AcceptFlag { get; set; }
+}
