@@ -9,6 +9,7 @@
 @using Cinnamon.Core
 @using System.Text
 @using System.Globalization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <!DOCTYPE html>
 
@@ -508,6 +509,9 @@
         Address         = await CoreDI.DataStore.Addresses.GetAllAsync();
         activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
         activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

@@ -1,10 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.WebUtilities;
+using Cinnamon.Core.Models;
 using Cinnamon.Core.Common;
 using Cinnamon.Core.Config;
-using Cinnamon.Core.Module.NotificationService.Interactors;
-using Cinnamon.Core.Module.NotificationService.Handler;
 using Cinnamon.Core.Module.CinnamonMakerService.Interactors;
 using Cinnamon.Core.Module.CinnamonMakerService.Interactors.Results;
 
@@ -13,25 +11,29 @@ namespace Cinnamon.Core.Module.CinnamonMakerService.Handler.Register;
 public class RegisterMakerHandler : IRegisterMaker
 {
     private readonly CoreConfig coreConfig;
-    private readonly IEmailVerification emailVerification;
     private readonly UserManager<IdentityUser> usermanager;
     private readonly IUserStore<IdentityUser> userStore;
     private readonly IUserEmailStore<IdentityUser> emailStore;
 
-    public RegisterMakerHandler(IEmailVerification emailVerification,
-        UserManager<IdentityUser> userManager, IUserStore<IdentityUser> userStore,
-        IUserEmailStore<IdentityUser> emailStore, CoreConfig coreConfig)
+    public RegisterMakerHandler(UserManager<IdentityUser> userManager, 
+        IUserStore<IdentityUser> userStore,CoreConfig coreConfig)
     {
         this.coreConfig = coreConfig;
-        this.emailVerification = emailVerification;
         this.usermanager = userManager;
         this.userStore = userStore;
-        this.emailStore = emailStore;
+        emailStore = GetEmailStore();
     }
 
     public AppResult<RegisterMakerResult> Execute(RegisterMaker args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex) 
+        {
+            return AppResult<RegisterMakerResult>.CreateFailed(ex, "An error occured in RegisterMakerHandler");
+        }
     }
 
     public async Task<AppResult<RegisterMakerResult>> ExecuteAsync(RegisterMaker args)
@@ -40,27 +42,43 @@ public class RegisterMakerHandler : IRegisterMaker
         {
             var user = CreateUser();
 
-            await userStore.SetUserNameAsync(user, args.Username, CancellationToken.None);
+            // register user using identity framework
+            await userStore.SetUserNameAsync(user, args.Email, CancellationToken.None);
             await emailStore.SetEmailAsync(user, args.Email, CancellationToken.None);
             var createUserResult = await usermanager.CreateAsync(user, args.Password);
 
             if(!createUserResult.Succeeded)
             {
+                string errors = string.Empty;
+                foreach(var error in createUserResult.Errors)
+                {
+                    errors += error.Description + ". ";
+                }
                 return AppResult<RegisterMakerResult>
-                    .CreateFailed(new ApplicationException("An error occured when trying to create user"), 
-                        "An error occured in RegisterMakerHandler");
+                    .CreateFailed(new ApplicationException(errors),errors);
             }
 
             var userId = await usermanager.GetUserIdAsync(user);
-            var token = await usermanager.GenerateEmailConfirmationTokenAsync(user);
 
-            token = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+            var customer = new CustomerModel
+            {
+                AcceptFlag = args.AcceptFlag,
+                Birthdate = args.Birthdate,
+                Email = args.Email,
+                FirstName = args.FirstName,
+                LastName = args.LastName,
+                IsMaker = false,
+                UserId = userId
+            };
 
-            var verificationLink = $"{coreConfig.BaseUrl}/Account/ConfirmEmail/?userid={userId}&token={token}";
-            var emailVerificationResult = await emailVerification.ExecuteAsync(new EmailVerification {Email = args.Email, VerificationLink = verificationLink});
+            var customerRes = await CoreDI.DataStore.Customers.SaveDataAsync(customer);
+            if(!customerRes.Message.ToLower().Contains("saved"))
+            {
+                return AppResult<RegisterMakerResult>.CreateFailed(new ApplicationException("An error occured when saving customer information"), "An error occured in RegisterMakerHandler");
+            }
 
             return AppResult<RegisterMakerResult>
-                .CreateSucceeded(new RegisterMakerResult { GeneratedVerificationLink = verificationLink }, "Verification link successfully sent");
+                .CreateSucceeded(new RegisterMakerResult { User = user }, "Customer successfully registered");
 
         }
         catch(Exception ex)
@@ -81,5 +99,14 @@ public class RegisterMakerHandler : IRegisterMaker
                 $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
                 $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
         }
+    }
+
+    private IUserEmailStore<IdentityUser> GetEmailStore()
+    {
+        if (!usermanager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<IdentityUser>)userStore;
     }
 }

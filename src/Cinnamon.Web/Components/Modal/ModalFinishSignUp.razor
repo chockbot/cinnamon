@@ -1,14 +1,18 @@
 ﻿@namespace Cinnamon.Web.Components
+@using Microsoft.AspNetCore.Identity;
 @using Cinnamon.Core.Common;
 @using Cinnamon.Core
+@using Cinnamon.Core.Models;
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.ViewModels
 @using Cinnamon.Data
-@using System.ComponentModel.DataAnnotations
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @using System.Linq.Expressions
 @inject DataStoreDbContext user
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
+@inject IRegisterMaker registerMakerHandler;
+@inject UserManager<IdentityUser> userManager;
 
 <div class="modal @ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -25,31 +29,31 @@
                         <DataAnnotationsValidator />
                         <div class="d-flex flex-column gap-3 align-items-center">
                             <div class="col-12">
-                                <InputText id="firstname-signup" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.FirstName />
-                                    <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.FirstName" />
+                                <InputText id="firstname-signup" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.FirstName />
+                                    <ValidationMessage style="text-align:left" For="() => viewModel.Customer.FirstName" />
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="lastname-signup" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.LastName />
-                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.LastName" />
+                                <InputText id="lastname-signup" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.LastName />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.Customer.LastName" />
                                 <p>Be sure it's the same as what appears on your government ID.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="birtdate-signup" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Birthdate />
-                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Birthdate" />
+                                <InputText id="birtdate-signup" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.Birthdate />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.Customer.Birthdate" />
                                 <p>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Email disabled/>
-                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Email" />
+                                <InputText id="email-signup" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.Email disabled/>
+                                <ValidationMessage style="text-align:left" For="() => viewModel.Customer.Email" />
                                 <p>For email confirmations, and receipts.</p>
                             </div>
                             <div class="col-12">
-                                <InputText id="password-signup" type="password" class="input-group fs-12" placeholder="Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.Password />
-                                    <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.Password" />
+                                <InputText id="password-signup" type="password" class="input-group fs-12" placeholder="Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Password />
+                                    <ValidationMessage style="text-align:left" For="() => viewModel.Password" />
                             </div>
                             <div class="col-12">
-                                <InputText id="confirm-signup" type="password" class="input-group fs-12" placeholder="Confirm Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.waitListModel.ConfirmPassword />
-                                <ValidationMessage style="text-align:left" For="() => viewModel.waitListModel.ConfirmPassword" />
+                                <InputText id="confirm-signup" type="password" class="input-group fs-12" placeholder="Confirm Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.ConfirmPassword />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.ConfirmPassword" />
                             </div>
                                 <!--Error Message-->
                                 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -61,7 +65,7 @@
                             <SignupButton id="signup-waiting" Width="100%" Text="Agree and continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" />
                             <div class="col-12">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @bind=viewModel.waitListModel.AcceptFlag>
+                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @bind=viewModel.Customer.AcceptFlag>
                                     <label class="form-check-label" for="defaultCheck1" style="font-family:'Nunito';font-size:12px;font-weight:400;">
                                         I do not wish to receive promotional communications from Cinnamon.
                                   </label>
@@ -83,8 +87,6 @@
     IJSObjectReference module;
 
     [Parameter]
-    public UserType TypeValue { get; set; }
-    [Parameter]
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
@@ -97,13 +99,10 @@
 
     public string ErrorText { get; set; }
 
-    public List<WaitListModel> userList = new List<WaitListModel>();
-
     public void OnSelect(ChangeEventArgs args)
     {
         UserType usertype;
         Enum.TryParse(args.Value.ToString(), out usertype);
-        TypeValue = usertype;
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -130,7 +129,7 @@
         ModalDisplay                  = "block;";
         ModalClass                    = "show";
         ShowBackdrop                  = true;
-        viewModel.waitListModel.Email = Email;
+        viewModel.Customer.Email = Email;
         StateHasChanged();
     }
     public async Task CloseModal()
@@ -141,24 +140,24 @@
     }
     public async Task Submit()
     {
-        if (viewModel.isValid(viewModel.waitListModel.Email) && viewModel.isValid(viewModel.waitListModel.FirstName) &&
-        viewModel.isValid(viewModel.waitListModel.LastName) && viewModel.isValid(viewModel.waitListModel.Birthdate))
+        if (viewModel.isValid(viewModel.Customer.Email) && viewModel.isValid(viewModel.Customer.FirstName) &&
+        viewModel.isValid(viewModel.Customer.LastName) && viewModel.isValid(viewModel.Customer.Birthdate.ToString()))
         {
-            if (viewModel.isValidPassword(viewModel.waitListModel.Password, viewModel.waitListModel.ConfirmPassword))
+            if (viewModel.isValidPassword(viewModel.Password, viewModel.ConfirmPassword))
             {
-                userList = await CoreDI.DataStore.WaitList.GetAllAsync();
-                var result = userList.Where(p => p.Email == viewModel.waitListModel.Email).FirstOrDefault();
-                if (result != null)
+                var user = await userManager.FindByEmailAsync(viewModel.Customer.Email);
+                if(user == null)
                 {
-                    result.FirstName = viewModel.waitListModel.FirstName;
-                    result.LastName = viewModel.waitListModel.LastName;
-                    result.Birthdate = viewModel.waitListModel.Birthdate;
-                    result.Password = viewModel.waitListModel.Password;
-                    result.ConfirmPassword = viewModel.waitListModel.ConfirmPassword;
-                    result.AcceptFlag = viewModel.waitListModel.AcceptFlag;
-
-                    var res = await CoreDI.DataStore.WaitList.SaveDataAsync(result);
-                    if (res.Message.Contains("Saved"))
+                    var registerRes = await registerMakerHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker 
+                        {
+                            AcceptFlag = viewModel.Customer.AcceptFlag,
+                            Birthdate = viewModel.Customer.Birthdate,
+                            Email = viewModel.Customer.Email,
+                            FirstName = viewModel.Customer.FirstName,
+                            LastName = viewModel.Customer.LastName,
+                            Password = viewModel.Password                            
+                        });
+                    if(registerRes.Succeeded)
                     {
                         await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
                         viewModel.isSubmit = true;
