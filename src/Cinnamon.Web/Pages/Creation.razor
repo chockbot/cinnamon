@@ -4,9 +4,11 @@
 @using Cinnamon.Core
 @using Cinnamon.Web.Components
 @using Cinnamon.Core.Module.ActivityService.Handler;
+@using System.Security.Claims
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 @inject IUpdateActivityHandler updateActivityHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @if(_viewModel != null)
 {
@@ -114,13 +116,17 @@
     private CreationViewModel _viewModel;
     public bool ShowErrorMessage { get; set; }
     public bool ShowSuccessMessage { get; set; } 
-
+    public AuthenticationState AuthState { get; set; }
+    public List<UserListModel> UserList = new List<UserListModel>();
+    public UserListModel UserModel = new UserListModel();
     protected override async Task OnInitializedAsync()
     {
         _viewModel = new CreationViewModel(updateActivityHandler);
         var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
         var actionSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("action", out var action);
         var activityIdSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityid", out var activityId);
+
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
         if(actionSuccess && activityIdSuccess && action.ToString().ToLower() == "update")
         {
@@ -133,6 +139,12 @@
                     _viewModel.UserActionType = Core.Enums.UserActionType.Update;
                 }
             }
+        }
+
+        if (AuthState != null)
+        {
+            UserList = await CoreDI.DataStore.User.GetAllAsync();
+            UserModel = UserList?.FirstOrDefault(x => x.Email == AuthState.User.FindFirstValue(ClaimTypes.Email));
         }
     }
 
@@ -174,6 +186,7 @@
     {
         if (_viewModel.IsComplete)
         {
+            _viewModel.UserList = UserModel;
             var res = Task.Run(() => _viewModel.SaveActivity(_viewModel.activity)).Result;
             if (res)
             {
