@@ -30,7 +30,6 @@ await Framework.Service<ApplicationViewModel>().applySeedDemoData();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
-builder.Services.AddHttpClient();
 builder.Services.AddDbContext<DataStoreDbContext>(options =>
     options.UseNpgsql(connectionString),ServiceLifetime.Transient);
 
@@ -38,10 +37,13 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<DataStoreDbContext>();
-    
+
+builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
+
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
     .AddFontAwesomeIcons();
@@ -50,6 +52,7 @@ CoreConfig coreConfig = new CoreConfig();
 // add core configuration
 builder.Configuration.GetSection("AppConfig").Bind(coreConfig);
 builder.Services.AddSingleton(coreConfig);
+
 builder.Services.ExtendServices();
 
 builder.Services.Configure<IdentityOptions>(options =>
@@ -86,9 +89,13 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
-app.MapBlazorHub();
-app.MapFallbackToPage("/_Host");
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+
+    app.MapBlazorHub();
+    app.MapFallbackToPage("/_Host");
+});
 
 app.Run();
 
