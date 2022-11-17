@@ -1,5 +1,7 @@
+import profile from "./profile";
 import onboarding from "./onboarding";
 
 export default {
-  onboarding,
+  profile,
+  onboarding
 };

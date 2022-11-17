@@ -9,4 +9,4 @@ export function Track(event) {
   return track(event);
 }
 
-export const Pages = { pages };
+export const Pages = pages;

@@ -1,5 +1,5 @@
-import onboarding from "./Onboarding";
+import customer from "./customer";
 
 export default {
-  onboarding,
+  customer,
 };
