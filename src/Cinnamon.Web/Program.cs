@@ -1,20 +1,18 @@
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Dna;
-using Cinnamon.Web.Areas.Identity;
-using Cinnamon.Data;
-using Cinnamon.Core;
-using Cinnamon.Core.Models;
-using Cinnamon.Core.Config;
-using Cinnamon.Core.Extensions;
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
-using Microsoft.Extensions.Options;
+using Cinnamon.Core;
+using Cinnamon.Core.Config;
+using Cinnamon.Core.Extensions;
+using Cinnamon.Core.Models;
+using Cinnamon.Data;
+using Cinnamon.Web.Areas.Identity;
+using Dna;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
-using Cinnamon.Core.Models;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
