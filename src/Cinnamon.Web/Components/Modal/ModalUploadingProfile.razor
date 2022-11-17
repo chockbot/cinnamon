@@ -1,7 +1,10 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core.ViewModels
-@using Cinnamon.Core.Models
-@using System.Drawing.Imaging
+@using Cinnamon.Core
+@using System
+@using System.IO
+@using Microsoft.AspNetCore.Hosting
+@using Microsoft.Extensions.Logging
+@inject IWebHostEnvironment Environment
 
 <div class="modal @ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog">
@@ -13,25 +16,28 @@
             <div class="modal-body">
                 <p class="top-text">People can get to know you better if your profile shows your face.</p>
                 <div class="col-12-lg d-flex justify-content-center">
-                    <Card class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is7.OnDesktop.Is8.OnMobile" TextAlignment="TextAlignment.Center" >
+                    <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is8.OnMobile" TextAlignment="TextAlignment.Center" >
                         <div class="btn-delete">
-                            <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0">
-                                <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
-                            </Button>
+                            <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())">
+                                <i class="fa fa-trash" style="color:black;"></i>
+                            </button>
                        </div>
                        <div class="figure-profile">
-                            <Figure Border="Border.RoundedCircle" Width="Width.Max100">
-                                <FigureImage Source="images/Profile/user1.png" AlternateText="profile" Width="Width.Max100" Border="Border.RoundedCircle.Is2.White" />
-                            </Figure> 
+                            <Figure Border="Border.RoundedCircle">
+                                <CardImage Source="@profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                            </Figure>
                             <div class="round">
-                                <input type="file" />
+                                <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadImage" />
                                 <i class="fa fa-camera" style="color: black;"></i>
                             </div>
                        </div>
                     </Card>
                 </div>
                 <div class="btn-upload">
-                    <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18">Upload</Button>
+
+                    <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18" Style="" Disabled="@ButtonIsClicked()">
+                        Upload
+                    </Button>
                 </div>
             </div>
         </div>
@@ -42,11 +48,23 @@
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
 @code {
+    private List<IBrowserFile> loadedFiles = new();
+
+    UploadProfileViewModel viewModel = new UploadProfileViewModel();
+
+    private long maxFileSize = 10000000;
+
+    private int maxAllowedFiles = 3;
+
+    private bool isLoading;
+
     public string ModalDisplay = "none;";
 
     public string ModalClass = "";
 
     public bool ShowBackdrop = false;
+
+    public string profilepicture { get; set; } = "images/Profile/user.png";
 
     public async Task OpenModal()
     {
@@ -62,11 +80,48 @@
         ShowBackdrop    = false;
         StateHasChanged();
     }
-    private async Task DeleteProfile()
+    public bool ButtonIsClicked()
     {
-
+        return viewModel.isClickButton ? true : false;
     }
-    private async Task Upload(IFormFile imgFile)
+    public string showSpinner()
+    {
+        return viewModel.isClickButton ? "visible" : "hidden";
+    }
+    private void DeleteProfile()
+    {
+        profilepicture = "images/Profile/user.png";
+    }
+    private async Task LoadImage(InputFileChangeEventArgs e)
+    {
+        isLoading = true;
+        loadedFiles.Clear();
+
+        string path = Path.Combine(Environment.WebRootPath, "Images\\ProfilePicture");
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            string fileName = Path.GetFileName(file.Name);
+            try
+            {
+                loadedFiles.Add(file);
+                await using FileStream fs = new FileStream(Path.Combine(path, fileName), FileMode.Create);
+                await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+                profilepicture          = "images/ProfilePicture/"+file.Name;
+                viewModel.isClickButton = false;
+            }
+            catch (Exception ex)
+            {
+                ResultModel.error(ex.Message);
+            }
+        }
+
+        isLoading = false;
+    }
+    private async Task Upload()
     {
 
     }

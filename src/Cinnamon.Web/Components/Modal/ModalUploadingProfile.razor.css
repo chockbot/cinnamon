@@ -4,6 +4,12 @@
     font-weight: 700;
     margin-left: 1rem;
 }
+::deep .card-image-full {
+    width: 17rem;
+    height: 17rem;
+    line-height: 17rem;
+    text-align: center;
+}
 .textarea-container label {
     text-align: right;
     padding-right: 10px;
@@ -21,12 +27,13 @@
     font-size: 18px !important;
 }
 .btn-delete {
-    margin-left: 13rem;
-    margin-top: 1rem;
+    margin-left: 15rem;
+    margin-top: 0.5rem;
 }
 .figure-profile{
     margin-right:1rem;
     margin-left: 1rem;
+    margin-top: 0px;
 }
     .figure-profile .round {
         position: absolute;
@@ -35,16 +42,16 @@
         background: white;
         width: 32px;
         height: 32px;
-        line-height:32px;
+        line-height: 32px;
         overflow: hidden;
-        border-radius:50%;
+        border-radius: 50%;
         text-align: center;
         border: 1px solid gray;
     }
         .figure-profile .round:hover {
             background: var(--primary);
         }
-        .figure-profile .round input[type='file'] {
+        ::deep .figure-profile .round input[type='file'] {
             position: absolute;
             transform: scale(2);
             opacity: 0;
@@ -64,5 +71,11 @@
     .figure-profile .round {
         bottom: 25px;
         right: 45px;
+    }
+    ::deep .card-image-full {
+        width: 12rem;
+        height: 12rem;
+        line-height: 12rem;
+        text-align: center;
     }
 }
