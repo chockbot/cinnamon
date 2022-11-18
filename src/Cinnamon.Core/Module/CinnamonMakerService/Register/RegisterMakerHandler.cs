@@ -5,6 +5,7 @@ using Cinnamon.Core.Common;
 using Cinnamon.Core.Config;
 using Cinnamon.Core.Module.CinnamonMakerService.Interactors;
 using Cinnamon.Core.Module.CinnamonMakerService.Interactors.Results;
+using Cinnamon.Core.Module.NotificationService.Handler;
 
 namespace Cinnamon.Core.Module.CinnamonMakerService.Handler.Register;
 
@@ -14,14 +15,16 @@ public class RegisterMakerHandler : IRegisterMaker
     private readonly UserManager<IdentityUser> usermanager;
     private readonly IUserStore<IdentityUser> userStore;
     private readonly IUserEmailStore<IdentityUser> emailStore;
+    private readonly IWelcomeNotification welcomeNotification;
 
     public RegisterMakerHandler(UserManager<IdentityUser> userManager, 
-        IUserStore<IdentityUser> userStore,CoreConfig coreConfig)
+        IUserStore<IdentityUser> userStore,CoreConfig coreConfig, IWelcomeNotification welcomeNotification)
     {
         this.coreConfig = coreConfig;
         this.usermanager = userManager;
         this.userStore = userStore;
-        emailStore = GetEmailStore();
+        this.emailStore = GetEmailStore();
+        this.welcomeNotification = welcomeNotification;
     }
 
     public AppResult<RegisterMakerResult> Execute(RegisterMaker args)
@@ -75,6 +78,12 @@ public class RegisterMakerHandler : IRegisterMaker
             if(!customerRes.Message.ToLower().Contains("saved"))
             {
                 return AppResult<RegisterMakerResult>.CreateFailed(new ApplicationException("An error occured when saving customer information"), "An error occured in RegisterMakerHandler");
+            }
+
+            var welcomeNotify = await welcomeNotification.ExecuteAsync(new NotificationService.Interactors.WelcomeNotification { Email = args.Email });
+            if(!welcomeNotify.Succeeded)
+            {
+                return AppResult<RegisterMakerResult>.CreateFailed(welcomeNotify.Error.Exception, welcomeNotify.Message);
             }
 
             return AppResult<RegisterMakerResult>

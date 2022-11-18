@@ -70,7 +70,7 @@
                     {
                         @if(AuthState.User.Identity.IsAuthenticated)
                         {
-                            if(UserModel.IsMaker)
+                            if(UserModel != null && UserModel.IsMaker)
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
