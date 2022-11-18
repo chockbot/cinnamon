@@ -2,7 +2,7 @@ namespace Cinnamon.Core.Module.NotificationService.Handler.VerifyEmail;
 
 public class VerifyEmailHelper 
 {
-    public string GetTemplate(string link)
+    public string GetTemplate(string link, string host)
     {
         return $@"
             <div
@@ -19,7 +19,7 @@ public class VerifyEmailHelper
                 >
                 <div style='margin-bottom: 2rem'>
                     <img
-                    src='http://dev.cinnamon.ph/images/cinnamon-logo.png'
+                    src='{host}/images/cinnamon-logo.png'
                     alt='logo'
                     style='width: 200px; height: auto'
                     />

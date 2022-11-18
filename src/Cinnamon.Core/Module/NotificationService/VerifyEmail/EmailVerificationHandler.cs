@@ -1,4 +1,5 @@
 using Cinnamon.Core.Common;
+using Cinnamon.Core.Config;
 using Cinnamon.Core.Module.EmailService.Handler;
 using Cinnamon.Core.Module.NotificationService.Interactors;
 using Cinnamon.Core.Module.NotificationService.Interactors.Results;
@@ -9,11 +10,13 @@ public class EmailVerificationHandler: IEmailVerification
 {
     private readonly ISendMailHandler sendMailHandler;
     private readonly VerifyEmailHelper helper;
+    private readonly CoreConfig coreConfig;
 
-    public EmailVerificationHandler(ISendMailHandler sendMailHandler)
+    public EmailVerificationHandler(ISendMailHandler sendMailHandler, CoreConfig coreConfig)
     {
         this.sendMailHandler = sendMailHandler;
         this.helper = new VerifyEmailHelper();
+        this.coreConfig = coreConfig;
     }
 
     public AppResult<EmailVerificationResult> Execute (EmailVerification args)
@@ -25,7 +28,7 @@ public class EmailVerificationHandler: IEmailVerification
     {
         try
         {
-            var emailBody = helper.GetTemplate(args.VerificationLink);
+            var emailBody = helper.GetTemplate(args.VerificationLink, coreConfig.BaseUrl);
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailService.Interactors.SendMail()
                 {
