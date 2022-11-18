@@ -100,7 +100,10 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseCookiePolicy();
+app.UseCookiePolicy(new CookiePolicyOptions()
+{
+    MinimumSameSitePolicy = SameSiteMode.Lax
+});
 app.UseAuthentication();
 app.UseAuthorization();
 
