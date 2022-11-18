@@ -1,5 +1,104 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
-<div>
-    <h1>personal info content goes here</h1>
-</div>
+<article class="personal-info-wrapper py-3">
+    <div class="p-section name-section">
+        <Row>
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                <p class="title mb-1">Legal Name</p>
+                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                    <span class="text-capitalize">dexter echalico</span>
+                    <span class="edit">Edit</span>
+                </Div>
+            </Column>
+        </Row>
+    </div>
+    <Divider />
+    <div class="p-section children-section">
+        <Row>
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                <p class="title mb-1">Kids Info</p>
+                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                    <Column style="margin-right: 1.5rem;">
+                        @foreach (var item in children)
+                        {
+                            <Row style="flex: 0 0 auto;">
+                                <Column>
+                                    <p class="text-capitalize">@item.Name</p>
+                                </Column>
+                                <Column>
+                                    <p class="text-capitalize text-center">@item.Gender</p>
+                                </Column>
+                                <Column>
+                                    <p class="text-capitalize text-end">@item.BirthDate</p>
+                                </Column>
+                            </Row>
+                        }
+                    </Column>
+                    <span class="edit">Edit</span>
+                </Div>
+            </Column>
+        </Row>
+    </div>
+    <Divider />
+    <div class="p-section ids-section">
+        <Row>
+            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                <p class="title mb-1">Governmend ID</p>
+                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                    <span>ID no. 1</span>
+                    <span class="edit">Edit</span>
+                </Div>
+            </Column>
+        </Row>
+    </div>
+</article>
+
+<style scoped>
+.personal-info-wrapper {
+    font-family: "Nunito";
+    overflow: hidden;
+}
+.personal-info-wrapper p 
+{
+    margin-bottom: 0;
+}
+.personal-info-wrapper .p-section .title 
+{
+    font-size: 18px;
+    color: #344050;
+    font-weight: 700;
+}
+.personal-info-wrapper .p-section .details 
+{
+    font-size: 16px;
+    color: #717171;
+    font-weight: 500;
+}
+.personal-info-wrapper .p-section .edit 
+{
+    font-size: 14px;
+    font-weight: 700;
+    color: #343D4C;
+    cursor: pointer;
+}
+</style>
+
+@code 
+{
+    private IList<Child> children = new List<Child>();
+    
+    protected override void OnInitialized()
+    {
+        children.Add(new Child {BirthDate = "April 2010", Gender = "Female", Name = "juanita san jose"});
+        children.Add(new Child {BirthDate = "September 2008", Gender = "Male", Name = "charanko san jose"});
+        children.Add(new Child {BirthDate = "December 2006", Gender = "Femala", Name = "rocia san jose"});
+    }
+
+    public class Child 
+    {
+        public string Name {get; set;}
+        public string Gender {get; set;}
+        public string BirthDate {get; set;}
+    }
+}
+

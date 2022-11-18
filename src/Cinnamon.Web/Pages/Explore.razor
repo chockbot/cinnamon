@@ -70,6 +70,9 @@
                                 </li>
                             }
                             <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToAccount" Text="Account" />
+                            </li>
+                            <li class="dropdown-item">
                                 <form class="form-inline" asp-area="Identity" action="Identity/Account/Logout" method="post">
                                     <button type="submit" class="btn border-0">
                                       Logout
@@ -537,14 +540,35 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
         }
     }
+
+    private void NavigateToFAQPage()
+    {
+        NavigationManager.NavigateTo("FAQ");
+    }
+    private void NavigateToPolicyPage()
+    {
+        NavigationManager.NavigateTo("policy");
+    }
+    private void NavigateToTermsPage()
+    {
+        NavigationManager.NavigateTo("terms");
+    }
+
     private void NavigateToOnboardingPage()
     {
         NavigationManager.NavigateTo("Onboarding");
     }
-      private void NavigateToDashboard()
+
+    private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");
     }
+
+    private void NavigateToAccount()
+    {
+        NavigationManager.NavigateTo("/customer/profile");
+    }
+
     private void onClickMenu(){
         if(clickButton)
         {
