@@ -6,5 +6,4 @@ namespace Cinnamon.Core.Module.CinnamonMakerService.Interactors;
 public class SubmitWaitingList : IInteractor
 {
     public string Email { get; set; }
-    public UserType UserType { get; set; }
 }
