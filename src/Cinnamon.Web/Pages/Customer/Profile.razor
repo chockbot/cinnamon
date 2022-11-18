@@ -25,7 +25,7 @@
                         </CardTitle>
                     </CardBody>
                     <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
-                        <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18">Get the badge</Button>
+                        <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
                     </CardFooter>
                 </Card>
             </Column>
@@ -54,6 +54,7 @@
             <Items>
                 <Tab Name="experiences" TextTransform="TextTransform.Capitalize">experiences</Tab>
                 <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
+                <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">maker experiences</Tab>
             </Items>
             <Content>
                 <TabPanel Name="experiences">
@@ -61,6 +62,9 @@
                 </TabPanel>
                 <TabPanel Name="personal-info">
                     <PersonalInfo />
+                </TabPanel>
+                <TabPanel Name="maker-experience">
+                    <MakerExperiences />
                 </TabPanel>
             </Content>
         </Tabs>
