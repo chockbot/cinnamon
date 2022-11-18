@@ -2,9 +2,9 @@ namespace Cinnamon.Core.Module.NotificationService.Handler.WelcomeNotifiy;
 
 public class WelcomeNotifyHelper 
 {
-    public string GetTemplate()
+    public string GetTemplate(string host)
     {
-        return @"
+        return $@"
             <div
                 style='
                     padding: 3rem;
@@ -18,7 +18,13 @@ public class WelcomeNotifyHelper
                     line-height: 1.5;
                 '
                 >
-                <h1 style='color: #ffa942; margin-top: 0'>Cinnamon</h1>
+                <div style='margin-bottom: 2rem'>
+                    <img
+                    src='{host}/images/cinnamon-logo.png'
+                    alt='logo'
+                    style='width: 200px; height: auto'
+                    />
+                </div>
                 <p>Hello!</p>
                 <p>
                     We're glad you're here! Welcome to Cinnamon, the family experience

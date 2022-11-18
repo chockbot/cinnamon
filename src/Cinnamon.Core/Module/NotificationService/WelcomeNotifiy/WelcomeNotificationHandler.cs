@@ -1,4 +1,5 @@
 using Cinnamon.Core.Common;
+using Cinnamon.Core.Config;
 using Cinnamon.Core.Module.EmailService.Handler;
 using Cinnamon.Core.Module.NotificationService.Interactors;
 using Cinnamon.Core.Module.NotificationService.Interactors.Results;
@@ -9,11 +10,13 @@ public class WelcomeNotificationHandler: IWelcomeNotification
 {
     private readonly ISendMailHandler sendMailHandler;
     private readonly WelcomeNotifyHelper helper;
+    private readonly CoreConfig coreConfig;
 
-    public WelcomeNotificationHandler(ISendMailHandler sendMailHandler)
+    public WelcomeNotificationHandler(ISendMailHandler sendMailHandler, CoreConfig coreConfig)
     {
         this.sendMailHandler = sendMailHandler;
         this.helper = new WelcomeNotifyHelper();
+        this.coreConfig = coreConfig;
     }
 
     public AppResult<WelcomeNotificationResult> Execute(WelcomeNotification args) 
@@ -25,7 +28,7 @@ public class WelcomeNotificationHandler: IWelcomeNotification
     {
         try 
         {
-            var emailBody = helper.GetTemplate();
+            var emailBody = helper.GetTemplate(coreConfig.BaseUrl);
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailService.Interactors.SendMail()
                 {
