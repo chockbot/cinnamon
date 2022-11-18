@@ -70,7 +70,7 @@
                     {
                         @if(AuthState.User.Identity.IsAuthenticated)
                         {
-                            if(UserModel.isMaker)
+                            if(UserModel.IsMaker)
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
@@ -513,7 +513,7 @@
     public List<ActivityImagesModels> images         = new List<ActivityImagesModels>();
     public List<AddressModel> Address                = new List<AddressModel>();
     public List<UserListModel> UserList = new List<UserListModel>();
-    public UserListModel UserModel                    = new UserListModel();
+    public CustomerModel UserModel                    = new CustomerModel();
     public string searchValue                        = string.Empty;
     public string filterId                           = string.Empty;
     public int cnt                                   = 0;
@@ -531,10 +531,10 @@
 
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        if(AuthState != null)
+        if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
         {
-            UserList = await CoreDI.DataStore.User.GetAllAsync();
-            UserModel = UserList?.FirstOrDefault(x => x.Email == AuthState.User.FindFirstValue(ClaimTypes.Email));
+            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
+            UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
         }
     }
 

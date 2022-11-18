@@ -3,6 +3,7 @@
 @using Cinnamon.Web.Components
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core
+@using Cinnamon.Core.Models;
 @using Cinnamon.Data
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -34,7 +35,7 @@
                         {
                             @if (AuthState.User.Identity.IsAuthenticated)
                             {
-                                if (UserModel.isMaker)
+                                if (UserModel.IsMaker)
                                 {
                                     <li class="dropdown-item">
                                         <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
@@ -81,17 +82,17 @@
 @code {
     public bool clickButton { get; set; }
     public List<UserListModel> UserList = new List<UserListModel>();
-    public UserListModel UserModel = new UserListModel();
+    public CustomerModel UserModel = new CustomerModel();
     public AuthenticationState AuthState { get; set; }
 
      protected override async Task OnInitializedAsync()
     {
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        if(AuthState != null)
+        if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
         {
-            UserList = await CoreDI.DataStore.User.GetAllAsync();
-            UserModel = UserList?.FirstOrDefault(x => x.Email == AuthState.User.FindFirstValue(ClaimTypes.Email));
+            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
+            UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
         }
     }
 

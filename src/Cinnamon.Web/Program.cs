@@ -54,7 +54,7 @@ builder.Services.AddBlazorise(options => { options.Immediate = true; })
 
 builder.Services.AddScoped<TokenProvider>();
 
-builder.Services.AddAuthentication(GoogleDefaults.AuthenticationScheme).AddGoogle(o =>
+builder.Services.AddAuthentication().AddGoogle(o =>
 {
     o.ClientId = builder.Configuration["AppConfig:Authentication:Google:ClientId"];
     o.ClientSecret = builder.Configuration["AppConfig:Authentication:Google:ClientSecret"];
@@ -103,7 +103,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 
 app.UseEndpoints(endpoints =>
 {
