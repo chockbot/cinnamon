@@ -1,8 +1,9 @@
 @page "/maker/dashboard"
 @using Cinnamon.Core
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
+@using Microsoft.AspNetCore.Components.Authorization
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject NavigationManager NavigationManager
+@inject NavigationManager navigationManager
 
 <section class="mt-5 maker-dashboard">
     <div class="container">
@@ -44,6 +45,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if(!user.Identity.IsAuthenticated)
+        {
+            navigationManager.NavigateTo("/onboarding");
+            return;
+        }
+
         activities = (await CoreDI.DataStore.Activities.GetAllAsync()).OrderBy(i => i.Id).ToList();
         activeActivityCount = activities.Where(i => i.IsPublished).Count();
         var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();

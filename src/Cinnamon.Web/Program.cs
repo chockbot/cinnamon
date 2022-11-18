@@ -41,7 +41,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<DataStoreDbContext>();
 
 builder.Services.AddControllers();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(opts => {
+    opts.Conventions.AddAreaPageRoute("Identity", "/Account/Onboarding", "/Onboarding");
+});
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
@@ -106,9 +108,9 @@ app.MapControllers();
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-
-    app.MapBlazorHub();
-    app.MapFallbackToPage("/_Host");
+    endpoints.MapRazorPages();
+    endpoints.MapBlazorHub();
+    endpoints.MapFallbackToPage("/_Host");
 });
 
 app.Run();

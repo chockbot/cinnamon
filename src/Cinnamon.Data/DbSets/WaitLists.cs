@@ -10,5 +10,8 @@ namespace Cinnamon.Data
 
         public async Task<WaitListModel> GetWaitListByGuid(string guid)
             => await mDbContext.WaitLists.FirstOrDefaultAsync(i => i.Guid == guid);
+
+        public async Task<WaitListModel> GetWaitListByEmail(string email)
+            => await mDbContext.WaitLists.FirstOrDefaultAsync(i => i.Email == email);
     }
 }
