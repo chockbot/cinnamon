@@ -79,7 +79,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Adaptable:Can come up with alternative ideas when the need arises; Can adjust based on the situation.
+        ///   Looks up a localized string similar to - Adaptable: Can come up with alternative ideas when the need arises; Can adjust based on the situation.
         /// </summary>
         internal static string Adaptable {
             get {
@@ -295,7 +295,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Creative:Able to deliver unique and creative experiences.
+        ///   Looks up a localized string similar to - Creative: Able to deliver unique and creative experiences.
         /// </summary>
         internal static string Creative {
             get {
@@ -547,7 +547,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Intuitive:Able to discern or understand the situation or customer at the onset.
+        ///   Looks up a localized string similar to - Intuitive: Able to discern or understand the situation or customer at the onset.
         /// </summary>
         internal static string Intuitive {
             get {
@@ -646,7 +646,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Munificent:Generous in sharing knowledge and experience so that the customer would really see the experience as worth its cost.
+        ///   Looks up a localized string similar to - Munificent: Generous in sharing knowledge and experience so that the customer would really see the experience as worth its cost.
         /// </summary>
         internal static string Munificent {
             get {
@@ -674,7 +674,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Neighborly:Is a good “neighbor” by creating a safe space for the customer.
+        ///   Looks up a localized string similar to - Neighborly: Is a good “neighbor” by creating a safe space for the customer.
         /// </summary>
         internal static string Neighborly {
             get {
@@ -683,7 +683,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Notable:Can create a notable or memorable experience for the customers.
+        ///   Looks up a localized string similar to - Notable: Can create a notable or memorable experience for the customers.
         /// </summary>
         internal static string Notable {
             get {
@@ -701,7 +701,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Nurturing:Takes good care of the customer and has the customer’s welfare in mind.
+        ///   Looks up a localized string similar to - Nurturing: Takes good care of the customer and has the customer’s welfare in mind.
         /// </summary>
         internal static string Nurturing {
             get {
@@ -737,7 +737,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Open:Has a listening ear to his/her customers. Able to receive feedback well, whether positive or negative.
+        ///   Looks up a localized string similar to - Open: Has a listening ear to his/her customers. Able to receive feedback well, whether positive or negative.
         /// </summary>
         internal static string Open {
             get {
