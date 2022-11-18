@@ -63,12 +63,15 @@
                     {
                         @if(AuthState.User.Identity.IsAuthenticated)
                         {
-                            if(UserModel.IsMaker)
+                            if(UserModel != null && UserModel.IsMaker)
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
                                 </li>
                             }
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToAccount" Text="Account" />
+                            </li>
                             <li class="dropdown-item">
                                 <form class="form-inline" asp-area="Identity" action="Identity/Account/Logout" method="post">
                                     <button type="submit" class="btn border-0">
@@ -536,14 +539,22 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
         }
     }
+
     private void NavigateToOnboardingPage()
     {
         NavigationManager.NavigateTo("Onboarding");
     }
-      private void NavigateToDashboard()
+
+    private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");
     }
+
+    private void NavigateToAccount()
+    {
+        NavigationManager.NavigateTo("/customer/profile");
+    }
+
     private void onClickMenu(){
         if(clickButton)
         {
