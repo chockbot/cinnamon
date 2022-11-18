@@ -97,6 +97,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to By using this website, you agree to our cookie policy..
+        /// </summary>
+        internal static string AlertCookie {
+            get {
+                return ResourceManager.GetString("AlertCookie", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Cinnamon.
         /// </summary>
         internal static string appName {

@@ -3,6 +3,7 @@
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@using Cinnamon.Web.Components
 
 <section class="py-3 mt-5 profile-content">
     <Container>
@@ -13,12 +14,17 @@
                         <Figure Width="Width.Max100" Border="Border.RoundedCircle" Size="FigureSize.Is128x128" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
                             <FigureImage Source="images/Profile/user.png" AlternateText="profile" />
                         </Figure>
+                        <div class="edit-icon">
+                            <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" Clicked="EditProfile"> 
+                                <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
+                            </Button>
+                        </div>
                     </CardHeader>
                     <CardBody Border="Border.Is0" Padding="Padding.Is1.OnY">
                         <CardTitle TextAlignment="TextAlignment.Center">
                             <p class="text-capitalize fw-bold m-0 mb-1 font-30">dexter echalico</p>
                             <p class="text-color-8080 my-1 font-24">
-                               <Icon Name="Blazorise.Icons.FontAwesome.FontAwesomeIcons.ShieldAlt" IconStyle="IconStyle.Solid" />
+                               <Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />
                                <span class="text-capitalize">verified user</span>
                             </p>
                             <p class="text-color-8080 font-16 mb-1">Lorem ipsum dolor sit, amet consectetur adipisicing elit</p>
@@ -70,10 +76,12 @@
         </Tabs>
     </Container>
 </section>
-
+<ModalUploadingProfile @ref="upload"></ModalUploadingProfile>
 @code 
 {
     private string selectedTab = "experiences";
+
+    protected ModalUploadingProfile upload { get; set; }
 
     private Task OnSelectedTabChanged(string name)
     {
@@ -98,5 +106,10 @@
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
         }
+    }
+    private async Task EditProfile()
+    {
+        //Display Modal Upload
+        await upload.OpenModal();
     }
 }

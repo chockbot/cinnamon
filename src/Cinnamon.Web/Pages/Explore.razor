@@ -15,7 +15,6 @@
 <!DOCTYPE html>
 
 <html lang="en">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -33,7 +32,7 @@
             <a href="" class="app-name">@Resources.App.appName</a>
         </div>
         <!--Search Location and Experience-->
-        <div class="col-lg-4 d-flex justify-content-end col-md-8 d-flex justify-content-center col-sm-11 d-flex flex-row justify-content-start col-11 d-flex flex-row justify-content-start">
+        <div class="col-lg-6 d-flex justify-content-end col-md-8 d-flex justify-content-center col-sm-11 d-flex flex-row justify-content-start col-11 d-flex flex-row justify-content-start">
             <div class="home-logo">
                 <a class="button" href="#">
                     <img src="images/Home.png" class="img-icon">
@@ -48,13 +47,7 @@
             </div>
         </div>
         <!--Menu-->
-        <div class="col-lg-6 d-flex flex-row justify-content-start col-md-2 d-flex flex-row justify-content-start col-sm-1 d-flex justify-content-center col-1 d-flex justify-content-center">
-                <div class="btn-join">
-                     <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
-                       @Resources.App.Signup
-                     </button>
-                </div>
-                &nbsp;
+        <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-1 d-flex justify-content-end col-1 d-flex justify-content-end">
                 <div class="become">
                      <NavButton OnClick="NavigateToOnboardingPage" Text=@Resources.App.Become/>
                 </div>
@@ -502,9 +495,11 @@
     </div>
 </body>
 <ModalLogin TypeValue="@UserType.Customer"></ModalLogin>
+<!--Filter-->
 <FilterModal></FilterModal>
 <Footer></Footer>
-<BetaAlert></BetaAlert>
+<!--Beta Alert-->
+@*<BetaAlert></BetaAlert>*@
 </html>
 @code {
     public List<ActivityModel> activity              = new List<ActivityModel>();
@@ -545,25 +540,9 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
         }
     }
-
-    private void NavigateToFAQPage()
-    {
-        NavigationManager.NavigateTo("FAQ");
-    }
-
-    private void NavigateToPolicyPage()
-    {
-        NavigationManager.NavigateTo("policy");
-    }
-
-    private void NavigateToTermsPage()
-    {
-        NavigationManager.NavigateTo("terms");
-    }
-
     private void NavigateToOnboardingPage()
     {
-        NavigationManager.NavigateTo("Onboarding");
+        NavigationManager.NavigateTo("onboarding");
     }
 
     private void NavigateToDashboard()
