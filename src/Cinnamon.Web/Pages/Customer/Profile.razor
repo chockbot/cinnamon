@@ -1,11 +1,12 @@
 @page "/customer/profile"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
+@inject IJSRuntime jsRuntime
 @using Cinnamon.Web.Components
 
 <section class="py-3 mt-5 profile-content">
     <Container>
         <Row>
-            <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is4.OnTablet.Is12.OnMobile">
+            <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                 <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
                     <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
                         <Figure Width="Width.Max100" Border="Border.RoundedCircle" Size="FigureSize.Is128x128" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
@@ -32,7 +33,7 @@
                     </CardFooter>
                 </Card>
             </Column>
-            <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is8.OnTablet.Is12.OnMobile">
+            <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                 <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                     <Div>
                         <p class="m-0 font-30 fw-bold">Hi, I'm Dexter</p>
@@ -51,7 +52,7 @@
     </Container>
 </section>
 
-<section class="mt-5">
+<section class="mt-5 customer-profile-details">
     <Container>
         <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
             <Items>
@@ -81,6 +82,15 @@
         selectedTab = name;
         return Task.CompletedTask;
     }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
+        }
+    }
+}
     private async Task EditProfile()
     {
         //Display Modal Upload

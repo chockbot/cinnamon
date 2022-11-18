@@ -113,7 +113,7 @@
                 //Register Account
                 var register = await submitWaitingListHandler.ExecuteAsync(
                         new Core.Module.CinnamonMakerService.Interactors.SubmitWaitingList
-                            { Email = viewModel.waitListModel.Email, UserType = UserType.Maker });
+                            { Email = viewModel.waitListModel.Email });
 
                 if (register.Succeeded)
                 {

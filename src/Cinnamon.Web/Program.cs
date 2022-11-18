@@ -41,7 +41,9 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<DataStoreDbContext>();
 
 builder.Services.AddControllers();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(opts => {
+    opts.Conventions.AddAreaPageRoute("Identity", "/Account/Onboarding", "/Onboarding");
+});
 builder.Services.AddServerSideBlazor();
 
 builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
@@ -52,7 +54,7 @@ builder.Services.AddBlazorise(options => { options.Immediate = true; })
 
 builder.Services.AddScoped<TokenProvider>();
 
-builder.Services.AddAuthentication(GoogleDefaults.AuthenticationScheme).AddGoogle(o =>
+builder.Services.AddAuthentication().AddGoogle(o =>
 {
     o.ClientId = builder.Configuration["AppConfig:Authentication:Google:ClientId"];
     o.ClientSecret = builder.Configuration["AppConfig:Authentication:Google:ClientSecret"];
@@ -101,14 +103,13 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapControllers();
 
 app.UseEndpoints(endpoints =>
 {
     endpoints.MapControllers();
-
-    app.MapBlazorHub();
-    app.MapFallbackToPage("/_Host");
+    endpoints.MapRazorPages();
+    endpoints.MapBlazorHub();
+    endpoints.MapFallbackToPage("/_Host");
 });
 
 app.Run();
