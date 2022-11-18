@@ -1,6 +1,8 @@
 @page "/customer/profile"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <section class="py-3 mt-5 profile-content">
     <Container>
@@ -73,6 +75,17 @@
     {
         selectedTab = name;
         return Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        if(!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/onboarding");
+            return;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
