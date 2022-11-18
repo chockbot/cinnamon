@@ -1,10 +1,15 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
+@using Cinnamon.Core.Enums
+@using Cinnamon.Core.ViewModels
+@using Cinnamon.Data
 @using System
 @using System.IO
 @using Microsoft.AspNetCore.Hosting
 @using Microsoft.Extensions.Logging
+@using Cinnamon.Core.Module.UploadService.Handler
 @inject IWebHostEnvironment Environment
+@inject IUploadImages uploadImageHandler;
 
 <div class="modal @ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog">
@@ -110,19 +115,22 @@
                 loadedFiles.Add(file);
                 await using FileStream fs = new FileStream(Path.Combine(path, fileName), FileMode.Create);
                 await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+
                 profilepicture          = "images/ProfilePicture/"+file.Name;
                 viewModel.isClickButton = false;
+                //byte[] imageByte= new byte[fs.Length];
+
+                //Upload to Azure Blob
+                //var upload = await uploadImageHandler.ExecuteAsync(
+                //        new Core.Module.UploadService.Interactors.ImageUpload
+                //            { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name)});
+                }
+                catch (Exception ex)
+                {
+                    ResultModel.error(ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                ResultModel.error(ex.Message);
-            }
+
+            isLoading = false;
         }
-
-        isLoading = false;
     }
-    private async Task Upload()
-    {
-
-    }
-}
