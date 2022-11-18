@@ -7,5 +7,11 @@ namespace Cinnamon.Data
     {
         public WaitLists(DataStoreDbContext dbContext) : base(dbContext) { }
         protected override DbSet<WaitListModel> Table => mDbContext.WaitLists;
+
+        public async Task<WaitListModel> GetWaitListByGuid(string guid)
+            => await mDbContext.WaitLists.FirstOrDefaultAsync(i => i.Guid == guid);
+
+        public async Task<WaitListModel> GetWaitListByEmail(string email)
+            => await mDbContext.WaitLists.FirstOrDefaultAsync(i => i.Email == email);
     }
 }

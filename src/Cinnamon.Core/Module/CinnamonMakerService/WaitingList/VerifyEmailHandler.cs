@@ -24,7 +24,7 @@ public class VerifyEmailHandler : IVerifyEmail
     {
         try
         {
-            if(string.IsNullOrEmpty(args.Token) || string.IsNullOrEmpty(args.UserId) || string.IsNullOrEmpty(args.Email))
+            if(string.IsNullOrEmpty(args.Token) || string.IsNullOrEmpty(args.UserId))
             {
                 return AppResult<VerifyEmailResult>.CreateFailed(new ApplicationException("Provide valid token and userId"), "Provide valid token and userId");
             }
@@ -40,11 +40,6 @@ public class VerifyEmailHandler : IVerifyEmail
 
             // invalid token
             if(waitingRes.Token != decodedToken)
-            {
-                return AppResult<VerifyEmailResult>.CreateFailed(new ApplicationException("Provide valid token and userId"), "Provide valid token and userId");
-            }
-            //invalid email
-            if (waitingRes.Email != args.Email)
             {
                 return AppResult<VerifyEmailResult>.CreateFailed(new ApplicationException("Provide valid token and userId"), "Provide valid token and userId");
             }

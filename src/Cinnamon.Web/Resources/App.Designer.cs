@@ -917,7 +917,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Sign-up.
+        ///   Looks up a localized string similar to Login/Signup.
         /// </summary>
         internal static string Sign {
             get {

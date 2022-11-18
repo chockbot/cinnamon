@@ -1,11 +1,18 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
+using Cinnamon.Core.Module.ActivityService.Handler;
 
 namespace Cinnamon.Core
 {
     public class CreationViewModel
     {
+        private readonly IUpdateActivityHandler updateActivityHandler;
+        public CreationViewModel(IUpdateActivityHandler updateActivityHandler)
+        {
+            this.updateActivityHandler = updateActivityHandler;
+        }
+
         public ExperienceCreationViewModel ExperienceCreationViewModel { get; set; } = new ExperienceCreationViewModel();
         public ExperienceSetupViewModel ExperienceSetupViewModel { get; set; } = new ExperienceSetupViewModel();    
         private List<CreationStep> creationSteps = new List<CreationStep> {
@@ -15,6 +22,7 @@ namespace Cinnamon.Core
             CreationStep.Publish
         };
 
+        public UserListModel UserList { get; set; }
         public Cinnamon.Core.Enums.UserActionType UserActionType { get; set; } = Enums.UserActionType.Create;
 
         private int _currentStepIndex = 0;
@@ -103,15 +111,20 @@ namespace Cinnamon.Core
                 if(UserActionType == Enums.UserActionType.Create)
                 {
                     activity.ActivityImages = await Upload(ExperienceSetupViewModel.Images);
+                    activity.CreatedBy = UserList.Id;
+                    activity.CreatedOn = DateTime.UtcNow;
+                    activity.ChangedOn = DateTime.UtcNow;
                     var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
                     if (res.Type == MessageType.Success)
                     {
+                        UserList.isMaker = true;
+                        await CoreDI.DataStore.User.SaveDataAsync(UserList);
                         return true;
                     }
                 }
                 else if(UserActionType == Enums.UserActionType.Update)
                 {
-                    var res = await CoreDI.UpdateActivityHandler.ExecuteAsync(new Module.ActivityService.Interactors.UpdateActivity {Activity = activityModel});
+                    var res = await updateActivityHandler.ExecuteAsync(new Module.ActivityService.Interactors.UpdateActivity {Activity = activityModel});
                     if(!res.Succeeded)
                     {
                        throw res.Error.Exception;

@@ -5,8 +5,8 @@
 @functions {
     public async Task<IActionResult> OnPost()
     {
-        if (SignInManager.IsSignedIn(User))
-        {
+        if (User != null)
+    {
             await SignInManager.SignOutAsync();
         }
 

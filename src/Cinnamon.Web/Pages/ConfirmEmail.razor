@@ -1,10 +1,13 @@
 @page "/confirm-email"
 @layout LandingMainLayout
+
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core
 @using Cinnamon.Web.Components
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @inject NavigationManager NavigationManager
 @inject NavigationManager navigationManager
+@inject IVerifyEmail verifyEmailHandler;
 
 <Onboarding></Onboarding>
 <ModalFinishSignUp @ref="modal"></ModalFinishSignUp>
@@ -23,35 +26,51 @@
         var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
         var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
         var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
-        var emailSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("email", out var email);
+
         try
         {
-            if (userSuccess && tokenSuccess && emailSuccess)
+            if (userSuccess && tokenSuccess)
             {
-                var res = await CoreDI.CinnamonMakerService.VerifyEmail
-                .ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId, Email = email });
-                if (res.Succeeded)
+                // get waiting list if email already verified
+                var waitingRes = await CoreDI.DataStore.WaitList.GetWaitListByGuid(userId);
+                if(waitingRes == null)
                 {
-                    // Checking if user has completed basic details
-                    list = await CoreDI.DataStore.WaitList.GetAllAsync();
-                    var result = list.Where(p => p.Email == email).FirstOrDefault();
-                    if (string.IsNullOrEmpty(result.FirstName) || string.IsNullOrEmpty(result.LastName)
-                    || string.IsNullOrEmpty(result.Birthdate) || string.IsNullOrEmpty(result.Password))
+                    // invalid guid
+                    NavigationManager.NavigateTo("/onboarding");
+                }
+                // check if email already verified so that will not call verify email every request
+                if(!waitingRes.IsVerified)
+                {
+                    // need to verified
+                    var verifyRes = await verifyEmailHandler.ExecuteAsync(
+                            new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId });
+                    if(!verifyRes.Succeeded)
                     {
-                        //Open Modal Finish Signing up and auto populate email
-                        await modal.OpenModal(email);
+                        // invalid userid and token redirect to onboargin page
+                        NavigationManager.NavigateTo("/onboarding");
                     }
-                    else
+
+                    // proceed to populate customer information
+                    await modal.OpenModal(waitingRes.Email);
+                }
+                else 
+                {
+                    // email already verified. Need to check if customer info already populated. 
+                    // if not open modal information
+                    var customerRes = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(waitingRes.Email);
+                    if(customerRes == null)
                     {
-                        //Display the password input box to log in.
-                        await modalPassword.OpenModal(email);
+                        await modal.OpenModal(waitingRes.Email);
+                    }
+                    else 
+                    {
+                        await modalPassword.OpenModal(waitingRes.Email);
                     }
                 }
             }
         }
         catch (Exception e)
         {
-
             e.Message.ToString();
         }
     }
