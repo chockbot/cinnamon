@@ -22,6 +22,7 @@ namespace Cinnamon.Data
         public DbSet<ScheduleModel> Schedules { get; set; }
         public DbSet<SearchTagsModel> SearchTags { get; set; }
         public DbSet<UserListModel> UserList { get; set; }
+        public DbSet<CustomerModel> Customers { get; set; }
         #endregion
 
         #region Constructor
@@ -71,6 +72,8 @@ namespace Cinnamon.Data
             modelBuilder.Entity<ActivityImagesModels>().HasKey(b => new { b.Id });
             modelBuilder.Entity<UserListModel>().HasKey(x => new { x.Id});
 
+            modelBuilder.Entity<CustomerModel>().HasIndex(i => i.UserId);
+            modelBuilder.Entity<CustomerModel>().HasIndex(i => i.Email);
         }
         #endregion
 
@@ -91,18 +94,24 @@ namespace Cinnamon.Data
 
             AddedEntities.ForEach(E =>
             {
-                E.Property("CreatedOn").CurrentValue = CurrentTime;
-                //E.Property("CreatedBy").CurrentValue = UserID;
-                E.Property("ChangedOn").CurrentValue = CurrentTime;
-                //E.Property("ChangedBy").CurrentValue = UserID;
+                if(E.HasProperty("CreatedOn"))
+                {
+                    E.Property("CreatedOn").CurrentValue = CurrentTime;
+                }
+                if(E.HasProperty("ChangedOn"))
+                {
+                    E.Property("ChangedOn").CurrentValue = CurrentTime;
+                }
             });
 
             var EditedEntities = ChangeTracker.Entries().Where(E => E.State == EntityState.Modified).ToList();
 
             EditedEntities.ForEach(E =>
             {
-                E.Property("ChangedOn").CurrentValue = CurrentTime;
-                //E.Property("ChangedBy").CurrentValue = UserID;
+                if(E.HasProperty("ChangedOn"))
+                {
+                    E.Property("ChangedOn").CurrentValue = CurrentTime;
+                }
             });
 
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);

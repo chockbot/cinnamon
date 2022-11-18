@@ -5,6 +5,7 @@
 @using Cinnamon.Core.Enums
 @using Cinnamon.Web.Components
 @using System.Globalization
+@inject AuthenticationStateProvider AuthenticationStateProvider
 <PageTitle>@Resources.App.appName</PageTitle>
 
 <!--Section 1-->
@@ -25,7 +26,14 @@
         <span class="onboarding-header">@Resources.App.onboardingHeader</span>
         <span class="onboarding-subheader">@Resources.App.onboardingSubHeader</span>
         <div class="btn-cinnamon btn-cinnamon-section1">
-            <PrimaryButton ModalTarget="#loginModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Try Cinnamon Making" Size="1vw"/>
+            @if (AuthState.User.Identity.IsAuthenticated)
+            {
+                <PrimaryButton OnClick="NavigateToCreation" Text="Try Cinnamon Making" />
+            }
+            else
+            {
+                <PrimaryButton ModalTarget="#loginModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Try Cinnamon Making" />
+            }
         </div>
     </div>
 </div>
@@ -139,12 +147,25 @@
 <Footer></Footer>
 
 @code{
+    public AuthenticationState AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
        if(firstRender)
        {
            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Onboarding Page Loaded");
        }
+    }
+
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo("Creation");
     }
 }
 

@@ -3,91 +3,98 @@
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core
 @using Cinnamon.Web.Components
+@using Cinnamon.Core.Module.ActivityService.Handler;
+@using System.Security.Claims
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
+@inject IUpdateActivityHandler updateActivityHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<!-- Circles which indicates the steps of the form: -->
-<nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
-    <ol class="breadcrumb">
-        <li class="step breadcrumb-item @ActiveStep(CreationStep.Overview)">
-            <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.Overview))">
-                <span class="icon-step @ActiveStep(CreationStep.Overview)">1</span>
-                <span class="step-yellow">Overview</span>
-            </a>
-        </li>
-        <li class="step breadcrumb-item @ActiveStep(CreationStep.ExperienceCreation)" aria-current="page">
-             <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.ExperienceCreation))">
-                <span class="icon-step @ActiveStep(CreationStep.ExperienceCreation)">2</span>
-                <span class="step-yellow">Experience creation</span>
-            </a>
-        </li>
-        <li class="step breadcrumb-item @ActiveStep(CreationStep.ExperienceSetup)" aria-current="page">
-             <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.ExperienceSetup))">
-                <span class="icon-step @ActiveStep(CreationStep.ExperienceSetup)">3</span>
-                <span class="step-yellow">Setup</span>
-            </a>
-        </li>
-        <li class="step breadcrumb-item @ActiveStep(CreationStep.Publish)" aria-current="page">
-            <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.Publish))">
-                <span class="icon-step @ActiveStep(CreationStep.Publish)">4</span>
-                <span class="step-yellow">Publish</span>
-            </a>
-        </li>
-    </ol>
-</nav>
+@if(_viewModel != null)
+{
+    <!-- Circles which indicates the steps of the form: -->
+    <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="step breadcrumb-item @ActiveStep(CreationStep.Overview)">
+                <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.Overview))">
+                    <span class="icon-step @ActiveStep(CreationStep.Overview)">1</span>
+                    <span class="step-yellow">Overview</span>
+                </a>
+            </li>
+            <li class="step breadcrumb-item @ActiveStep(CreationStep.ExperienceCreation)" aria-current="page">
+                <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.ExperienceCreation))">
+                    <span class="icon-step @ActiveStep(CreationStep.ExperienceCreation)">2</span>
+                    <span class="step-yellow">Experience creation</span>
+                </a>
+            </li>
+            <li class="step breadcrumb-item @ActiveStep(CreationStep.ExperienceSetup)" aria-current="page">
+                <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.ExperienceSetup))">
+                    <span class="icon-step @ActiveStep(CreationStep.ExperienceSetup)">3</span>
+                    <span class="step-yellow">Setup</span>
+                </a>
+            </li>
+            <li class="step breadcrumb-item @ActiveStep(CreationStep.Publish)" aria-current="page">
+                <a class="button" @onclick="@(() => _viewModel.GotoStep(CreationStep.Publish))">
+                    <span class="icon-step @ActiveStep(CreationStep.Publish)">4</span>
+                    <span class="step-yellow">Publish</span>
+                </a>
+            </li>
+        </ol>
+    </nav>
 
-<div class="progress-container landing-sm shadow-sm">
-    <div class="progress mx-4">
-        <div id="myBar" class="progress-bar" role="progressbar" style="width: @PercentageCompletionString();" aria-valuenow="@_viewModel.PercentageCompletion" aria-valuemin="0" aria-valuemax="100">@PercentageCompletionString()</div>
-    </div>
-</div>
-
-<div id="regForm" class="shadow-lg">
-    <EditForm Model="@_viewModel.activity">
-    <!-- One "tab" for each step in the form: -->
-        <!--Overview-->
-    <div class="tab @ActiveTab(CreationStep.Overview)">
-        <Overview></Overview>
-    </div>
-
-        <!--Experience Creation-->
-    <div class="tab @ActiveTab(CreationStep.ExperienceCreation)">
-       <ExperienceCreation activityModel="_viewModel.activity" viewModel="_viewModel.ExperienceCreationViewModel"></ExperienceCreation>
-    </div>
-
-        <!--Set up-->
-    <div class="tab @ActiveTab(CreationStep.ExperienceSetup)">
-        <ExperienceSetup activityModel="_viewModel.activity" viewModel="_viewModel.ExperienceSetupViewModel"></ExperienceSetup>
-    </div>
-
-        <!--Publish-->
-    <div class="tab @ActiveTab(CreationStep.Publish)">
-        @*<Publish ViewModel="_viewModel"></Publish>*@
-            <div class="text-center publish-container">
-                <div class="w-100 publish-text">
-                    <h2 class="fw-bold">You're all set!!</h2>
-                    <p>Live your passion, share your knowledge and leave a mark in people's lives!</p>
-                    <div class="button-container" style="overflow:auto;">
-                        <div class="w-100">
-                            <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
-                            <button class="btn-primary" type="button" id="nextBtn" @onclick=OnClickNext>@MainButtonText()</button>
-                        </div>
-                    </div>
-           @*         <img id="publish-image" class="img-fluid w-100" style="margin-left:-50px;" src="images/publishimage_mobile.png" />*@
-                </div>
-            </div>
-    </div>
-    @if(_viewModel.currentStep != CreationStep.Publish)
-    {
-        <div class="button-container" style="overflow:auto;">
-          <div style="float:right;">
-            <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
-            <button class="btn-primary" type="button" id="nextBtn" @onclick=OnClickNext>@MainButtonText()</button>
-          </div>
+    <div class="progress-container landing-sm shadow-sm">
+        <div class="progress mx-4">
+            <div id="myBar" class="progress-bar" role="progressbar" style="width: @PercentageCompletionString();" aria-valuenow="@_viewModel.PercentageCompletion" aria-valuemin="0" aria-valuemax="100">@PercentageCompletionString()</div>
         </div>
-    }
-    </EditForm>
-</div>
+    </div>
+
+    <div id="regForm" class="shadow-lg">
+        <EditForm Model="@_viewModel.activity">
+        <!-- One "tab" for each step in the form: -->
+            <!--Overview-->
+        <div class="tab @ActiveTab(CreationStep.Overview)">
+            <Overview></Overview>
+        </div>
+
+            <!--Experience Creation-->
+        <div class="tab @ActiveTab(CreationStep.ExperienceCreation)">
+        <ExperienceCreation activityModel="_viewModel.activity" viewModel="_viewModel.ExperienceCreationViewModel"></ExperienceCreation>
+        </div>
+
+            <!--Set up-->
+        <div class="tab @ActiveTab(CreationStep.ExperienceSetup)">
+            <ExperienceSetup activityModel="_viewModel.activity" viewModel="_viewModel.ExperienceSetupViewModel"></ExperienceSetup>
+        </div>
+
+            <!--Publish-->
+        <div class="tab @ActiveTab(CreationStep.Publish)">
+            @*<Publish ViewModel="_viewModel"></Publish>*@
+                <div class="text-center publish-container">
+                    <div class="w-100 publish-text">
+                        <h2 class="fw-bold">You're all set!!</h2>
+                        <p>Live your passion, share your knowledge and leave a mark in people's lives!</p>
+                        <div class="button-container" style="overflow:auto;">
+                            <div class="w-100">
+                                <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
+                                <button class="btn-primary" type="button" id="nextBtn" @onclick=OnClickNext>@MainButtonText()</button>
+                            </div>
+                        </div>
+            @*         <img id="publish-image" class="img-fluid w-100" style="margin-left:-50px;" src="images/publishimage_mobile.png" />*@
+                    </div>
+                </div>
+        </div>
+        @if(_viewModel.currentStep != CreationStep.Publish)
+        {
+            <div class="button-container" style="overflow:auto;">
+            <div style="float:right;">
+                <button type="button" id="prevBtn" style="border:none;background-color:transparent" @onclick=_viewModel.PrevStep>Back</button>
+                <button class="btn-primary" type="button" id="nextBtn" @onclick=OnClickNext>@MainButtonText()</button>
+            </div>
+            </div>
+        }
+        </EditForm>
+    </div>
+}
 
 @if(ShowErrorMessage)
 {
@@ -106,15 +113,20 @@
 
 @code {
     IJSObjectReference module;
-    private CreationViewModel _viewModel = new CreationViewModel();
+    private CreationViewModel _viewModel;
     public bool ShowErrorMessage { get; set; }
     public bool ShowSuccessMessage { get; set; } 
-
+    public AuthenticationState AuthState { get; set; }
+    public List<UserListModel> UserList = new List<UserListModel>();
+    public UserListModel UserModel = new UserListModel();
     protected override async Task OnInitializedAsync()
     {
+        _viewModel = new CreationViewModel(updateActivityHandler);
         var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
         var actionSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("action", out var action);
         var activityIdSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityid", out var activityId);
+
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
         if(actionSuccess && activityIdSuccess && action.ToString().ToLower() == "update")
         {
@@ -127,6 +139,12 @@
                     _viewModel.UserActionType = Core.Enums.UserActionType.Update;
                 }
             }
+        }
+
+        if (AuthState != null)
+        {
+            UserList = await CoreDI.DataStore.User.GetAllAsync();
+            UserModel = UserList?.FirstOrDefault(x => x.Email == AuthState.User.FindFirstValue(ClaimTypes.Email));
         }
     }
 
@@ -168,6 +186,7 @@
     {
         if (_viewModel.IsComplete)
         {
+            _viewModel.UserList = UserModel;
             var res = Task.Run(() => _viewModel.SaveActivity(_viewModel.activity)).Result;
             if (res)
             {

@@ -5,11 +5,13 @@ namespace Cinnamon.Core
 {
     public class UserListModel : BaseModel
     {
+        [Key]
         public int Id { get; set; }
+        [Key]
         [RegularExpression(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", ErrorMessage = "The Field Email contains invalid characters.")]
         public string Email { get; set; }
         [Required]
-        public UserType Type { get; set; } = UserType.Maker;
+        public UserType Type { get; set; } = UserType.Customer;
         [Required(ErrorMessage="Please enter your First Name")]
         public string FirstName { get; set; }
         [Required(ErrorMessage = "Please enter your Last Name")]
@@ -23,5 +25,7 @@ namespace Cinnamon.Core
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; }
         public bool AcceptFlag { get; set; } = false;
+        public bool ExternalLogin { get; set; }
+        public bool isMaker { get; set; }
     }
 }
