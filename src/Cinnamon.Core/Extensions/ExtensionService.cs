@@ -23,6 +23,7 @@ public static class ExtensionService
     {
         services.AddTransient<IJsonSerializationService, DefaultJsonSerializationService>();
         services.AddTransient<IUploadImages, UploadImagesHandler>();
+        services.AddTransient<IDeleteImage, DeleteImageHandler>();
         services.AddTransient<ISendMailHandler, SendMailHandler>();
         services.AddTransient<IEmailVerification, EmailVerificationHandler>();
         services.AddTransient<IWelcomeNotification, WelcomeNotificationHandler>();
