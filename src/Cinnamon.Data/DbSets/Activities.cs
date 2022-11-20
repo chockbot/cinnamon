@@ -10,5 +10,8 @@ namespace Cinnamon.Data
 
         public async Task<ActivityModel> GetActivityByIdAsync(int id)
             => await mDbContext.Activities.FirstOrDefaultAsync(i => i.Id == id);
+
+        public async Task<IList<ActivityModel>> GetActivityByCreatedId(int id)
+            => await mDbContext.Activities.Where(i => i.CreatedBy == id).ToListAsync();
     }
 }

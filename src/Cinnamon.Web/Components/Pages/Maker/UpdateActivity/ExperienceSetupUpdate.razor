@@ -270,6 +270,11 @@
                 {
                     await file.OpenReadStream(maxFileSize).CopyToAsync(ms);
                     selectedImage.ImageData = ms.ToArray();
+
+                    // create unique filename
+                    var guid = Guid.NewGuid().ToString();
+                    var extenstion = file.ContentType.Split("/")[1];
+                    selectedImage.ImageSrc = $"{guid}.{extenstion}";
                 }
                 selectedImage.HasError = false;
                 currentImageIndex++;
