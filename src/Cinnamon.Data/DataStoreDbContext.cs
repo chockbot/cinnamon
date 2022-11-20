@@ -22,6 +22,8 @@ namespace Cinnamon.Data
         public DbSet<ScheduleModel> Schedules { get; set; }
         public DbSet<SearchTagsModel> SearchTags { get; set; }
         public DbSet<CustomerModel> Customers { get; set; }
+
+        public DbSet<ProfileModel> Profile { get; set; }
         #endregion
 
         #region Constructor
