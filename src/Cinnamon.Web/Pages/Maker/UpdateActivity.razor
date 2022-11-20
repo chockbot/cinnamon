@@ -65,7 +65,7 @@
                         <button type="button" id="prevBtn" @onclick="() => OnBackClick()" style="border:none;background-color:transparent">Back</button>
                     }
                     <button class="btn-primary" @onclick="() => OnNextClick()" type="button" id="nextBtn">
-                        @(currentIndex == 2 ? "Submit" : "Next")
+                        @(currentIndex == 2 ? "Submit" : "Continue")
                     </button>
                 </div>
             </div>
@@ -202,7 +202,7 @@
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
-        if(currentIndex == 2)
+        if(index == 0 && currentIndex == 2)
         {
             // popuplate images
             var images = new List<Tuple<int,byte[],string>>();
