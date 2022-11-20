@@ -2,6 +2,7 @@
 @page "/Creation"
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core
+@using Cinnamon.Core.Models;
 @using Cinnamon.Web.Components
 @using Cinnamon.Core.Module.ActivityService.Handler;
 @using System.Security.Claims
@@ -117,8 +118,8 @@
     public bool ShowErrorMessage { get; set; }
     public bool ShowSuccessMessage { get; set; } 
     public AuthenticationState AuthState { get; set; }
-    public List<UserListModel> UserList = new List<UserListModel>();
-    public UserListModel UserModel = new UserListModel();
+    public List<CustomerModel> UserList = new List<CustomerModel>();
+    public CustomerModel UserModel = new CustomerModel();
     protected override async Task OnInitializedAsync()
     {
         _viewModel = new CreationViewModel(updateActivityHandler);
@@ -143,7 +144,7 @@
 
         if (AuthState != null)
         {
-            UserList = await CoreDI.DataStore.User.GetAllAsync();
+            UserList = await CoreDI.DataStore.Customers.GetAllAsync();
             UserModel = UserList?.FirstOrDefault(x => x.Email == AuthState.User.FindFirstValue(ClaimTypes.Email));
         }
     }
