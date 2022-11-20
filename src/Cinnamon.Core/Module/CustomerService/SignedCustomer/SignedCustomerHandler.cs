@@ -33,7 +33,7 @@ public class SignedCustomerHandler : ISignedCustomer
         try 
         {
             // dont have current user login
-            if(httpContext.HttpContext.User != null || !httpContext.HttpContext.User.Identity.IsAuthenticated)
+            if(httpContext.HttpContext.User == null || (!httpContext.HttpContext.User.Identity.IsAuthenticated))
             {
                 return AppResult<CurrentLoginResult>.CreateFailed(new ApplicationException("Currently don't have login user"), "Currently don't have login user");
             }

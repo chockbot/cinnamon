@@ -6,8 +6,10 @@
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
 @using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+@using Cinnamon.Core.Module.CustomerService.Handler;
 @inject NavigationManager NavigationManager;
 @inject ISubmitUpdatedActivity submitUpdatedActivityHandler;
+@inject ISignedCustomer signedCustomer;
 
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -89,6 +91,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin {});
+        if(!currentCustomer.Succeeded)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+        }
+
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var res = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityId", out var id);
 
@@ -99,6 +108,10 @@
 
         var activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(activityId);
         if(activity == null)
+            NavigationManager.NavigateTo("/maker/dashboard");
+        
+        // check activity is related to signed in customer
+        if(currentCustomer.Result.Customer.Id != activity.CreatedBy)
             NavigationManager.NavigateTo("/maker/dashboard");
 
         var experienceTypes = await CoreDI.DataStore.ExperienceTypes.GetAllAsync();
