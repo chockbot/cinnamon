@@ -204,12 +204,22 @@
         // for submit action
         if(currentIndex == 2)
         {
+            // popuplate images
+            var images = new List<Tuple<int,byte[],string>>();
+            var firstImage = ExperienceUpdateModel.Images.FirstImage;
+            var secondImage = ExperienceUpdateModel.Images.SecondImage;
+            var thridImage = ExperienceUpdateModel.Images.ThridImage;
+
+            images.Add(new Tuple<int, byte[], string>(firstImage.Id, firstImage.ImageData, firstImage.ImageSrc));
+            images.Add(new Tuple<int, byte[], string>(secondImage.Id, secondImage.ImageData, secondImage.ImageSrc));
+            images.Add(new Tuple<int, byte[], string>(thridImage.Id, thridImage.ImageData, thridImage.ImageSrc));
+
             var submit = await submitUpdatedActivityHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitUpdatedActivity 
                 {
                     Activity = ExperienceUpdateModel.Activity,
                     SearchTags = ExperienceUpdateModel.SearchTags
                         .Select(i => new Tuple<int,string>(i.Key,i.Value)).ToList(),
-                    Images = new List<Tuple<int,byte[],string>>()
+                    Images = images
                 });
             
             if(!submit.Succeeded)
