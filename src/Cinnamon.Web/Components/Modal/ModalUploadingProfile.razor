@@ -9,7 +9,9 @@
 @using Microsoft.Extensions.Logging
 @using Cinnamon.Core.Module.UploadService.Handler
 @inject IWebHostEnvironment Environment
-@inject IUploadImages uploadImageHandler;
+@inject IUploadImages uploadImageHandler
+@using Microsoft.WindowsAzure.Storage
+@using Microsoft.WindowsAzure.Storage.Blob
 
 <div class="modal @ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog">
@@ -53,6 +55,8 @@
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
 @code {
+    private readonly IConfiguration configuration;
+
     private List<IBrowserFile> loadedFiles = new();
 
     UploadProfileViewModel viewModel = new UploadProfileViewModel();
@@ -71,6 +75,10 @@
 
     public string profilepicture { get; set; } = "images/Profile/user.png";
 
+    public ModalUploadingProfile(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
     public async Task OpenModal()
     {
         ModalDisplay    = "block;";
@@ -95,6 +103,9 @@
     }
     private void DeleteProfile()
     {
+        string[] filepath = profilepicture.Split("/");
+        profilepicture = filepath[4];
+        DeleteBlob(profilepicture, "upload-profile-picture");
         profilepicture = "images/Profile/user.png";
     }
     private async Task LoadImage(InputFileChangeEventArgs e)
@@ -113,18 +124,28 @@
             try
             {
                 loadedFiles.Add(file);
-                await using FileStream fs = new FileStream(Path.Combine(path, fileName), FileMode.Create);
-                await file.OpenReadStream(maxFileSize).CopyToAsync(fs);
+                MemoryStream ms = new MemoryStream();
+                await file.OpenReadStream(maxFileSize).CopyToAsync(ms);
+                byte[] imageByte = ms.ToArray();
 
-                profilepicture          = "images/ProfilePicture/"+file.Name;
-                viewModel.isClickButton = false;
-                //byte[] imageByte= new byte[fs.Length];
-
-                //Upload to Azure Blob
-                //var upload = await uploadImageHandler.ExecuteAsync(
-                //        new Core.Module.UploadService.Interactors.ImageUpload
-                //            { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name)});
+                // Upload to Azure Blob
+                var upload = await uploadImageHandler.ExecuteAsync(
+                        new Core.Module.UploadService.Interactors.ImageUpload
+                        { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name) } });
+                //Display Image
+                if(upload.Succeeded)
+                {
+                    if (upload.Result!= null)
+                    {
+                        foreach (var imagePath in upload.Result.ImagesPath)
+                        {
+                            profilepicture = imagePath;
+                        }
+                    }
                 }
+                //Save Image to DB
+
+            }
                 catch (Exception ex)
                 {
                     ResultModel.error(ex.Message);
@@ -133,4 +154,14 @@
 
             isLoading = false;
         }
+    public void DeleteBlob(string filename, string container1)
+    {
+        var connectionString            = configuration.GetConnectionString("AzureConnectionString");
+        CloudStorageAccount account     = CloudStorageAccount.Parse(connectionString);
+        CloudBlobClient blobClient      = account.CreateCloudBlobClient();
+        CloudBlobContainer container    = blobClient.GetContainerReference(container1);
+        var blockBlob                   = container.GetBlockBlobReference(filename);
+        blockBlob.DeleteIfExistsAsync();
     }
+}
+    
