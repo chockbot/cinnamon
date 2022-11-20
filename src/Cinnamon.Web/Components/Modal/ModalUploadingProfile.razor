@@ -5,15 +5,12 @@
 @using Cinnamon.Data
 @using System
 @using System.IO
-@using Microsoft.AspNetCore.Hosting
-@using Microsoft.Extensions.Logging
 @using Cinnamon.Core.Module.UploadService.Handler
 @inject IWebHostEnvironment Environment
 @inject IUploadImages uploadImageHandler
-@using Microsoft.WindowsAzure.Storage
-@using Microsoft.WindowsAzure.Storage.Blob
+@inject IDeleteImage deleteImageHandler
 
-<div class="modal @ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
+<div class="modal @viewModel.ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -31,7 +28,7 @@
                        </div>
                        <div class="figure-profile">
                             <Figure Border="Border.RoundedCircle">
-                                <CardImage Source="@profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                <CardImage Source="@viewModel.profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                             </Figure>
                             <div class="round">
                                 <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadImage" />
@@ -50,7 +47,8 @@
         </div>
     </div>
 </div>
-@if (ShowBackdrop)
+<!--Confimation Popup-->
+@if (viewModel.ShowBackdrop)
 {
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
@@ -61,38 +59,6 @@
 
     UploadProfileViewModel viewModel = new UploadProfileViewModel();
 
-    private long maxFileSize = 10000000;
-
-    private int maxAllowedFiles = 3;
-
-    private bool isLoading;
-
-    public string ModalDisplay = "none;";
-
-    public string ModalClass = "";
-
-    public bool ShowBackdrop = false;
-
-    public string profilepicture { get; set; } = "images/Profile/user.png";
-
-    public ModalUploadingProfile(IConfiguration configuration)
-    {
-        this.configuration = configuration;
-    }
-    public async Task OpenModal()
-    {
-        ModalDisplay    = "block;";
-        ModalClass      = "show";
-        ShowBackdrop    = true;
-        StateHasChanged();
-    }
-    public async Task CloseModal()
-    {
-        ModalClass      = "";
-        ModalDisplay    = "none;";
-        ShowBackdrop    = false;
-        StateHasChanged();
-    }
     public bool ButtonIsClicked()
     {
         return viewModel.isClickButton ? true : false;
@@ -101,16 +67,15 @@
     {
         return viewModel.isClickButton ? "visible" : "hidden";
     }
-    private void DeleteProfile()
+    private async Task DeleteProfile()
     {
-        string[] filepath = profilepicture.Split("/");
-        profilepicture = filepath[4];
-        DeleteBlob(profilepicture, "upload-profile-picture");
-        profilepicture = "images/Profile/user.png";
+        string[] filepath           = viewModel.profilepicture.Split("/");
+        viewModel.profilepicture    = filepath[4];
+        await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
     }
     private async Task LoadImage(InputFileChangeEventArgs e)
     {
-        isLoading = true;
+        viewModel.isLoading = true;
         loadedFiles.Clear();
 
         string path = Path.Combine(Environment.WebRootPath, "Images\\ProfilePicture");
@@ -118,14 +83,14 @@
         {
             Directory.CreateDirectory(path);
         }
-        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        foreach (var file in e.GetMultipleFiles(viewModel.maxAllowedFiles))
         {
             string fileName = Path.GetFileName(file.Name);
             try
             {
                 loadedFiles.Add(file);
                 MemoryStream ms = new MemoryStream();
-                await file.OpenReadStream(maxFileSize).CopyToAsync(ms);
+                await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
                 byte[] imageByte = ms.ToArray();
 
                 // Upload to Azure Blob
@@ -139,29 +104,55 @@
                     {
                         foreach (var imagePath in upload.Result.ImagesPath)
                         {
-                            profilepicture = imagePath;
+                            viewModel.profilepicture = imagePath;
+                            viewModel.isClickButton  = false;
                         }
                     }
                 }
                 //Save Image to DB
 
             }
-                catch (Exception ex)
-                {
-                    ResultModel.error(ex.Message);
-                }
+            catch (Exception ex)
+            {
+                ResultModel.error(ex.Message);
             }
-
-            isLoading = false;
         }
-    public void DeleteBlob(string filename, string container1)
+
+        viewModel.isLoading = false;
+    }
+    private async Task DeleteBlob(string filename, string container1)
     {
-        var connectionString            = configuration.GetConnectionString("AzureConnectionString");
-        CloudStorageAccount account     = CloudStorageAccount.Parse(connectionString);
-        CloudBlobClient blobClient      = account.CreateCloudBlobClient();
-        CloudBlobContainer container    = blobClient.GetContainerReference(container1);
-        var blockBlob                   = container.GetBlockBlobReference(filename);
-        blockBlob.DeleteIfExistsAsync();
+        // Upload to Azure Blob
+        var result = await deleteImageHandler.ExecuteAsync(
+                new Core.Module.UploadService.Interactors.DeleteImage
+                { Container = "upload-profile-picture", FileName = filename });
+
+        if(result.Succeeded)
+        {
+            viewModel.profilepicture = "images/Profile/user.png";
+        }
+        else
+        {
+            ResultModel.error("Error occurred while deleting image");
+        }
+    }
+    private async Task Upload()
+    {
+
+    }
+    public async Task OpenModal()
+    {
+        viewModel.ModalDisplay = "block;";
+        viewModel.ModalClass   = "show";
+        viewModel.ShowBackdrop = true;
+        StateHasChanged();
+    }
+    public async Task CloseModal()
+    {
+        viewModel.ModalClass   = "";
+        viewModel.ModalDisplay = "none;";
+        viewModel.ShowBackdrop = false;
+        StateHasChanged();
     }
 }
     
