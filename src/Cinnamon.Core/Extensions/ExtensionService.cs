@@ -15,6 +15,9 @@ using Cinnamon.Core.Module.UploadService.Handler.AzureBlob;
 using Cinnamon.Core.Module.CinnamonMakerService.Handler.Activity;
 using Cinnamon.Core.Services;
 using Cinnamon.Core.Services.DefaultJsonSerialization;
+using Cinnamon.Core.Module.CustomerService.Handler;
+using Cinnamon.Core.Module.CustomerService.Handler.SignedCustomer;
+
 namespace Cinnamon.Core.Extensions;
 
 public static class ExtensionService
@@ -33,6 +36,7 @@ public static class ExtensionService
         services.AddTransient<ISubmitUpdatedActivity, SubmitUpdatedActivityHandler>();
         services.AddTransient<IPublishActivityHandler, PublishActivityHandler>();
         services.AddTransient<IUpdateActivityHandler, UpdateActivityHandler>();
+        services.AddTransient<ISignedCustomer, SignedCustomerHandler>();
 
         return services;
     } 
