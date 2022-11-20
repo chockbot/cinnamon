@@ -23,6 +23,8 @@ namespace Cinnamon.Data
         public DbSet<SearchTagsModel> SearchTags { get; set; }
         public DbSet<UserListModel> UserList { get; set; }
         public DbSet<CustomerModel> Customers { get; set; }
+
+        public DbSet<ProfileModel> Profile { get; set; }
         #endregion
 
         #region Constructor
