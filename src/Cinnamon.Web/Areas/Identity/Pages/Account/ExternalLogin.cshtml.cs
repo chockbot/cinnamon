@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel;
 using Cinnamon.Core;
+using Cinnamon.Core.Models;
 using Cinnamon.Core.Enums;
 
 namespace Cinnamon.Web.Areas.Identity.Pages.Account
@@ -128,7 +129,7 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
             }
 
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await CoreDI.DataStore.User.GetAllAsync();
+            var result = await CoreDI.DataStore.Customers.GetAllAsync();
             var userData = result.Where(x => x.Email.Equals(info.Principal.FindFirstValue(ClaimTypes.Email).ToString())).FirstOrDefault();
             if (userData != null)
             {
@@ -183,7 +184,7 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
 
                 try
                 {
-                    var result = await CoreDI.DataStore.User.SaveDataAsync(new UserListModel() { FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, Type = Core.Enums.UserType.Customer, Password = info.LoginProvider, ConfirmPassword = info.LoginProvider, ExternalLogin = true, isMaker = Input.UserType == UserType.Maker ? true:false });
+                    var result = await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true:false });
                     var user = CreateUser();
 
                     await _emailStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);

@@ -2,6 +2,7 @@
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Cinnamon.Core.Module.ActivityService.Handler;
+using Cinnamon.Core.Models;
 
 namespace Cinnamon.Core
 {
@@ -22,7 +23,7 @@ namespace Cinnamon.Core
             CreationStep.Publish
         };
 
-        public UserListModel UserList { get; set; }
+        public CustomerModel  UserList { get; set; }
         public Cinnamon.Core.Enums.UserActionType UserActionType { get; set; } = Enums.UserActionType.Create;
 
         private int _currentStepIndex = 0;
@@ -117,8 +118,8 @@ namespace Cinnamon.Core
                     var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
                     if (res.Type == MessageType.Success)
                     {
-                        UserList.isMaker = true;
-                        await CoreDI.DataStore.User.SaveDataAsync(UserList);
+                        UserList.IsMaker = true;
+                        await CoreDI.DataStore.Customers.SaveDataAsync(UserList);
                         return true;
                     }
                 }

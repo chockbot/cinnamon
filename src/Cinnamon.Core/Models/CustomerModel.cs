@@ -12,4 +12,5 @@ public class CustomerModel : BaseModel
     public bool IsMaker { get; set; }
     public string Birthdate { get; set; }
     public bool AcceptFlag { get; set; }
+    public bool ExternalLogin { get; set; }
 }
