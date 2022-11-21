@@ -52,10 +52,13 @@
             NavigationManager.NavigateTo("explore");
         }
 
-        var customer = currentCustomer.Result.Customer;
+        if(currentCustomer.Result != null)
+        {
+            var customer = currentCustomer.Result.Customer;
 
-        activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
-        activeActivityCount = activities.Where(i => i.IsPublished).Count();
+            activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
+            activeActivityCount = activities.Where(i => i.IsPublished).Count(); 
+        }
     }
 
     private void ActiveCountChanged(int count)
