@@ -9,10 +9,13 @@ namespace Cinnamon.Core.ViewModels
         // initiate customer and set default birthdate
         public CustomerModel Customer { get; set; } = new CustomerModel {Birthdate = DateTime.Now.AddYears(-18).ToString()};
         public WaitListModel waitListModel = new WaitListModel();
-
+        public string ModalDisplay { get; set; } = "none;";
+        public string ModalClass { get; set; } = "";
+        public string imagePath { get; set; } = "images\\Profile\\user.png";
+        public string ErrorText { get; set; }
+        public bool ShowBackdrop { get; set; } = false;
         public bool isSubmit { get; set; } = false;
         public bool isClickButton { get; set; } = false;
-
         public bool HasError { get; set; } = false;
 
         public bool isValid(string email)

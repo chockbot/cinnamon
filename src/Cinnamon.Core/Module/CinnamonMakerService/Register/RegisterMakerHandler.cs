@@ -65,13 +65,15 @@ public class RegisterMakerHandler : IRegisterMaker
 
             var customer = new CustomerModel
             {
-                AcceptFlag = args.AcceptFlag,
-                Birthdate = args.Birthdate,
-                Email = args.Email,
-                FirstName = args.FirstName,
-                LastName = args.LastName,
-                IsMaker = false,
-                UserId = userId
+                AcceptFlag      = args.AcceptFlag,
+                Birthdate       = args.Birthdate,
+                Email           = args.Email,
+                FirstName       = args.FirstName,
+                LastName        = args.LastName,
+                IsMaker         = false,
+                UserId          = userId,
+                ProfilePath     = args.ProfilePath
+                
             };
 
             var customerRes = await CoreDI.DataStore.Customers.SaveDataAsync(customer);

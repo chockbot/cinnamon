@@ -11,4 +11,5 @@ public class RegisterMaker : IInteractor
     public string LastName { get; set; }
     public string Birthdate { get; set; }
     public bool AcceptFlag { get; set; }
+    public string ProfilePath { get; set; }
 }

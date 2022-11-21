@@ -13,4 +13,5 @@ public class CustomerModel : BaseModel
     public string Birthdate { get; set; }
     public bool AcceptFlag { get; set; }
     public bool ExternalLogin { get; set; }
+    public string ProfilePath { get; set; }
 }
