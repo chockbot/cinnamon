@@ -5,10 +5,17 @@
         <Row>
             <Column ColumnSize="ColumnSize.Is6.OnDesktop">
                 <p class="title mb-1">Legal Name</p>
-                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                    <span class="text-capitalize">dexter echalico</span>
-                    <span class="edit">Edit</span>
-                </Div>
+                @if(!isEditLegalName)
+                {
+                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        <span class="text-capitalize">dexter echalico</span>
+                        <span class="edit">Edit</span>
+                    </Div>
+                }
+                else
+                {
+
+                }
             </Column>
         </Row>
     </div>
@@ -86,6 +93,8 @@
 @code 
 {
     private IList<Child> children = new List<Child>();
+    
+    private bool isEditLegalName = false;
     
     protected override void OnInitialized()
     {

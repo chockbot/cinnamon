@@ -12,6 +12,9 @@ public class Customer : BaseDbSet<CustomerModel>, ICustomer
      public async Task<CustomerModel> GetCustomerByEmailAsync(string email)
          => await mDbContext.Customers.FirstOrDefaultAsync(i => i.Email == email);
 
-    public async Task<CustomerModel> GetCustomerByUserId(string userId)
+     public async Task<CustomerModel> GetCustomerByUserId(string userId)
          => await mDbContext.Customers.FirstOrDefaultAsync(i => i.UserId == userId);
+
+    public async Task<CustomerModel> GetCustomerById(int id)
+         => await mDbContext.Customers.FirstOrDefaultAsync(i => i.Id == id);
 }

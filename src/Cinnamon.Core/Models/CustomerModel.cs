@@ -14,4 +14,7 @@ public class CustomerModel : BaseModel
     public bool AcceptFlag { get; set; }
     public bool ExternalLogin { get; set; }
     public string ProfilePath { get; set; }
+    public bool IsVerified { get; set; }
+    public string DateJoined { get; set; }
+    public string About { get; set; }
 }
