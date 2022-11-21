@@ -18,10 +18,6 @@ public class Onboarding : PageModel
 
     public async Task<IActionResult> OnGetAsync()
     {
-        if(User.Identity.IsAuthenticated)
-        {
-            return Redirect("/explore");
-        }
         return Page();
     }
 
@@ -32,7 +28,9 @@ public class Onboarding : PageModel
             var login = await signInManager.PasswordSignInAsync(Input.Email,Input.Password, true, false);
             if(login.Succeeded)
             {
-                return Redirect("/explore");
+                return Redirect("/Creation");
+                
+                
             } else {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             }
