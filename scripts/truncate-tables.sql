@@ -1,0 +1,15 @@
+TRUNCATE TABLE "WaitLists";
+TRUNCATE TABLE "SearchTags";
+TRUNCATE TABLE "Schedules";
+TRUNCATE TABLE "Descriptions";
+TRUNCATE TABLE "Addresses";
+TRUNCATE TABLE "ActivityImages";
+TRUNCATE TABLE "Customers";
+TRUNCATE TABLE "Activities" CASCADE;
+TRUNCATE TABLE "AspNetRoleClaims";
+TRUNCATE TABLE "AspNetUserClaims";
+TRUNCATE TABLE "AspNetUserLogins";
+TRUNCATE TABLE "AspNetUserRoles";
+TRUNCATE TABLE "AspNetUserTokens";
+TRUNCATE TABLE "AspNetRoles" CASCADE;
+TRUNCATE TABLE "AspNetUsers" CASCADE;
