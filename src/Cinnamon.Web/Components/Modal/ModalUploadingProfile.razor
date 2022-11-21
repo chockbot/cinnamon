@@ -11,46 +11,46 @@
 @inject IUploadImages uploadImageHandler
 @inject IDeleteImage deleteImageHandler
 
-<div class="modal @viewModel.ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center">Profile Photo</p>
-                <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
-            </div>
-            <div class="modal-body">
-                <p class="top-text">People can get to know you better if your profile shows your face.</p>
-                <div class="col-12-lg d-flex justify-content-center">
-                    <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is8.OnMobile" TextAlignment="TextAlignment.Center" >
-                        <div class="btn-delete">
-                            <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())">
-                                <i class="fa fa-trash" style="color:black;"></i>
-                            </button>
-                       </div>
-                       <div class="figure-profile">
-                            <Figure Border="Border.RoundedCircle">
-                                <CardImage Source="@viewModel.profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
-                            </Figure>
-                            <div class="round">
-                                <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadImage" />
-                                <i class="fa fa-camera" style="color: black;"></i>
+@if (!viewModel.isSubmit)
+{
+<EditForm Model=viewModel OnValidSubmit="Upload">
+    <DataAnnotationsValidator />
+    <div class="modal @viewModel.ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center">Profile Photo</p>
+                    <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+                </div>
+                <div class="modal-body">
+                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                    <div class="col-12-lg d-flex justify-content-center">
+                        <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is8.OnMobile" TextAlignment="TextAlignment.Center" >
+                            <div class="btn-delete">
+                                <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
+                                    <i class="fa fa-trash" style="color:black;"></i>
+                                </button>
                             </div>
-                       </div>
-                    </Card>
-                </div>
-                <Label hidden="true">@viewModel.UserEmail</Label>
-                <div class="btn-upload">
-                    <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" 
-                    Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18" Style="" 
-                    Disabled="ButtonIsClicked()" Clicked="Upload">
-                        Upload
-                    </Button>
+                            <div class="figure-profile">
+                                <Figure Border="Border.RoundedCircle">
+                                    <CardImage Source="@viewModel.profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                </Figure>
+                                <div class="round">
+                                    <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadImage" />
+                                    <i class="fa fa-camera" style="color: black;"></i>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                    <div class="btn-upload">
+                        <SignupButton id="update-profile" Width="100%" Text="Upload" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" Height="0.5vw" OnClick="@Upload"/>
+                    </div>
                 </div>
             </div>
-
         </div>
     </div>
-</div>
+</EditForm>
+}
 <!--Confimation Popup-->
 @if (viewModel.ShowBackdrop)
 {
@@ -71,7 +71,7 @@
     }
     public string showSpinner()
     {
-        return viewModel.isClickButton ? "visible" : "hidden";
+        return viewModel.isSpinnerShow ? "visible" : "hidden";
     }
     private async Task DeleteProfile()
     {
@@ -81,7 +81,8 @@
     }
     private async Task LoadImage(InputFileChangeEventArgs e)
     {
-        viewModel.isLoading = true;
+        viewModel.isLoading     = true;
+        viewModel.isClickButton = true;
         loadedFiles.Clear();
 
         string path = Path.Combine(Environment.WebRootPath, "Images\\ProfilePicture");
@@ -133,7 +134,8 @@
 
         if(result.Succeeded)
         {
-            viewModel.profilepicture = "images/Profile/user.png";
+            customer = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
+            viewModel.profilepicture = customer.ProfilePath;
         }
         else
         {
@@ -143,24 +145,27 @@
     private async Task Upload()
     {
         // Check if Customer exist
+        viewModel.isSpinnerShow = true;
         var res = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
         if (res != null)
         {
-            res.ProfilePath = viewModel.profilepicture;
-            var update      = await CoreDI.DataStore.Customers.SaveDataAsync(res);
+            res.ProfilePath         = viewModel.profilepicture;
+            var update              = await CoreDI.DataStore.Customers.SaveDataAsync(res);
             viewModel.isClickButton = false;
+            viewModel.isSpinnerShow = false;
         }
         else
         {
             ResultModel.error("Customer not exist!");
         }
     }
-    public async Task OpenModal(string email)
+    public async Task OpenModal(string email, string path)
     {
-        viewModel.ModalDisplay = "block;";
-        viewModel.ModalClass   = "show";
-        viewModel.ShowBackdrop = true;
-        viewModel.UserEmail    = email;
+        viewModel.ModalDisplay   = "block;";
+        viewModel.ModalClass     = "show";
+        viewModel.ShowBackdrop   = true;
+        viewModel.UserEmail      = email;
+        viewModel.profilepicture = path;
         StateHasChanged();
     }
     public async Task CloseModal()

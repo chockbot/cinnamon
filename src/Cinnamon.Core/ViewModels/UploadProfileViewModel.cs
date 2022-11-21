@@ -11,9 +11,11 @@ namespace Cinnamon.Core
         public int      maxAllowedFiles{ get; set; }     = 1;
         public string   ModalDisplay   { get; set; }     = "none;";
         public string   ModalClass     { get; set; }     = "";
-        public string   profilepicture { get; set; }     = "images/Profile/user.png";
+        public string   profilepicture { get; set; }
+        public bool     isSubmit       { get; set; }     = false;
         public bool     ShowBackdrop   { get; set; }     = false;
-        public bool     isClickButton  { get; set; }     = false;
+        public bool     isClickButton  { get; set; }     = true;
+        public bool     isSpinnerShow  { get; set; }     = false;
         public bool     isLoading      { get; set; }     = false;
         public string   UserEmail      { get; set; }
     }

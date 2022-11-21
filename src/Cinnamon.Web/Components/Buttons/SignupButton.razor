@@ -1,6 +1,6 @@
 ﻿@namespace Cinnamon.Web.Components
 
-<button class="btn-primary rounded-pill shadow-sm text-center" id="@Id" type="submit" style="width:@Width;white-space:nowrap;padding-right:50px;" data-bs-toggle=@ModalBsToggle data-bs-target=@ModalTarget @onclick="OnClick" disabled="@DisableButton">
+<button class="btn-primary rounded-pill shadow-sm text-center" id="@Id" type="submit" style="width:@Width;height:@Height;white-space:nowrap;padding-right:50px;" data-bs-toggle=@ModalBsToggle data-bs-target=@ModalTarget @onclick="OnClick" disabled="@DisableButton">
     <i id="spinner-loading" class="fa fa-spinner fa-spin" style="visibility:@Visibility"></i> @Text
 </button>
 
@@ -15,6 +15,8 @@
     public string ModalBsToggle { get; set; } = "";
     [Parameter]
     public string Width { get; set; } = "50%";
+    [Parameter]
+    public string Height { get; set; } = "3vw";
     [Parameter]
     public string Id { get; set; }
     [Parameter]
