@@ -10,6 +10,7 @@
 @inject NavigationManager NavigationManager;
 @inject ISubmitUpdatedActivity submitUpdatedActivityHandler;
 @inject ISignedCustomer signedCustomer;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -91,7 +92,9 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin {});
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin {User = user});
         if(!currentCustomer.Succeeded)
         {
             // don't have current user login
