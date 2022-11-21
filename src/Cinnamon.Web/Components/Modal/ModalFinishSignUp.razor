@@ -14,7 +14,7 @@
 @inject IRegisterMaker registerMakerHandler;
 @inject UserManager<IdentityUser> userManager;
 
-<div class="modal @ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
+<div class="modal @viewModel.ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
     <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -58,7 +58,7 @@
                                 <!--Error Message-->
                                 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
                                     <ul id="error-list" class="fw-bold">
-                                        <li style="font-family:'Nunito';font-size:14px;">@ErrorText</li>
+                                        <li style="font-family:'Nunito';font-size:14px;">@viewModel.ErrorText</li>
                                     </ul>
                                 </div>
                             <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
@@ -79,7 +79,7 @@
         </div>  
     </div>
 </div>
-@if (ShowBackdrop)
+@if (viewModel.ShowBackdrop)
 {
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
@@ -90,14 +90,6 @@
     public Expression<Func<string>>? For { get; set; }
 
     SignupViewModel viewModel = new SignupViewModel();
-
-    public string ModalDisplay = "none;";
-
-    public string ModalClass = "";
-
-    public bool ShowBackdrop = false;
-
-    public string ErrorText { get; set; }
 
     public void OnSelect(ChangeEventArgs args)
     {
@@ -115,7 +107,6 @@
     {
         return viewModel.isClickButton ? true : false;
     }
-
     public string showSpinner()
     {
         return viewModel.isClickButton ? "visible" : "hidden";
@@ -126,16 +117,16 @@
     }
     public async Task OpenModal(string Email)
     {
-        ModalDisplay                  = "block;";
-        ModalClass                    = "show";
-        ShowBackdrop                  = true;
+        viewModel.ModalDisplay   = "block;";
+        viewModel.ModalClass     = "show";
+        viewModel.ShowBackdrop   = true;
         viewModel.Customer.Email = Email;
         StateHasChanged();
     }
     public async Task CloseModal()
     {
-        ModalClass      = "";
-        ModalDisplay    = "none;";
+        viewModel.ModalClass    = "";
+        viewModel.ModalDisplay  = "none;";
         StateHasChanged();
     }
     public async Task Submit()
@@ -148,19 +139,20 @@
                 var user = await userManager.FindByEmailAsync(viewModel.Customer.Email);
                 if(user == null)
                 {
-                    var registerRes = await registerMakerHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker 
+                    var registerRes = await registerMakerHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker
                         {
-                            AcceptFlag = viewModel.Customer.AcceptFlag,
-                            Birthdate = viewModel.Customer.Birthdate,
-                            Email = viewModel.Customer.Email,
-                            FirstName = viewModel.Customer.FirstName,
-                            LastName = viewModel.Customer.LastName,
-                            Password = viewModel.Password                            
+                            AcceptFlag  = viewModel.Customer.AcceptFlag,
+                            Birthdate   = viewModel.Customer.Birthdate,
+                            Email       = viewModel.Customer.Email,
+                            FirstName   = viewModel.Customer.FirstName,
+                            LastName    = viewModel.Customer.LastName,
+                            Password    = viewModel.Password,
+                            ProfilePath = viewModel.imagePath
                         });
                     if(registerRes.Succeeded)
                     {
                         await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
-                        viewModel.isSubmit = true;
+                        viewModel.isSubmit      = true;
                         viewModel.isClickButton = false;
                         NavigationManager.NavigateTo("Creation");
                     }
@@ -168,15 +160,15 @@
             }
             else
             {
-                viewModel.HasError = true;
-                ErrorText = "Password and confirm password are not match.";
+                viewModel.HasError      = true;
+                viewModel.ErrorText     = "Password and confirm password are not match.";
                 viewModel.isClickButton = false;
             }
         }
         else
         {
-            viewModel.HasError = true;
-            ErrorText = "Kindly fill out the form to proceed signing up.";
+            viewModel.HasError      = true;
+            viewModel.ErrorText     = "Kindly fill out the form to proceed signing up.";
             viewModel.isClickButton = false;
         }
     }

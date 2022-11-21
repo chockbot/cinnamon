@@ -2,6 +2,7 @@
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.ViewModels
+@using Cinnamon.Core.Models
 @using Cinnamon.Data
 @using System
 @using System.IO
@@ -37,13 +38,16 @@
                        </div>
                     </Card>
                 </div>
+                <Label hidden="true">@viewModel.UserEmail</Label>
                 <div class="btn-upload">
-
-                    <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18" Style="" Disabled="ButtonIsClicked()">
+                    <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Medium" 
+                    Color="Color.Primary" Border="Border.RoundedPill" Block class="font-18" Style="" 
+                    Disabled="ButtonIsClicked()" Clicked="Upload">
                         Upload
                     </Button>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -58,6 +62,8 @@
     private List<IBrowserFile> loadedFiles = new();
 
     UploadProfileViewModel viewModel = new UploadProfileViewModel();
+
+    private CustomerModel customer = new CustomerModel();
 
     public bool ButtonIsClicked()
     {
@@ -109,8 +115,6 @@
                         }
                     }
                 }
-                //Save Image to DB
-
             }
             catch (Exception ex)
             {
@@ -138,13 +142,25 @@
     }
     private async Task Upload()
     {
-
+        // Check if Customer exist
+        var res = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
+        if (res != null)
+        {
+            res.ProfilePath = viewModel.profilepicture;
+            var update      = await CoreDI.DataStore.Customers.SaveDataAsync(res);
+            viewModel.isClickButton = false;
+        }
+        else
+        {
+            ResultModel.error("Customer not exist!");
+        }
     }
-    public async Task OpenModal()
+    public async Task OpenModal(string email)
     {
         viewModel.ModalDisplay = "block;";
         viewModel.ModalClass   = "show";
         viewModel.ShowBackdrop = true;
+        viewModel.UserEmail    = email;
         StateHasChanged();
     }
     public async Task CloseModal()
@@ -155,4 +171,3 @@
         StateHasChanged();
     }
 }
-    
