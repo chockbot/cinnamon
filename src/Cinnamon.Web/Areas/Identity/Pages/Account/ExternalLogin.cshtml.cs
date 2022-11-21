@@ -21,6 +21,7 @@ using System.ComponentModel;
 using Cinnamon.Core;
 using Cinnamon.Core.Models;
 using Cinnamon.Core.Enums;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Cinnamon.Web.Areas.Identity.Pages.Account
 {
@@ -129,16 +130,21 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
             }
 
             // Sign in the user with this external login provider if the user already has a login.
-            var result = await CoreDI.DataStore.Customers.GetAllAsync();
-            var userData = result.Where(x => x.Email.Equals(info.Principal.FindFirstValue(ClaimTypes.Email).ToString())).FirstOrDefault();
-            if (userData != null)
+            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+           
+            if (result.Succeeded)
             {
-                var user = CreateUser();
-
-                await _emailStore.SetUserNameAsync(user, userData.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, userData.Email, CancellationToken.None);
-
-                await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
+                //var user = CreateUser();
+                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+                var props = new AuthenticationProperties();
+                props.StoreTokens(info.AuthenticationTokens);
+                await _signInManager.SignInAsync(user, props, info.LoginProvider);
+                //await _emailStore.SetUserNameAsync(user, userData.Email, CancellationToken.None);
+                //await _emailStore.SetEmailAsync(user, userData.Email, CancellationToken.None);
+                //var result = await CoreDI.DataStore.Customers.GetAllAsync();
+                //var userd = _userManager.
+                //var userData = result.Where(x => x.Email.Equals(info.Principal.FindFirstValue(ClaimTypes.Email).ToString())).Where(x => x.ExternalLogin == true).FirstOrDefault();
+                //await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 if (userType == UserType.Maker)
                 {
@@ -180,20 +186,26 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
 
             if (ModelState.IsValid)
             {
-           
+                var user = CreateUser();
+                await _emailStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+                await _emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);
+                var result = await _userManager.CreateAsync(user);
 
-                try
+                if (result.Succeeded)
                 {
-                    var result = await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true:false });
-                    var user = CreateUser();
+                    result = await _userManager.AddLoginAsync(user, info);
+                    if (result.Succeeded)
+                    {
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        // Include the access token in the properties
+                        var props = new AuthenticationProperties();
+                        props.StoreTokens(info.AuthenticationTokens);
+                        await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { UserId = userId, FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true : false });
+                        await _signInManager.SignInAsync(user, props, authenticationMethod: info.LoginProvider);
+                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
-                    await _emailStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                    await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                    await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                }
-                catch(Exception ex)
-                {
-                    return LocalRedirect("/Error");
+                    }
                 }
             }
             

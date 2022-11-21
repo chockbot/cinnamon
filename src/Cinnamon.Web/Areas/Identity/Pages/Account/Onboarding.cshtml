@@ -19,9 +19,19 @@
         <span class="onboarding-header">Grow your business and lead people on activities you love</span>
         <span class="onboarding-subheader">Live your passion, share your knowledge and leave a mark in people's lives!</span>
         <div class="btn-cinnamon btn-cinnamon-section1">
-            <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker" style="width: fit-content;" data-bs-toggle="modal" data-bs-target="#loginModal">
-                Try Cinnamon Making
-            </button>
+              @if (HttpContext.User.Identity.IsAuthenticated)
+            {
+                <a class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker" style="width: fit-content;display:flex;align-items:center;" href="/Creation">
+                    Try Cinnamon Making
+                </a>
+            }
+            else
+            {
+                <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker" style="width: fit-content;" data-bs-toggle="modal" data-bs-target="#loginModal">
+                    Try Cinnamon Making
+                </button>
+            }
+       
         </div>
     </div>
 </div>

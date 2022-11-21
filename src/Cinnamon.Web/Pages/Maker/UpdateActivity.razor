@@ -6,8 +6,11 @@
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
 @using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+@using Cinnamon.Core.Module.CustomerService.Handler;
 @inject NavigationManager NavigationManager;
 @inject ISubmitUpdatedActivity submitUpdatedActivityHandler;
+@inject ISignedCustomer signedCustomer;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -63,7 +66,7 @@
                         <button type="button" id="prevBtn" @onclick="() => OnBackClick()" style="border:none;background-color:transparent">Back</button>
                     }
                     <button class="btn-primary" @onclick="() => OnNextClick()" type="button" id="nextBtn">
-                        @(currentIndex == 2 ? "Submit" : "Next")
+                        @(currentIndex == 2 ? "Submit" : "Continue")
                     </button>
                 </div>
             </div>
@@ -89,6 +92,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin {User = user});
+        if(!currentCustomer.Succeeded)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+        }
+
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var res = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityId", out var id);
 
@@ -99,6 +111,10 @@
 
         var activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(activityId);
         if(activity == null)
+            NavigationManager.NavigateTo("/maker/dashboard");
+        
+        // check activity is related to signed in customer
+        if(currentCustomer.Result.Customer.Id != activity.CreatedBy)
             NavigationManager.NavigateTo("/maker/dashboard");
 
         var experienceTypes = await CoreDI.DataStore.ExperienceTypes.GetAllAsync();
@@ -189,14 +205,24 @@
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
-        if(currentIndex == 2)
+        if(index == 0 && currentIndex == 2)
         {
+            // popuplate images
+            var images = new List<Tuple<int,byte[],string>>();
+            var firstImage = ExperienceUpdateModel.Images.FirstImage;
+            var secondImage = ExperienceUpdateModel.Images.SecondImage;
+            var thridImage = ExperienceUpdateModel.Images.ThridImage;
+
+            images.Add(new Tuple<int, byte[], string>(firstImage.Id, firstImage.ImageData, firstImage.ImageSrc));
+            images.Add(new Tuple<int, byte[], string>(secondImage.Id, secondImage.ImageData, secondImage.ImageSrc));
+            images.Add(new Tuple<int, byte[], string>(thridImage.Id, thridImage.ImageData, thridImage.ImageSrc));
+
             var submit = await submitUpdatedActivityHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitUpdatedActivity 
                 {
                     Activity = ExperienceUpdateModel.Activity,
                     SearchTags = ExperienceUpdateModel.SearchTags
                         .Select(i => new Tuple<int,string>(i.Key,i.Value)).ToList(),
-                    Images = new List<Tuple<int,byte[],string>>()
+                    Images = images
                 });
             
             if(!submit.Succeeded)

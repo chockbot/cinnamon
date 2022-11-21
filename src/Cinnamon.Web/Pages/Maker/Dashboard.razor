@@ -1,9 +1,10 @@
 @page "/maker/dashboard"
 @using Cinnamon.Core
+@using Cinnamon.Core.Module.CustomerService.Handler;
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
-@using Microsoft.AspNetCore.Components.Authorization
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject ISignedCustomer signedCustomer;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 
 <section class="mt-5 maker-dashboard">
     <div class="container">
@@ -40,26 +41,24 @@
 
 @code
 {
-    private IList<ActivityModel> activities;
+    private IList<ActivityModel> activities = new List<ActivityModel>();
     private int activeActivityCount = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        if(!user.Identity.IsAuthenticated)
-        {
-            NavigationManager.NavigateTo("/onboarding");
-            return;
-        }
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        activities = (await CoreDI.DataStore.Activities.GetAllAsync()).OrderBy(i => i.Id).ToList();
-        activeActivityCount = activities.Where(i => i.IsPublished).Count();
-        var auth = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if(!auth.User.Identity.IsAuthenticated)
+        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user});
+        if(!currentCustomer.Succeeded)
         {
+            // don't have current user login
             NavigationManager.NavigateTo("explore");
         }
+
+        var customer = currentCustomer.Result.Customer;
+
+        activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
+        activeActivityCount = activities.Where(i => i.IsPublished).Count(); 
     }
 
     private void ActiveCountChanged(int count)

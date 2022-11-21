@@ -29,10 +29,10 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException("Can't find activity"), "Can't find activity");
             }
 
-            var update = await CoreDI.DataStore.Activities.SaveDataAsync(args.Activity);
-            if(!update.Message.ToLower().Contains("saved"))
+            var update = await CoreDI.DataStore.Activities.SlowUpdateActivityAsync(args.Activity);
+            if(update == null)
             {
-                return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(update.Message), update.Message);
+                return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException("An error occured when updating activity"), "An error occured when updating activity");
             }
 
             var updatedActivity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(args.Activity.Id);

@@ -68,50 +68,70 @@ public class SubmitUpdatedActivityHandler : ISubmitUpdatedActivity
             {
                 args.Activity.SearchTagsModel.SearchTag1 = args.SearchTags.ElementAt(0).Item2;
             }
+            else 
+            {
+                args.Activity.SearchTagsModel.SearchTag1 = null;
+            }
             if(args.SearchTags.Count > 1)
             {
                 args.Activity.SearchTagsModel.SearchTag2 = args.SearchTags.ElementAt(1).Item2;
+            }
+            else 
+            {
+                args.Activity.SearchTagsModel.SearchTag2 = null;
             }
             if(args.SearchTags.Count > 2)
             {
                 args.Activity.SearchTagsModel.SearchTag3 = args.SearchTags.ElementAt(2).Item2;
             }
+            else 
+            {
+                args.Activity.SearchTagsModel.SearchTag3 = null;
+            }
             if(args.SearchTags.Count > 3)
             {
                 args.Activity.SearchTagsModel.SearchTag4 = args.SearchTags.ElementAt(3).Item2;
+            }
+            else 
+            {
+                args.Activity.SearchTagsModel.SearchTag4 = null;
             }
             if(args.SearchTags.Count > 4)
             {
                 args.Activity.SearchTagsModel.SearchTag5 = args.SearchTags.ElementAt(4).Item2;
             }
+            else 
+            {
+                args.Activity.SearchTagsModel.SearchTag5 = null;
+            }
 
             // upload images first
-            // IList<Tuple<byte[], string>> images = new List<Tuple<byte[], string>>();
-            // var ids = new List<Tuple<int,string>>();
+            IList<Tuple<byte[], string>> images = new List<Tuple<byte[], string>>();
+            var ids = new List<Tuple<int,string>>();
             // upload only new images
-            // foreach(var item in args.Images.Where(i => i.Item2 != null))
-            // {
-            //     images.Add(new Tuple<byte[], string>(item.Item2,item.Item3));
-            //     ids.Add(new Tuple<int, string>(item.Item1,item.Item3));
-            // }
+            foreach(var item in args.Images.Where(i => i.Item2 != null))
+            {
+                images.Add(new Tuple<byte[], string>(item.Item2,item.Item3));
+                ids.Add(new Tuple<int, string>(item.Item1,item.Item3));
+            }
 
-            // var upload = await uploadImagesHandler.ExecuteAsync(
-            //     new UploadService.Interactors.ImageUpload { Container = "upload-container", Images = images });
-            // if(!upload.Succeeded)
-            // {
-            //     return AppResult<SubmitUpdatedActivityResult>.CreateFailed(upload.Error.Exception, upload.Message);
-            // }
+            var upload = await uploadImagesHandler.ExecuteAsync(
+                new UploadService.Interactors.ImageUpload { Container = "upload-container", Images = images });
+            if(!upload.Succeeded)
+            {
+                return AppResult<SubmitUpdatedActivityResult>.CreateFailed(upload.Error.Exception, upload.Message);
+            }
 
             // for update only image location and image name
-            // foreach(var item in args.Activity.ActivityImages)
-            // {
-            //     var t = ids.Find(i => i.Item1 == item.Id);
-            //     if(t != null)
-            //     {
-            //         item.ImageLocation = upload.Result.ImagesPath[ids.IndexOf(t)];
-            //         item.ImageName = t.Item2;
-            //     }
-            // }
+            foreach(var item in args.Activity.ActivityImages)
+            {
+                var t = ids.Find(i => i.Item1 == item.Id);
+                if(t != null)
+                {
+                    item.ImageLocation = upload.Result.ImagesPath[ids.IndexOf(t)];
+                    item.ImageName = t.Item2;
+                }
+            }
 
             // save updated activity
             var updatedActivity = await updateActivityHandler.ExecuteAsync(new ActivityService.Interactors.UpdateActivity {Activity = args.Activity});
