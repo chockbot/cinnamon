@@ -1,6 +1,4 @@
 using System.Security.Claims;
-using Microsoft.AspNetCore.Http;
-using Cinnamon.Core.Models;
 using Cinnamon.Core.Common;
 using Cinnamon.Core.Module.CustomerService.Interactors;
 using Cinnamon.Core.Module.CustomerService.Interactors.Results;
@@ -9,13 +7,6 @@ namespace Cinnamon.Core.Module.CustomerService.Handler.SignedCustomer;
 
 public class SignedCustomerHandler : ISignedCustomer 
 {
-    private readonly IHttpContextAccessor httpContext;
-
-    public SignedCustomerHandler(IHttpContextAccessor httpContext)
-    {
-        this.httpContext = httpContext;
-    }
-
     public AppResult<CurrentLoginResult> Execute(CurrentLogin args)
     {
         try
@@ -32,13 +23,17 @@ public class SignedCustomerHandler : ISignedCustomer
     {
         try 
         {
-            // dont have current user login
-            if(httpContext.HttpContext.User == null || (!httpContext.HttpContext.User.Identity.IsAuthenticated))
+            if(args.User == null)
             {
-                return AppResult<CurrentLoginResult>.CreateFailed(new ApplicationException("Currently don't have login user"), "Currently don't have login user");
+                return AppResult<CurrentLoginResult>.CreateFailed(new ApplicationException("Can't find current login user id"), "Can't find current login user id");
             }
 
-            var userId = httpContext.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if(args.User.Identity != null && (!args.User.Identity.IsAuthenticated))
+            {
+                return AppResult<CurrentLoginResult>.CreateFailed(new ApplicationException("Don't have user login"), "Don't have user login");
+            }
+
+            var userId = args.User.FindFirstValue(ClaimTypes.NameIdentifier);
             if(userId == null)
             {
                 return AppResult<CurrentLoginResult>.CreateFailed(new ApplicationException("Can't find current login user id"), "Can't find current login user id");
