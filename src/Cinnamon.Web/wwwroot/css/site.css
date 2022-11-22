@@ -183,8 +183,28 @@ a,
   border-radius: 10px;
 }
 
-.customer-profile-details .profile-info-input input {
+.customer-profile-details .profile-info-input input,
+.customer-profile-details .profile-info-input select {
   background-color: #edf2f8;
+}
+
+.customer-profile-details .family-members {
+  width: fit-content;
+}
+
+.customer-profile-details .family-members .profile-info-input.gender {
+  margin-left: 2rem;
+  margin-right: 2rem;
+}
+
+.customer-profile-details .family-members .profile-info-input.birthmonth {
+  margin-right: 0.5rem;
+}
+
+.customer-profile-details .family-members .abs-delete {
+  position: absolute;
+  top: 1.5rem;
+  right: -2rem;
 }
 
 @media only screen and (max-width: 1000px) {
@@ -224,6 +244,22 @@ a,
   }
   .customer-profile-details .recommendedSwiper .swiper-slide {
     width: 80%;
+  }
+
+  .customer-profile-details .family-members .profile-info-input.name {
+    width: 90%;
+  }
+  .customer-profile-details .family-members .profile-info-input.gender {
+    margin-left: 0;
+    margin-right: 0.2rem;
+  }
+  .customer-profile-details .family-members .profile-info-input.birthmonth {
+    margin-left: 0;
+    margin-right: 0.2rem;
+  }
+
+  .customer-profile-details .family-members .abs-delete {
+    right: 0;
   }
 }
 /* end of customer profile styling */

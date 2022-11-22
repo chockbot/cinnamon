@@ -1,9 +1,7 @@
 @page "/customer/profile"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
-@using Cinnamon.Web.Models.Customer;
 @using Cinnamon.Core.Module.CustomerService.Handler;
-@using Cinnamon.Core.Models
 @inject IModalService modal
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -136,10 +134,7 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
-        {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
-        }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
 
     private async Task EditProfile()

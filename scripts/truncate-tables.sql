@@ -1,3 +1,4 @@
+TRUNCATE TABLE "FamilyMembers";
 TRUNCATE TABLE "WaitLists";
 TRUNCATE TABLE "SearchTags";
 TRUNCATE TABLE "Schedules";

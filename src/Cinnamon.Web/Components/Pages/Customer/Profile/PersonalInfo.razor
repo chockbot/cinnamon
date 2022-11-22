@@ -1,4 +1,5 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Core.Models;
 @using Cinnamon.Core.Module.CustomerService.Handler;
 @inject IUpdateCustomerLegalName updateLegalNameHandler;
 
@@ -22,16 +23,16 @@
                     </Div>
                     <Row>
                         <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                            <div class="form-floating mt-3 profile-info-input">
+                            <Field class="form-floating mt-3 profile-info-input">
                                 <TextEdit class="border-10" id="legalFirstname" Size="Size.Default" @bind-Text="firstNameLocalState" />
-                                <label for="legalFirstname">First name</label>
-                            </div>
+                                <FieldLabel for="legalFirstname">First name</FieldLabel>
+                            </Field>
                         </Column>
                         <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                            <div class="form-floating mt-3 profile-info-input">
+                            <Field class="form-floating mt-3 profile-info-input">
                                 <TextEdit class="border-10" id="legalLastname" Size="Size.Default" @bind-Text="lastNameLocalState" />
-                                <label for="legalLastname">Last name</label>
-                            </div>
+                                <FieldLabel for="legalLastname">Last name</FieldLabel>
+                            </Field>
                         </Column>
                     </Row>
                     <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveLegalName">Save</Button>
@@ -42,28 +43,56 @@
     <Divider />
     <div class="p-section children-section">
         <Row>
-            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                <p class="title mb-1">Kids Info</p>
-                <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                    <Column style="margin-right: 1.5rem;">
-                        @foreach (var item in children)
-                        {
-                            <Row style="flex: 0 0 auto;">
-                                <Column>
-                                    <p class="text-capitalize">@item.Name</p>
-                                </Column>
-                                <Column>
-                                    <p class="text-capitalize text-center">@item.Gender</p>
-                                </Column>
-                                <Column>
-                                    <p class="text-capitalize text-end">@item.BirthDate</p>
-                                </Column>
-                            </Row>
-                        }
-                    </Column>
-                    <span class="edit">Edit</span>
-                </Div>
-            </Column>
+            @if(!isEditFamilyMember)
+            {
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        <p class="title mb-1">Kids Info</p>
+                        <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Edit</span>
+                    </Div>
+                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        <Column style="margin-right: 1.5rem;">
+                            @foreach (var item in Model.Customer.FamilyMembers)
+                            {
+                                <Row style="flex: 0 0 auto;">
+                                    <Column>
+                                        <p class="text-capitalize">@item.Name</p>
+                                    </Column>
+                                    <Column>
+                                        <p class="text-capitalize text-center">@item.Gender</p>
+                                    </Column>
+                                    <Column>
+                                        <p class="text-capitalize text-end">@item.BirthMonth @item.BirthYear</p>
+                                    </Column>
+                                </Row>
+                            }
+                        </Column>
+                    </Div>
+                </Column>
+            }
+            else 
+            {
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12.OnMobile">
+                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        <p class="title mb-1">Kids Info</p>
+                        <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Cancel</span>
+                    </Div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is12.OnMobile">
+                    <p class="details">
+                        We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
+                    </p>
+                    @foreach (var item in localStateFamilyMembers)
+                    {
+                        <ChildItem Model="item" OnDelete="OnDeleteFamily" />
+                    }
+                    <Div Display="Display.Flex">
+                        <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop" 
+                            TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">Add</Button>
+                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary">Save</Button>
+                    </Div>
+                </Column>
+            }
         </Row>
     </div>
     <Divider />
@@ -114,21 +143,16 @@
 {
     [Parameter]
     public Models.Customer.Profile Model {get; set;}
-
-    private IList<Child> children = new List<Child>();
     
     private bool isEditLegalName = false;
     
     private string firstNameLocalState = string.Empty;
     
     private string lastNameLocalState = string.Empty;
-    
-    protected override void OnInitialized()
-    {
-        children.Add(new Child {BirthDate = "April 2010", Gender = "Female", Name = "juanita san jose"});
-        children.Add(new Child {BirthDate = "September 2008", Gender = "Male", Name = "charanko san jose"});
-        children.Add(new Child {BirthDate = "December 2006", Gender = "Femala", Name = "rocia san jose"});
-    }
+
+    private bool isEditFamilyMember = false;
+
+    private IList<FamilyMemberModel> localStateFamilyMembers = new List<FamilyMemberModel>();
 
     private void EditLegalNameClick()
     {
@@ -161,11 +185,17 @@
         isEditLegalName = false;
     }
 
-    public class Child 
+    private void AddFamilyMember()
     {
-        public string Name {get; set;}
-        public string Gender {get; set;}
-        public string BirthDate {get; set;}
+        if(isEditFamilyMember)
+        {
+            localStateFamilyMembers.Add(new ());
+        }
+    }
+    
+    private void OnDeleteFamily(FamilyMemberModel member)
+    {
+        localStateFamilyMembers.Remove(member);
     }
 }
 
