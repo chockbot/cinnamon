@@ -3,7 +3,7 @@
 
 <Div Position="Position.Relative" Flex="Flex.NoWrap.OnDesktop.Wrap.OnMobile" class="family-members">
     <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input name">
-        <TextEdit class="border-10" id="legalFirstname" Size="Size.Default" @bind-bind-Text="Model.Name" />
+        <TextEdit class="border-10" id="legalFirstname" Size="Size.Default" @bind-Text="Model.Name" />
         <FieldLabel for="legalFirstname">Name</FieldLabel>
     </Field>
     <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input gender">
@@ -17,7 +17,8 @@
         <FieldLabel for="legalFirstname">Gender</FieldLabel>
     </Field>
     <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input birthmonth">
-        <Select TValue="int" Size="Size.Default" @bind-bind-SelectedValue="Model.BirthMonth" class="form-select border-10 text-capitalize">
+        <Select TValue="int" Size="Size.Default" @bind-bind-SelectedValue="Model.BirthMonth" 
+            class="form-select border-10 text-capitalize">
             @foreach (var item in months)
             {
                 <SelectItem Value="@item">@item</SelectItem>
@@ -26,7 +27,8 @@
         <FieldLabel for="legalFirstname">Birth Month</FieldLabel>
     </Field>
     <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input year">
-        <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear" class="form-select border-10 text-capitalize">
+        <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear" 
+            class="form-select border-10 text-capitalize">
             @foreach (var item in years)
             {
                 <SelectItem Value="@item">@item</SelectItem>
@@ -46,6 +48,9 @@
     public FamilyMemberModel Model {get; set;}
 
     [Parameter]
+    public EventCallback<FamilyMemberModel> ModelChanged {get; set;}
+
+    [Parameter]
     public EventCallback<FamilyMemberModel> OnDelete {get; set;}
 
     private IList<string> genders = new List<string>();
@@ -58,7 +63,7 @@
     {
         // gender
         genders.Add("male");
-        genders.Add("Female");
+        genders.Add("female");
 
         // years`
         for(int i = 1900; i <= DateTime.Now.Year; i++)

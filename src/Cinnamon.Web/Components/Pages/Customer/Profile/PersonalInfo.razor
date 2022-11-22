@@ -2,6 +2,7 @@
 @using Cinnamon.Core.Models;
 @using Cinnamon.Core.Module.CustomerService.Handler;
 @inject IUpdateCustomerLegalName updateLegalNameHandler;
+@inject IUpdateCustomerFamilyMembers updateFamilyMembers;
 
 <article class="personal-info-wrapper p-3">
     <div class="p-section name-section">
@@ -48,13 +49,13 @@
                 <Column ColumnSize="ColumnSize.Is6.OnDesktop">
                     <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                         <p class="title mb-1">Kids Info</p>
-                        <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Edit</span>
+                        <span class="edit" @onclick="EditFamilyMemberClick">Edit</span>
                     </Div>
                     <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                        <Column style="margin-right: 1.5rem;">
+                        <Column>
                             @foreach (var item in Model.Customer.FamilyMembers)
                             {
-                                <Row style="flex: 0 0 auto;">
+                                <Row style="flex: 0 0 auto;" class="mb-2">
                                     <Column>
                                         <p class="text-capitalize">@item.Name</p>
                                     </Column>
@@ -82,14 +83,15 @@
                     <p class="details">
                         We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
                     </p>
-                    @foreach (var item in localStateFamilyMembers)
+                    @for(int i = 0; i < localStateFamilyMembers.Count; i++)
                     {
-                        <ChildItem Model="item" OnDelete="OnDeleteFamily" />
+                        <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
                     }
                     <Div Display="Display.Flex">
                         <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop" 
                             TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">Add</Button>
-                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary">Save</Button>
+                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" @onclick="SaveEditedFamilyMember" 
+                            TextColor="TextColor.White" Color="Color.Primary">Save</Button>
                     </Div>
                 </Column>
             }
@@ -189,13 +191,37 @@
     {
         if(isEditFamilyMember)
         {
-            localStateFamilyMembers.Add(new ());
+            localStateFamilyMembers.Add(new () {BirthMonth = "january", BirthYear = 1900, Gender = "male"});
         }
     }
     
     private void OnDeleteFamily(FamilyMemberModel member)
     {
         localStateFamilyMembers.Remove(member);
+    }
+
+    private void EditFamilyMemberClick()
+    {
+        localStateFamilyMembers = Model.Customer.FamilyMembers;
+        isEditFamilyMember = true;
+    }
+    
+    private async Task SaveEditedFamilyMember()
+    {
+        if(isEditFamilyMember)
+        {
+            // get only not empty members
+            var members = localStateFamilyMembers.Where(i => !string.IsNullOrEmpty(i.Name)).ToList();
+
+            var update = await updateFamilyMembers.ExecuteAsync(
+                new Core.Module.CustomerService.Interactors.UpdateFamilyMember {CustomerId = Model.Customer.Id, FamilyMembers = members});
+            
+            if(update.Succeeded)
+            {
+                Model.Customer = update.Result.Customer;
+            }
+        }
+        isEditFamilyMember = false;
     }
 }
 

@@ -41,6 +41,7 @@ public static class ExtensionService
         services.AddTransient<ISignedCustomer, SignedCustomerHandler>();
         services.AddTransient<IUpdateCustomerAbout, UpdateCustomerAboutHandler>();
         services.AddTransient<IUpdateCustomerLegalName, UpdateCustomerLegalNameHandler>();
+        services.AddTransient<IUpdateCustomerFamilyMembers, UpdateCustomerFamilyMemberHandler>();
 
         return services;
     } 
