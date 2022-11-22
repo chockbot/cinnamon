@@ -1,0 +1,48 @@
+@namespace Cinnamon.Web.Components.Modals
+@using Cinnamon.Web.Components.Pages.Customer.Profile;
+
+<Modal @ref="modalRef" class="upload-government-id">
+    <ModalContent>
+        <ModalHeader Border="Border.Is0" Position="Position.Relative" Flex="Flex.JustifyContent.Center">
+            <p class="mb-0 header-label">Upload your Government ID</p>
+            <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-close" @onclick="() => modalRef.Hide()"> 
+                <Icon Name="IconName.Times" IconStyle="IconStyle.Solid" IconSize="IconSize.Large" />
+            </Button>
+        </ModalHeader>
+        <ModalBody Border="Border.Is0" Padding="Padding.Is0.OnY">
+            <Divider Margin="Margin.Is0" />
+            <p class="body-label">Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.</p>
+            <Row>
+                <Column>
+                    <ImageUpload @bind-ImageData="frontImageData" ImageName="front-image" Label="Front Image" />
+                </Column>
+                <Column>
+                    <ImageUpload @bind-ImageData="backImageData" ImageName="back-image" Label="Back Image" />
+                </Column>
+            </Row>
+        </ModalBody>
+        <ModalFooter Border="Border.Is0" Margin="Margin.Is3.FromBottom">
+            <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" 
+                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Upload</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code 
+{
+    private Modal modalRef;
+
+    private byte[] frontImageData;
+
+    private byte[] backImageData;
+
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+}

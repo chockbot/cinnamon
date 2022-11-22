@@ -1,6 +1,7 @@
 @page "/customer/profile"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Modals;
 @using Cinnamon.Core.Module.CustomerService.Handler;
 @inject IModalService modal
 @inject IJSRuntime jsRuntime
@@ -37,7 +38,8 @@
                             </CardTitle>
                         </CardBody>
                         <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
-                            <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
+                            <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()" 
+                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
                         </CardFooter>
                     </Card>
                 </Column>
@@ -96,16 +98,23 @@
         </Container>
     </section>
     <ModalUploadingProfile @ref="upload"></ModalUploadingProfile>
+    <ModalUploadGovernmentId @ref="uploadIdModal" />
 }
 
 @code 
 {
+    private ModalUploadGovernmentId uploadIdModal;
+
     private string selectedTab = "experiences";
+
     private string ImageSource { get; set; } = "images/Profile/user";
+
     private Models.Customer.Profile Model;
+
     protected ModalUploadingProfile upload { get; set; }
 
     private bool isEditAbout = false;
+
     private string aboutLocalState = string.Empty;
 
     private Task OnSelectedTabChanged(string name)
