@@ -42,6 +42,7 @@ public static class ExtensionService
         services.AddTransient<IUpdateCustomerAbout, UpdateCustomerAboutHandler>();
         services.AddTransient<IUpdateCustomerLegalName, UpdateCustomerLegalNameHandler>();
         services.AddTransient<IUpdateCustomerFamilyMembers, UpdateCustomerFamilyMemberHandler>();
+        services.AddTransient<IUploadCustomerGovernmentId, UploadCustomerGovernmentIdHandler>();
 
         return services;
     } 

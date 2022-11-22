@@ -1,13 +1,14 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Models.Customer;
 
 <Div class="image-wrapper">
-    <label for="@ImageName" class="upload-image">
+    <label for="@Model.ImageName" class="upload-image">
         <Figure Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0">
             <FigureImage Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0" Source="@GetFrontImageSrc()" />
         </Figure>
     </label>
-    <InputFile style="display: none;" id="@ImageName" name="@ImageName" accept=".png,.jpg,.jpeg" OnChange="LoadImage" />
-    <p class="m-0">@Label</p>
+    <InputFile style="display: none;" id="@Model.ImageName" name="@Model.ImageName" accept=".png,.jpg,.jpeg" OnChange="LoadImage" />
+    <p class="m-0">@Model.Label</p>
     @if(!string.IsNullOrEmpty(errorMessage))
     {
         <p class="mt-2 mb-0">@errorMessage</p>
@@ -17,16 +18,10 @@
 @code 
 {
     [Parameter]
-    public string ImageName {get; set;}
-    
-    [Parameter]
-    public string Label {get; set;}
+    public UploadGovernmenId Model {get; set;}
 
     [Parameter]
-    public byte[] ImageData {get; set;}
-
-    [Parameter]
-    public EventCallback<byte[]> ImageDataChanged {get; set;}
+    public EventCallback<UploadGovernmenId> ModelChanged {get; set;}
 
     private bool isImageLoading = false;
 
@@ -34,15 +29,13 @@
 
     private const int maxFileSize = 10000000;
 
-    private string fileName = string.Empty;
-
     private string GetFrontImageSrc()
     {
         if(isImageLoading) return "/images/loading_indicator.gif";
         
-        if(ImageData != null)
+        if(Model.ImageData != null)
         {
-            var imageSrc = Convert.ToBase64String(ImageData);
+            var imageSrc = Convert.ToBase64String(Model.ImageData);
             return string.Format("data:image/jpeg;base64,{0}", imageSrc);
         }
 
@@ -66,13 +59,13 @@
             using(var ms = new MemoryStream())
             {
                 await file.OpenReadStream(maxFileSize).CopyToAsync(ms);
-                ImageData = ms.ToArray();
+                Model.ImageData = ms.ToArray();
 
                 var guid = Guid.NewGuid().ToString();
                 var extension = file.ContentType.Split("/")[1];
-                fileName = $"{guid}.{extension}";
+                Model.ImageFileName = $"{guid}.{extension}";
 
-                await ImageDataChanged.InvokeAsync(ImageData);
+                await ModelChanged.InvokeAsync(Model);
             }
         }
         catch 

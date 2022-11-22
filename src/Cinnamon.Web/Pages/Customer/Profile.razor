@@ -30,16 +30,22 @@
                         <CardBody Border="Border.Is0" Padding="Padding.Is1.OnY">
                             <CardTitle TextAlignment="TextAlignment.Center">
                                 <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.Customer.FirstName @Model.Customer.LastName</p>
-                                <p class="text-color-8080 my-1 font-24">
-                                <Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />
-                                <span class="text-capitalize">verified user</span>
-                                </p>
+                                @if(Model.Customer.IsVerified)
+                                {
+                                    <p class="text-color-8080 my-1 font-24">
+                                        <Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />
+                                        <span class="text-capitalize">verified user</span>
+                                    </p>
+                                }
                                 <p class="text-color-8080 font-16 mb-1">Lorem ipsum dolor sit, amet consectetur adipisicing elit</p>
                             </CardTitle>
                         </CardBody>
                         <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
-                            <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()" 
-                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
+                            @if(!Model.Customer.IsVerified)
+                            {
+                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()" 
+                                    Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
+                            }
                         </CardFooter>
                     </Card>
                 </Column>
@@ -98,7 +104,7 @@
         </Container>
     </section>
     <ModalUploadingProfile @ref="upload"></ModalUploadingProfile>
-    <ModalUploadGovernmentId @ref="uploadIdModal" />
+    <ModalUploadGovernmentId @ref="uploadIdModal" CustomerId="Model.Customer.Id"/>
 }
 
 @code 
