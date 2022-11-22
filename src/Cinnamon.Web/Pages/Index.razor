@@ -173,7 +173,8 @@
         <br/> <br/>
         <span class="landing-subheader" >@Resources.App.makerDescription</span>
         <div class="btn-explore">
-            <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />
+            <PrimaryButton OnClick="NavigateToOnboardingPage" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />
+           @* <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />*@
         </div>
     </div>
 </div>
@@ -221,7 +222,10 @@
     {
         NavigationManager.NavigateTo("explore");
     }
-
+    private void NavigateToOnboardingPage()
+    {
+        NavigationManager.NavigateTo("Identity/Account/Onboarding");
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
        if(firstRender)
