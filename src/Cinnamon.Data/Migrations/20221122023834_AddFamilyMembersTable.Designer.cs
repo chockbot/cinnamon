@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221122023834_AddFamilyMembersTable")]
+    partial class AddFamilyMembersTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -469,6 +471,9 @@ namespace Cinnamon.Data.Migrations
                     b.Property<int>("CustomerId")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("CustomerModelId")
+                        .HasColumnType("integer");
+
                     b.Property<bool>("DeletionFlag")
                         .HasColumnType("boolean");
 
@@ -487,6 +492,8 @@ namespace Cinnamon.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
+
+                    b.HasIndex("CustomerModelId");
 
                     b.ToTable("FamilyMembers");
                 });
@@ -897,13 +904,9 @@ namespace Cinnamon.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Core.Models.FamilyMemberModel", b =>
                 {
-                    b.HasOne("Cinnamon.Core.Models.CustomerModel", "Customer")
+                    b.HasOne("Cinnamon.Core.Models.CustomerModel", null)
                         .WithMany("FamilyMembers")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
+                        .HasForeignKey("CustomerModelId");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.Models.SearchTagsModel", b =>
