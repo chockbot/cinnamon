@@ -10,6 +10,7 @@
 @inject IWebHostEnvironment Environment
 @inject IUploadImages uploadImageHandler
 @inject IDeleteImage deleteImageHandler
+@inject NavigationManager NavigationManager
 
 @if (!viewModel.isSubmit)
 {
@@ -174,5 +175,6 @@
         viewModel.ModalDisplay = "none;";
         viewModel.ShowBackdrop = false;
         StateHasChanged();
+        NavigationManager.NavigateTo("/customer/profile",true);
     }
 }
