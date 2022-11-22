@@ -1,0 +1,84 @@
+@namespace Cinnamon.Web.Components.Modals
+@using Cinnamon.Web.Models.Customer;
+@using Cinnamon.Web.Components.Pages.Customer.Profile;
+@using Cinnamon.Core.Module.CustomerService.Handler;
+@inject IUploadCustomerGovernmentId uploadGovermentIdHandler;
+
+<Modal @ref="modalRef" class="upload-government-id">
+    <ModalContent>
+        <ModalHeader Border="Border.Is0" Position="Position.Relative" Flex="Flex.JustifyContent.Center">
+            <p class="mb-0 header-label">Upload your Government ID</p>
+            <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-close" @onclick="() => modalRef.Hide()"> 
+                <Icon Name="IconName.Times" IconStyle="IconStyle.Solid" IconSize="IconSize.Large" />
+            </Button>
+        </ModalHeader>
+        <ModalBody Border="Border.Is0" Padding="Padding.Is0.OnY">
+            <Divider Margin="Margin.Is0" />
+            <p class="body-label">Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.</p>
+            <Row>
+                <Column>
+                    <ImageUpload @bind-Model="frontData" />
+                </Column>
+                <Column>
+                    <ImageUpload @bind-Model="backData" />
+                </Column>
+            </Row>
+        </ModalBody>
+        <ModalFooter Border="Border.Is0" Margin="Margin.Is3.FromBottom">
+            <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="OnUploadClick"
+                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Upload</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code 
+{
+    [Parameter]
+    public int CustomerId {get; set;}
+
+    private Modal modalRef;
+
+    private UploadGovernmenId frontData = new();
+
+    private UploadGovernmenId backData = new();
+
+    protected override void OnInitialized()
+    {
+        frontData.Label = "Front Image";
+        frontData.ImageName = "front-image";
+        backData.Label = "Back Data";
+        backData.ImageName = "back-data";
+    }
+
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+
+    public async Task OnUploadClick()
+    {
+        if(frontData.ImageData != null && backData.ImageData != null)
+        {
+            var uploadResult = await uploadGovermentIdHandler.ExecuteAsync(
+                new Core.Module.CustomerService.Interactors.UploadGovernmenId 
+                {
+                    BackFileName = backData.ImageFileName,
+                    BackImageData = backData.ImageData,
+                    FrontFileName = frontData.ImageFileName,
+                    FrontImageData = frontData.ImageData,
+                    CustomerId = CustomerId
+                });
+            
+            if(uploadResult.Succeeded)
+            {
+                modalRef.Hide();
+            }
+        }
+    }
+}
+

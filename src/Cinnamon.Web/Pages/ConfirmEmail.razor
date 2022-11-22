@@ -36,7 +36,7 @@
                 if(waitingRes == null)
                 {
                     // invalid guid
-                    NavigationManager.NavigateTo("/onboarding");
+                    NavigationManager.NavigateTo("/onboarding", forceLoad: true);
                 }
                 // check if email already verified so that will not call verify email every request
                 if(!waitingRes.IsVerified)

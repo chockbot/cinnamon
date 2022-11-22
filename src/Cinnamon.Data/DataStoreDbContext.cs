@@ -22,6 +22,7 @@ namespace Cinnamon.Data
         public DbSet<ScheduleModel> Schedules { get; set; }
         public DbSet<SearchTagsModel> SearchTags { get; set; }
         public DbSet<CustomerModel> Customers { get; set; }
+        public DbSet<FamilyMemberModel> FamilyMembers { get; set; }
         #endregion
 
         #region Constructor
@@ -72,6 +73,10 @@ namespace Cinnamon.Data
 
             modelBuilder.Entity<CustomerModel>().HasIndex(i => i.UserId);
             modelBuilder.Entity<CustomerModel>().HasIndex(i => i.Email);
+            modelBuilder.Entity<CustomerModel>().HasMany(i => i.FamilyMembers);
+
+            modelBuilder.Entity<FamilyMemberModel>().HasIndex(i => i.CustomerId);
+            modelBuilder.Entity<FamilyMemberModel>().HasOne(i => i.Customer);
         }
         #endregion
 

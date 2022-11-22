@@ -17,6 +17,7 @@ using Cinnamon.Core.Services;
 using Cinnamon.Core.Services.DefaultJsonSerialization;
 using Cinnamon.Core.Module.CustomerService.Handler;
 using Cinnamon.Core.Module.CustomerService.Handler.SignedCustomer;
+using Cinnamon.Core.Module.CustomerService.Handler.Profile;
 
 namespace Cinnamon.Core.Extensions;
 
@@ -38,6 +39,10 @@ public static class ExtensionService
         services.AddTransient<IPublishActivityHandler, PublishActivityHandler>();
         services.AddTransient<IUpdateActivityHandler, UpdateActivityHandler>();
         services.AddTransient<ISignedCustomer, SignedCustomerHandler>();
+        services.AddTransient<IUpdateCustomerAbout, UpdateCustomerAboutHandler>();
+        services.AddTransient<IUpdateCustomerLegalName, UpdateCustomerLegalNameHandler>();
+        services.AddTransient<IUpdateCustomerFamilyMembers, UpdateCustomerFamilyMemberHandler>();
+        services.AddTransient<IUploadCustomerGovernmentId, UploadCustomerGovernmentIdHandler>();
 
         return services;
     } 

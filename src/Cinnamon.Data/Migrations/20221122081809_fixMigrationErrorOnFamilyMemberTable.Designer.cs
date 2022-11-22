@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221122081809_fixMigrationErrorOnFamilyMemberTable")]
+    partial class fixMigrationErrorOnFamilyMemberTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -280,9 +282,6 @@ namespace Cinnamon.Data.Migrations
                     b.Property<bool>("AcceptFlag")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("BackIdImagePath")
-                        .HasColumnType("text");
-
                     b.Property<string>("Birthdate")
                         .IsRequired()
                         .HasColumnType("text");
@@ -315,9 +314,6 @@ namespace Cinnamon.Data.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FrontIdImagePath")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsMaker")
@@ -456,9 +452,6 @@ namespace Cinnamon.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("BirthYear")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ChangedBy")
                         .HasColumnType("integer");
 
@@ -478,10 +471,6 @@ namespace Cinnamon.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
 

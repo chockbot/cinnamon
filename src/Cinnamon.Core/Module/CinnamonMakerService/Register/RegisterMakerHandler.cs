@@ -72,8 +72,10 @@ public class RegisterMakerHandler : IRegisterMaker
                 LastName        = args.LastName,
                 IsMaker         = false,
                 UserId          = userId,
-                ProfilePath     = args.ProfilePath
-                
+                ProfilePath     = args.ProfilePath,
+                DateJoined      = DateTime.Now.ToString(),
+                About           = string.Empty,
+                IsVerified      = false
             };
 
             var customerRes = await CoreDI.DataStore.Customers.SaveDataAsync(customer);

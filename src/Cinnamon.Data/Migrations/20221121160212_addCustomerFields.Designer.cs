@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221121160212_addCustomerFields")]
+    partial class addCustomerFields
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -280,9 +282,6 @@ namespace Cinnamon.Data.Migrations
                     b.Property<bool>("AcceptFlag")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("BackIdImagePath")
-                        .HasColumnType("text");
-
                     b.Property<string>("Birthdate")
                         .IsRequired()
                         .HasColumnType("text");
@@ -315,9 +314,6 @@ namespace Cinnamon.Data.Migrations
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("FrontIdImagePath")
                         .HasColumnType("text");
 
                     b.Property<bool>("IsMaker")
@@ -442,54 +438,6 @@ namespace Cinnamon.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("ExperienceCategories");
-                });
-
-            modelBuilder.Entity("Cinnamon.Core.Models.FamilyMemberModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("BirthMonth")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("BirthYear")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("DeletionFlag")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Gender")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("FamilyMembers");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.Models.SearchTagsModel", b =>
@@ -896,17 +844,6 @@ namespace Cinnamon.Data.Migrations
                     b.Navigation("Activity");
                 });
 
-            modelBuilder.Entity("Cinnamon.Core.Models.FamilyMemberModel", b =>
-                {
-                    b.HasOne("Cinnamon.Core.Models.CustomerModel", "Customer")
-                        .WithMany("FamilyMembers")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("Cinnamon.Core.Models.SearchTagsModel", b =>
                 {
                     b.HasOne("Cinnamon.Core.ActivityModel", "Activity")
@@ -1001,11 +938,6 @@ namespace Cinnamon.Data.Migrations
             modelBuilder.Entity("Cinnamon.Core.ExperienceTypeModel", b =>
                 {
                     b.Navigation("Activities");
-                });
-
-            modelBuilder.Entity("Cinnamon.Core.Models.CustomerModel", b =>
-                {
-                    b.Navigation("FamilyMembers");
                 });
 #pragma warning restore 612, 618
         }

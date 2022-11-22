@@ -115,7 +115,8 @@ public class AccountController : Controller
                 Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                Password = model.Password
+                Password = model.Password,
+                ProfilePath = "/images/profile/user.png" // add default image
             });
 
             if(!register.Succeeded)
