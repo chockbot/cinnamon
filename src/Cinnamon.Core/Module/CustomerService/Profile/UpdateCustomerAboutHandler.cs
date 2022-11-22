@@ -8,7 +8,14 @@ public class UpdateCustomerAboutHandler : IUpdateCustomerAbout
 {
     public AppResult<UpdateAboutResult> Execute(UpdateAbout args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateAboutResult>.CreateFailed(ex, "An error occured in UpdateAboutHandler");
+        }
     }
 
     public async Task<AppResult<UpdateAboutResult>> ExecuteAsync(UpdateAbout args)
@@ -19,7 +26,7 @@ public class UpdateCustomerAboutHandler : IUpdateCustomerAbout
             var customer = await CoreDI.DataStore.Customers.GetCustomerById(args.CustomerId);
             if(customer == null)
             {
-                return AppResult<UpdateAboutResult>.CreateFailed(new ApplicationException("Can't customer data"), "Can't customer data");
+                return AppResult<UpdateAboutResult>.CreateFailed(new ApplicationException("Can't find customer data"), "Can't find customer data");
             }
 
             customer.About = args.About;

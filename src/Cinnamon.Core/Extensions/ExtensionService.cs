@@ -40,6 +40,7 @@ public static class ExtensionService
         services.AddTransient<IUpdateActivityHandler, UpdateActivityHandler>();
         services.AddTransient<ISignedCustomer, SignedCustomerHandler>();
         services.AddTransient<IUpdateCustomerAbout, UpdateCustomerAboutHandler>();
+        services.AddTransient<IUpdateCustomerLegalName, UpdateCustomerLegalNameHandler>();
 
         return services;
     } 

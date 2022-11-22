@@ -1,6 +1,8 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Core.Module.CustomerService.Handler;
+@inject IUpdateCustomerLegalName updateLegalNameHandler;
 
-<article class="personal-info-wrapper py-3">
+<article class="personal-info-wrapper p-3">
     <div class="p-section name-section">
         <Row>
             <Column ColumnSize="ColumnSize.Is6.OnDesktop">
@@ -8,13 +10,31 @@
                 @if(!isEditLegalName)
                 {
                     <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                        <span class="text-capitalize">dexter echalico</span>
-                        <span class="edit">Edit</span>
+                        <span class="text-capitalize">@Model.Customer.FirstName @Model.Customer.LastName</span>
+                        <span class="edit" @onclick="EditLegalNameClick">Edit</span>
                     </Div>
                 }
                 else
                 {
-
+                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        <span>Your name should match the name in your submitted Government ID.</span>
+                        <span class="edit" @onclick="() => isEditLegalName = !isEditLegalName">Cancel</span>
+                    </Div>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                            <div class="form-floating mt-3 profile-info-input">
+                                <TextEdit class="border-10" id="legalFirstname" Size="Size.Default" @bind-Text="firstNameLocalState" />
+                                <label for="legalFirstname">First name</label>
+                            </div>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                            <div class="form-floating mt-3 profile-info-input">
+                                <TextEdit class="border-10" id="legalLastname" Size="Size.Default" @bind-Text="lastNameLocalState" />
+                                <label for="legalLastname">Last name</label>
+                            </div>
+                        </Column>
+                    </Row>
+                    <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveLegalName">Save</Button>
                 }
             </Column>
         </Row>
@@ -92,15 +112,53 @@
 
 @code 
 {
+    [Parameter]
+    public Models.Customer.Profile Model {get; set;}
+
     private IList<Child> children = new List<Child>();
     
     private bool isEditLegalName = false;
+    
+    private string firstNameLocalState = string.Empty;
+    
+    private string lastNameLocalState = string.Empty;
     
     protected override void OnInitialized()
     {
         children.Add(new Child {BirthDate = "April 2010", Gender = "Female", Name = "juanita san jose"});
         children.Add(new Child {BirthDate = "September 2008", Gender = "Male", Name = "charanko san jose"});
         children.Add(new Child {BirthDate = "December 2006", Gender = "Femala", Name = "rocia san jose"});
+    }
+
+    private void EditLegalNameClick()
+    {
+        isEditLegalName = !isEditLegalName;
+        if(isEditLegalName)
+        {
+            firstNameLocalState = Model.Customer.FirstName;
+            lastNameLocalState = Model.Customer.LastName;
+        }
+        else
+        {
+            firstNameLocalState = string.Empty;
+            lastNameLocalState = string.Empty;
+        }
+    }
+
+    private async Task SaveLegalName()
+    {
+        if(isEditLegalName)
+        {
+            var result = await updateLegalNameHandler.ExecuteAsync(
+                new Core.Module.CustomerService.Interactors.UpdateLegalName {CustomerId = Model.Customer.Id, FirstName = firstNameLocalState, LastName = lastNameLocalState});
+            
+            if(result.Succeeded)
+            {
+                Model.Customer.FirstName = firstNameLocalState;
+                Model.Customer.LastName = lastNameLocalState;
+            }
+        }
+        isEditLegalName = false;
     }
 
     public class Child 
