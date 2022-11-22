@@ -17,6 +17,8 @@ public class CustomerModel : BaseModel
     public bool IsVerified { get; set; }
     public string DateJoined { get; set; }
     public string About { get; set; }
+    public string? FrontIdImagePath { get; set; }
+    public string? BackIdImagePath { get; set; }
 
     public virtual IList<FamilyMemberModel> FamilyMembers{ get; set; }
 }
