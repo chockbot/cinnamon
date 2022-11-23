@@ -1,4 +1,5 @@
 @page "/customer/profile"
+@using Cinnamon.Core
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Modals;
@@ -91,13 +92,13 @@
                 </Items>
                 <Content>
                     <TabPanel Name="experiences">
-                        <Experiences />
+                        <Experiences/>
                     </TabPanel>
                     <TabPanel Name="personal-info">
                         <PersonalInfo Model="Model" />
                     </TabPanel>
                     <TabPanel Name="maker-experience">
-                        <MakerExperiences />
+                        <MakerExperiences @ref="makerExperiences" Activities="activities" />
                     </TabPanel>
                 </Content>
             </Tabs>
@@ -109,7 +110,11 @@
 
 @code 
 {
+    private IList<ActivityModel> activities = new List<ActivityModel>();
+
     private ModalUploadGovernmentId uploadIdModal;
+
+    private MakerExperiences makerExperiences;
 
     private string selectedTab = "experiences";
 
@@ -140,11 +145,18 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
-
         //Get Customer Information
         Model = new();
         Model.Customer = currentCustomer.Result.Customer;
         ImageSource   = Model.Customer.ProfilePath;
+        //Get Customer Activities
+
+
+        //Get Maker Activities
+        var customer = currentCustomer.Result.Customer;
+        activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
+        if(activities == null)return;
+      
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

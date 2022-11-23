@@ -111,7 +111,7 @@ namespace Cinnamon.Core
             {
                 if(UserActionType == Enums.UserActionType.Create)
                 {
-                    activity.ActivityImages = await Upload(ExperienceSetupViewModel.Images);
+                     activity.ActivityImages = await Upload(ExperienceSetupViewModel.Images);
                     activity.CreatedBy = UserList.Id;
                     activity.CreatedOn = DateTime.UtcNow;
                     activity.ChangedOn = DateTime.UtcNow;
