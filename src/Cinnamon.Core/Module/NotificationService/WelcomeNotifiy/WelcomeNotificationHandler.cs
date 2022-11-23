@@ -33,7 +33,6 @@ public class WelcomeNotificationHandler: IWelcomeNotification
                 .ExecuteAsync(new EmailService.Interactors.SendMail()
                 {
                     Body = emailBody,
-                    From = "dexter.echalico@cinnamon.ph",
                     Recipients = new List<string> { args.Email },
                     Subject = "Welcome to Cinnamon",
                     ContentType = "html"

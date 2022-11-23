@@ -8,4 +8,5 @@ public class EmailService
     public string ClientSecret {get; set;}
     public string DirectoryTenantId {get; set;}
     public string Resource {get; set;}
+    public string Email { get; set; }
 }
