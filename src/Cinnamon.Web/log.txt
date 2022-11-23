@@ -4130,3 +4130,1677 @@ INFORMATION: [2022-11-23 03:27:29] Entity Framework Core 6.0.10 initialized 'Dat
 INFORMATION: [2022-11-23 03:27:29] Executed DbCommand (4ms) [Parameters=[@p19='?' (DbType = Int32), @p0='?', @p1='?' (DbType = Boolean), @p2='?', @p3='?', @p4='?' (DbType = Int32), @p5='?' (DbType = DateTime), @p6='?' (DbType = Int32), @p7='?' (DbType = DateTime), @p8='?', @p9='?' (DbType = Boolean), @p10='?', @p11='?' (DbType = Boolean), @p12='?', @p13='?', @p14='?' (DbType = Boolean), @p15='?' (DbType = Boolean), @p16='?', @p17='?', @p18='?'], CommandType='Text', CommandTimeout='30']
 UPDATE "Customers" SET "About" = @p0, "AcceptFlag" = @p1, "BackIdImagePath" = @p2, "Birthdate" = @p3, "ChangedBy" = @p4, "ChangedOn" = @p5, "CreatedBy" = @p6, "CreatedOn" = @p7, "DateJoined" = @p8, "DeletionFlag" = @p9, "Email" = @p10, "ExternalLogin" = @p11, "FirstName" = @p12, "FrontIdImagePath" = @p13, "IsMaker" = @p14, "IsVerified" = @p15, "LastName" = @p16, "ProfilePath" = @p17, "UserId" = @p18
 WHERE "Id" = @p19;
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (50ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:39:40] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (6ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:39:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:40] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:39:44] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:44] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:44] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ActivityTypeId", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Description", a."ExperienceCategoryId", a."ExperienceTypeId", a."Guarantee", a."IsPublished", a."Location", a."MapDetails", a."Price", a."Remarks", a."ScheduleIndicator", a."Schedules", a."Subtitle", a."Title"
+FROM "Activities" AS a
+INFORMATION: [2022-11-23 01:39:44] Executed DbCommand (24ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ActivityTypeId", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Description", a."ExperienceCategoryId", a."ExperienceTypeId", a."Guarantee", a."IsPublished", a."Location", a."MapDetails", a."Price", a."Remarks", a."ScheduleIndicator", a."Schedules", a."Subtitle", a."Title"
+FROM "Activities" AS a
+INFORMATION: [2022-11-23 01:39:44] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:44] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:44] Executed DbCommand (12ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:39:44] Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ActivityId", a."Address1", a."Address2", a."ChangedBy", a."ChangedOn", a."City", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."District"
+FROM "Addresses" AS a
+INFORMATION: [2022-11-23 01:39:44] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:44] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."ImageId", a."ImageLocation", a."ImageName"
+FROM "ActivityImages" AS a
+INFORMATION: [2022-11-23 01:39:44] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:44] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:39:57] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:57] Executed DbCommand (3ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:57] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:39:57] Executed DbCommand (2ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:39:57] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 01:40:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:40:30] Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:43:05] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:43:05] Executed DbCommand (49ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:43:05] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:43:05] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:43:05] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:43:05] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:43:05] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:43:05] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:43:05] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:43:05] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:43:05] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:43:16] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:43:17] Executed DbCommand (12ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:43:17] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:43:17] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:43:17] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 01:44:09] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:44:09] Executed DbCommand (48ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:44:09] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:44:09] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:44:09] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:44:09] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:44:10] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:44:10] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:44:10] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:44:10] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:44:10] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:44:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:44:39] Executed DbCommand (11ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:44:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:44:39] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:44:39] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 01:45:28] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:45:28] Executed DbCommand (1ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:28] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:28] Executed DbCommand (51ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:46:28] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:46:28] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:46:28] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:46:28] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:28] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:46:28] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:28] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:46:28] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:28] Executed DbCommand (6ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:28] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:46:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:29] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:46:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:39] Executed DbCommand (2ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:46:39] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:46:39] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 01:52:25] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:25] Executed DbCommand (48ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:52:25] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:52:25] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:52:25] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:52:25] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (6ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 01:52:26] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:52:26] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:53:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:53:39] Executed DbCommand (49ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:53:39] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:53:39] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:53:39] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:53:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:53:39] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:53:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:53:39] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:53:39] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:53:39] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:54:13] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:54:14] Executed DbCommand (49ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:54:14] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:54:14] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:54:14] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:54:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:54:14] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:54:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:54:14] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:54:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:54:14] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:54:22] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:54:23] Executed DbCommand (12ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:54:23] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:54:23] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:54:23] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 01:55:23] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:55:23] Executed DbCommand (53ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:55:23] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 01:55:23] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 01:55:23] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 01:55:23] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:55:23] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 01:55:23] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:55:23] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 01:55:23] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:55:23] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 01:55:36] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:55:36] Executed DbCommand (12ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:55:36] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 01:55:36] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 01:55:36] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 02:17:13] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (49ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (5ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 02:17:14] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (6ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:17:14] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:14] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 02:17:24] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:24] Executed DbCommand (2ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:24] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:17:24] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:17:24] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 02:19:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:19:40] Executed DbCommand (53ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:19:40] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:19:40] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 02:19:40] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 02:19:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:19:40] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 02:19:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:19:40] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 02:19:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:19:40] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 02:19:58] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:19:58] Executed DbCommand (12ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:19:58] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:19:58] Executed DbCommand (3ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:19:58] Executed DbCommand (6ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 02:20:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:29] Executed DbCommand (49ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:20:29] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:20:29] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 02:20:29] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 02:20:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:29] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 02:20:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:29] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 02:20:29] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:29] Executed DbCommand (6ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (0ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:20:30] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:30] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 02:20:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:40] Executed DbCommand (2ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:40] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:20:40] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:20:40] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 02:23:34] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:34] Executed DbCommand (49ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:23:34] Executed DbCommand (3ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT EXISTS (SELECT 1 FROM pg_catalog.pg_class c JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace WHERE c.relname='__EFMigrationsHistory');
+INFORMATION: [2022-11-23 02:23:34] Executed DbCommand (4ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT "MigrationId", "ProductVersion"
+FROM "__EFMigrationsHistory"
+ORDER BY "MigrationId";
+INFORMATION: [2022-11-23 02:23:34] No migrations were applied. The database is already up to date.
+INFORMATION: [2022-11-23 02:23:34] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag", e."Name"
+FROM "ExperienceTypes" AS e
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (6ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (5ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (4ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT a."Id", a."ChangedBy", a."ChangedOn", a."CreatedBy", a."CreatedOn", a."DeletionFlag", a."Icon", a."Name"
+FROM "ActivityTypes" AS a
+WHERE a."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = Int32), @p2='?' (DbType = DateTime), @p3='?' (DbType = Int32), @p4='?' (DbType = DateTime), @p5='?' (DbType = Boolean), @p6='?', @p7='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "ActivityTypes" ("Id", "ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Icon", "Name")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7);
+INFORMATION: [2022-11-23 02:23:35] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:35] Executed DbCommand (1ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT e."Id", e."Category", e."ChangedBy", e."ChangedOn", e."CreatedBy", e."CreatedOn", e."DeletionFlag"
+FROM "ExperienceCategories" AS e
+INFORMATION: [2022-11-23 02:23:43] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:43] Executed DbCommand (2ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Email" = @__email_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:43] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:43] Executed DbCommand (1ms) [Parameters=[@__p_0='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Id" = @__p_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:43] Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+INSERT INTO "WaitLists" ("ChangedBy", "ChangedOn", "CreatedBy", "CreatedOn", "DeletionFlag", "Email", "Guid", "IsVerified", "Token")
+VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8)
+RETURNING "Id";
+INFORMATION: [2022-11-23 02:23:54] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:54] Executed DbCommand (30ms) [Parameters=[@__guid_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Guid" = @__guid_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:54] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:54] Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+INFORMATION: [2022-11-23 02:23:54] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:54] Executed DbCommand (2ms) [Parameters=[@p9='?' (DbType = Int32), @p0='?' (DbType = Int32), @p1='?' (DbType = DateTime), @p2='?' (DbType = Int32), @p3='?' (DbType = DateTime), @p4='?' (DbType = Boolean), @p5='?', @p6='?', @p7='?' (DbType = Boolean), @p8='?'], CommandType='Text', CommandTimeout='30']
+UPDATE "WaitLists" SET "ChangedBy" = @p0, "ChangedOn" = @p1, "CreatedBy" = @p2, "CreatedOn" = @p3, "DeletionFlag" = @p4, "Email" = @p5, "Guid" = @p6, "IsVerified" = @p7, "Token" = @p8
+WHERE "Id" = @p9;
+INFORMATION: [2022-11-23 02:23:55] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:55] Executed DbCommand (10ms) [Parameters=[@__guid_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT w."Id", w."ChangedBy", w."ChangedOn", w."CreatedBy", w."CreatedOn", w."DeletionFlag", w."Email", w."Guid", w."IsVerified", w."Token"
+FROM "WaitLists" AS w
+WHERE w."Guid" = @__guid_0
+LIMIT 1
+INFORMATION: [2022-11-23 02:23:55] Entity Framework Core 6.0.10 initialized 'DataStoreDbContext' using provider 'Npgsql.EntityFrameworkCore.PostgreSQL:6.0.6+6fa8f3c27a7c241a66e72a6c09e0b252509215d0' with options: using lazy loading proxies 
+INFORMATION: [2022-11-23 02:23:55] Executed DbCommand (7ms) [Parameters=[@__email_0='?'], CommandType='Text', CommandTimeout='30']
+SELECT c."Id", c."About", c."AcceptFlag", c."BackIdImagePath", c."Birthdate", c."ChangedBy", c."ChangedOn", c."CreatedBy", c."CreatedOn", c."DateJoined", c."DeletionFlag", c."Email", c."ExternalLogin", c."FirstName", c."FrontIdImagePath", c."IsMaker", c."IsVerified", c."LastName", c."ProfilePath", c."UserId"
+FROM "Customers" AS c
+WHERE c."Email" = @__email_0
+LIMIT 1
