@@ -188,13 +188,17 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    // Include the access token in the properties
-                    var props = new AuthenticationProperties();
-                    props.StoreTokens(info.AuthenticationTokens);
-                    await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { UserId = userId, ProfilePath = "/images/Profile/user.png", FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true : false, About ="" , DateJoined = "" });
-                    await _signInManager.SignInAsync(user, props, authenticationMethod: info.LoginProvider);
-                    _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                    result = await _userManager.AddLoginAsync(user, info);
+                    if (result.Succeeded)
+                    {
+                        var userId = await _userManager.GetUserIdAsync(user);
+                        // Include the access token in the properties
+                        var props = new AuthenticationProperties();
+                        props.StoreTokens(info.AuthenticationTokens);
+                        await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { UserId = userId, ProfilePath = "/images/Profile/user.png", FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true : false, About = "", DateJoined = "" });
+                        await _signInManager.SignInAsync(user, props, authenticationMethod: info.LoginProvider);
+                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+                    }
                 }
             }
             
