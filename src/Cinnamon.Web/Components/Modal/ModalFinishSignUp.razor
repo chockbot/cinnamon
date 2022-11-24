@@ -94,7 +94,7 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.finishSignupModal.init","");
+            await jsRuntime.InvokeVoidAsync("MyLib.Components.modal.finishSignUpModal.init","");
         }
     }
 
