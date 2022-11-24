@@ -198,22 +198,23 @@
             Schedules = await CoreDI.DataStore.Schedules.GetAllAsync();
             Schedule = Schedules.Find(x=>x.Id == Id);
             Activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(Schedule.ActivityId);
-            var user = AuthState.User;
-
-            var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user });
-            if (!currentCustomer.Succeeded)
-            {
-                // don't have current user login
-                NavigationManager.NavigateTo("explore");
-                return;
-            }
-
-            //Get Customer Information
-            Model = new();
-            Model.Customer = currentCustomer.Result.Customer;
-
-            isLoaded= true;
         }
+
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user });
+        if (!currentCustomer.Succeeded)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        //Get Customer Information
+        Model = new();
+        Model.Customer = currentCustomer.Result.Customer;
+
+        isLoaded= true;
     }
 
     private void OnClickChange(){
