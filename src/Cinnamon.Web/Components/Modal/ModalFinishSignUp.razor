@@ -89,11 +89,6 @@
 
     SignupViewModel viewModel = new SignupViewModel();
 
-    public void OnSelect(ChangeEventArgs args)
-    {
-        UserType usertype;
-        Enum.TryParse(args.Value.ToString(), out usertype);
-    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -102,18 +97,17 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.finishSignupModal.init","");
         }
     }
+
     public bool ButtonIsClicked()
     {
         return viewModel.isClickButton ? true : false;
     }
+
     public string showSpinner()
     {
         return viewModel.isClickButton ? "visible" : "hidden";
     }
-    private string ShowErrorMessage()
-    {
-        return viewModel.HasError ? "block" : "none";
-    }
+
     public async Task OpenModal(string Email)
     {
         viewModel.ModalDisplay   = "block;";
@@ -122,53 +116,11 @@
         viewModel.Customer.Email = Email;
         StateHasChanged();
     }
+
     public async Task CloseModal()
     {
         viewModel.ModalClass    = "";
         viewModel.ModalDisplay  = "none;";
         StateHasChanged();
-    }
-    public async Task Submit()
-    {
-        if (viewModel.isValid(viewModel.Customer.Email) && viewModel.isValid(viewModel.Customer.FirstName) &&
-        viewModel.isValid(viewModel.Customer.LastName) && viewModel.isValid(viewModel.Customer.Birthdate.ToString()))
-        {
-            if (viewModel.isValidPassword(viewModel.Password, viewModel.ConfirmPassword))
-            {
-                var user = await userManager.FindByEmailAsync(viewModel.Customer.Email);
-                if(user == null)
-                {
-                    var registerRes = await registerMakerHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker
-                        {
-                            AcceptFlag  = viewModel.Customer.AcceptFlag,
-                            Birthdate   = viewModel.Customer.Birthdate,
-                            Email       = viewModel.Customer.Email,
-                            FirstName   = viewModel.Customer.FirstName,
-                            LastName    = viewModel.Customer.LastName,
-                            Password    = viewModel.Password,
-                            ProfilePath = viewModel.imagePath
-                        });
-                    if(registerRes.Succeeded)
-                    {
-                        await jsRuntime.InvokeVoidAsync("MyLib.Track", "User Signup");
-                        viewModel.isSubmit      = true;
-                        viewModel.isClickButton = false;
-                        NavigationManager.NavigateTo("Creation");
-                    }
-                }
-            }
-            else
-            {
-                viewModel.HasError      = true;
-                viewModel.ErrorText     = "Password and confirm password are not match.";
-                viewModel.isClickButton = false;
-            }
-        }
-        else
-        {
-            viewModel.HasError      = true;
-            viewModel.ErrorText     = "Kindly fill out the form to proceed signing up.";
-            viewModel.isClickButton = false;
-        }
     }
 }
