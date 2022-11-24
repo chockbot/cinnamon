@@ -173,10 +173,6 @@
     <SchedulesModal @ref="ModalSched" ScheduleModel="Activity.ScheduleList.ToList()"></SchedulesModal>
 }
 
-@if (!AuthState.User.Identity.IsAuthenticated)
-{
-    <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@($"/Payment/{Schedule.Id}")"></ModalLogin>
-}
 
 @code {
     [Parameter]
