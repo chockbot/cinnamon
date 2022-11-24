@@ -96,7 +96,7 @@ namespace Cinnamon.Core
         public async Task<bool> SaveActivity(ActivityModel activityModel)
         {
             var sortPrice = ExperienceSetupViewModel.Schedules.OrderBy(x => x.Price).ToList();
-            activityModel.Price = sortPrice.Count > 0 ? String.Format("{0} {1} - {2}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price, sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price.ToString());
+            activityModel.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price, sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price.ToString());
 
             if (activityModel.ExperienceTypeId == 1)
             {

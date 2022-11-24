@@ -152,7 +152,7 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
                 }
                 else
                 {
-                    return Redirect("/Explore");
+                    return Redirect(returnUrl);
                 }
             }
             else
@@ -217,7 +217,7 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
             else
             {
 
-                return Redirect("/Explore");
+                return Redirect(returnUrl);
             }
         }
 

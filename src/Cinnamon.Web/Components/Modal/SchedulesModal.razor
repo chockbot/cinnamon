@@ -1,0 +1,57 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Core.Enums
+@using Cinnamon.Web.Components
+@using Cinnamon.Data
+@using Cinnamon.Core
+@using System.Text
+@using System.Globalization
+
+<div class="modal fade @ModalClass" id="scheduleModal" tabindex="-1" aria-labelledby="ScheduleModalLabel" aria-hidden="true" style="display:@ModalDisplay">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="()=>Close()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row col-lg-12 col-md-12 col-sm-12 d-flex flex-row flex-wrap">
+                    @for (int x = 0; x < ScheduleModel.Count; x++)
+                    {
+                        <div class="col-md-4 mb-2">
+                            <CarouselItemSchedule ScheduleModel="@ScheduleModel.ElementAt(x)"></CarouselItemSchedule>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+@code {
+    [Parameter]
+    public List<ScheduleModel> ScheduleModel { get; set; }
+
+    public string ModalDisplay = "none;";
+    public string ModalClass = "";
+    public bool ShowBackdrop = false;
+
+    public void Open()
+    {
+        ModalDisplay = "block;";
+        ModalClass = "show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        ModalDisplay = "none";
+        ModalClass = "hide";
+        ShowBackdrop = false;
+        StateHasChanged();
+    }
+}

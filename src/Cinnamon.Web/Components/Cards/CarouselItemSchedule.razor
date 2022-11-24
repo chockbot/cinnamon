@@ -1,19 +1,58 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core
-
+@using Cinnamon.Core.Enums
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
 <div class="card shadow p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
     @ScheduleModel.Name
     <br />
     <br />
+    <div>
+        @ScheduleModel.DateTime
+    </div>
+    <br />
+    <br />
     <div style="font-size:0.7rem">
      @ScheduleModel.UnitPrice @ScheduleModel.Price / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
     </div>
-    <button class="btn-primary rounded-pill shadow-sm">Choose</button>
+    @if (AuthState.User.Identity.IsAuthenticated)
+    {
+        if (ButtonType == ScheduleButtonType.Choose)
+        {
+            <button class="btn-primary rounded border-0 p-2 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" >Choose</button>
+        }
+        else{
+            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="OnClickChange">
+                Change
+            </button>
+        }
+    }
+    else
+    {
+        <button class="btn-primary rounded border-0 p-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Choose</button>
+    }
+    
 </div>
-
 
 @code {
     [Parameter]
     public ScheduleModel ScheduleModel { get; set; }
+    [Parameter]
+    public ScheduleButtonType ButtonType { get; set; } = ScheduleButtonType.Choose;
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickChange { get; set; } = new EventCallback<MouseEventArgs>();
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickLogin { get; set; } = new EventCallback<MouseEventArgs>();
+
+    public AuthenticationState AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
+    private void OnClickChoose(){
+        NavigationManager.NavigateTo($"/Payment/{ScheduleModel.Id}", true);
+    }
 }
