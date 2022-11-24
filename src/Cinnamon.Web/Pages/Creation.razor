@@ -207,6 +207,11 @@
         {
             _viewModel.NextStep();
         }
+
+        if(!_viewModel.ExperienceSetupViewModel.IsValid)
+        {
+            Task.Run(() => module.InvokeVoidAsync("onScrollUp"));
+        }
     }
 
     private string MainButtonText(){
