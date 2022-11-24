@@ -3,5 +3,5 @@ import onboarding from "./onboarding";
 
 export default {
   profile,
-  onboarding
+  onboarding,
 };
