@@ -108,6 +108,17 @@ public class AccountController : Controller
                 return Json(new { success = false, message = "Please provide required fields" });
             }
 
+            var waitListRes = await CoreDI.DataStore.WaitList.GetWaitListByEmail(model.Email);
+            if(waitListRes == null)
+            {
+                return Json(new { success = false, message = "Please register your email first" });
+            }
+            
+            if(!waitListRes.IsVerified)
+            {
+                return Json(new { success = false, message = "Please verified your email first" });
+            }
+
             // register customer information
             var register = await registerMaker.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker {
                 AcceptFlag = model.AcceptFlag,
