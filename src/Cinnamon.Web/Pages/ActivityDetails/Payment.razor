@@ -1,0 +1,251 @@
+﻿@page "/Payment/{Id:int}"
+@layout LandingMainLayout
+@using Cinnamon.Core
+@using Cinnamon.Core.Enums
+@using Cinnamon.Core.Models
+@using Cinnamon.Core.Module.CustomerService.Handler
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Shared
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject ISignedCustomer signedCustomer;
+@inject IUpdateCustomerFamilyMembers updateFamilyMembers;
+
+<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
+    <div class="d-flex col-lg-10 col-md-10 col-sm-12 col-12">
+        <a class="text-decoration-none text-reset" href="/Explore/@Schedule.ActivityId"><i class="far fa-arrow-alt-circle-left" style="font-size:1.7rem"></i></a>
+        <h4 class="fw-bold px-3">Confirm experience</h4>
+    </div>
+</div>
+
+<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-3">
+    <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
+        <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
+            <div class="col-lg-5 col-md-5 col-sm-12 col-12">
+                <h5 class="fw-bold">Activity selected</h5>
+                <CarouselItemSchedule ScheduleModel="@Schedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange"></CarouselItemSchedule>
+            </div>
+            <hr />
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                <h5 class="fw-bold">Select who will attend</h5>
+                @if (isLoaded)
+                {
+                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                        <Div class="details" Display="Display.Flex">
+                            <Column class="d-flex flex-row flex-wrap">
+                                @foreach (var item in Model.Customer.FamilyMembers)
+                                {
+                                    <div class="card shadow text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap">
+                                        <input type="checkbox" value="@item.Id" class="mx-2" @onchange="() => OnSelectAttend(item)"/> @item.Name
+                                    </div>
+                                }
+                            </Column>
+                        </Div>
+                    </Column>
+                }
+                <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" @onclick="()=>AddChildrenModal.Open()">Add</button>
+            </div>
+            <hr />
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="d-flex">
+                    <h5 class="fw-bold">Pay with</h5>
+                </div>
+                <div class="col-lg-12 col-md-12 col-12">
+                    <div class="form-outline mb-4 pb-1"> 
+                            <label>Credit or debit card</label>
+                        <select Class="form-control form-control-lg">
+                            <option><i class="bi bi-credit-card"></i>Credit or debit card</option>
+                            </select>
+                        </div>
+
+                        <p class="fw-bold mb-4">Enter Your Card Details</p>
+
+                        <div class="row mb-4">
+                            <div class="col-7">
+                            <input type="text" id="formControlLgXsd" class="form-control form-control-lg" value="" placeholder="Card number" />
+                            </div>
+                            <div class="col-3">
+                                <div class="form-outline">
+                                    <input type="password" id="formControlLgExpk" class="form-control form-control-lg"
+                                           placeholder="MM/YYYY" />
+                                </div>
+                            </div>
+                            <div class="col-2">
+                                <div class="form-outline">
+                                    <input type="password" id="formControlLgcvv" class="form-control form-control-lg"
+                                           placeholder="Cvv" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-4">
+                            <div class="col-7">
+                                <div class="form-outline">
+                                <label class="form-label" for="formControlLgXM">Name on card</label>
+                                <input type="text" id="formControlLgXM" class="form-control form-control-lg"
+                                           value="" placeholder="Name"/>
+                                </div>
+                            </div>
+                             <div class="col-5">
+                                <div class="form-outline">
+                                <label class="form-label" for="formControlLgXM">Contact number</label>
+                                    <input type="text" id="formControlLgXM" class="form-control form-control-lg"
+                                       value="" placeholder="contact no." />
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <br />
+                    <div class="form-outline">
+                        <label class="form-label" for="formControlLgXM"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
+                            <br />
+                            <br />
+                        <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3">Pay and confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
+            <div class="card shadow p-lg-3 p-3 mr-5 d-flex flex-column sticky-top mb-3" style="top:80px;">
+                <div style="font-size:1rem">
+                    <span class="fw-bold">@Activity.Title</span>
+                    <div style="font-size:0.8rem">
+                        @Schedule.Name
+                    </div>
+                    <div style="font-size:0.8rem">
+                        @Schedule.DateTime
+                    </div>
+                </div>
+                <hr />
+                <div class="d-flex align-items-center">
+                    Your booking is protected by <div class="app-name">
+                        @Resources.App.appName
+                    </div>
+                </div>
+                <hr />
+                 <div style="font-size:1rem">
+                    <span class="fw-bold">Price details</span>
+                    <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                       <div>
+                           @Schedule.UnitPrice @Schedule.Price x @SelectedAttendees.Count head
+                       </div>
+                        <div>
+                            @(@Schedule.Price * @SelectedAttendees.Count)
+                       </div>
+                    </div>
+                    <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                       <div>
+                            Convinience fee - 15%
+                       </div>
+                        <div>
+                            P1,250.00
+                       </div>
+                    </div>
+                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                       <div>
+                            <a href="#">Enter coupon</a>
+                       </div>
+                        <div>
+                            - P75.00
+                       </div>
+                    </div>
+                    <br />
+                    <br />
+                    <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                        <div>
+                            Total (PHP)
+                        </div>
+                        <div>
+                            0
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@if (isLoaded)
+{
+    <AddChildrenModal @ref="AddChildrenModal" Model="@Model" SaveEditedFamilyMember="SaveEditedFamilyMember"></AddChildrenModal>
+    <SchedulesModal @ref="ModalSched" ScheduleModel="Activity.ScheduleList.ToList()"></SchedulesModal>
+}
+
+@if (!AuthState.User.Identity.IsAuthenticated)
+{
+    <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@($"/Payment/{Schedule.Id}")"></ModalLogin>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    private Models.Customer.Profile Model;
+    public List<ScheduleModel> Schedules { get; set; }
+    public ScheduleModel Schedule { get; set; } = new ScheduleModel();
+    public ActivityModel Activity { get; set; } = new ActivityModel();
+    public IList<FamilyMemberModel> SelectedAttendees { get; set; } = new List<FamilyMemberModel>();
+    public AuthenticationState AuthState { get; set; }
+    private SchedulesModal ModalSched { get; set; }
+    public AddChildrenModal AddChildrenModal { get; set; }
+    public bool isLoaded { get; set; } = false;
+    protected override async Task OnInitializedAsync()
+    {
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        if (AuthState.User.Identity.IsAuthenticated)
+        {
+            Schedules = await CoreDI.DataStore.Schedules.GetAllAsync();
+            Schedule = Schedules.Find(x=>x.Id == Id);
+            Activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(Schedule.ActivityId);
+            var user = AuthState.User;
+
+            var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user });
+            if (!currentCustomer.Succeeded)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+
+            //Get Customer Information
+            Model = new();
+            Model.Customer = currentCustomer.Result.Customer;
+
+            isLoaded= true;
+        }
+    }
+
+    private void OnClickChange(){
+        ModalSched.Open();
+    }
+
+    private async Task SaveEditedFamilyMember(IList<FamilyMemberModel> familyMembers)
+    {
+        // get only not empty members
+        var members = familyMembers.Where(i => !string.IsNullOrEmpty(i.Name)).ToList();
+
+        var update = await updateFamilyMembers.ExecuteAsync(
+            new Core.Module.CustomerService.Interactors.UpdateFamilyMember { CustomerId = Model.Customer.Id, FamilyMembers = members });
+
+        if (update.Succeeded)
+        {
+            Model.Customer = update.Result.Customer;
+        }
+
+        AddChildrenModal.Close();
+    }
+
+    private void OnSelectAttend(FamilyMemberModel familyMember){
+        if(SelectedAttendees.Where(x=>x.Id == familyMember.Id).FirstOrDefault() == null)
+        {
+            SelectedAttendees.Add(familyMember);
+        }
+        else{
+            SelectedAttendees.Remove(familyMember);
+        }
+
+        SelectedAttendees = SelectedAttendees;
+    }
+}
+

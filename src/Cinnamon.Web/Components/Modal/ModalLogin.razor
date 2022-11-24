@@ -13,7 +13,7 @@
                     <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
                     <br/>
                     <h6>Email</h6>
-                    <LoginCard TypeValue="@TypeValue"></LoginCard>
+                    <LoginCard TypeValue="@TypeValue" ReturnUrl="@ReturnUrl"></LoginCard>
                 </div>
             </div>
         </div>  
@@ -22,4 +22,6 @@
 @code {
     [Parameter]
     public UserType TypeValue { get; set; }
+    [Parameter]
+    public string ReturnUrl { get; set; } = "";
 }

@@ -331,6 +331,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to What it&apos;s all about.
+        /// </summary>
+        internal static string detailDescription1 {
+            get {
+                return ResourceManager.GetString("detailDescription1", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to {0} Kilometers away.
         /// </summary>
         internal static string distanceInKM {

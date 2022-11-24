@@ -41,7 +41,7 @@
                     method="post">
                  <input type="hidden" name="provider" value="Google">
                 <input type="hidden" name="userType"  value="@TypeValue">
-                <input type="hidden" name="returnUrl" value="">
+                <input type="hidden" name="returnUrl" value="@ReturnUrl">
                 <button class="btn btn-md btn-google" type="submit"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail</button>
                 <input name="__RequestVerificationToken" type="hidden" value="@_tokenProvider.AntiForgeryToken" />
             </form>
@@ -55,8 +55,6 @@
 @code {
     IJSObjectReference module;
 
-    public Modal modal { get; set; }
-
     ModalPassword modalPassword { get; set; }
 
     ValidationModal verify { get; set; }
@@ -68,6 +66,9 @@
 
     [Parameter]
     public Expression<Func<string>>? For { get; set; }
+
+    [Parameter]
+    public string ReturnUrl { get; set; } = "";
 
     SignupViewModel viewModel = new SignupViewModel();
 
