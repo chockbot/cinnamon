@@ -37,7 +37,9 @@
                 {
                     // invalid guid
                     NavigationManager.NavigateTo("/onboarding", forceLoad: true);
+                    return;
                 }
+                
                 // check if email already verified so that will not call verify email every request
                 if(!waitingRes.IsVerified)
                 {
@@ -48,6 +50,7 @@
                     {
                         // invalid userid and token redirect to onboargin page
                         NavigationManager.NavigateTo("/onboarding");
+                        return;
                     }
 
                     // proceed to populate customer information

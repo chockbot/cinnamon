@@ -132,7 +132,7 @@ public class SendMailHandler : ISendMailHandler
             payload.message.toRecipients = recipients;
 
             // from data
-            payload.message.from = new BodyPayload.From { emailAddress = new BodyPayload.EmailAddress { address = args.From } };
+            payload.message.from = new BodyPayload.From { emailAddress = new BodyPayload.EmailAddress { address = coreConfig.EmailService.Email } };
 
             var json = jsonSerialization.Serialize(payload);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
