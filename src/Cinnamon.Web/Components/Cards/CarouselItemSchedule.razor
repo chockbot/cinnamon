@@ -12,10 +12,10 @@
         @ScheduleModel.DateTime
     </div>
     <br />
-    <br />
     <div style="font-size:0.7rem">
      @ScheduleModel.UnitPrice @ScheduleModel.Price / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
     </div>
+    <br />
     @if (AuthState.User.Identity.IsAuthenticated)
     {
         if (ButtonType == ScheduleButtonType.Choose)
