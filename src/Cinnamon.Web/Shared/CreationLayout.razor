@@ -1,12 +1,12 @@
 ﻿@inherits LayoutComponentBase
-
+@inject NavigationManager navigationManager
 <PageTitle>Cinnamon</PageTitle>
 
 <div class="page">
     <main>
         <div class="top-row px-3">
             <div class="app-name col-lg-3 col-md-2">
-                <a href="" class="app-name">@Resources.App.appName</a>
+                <a class="app-name" @onclick="()=>OnClickLogo()">@Resources.App.appName</a>
             </div>
         </div>
         <article class="content">
@@ -14,3 +14,9 @@
         </article>
     </main>
 </div>
+
+@code{
+    private void OnClickLogo(){
+        navigationManager.NavigateTo("", true);
+    }
+}
