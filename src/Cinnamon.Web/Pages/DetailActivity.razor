@@ -109,12 +109,14 @@
                     </p>
                 }
             </div>
+            @if(Customer != null)
+            {
                 <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
                     <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
-                    <img class="rounded-2 rounded-circle m-3" src="images/profile_picture.png" width="60" height="60" />
+                    <img class="rounded-2 rounded-circle m-3" src="@Customer.ProfilePath" width="60" height="60" />
                     <div class="d-flex flex-column m-2">
-                        <span>Sample Owner</span>
-                        <span>David Watson</span>
+                        <span>Owner</span>
+                        <span>@Customer.FirstName @Customer.LastName</span>
                         <label>View Profile</label>
                     </div>
                     <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
@@ -122,6 +124,22 @@
                     </div>
                     </div>
                 </div>
+            }
+            else{
+                   <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
+                    <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
+                    <img class="rounded-2 rounded-circle m-3" src="/images/Profile/user.png" width="60" height="60" />
+                    <div class="d-flex flex-column m-2">
+                        <span>Sample Owner</span>
+                        <span>Owner Name</span>
+                        <label>View Profile</label>
+                    </div>
+                    <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
+                        <img class="px-3" src="images/check.svg" />
+                    </div>
+                    </div>
+                </div>
+            }
                 <hr class="d-block d-sm-block d-md-none"/>
         </div>
             <hr />
@@ -313,7 +331,8 @@
     public ActivityModel actModel = new ActivityModel();
     public DescriptionSectionModel DescriptionSection = new DescriptionSectionModel();
     public AddressModel Address = new AddressModel();
-     private SchedulesModal ModalSched { get; set; }
+    private SchedulesModal ModalSched { get; set; }
+    private CustomerModel Customer { get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
@@ -321,10 +340,11 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
         }
     }
-    protected override void OnInitialized()   
+    protected override async Task OnInitializedAsync()   
     {
         ActivityModel = Task.Run(() => CoreDI.DataStore.Activities.GetAllAsync()).Result;
         _Images =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Id).ToList();
         actModel = ActivityModel.Where(c => c.Id == Id).ElementAt(0);
+        Customer = await CoreDI.DataStore.Customers.GetCustomerById(actModel.CreatedBy);
     }
 }
