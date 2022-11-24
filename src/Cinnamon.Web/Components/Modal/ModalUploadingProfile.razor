@@ -52,6 +52,20 @@
     </div>
 </EditForm>
 }
+@if (viewModel.ShowErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+        <strong>Error!</strong>Error occured while uploading. Please refresh the page and try again.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (viewModel.ShowSuccessMessage)
+{
+    <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+        <strong>Success!</strong> Your profile photo was uploaded successfully.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 <!--Confimation Popup-->
 @if (viewModel.ShowBackdrop)
 {
@@ -120,7 +134,8 @@
             }
             catch (Exception ex)
             {
-                ResultModel.error(ex.Message);
+                viewModel.ShowErrorMessage = true;
+                HideMessageAfterDelay();
             }
         }
 
@@ -150,14 +165,17 @@
         var res = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
         if (res != null)
         {
-            res.ProfilePath         = viewModel.profilepicture;
-            var update              = await CoreDI.DataStore.Customers.SaveDataAsync(res);
-            viewModel.isClickButton = false;
-            viewModel.isSpinnerShow = false;
+            res.ProfilePath              = viewModel.profilepicture;
+            var update                   = await CoreDI.DataStore.Customers.SaveDataAsync(res);
+            viewModel.isClickButton      = false;
+            viewModel.isSpinnerShow      = false;
+            viewModel.ShowSuccessMessage = true;
+            HideMessageAfterDelay();
         }
         else
         {
-            ResultModel.error("Customer not exist!");
+            viewModel.ShowErrorMessage = true;
+            HideMessageAfterDelay();
         }
     }
     public async Task OpenModal(string email, string path)
@@ -176,5 +194,12 @@
         viewModel.ShowBackdrop = false;
         StateHasChanged();
         NavigationManager.NavigateTo("/customer/profile",true);
+    }
+    private async void HideMessageAfterDelay()
+    {
+        await Task.Delay(3000);
+        viewModel.ShowErrorMessage  = false;
+        viewModel.ShowSuccessMessage = false;
+        StateHasChanged();
     }
 }

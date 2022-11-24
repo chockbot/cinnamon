@@ -17,7 +17,11 @@ namespace Cinnamon.Core
         public bool     isClickButton  { get; set; }     = true;
         public bool     isSpinnerShow  { get; set; }     = false;
         public bool     isLoading      { get; set; }     = false;
+        public bool ShowErrorMessage { get; set; }       = false;
+        public bool ShowSuccessMessage { get; set; }     = false;
         public string   UserEmail      { get; set; }
+
+
     }
     //public async Task SaveImageLocation()
     //{
