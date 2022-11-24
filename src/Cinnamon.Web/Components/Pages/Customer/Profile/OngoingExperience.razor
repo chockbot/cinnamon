@@ -5,12 +5,11 @@
     <h3 class="title">Ongoing Experiences</h3>
     <Div class="ongoing-experiences-container activitySwiper" Margin="Margin.Is3.FromTop">
         <div class="swiper-wrapper">
-            @for(int i =0; i < 6; i++)
+            @if (Activities != null)
             {
-                if (Activities == null) return;
                 foreach (var item in Activities)
                 {
-                    <OngoingExperienceItem Activity="item" @ref="ongoingExperienceItem"/>
+                    <OngoingExperienceItem Activity="item" @ref="ongoingExperienceItem" />
                 }
             }
         </div>

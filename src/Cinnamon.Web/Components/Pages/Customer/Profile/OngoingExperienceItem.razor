@@ -1,19 +1,34 @@
 @using Cinnamon.Core
+@using Cinnamon.Core.Models
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <div class="swiper-slide">
     <Card class="card-experience-item" Border="Border.Is0">
         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
             <Figure class="figure-container" Overflow="Overflow.Hidden" Width="Width.Max100" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
-                <FigureImage Margin="Margin.Is0" Source="@_Images.ElementAt(1).ImageLocation" AlternateText="banner" Width="Width.Is100" />
+                <FigureImage Margin="Margin.Is0" Source="@_Images.ElementAt(0).ImageLocation" AlternateText="banner" Width="Width.Is100" />
             </Figure>
         </CardHeader>
         <CardBody Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is2.FromTop">
             <CardTitle>
                 <Row>
                     <Column ColumnSize="ColumnSize.Is8">
-                        <p class="name mb-0 text-color-343D">@Activity.Address</p>
-                        <p class="address mb-0 text-color-7171">5,350 Kilometers away<br>Aug 18-23</p>
+                        <p class="name mb-0 text-color-343D">@Activity.Title</p>
+                        @if (activityModel.ExperienceType.Id == 1)
+                        {
+                            if (String.IsNullOrEmpty(activityModel.Location))
+                            {
+                                <p class="price mb-0 text-color-343D">@activityModel.Address.District, @activityModel.Address.City</p>
+                            }
+                            else
+                            {
+                                <p class="price mb-0 text-color-343D">@activityModel.Location</p>
+                            }
+                        }
+                        else
+                        {
+                            <p class="price mb-0 text-color-343D">@activityModel.ExperienceType.Name</p>
+                        }
                         <p class="price mb-0 text-color-343D">@Activity.Price</p>
                     </Column>
                     <Column ColumnSize="ColumnSize.Is4">
@@ -30,11 +45,15 @@
 @code{
     [Parameter]
     public ActivityModel Activity {get; set;}
-
-    public List<ActivityImagesModels> _Images = new List<ActivityImagesModels>();
+    public ActivityModel              activityModel = new ActivityModel();
+    public List<ActivityModel>        ActivityModel = new List<ActivityModel>();
+    public AddressModel               Address       = new AddressModel();
+    public List<ActivityImagesModels> _Images       = new List<ActivityImagesModels>();
 
     protected override void OnInitialized()   
     {
-        _Images =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Activity.Id).ToList();
+        ActivityModel = Task.Run(() => CoreDI.DataStore.Activities.GetAllAsync()).Result;
+        _Images       =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Activity.Id).ToList();
+        activityModel = ActivityModel.Where(c => c.Id == Activity.Id).ElementAt(0);
     }
 }

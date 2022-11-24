@@ -155,7 +155,6 @@
         //Get Maker Activities
         var customer = currentCustomer.Result.Customer;
         activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
-        if(activities == null)return;
       
     }
 
