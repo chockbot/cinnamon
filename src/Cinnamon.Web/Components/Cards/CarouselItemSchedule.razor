@@ -35,6 +35,11 @@
     
 </div>
 
+
+@if (!AuthState.User.Identity.IsAuthenticated)
+{
+    <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@($"/Payment/{ScheduleModel.Id}")"></ModalLogin>
+}
 @code {
     [Parameter]
     public ScheduleModel ScheduleModel { get; set; }
