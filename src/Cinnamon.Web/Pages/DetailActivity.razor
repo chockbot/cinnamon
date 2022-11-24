@@ -145,7 +145,7 @@
             <hr />
             <div class="col-12">
                 <label class="fw-bold mb-3">Schedule of @(actModel.ScheduleList.Count > 1 ? "activities":"activity")</label>
-                <div class="d-flex flex-row gap-2 mb-2">
+                <div class="d-flex flex-row gap-2 mb-2 overflow-auto">
                     @if (actModel.ScheduleIndicator == "selection" || actModel.ScheduleList.Count > 0)
                     {
                         @if(string.IsNullOrEmpty(actModel.Schedules))
