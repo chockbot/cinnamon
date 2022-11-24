@@ -139,12 +139,6 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
                 var props = new AuthenticationProperties();
                 props.StoreTokens(info.AuthenticationTokens);
                 await _signInManager.SignInAsync(user, props, info.LoginProvider);
-                //await _emailStore.SetUserNameAsync(user, userData.Email, CancellationToken.None);
-                //await _emailStore.SetEmailAsync(user, userData.Email, CancellationToken.None);
-                //var result = await CoreDI.DataStore.Customers.GetAllAsync();
-                //var userd = _userManager.
-                //var userData = result.Where(x => x.Email.Equals(info.Principal.FindFirstValue(ClaimTypes.Email).ToString())).Where(x => x.ExternalLogin == true).FirstOrDefault();
-                //await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
                 _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
                 if (userType == UserType.Maker)
                 {
@@ -194,18 +188,13 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
-                    {
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        // Include the access token in the properties
-                        var props = new AuthenticationProperties();
-                        props.StoreTokens(info.AuthenticationTokens);
-                        await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { UserId = userId, FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true : false });
-                        await _signInManager.SignInAsync(user, props, authenticationMethod: info.LoginProvider);
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-
-                    }
+                    var userId = await _userManager.GetUserIdAsync(user);
+                    // Include the access token in the properties
+                    var props = new AuthenticationProperties();
+                    props.StoreTokens(info.AuthenticationTokens);
+                    await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { UserId = userId, FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true : false });
+                    await _signInManager.SignInAsync(user, props, authenticationMethod: info.LoginProvider);
+                    _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
                 }
             }
             
