@@ -23,13 +23,6 @@ finishSignupModal._initFinishForm = () => {
     // prettier-ignore
     if (confirmPassword !== password) errors.push("Password mismatch");
 
-    let errorHTML = "";
-    $("#error-list-finish").empty();
-    errors.forEach((item) => {
-      errorHTML += `<li style="font-family:'Nunito';font-size:14px;">${item}</li>`;
-    });
-    $("#error-list-finish").append(errorHTML);
-
     if (errors.length > 0) {
       finishSignupModal._showErrors(errors);
       return;
