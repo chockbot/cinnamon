@@ -172,9 +172,9 @@
         <span class="landing-header">@Resources.App.maker!</span>
         <br/> <br/>
         <span class="landing-subheader" >@Resources.App.makerDescription</span>
-        <div class="btn-explore">
-            <a href="/Onboarding" class="btn btn-primary rounded-pill shadow-sm" style="width: fit-content;">Sign-up to become a Cinnamon Maker!</a>
-            @* <PrimaryButton OnClick="NavigateToOnboardingPage" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup /> *@
+        <div class="btn-explore btn-explore-section4">
+           @* <a href="/Onboarding" class="btn btn-primary rounded-pill shadow-sm" style="width: fit-content;">Sign-up to become a Cinnamon Maker!</a>*@
+             <PrimaryButton OnClick="NavigateToOnboardingPage" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup /> 
            @* <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />*@
         </div>
     </div>
@@ -225,7 +225,7 @@
     }
     private void NavigateToOnboardingPage()
     {
-        NavigationManager.NavigateTo("/Identity/Account/Onboarding",true);
+        NavigationManager.NavigateTo("/Onboarding",true);
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
