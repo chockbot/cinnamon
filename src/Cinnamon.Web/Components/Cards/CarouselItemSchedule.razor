@@ -4,9 +4,8 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="card shadow p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
-    @ScheduleModel.Name
-    <br />
+<div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
+    <span class="fw-bold">@ScheduleModel.Name</span>
     <br />
     <div>
         @ScheduleModel.DateTime
@@ -20,7 +19,7 @@
     {
         if (ButtonType == ScheduleButtonType.Choose)
         {
-            <button class="btn-primary rounded border-0 p-2 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" >Choose</button>
+            <button class="btn-primary rounded border-0 p-2 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" style="width:fit-content">Choose</button>
         }
         else{
             <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="OnClickChange">
@@ -30,7 +29,7 @@
     }
     else
     {
-        <button class="btn-primary rounded border-0 p-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal">Choose</button>
+        <button class="btn-primary rounded border-0 p-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal" style="width:fit-content">Choose</button>
     }
     
 </div>

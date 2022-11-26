@@ -73,7 +73,7 @@
         </div>
         <div class="d-flex justify-content-between mt-3">
             <div class="activity-title">
-                <label class="fw-bold mb-3 col-md-12 col-12">@actModel.Title</label>
+                <label class="fw-bold mb-3 col-md-12 col-12" style="font-size:1.9rem">@actModel.Title</label>
                 <span class="col-md-12 col-12">
                     @if(actModel.ExperienceType.Id == 1)
                     {
@@ -84,7 +84,7 @@
                         <i class="fa fa-laptop mx-1" aria-hidden="true"></i>
                     }
                     
-                    @actModel.ExperienceType.Name
+                   <span style="font-size:1.125rem"> @actModel.ExperienceType.Name</span>
                 </span>
             </div>
         </div>
@@ -93,10 +93,10 @@
     <div class="description-container py-4 d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12">
         <div class="flex-fill col-lg-12 col-md-12 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last d-flex flex-column">
            <div class="col-12 d-flex flex-lg-row flex-md-row flex-sm-column flex-column">
-                <div class="description-container pe-3 mt-lg-0 mt-md-0 mt-3 mt-sm-3 col-lg-8 col-md-8 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last">
+                <div class="pe-3 mt-lg-0 mt-md-0 mt-3 mt-sm-3 col-lg-8 col-md-8 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last">
                 @if (String.IsNullOrEmpty(actModel.Description))
                 {
-                    <h3>@Resources.App.detailDescription1</h3>
+                    <label class="fw-bold mb-2 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
                     <p>
                         @actModel.DescriptionSectionModel.Description
                     </p>
@@ -115,12 +115,12 @@
                     <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
                     <img class="rounded-2 rounded-circle m-3" src="@Customer.ProfilePath" width="60" height="60" />
                     <div class="d-flex flex-column m-2">
-                        <span>Owner</span>
-                        <span>@Customer.FirstName @Customer.LastName</span>
+                        <span style="font-size:0.7rem;">Owner</span>
+                        <span class="fw-bold" style="font-size:1rem;">@Customer.FirstName @Customer.LastName</span>
                         <label>View Profile</label>
                     </div>
                     <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
-                        <img class="px-3" src="images/check.svg" />
+                        <img class="px-3" src="images/details_profile_badge.png" />
                     </div>
                     </div>
                 </div>
@@ -135,7 +135,7 @@
                         <label>View Profile</label>
                     </div>
                     <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
-                        <img class="px-3" src="images/check.svg" />
+                        <img class="px-3" src="images/details_profile_badge.png" />
                     </div>
                     </div>
                 </div>
@@ -144,8 +144,8 @@
         </div>
             <hr />
             <div class="col-12">
-                <label class="fw-bold mb-3">Schedule of @(actModel.ScheduleList.Count > 1 ? "activities":"activity")</label>
-                <div class="d-flex flex-row gap-2 mb-2 overflow-auto">
+                <label class="fw-bold mb-3 detail-label">Schedule of @(actModel.ScheduleList.Count > 1 ? "activities" : "activity")</label>
+                <di v class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
                     @if (actModel.ScheduleIndicator == "selection" || actModel.ScheduleList.Count > 0)
                     {
                         @if(string.IsNullOrEmpty(actModel.Schedules))
@@ -220,7 +220,7 @@
                             </span>
                         </div>
                     }
-                </div>
+                </di>
                 @if (actModel.ScheduleList.Count > 4)
                 {
                     <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
@@ -230,7 +230,7 @@
             </div>
             <hr />
             <div class="d-flex flex-column align-items-start col-lg-6 col-md-6 col-sm-12 col-12">
-                <label class="fw-bold mb-3">Where you’ll be</label>
+                <label class="fw-bold mb-3 detail-label">Where you’ll be</label>
                 @if(string.IsNullOrEmpty(actModel.MapDetails))
                 {
                     @if(actModel.ExperienceType.Id == 1)
@@ -271,21 +271,21 @@
             {
                 <hr />
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                    <label class="fw-bold mb-3">What's included</label>
+                    <label class="fw-bold mb-3 detail-label">What's included</label>
                     <p>
                         @actModel.DescriptionSectionModel.SpecificsYouWillProvide
                     </p>
                 </div>
                 <hr />
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                    <label class="fw-bold mb-3">What you should bring</label>
+                    <label class="fw-bold mb-3 detail-label">What you should bring</label>
                     <p>
                         @actModel.DescriptionSectionModel.CustomerBringWithThem
                     </p>
                 </div>
                 <hr />
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12"style="overflow-wrap:break-word;">
-                    <label class="fw-bold mb-3">Requirements</label>
+                    <label class="fw-bold mb-3 detail-label">Requirements</label>
                     <p>
                         Minimum Age: @actModel.DescriptionSectionModel.MinimumAge
                         <br>
@@ -300,7 +300,7 @@
                 {
                     <hr />
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                        <label class="fw-bold mb-3">Additional Requirements</label>
+                        <label class="fw-bold mb-3 detail-label">Additional Requirements</label>
                         <p>
                             @actModel.DescriptionSectionModel.AdditionalRequirements
                         </p>
