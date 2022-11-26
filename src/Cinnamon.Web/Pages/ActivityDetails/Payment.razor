@@ -15,7 +15,7 @@
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
     <div class="d-flex col-lg-10 col-md-10 col-sm-12 col-12">
         <a class="text-decoration-none text-reset" href="/Explore/@Schedule.ActivityId"><i class="far fa-arrow-alt-circle-left" style="font-size:1.7rem"></i></a>
-        <h4 class="fw-bold px-3">Confirm experience</h4>
+        <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
     </div>
 </div>
 
@@ -23,12 +23,12 @@
     <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
         <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
             <div class="col-lg-5 col-md-5 col-sm-12 col-12">
-                <h5 class="fw-bold">Activity selected</h5>
+                <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
                 <CarouselItemSchedule ScheduleModel="@Schedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange"></CarouselItemSchedule>
             </div>
             <hr />
             <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                <h5 class="fw-bold">Select who will attend</h5>
+                <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
                 @if (isLoaded)
                 {
                     <Column ColumnSize="ColumnSize.Is12.OnDesktop">
@@ -36,8 +36,8 @@
                             <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
                                 @foreach (var item in Model.Customer.FamilyMembers)
                                 {
-                                    <div class="card shadow text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap">
-                                        <input type="checkbox" id="@item.Id" value="@item.Id" class="mx-2" @onchange="() => OnSelectAttend(item)"/> <label for="@item.Id">@item.Name</label> 
+                                    <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
+                                        <input type="checkbox" id="@item.Id" value="@item.Id" class="mx-2 checkbox-round" @onchange="() => OnSelectAttend(item)"/> <label for="@item.Id">@item.Name</label> 
                                     </div>
                                 }
                             </Column>
@@ -47,7 +47,7 @@
                 <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" @onclick="()=>AddChildrenModal.Open()">Add</button>
             </div>
             <hr />
-            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+            <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
                 <div class="d-flex align-items-center justify-content-between">
                     <div><h5 class="fw-bold">Pay with</h5></div>
                     <div class="d-flex d-md-block d-lg-block d-none d-sm-none">
@@ -64,7 +64,7 @@
                         </select>
                         </div>
 
-                        <p class="fw-bold mb-2">Enter Your Card Details</p>
+                        <label class="mb-2">Enter Your Card Details</label>
 
                         <div class="row mb-2">
                             <div class="col-7">
@@ -104,7 +104,7 @@
                 <hr />
                 <br />
                 <div class="form-outline">
-                    <label class="form-label" for="formControlLgXM"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
+                    <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                     <br />
                     <br />
                     <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3">Pay and confirm</button>
@@ -113,24 +113,24 @@
         </div>
         <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
             <div class="card shadow p-lg-3 p-3 mr-5 d-flex flex-column sticky-top mb-3" style="top:80px;">
-                <div style="font-size:1rem">
+                <div style="font-size:1.125rem">
                     <span class="fw-bold">@Activity.Title</span>
-                    <div style="font-size:0.8rem">
+                    <div style="font-size:0.6rem">
                         @Schedule.Name
                     </div>
-                    <div style="font-size:0.8rem">
+                    <div style="font-size:0.6rem">
                         @Schedule.DateTime
                     </div>
                 </div>
                 <hr />
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center" style="font-size:0.8rem">
                     Your booking is protected by <div class="app-name">
                         @Resources.App.appName
                     </div>
                 </div>
                 <hr />
-                 <div style="font-size:1rem">
-                    <span class="fw-bold">Price details</span>
+                 <div>
+                    <span class="fw-bold" style="font-size:1.125rem">Price details</span>
                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
                        <div>
                            @Schedule.UnitPrice @Schedule.Price x @SelectedAttendees.Count head
