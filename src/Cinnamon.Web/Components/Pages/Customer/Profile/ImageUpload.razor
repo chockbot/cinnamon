@@ -39,6 +39,8 @@
             return string.Format("data:image/jpeg;base64,{0}", imageSrc);
         }
 
+        if(!string.IsNullOrEmpty(Model.ImageFileName)) return Model.ImageFileName;
+
         return "/images/Profile/blank.png";
     }
 

@@ -104,7 +104,7 @@
                 <p class="title mb-1">Governmend ID</p>
                 <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                     <span>ID no. 1</span>
-                    <span class="edit">Edit</span>
+                    <span class="edit" @onclick="() => OnEditIdClick.InvokeAsync()">Edit</span>
                 </Div>
             </Column>
         </Row>
@@ -145,6 +145,12 @@
 {
     [Parameter]
     public Models.Customer.Profile Model {get; set;}
+
+    [Parameter]
+    public EventCallback<Models.Customer.Profile> ModelChanged {get; set;}
+
+    [Parameter]
+    public EventCallback OnEditIdClick {get; set;}
     
     private bool isEditLegalName = false;
     
@@ -182,6 +188,8 @@
             {
                 Model.Customer.FirstName = firstNameLocalState;
                 Model.Customer.LastName = lastNameLocalState;
+
+                await ModelChanged.InvokeAsync(Model);
             }
         }
         isEditLegalName = false;

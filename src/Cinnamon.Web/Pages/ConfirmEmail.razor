@@ -21,7 +21,7 @@
 
     public List<WaitListModel> list = new List<WaitListModel>();
 
-    protected override async Task OnInitializedAsync()
+    protected async override Task OnAfterRenderAsync(bool firstRender)
     {
         var uri = navigationManager.ToAbsoluteUri(navigationManager.Uri);
         var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
@@ -78,3 +78,4 @@
         }
     }
 }
+
