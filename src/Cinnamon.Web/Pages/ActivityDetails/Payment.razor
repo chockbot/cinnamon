@@ -136,7 +136,7 @@
                            @Schedule.UnitPrice @Schedule.Price x @SelectedAttendees.Count head
                        </div>
                         <div>
-                            @(@Schedule.Price * @SelectedAttendees.Count)
+                           Php@((@Schedule.Price * @SelectedAttendees.Count).ToString("#,###.00"))
                        </div>
                     </div>
                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
@@ -144,25 +144,49 @@
                             Convinience fee - 15%
                        </div>
                         <div>
-                            P1,250.00
+                            Php@((@Schedule.Price * @SelectedAttendees.Count) * .15m)
                        </div>
                     </div>
                      <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                       <div>
-                            <a href="#">Enter coupon</a>
-                       </div>
-                        <div>
-                            - P75.00
-                       </div>
+                        @if(couponAction == CouponAction.NoCoupon)
+                        {
+                            <div>
+                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">enter coupon</span>
+                            </div>
+                        }
+                        else if(couponAction == CouponAction.EnteringCoupon)
+                        {
+                            <div class="d-flex align-items-center">
+                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.AppliedCoupon">add coupon</span>
+                            </div>
+                            <div>
+                                <TextEdit class="text-end" required Placeholder="enter coupon code" Size="Size.ExtraSmall" />
+                            </div>
+                        }
+                        else if(couponAction == CouponAction.AppliedCoupon)
+                        {
+                            <div class="d-flex align-items-center">
+                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">remove coupon</span>
+                            </div>
+                            <div>
+                               - <span>Php</span>@couponAmount.ToString("#,###.00")
+                            </div>
+                        }
                     </div>
-                    <br />
-                    <br />
+                    <br>
                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
                         <div>
                             Total (PHP)
                         </div>
                         <div>
-                            0
+                            @if(SelectedAttendees.Count > 0)
+                            {
+                                <span>Php</span>@((((Schedule.Price * SelectedAttendees.Count) + ((@Schedule.Price * @SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00"))
+                            }
+                            else 
+                            {
+                                <span>Php0.00</span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -253,6 +277,17 @@
     private SchedulesModal ModalSched { get; set; }
     public AddChildrenModal AddChildrenModal { get; set; }
     public bool isLoaded { get; set; } = false;
+
+    private enum CouponAction {
+        NoCoupon = 0,
+        EnteringCoupon = 1,
+        AppliedCoupon = 2
+    }
+
+    private CouponAction couponAction = CouponAction.EnteringCoupon;
+
+    private decimal couponAmount = 50;
+    
     protected override async Task OnInitializedAsync()
     {
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
