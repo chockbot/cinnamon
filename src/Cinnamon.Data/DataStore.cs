@@ -37,6 +37,7 @@ namespace Cinnamon.Data
         public ISearchTags SearchTags => new SearchTags(mDbContext);
         public ICustomer Customers => new Customer(mDbContext);
         public IFamilyMembers FamilyMembers => new FamilyMember(mDbContext);
+        public IOngoingActivity OngoingActivity => new OngoingActivity(mDbContext);
         #endregion
 
         #region Constructor
