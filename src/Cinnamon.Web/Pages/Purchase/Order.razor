@@ -1,4 +1,5 @@
 @page "/purchase/order"
+@using Cinnamon.Web.Components
 @inject NavigationManager NavigationManager
 
 <section class="container order-banner text-center">
@@ -8,4 +9,19 @@
         <span class="text-capitalize cinnamon-banner-text">cinnamon</span>
     </h1>
     <Divider />
+    <div class="order-details text-start">
+        <h3 class="text-capitalize mt-5">payment confirmed!</h3>
+        <p class="text-capitalize mt-5 mb-0">purchase details:</p>
+        <p class="text-capitalize">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
+        <div class="schedule-ordered text-center">
+            <p>Under 11yo</p>
+            <p>Mon & Thurs 9am-10am</p>
+            <p>PHP 7500/1/head/10 session</p>
+            <p>Total: 50000</p>
+        </div>
+        <p>Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+        <div class="text-center mt-5 mb-5">
+            <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
+        </div> 
+    </div>
 </section>

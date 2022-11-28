@@ -4,6 +4,7 @@
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.Models
 @using Cinnamon.Core.Module.CustomerService.Handler
+@using Cinnamon.Core.Module.PurchaseService.Handler
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Shared
@@ -11,6 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject ISignedCustomer signedCustomer;
 @inject IUpdateCustomerFamilyMembers updateFamilyMembers;
+@inject ISubmitOrderHandler submitOrerHandler;
 
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
     <div class="d-flex col-lg-10 col-md-10 col-sm-12 col-12">
@@ -107,7 +109,11 @@
                     <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                     <br />
                     <br />
-                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3">Pay and confirm</button>
+                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" @onclick="OnPayConfirmedClicked">Pay and confirm</button>
+                    @if(isShowPayErrorMessage)
+                    {
+                        <p class="text-danger">@payErrorMessage</p>
+                    }
                 </div>
             </div>
         </div>
@@ -346,5 +352,37 @@
 
         SelectedAttendees = SelectedAttendees;
     }
-}
 
+    private string payErrorMessage = string.Empty;
+    private bool isShowPayErrorMessage = false;
+
+    private async Task OnPayConfirmedClicked()
+    {
+        if(SelectedAttendees.Count > 0)
+        {
+            var submit = await submitOrerHandler.ExecuteAsync(new Core.Module.PurchaseService.Interactors.SubmitOrderArgs {
+                ActivityId = Activity.Id,
+                ScheduleId = Schedule.Id.Value,
+                CustomerId = Model.Customer.Id,
+                CouponCode = "temporary coupon code",
+                NumberOfHeads = SelectedAttendees.Count
+            });
+
+            if(!submit.Succeeded)
+            {
+                payErrorMessage = "An error occured. Please try again later.";
+                isShowPayErrorMessage = true;
+            }
+            else 
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+        }
+        else 
+        {
+            payErrorMessage = "Please include family to register";
+            isShowPayErrorMessage = true;
+        }
+    }
+}
