@@ -24,6 +24,7 @@ namespace Cinnamon.Data
         public DbSet<CustomerModel> Customers { get; set; }
         public DbSet<FamilyMemberModel> FamilyMembers { get; set; }
         public DbSet<OngoingActivityModel> OngoingActivities { get; set; }
+        public DbSet<PurchaseOrderModel> PurchaseOrders { get; set; }
         #endregion
 
         #region Constructor
@@ -82,6 +83,7 @@ namespace Cinnamon.Data
 
             modelBuilder.Entity<OngoingActivityModel>().HasOne(i => i.Activity);
             modelBuilder.Entity<OngoingActivityModel>().HasOne(i => i.Customer);
+            modelBuilder.Entity<OngoingActivityModel>().HasIndex(i => i.PurchaseOrderId);
         }
         #endregion
 

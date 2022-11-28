@@ -38,6 +38,7 @@ namespace Cinnamon.Data
         public ICustomer Customers => new Customer(mDbContext);
         public IFamilyMembers FamilyMembers => new FamilyMember(mDbContext);
         public IOngoingActivity OngoingActivity => new OngoingActivity(mDbContext);
+        public IPurchaseOrder PurchaseOrder => new PurchaseOrder(mDbContext);
         #endregion
 
         #region Constructor
