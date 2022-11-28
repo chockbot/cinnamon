@@ -1,4 +1,5 @@
 @page
+@using Cinnamon.Core.Enums
 @using Cinnamon.Web.Areas.Identity.Pages.Account
 @model Onboarding
 
@@ -250,14 +251,22 @@
                                     <i id="email-spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Continue
                                 </button>
                                 <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
-                                <div class="divider">
-                                    <hr class="left" />or<hr class="right" />
-                                </div>
-                                <div class="col-12">
-                                    <a class="btn btn-md btn-google" href="#"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" onclick=""/> Continue with Gmail</a>
-                                </div>
                             </div>
                         </form> 
+                         <div class="divider">
+                            <hr class="left" />or<hr class="right" />
+                        </div>
+                        <div class="col-12">
+                          <form id="external-account"
+                                action="/Identity/Account/ExternalLogin"
+                                method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="provider" value="Google">
+                                <input type="hidden" name="userType"  value="@UserType.Maker">
+                                <input type="hidden" name="returnUrl" value="/Creation">
+                                <button class="btn btn-md btn-google" type="submit"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail</button>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -18,3 +18,7 @@
 export function OffBeforeUnload() {
    $(window).off('beforeunload');
 }
+
+export function onScrollUp() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}

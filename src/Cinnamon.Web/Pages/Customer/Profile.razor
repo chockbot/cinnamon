@@ -95,7 +95,7 @@
                         <Experiences/>
                     </TabPanel>
                     <TabPanel Name="personal-info">
-                        <PersonalInfo Model="Model" />
+                        <PersonalInfo @bind-Model="Model" OnEditIdClick="() => uploadIdModal.ShowModal()" />
                     </TabPanel>
                     <TabPanel Name="maker-experience">
                         <MakerExperiences @ref="makerExperiences" Activities="activities" />
@@ -105,7 +105,7 @@
         </Container>
     </section>
     <ModalUploadingProfile @ref="upload"></ModalUploadingProfile>
-    <ModalUploadGovernmentId @ref="uploadIdModal" CustomerId="Model.Customer.Id"/>
+    <ModalUploadGovernmentId @ref="uploadIdModal" Model="Model"/>
 }
 
 @code 

@@ -15,29 +15,29 @@
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
     <div class="d-flex col-lg-10 col-md-10 col-sm-12 col-12">
         <a class="text-decoration-none text-reset" href="/Explore/@Schedule.ActivityId"><i class="far fa-arrow-alt-circle-left" style="font-size:1.7rem"></i></a>
-        <h4 class="fw-bold px-3">Confirm experience</h4>
+        <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
     </div>
 </div>
 
-<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-3">
+<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
     <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
         <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
             <div class="col-lg-5 col-md-5 col-sm-12 col-12">
-                <h5 class="fw-bold">Activity selected</h5>
+                <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
                 <CarouselItemSchedule ScheduleModel="@Schedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange"></CarouselItemSchedule>
             </div>
             <hr />
             <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                <h5 class="fw-bold">Select who will attend</h5>
+                <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
                 @if (isLoaded)
                 {
                     <Column ColumnSize="ColumnSize.Is12.OnDesktop">
-                        <Div class="details" Display="Display.Flex">
-                            <Column class="d-flex flex-row flex-wrap">
+                        <Div class="details overflow-auto" Display="Display.Flex">
+                            <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
                                 @foreach (var item in Model.Customer.FamilyMembers)
                                 {
-                                    <div class="card shadow text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap">
-                                        <input type="checkbox" value="@item.Id" class="mx-2" @onchange="() => OnSelectAttend(item)"/> @item.Name
+                                    <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
+                                        <input type="checkbox" id="@item.Id" value="@item.Id" class="mx-2 checkbox-round" @onchange="() => OnSelectAttend(item)"/> <label for="@item.Id">@item.Name</label> 
                                     </div>
                                 }
                             </Column>
@@ -47,34 +47,39 @@
                 <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" @onclick="()=>AddChildrenModal.Open()">Add</button>
             </div>
             <hr />
-            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                <div class="d-flex">
-                    <h5 class="fw-bold">Pay with</h5>
+            <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div><h5 class="fw-bold">Pay with</h5></div>
+                    <div class="d-flex d-md-block d-lg-block d-none d-sm-none">
+                        <img class="img-thumbnail" src="/images/mastercard.png" />
+                        <img class="img-thumbnail" src="/images/paypal.png" />
+                    </div>
                 </div>
-                <div class="col-lg-12 col-md-12 col-12">
+                <button class="d-md-none d-lg-none d-block d-sm-block" style="border:none;background-color:white" data-bs-toggle="modal" data-bs-target="#paymentModal"><i class="fas fa-credit-card mx-2"></i>Credit or debit card</button>
+                <div class="col-lg-12 col-md-12 col-12 d-md-block d-lg-block d-none d-sm-none">
                     <div class="form-outline mb-4 pb-1"> 
-                            <label>Credit or debit card</label>
-                        <select Class="form-control form-control-lg">
-                            <option><i class="bi bi-credit-card"></i>Credit or debit card</option>
-                            </select>
+                        <label>Credit or debit card</label>
+                        <select Class="form-control">
+                            <option value="1">Credit or debit card</option>
+                        </select>
                         </div>
 
-                        <p class="fw-bold mb-4">Enter Your Card Details</p>
+                        <label class="mb-2">Enter Your Card Details</label>
 
-                        <div class="row mb-4">
+                        <div class="row mb-2">
                             <div class="col-7">
-                            <input type="text" id="formControlLgXsd" class="form-control form-control-lg" value="" placeholder="Card number" />
+                            <input type="text" id="formControlLgXsd" class="form-control" value="" placeholder="Card number" />
                             </div>
                             <div class="col-3">
                                 <div class="form-outline">
-                                    <input type="password" id="formControlLgExpk" class="form-control form-control-lg"
-                                           placeholder="MM/YYYY" />
+                                    <input type="password" id="formControlLgExpk" class="form-control"
+                                            placeholder="MM/YYYY" />
                                 </div>
                             </div>
                             <div class="col-2">
                                 <div class="form-outline">
-                                    <input type="password" id="formControlLgcvv" class="form-control form-control-lg"
-                                           placeholder="Cvv" />
+                                    <input type="password" id="formControlLgcvv" class="form-control"
+                                            placeholder="CVV" />
                                 </div>
                             </div>
                         </div>
@@ -83,49 +88,49 @@
                             <div class="col-7">
                                 <div class="form-outline">
                                 <label class="form-label" for="formControlLgXM">Name on card</label>
-                                <input type="text" id="formControlLgXM" class="form-control form-control-lg"
-                                           value="" placeholder="Name"/>
+                                <input type="text" id="formControlLgXM" class="form-control"
+                                            value="" placeholder="Name"/>
                                 </div>
                             </div>
-                             <div class="col-5">
+                                <div class="col-5">
                                 <div class="form-outline">
                                 <label class="form-label" for="formControlLgXM">Contact number</label>
-                                    <input type="text" id="formControlLgXM" class="form-control form-control-lg"
-                                       value="" placeholder="contact no." />
+                                    <input type="text" id="formControlLgXM" class="form-control"
+                                        value="" placeholder="contact no." />
                                 </div>
                             </div>
                         </div>
-                        <hr />
-                        <br />
-                    <div class="form-outline">
-                        <label class="form-label" for="formControlLgXM"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
-                            <br />
-                            <br />
-                        <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3">Pay and confirm</button>
                     </div>
+                <hr />
+                <br />
+                <div class="form-outline">
+                    <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
+                    <br />
+                    <br />
+                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3">Pay and confirm</button>
                 </div>
             </div>
         </div>
         <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
             <div class="card shadow p-lg-3 p-3 mr-5 d-flex flex-column sticky-top mb-3" style="top:80px;">
-                <div style="font-size:1rem">
+                <div style="font-size:1.125rem">
                     <span class="fw-bold">@Activity.Title</span>
-                    <div style="font-size:0.8rem">
+                    <div style="font-size:0.6rem">
                         @Schedule.Name
                     </div>
-                    <div style="font-size:0.8rem">
+                    <div style="font-size:0.6rem">
                         @Schedule.DateTime
                     </div>
                 </div>
                 <hr />
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-center" style="font-size:0.8rem">
                     Your booking is protected by <div class="app-name">
                         @Resources.App.appName
                     </div>
                 </div>
                 <hr />
-                 <div style="font-size:1rem">
-                    <span class="fw-bold">Price details</span>
+                 <div>
+                    <span class="fw-bold" style="font-size:1.125rem">Price details</span>
                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
                        <div>
                            @Schedule.UnitPrice @Schedule.Price x @SelectedAttendees.Count head
@@ -173,6 +178,68 @@
     <SchedulesModal @ref="ModalSched" ScheduleModel="Activity.ScheduleList.ToList()"></SchedulesModal>
 }
 
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Pay with</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="d-flex">
+                    <img class="img-thumbnail" src="/images/mastercard.png" />
+                    <img class="img-thumbnail" src="/images/paypal.png" />
+                </div>
+                <div class="form-outline mb-2 pb-1">
+                    <label>Credit or debit card</label>
+                    <select Class="form-control">
+                        <option value="1">Credit or debit card</option>
+                    </select>
+                </div>
+
+                <p class="fw-bold mb-1">Enter Your Card Details</p>
+
+                <div class="row mb-2">
+                    <div class="col-12 mb-2">
+                        <input type="text" id="formControlLgXsd" class="form-control" value="" placeholder="Card number" />
+                    </div>
+                    <div class="col-6">
+                        <div class="form-outline">
+                            <input type="password" id="formControlLgExpk" class="form-control"
+                                   placeholder="MM/YYYY" />
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-outline">
+                            <input type="password" id="formControlLgcvv" class="form-control"
+                                   placeholder="CVV" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-12">
+                        <div class="form-outline">
+                            <label class="form-label" for="formControlLgXM">Name on card</label>
+                            <input type="text" id="formControlLgXM" class="form-control"
+                                   value="" placeholder="Name" />
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-outline">
+                            <label class="form-label" for="formControlLgXM">Contact number</label>
+                            <input type="text" id="formControlLgXM" class="form-control"
+                                   value="" placeholder="contact no." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn" style="background-color:#ffa942;color:white" data-bs-dismiss="modal">Done</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     [Parameter]

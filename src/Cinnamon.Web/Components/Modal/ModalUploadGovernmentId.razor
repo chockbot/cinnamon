@@ -34,7 +34,7 @@
 @code 
 {
     [Parameter]
-    public int CustomerId {get; set;}
+    public Models.Customer.Profile Model {get; set;}
 
     private Modal modalRef;
 
@@ -46,8 +46,11 @@
     {
         frontData.Label = "Front Image";
         frontData.ImageName = "front-image";
+        frontData.ImageFileName = Model.Customer.FrontIdImagePath;
+
         backData.Label = "Back Data";
         backData.ImageName = "back-data";
+        backData.ImageFileName = Model.Customer.BackIdImagePath;
     }
 
     public Task ShowModal()
@@ -71,7 +74,7 @@
                     BackImageData = backData.ImageData,
                     FrontFileName = frontData.ImageFileName,
                     FrontImageData = frontData.ImageData,
-                    CustomerId = CustomerId
+                    CustomerId = Model.Customer.Id
                 });
             
             if(uploadResult.Succeeded)
