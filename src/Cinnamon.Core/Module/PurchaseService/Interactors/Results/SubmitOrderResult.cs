@@ -1,6 +1,7 @@
+using Cinnamon.Core.Models;
 namespace Cinnamon.Core.Module.PurchaseService.Interactors.Results;
 
 public class SubmitOrderResult 
 {
-    public decimal TotalAmount {get; set;}
+    public PurchaseOrderModel PurchaseOrder {get; set;}
 }

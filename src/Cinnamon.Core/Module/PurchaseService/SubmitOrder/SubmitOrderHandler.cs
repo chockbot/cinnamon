@@ -53,6 +53,7 @@ public class SubmitOrderHandler : ISubmitOrderHandler
 
             var purchaseData = new PurchaseOrderModel {
                 ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId,
                 ConvinienceFee = fee,
                 Coupon = args.CouponCode,
                 Total = subTotal + fee,
@@ -80,7 +81,7 @@ public class SubmitOrderHandler : ISubmitOrderHandler
                     new ApplicationException("Error occured when saving activity purchased"), "Error occured when saving activity purchased");
             }
 
-            return AppResult<SubmitOrderResult>.CreateSucceeded(new SubmitOrderResult {TotalAmount = overallTotal}, "Purchased successfully");
+            return AppResult<SubmitOrderResult>.CreateSucceeded(new SubmitOrderResult {PurchaseOrder = purchaseData}, "Purchased successfully");
         }
         catch (Exception ex)
         {

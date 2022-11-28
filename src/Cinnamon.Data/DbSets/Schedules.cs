@@ -13,5 +13,8 @@ namespace Cinnamon.Data.DbSets
     {
         public Schedules(DataStoreDbContext dbContext) : base(dbContext) { }
         protected override DbSet<ScheduleModel> Table => mDbContext.Schedules;
+
+        public async Task<ScheduleModel> GetScheduleByIdAsync(int id)
+            => await mDbContext.Schedules.FirstOrDefaultAsync(i => i.Id == id);
     }
 }
