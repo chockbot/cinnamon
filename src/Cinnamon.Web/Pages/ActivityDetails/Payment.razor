@@ -4,6 +4,7 @@
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.Models
 @using Cinnamon.Core.Module.CustomerService.Handler
+@using Cinnamon.Core.Module.PurchaseService.Handler
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Shared
@@ -11,6 +12,7 @@
 @inject NavigationManager NavigationManager
 @inject ISignedCustomer signedCustomer;
 @inject IUpdateCustomerFamilyMembers updateFamilyMembers;
+@inject ISubmitOrderHandler submitOrerHandler;
 
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
     <div class="d-flex col-lg-10 col-md-10 col-sm-12 col-12">
@@ -107,7 +109,11 @@
                     <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                     <br />
                     <br />
-                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3">Pay and confirm</button>
+                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" @onclick="OnPayConfirmedClicked">Pay and confirm</button>
+                    @if(isShowPayErrorMessage)
+                    {
+                        <p class="text-danger">@payErrorMessage</p>
+                    }
                 </div>
             </div>
         </div>
@@ -136,7 +142,7 @@
                            @Schedule.UnitPrice @Schedule.Price x @SelectedAttendees.Count head
                        </div>
                         <div>
-                            @(@Schedule.Price * @SelectedAttendees.Count)
+                           Php@((@Schedule.Price * @SelectedAttendees.Count).ToString("#,###.00"))
                        </div>
                     </div>
                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
@@ -144,25 +150,49 @@
                             Convinience fee - 15%
                        </div>
                         <div>
-                            P1,250.00
+                            Php@((@Schedule.Price * @SelectedAttendees.Count) * .15m)
                        </div>
                     </div>
                      <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                       <div>
-                            <a href="#">Enter coupon</a>
-                       </div>
-                        <div>
-                            - P75.00
-                       </div>
+                        @if(couponAction == CouponAction.NoCoupon)
+                        {
+                            <div>
+                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">enter coupon</span>
+                            </div>
+                        }
+                        else if(couponAction == CouponAction.EnteringCoupon)
+                        {
+                            <div class="d-flex align-items-center">
+                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.AppliedCoupon">add coupon</span>
+                            </div>
+                            <div>
+                                <TextEdit class="text-end" required Placeholder="enter coupon code" Size="Size.ExtraSmall" />
+                            </div>
+                        }
+                        else if(couponAction == CouponAction.AppliedCoupon)
+                        {
+                            <div class="d-flex align-items-center">
+                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">remove coupon</span>
+                            </div>
+                            <div>
+                               - <span>Php</span>@couponAmount.ToString("#,###.00")
+                            </div>
+                        }
                     </div>
-                    <br />
-                    <br />
+                    <br>
                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
                         <div>
                             Total (PHP)
                         </div>
                         <div>
-                            0
+                            @if(SelectedAttendees.Count > 0)
+                            {
+                                <span>Php</span>@((((Schedule.Price * SelectedAttendees.Count) + ((@Schedule.Price * @SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00"))
+                            }
+                            else 
+                            {
+                                <span>Php0.00</span>
+                            }
                         </div>
                     </div>
                 </div>
@@ -253,6 +283,17 @@
     private SchedulesModal ModalSched { get; set; }
     public AddChildrenModal AddChildrenModal { get; set; }
     public bool isLoaded { get; set; } = false;
+
+    private enum CouponAction {
+        NoCoupon = 0,
+        EnteringCoupon = 1,
+        AppliedCoupon = 2
+    }
+
+    private CouponAction couponAction = CouponAction.EnteringCoupon;
+
+    private decimal couponAmount = 50;
+    
     protected override async Task OnInitializedAsync()
     {
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -311,5 +352,37 @@
 
         SelectedAttendees = SelectedAttendees;
     }
-}
 
+    private string payErrorMessage = string.Empty;
+    private bool isShowPayErrorMessage = false;
+
+    private async Task OnPayConfirmedClicked()
+    {
+        if(SelectedAttendees.Count > 0)
+        {
+            var submit = await submitOrerHandler.ExecuteAsync(new Core.Module.PurchaseService.Interactors.SubmitOrderArgs {
+                ActivityId = Activity.Id,
+                ScheduleId = Schedule.Id.Value,
+                CustomerId = Model.Customer.Id,
+                CouponCode = "temporary coupon code",
+                NumberOfHeads = SelectedAttendees.Count
+            });
+
+            if(!submit.Succeeded)
+            {
+                payErrorMessage = "An error occured. Please try again later.";
+                isShowPayErrorMessage = true;
+            }
+            else 
+            {
+                NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.PurchaseOrder.Id}");
+                return;
+            }
+        }
+        else 
+        {
+            payErrorMessage = "Please include family to register";
+            isShowPayErrorMessage = true;
+        }
+    }
+}

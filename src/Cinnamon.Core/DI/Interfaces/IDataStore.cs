@@ -15,6 +15,8 @@ namespace Cinnamon.Core
         IDescriptions Descriptions { get; }
         ISearchTags SearchTags { get; }
         ICustomer Customers { get; }
+        IOngoingActivity OngoingActivity { get; }
+        IPurchaseOrder PurchaseOrder {get; }
         /// <summary>
         /// Makes sure the client data store is correctly setup
         /// </summary>

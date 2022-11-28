@@ -1,5 +1,6 @@
 @page "/customer/profile"
 @using Cinnamon.Core
+@using Cinnamon.Core.Models;
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Modals;
@@ -92,7 +93,7 @@
                 </Items>
                 <Content>
                     <TabPanel Name="experiences">
-                        <Experiences/>
+                        <Experiences Activities="OngoingActivities"/>
                     </TabPanel>
                     <TabPanel Name="personal-info">
                         <PersonalInfo @bind-Model="Model" OnEditIdClick="() => uploadIdModal.ShowModal()" />
@@ -196,5 +197,13 @@
         }
 
         isEditAbout = false;
+    }
+
+    private IList<ActivityModel> OngoingActivities 
+    {
+        get 
+        {
+            return Model.Customer.OngoingActivities.Select(i => i.Activity).ToList();
+        }    
     }
 }

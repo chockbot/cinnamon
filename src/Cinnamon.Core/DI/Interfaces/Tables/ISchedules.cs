@@ -8,5 +8,6 @@ namespace Cinnamon.Core.DI.Interfaces.Tables
 {
     public interface ISchedules : IBaseTable<ScheduleModel>
     {
+        Task<ScheduleModel> GetScheduleByIdAsync(int id);
     }
 }

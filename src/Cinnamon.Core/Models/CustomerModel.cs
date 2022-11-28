@@ -21,4 +21,5 @@ public class CustomerModel : BaseModel
     public string? BackIdImagePath { get; set; }
 
     public virtual IList<FamilyMemberModel> FamilyMembers{ get; set; }
+    public virtual IList<OngoingActivityModel> OngoingActivities { get; set; }
 }

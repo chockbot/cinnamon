@@ -1,0 +1,75 @@
+@page "/purchase/order"
+@using Microsoft.AspNetCore.WebUtilities;
+@using Cinnamon.Core;
+@using Cinnamon.Web.Components;
+@using Cinnamon.Core.Models;
+@inject NavigationManager NavigationManager
+
+@if(purchaseOrder != null && schedule != null)
+{
+    <section class="container order-banner text-center">
+        <h1 class="order-banner-h1">
+            Thank you for choosing
+            <br>
+            <span class="text-capitalize cinnamon-banner-text">cinnamon</span>
+        </h1>
+        <Divider />
+        <div class="order-details text-start">
+            <h3 class="text-capitalize mt-5">payment confirmed!</h3>
+            <p class="text-capitalize mt-5 mb-0">purchase details:</p>
+            <p class="text-capitalize">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
+            <div class="schedule-ordered text-center">
+                <p>@schedule.Name</p>
+                <p>@schedule.DateTime</p>
+                <p>PHP @schedule.UnitPrice @schedule.Price / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
+                <p>Total: @purchaseOrder.OverallTotal</p>
+            </div>
+            <p>Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+            <div class="text-center mt-5 mb-5">
+                <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
+            </div> 
+        </div>
+    </section>
+}
+
+@code
+{
+    private PurchaseOrderModel purchaseOrder;
+    private ScheduleModel schedule;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var purchaseSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("purchaseid", out var purchaseIdString);
+
+        if(!purchaseSuccess)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        if(!int.TryParse(purchaseIdString, out int purchasedId))
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        // get purchase data
+        var purchaseData = await CoreDI.DataStore.PurchaseOrder.GetPurchaseByIdAsync(purchasedId);
+        if(purchaseData == null)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+        purchaseOrder = purchaseData;
+
+        // get scheduled purchaesed data
+        var scheduleData = await CoreDI.DataStore.Schedules.GetScheduleByIdAsync(purchaseData.ScheduleId);
+        if(scheduleData == null)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+        schedule = scheduleData;
+    }
+}
