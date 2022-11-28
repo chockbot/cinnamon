@@ -26,16 +26,19 @@
                 <div class="modal-body">
                     <p class="top-text">People can get to know you better if your profile shows your face.</p>
                     <div class="col-12-lg d-flex justify-content-center">
-                        <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is8.OnMobile" TextAlignment="TextAlignment.Center" >
+                        <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center" >
                             <div class="btn-delete">
                                 <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
                                     <i class="fa fa-trash" style="color:black;"></i>
                                 </button>
                             </div>
                             <div class="figure-profile">
-                                <Figure Border="Border.RoundedCircle">
-                                    <CardImage Source="@viewModel.profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
-                                </Figure>
+                                 <label for="fileinput" class="upload-image">
+                                    <Figure Border="Border.RoundedCircle">
+                                        <CardImage Source="@viewModel.profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                    </Figure>
+                                 </label>
+                                    <InputFile style="display: none;" id="fileinput" name="fileinput" accept=".png,.jpg,.jpeg" OnChange="@LoadImage" />
                                 <div class="round">
                                     <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadImage" />
                                     <i class="fa fa-camera" style="color: black;"></i>
@@ -55,7 +58,7 @@
 @if (viewModel.ShowErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-        <strong>Error!</strong>Error occured while uploading. Please refresh the page and try again.
+        <strong>Error!</strong>Error occured while uploading image. Please try again.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
@@ -96,33 +99,33 @@
     }
     private async Task LoadImage(InputFileChangeEventArgs e)
     {
+        var file = e.File;
         viewModel.isLoading     = true;
         viewModel.isClickButton = true;
         loadedFiles.Clear();
 
-        string path = Path.Combine(Environment.WebRootPath, "Images\\ProfilePicture");
-        if (!Directory.Exists(path))
+        //Check file content
+        if (!file.ContentType.Contains("image"))
         {
-            Directory.CreateDirectory(path);
+            viewModel.ShowErrorMessage = true;
+            HideMessageAfterDelay();
+            return;
         }
-        foreach (var file in e.GetMultipleFiles(viewModel.maxAllowedFiles))
+        try
         {
-            string fileName = Path.GetFileName(file.Name);
-            try
+            using (var ms = new MemoryStream())
             {
-                loadedFiles.Add(file);
-                MemoryStream ms = new MemoryStream();
                 await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
                 byte[] imageByte = ms.ToArray();
 
                 // Upload to Azure Blob
                 var upload = await uploadImageHandler.ExecuteAsync(
                         new Core.Module.UploadService.Interactors.ImageUpload
-                        { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name) } });
+                            { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name) } });
                 //Display Image
-                if(upload.Succeeded)
+                if (upload.Succeeded)
                 {
-                    if (upload.Result!= null)
+                    if (upload.Result != null)
                     {
                         foreach (var imagePath in upload.Result.ImagesPath)
                         {
@@ -132,13 +135,12 @@
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                viewModel.ShowErrorMessage = true;
-                HideMessageAfterDelay();
-            }
         }
-
+        catch (Exception ex)
+        {
+            viewModel.ShowErrorMessage = true;
+            HideMessageAfterDelay();
+        }
         viewModel.isLoading = false;
     }
     private async Task DeleteBlob(string filename, string container1)
