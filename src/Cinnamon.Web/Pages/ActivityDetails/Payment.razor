@@ -15,8 +15,8 @@
 @inject ISubmitOrderHandler submitOrerHandler;
 
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
-    <div class="d-flex col-lg-10 col-md-10 col-sm-12 col-12">
-        <a class="text-decoration-none text-reset" href="/Explore/@Schedule.ActivityId"><i class="far fa-arrow-alt-circle-left" style="font-size:1.7rem"></i></a>
+    <div class="d-flex flex-row col-lg-9 col-md-9 col-sm-12 col-12 px-2">
+        <a class="text-decoration-none text-reset" href="/Explore/@Schedule.ActivityId"><img src="/images/previous.png" style="width:20px;" /></a>
         <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
     </div>
 </div>
@@ -46,7 +46,7 @@
                         </Div>
                     </Column>
                 }
-                <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" @onclick="()=>AddChildrenModal.Open()">Add</button>
+                <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
             </div>
             <hr />
             <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
@@ -109,7 +109,7 @@
                     <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                     <br />
                     <br />
-                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" @onclick="OnPayConfirmedClicked">Pay and confirm</button>
+                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" style="width:100% !important" @onclick="OnPayConfirmedClicked">Pay and confirm</button>
                     @if(isShowPayErrorMessage)
                     {
                         <p class="text-danger">@payErrorMessage</p>

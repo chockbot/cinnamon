@@ -10,7 +10,7 @@ namespace Cinnamon.Core
             new ImageCacheModel{ Id = 1 }, new ImageCacheModel{ Id = 2} , new ImageCacheModel{ Id = 3}
         };
         public DescriptionSectionModel DescriptionSection { get; set; } = new DescriptionSectionModel();
-        public bool IsPrivate { get; set; } = true;
+        public bool IsPublish { get; set; } = true;
         public List<string> LevelOfActivityList { get; set; } = new List<string> { 
             "Beginner" , "Intermediate", "Advance"
         };
