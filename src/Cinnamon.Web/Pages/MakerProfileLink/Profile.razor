@@ -1,0 +1,181 @@
+@page "/maker/profile/{Id:int}"
+@using Cinnamon.Core
+@using Cinnamon.Core.Models;
+@using Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Modals;
+@using Cinnamon.Core.Module.CustomerService.Handler;
+@inject IModalService modal
+@inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISignedCustomer signedCustomer;
+@inject NavigationManager NavigationManager
+@inject IUpdateCustomerAbout updateAboutHandler;
+
+@if(Model != null)
+{
+    <section class="py-3 mt-5 profile-content">
+        <Container>
+            <Row>
+                <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
+                    <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
+                        <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
+                            <Figure Width="Width.Max100" Border="Border.RoundedCircle" Size="FigureSize.Is128x128" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
+                                <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                            </Figure>
+                        </CardHeader>
+                        <CardBody Border="Border.Is0" Padding="Padding.Is1.OnY">
+                            <CardTitle TextAlignment="TextAlignment.Center">
+                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.Customer.FirstName @Model.Customer.LastName</p>
+                                @if(Model.Customer.IsVerified)
+                                {
+                                    <p class="text-color-8080 my-1 font-24">
+                                        <Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />
+                                        <span class="text-capitalize">verified user</span>
+                                    </p>
+                                }
+                                <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
+                            </CardTitle>
+                        </CardBody>
+                    </Card>
+                </Column>
+                <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile">
+                    <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
+                        <Div>
+                            <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@Model.Customer.FirstName</span></p>
+                            <p class="m-0 text-color-8080 font-14">Joined in 2022</p>
+                        </Div>
+                        <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
+                            <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
+                                <p class="my-3 fw-bold font-18">About you</p>
+                            </Div>
+                        </Div>
+                        @if(!isEditAbout)
+                        {
+                            <p class="m-0 text-color-8080 font-16">@Model.Customer.About</p>
+                        }
+                        else
+                        {
+                            <MemoEdit Border="Border.Rounded" @bind-Text="aboutLocalState" Rows="5" />
+                        }
+                    </Div>
+                </Column>
+            </Row>
+        </Container>
+    </section>
+
+    <section class="mt-5 customer-profile-details">
+        <Container>
+            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                <Items>
+                    <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
+                </Items>
+                <Content>
+                    <TabPanel Name="maker-experience">
+                        <OngoingExperience Activities="activities" />
+                    </TabPanel>
+                </Content>
+            </Tabs>
+        </Container>
+    </section>
+    <ModalUploadingProfile @ref="upload"></ModalUploadingProfile>
+    <ModalUploadGovernmentId @ref="uploadIdModal" Model="Model"/>
+}
+
+@code 
+{
+    [Parameter]
+    public int Id { get; set; }
+    private IList<ActivityModel> activities = new List<ActivityModel>();
+
+    private ModalUploadGovernmentId uploadIdModal;
+
+    private MakerExperiences makerExperiences;
+
+    private string selectedTab = "maker-experience";
+
+    private string ImageSource { get; set; } = "images/Profile/user";
+
+    private Models.Customer.Profile Model;
+
+    public CustomerModel Customer { get; set; }
+
+    protected ModalUploadingProfile upload { get; set; }
+
+    private bool isEditAbout = false;
+
+    private string aboutLocalState = string.Empty;
+
+    private Task OnSelectedTabChanged(string name)
+    {
+        selectedTab = name;
+        return Task.CompletedTask;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        //var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        //var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user});
+        var currentCustomer = await CoreDI.DataStore.Customers.GetCustomerById(Id);
+        //Get Customer Information
+        Model = new();
+        Model.Customer = currentCustomer;
+        ImageSource   = Model.Customer.ProfilePath;
+        //Get Customer Activities
+
+
+        //Get Maker Activities
+        var customer = currentCustomer;
+        activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
+      
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
+    }
+
+    private async Task EditProfile()
+    {
+        //Display Modal Upload
+        await upload.OpenModal(Model.Customer.Email, Model.Customer.ProfilePath);
+    }
+
+    private void OnEditAboutClick()
+    {
+        isEditAbout = !isEditAbout;
+        if(isEditAbout)
+        {
+            aboutLocalState = Model.Customer.About;
+        }
+        else 
+        {
+            aboutLocalState = string.Empty;
+        }
+    }
+
+    private async Task SaveAboutClick()
+    {
+        if(isEditAbout)
+        {
+            var res = await updateAboutHandler.ExecuteAsync(
+                new Core.Module.CustomerService.Interactors.UpdateAbout {About = aboutLocalState, CustomerId = Model.Customer.Id});
+            
+            if(res.Succeeded)
+            {
+                Model.Customer = res.Result.Customer;
+            }
+        }
+
+        isEditAbout = false;
+    }
+
+    private IList<ActivityModel> OngoingActivities 
+    {
+        get 
+        {
+            return Model.Customer.OngoingActivities.Select(i => i.Activity).ToList();
+        }    
+    }
+}
