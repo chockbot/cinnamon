@@ -50,14 +50,7 @@
                                 <p class="my-3 fw-bold font-18">About you</p>
                             </Div>
                         </Div>
-                        @if(!isEditAbout)
-                        {
-                            <p class="m-0 text-color-8080 font-16">@Model.Customer.About</p>
-                        }
-                        else
-                        {
-                            <MemoEdit Border="Border.Rounded" @bind-Text="aboutLocalState" Rows="5" />
-                        }
+                        <p class="m-0 text-color-8080 font-16">@Model.Customer.About</p>
                     </Div>
                 </Column>
             </Row>
@@ -78,8 +71,6 @@
             </Tabs>
         </Container>
     </section>
-    <ModalUploadingProfile @ref="upload"></ModalUploadingProfile>
-    <ModalUploadGovernmentId @ref="uploadIdModal" Model="Model"/>
 }
 
 @code 
@@ -87,8 +78,6 @@
     [Parameter]
     public int Id { get; set; }
     private IList<ActivityModel> activities = new List<ActivityModel>();
-
-    private ModalUploadGovernmentId uploadIdModal;
 
     private MakerExperiences makerExperiences;
 
@@ -99,12 +88,6 @@
     private Models.Customer.Profile Model;
 
     public CustomerModel Customer { get; set; }
-
-    protected ModalUploadingProfile upload { get; set; }
-
-    private bool isEditAbout = false;
-
-    private string aboutLocalState = string.Empty;
 
     private Task OnSelectedTabChanged(string name)
     {
@@ -136,40 +119,6 @@
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
 
-    private async Task EditProfile()
-    {
-        //Display Modal Upload
-        await upload.OpenModal(Model.Customer.Email, Model.Customer.ProfilePath);
-    }
-
-    private void OnEditAboutClick()
-    {
-        isEditAbout = !isEditAbout;
-        if(isEditAbout)
-        {
-            aboutLocalState = Model.Customer.About;
-        }
-        else 
-        {
-            aboutLocalState = string.Empty;
-        }
-    }
-
-    private async Task SaveAboutClick()
-    {
-        if(isEditAbout)
-        {
-            var res = await updateAboutHandler.ExecuteAsync(
-                new Core.Module.CustomerService.Interactors.UpdateAbout {About = aboutLocalState, CustomerId = Model.Customer.Id});
-            
-            if(res.Succeeded)
-            {
-                Model.Customer = res.Result.Customer;
-            }
-        }
-
-        isEditAbout = false;
-    }
 
     private IList<ActivityModel> OngoingActivities 
     {
