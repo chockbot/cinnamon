@@ -39,6 +39,7 @@ namespace Cinnamon.Data
         public IFamilyMembers FamilyMembers => new FamilyMember(mDbContext);
         public IOngoingActivity OngoingActivity => new OngoingActivity(mDbContext);
         public IPurchaseOrder PurchaseOrder => new PurchaseOrder(mDbContext);
+        public IResendEmail ResendEmail => new ResendEmail(mDbContext);
         #endregion
 
         #region Constructor

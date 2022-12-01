@@ -25,6 +25,7 @@ namespace Cinnamon.Data
         public DbSet<FamilyMemberModel> FamilyMembers { get; set; }
         public DbSet<OngoingActivityModel> OngoingActivities { get; set; }
         public DbSet<PurchaseOrderModel> PurchaseOrders { get; set; }
+        public DbSet<ResendEmailModel> ResendEmails { get; set; }
         #endregion
 
         #region Constructor
@@ -84,6 +85,9 @@ namespace Cinnamon.Data
             modelBuilder.Entity<OngoingActivityModel>().HasOne(i => i.Activity);
             modelBuilder.Entity<OngoingActivityModel>().HasOne(i => i.Customer);
             modelBuilder.Entity<OngoingActivityModel>().HasIndex(i => i.PurchaseOrderId);
+
+            modelBuilder.Entity<ResendEmailModel>().HasIndex(i => i.Email);
+            modelBuilder.Entity<ResendEmailModel>().HasIndex(new string[] { "Email", "DateResend" });
         }
         #endregion
 

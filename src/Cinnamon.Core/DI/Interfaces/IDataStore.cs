@@ -17,6 +17,7 @@ namespace Cinnamon.Core
         ICustomer Customers { get; }
         IOngoingActivity OngoingActivity { get; }
         IPurchaseOrder PurchaseOrder {get; }
+        IResendEmail ResendEmail { get; }
         /// <summary>
         /// Makes sure the client data store is correctly setup
         /// </summary>
