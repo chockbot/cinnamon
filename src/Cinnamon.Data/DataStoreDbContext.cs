@@ -87,6 +87,7 @@ namespace Cinnamon.Data
             modelBuilder.Entity<OngoingActivityModel>().HasIndex(i => i.PurchaseOrderId);
 
             modelBuilder.Entity<ResendEmailModel>().HasIndex(i => i.Email);
+            modelBuilder.Entity<ResendEmailModel>().HasIndex(new string[] { "Email", "DateResend" });
         }
         #endregion
 
