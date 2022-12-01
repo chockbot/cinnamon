@@ -14,7 +14,7 @@
             <span class="text-capitalize cinnamon-banner-text">cinnamon</span>
         </h1>
         <Divider />
-        <div class="order-details text-start">
+        <div class="order-details text-start text-center">
             <h3 class="text-capitalize mt-5">payment confirmed!</h3>
             <p class="text-capitalize mt-5 mb-0">purchase details:</p>
             <p class="text-capitalize">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
@@ -24,7 +24,7 @@
                 <p>PHP @schedule.UnitPrice @schedule.Price / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
                 <p>Total: @purchaseOrder.OverallTotal</p>
             </div>
-            <p>Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+            <p class="text-center">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
             <div class="text-center mt-5 mb-5">
                 <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
             </div> 
