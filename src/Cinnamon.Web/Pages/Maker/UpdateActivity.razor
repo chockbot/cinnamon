@@ -81,7 +81,7 @@
     private ExperienceUpdate experienceUpdateComponent {get; set;}
 
     private ExperienceSetupUpdate experienceSetupUpdateComponent {get; set;}
-    
+
     private int currentIndex = 0;
 
     private int GetPerentCompletion {
@@ -110,6 +110,7 @@
             NavigationManager.NavigateTo("/maker/dashboard");
 
         var activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(activityId);
+       
         if(activity == null)
             NavigationManager.NavigateTo("/maker/dashboard");
         
@@ -155,6 +156,19 @@
         {
             activity.ActivityImages = new List<ActivityImagesModels>();
         }
+
+        var sortPrice = activity.ScheduleList.OrderBy(x => x.Price).ToList();
+        activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
+                                                            sortPrice.ElementAtOrDefault(0).UnitPrice,
+                                                            sortPrice.ElementAtOrDefault(0).Price,
+                                                            sortPrice.ElementAtOrDefault(sortPrice.Count - 1).Price) : String.Format("{0} {1} / {2} {3} / {4} {5}",
+                                                            sortPrice.ElementAtOrDefault(0).UnitPrice,
+                                                            sortPrice.ElementAtOrDefault(0).Price.ToString(),
+                                                            sortPrice.ElementAtOrDefault(0).PerUnit1.ToString(),
+                                                            sortPrice.ElementAtOrDefault(0).PriceUnit1,
+                                                            sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
+                                                            sortPrice.ElementAtOrDefault(0).PriceUnit2);
+
         // initiate Images
         ExperienceUpdateModel.ActivityImages images = new();
         if(activity.ActivityImages.Count > 0)

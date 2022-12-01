@@ -96,7 +96,16 @@ namespace Cinnamon.Core
         public async Task<bool> SaveActivity(ActivityModel activityModel)
         {
             var sortPrice = ExperienceSetupViewModel.Schedules.OrderBy(x => x.Price).ToList();
-            activityModel.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price, sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1}",sortPrice.ElementAtOrDefault(0).UnitPrice, sortPrice.ElementAtOrDefault(0).Price.ToString());
+            activityModel.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
+                                                                        sortPrice.ElementAtOrDefault(0).Price, 
+                                                                        sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1} / {2} {3} / {4} {5}",
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
+                                                                        sortPrice.ElementAtOrDefault(0).Price.ToString(), 
+                                                                        sortPrice.ElementAtOrDefault(0).PerUnit1.ToString(),
+                                                                        sortPrice.ElementAtOrDefault(0).PriceUnit1,
+                                                                        sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
+                                                                        sortPrice.ElementAtOrDefault(0).PriceUnit2);
 
             if (activityModel.ExperienceTypeId == 1)
             {
@@ -111,11 +120,11 @@ namespace Cinnamon.Core
             {
                 if(UserActionType == Enums.UserActionType.Create)
                 {
-                     activity.ActivityImages = await Upload(ExperienceSetupViewModel.Images);
+                    activity.ActivityImages = await Upload(ExperienceSetupViewModel.Images);
                     activity.CreatedBy = UserList.Id;
                     activity.CreatedOn = DateTime.UtcNow;
                     activity.ChangedOn = DateTime.UtcNow;
-                    activity.IsPublished = !ExperienceSetupViewModel.IsPrivate;
+                    activity.IsPublished = ExperienceSetupViewModel.IsPublish;
                     var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
                     if (res.Type == MessageType.Success)
                     {

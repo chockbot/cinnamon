@@ -4,7 +4,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
+<div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
     <span class="fw-bold">@ScheduleModel.Name</span>
     <br />
     <div>
@@ -19,23 +19,23 @@
     {
         if (ButtonType == ScheduleButtonType.Choose)
         {
-            <button class="btn-primary rounded border-0 p-2 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" style="width:fit-content">Choose</button>
+            <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" style="width:fit-content;padding: 5px 10px">Choose</button>
         }
         else{
-            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="OnClickChange">
+            <button class="btn-primary shadow-sm border-0 rounded" style="width:fit-content;padding: 5px 10px" @onclick="OnClickChange">
                 Change
             </button>
         }
     }
     else
     {
-        <button class="btn-primary rounded border-0 p-2 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal" style="width:fit-content">Choose</button>
+        <button class="btn-primary rounded border-0 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal" style="width:fit-content;padding: 5px 10px">Choose</button>
     }
     
 </div>
 
 
-@if (!AuthState.User.Identity.IsAuthenticated)
+@if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
 {
     <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@($"/Payment/{ScheduleModel.Id}")"></ModalLogin>
 }
@@ -50,6 +50,7 @@
     public EventCallback<MouseEventArgs> OnClickLogin { get; set; } = new EventCallback<MouseEventArgs>();
 
     public AuthenticationState AuthState { get; set; }
+    private bool mouseEnter { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -58,5 +59,9 @@
 
     private void OnClickChoose(){
         NavigationManager.NavigateTo($"/Payment/{ScheduleModel.Id}", true);
+    }
+
+    private void OnMouseEnter(){
+        mouseEnter = !mouseEnter;
     }
 }

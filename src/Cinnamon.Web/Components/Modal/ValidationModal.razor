@@ -1,5 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Core.Enums
+@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+@inject IResendEmail resendEmailHandler;
 
 <div class="modal @ModalClass" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog">
@@ -14,7 +16,16 @@
                     <br />
                     <div class="col-12 text-center">
                         <p>We've sent an email to your inbox. Please check and click verify.</p>
-                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
+                        <p>
+                            Haven't received a verification email?
+                            <span class="text-capitalize text-decoration-underline" 
+                                style='color:#FFA942;cursor: pointer; display: @(isResendLoading ? "none":"");' @onclick="ResendEmail"> 
+                                Resend
+                            </span>
+                            <span style='display: @(isResendLoading ? "":"none");'>
+                                <i id="spinner-loading" class="fa fa-spinner fa-spin" style="color:#FFA942"></i>
+                            </span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -25,15 +36,35 @@
 {
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
+
+<div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" 
+    style='z-index:99999; display: @(string.IsNullOrEmpty(errorMessage) ? "none": "block");'>
+  <strong>Error!</strong> @errorMessage
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
+<div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" 
+    style='z-index:99999; display: @(string.IsNullOrEmpty(successMessage) ? "none": "block");'>
+  <strong>Success!</strong> @successMessage
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+
 @code {
     [Parameter]
     public Modal modal{ get; set; }
+
+    [Parameter]
+    public string Email {get; set;}
 
     public string ModalDisplay = "none;";
 
     public string ModalClass = "";
 
     public bool ShowBackdrop = false;
+
+    private bool isResendLoading = false;
+    private string errorMessage = string.Empty;
+    private string successMessage = string.Empty;
 
     public async Task OpenModal()
     {
@@ -48,5 +79,31 @@
         ModalDisplay    = "none;";
         ShowBackdrop    = false;
         StateHasChanged();
+    }
+
+    private async Task ResendEmail()
+    {
+        isResendLoading = true;
+        errorMessage = string.Empty;
+        successMessage = string.Empty;
+
+        var resendRes = await resendEmailHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.ResendEmailArgs {Email = Email});
+
+        if(!resendRes.Succeeded)
+        {
+            if(resendRes.Error.Code == "RESENDEXCEED")
+            {
+                errorMessage = "Can't resend email again. Need to wait after 1 day.";
+            }
+            else 
+            {
+                errorMessage = "An error occured. Please try again later.";
+            }
+        }
+        else 
+        {
+            successMessage = "Confirmation link successfully resend to your email.";
+        }
+        isResendLoading = false;
     }
 }

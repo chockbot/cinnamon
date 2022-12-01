@@ -61,12 +61,12 @@
             <div class="w-100 order-lg-first order-md-first order-sm-last">
                 <div class="text-black">
                     <div class="d-flex gap-1 fs-6">
-                        <span class="review">
+                      @*  <span class="review">
                             <span>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-star" viewBox="0 0 20 22">
                                     <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
                                 </svg>
-                            </span>4.99 · <u>150 reviews</u></span>
+                            </span>4.99 · <u>150 reviews</u></span>*@
                     </div>
                 </div>
             </div>
@@ -74,17 +74,16 @@
         <div class="d-flex justify-content-between mt-3">
             <div class="activity-title">
                 <label class="fw-bold mb-3 col-md-12 col-12" style="font-size:1.9rem">@actModel.Title</label>
-                <span class="col-md-12 col-12">
-                    @if(actModel.ExperienceType.Id == 1)
+                <span class="col-md-12 col-12 d-flex align-items-center">
+                    @if(actModel.ExperienceType.Id == 1) 
                     {
-                         <i class="fas fa-map-marker-alt mx-1" aria-hidden="true"></i>
+                        <img class="img-thumbnail border-0" src="/images/location.png" />
                     }
                     else
                     {
                         <i class="fa fa-laptop mx-1" aria-hidden="true"></i>
                     }
-                    
-                   <span style="font-size:1.125rem"> @actModel.ExperienceType.Name</span>
+                   <span> @actModel.ExperienceType.Name</span>
                 </span>
             </div>
         </div>
@@ -116,10 +115,10 @@
                     <img class="rounded-2 rounded-circle m-3" src="@Customer.ProfilePath" width="60" height="60" />
                     <div class="d-flex flex-column m-2">
                         <span style="font-size:0.7rem;">Owner</span>
-                        <span class="fw-bold" style="font-size:1rem;">@Customer.FirstName @Customer.LastName</span>
-                        <label>View Profile</label>
+                        <span class="fw-bold text-capitalize" style="font-size:1rem;">@Customer.FirstName @Customer.LastName</span>
+                        <a class="text-decoration-none" href="/maker/profile/@Customer.Id">View Profile</a>
                     </div>
-                    <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
+                    <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
                         <img class="px-3" src="images/details_profile_badge.png" />
                     </div>
                     </div>
@@ -133,8 +132,8 @@
                         <span>Sample Owner</span>
                         <span>Owner Name</span>
                         <label>View Profile</label>
-                    </div>
-                    <div class="d-flex flex-column justify-content-center align-items-end flex-grow-1">
+                    </div> 
+                    <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
                         <img class="px-3" src="images/details_profile_badge.png" />
                     </div>
                     </div>
@@ -145,7 +144,7 @@
             <hr />
             <div class="col-12">
                 <label class="fw-bold mb-3 detail-label">Schedule of @(actModel.ScheduleList.Count > 1 ? "activities" : "activity")</label>
-                <di v class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
+                <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
                     @if (actModel.ScheduleIndicator == "selection" || actModel.ScheduleList.Count > 0)
                     {
                         @if(string.IsNullOrEmpty(actModel.Schedules))
@@ -155,7 +154,7 @@
                             {
                                 @if(x<=3)
                                 {
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-lg-3 col-sm-6 col-6">
                                         <CarouselItemSchedule ScheduleModel="@actModel.ScheduleList.ElementAt(x)"></CarouselItemSchedule>
                                     </div>
                                 }
@@ -220,7 +219,7 @@
                             </span>
                         </div>
                     }
-                </di>
+                </div>
                 @if (actModel.ScheduleList.Count > 4)
                 {
                     <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
@@ -289,7 +288,7 @@
                     <p>
                         Minimum Age: @actModel.DescriptionSectionModel.MinimumAge
                         <br>
-                        Adults: @actModel.DescriptionSectionModel.CanAdultsJoin
+                        Adults: @(actModel.DescriptionSectionModel.CanAdultsJoin ? "Can join": "Can't join")
                         <br>
                         Levels of Activity: @actModel.DescriptionSectionModel.ActivityLevel
                         <br>
@@ -311,7 +310,7 @@
             <div class="end-container d-flex flex-column">
                 <span class="landing-header color-primary fs-2">@Resources.App.appName</span>
                 <span>
-                    Not happy with the experience? <br /> Contact us and we'll solve the problem for you.
+                    Not happy with the experience? <br /> <a href="mailto:support@cinnamon.ph">Contact us</a> and we'll solve the problem for you.
                 </span>
             </div>
         </div>

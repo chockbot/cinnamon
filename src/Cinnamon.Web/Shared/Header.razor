@@ -19,7 +19,7 @@
             <a href="/explore" class="app-name">@Resources.App.appName</a>
         </div>
         <!--Menu-->
-            <div class="d-flex flex-row justify-content-end">
+            <div class="d-flex flex-row justify-content-end" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
                 <div class="become">
                      <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
                 </div>
@@ -79,12 +79,16 @@
     </main>
     <ModalSignUp></ModalSignUp>
 </div>
+@if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
+{
+    <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@NavigationManager.Uri"></ModalLogin>
+}
 @code {
     public bool clickButton { get; set; }
     public List<CustomerModel> UserList = new List<CustomerModel>();
     public CustomerModel UserModel = new CustomerModel();
     public AuthenticationState AuthState { get; set; }
-
+    private bool mouseEnter { get; set; }
      protected override async Task OnInitializedAsync()
     {
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
@@ -121,6 +125,11 @@
     private string ShowMenu()
     {
         return clickButton ? "show" : "";
+    }
+
+    private void OnMouseEnter()
+    {
+        mouseEnter = !mouseEnter;
     }
 }
 

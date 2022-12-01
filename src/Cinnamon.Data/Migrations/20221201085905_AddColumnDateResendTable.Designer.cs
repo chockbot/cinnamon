@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221201085905_AddColumnDateResendTable")]
+    partial class AddColumnDateResendTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -597,6 +599,9 @@ namespace Cinnamon.Data.Migrations
                     b.Property<DateTime>("ChangedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("Count")
+                        .HasColumnType("integer");
+
                     b.Property<int>("CreatedBy")
                         .HasColumnType("integer");
 
@@ -616,8 +621,6 @@ namespace Cinnamon.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email");
-
-                    b.HasIndex("Email", "DateResend");
 
                     b.ToTable("ResendEmails");
                 });
