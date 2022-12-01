@@ -1,4 +1,5 @@
 using Cinnamon.Core;
+using Cinnamon.Core.Extensions;
 using Cinnamon.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,4 +12,13 @@ public class ResendEmail : BaseDbSet<ResendEmailModel>, IResendEmail
 
     public async Task<ResendEmailModel> GetResendByEmailAsync(string email)
         => await mDbContext.ResendEmails.FirstOrDefaultAsync(i => i.Email == email);
+
+    public async Task<IList<ResendEmailModel>> GetLisResendEmailAsync(string email, DateTime from, DateTime to)
+    {
+        from = from.SetKindUtc();
+        to = to.SetKindUtc();
+
+        return await mDbContext.ResendEmails.Where(i => i.Email == email && i.DateResend >= from && i.DateResend <= to)
+            .ToListAsync();
+    }
 }
