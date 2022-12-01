@@ -115,7 +115,7 @@ namespace Cinnamon.Core
                     activity.CreatedBy = UserList.Id;
                     activity.CreatedOn = DateTime.UtcNow;
                     activity.ChangedOn = DateTime.UtcNow;
-                    activity.IsPublished = !ExperienceSetupViewModel.IsPrivate;
+                    activity.IsPublished = ExperienceSetupViewModel.IsPublish;
                     var res = await CoreDI.DataStore.Activities.SaveDataAsync(activityModel);
                     if (res.Type == MessageType.Success)
                     {
