@@ -549,7 +549,8 @@
     }
 
     private async Task FetchActivities(){
-        var fetchActivities = (await CoreDI.DataStore.Activities.GetAllAsync()).Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(10);
+        var ActivityListData = await CoreDI.DataStore.Activities.GetAllAsync();
+        var fetchActivities = ActivityListData.Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(ActivityListData.Count < 10 ? ActivityListData.Count : 10);
         activity.AddRange(fetchActivities);
     }
 
