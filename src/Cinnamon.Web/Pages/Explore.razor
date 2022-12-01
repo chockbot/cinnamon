@@ -332,84 +332,94 @@
         </div>
     <!--Section 2-->
         <div class="section-2-lg">
-            <div class="row d-flex justify-content-start">
-                @foreach (var act in activity.OrderBy(a => a.Id))
-                {
-                 cnt = 0;
-                 images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
-                 <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center">
-                 <a class="button carousel-card text-center" href="/explore/@act.Id">
-                    <div class="card">
-                        <div id="carousel1-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
-                            <div class="carousel-indicators">
-                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
-                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                            </div>
-                            <div class="carousel-inner1">
-                                @foreach(var item in images)
-                                {
-                                    cnt++;
-                                    if (item.ImageId == act.Id && cnt == 1)
-                                    {
-                                        <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
-                                        <div class="carousel-item active">
-                                        <img src=@item.ImageLocation alt="First slide" class="card-img">
-                                        </div>
-                                    }
-                                    else if (item.ImageId == act.Id && cnt == 2)
-                                    {
-                                        <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
-                                        <div class="carousel-item">
-                                        <img src=@item.ImageLocation alt="Second slide" class="card-img">
-                                        </div>
-                                    }
-                                    else if(item.ImageId == act.Id && cnt == 3)
-                                    {
-                                         <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
-                                        <div class="carousel-item">
-                                        <img src=@item.ImageLocation alt="Third slide" class="card-img">
-                                        </div>
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                            </div>
-                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.Id" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden"></span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.Id" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden"></span>
-                            </button>
-                        </div>  
-                        <div class="card-body1 text-start">
-                            <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
-                            <h4 class="card-title1 mb-0" >@act.Title</h4>
-                            @if(act.ExperienceType.Id == 1)
-                            {
-                                if(String.IsNullOrEmpty(act.Location))
-                                {
-                                    <p class="card-title2 mb-0">@act.Address.City</p>
-                                }
-                                else{
-                                    <p class="card-title2 mb-0">@act.Location</p>
-                                }
-                            }
-                            else{
-                                 <p class="card-title2 mb-0">@act.ExperienceType.Name</p>
-                            }
-                           @* <p class="card-title2 mb-0">@act.Location</p>*@
-                            <p class="card-title3">@act.Price</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            @if (activity == null)
+            {
+                <p><em>Loading...</em></p>
             }
-            </div>
+            else{
+                <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> FetchActivities()">
+                    <div class="row d-flex justify-content-start">
+                        @foreach (var act in activity)
+                        {
+                         cnt = 0;
+                         images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
+           
+                         <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center">
+                            <a class="button carousel-card text-center" href="/explore/@act.Id">
+                            <div class="card">
+                                <div id="carousel1-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
+                                    <div class="carousel-indicators">
+                                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
+                                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                    </div>
+                                    <div class="carousel-inner1">
+                                        @foreach(var item in images)
+                                        {
+                                            cnt++;
+                                            if (item.ImageId == act.Id && cnt == 1)
+                                            {
+                                                <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
+                                                <div class="carousel-item active">
+                                                <img src=@item.ImageLocation alt="First slide" class="card-img">
+                                                </div>
+                                            }
+                                            else if (item.ImageId == act.Id && cnt == 2)
+                                            {
+                                                <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
+                                                <div class="carousel-item">
+                                                <img src=@item.ImageLocation alt="Second slide" class="card-img">
+                                                </div>
+                                            }
+                                            else if(item.ImageId == act.Id && cnt == 3)
+                                            {
+                                                 <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
+                                                <div class="carousel-item">
+                                                <img src=@item.ImageLocation alt="Third slide" class="card-img">
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                break;
+                                            }
+                                        }
+                                    </div>
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.Id" data-bs-slide="prev">
+                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden"></span>
+                                    </button>
+                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.Id" data-bs-slide="next">
+                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                        <span class="visually-hidden"></span>
+                                    </button>
+                                </div>  
+                                <div class="card-body1 text-start">
+                                    <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
+                                    <h4 class="card-title1 mb-0" >@act.Title</h4>
+                                    @if(act.ExperienceType.Id == 1)
+                                    {
+                                        if(String.IsNullOrEmpty(act.Location))
+                                        {
+                                            <p class="card-title2 mb-0">@act.Address.City</p>
+                                        }
+                                        else{
+                                            <p class="card-title2 mb-0">@act.Location</p>
+                                        }
+                                    }
+                                    else{
+                                         <p class="card-title2 mb-0">@act.ExperienceType.Name</p>
+                                    }
+                                   @* <p class="card-title2 mb-0">@act.Location</p>*@
+                                    <p class="card-title3">@act.Price</p>
+                                </div>
+                            </div>
+                        </a>
+                         </div>
+                        }
+                        <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center" id="observerTarget"></div>
+                    </div>
+                </InfiniteScroll>
+            }
         </div>
     <!--Section 3-->
         <div class="section-3-md">
@@ -516,7 +526,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        activity        = (await CoreDI.DataStore.Activities.GetAllAsync()).Where(i => i.IsPublished).ToList();
+        await FetchActivities();
         Address         = await CoreDI.DataStore.Addresses.GetAllAsync();
         activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
         activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
@@ -536,6 +546,11 @@
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
         }
+    }
+
+    private async Task FetchActivities(){
+        var fetchActivities = (await CoreDI.DataStore.Activities.GetAllAsync()).Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(10);
+        activity.AddRange(fetchActivities);
     }
 
 
