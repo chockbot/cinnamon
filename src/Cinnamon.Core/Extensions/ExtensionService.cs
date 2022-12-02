@@ -47,6 +47,7 @@ public static class ExtensionService
         services.AddTransient<IUploadCustomerGovernmentId, UploadCustomerGovernmentIdHandler>();
         services.AddTransient<ISubmitOrderHandler,SubmitOrderHandler>();
         services.AddTransient<Module.CinnamonMakerService.Handler.IResendEmail, ResendEmailHandler>();
+        services.AddTransient<IUpdateBirthDate, UpdateBirthDateHandler>();
 
         return services;
     } 

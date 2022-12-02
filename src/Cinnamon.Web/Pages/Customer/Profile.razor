@@ -89,7 +89,10 @@
                 <Items>
                     <Tab Name="experiences" TextTransform="TextTransform.Capitalize">experiences</Tab>
                     <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
-                    <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
+                    @if(Model.Customer.IsMaker)
+                    {
+                        <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
+                    }
                 </Items>
                 <Content>
                     <TabPanel Name="experiences">
@@ -98,9 +101,12 @@
                     <TabPanel Name="personal-info">
                         <PersonalInfo @bind-Model="Model" OnEditIdClick="() => uploadIdModal.ShowModal()" />
                     </TabPanel>
-                    <TabPanel Name="maker-experience">
-                        <MakerExperiences @ref="makerExperiences" Activities="activities" />
-                    </TabPanel>
+                    @if(Model.Customer.IsMaker)
+                    {
+                        <TabPanel Name="maker-experience">
+                            <MakerExperiences @ref="makerExperiences" Activities="activities" />
+                        </TabPanel>
+                    }
                 </Content>
             </Tabs>
         </Container>
