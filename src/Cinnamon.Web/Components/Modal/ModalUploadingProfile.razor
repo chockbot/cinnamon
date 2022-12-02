@@ -11,6 +11,7 @@
 @inject IUploadImages uploadImageHandler
 @inject IDeleteImage deleteImageHandler
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
 
 @if (!viewModel.isSubmit)
 {
@@ -40,8 +41,10 @@
                                  </label>
                                     <InputFile style="display: none;" id="fileinput" name="fileinput" accept=".png,.jpg,.jpeg" OnChange="@LoadImage" />
                                 <div class="round">
-                                    <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadImage" />
-                                    <i class="fa fa-camera" style="color: black;"></i>
+                                    <form method="post">
+                                            <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" name="image" class="image" />
+                                        <i class="fa fa-camera" style="color: black;"></i>
+                                    </form>
                                 </div>
                             </div>
                         </Card>
@@ -55,6 +58,35 @@
         </div>
     </div>
 </EditForm>
+<!--ModalEdit-->
+    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Crop image</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="img-container">
+                        <div class="row">
+                            <div class="col-lg-7">
+                                <img id="image">
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="preview" style="border-radius:50%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="crop">Crop</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 @if (viewModel.ShowErrorMessage)
 {
@@ -76,6 +108,8 @@
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
 @code {
+    IJSObjectReference module;
+
     private readonly IConfiguration configuration;
 
     private List<IBrowserFile> loadedFiles = new();
@@ -84,6 +118,24 @@
 
     private CustomerModel customer = new CustomerModel();
 
+    private Modal modalRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/editprofileModal.js");
+        }
+    }
+    private async Task ShowModal()
+    {
+        await modalRef.Show();
+    }
+
+    private async Task HideModal()
+    {
+        await modalRef.Hide();
+    }
     public bool ButtonIsClicked()
     {
         return viewModel.isClickButton ? true : false;
