@@ -10,5 +10,6 @@ namespace Cinnamon.Core.Models
     {
         public int Id { get; set; }
         public string Category { get; set; }
+        public string IconPath { get; set; }
     }
 }

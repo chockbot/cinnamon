@@ -101,25 +101,18 @@
     <!--Section 1-->
     <div class="activity-sm">
                 <div class="row d-flex justify-content-start">
-                    @*<div class="col-sm-12 col-12 d-flex justify-content-center p-2">
-                        <div class="btn-family">
-                            <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
-                                @Resources.App.Signup
-                            </button>
-                        </div>
-                    </div>*@
                     <div class="col-sm-12 col-12">
                         <div id="carouselExampleControls1" class="carousel slide" data-ride="carousel" data-interval="0">
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
+                                        @foreach (var category in experienceCategory)
                                         {
                                             if (category.Id <= 5)
                                             {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                                    <img src=@category.IconPath class="img-icon text-center">
+                                                    <p class="card-title">@category.Category</p>
                                                 </a>
                                             }
                                         }
@@ -127,55 +120,13 @@
                                 </div>
                                 <div class="carousel-item">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
+                                @foreach (var category in experienceCategory)
                                         {
                                             if (category.Id > 5 && category.Id <= 10)
                                             {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 10 && category.Id <= 15)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 15 && category.Id <= 20)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 20 && category.Id <= 25)
-                                            {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                                    <img src=@category.IconPath class="img-icon text-center">
+                                                    <p class="card-title">@category.Category</p>
                                                 </a>
                                             }
                                         }
@@ -203,41 +154,13 @@
                         <div class="carousel-inner"> 
                             <div class="carousel-item active">
                                 <div class="cards-wrapper">
-                                @foreach(var category in activityTypes)
+                                @foreach(var category in experienceCategory)
                                 {
                                     if(category.Id <= 10)
                                     {
-                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                            <img src=@category.Icon class="img-icon text-center">
-                                            <p class="card-title">@category.Name</p>
-                                        </a>
-                                    }
-                                }
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="cards-wrapper">
-                                @foreach(var category in activityTypes)
-                                {
-                                    if(category.Id > 10 && category.Id <= 20)
-                                    {
-                                        <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                            <img src=@category.Icon class="img-icon text-center">
-                                            <p class="card-title">@category.Name</p>
-                                        </a>
-                                    }
-                                }
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <div class="cards-wrapper">
-                                @foreach(var category in activityTypes)
-                                {
-                                    if(category.Id > 20 && category.Id <= 30)
-                                    {
-                                        <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                            <img src=@category.Icon class="img-icon text-center">
-                                            <p class="card-title">@category.Name</p>
+                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                            <img src=@category.IconPath class="img-icon text-center">
+                                            <p class="card-title">@category.Category</p>
                                         </a>
                                     }
                                 }
@@ -269,41 +192,13 @@
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
+                                        @foreach (var category in experienceCategory)
                                         {
                                             if (category.Id <= 7)
                                             {
-                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 7 && category.Id <= 14)
-                                            {
-                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
-                                                </a>
-                                            }
-                                        }
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="cards-wrapper">
-                                        @foreach (var category in activityTypes)
-                                        {
-                                            if (category.Id > 14 && category.Id <= 21)
-                                            {
-                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Name))">
-                                                    <img src=@category.Icon class="img-icon text-center">
-                                                    <p class="card-title">@category.Name</p>
+                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                                    <img src=@category.IconPath class="img-icon text-center">
+                                                    <p class="card-title">@category.Category</p>
                                                 </a>
                                             }
                                         }
@@ -509,16 +404,17 @@
 @*<BetaAlert></BetaAlert>*@
 </html>
 @code {
-    public List<ActivityModel> activity              = new List<ActivityModel>();
-    public List<ActivityTypeModel> activityTypes     = new List<ActivityTypeModel>();
-    public List<ActivityImagesModels> activityImages = new List<ActivityImagesModels>();
-    public List<ActivityImagesModels> images         = new List<ActivityImagesModels>();
-    public List<AddressModel> Address                = new List<AddressModel>();
-    public List<CustomerModel> UserList = new List<CustomerModel>();
-    public CustomerModel UserModel                    = new CustomerModel();
-    public string searchValue                        = string.Empty;
-    public string filterId                           = string.Empty;
-    public int cnt                                   = 0;
+    public List<ActivityModel>           activity           = new List<ActivityModel>();
+    public List<ActivityTypeModel>       activityTypes      = new List<ActivityTypeModel>();
+    public List<ActivityImagesModels>    activityImages     = new List<ActivityImagesModels>();
+    public List<ActivityImagesModels>    images             = new List<ActivityImagesModels>();
+    public List<AddressModel>            Address            = new List<AddressModel>();
+    public List<CustomerModel>           UserList           = new List<CustomerModel>();
+    public List<ExperienceCategoryModel> experienceCategory = new List<ExperienceCategoryModel>();
+    public CustomerModel                 UserModel          = new CustomerModel();
+    public string                        searchValue        = string.Empty;
+    public string                        filterId           = string.Empty;
+    public int                           cnt                = 0;
     private string value { get; set; }
     public bool clickButton { get; set; }
     public AuthenticationState AuthState { get; set; }
@@ -527,9 +423,10 @@
     protected override async Task OnInitializedAsync()
     {
         await FetchActivities();
-        Address         = await CoreDI.DataStore.Addresses.GetAllAsync();
-        activityImages  = await CoreDI.DataStore.ActivityImages.GetAllAsync();
-        activityTypes   = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
+        Address             = await CoreDI.DataStore.Addresses.GetAllAsync();
+        activityImages      = await CoreDI.DataStore.ActivityImages.GetAllAsync();
+        activityTypes       = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
+        experienceCategory  = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
 
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
@@ -598,9 +495,9 @@
     }
     public async Task Filter(int id, string type)
     {
-        searchValue = type;
-        activity    = await CoreDI.DataStore.Activities.GetAllAsync();
-        activity    = activity.Where(p=> p.Id == id && p.IsPublished).ToList();
+        //searchValue = type;
+        //activity    = await CoreDI.DataStore.Activities.GetAllAsync();
+        //activity    = activity.Where(p=> p.Id == id && p.IsPublished).ToList();
 
     }
     public async Task Clear()

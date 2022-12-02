@@ -4,9 +4,6 @@ namespace Cinnamon.Core
 {
     public class ApplicationViewModel
     {
-        public List<ActivityTypeModel> type;
-        public List<ActivityModel> act;
-        public List<ActivityImagesModels> images;
         public async Task applySeedDemoData() {
 
             // Create Experience Types 
@@ -163,33 +160,59 @@ namespace Cinnamon.Core
             }
 
             var ExperienceCategory = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
-            if (ExperienceCategory.Count == 0)
+            if (ExperienceCategory.Count != 0)
             {
-                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                if (ExperienceCategory[0].Category != "New")
                 {
-                    Id = 1,
-                    Category = "Sports"
-                });
-                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
-                {
-                    Id = 2,
-                    Category = "Academics"
-                });
-                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
-                {
-                    Id = 3,
-                    Category = "Toddler Experience"
-                });
-                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
-                {
-                    Id = 4,
-                    Category = "Language"
-                });
-                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
-                {
-                    Id = 5,
-                    Category = "Music"
-                });
+                    foreach (var item in ExperienceCategory)
+                    {
+                        await CoreDI.DataStore.ExperienceCategory.DeleteDataAsync(item);
+                    }
+                    await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                    {
+                        Id = 1,
+                        Category = "New",
+                        IconPath = "images/Category/New.png"
+
+                    });
+                    await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                    {
+                        Id = 2,
+                        Category = "Academics",
+                        IconPath = "images/Category/Academic.png"
+                        
+                    });
+                    await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                    {
+                        Id = 3,
+                        Category = "Language",
+                        IconPath = "images/Category/Language.png"
+                    });
+                    await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                    {
+                        Id = 4,
+                        Category = "Music",
+                        IconPath = "images/Category/Music.png"
+                    });
+                    await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                    {
+                        Id = 5,
+                        Category = "Skill",
+                        IconPath = "images/Category/Skill.png"
+                    });
+                    await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                    {
+                        Id = 6,
+                        Category = "SPED",
+                        IconPath = "images/Category/SPED.png"
+                    });
+                    await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                    {
+                        Id = 7,
+                        Category = "Sports",
+                        IconPath = "images/Category/Sports.png"
+                    });
+                }
             }
         }  
 
