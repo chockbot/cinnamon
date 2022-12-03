@@ -88,6 +88,30 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
+                Subcategory
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @if (activityModel.ExperienceCategoryId != null)
+            {
+                <select @bind="activityModel.ExperienceSubCategoryId" class="form-control @RequiredCheck(activityModel.ExperienceSubCategoryId)">
+                    <option disabled selected>Select Subcategory</option>
+                    @foreach (var cat in viewModel.ExperienceCategory.Where(x => x.Id == activityModel.ExperienceCategoryId).FirstOrDefault().SubCategory)
+                    {
+                        <option value="@cat.Id">@cat.SubCatergory</option>
+                    }
+                </select>
+            }
+            else {
+                <select class="form-control @RequiredCheck(activityModel.ExperienceSubCategoryId)" disabled>
+                    <option disabled selected>Select SubCategory</option>
+                </select>
+            }
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
                 @Resources.App.searchTags
             </label>
         </div>
