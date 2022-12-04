@@ -507,14 +507,11 @@
             e.Message.ToString();
         }
     }
-
     private async Task FetchActivities(){
         var ActivityListData = await CoreDI.DataStore.Activities.GetAllAsync();
         var fetchActivities = ActivityListData.Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(ActivityListData.Count < 10 ? ActivityListData.Count : 10);
         activity.AddRange(fetchActivities);
     }
-
-
     private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");
@@ -552,7 +549,6 @@
         }
         else
         {
-            activity  = await CoreDI.DataStore.Activities.GetAllAsync();
             activity = activity.Where(i => i.IsPublished).ToList();
         }
     }
