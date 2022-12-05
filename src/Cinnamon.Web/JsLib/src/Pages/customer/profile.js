@@ -15,6 +15,10 @@ customerProfile.init = () => {
     slidesPerView: "auto",
     spaceBetween: 30,
   });
+  const profileTabSwiper = new Swiper(".personal-tab-swiper", {
+    slidesPerView: "auto",
+    spaceBetween: 0,
+  });
 };
 
 export default customerProfile;
