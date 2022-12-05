@@ -126,5 +126,15 @@ namespace Cinnamon.Data
 
             return updatedActivity;
         }
+
+        public async Task<IList<ActivityModel>> GetActivitiesByCategoriesAsync(int categoryId)
+            => await mDbContext.Activities
+                .Where(i => i.ExperienceCategoryId == categoryId && i.IsPublished)
+                .ToListAsync();
+
+        public async Task<IList<ActivityModel>> GetActivitiesBySubCategoriesAsync(int[] subIds)
+            => await mDbContext.Activities
+                .Where(i => subIds.Contains(i.ExperienceSubCategoryId.Value) && i.IsPublished)
+                .ToListAsync();
     }
 }
