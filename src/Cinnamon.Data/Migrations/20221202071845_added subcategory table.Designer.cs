@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221202071845_added subcategory table")]
+    partial class addedsubcategorytable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,9 +96,6 @@ namespace Cinnamon.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("ExperienceCategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ExperienceSubCategoryId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ExperienceTypeId")
@@ -584,45 +583,6 @@ namespace Cinnamon.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("PurchaseOrders");
-                });
-
-            modelBuilder.Entity("Cinnamon.Core.Models.ResendEmailModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("DateResend")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("DeletionFlag")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Email");
-
-                    b.HasIndex("Email", "DateResend");
-
-                    b.ToTable("ResendEmails");
                 });
 
             modelBuilder.Entity("Cinnamon.Core.Models.SearchTagsModel", b =>

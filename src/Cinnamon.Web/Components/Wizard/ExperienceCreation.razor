@@ -88,7 +88,31 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                @Resources.App.searchTags
+                Sub-category
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @if (activityModel.ExperienceCategoryId != null)
+            {
+                <select @bind="activityModel.ExperienceSubCategoryId" class="form-control @RequiredCheck(activityModel.ExperienceSubCategoryId)">
+                    <option disabled selected>Select Subcategory</option>
+                    @foreach (var cat in viewModel.ExperienceCategory.Where(x => x.Id == activityModel.ExperienceCategoryId).FirstOrDefault().SubCategory)
+                    {
+                        <option value="@cat.Id">@cat.SubCatergory</option>
+                    }
+                </select>
+            }
+            else {
+                <select class="form-control @RequiredCheck(activityModel.ExperienceSubCategoryId)" disabled>
+                    <option disabled selected>Select Sub-category</option>
+                </select>
+            }
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Sub-category missing? Suggest up to five!
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
@@ -103,7 +127,7 @@
                 }
                 <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
             </div>
-            <label>@Resources.App.searchTagMessage</label>
+            <label>Suggest sub-category for approval (up to 5 suggestions)</label>
         </div>
     </div>
 </div>

@@ -10,5 +10,7 @@ namespace Cinnamon.Core.Models
     {
         public int Id { get; set; }
         public string Category { get; set; }
+
+        public virtual IList<SubCategoryModel> SubCategory { get; set; }
     }
 }

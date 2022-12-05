@@ -26,6 +26,7 @@ namespace Cinnamon.Data
         public DbSet<OngoingActivityModel> OngoingActivities { get; set; }
         public DbSet<PurchaseOrderModel> PurchaseOrders { get; set; }
         public DbSet<ResendEmailModel> ResendEmails { get; set; }
+        public DbSet<SubCategoryModel> SubCategory { get; set; }
         #endregion
 
         #region Constructor
