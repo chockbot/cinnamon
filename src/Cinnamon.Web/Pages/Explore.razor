@@ -9,6 +9,7 @@
 @using Cinnamon.Data
 @using Cinnamon.Core
 @using System.Text
+@using System.Linq;
 @using System.Globalization
 @using System.Security.Claims
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -124,15 +125,15 @@
                                 </div>
                                 <div class="carousel-item">
                                     <div class="cards-wrapper">
-                                @foreach (var category in experienceCategory)
-                                        {
-                                            if (category.Id > 5 && category.Id <= 10)
+                                        @foreach (var category in experienceCategory)
                                             {
-                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
-                                                    <img src=@category.IconPath class="img-icon text-center">
-                                                    <p class="card-title">@category.Category</p>
-                                                </a>
-                                            }
+                                                if (category.Id > 5 && category.Id <= 10)
+                                                {
+                                                    <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                                        <img src=@category.IconPath class="img-icon text-center">
+                                                        <p class="card-title">@category.Category</p>
+                                                    </a>
+                                                }
                                         }
                                     </div>
                                 </div>
@@ -158,16 +159,16 @@
                         <div class="carousel-inner"> 
                             <div class="carousel-item active">
                                 <div class="cards-wrapper">
-                                @foreach(var category in experienceCategory)
-                                {
-                                    if(category.Id <= 10)
+                                    @foreach(var category in experienceCategory)
                                     {
-                                            <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
-                                            <img src=@category.IconPath class="img-icon text-center">
-                                            <p class="card-title">@category.Category</p>
-                                        </a>
+                                        if(category.Id <= 10)
+                                        {
+                                                <a class="button carousel-list text-center" @onclick="@(() => Filter(category.Id, category.Category))">
+                                                <img src=@category.IconPath class="img-icon text-center">
+                                                <p class="card-title">@category.Category</p>
+                                            </a>
+                                        }
                                     }
-                                }
                                 </div>
                             </div>
                             <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -404,7 +405,7 @@
 </body>
 <ModalLogin TypeValue="@UserType.Customer"></ModalLogin>
 <!--Filter-->
-<FilterModal></FilterModal>
+<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 
@@ -507,11 +508,14 @@
             e.Message.ToString();
         }
     }
-    private async Task FetchActivities(){
+
+    private async Task FetchActivities()
+    {
         var ActivityListData = await CoreDI.DataStore.Activities.GetAllAsync();
         var fetchActivities = ActivityListData.Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(ActivityListData.Count < 10 ? ActivityListData.Count : 10);
         activity.AddRange(fetchActivities);
     }
+
     private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");
@@ -522,7 +526,8 @@
         NavigationManager.NavigateTo("/customer/profile");
     }
 
-    private void onClickMenu(){
+    private void onClickMenu()
+    {
         if(clickButton)
         {
             clickButton = false;
@@ -552,17 +557,23 @@
             activity = activity.Where(i => i.IsPublished).ToList();
         }
     }
+    
     public async Task Filter(int id, string type)
     {
         //searchValue = type;
-        //activity    = await CoreDI.DataStore.Activities.GetAllAsync();
+        activity    = (await CoreDI.DataStore.Activities.GetActivitiesByCategoriesAsync(id)).ToList();
         //activity    = activity.Where(p=> p.Id == id && p.IsPublished).ToList();
-
     }
+
     public async Task Clear()
     {
         searchValue = string.Empty;
         activity    = await CoreDI.DataStore.Activities.GetAllAsync();
         activity = activity.Where(p => p.IsPublished).ToList();
+    }
+
+    private async Task OnFilterSelectedChanged(int[] ids)
+    {
+        activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
     }
 }
