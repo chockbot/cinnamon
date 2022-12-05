@@ -144,52 +144,6 @@
         viewModel.profilepicture    = filepath[4];
         await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
     }
-    //private async Task LoadImage(InputFileChangeEventArgs e)
-    //{
-    //    var file = e.File;
-    //    viewModel.isLoading     = true;
-    //    viewModel.isClickButton = true;
-    //    loadedFiles.Clear();
-
-    //    //Check file content
-    //    if (!file.ContentType.Contains("image"))
-    //    {
-    //        viewModel.ShowErrorMessage = true;
-    //        HideMessageAfterDelay();
-    //        return;
-    //    }
-    //    try
-    //    {
-    //        using (var ms = new MemoryStream())
-    //        {
-    //            await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
-    //            byte[] imageByte = ms.ToArray();
-
-    //            // Upload to Azure Blob
-    //            var upload = await uploadImageHandler.ExecuteAsync(
-    //                    new Core.Module.UploadService.Interactors.ImageUpload
-    //                        { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name) } });
-    //            //Display Image
-    //            if (upload.Succeeded)
-    //            {
-    //                if (upload.Result != null)
-    //                {
-    //                    foreach (var imagePath in upload.Result.ImagesPath)
-    //                    {
-    //                        viewModel.profilepicture = imagePath;
-    //                        viewModel.isClickButton  = false;
-    //                    }
-    //                }
-    //            }
-    //        }
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        viewModel.ShowErrorMessage = true;
-    //        HideMessageAfterDelay();
-    //    }
-    //    viewModel.isLoading = false;
-    //}
     private async Task DeleteBlob(string filename, string container1)
     {
         // Delete to Azure Blob
@@ -207,12 +161,12 @@
             ResultModel.error("Error occurred while deleting image");
         }
     }
-    
     private async Task Upload()
     {
+         viewModel.isSpinnerShow = true;
+
         //Get Image Data Url from JS
         await module.InvokeVoidAsync("ChangeContentJS", objRef);
-        viewModel.isSpinnerShow = true;
 
         //Get Image Data
         var match = Regex.Match(ParaContent, @"data:(?<type>.+?);base64,(?<data>.+)");
@@ -222,7 +176,9 @@
 
         using (var ms = new MemoryStream(binData))
         {
+            //Get image Byte
             byte[] imageByte = ms.ToArray();
+
             //Generate File Name
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             var stringChars = new char[8];
@@ -230,15 +186,20 @@
 
             for (int i = 0; i < stringChars.Length; i++)
             {
-                stringChars[i] = chars[random.Next(chars.Length)]; 
+                stringChars[i] = chars[random.Next(chars.Length)];
             }
+            var randomStr = new String(stringChars);
 
-            string filename = new String(stringChars+"."+contentType);
+            //Set image FileName
+            string[] type= contentType.Split("/");
+            string extension = type[1];
+            string filename = new String(randomStr + "." + extension);
 
             //Upload to Azure Blob
             var upload = await uploadImageHandler.ExecuteAsync(
                 new Core.Module.UploadService.Interactors.ImageUpload
                     { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, filename) } });
+           
             //Display Image
             if (upload.Succeeded)
             {
@@ -252,6 +213,7 @@
                 }
             }
         }
+        //Save image location to DB
         var res = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
         if (res != null)
         {
@@ -261,6 +223,7 @@
             viewModel.isSpinnerShow      = false;
             viewModel.ShowSuccessMessage = true;
             HideMessageAfterDelay();
+            await CloseModal();
         }
         else
         {
@@ -296,7 +259,7 @@
 
     private async void HideMessageAfterDelay()
     {
-        await Task.Delay(3000);
+        await Task.Delay(20000);
         viewModel.ShowErrorMessage  = false;
         viewModel.ShowSuccessMessage = false;
         StateHasChanged();
