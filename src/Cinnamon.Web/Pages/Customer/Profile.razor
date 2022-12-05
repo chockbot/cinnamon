@@ -85,6 +85,31 @@
 
     <section class="mt-5 customer-profile-details">
         <Container>
+            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+                <div class="swiper-wrapper">
+                    <div class='swiper-slide @(selectedTab == "experiences" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "experiences" ? "active" : "")'
+                            @onclick='() => selectedTab = "experiences"'>
+                            experiences
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "personal-info" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "personal-info" ? "active" : "")'
+                            @onclick='() => selectedTab = "personal-info"'>
+                            personal info
+                        </div>
+                    </div>
+                    @if(Model.Customer.IsMaker)
+                    {
+                        <div class='swiper-slide @(selectedTab == "maker-experience" ? "swiper-slide-active" : "")'>
+                            <div class='tab-item @(selectedTab == "maker-experience" ? "active" : "")'
+                                @onclick='() => selectedTab = "maker-experience"'>
+                                created experiences
+                            </div>
+                        </div>
+                    }
+                </div>
+            </Div>
             <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                 <Items>
                     <Tab Name="experiences" TextTransform="TextTransform.Capitalize">experiences</Tab>
