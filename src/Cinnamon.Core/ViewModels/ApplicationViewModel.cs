@@ -326,6 +326,20 @@ namespace Cinnamon.Core
                     CatergoryId = 3,
                     SubCatergory = "Fun Play"
                 });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 47,
+                    CatergoryId = 6,
+                    SubCatergory = "Swimming Lessons"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 48,
+                    CatergoryId = 6,
+                    SubCatergory = "Occupational Theraphy"
+                });
             }
 
             //Create Activities
@@ -482,7 +496,7 @@ namespace Cinnamon.Core
                 await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
                 {
                     Id = 3,
-                    Category = "Toddler Experience"
+                    Category = "Skills"
                 });
                 await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
                 {
@@ -493,6 +507,11 @@ namespace Cinnamon.Core
                 {
                     Id = 5,
                     Category = "Music"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 6,
+                    Category = "SPED"
                 });
             }
         }  
