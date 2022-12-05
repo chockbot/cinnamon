@@ -102,7 +102,32 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Search Tags
+                Sub-category
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @if (Model.Activity.ExperienceCategoryId != null)
+            {
+                <select @bind="Model.Activity.ExperienceSubCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceSubCategoryId)">
+                    <option disabled selected>Select Subcategory</option>
+                    @foreach (var cat in Model.ExperienceCategories.Where(x => x.Id == Model.Activity.ExperienceCategoryId).FirstOrDefault().SubCategory)
+                    {
+                        <option value="@cat.Id">@cat.SubCatergory</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <select class="form-control @RequiredCheck(Model.Activity.ExperienceSubCategoryId)" disabled>
+                    <option disabled selected>Select Sub-category</option>
+                </select>
+            }
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Sub-category missing? Suggest up to five!
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
@@ -117,7 +142,7 @@
                 }
                 <input type="text" placeholder="" size="@SearchTagLength" @bind-value="searchTag" @bind-value:event="oninput" @onkeydown="Enter">
             </div>
-            <label>Search tag limit is up to 5 tags only</label>
+           <label>Suggest sub-category for approval (up to 5 suggestions)</label>
         </div>
     </div>
 </div>
