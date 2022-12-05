@@ -6,6 +6,7 @@
 @using Cinnamon.Data
 @using System
 @using System.IO
+@using System.Text.RegularExpressions;
 @using Cinnamon.Core.Module.UploadService.Handler
 @inject IWebHostEnvironment Environment
 @inject IUploadImages uploadImageHandler
@@ -36,20 +37,20 @@
                             <div class="figure-profile">
                                  <label for="fileinput" class="upload-image">
                                     <Figure Border="Border.RoundedCircle">
-                                        <CardImage Source="@viewModel.profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                        <CardImage Source="@viewModel.profilepicture" id="avatar-crop" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                                     </Figure>
                                  </label>
-                                    <InputFile style="display: none;" id="fileinput" name="fileinput" accept=".png,.jpg,.jpeg" OnChange="@LoadImage" />
+                                     <input type="file" name="photo" accept="image/*" class="js-photo-upload" style="display:none;">
                                 <div class="round">
                                     <form method="post">
-                                            <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" name="image" class="image" />
+                                        <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" type="file" name="photo" class="js-photo-upload"/>
                                         <i class="fa fa-camera" style="color: black;"></i>
                                     </form>
                                 </div>
                             </div>
                         </Card>
                     </div>
-                        <p class="bottom-text">JPEG or PNG only</p>
+                    <p class="bottom-text">JPEG or PNG only</p>
                     <div class="btn-upload">
                         <SignupButton id="update-profile" Width="100%" Text="Upload" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" Height="0.5vw" OnClick="@Upload"/>
                     </div>
@@ -59,30 +60,21 @@
     </div>
 </EditForm>
 <!--ModalEdit-->
-    <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
+        <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <p class="col-11 modal-title text-center">Profile Photo</p>
+                    <p class="col-11 modal-title text-center">Edit Profile Photo</p>
                     <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="img-container">
-                        <div class="row">
-                            <div class="col-lg-7">
-                                <img id="image">
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="preview" style="border-radius:50%;"></div>
-                            </div>
-                        </div>
+                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                     <div class="col-12-lg d-flex justify-content-center">
+                        <img class="js-avatar-preview" src="">
                     </div>
+                    <button class="btn btn-primary js-save-cropped-avatar">Save</button>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-primary" id="crop">Crop</button>
-                </div>
-            </div>
+            </div> 
         </div>
     </div>
 }
@@ -116,6 +108,8 @@
 
     private CustomerModel customer = new CustomerModel();
 
+    public static string ParaContent = "Some Text Content";
+
     private Modal modalRef;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -148,55 +142,55 @@
         viewModel.profilepicture    = filepath[4];
         await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
     }
-    private async Task LoadImage(InputFileChangeEventArgs e)
-    {
-        var file = e.File;
-        viewModel.isLoading     = true;
-        viewModel.isClickButton = true;
-        loadedFiles.Clear();
+    //private async Task LoadImage(InputFileChangeEventArgs e)
+    //{
+    //    var file = e.File;
+    //    viewModel.isLoading     = true;
+    //    viewModel.isClickButton = true;
+    //    loadedFiles.Clear();
 
-        //Check file content
-        if (!file.ContentType.Contains("image"))
-        {
-            viewModel.ShowErrorMessage = true;
-            HideMessageAfterDelay();
-            return;
-        }
-        try
-        {
-            using (var ms = new MemoryStream())
-            {
-                await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
-                byte[] imageByte = ms.ToArray();
+    //    //Check file content
+    //    if (!file.ContentType.Contains("image"))
+    //    {
+    //        viewModel.ShowErrorMessage = true;
+    //        HideMessageAfterDelay();
+    //        return;
+    //    }
+    //    try
+    //    {
+    //        using (var ms = new MemoryStream())
+    //        {
+    //            await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
+    //            byte[] imageByte = ms.ToArray();
 
-                // Upload to Azure Blob
-                var upload = await uploadImageHandler.ExecuteAsync(
-                        new Core.Module.UploadService.Interactors.ImageUpload
-                            { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name) } });
-                //Display Image
-                if (upload.Succeeded)
-                {
-                    if (upload.Result != null)
-                    {
-                        foreach (var imagePath in upload.Result.ImagesPath)
-                        {
-                            viewModel.profilepicture = imagePath;
-                            viewModel.isClickButton  = false;
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            viewModel.ShowErrorMessage = true;
-            HideMessageAfterDelay();
-        }
-        viewModel.isLoading = false;
-    }
+    //            // Upload to Azure Blob
+    //            var upload = await uploadImageHandler.ExecuteAsync(
+    //                    new Core.Module.UploadService.Interactors.ImageUpload
+    //                        { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name) } });
+    //            //Display Image
+    //            if (upload.Succeeded)
+    //            {
+    //                if (upload.Result != null)
+    //                {
+    //                    foreach (var imagePath in upload.Result.ImagesPath)
+    //                    {
+    //                        viewModel.profilepicture = imagePath;
+    //                        viewModel.isClickButton  = false;
+    //                    }
+    //                }
+    //            }
+    //        }
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        viewModel.ShowErrorMessage = true;
+    //        HideMessageAfterDelay();
+    //    }
+    //    viewModel.isLoading = false;
+    //}
     private async Task DeleteBlob(string filename, string container1)
     {
-        // Upload to Azure Blob
+        // Delete to Azure Blob
         var result = await deleteImageHandler.ExecuteAsync(
                 new Core.Module.UploadService.Interactors.DeleteImage
                 { Container = "upload-profile-picture", FileName = filename });
@@ -213,8 +207,48 @@
     }
     private async Task Upload()
     {
-        // Check if Customer exist
+        //Get Image Data Url from JS
+        await module.InvokeAsync<string>("ChangeContentJS");
         viewModel.isSpinnerShow = true;
+
+        //Get Image Data
+        var match = Regex.Match(ParaContent, @"data:(?<type>.+?);base64,(?<data>.+)");
+        var base64Data = match.Groups["data"].Value;
+        var contentType = match.Groups["type"].Value;
+        var binData = Convert.FromBase64String(base64Data);
+
+        using (var ms = new MemoryStream(binData))
+        {
+            byte[] imageByte = ms.ToArray();
+            //Generate File Name
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[8];
+            var random = new Random();
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+
+            string filename = new String(stringChars+"."+contentType);
+
+            //Upload to Azure Blob
+            var upload = await uploadImageHandler.ExecuteAsync(
+                new Core.Module.UploadService.Interactors.ImageUpload
+                    { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, filename) } });
+            //Display Image
+            if (upload.Succeeded)
+            {
+                if (upload.Result != null)
+                {
+                    foreach (var imagePath in upload.Result.ImagesPath)
+                    {
+                        viewModel.profilepicture = imagePath;
+                        viewModel.isClickButton = false;
+                    }
+                }
+            }
+        }
         var res = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
         if (res != null)
         {
@@ -230,6 +264,11 @@
             viewModel.ShowErrorMessage = true;
             HideMessageAfterDelay();
         }
+    }
+    [JSInvokable]
+    public static void ChangeParaContentValue(string value)
+    {
+        ParaContent = value;
     }
     public async Task OpenModal(string email, string path)
     {

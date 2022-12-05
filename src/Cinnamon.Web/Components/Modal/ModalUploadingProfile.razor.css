@@ -85,8 +85,43 @@ img {
     margin: 10px;
     border: 1px solid red;
 }
-@media screen and (max-width: 767px){
+.js-save-cropped-avatar {
+    color: #fff;
+    background-color: var(--primary);
+    border-color: var(--primary);
+    font-size: 1vw;
+    font-family: 'Nunito-Bold';
+    border-width: 0px;
+    width: 100%;
+    margin-top: 2rem;
+    margin-bottom: 3rem;
+    border-radius: 50px;
+    text-align: center;
+}
+    .js-save-cropped-avatar:hover {
+        color: #fff;
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+    .js-save-cropped-avatar:focus {
+        color: #fff;
+        background-color: var(--primary);
+        border-color: var(--primary);
+    }
+
+@media screen and (max-width: 767px) {
     .figure-profile .round {
         right: 65px;
+    }
+    .js-save-cropped-avatar {
+        width: 100% !important;
+        height: 12vw !important;
+        font-size: 0.9rem;
+    }
+}
+@media screen and (min-width: 767px) {
+    .js-save-cropped-avatar {
+        height: 3.8vw !important;
+        font-size: 1.3vw;
     }
 }

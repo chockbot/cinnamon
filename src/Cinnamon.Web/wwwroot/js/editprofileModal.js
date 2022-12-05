@@ -1,64 +1,69 @@
-﻿var bs_modal = $('#modal');
-var image = document.getElementById('image');
-var cropper, reader, file;
-
-$("body").on("change", ".image", function (e) {
-    var files = e.target.files;
-    var done = function (url) {
-        image.src = url;
-        bs_modal.modal('show');
-    };
+﻿let cropper;
+let cropperModalId = '#cropperModal';
+let $jsPhotoUploadInput = $('.js-photo-upload');
+let imageData;
 
 
-    if (files && files.length > 0) {
-        file = files[0];
+$jsPhotoUploadInput.on('change', function (e) {
+    var files = this.files;
+    if (files.length > 0) {
+        var photo = files[0];
 
-        if (URL) {
-            done(URL.createObjectURL(file));
-        } else if (FileReader) {
-            reader = new FileReader();
-            reader.onload = function (e) {
-                done(reader.result);
-            };
-            reader.readAsDataURL(file);
-        }
+        var reader = new FileReader();
+        reader.onload = function (event) {
+            var image = $('.js-avatar-preview')[0];
+            image.src = event.target.result;
+
+            cropper = new Cropper(image, {
+                viewMode: 1,
+                aspectRatio: 1,
+                minContainerWidth: 400,
+                minContainerHeight: 400,
+                minCropBoxWidth: 271,
+                minCropBoxHeight: 271,
+                movable: true,
+                ready: function () {
+                    console.log('ready');
+                    console.log(cropper.ready);
+                }
+            });
+
+            $(cropperModalId).modal('show');
+        };
+        reader.readAsDataURL(photo);
     }
 });
 
-bs_modal.on('shown.bs.modal', function () {
-    cropper = new Cropper(image, {
-        aspectRatio: 1,
-        viewMode: 3,
-        preview: '.preview'
-    });
-}).on('hidden.bs.modal', function () {
+$('.js-save-cropped-avatar').on('click', function (event) {
+    event.preventDefault();
+
+    console.log(cropper.ready);
+
+    var $button = $(this);
+    $button.text('Saving...');
+    $button.prop('disabled', true);
+
+    const canvas = cropper.getCroppedCanvas();
+    const base64encodedImage = canvas.toDataURL();
+    imageData = base64encodedImage;
+
+    $('#avatar-crop').attr('src', base64encodedImage);
+    $(cropperModalId).modal('hide');
+
+    $button.prop('disabled', false);
+    $button.text('Save');
+
     cropper.destroy();
     cropper = null;
 });
 
-$("#crop").click(function () {
-    canvas = cropper.getCroppedCanvas({
-        width: 256,
-        height: 256,
-    });
+export function ChangeContentJS() {
+    DotNet.invokeMethodAsync('Cinnamon.Web', "ChangeParaContentValue", imageData);
+}
 
-    canvas.toBlob(function (blob) {
-        url = URL.createObjectURL(blob);
-        var reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = function () {
-            var base64data = reader.result;
-            //alert(base64data);
-            //$.ajax({
-            //    type: "POST",
-            //    dataType: "json",
-            //    url: "crop_image_upload.php",
-            //    data: { image: base64data },
-            //    success: function (data) {
-            //        bs_modal.modal('hide');
-            //        alert("success upload image");
-            //    }
-            //});
-        };
-    });
+$('.btn-close').on('click', function (event) {
+    $(cropperModalId).modal('hide');
+    cropper.destroy();
+    cropper = null;
 });
+
