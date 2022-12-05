@@ -52,7 +52,7 @@
                     </div>
                     <p class="bottom-text">JPEG or PNG only</p>
                     <div class="btn-upload">
-                        <SignupButton id="update-profile" Width="100%" Text="Upload" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" Height="0.5vw" OnClick="@Upload"/>
+                        <SignupButton id="update-profile" Width="100%" Text="Upload" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" Height="0.5vw"/>
                     </div>
                 </div>
             </div>
@@ -100,6 +100,8 @@
 @code {
     IJSObjectReference module;
 
+    private DotNetObjectReference<ModalUploadingProfile>? objRef;
+
     private readonly IConfiguration configuration;
 
     private List<IBrowserFile> loadedFiles = new();
@@ -108,7 +110,7 @@
 
     private CustomerModel customer = new CustomerModel();
 
-    public static string ParaContent = "Some Text Content";
+    public string ParaContent = "Some Text Content";
 
     private Modal modalRef;
 
@@ -205,10 +207,11 @@
             ResultModel.error("Error occurred while deleting image");
         }
     }
+    
     private async Task Upload()
     {
         //Get Image Data Url from JS
-        await module.InvokeAsync<string>("ChangeContentJS");
+        await module.InvokeVoidAsync("ChangeContentJS", objRef);
         viewModel.isSpinnerShow = true;
 
         //Get Image Data
@@ -265,11 +268,13 @@
             HideMessageAfterDelay();
         }
     }
+
     [JSInvokable]
-    public static void ChangeParaContentValue(string value)
+    public void ChangeParaContentValue(string value)
     {
         ParaContent = value;
     }
+
     public async Task OpenModal(string email, string path)
     {
         viewModel.ModalDisplay   = "block;";
@@ -279,6 +284,7 @@
         viewModel.profilepicture = path;
         StateHasChanged();
     }
+
     public async Task CloseModal()
     {
         viewModel.ModalClass   = "";
@@ -287,6 +293,7 @@
         StateHasChanged();
         NavigationManager.NavigateTo("/customer/profile",true);
     }
+
     private async void HideMessageAfterDelay()
     {
         await Task.Delay(3000);
@@ -294,4 +301,10 @@
         viewModel.ShowSuccessMessage = false;
         StateHasChanged();
     }
+
+    protected override void OnInitialized()
+    {
+        objRef = DotNetObjectReference.Create(this);
+    }
 }
+
