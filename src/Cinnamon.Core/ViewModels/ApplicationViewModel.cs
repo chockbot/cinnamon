@@ -526,6 +526,11 @@ namespace Cinnamon.Core
                     CatergoryId = 7,
                     SubCatergory = "Chess"
                 });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 6,
+                    Category = "SPED"
+                });
             }
 
         }
