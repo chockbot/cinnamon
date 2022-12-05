@@ -890,7 +890,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Search tag limit is up to 5 tags only.
+        ///   Looks up a localized string similar to Suggest sub-category for approval.
         /// </summary>
         internal static string searchTagMessage {
             get {
