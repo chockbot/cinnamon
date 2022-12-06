@@ -1,6 +1,6 @@
 namespace Cinnamon.Api.Data.Repository.Entities;
 
-public class OngoingActicity : BaseEntity 
+public class OngoingActivity : BaseEntity 
 {
     public int ActivityId {get; set;}
     public int CustomerId {get; set;}
