@@ -1,0 +1,17 @@
+﻿using System.Linq.Expressions;
+using Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Framework.Common;
+
+namespace Cinnamon.Api.Data.Repository.Interfaces;
+
+public interface IGenericEntity<TTarget> where TTarget : BaseEntity 
+{
+    Task<AppResult<TTarget>> GetByIdAsync(int id);
+    Task<AppResult<IEnumerable<TTarget>>> GetAllAsync();
+    // take and skip for pagination
+    Task<AppResult<IEnumerable<TTarget>>> FindAsync(Expression<Func<TTarget, bool>> expression, int take = 100, int skip = 0);
+    Task<AppResult<TTarget>> Add(TTarget entity);
+    Task<AppResult<IEnumerable<TTarget>>> AddRange(IEnumerable<TTarget> entities);
+    Task<AppResult<TTarget>> Remove(TTarget entity);
+    Task<AppResult<IEnumerable<TTarget>>> RemoveRange(IEnumerable<TTarget> entities);
+}

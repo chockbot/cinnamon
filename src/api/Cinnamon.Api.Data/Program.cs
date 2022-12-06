@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Components.Authorization;
 using Serilog;
 using Cinnamon.Api.Data.Repository;
 
@@ -28,6 +26,9 @@ builder.Services.AddLogging(logBuilder =>
     logBuilder.AddSerilog(dispose: true));
 
 var app = builder.Build();
+
+// for postgres options to enable timestamp legacy behaviour
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
