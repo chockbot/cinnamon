@@ -14,7 +14,7 @@ namespace Cinnamon.Core
         public string   profilepicture { get; set; }
         public bool     isSubmit       { get; set; }     = false;
         public bool     ShowBackdrop   { get; set; }     = false;
-        public bool     isClickButton  { get; set; }     = true;
+        public bool     isClickButton  { get; set; }     = false;
         public bool     isSpinnerShow  { get; set; }     = false;
         public bool     isLoading      { get; set; }     = false;
         public bool ShowErrorMessage { get; set; }       = false;
