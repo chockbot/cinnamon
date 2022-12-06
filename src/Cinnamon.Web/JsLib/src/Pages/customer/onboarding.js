@@ -69,10 +69,7 @@ onboarding._initFormRegister = () => {
     if (!password) errors.push("Please provide your password");
 
       //Validate Birtday
-      var today = new Date();
-      var birthDate = new Date(birthdate);
-      var age = today.getFullYear() - birthDate.getFullYear();
-      if (age < 18) errors.push("Invalid Birthday");
+      var today = new Date(); var birthDate = new Date(birthdate); var age = today.getFullYear() - birthDate.getFullYear(); if (age < 18) errors.push("Invalid Birthday");
 
     // prettier-ignore
     if(confirmPassword !== password) errors.push("Password mismatch");
