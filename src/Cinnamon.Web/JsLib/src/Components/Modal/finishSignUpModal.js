@@ -28,7 +28,7 @@ finishSignupModal._initFinishForm = () => {
       if (age < 18) errors.push("Invalid Birthday");
        
     // prettier-ignore
-    if (confirmPassword !== password) errors.push("Password mismatchsss");
+    if (confirmPassword !== password) errors.push("Password mismatch");
 
     if (errors.length > 0) {
       finishSignupModal._showErrors(errors);
