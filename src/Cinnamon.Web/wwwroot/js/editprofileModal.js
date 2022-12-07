@@ -22,7 +22,7 @@ $jsPhotoUploadInput.on("change", function (e) {
               cropper = new Cropper(image, {
                   viewMode: 1,
                   aspectRatio: 1,
-                  minContainerWidth: 400,
+                  minContainerWidth: 350,
                   minContainerHeight: 400,
                   minCropBoxWidth: 271,
                   minCropBoxHeight: 271,
@@ -47,11 +47,13 @@ $(".js-save-cropped-avatar").on("click", function (event) {
 
   var $button = $(this);
   $button.text("Saving...");
-  $button.prop("disabled", true);
+    $button.prop("disabled", true);
+
     //Crop
     const canvas = cropper.getCroppedCanvas(); 
     //Round
     const roundedcanvas = getRoundedCanvas(canvas);
+
     //Check image Size
     const size = roundedcanvas.size;
     //Show
