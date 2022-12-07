@@ -13,6 +13,7 @@ public class Activity : BaseEntity
     public string MapDetails {get; set;}
     public string Guarantee {get; set;}
     public string Remarks {get; set;}
+    public bool IsPublished { get; set;}
 
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
