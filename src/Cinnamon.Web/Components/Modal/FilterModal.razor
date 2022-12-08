@@ -20,12 +20,12 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <h5 class="font-weight-bold align-items-start">Location</h5>
-                            <select class="form-select" aria-label="Default select example" value="@selectedValue">
+                            <select class="form-control" aria-label="Default select example">
                                 <option selected>All Location</option>
-                                @foreach (var act in distinctActivity)
+                                @foreach (var act in address)
                                 {
                                     cnt++;
-                                    <option value=@cnt>@act.Location</option>
+                                    <option value=@cnt>@act.District, @act.City</option>
                                 }
                             </select>
                             <br />
@@ -65,7 +65,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button @onclick="OnSelecteCategories" type="button" class="btn" style="background-color:#ffa942;color:white">Apply</button>
+                <button @onclick="OnSelecteCategories" type="button" class="btn" style="background-color:#ffa942;color:white" data-bs-dismiss="modal">Apply</button>
             </div>
         </div>
     </div>
@@ -73,27 +73,27 @@
 
 @code 
 {
-    public List<ActivityModel> activity              = new List<ActivityModel>();
-    public List<ActivityModel> distinctActivity      = new List<ActivityModel>();
-    public IList<SelectedSubCategories> activityTypes     = new List<SelectedSubCategories>();
+    public List<ActivityModel> activity               = new List<ActivityModel>();
+    public List<ActivityModel> distinctActivity       = new List<ActivityModel>();
+    public List<AddressModel>  address                = new List<AddressModel>();
+    public IList<SelectedSubCategories> activityTypes = new List<SelectedSubCategories>();
     public int cnt                                   = 0;
-    private int selectedValue { get; set; }
-
+    private string selectedString { get; set; }
     [Parameter]
-    public EventCallback<int[]> OnSelectedIdsChanged {get; set;}
-
+    public EventCallback<int[]> OnSelectedIdsChanged { get; set; }
     protected override async Task OnInitializedAsync()
     {
         activity         = await CoreDI.DataStore.Activities.GetAllAsync();
+        address          = await CoreDI.DataStore.Addresses.GetAllAsync();
         activityTypes    = (await CoreDI.DataStore.SubCategory.GetAllAsync())
                             .Select(i => new SelectedSubCategories {
                                 IsSelected = false,
                                 SubCategory = i
                             })
                             .ToList();
-        distinctActivity = activity.GroupBy(p => p.Location).Select(grp => grp.First()).ToList();
-    }
 
+        address = address.GroupBy(p => p.City).Select(grp => grp.First()).ToList();
+    }
     public class SelectedSubCategories 
     {
         public bool IsSelected {get; set;}
@@ -106,7 +106,6 @@
             .Where(i => i.IsSelected)
             .Select(i => i.SubCategory.Id)
             .ToArray();
-        
         await OnSelectedIdsChanged.InvokeAsync(selectedIds);
     }
 }
