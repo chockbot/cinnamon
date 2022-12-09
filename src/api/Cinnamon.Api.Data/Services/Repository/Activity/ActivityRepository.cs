@@ -24,21 +24,16 @@ public class ActivityRepository : IActivityRepository
         {
             // check experiencetypeId exist
             var exp = await dataStore.ExperienceType.GetByIdAsync(experienceTypeId);
-            if (!exp.Succeeded)
+            if (!exp.Succeeded || exp.Result == null)
             {
-                return AppResult<ActivityDTO>.CreateFailed(exp.Error.Exception, exp.Message);
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find experience type"), "Can't find experience type");
             }
 
             // check customer if exist
             var customer = await dataStore.Customer.GetByIdAsync(customerId);
             if (!customer.Succeeded || customer.Result == null)
             {
-                return AppResult<ActivityDTO>.CreateFailed(customer.Error.Exception, customer.Message);
-            }
-
-            if(exp.Result == null)
-            {
-                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find experience type"), "Can't find experience type");
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find customer id associated to activity"), "Can't find customer id associated to activity");
             }
 
             // save activity entity
@@ -140,8 +135,6 @@ public class ActivityRepository : IActivityRepository
     {
         try
         {
-            isActive = isActive.HasValue ? isActive.Value : false;
-
             var result = await dataStore.Activity.FindAsync(a => isActive.HasValue ? a.IsPublished == isActive.Value : true, count, skip);
             if (!result.Succeeded || result.Result == null)
             {

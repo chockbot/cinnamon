@@ -78,8 +78,6 @@ public class CustomerRepository : ICustomerRepository
     {
         try
         {
-            isVerified = isVerified.HasValue ? isVerified.Value : false;
-
             var result = await dataStore.Customer.FindAsync(i => isVerified.HasValue ? i.IsVerified == isVerified.Value : true,count, skip);
             if (!result.Succeeded || result.Result == null)
             {
