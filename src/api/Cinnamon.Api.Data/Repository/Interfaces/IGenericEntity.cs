@@ -10,8 +10,10 @@ public interface IGenericEntity<TTarget> where TTarget : BaseEntity
     Task<AppResult<IEnumerable<TTarget>>> GetAllAsync();
     // take and skip for pagination
     Task<AppResult<IEnumerable<TTarget>>> FindAsync(Expression<Func<TTarget, bool>> expression, int take = 100, int skip = 0);
+    Task<AppResult<TTarget>> FindFirstAsync(Expression<Func<TTarget, bool>> expression);
     Task<AppResult<TTarget>> Add(TTarget entity);
     Task<AppResult<IEnumerable<TTarget>>> AddRange(IEnumerable<TTarget> entities);
     Task<AppResult<TTarget>> Remove(TTarget entity);
     Task<AppResult<IEnumerable<TTarget>>> RemoveRange(IEnumerable<TTarget> entities);
+    Task<AppResult<TTarget>> Update(TTarget entity);
 }

@@ -35,7 +35,7 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
     {
         try 
         {
-            applicationContext.AddRange(entities);
+            applicationContext.Set<TTarget>().AddRange(entities);
             await applicationContext.SaveChangesAsync();
 
             return AppResult<IEnumerable<TTarget>>.CreateSucceeded(entities, "Entities successfully added");
@@ -56,6 +56,24 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
         catch (Exception ex)
         {
             return AppResult<IEnumerable<TTarget>>.CreateFailed(ex, "An error occured when finding entities");
+        }
+    }
+
+    public async Task<AppResult<TTarget>> FindFirstAsync(Expression<Func<TTarget, bool>> expression)
+    {
+        try
+        {
+            var result = await applicationContext.Set<TTarget>().FirstOrDefaultAsync(expression);
+            if(result == null)
+            {
+                return AppResult<TTarget>.CreateFailed(new ApplicationException("Can't find entity"), "Can't find entity");
+            }
+
+            return AppResult<TTarget>.CreateSucceeded(result, "Successfully find entity");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<TTarget>.CreateFailed(ex, "An error occured when finding entity");
         }
     }
 
@@ -117,6 +135,21 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
         catch (Exception ex)
         {
             return AppResult<IEnumerable<TTarget>>.CreateFailed(ex, "An error occured when removing all entities");
+        }
+    }
+
+    public async Task<AppResult<TTarget>> Update(TTarget entity)
+    {
+        try
+        {
+            applicationContext.Set<TTarget>().Update(entity);
+            await applicationContext.SaveChangesAsync();
+
+            return AppResult<TTarget>.CreateSucceeded(entity, "Successfully updated entoty");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<TTarget>.CreateFailed(ex, "An error occured when updating the entity");
         }
     }
 }
