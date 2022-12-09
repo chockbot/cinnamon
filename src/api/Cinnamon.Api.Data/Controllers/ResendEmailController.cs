@@ -20,25 +20,14 @@ public class ResendEmailController : ControllerBase
     [Route("GetResendEmailById/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetResendEmailResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetResendEmailById(int id)
     {
         try
         {
-            if (id <= 0)
-            {
-                return NotFound();
-            }
-
             var result = await resendEmailRepository.GetByIdAsync(id);
-            if (!result.Succeeded)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
-            }
-
-            if (result.Result == null)
-            {
-                return NotFound();
             }
 
             return new JsonResult(new GetResendEmailResult { Result = result.Result, IsSuccess = true });
@@ -52,7 +41,6 @@ public class ResendEmailController : ControllerBase
     [Route("GetResendEmailByEmailDateRange")]
     [HttpGet]
     [ProducesResponseType(typeof(GetResendEmailByEmailDateRange), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetResendEmailByEmailDateRange([FromQuery] GetResendEmailByEmailDateRangeArgs args)
     {
         try
@@ -62,14 +50,9 @@ public class ResendEmailController : ControllerBase
             DateTime to = DateTime.ParseExact(args.DateTo, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
 
             var result = await resendEmailRepository.GetByEmailDateRange(args.Email, from, to);
-            if (!result.Succeeded)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetResendEmailByEmailDateRange { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
-            }
-
-            if (result.Result == null)
-            {
-                return NotFound();
             }
 
             return new JsonResult(new GetResendEmailByEmailDateRange { Result = result.Result, IsSuccess = true });
@@ -83,7 +66,6 @@ public class ResendEmailController : ControllerBase
     [Route("GetAllResendEmail")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllResendEmailResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllResendEmail([FromQuery] GetAllResendEmailArgs args)
     {
         try
@@ -95,7 +77,7 @@ public class ResendEmailController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -105,7 +87,7 @@ public class ResendEmailController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -132,7 +114,6 @@ public class ResendEmailController : ControllerBase
     [Route("CreateEmailResend")]
     [HttpPost]
     [ProducesResponseType(typeof(CreatedEmailResendResult), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateEmailResend([FromBody] CreateEmailResendArgs args)
     {
         try
@@ -155,7 +136,6 @@ public class ResendEmailController : ControllerBase
     [Route("UpdateEmailResend")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateEmailResendResult), StatusCodes.Status202Accepted)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateEmailResend([FromBody] UpdateResendEmailArgs args)
     {
         try

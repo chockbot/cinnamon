@@ -19,25 +19,14 @@ public class WaitListController : ControllerBase
     [Route("GetWaitlistById/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetWaitlistResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetWaitlistById(int id)
     {
         try
         {
-            if (id <= 0)
-            {
-                return NotFound();
-            }
-
             var result = await waitListRepository.GetByIdAsync(id);
-            if (!result.Succeeded)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
-            }
-
-            if (result.Result == null)
-            {
-                return NotFound();
             }
 
             return new JsonResult(new GetWaitlistResult { Result = result.Result, IsSuccess = true });
@@ -51,20 +40,14 @@ public class WaitListController : ControllerBase
     [Route("GetWaitlistByGuid/{guid}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetWaitlistResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetWaitlistByGuid(string guid)
     {
         try
         {
             var result = await waitListRepository.GetByGuidAsync(guid);
-            if (!result.Succeeded)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
-            }
-
-            if (result.Result == null)
-            {
-                return NotFound();
             }
 
             return new JsonResult(new GetWaitlistResult { Result = result.Result, IsSuccess = true });
@@ -78,20 +61,14 @@ public class WaitListController : ControllerBase
     [Route("GetWaitlistByEmail/{email}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetWaitlistResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetWaitlistByEmail(string email)
     {
         try
         {
             var result = await waitListRepository.GetByEmailAsync(email);
-            if (!result.Succeeded)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
-            }
-
-            if (result.Result == null)
-            {
-                return NotFound();
             }
 
             return new JsonResult(new GetWaitlistResult { Result = result.Result, IsSuccess = true });
@@ -105,7 +82,6 @@ public class WaitListController : ControllerBase
     [Route("GetAllWaitlist")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllWaitlistResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllWaitlist([FromQuery] GetAllWaitlistArgs args)
     {
         try
@@ -117,7 +93,7 @@ public class WaitListController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -127,7 +103,7 @@ public class WaitListController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -154,7 +130,6 @@ public class WaitListController : ControllerBase
     [Route("CreateWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(CreatedWaitlistResult), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateWaitlist([FromBody] CreateWaitlistArgs args)
     {
         try
@@ -177,7 +152,6 @@ public class WaitListController : ControllerBase
     [Route("UpdateWaitlist")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateWaitlistResult), StatusCodes.Status202Accepted)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateWaitlist([FromBody] UpdateWaitlistArgs args)
     {
         try

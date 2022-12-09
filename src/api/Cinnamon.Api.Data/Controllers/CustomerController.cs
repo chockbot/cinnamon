@@ -19,25 +19,14 @@ public class CustomerController : ControllerBase
     [Route("GetCustomerById/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetCustomerResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCustomerById(int id)
     {
         try
         {
-            if (id <= 0)
-            {
-                return NotFound();
-            }
-
             var result = await customerRepository.GetByIdAsync(id);
-            if (!result.Succeeded)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
-            }
-
-            if (result.Result == null)
-            {
-                return NotFound();
             }
 
             return new JsonResult(new GetCustomerResult { Result = result.Result, IsSuccess = true });
@@ -63,7 +52,7 @@ public class CustomerController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -73,7 +62,7 @@ public class CustomerController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -100,7 +89,6 @@ public class CustomerController : ControllerBase
     [Route("CreateCustomer")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateCustomerResult), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerArgs args)
     {
         try
@@ -124,7 +112,6 @@ public class CustomerController : ControllerBase
     [Route("UpdateCustomer")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateCustomerResult), StatusCodes.Status202Accepted)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateCustomer([FromBody] UpdateCustomerArgs args)
     {
         try
