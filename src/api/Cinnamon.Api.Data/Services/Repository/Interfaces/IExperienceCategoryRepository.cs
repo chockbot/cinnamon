@@ -8,6 +8,6 @@ public interface IExperienceCategoryRepository
 {
     Task<AppResult<ExperienceCategoryDTO>> GetByIdAsync(int id);
     Task<AppResult<IEnumerable<ExperienceCategoryDTO>>> GetAllAsync();
-    Task<AppResult<ExperienceCategoryDTO>> SaveDateAsync(ExperienceCategoryDTO model);
+    //Task<AppResult<ExperienceCategoryDTO>> SaveDateAsync(ExperienceCategoryDTO model);
 }
 

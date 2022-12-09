@@ -64,18 +64,5 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             return AppResult<ExperienceCategoryDTO>.CreateFailed(ex, "An error occured when getting experience category by id");
         }
     }
-    //Save
-    //public async Task<AppResult<ExperienceCategoryDTO>> SaveDataAsync()
-    //{
-    //    try
-    //    {
-
-    //    }
-    //    catch (Exception ex)
-    //    {
-
-    //        throw;
-    //    }
-    //}
 }
 
