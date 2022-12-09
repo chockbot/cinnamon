@@ -46,11 +46,21 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
         }
     }
 
-    public async Task<AppResult<IEnumerable<TTarget>>> FindAsync(Expression<Func<TTarget, bool>> expression, int take = 100, int skip = 0)
+    public async Task<AppResult<IEnumerable<TTarget>>> FindAsync(Expression<Func<TTarget, bool>> expression, int? take = 100, int? skip = 0)
     {
         try
         {
-            var results = await applicationContext.Set<TTarget>().Where(expression).Skip(skip).Take(take).ToListAsync();
+            var query = applicationContext.Set<TTarget>().Where(expression);
+            if (skip.HasValue)
+            {
+                query = query.Skip(skip.Value);
+            }
+            if (take.HasValue)
+            {
+                query.Take(take.Value);
+            }
+
+            var results = await query.ToListAsync();
             return AppResult<IEnumerable<TTarget>>.CreateSucceeded(results, "Successfully find entities");
         }
         catch (Exception ex)

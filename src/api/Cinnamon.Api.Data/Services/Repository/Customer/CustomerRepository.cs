@@ -1,0 +1,235 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Cinnamon.Api.Data.Services.Repository.Customer.DTO;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Framework.Common;
+using Cinnamon.Api.Data.Repository.Interfaces;
+
+namespace Cinnamon.Api.Data.Services.Repository.Customer;
+
+public class CustomerRepository : ICustomerRepository
+{
+
+    private readonly IDataStore dataStore;
+    private readonly UserManager<IdentityUser> userManager;
+
+    public CustomerRepository(IDataStore dataStore, UserManager<IdentityUser> userManager)
+    {
+        this.dataStore = dataStore;
+        this.userManager = userManager;
+    }
+
+    public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, 
+        string? about, string profilePath, bool ismaker, bool externalLogin)
+    {
+        try
+        {
+            // check userid if existed
+            var user = await userManager.FindByIdAsync(userId);
+            if(user == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(new ApplicationException("Can't find provided user id"), "Can't find provided user id");
+            }
+
+            var customer = new Entities.Customer
+            {
+                About = about,
+                ProfilePath = profilePath,
+                Email = email,
+                Birthdate = birthdate,
+                ExternalLogin = externalLogin,
+                IsMaker = ismaker,
+                FirstName = firstname,
+                LastName = lastname,
+                IsVerified = false,
+                UserId = userId,
+            };
+
+            var createdCustomerRes = await dataStore.Customer.Add(customer);
+            if(!createdCustomerRes.Succeeded || createdCustomerRes.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(new ApplicationException("An error occured when creating customer"), "An error occured when creating customer");
+            }
+            var createdCustomer = createdCustomerRes.Result;
+
+            return AppResult<CustomerDTO>.CreateSucceeded(new CustomerDTO
+            {
+                About = createdCustomer.About,
+                Birthdate = createdCustomer.Birthdate,
+                DateJoined = createdCustomer.CreatedOn,
+                Email = createdCustomer.Email,
+                FirstName = createdCustomer.FirstName,
+                LastName = createdCustomer.LastName,
+                IsVerified = createdCustomer.IsVerified,
+                ExternalLogin = createdCustomer.ExternalLogin,
+                IsMaker = createdCustomer.IsMaker,
+                Id = createdCustomer.Id,
+                ProfileImg = createdCustomer.ProfilePath
+
+            }, "Successfully created customer data");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in creating customer");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified, int? count, int? skip)
+    {
+        try
+        {
+            isVerified = isVerified.HasValue ? isVerified.Value : false;
+
+            var result = await dataStore.Customer.FindAsync(i => isVerified.HasValue ? i.IsVerified == isVerified.Value : true,count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var customers = result.Result.Select(c =>
+            {
+                return new CustomerDTO
+                {
+                    About = c.About,
+                    Birthdate = c.Birthdate,
+                    DateJoined = c.CreatedOn,
+                    Email = c.Email,
+                    ExternalLogin = c.ExternalLogin,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    Id = c.Id,
+                    IsMaker = c.IsMaker,
+                    IsVerified = c.IsVerified,
+                    ProfileImg = c.ProfilePath,
+                };
+            });
+
+            return AppResult<IEnumerable<CustomerDTO>>.CreateSucceeded(customers, "Successfully get customers");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(ex, "An error occured in getting customers");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync()
+    {
+        try
+        {
+            var result = await dataStore.Customer.GetAllAsync();
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var customers = result.Result.Select(c =>
+            {
+                return new CustomerDTO
+                {
+                    About = c.About,
+                    Birthdate = c.Birthdate,
+                    DateJoined = c.CreatedOn,
+                    Email = c.Email,
+                    ExternalLogin = c.ExternalLogin,
+                    FirstName = c.FirstName,
+                    LastName = c.LastName,
+                    Id = c.Id,
+                    IsMaker = c.IsMaker,
+                    IsVerified = c.IsVerified,
+                    ProfileImg = c.ProfilePath,
+                };
+            });
+
+            return AppResult<IEnumerable<CustomerDTO>>.CreateSucceeded(customers, "Successfully get customers");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(ex, "An error occured in getting customers");
+        }
+    }
+
+    public async Task<AppResult<CustomerDTO>> GetByIdAsync(int id)
+    {
+        try
+        {
+            var result = await dataStore.Customer.GetByIdAsync(id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var customerDTO = new CustomerDTO
+            {
+                About = result.Result.About,
+                Birthdate = result.Result.Birthdate,
+                DateJoined = result.Result.CreatedOn,
+                Email = result.Result.Email,
+                ExternalLogin = result.Result.ExternalLogin,
+                FirstName = result.Result.FirstName,
+                LastName = result.Result.LastName,
+                Id = result.Result.Id,
+                IsMaker = result.Result.IsMaker,
+                IsVerified = result.Result.IsVerified,
+                ProfileImg = result.Result.ProfilePath,
+            };
+
+            return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in getting customer by id");
+        }
+    }
+
+    public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, 
+        string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh)
+    {
+        try
+        {
+            // check first customer if exist
+            var customerRes = await dataStore.Customer.GetByIdAsync(customerId);
+            if(!customerRes.Succeeded || customerRes.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(new ApplicationException("Can't find customer to update"), "Can't find customer to update");
+            }
+            var customer = customerRes.Result;
+
+            customer.FirstName = firstname ?? customer.FirstName;
+            customer.LastName = lastname ?? customer.LastName;
+            customer.Email = email ?? customer.Email;
+            customer.Birthdate = birthdate ?? customer.Birthdate;
+            customer.About = about ?? customer.About;
+            customer.ProfilePath = profilePath ?? customer.ProfilePath;
+            customer.IsMaker = ismaker ?? customer.IsMaker;
+            customer.ExternalLogin = externalLogin ?? customer.ExternalLogin;
+            customer.IsVerified = isVerified ?? customer.IsVerified;
+            customer.FrontIdImagePath = frontIdImagePath ?? customer.FrontIdImagePath;
+            customer.BackIdImagePath = backIdImageParh ?? customer.BackIdImagePath;
+
+            var updatedCustomerRes = await dataStore.Customer.Update(customer);
+            if (!updatedCustomerRes.Succeeded)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(updatedCustomerRes.Error.Exception, updatedCustomerRes.Message);
+            }
+
+            return AppResult<CustomerDTO>.CreateSucceeded(new CustomerDTO
+            {
+                About = customer.About,
+                Birthdate = customer.Birthdate,
+                DateJoined = customer.CreatedOn,
+                Email = customer.Email,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                ExternalLogin = customer.ExternalLogin,
+                Id = customer.Id,
+                IsMaker = customer.IsMaker,
+                IsVerified = customer.IsVerified,
+                ProfileImg = customer.ProfilePath
+            }, "Successfully updated customer data");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in updating customer data");
+        }
+    }
+}

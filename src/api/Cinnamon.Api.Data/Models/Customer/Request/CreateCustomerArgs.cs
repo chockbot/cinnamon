@@ -1,0 +1,23 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace Cinnamon.Api.Data.Models.Customer.Request;
+
+public class CreateCustomerArgs
+{
+    [Required]
+    public string UserId { get; set; }
+    [Required]
+    public string FirstName { get; set; }
+    [Required]
+    public string LastName { get; set; }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
+    [Required]
+    public DateTime Birthdate { get; set; }
+    public string? About { get; set; }
+    [Required]
+    public string ProfilePath { get; set; }
+    public bool IsMaker { get; set; } = false;
+    public bool ExternalLogin { get; set; } = false;
+}

@@ -56,16 +56,21 @@ public class ActivityController : ControllerBase
     {
         try
         {
-            args.PageIndex = args.PageIndex ?? 1;
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+                await activityRepository.GetAllAsync(args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await activityRepository.GetAllAsync();
 
-            var result = await activityRepository.GetAllAsync(args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage);
             if (!result.Succeeded || result.Result == null)
             {
                 return NotFound();
             }
 
             // get all without pagination to get all rows
-            var all = await activityRepository.GetAllAsync(args.IsActive, null, null);
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+                await activityRepository.GetAllAsync(args.IsActive, null, null) :
+                await activityRepository.GetAllAsync();
+
             if(!all.Succeeded || all.Result == null)
             {
                 return NotFound();
@@ -81,7 +86,8 @@ public class ActivityController : ControllerBase
                             PageIndex = args.PageIndex,
                             PerPage = args.CountPerPage,
                             TotalRecords = totalRecords,
-                            TotalPages = args.CountPerPage.HasValue ? (int)Math.Ceiling(Convert.ToDouble(totalRecords / args.CountPerPage.Value)) : null 
+                            TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ? 
+                                (int)Math.Ceiling(Convert.ToDouble(totalRecords / args.CountPerPage.Value)) : null 
                         }
                 });
         }

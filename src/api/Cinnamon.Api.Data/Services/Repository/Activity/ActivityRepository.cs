@@ -140,11 +140,41 @@ public class ActivityRepository : IActivityRepository
     {
         try
         {
-            count = count.HasValue ? count.Value : 0;
-            skip = skip.HasValue ? skip.Value : 0;
             isActive = isActive.HasValue ? isActive.Value : false;
 
-            var result = await dataStore.Activity.FindAsync(a => a.IsPublished == isActive, count.Value, skip.Value);
+            var result = await dataStore.Activity.FindAsync(a => isActive.HasValue ? a.IsPublished == isActive.Value : true, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var activities = result.Result.Select(a =>
+            {
+                return new ActivityDTO
+                {
+                    Id = a.Id,
+                    SubTitle = a.Subtitle,
+                    Title = a.Title,
+                    Description = a.Description,
+                    Price = a.Price,
+                    Remarks = a.Remarks,
+                    IsPublished = a.IsPublished,
+                };
+            });
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(activities, "Successfully get activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured in getting activities");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync()
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetAllAsync();
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
