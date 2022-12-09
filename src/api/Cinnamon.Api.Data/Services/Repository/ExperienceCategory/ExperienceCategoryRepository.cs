@@ -1,8 +1,8 @@
-﻿using Cinnamon.Api.Data.Services.Repository.ExperienceCategory.DTO;
+﻿using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.ExperienceCategory.DTO;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.Common;
-using Cinnamon.Api.Data.Services.Repository.Activity.DTO;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.ExperienceCategory;
 public class ExperienceCategoryRepository: IExperienceCategoryRepository
@@ -13,7 +13,7 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
 	{
 		this.dataStore = dataStore;	
 	}
-    //Select
+    //Select All Experience Category
 	public async Task<AppResult<IEnumerable<ExperienceCategoryDTO>>> GetAllAsync()
 	{
 		try
@@ -39,7 +39,7 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             return AppResult<IEnumerable<ExperienceCategoryDTO>>.CreateFailed(ex, "An error occured in getting experience categories");
         }
 	}
-    //Insert/Update
+    //Select by Id
 	public async Task<AppResult<ExperienceCategoryDTO>> GetByIdAsync(int id)
 	{
         try
@@ -62,6 +62,67 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
         catch (Exception ex)
         {
             return AppResult<ExperienceCategoryDTO>.CreateFailed(ex, "An error occured when getting experience category by id");
+        }
+    }
+    //Create Category Experience
+    public async Task<AppResult<ExperienceCategoryDTO>> CreateExperienceCategoryAsync(string category, string iconPath)
+    {
+        try
+        {
+            var experienceCategory = new Entities.ExperienceCategory
+            {
+                Category = category,
+                IconPath = iconPath
+            };
+            var creatCategory= await dataStore.ExperienceCategory.Add(experienceCategory);
+            if (!creatCategory.Succeeded || creatCategory.Result == null)
+            {
+                return AppResult<ExperienceCategoryDTO>.CreateFailed(creatCategory.Error.Exception, creatCategory.Message);
+            }
+            var createdExperienceCategory = new ExperienceCategoryDTO
+            {
+                Category = creatCategory.Result.Category,
+                IconPath = creatCategory.Result.IconPath
+            };
+            return AppResult<ExperienceCategoryDTO>.CreateSucceeded(createdExperienceCategory, "Activity successfully created");
+        }
+        catch (Exception ex)
+        {
+
+            return AppResult<ExperienceCategoryDTO>.CreateFailed(ex, "An error occured when creating activity");
+        }
+    }
+    //Update Category Experience
+    public async Task<AppResult<ExperienceCategoryDTO>> UpdateExperienceCategoryAsync(int id, string? category, string? iconPath)
+    {
+        try
+        {
+            //check if experience category exist
+            var categoryRes = await dataStore.ExperienceCategory.GetByIdAsync(id);
+            if (!categoryRes.Succeeded || categoryRes.Result == null)
+            {
+                return AppResult<ExperienceCategoryDTO>.CreateFailed(categoryRes.Error.Exception, categoryRes.Message);
+            }
+
+            var categoryExeperience = categoryRes.Result;
+            categoryExeperience.Category = category ?? categoryExeperience.Category;
+            categoryExeperience.IconPath = iconPath ?? categoryExeperience.IconPath;
+
+            var updatedcategoryExeperience = await dataStore.ExperienceCategory.Update(categoryExeperience);
+            if (!updatedcategoryExeperience.Succeeded)
+            {
+                return AppResult<ExperienceCategoryDTO>.CreateFailed(updatedcategoryExeperience.Error.Exception, updatedcategoryExeperience.Message);
+            }
+            return AppResult<ExperienceCategoryDTO>.CreateSucceeded(new ExperienceCategoryDTO
+            {
+                Id = categoryExeperience.Id,
+                Category = categoryExeperience.Category,
+            }, "Successfully updated experience category");
+
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ExperienceCategoryDTO>.CreateFailed(ex, "An error occured when updating experience category");
         }
     }
 }
