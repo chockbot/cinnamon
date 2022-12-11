@@ -7,6 +7,7 @@ public interface IActivityRepository
 {
     Task<AppResult<ActivityDTO>> GetByIdAsync(int id);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(bool? isActive, int? count, int? skip);
+    Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync();
     Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price,
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district,
         string city, string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements,

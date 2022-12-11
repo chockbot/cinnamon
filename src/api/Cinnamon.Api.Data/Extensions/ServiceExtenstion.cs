@@ -25,6 +25,9 @@ public static class ServiceExtenstion
         services.AddTransient<IWaitList, WaitListEntity>();
         services.AddTransient<IDataStore, DataStore>();
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ICustomerRepository, Services.Repository.Customer.CustomerRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IWaitListRepository, Services.Repository.Waitlist.WaitListRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IResendEmailRepository, Services.Repository.ResendEmail.ResendEmailRepository>();
 
         return services;
     }

@@ -19,25 +19,14 @@ public class ActivityController : ControllerBase
     [Route("GetActivityById/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetActivityResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetActivityById(int id)
     {
         try
         {
-            if(id <= 0)
-            {
-                return NotFound();
-            }
-
             var result = await activityRepository.GetByIdAsync(id);
-            if(!result.Succeeded)
+            if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
-            }
-
-            if(result.Result == null)
-            {
-                return NotFound();
             }
 
             return new JsonResult( new GetActivityResult { Result = result.Result, IsSuccess = true});
@@ -51,24 +40,28 @@ public class ActivityController : ControllerBase
     [Route("GetAllActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetAllActivities([FromQuery] GetAllActivitiesArgs args)
     {
         try
         {
-            args.PageIndex = args.PageIndex ?? 1;
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+                await activityRepository.GetAllAsync(args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await activityRepository.GetAllAsync();
 
-            var result = await activityRepository.GetAllAsync(args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage);
             if (!result.Succeeded || result.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
-            var all = await activityRepository.GetAllAsync(args.IsActive, null, null);
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+                await activityRepository.GetAllAsync(args.IsActive, null, null) :
+                await activityRepository.GetAllAsync();
+
             if(!all.Succeeded || all.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -81,7 +74,8 @@ public class ActivityController : ControllerBase
                             PageIndex = args.PageIndex,
                             PerPage = args.CountPerPage,
                             TotalRecords = totalRecords,
-                            TotalPages = args.CountPerPage.HasValue ? (int)Math.Ceiling(Convert.ToDouble(totalRecords / args.CountPerPage.Value)) : null 
+                            TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ? 
+                                (int)Math.Ceiling(Convert.ToDouble(totalRecords / args.CountPerPage.Value)) : null 
                         }
                 });
         }
@@ -94,7 +88,6 @@ public class ActivityController : ControllerBase
     [Route("CreateActivity")]
     [HttpPost]
     [ProducesResponseType(typeof(CreatedActivityResult), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> CreateActivity([FromBody] CreateActivityArgs args)
     {
         try
@@ -121,7 +114,6 @@ public class ActivityController : ControllerBase
     [Route("UpdateActivity")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdatedActivityResult), StatusCodes.Status202Accepted)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> UpdateActivity([FromBody] UpdateActivity args)
     {
         try
