@@ -1,11 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.ExperienceCategory.DTO;
-using Cinnamon.Api.Data.Models.ExperienceCategory.Response;
-using Cinnamon.Api.Data.Models.Activity.Response;
-using Cinnamon.Api.Data.Services.Repository.Activity;
-using Cinnamon.Api.Data.Models.Activity.Request;
+﻿using Cinnamon.Api.Data.Models.Activity.Request;
 using Cinnamon.Api.Data.Models.ExperienceCategory.Request;
+using Cinnamon.Api.Data.Models.ExperienceCategory.Response;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Api.Data.Controllers;
 public class ExperienceCategoryController : ControllerBase
@@ -15,36 +12,22 @@ public class ExperienceCategoryController : ControllerBase
 	{
 		this.experienceCategoryRepository = experienceCategoryRepository;
 	}
-
     [Route("GetCategoryById/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetCategoryResult), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> GetCategoryById(int id)
     {
 		try
 		{
-            if (id <= 0)
-            {
-                return NotFound();
-            }
-
             var result = await experienceCategoryRepository.GetByIdAsync(id);
-            if (!result.Succeeded)
+            if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetCategoryResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
             }
-
-            if (result.Result == null)
-            {
-                return NotFound();
-            }
-
             return new JsonResult(new GetCategoryResult { Result = result.Result, IsSuccess = true });
         }
 		catch (Exception ex)
 		{
-
             return new JsonResult(new GetCategoryResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
         }
     }
@@ -52,17 +35,42 @@ public class ExperienceCategoryController : ControllerBase
 	[HttpGet]
 	[ProducesResponseType(typeof(GetAllCategoryResult), StatusCodes.Status200OK)]
 	[ProducesResponseType(StatusCodes.Status404NotFound)]
-	public async Task<IActionResult> GetAllCategory()
+	public async Task<IActionResult> GetAllCategory([FromQuery] GetAllCategoryArgs args)
 	{
 		try
 		{
-            var result = await experienceCategoryRepository.GetAllAsync();
-            if (!result.Succeeded)
+            var result =
+               args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+               await experienceCategoryRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+               await experienceCategoryRepository.GetAllAsync();
+            if (!result.Succeeded || result.Result == null)
             {
-                return NotFound();
+                return new JsonResult(new GetAllCategoryResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+            }
+            // get all without pagination to get all rows
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+            await experienceCategoryRepository.GetAllAsync(null, null) :
+            await experienceCategoryRepository.GetAllAsync();
+
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetAllCategoryResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
             }
 
-            return new JsonResult(result.Result);
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetAllCategoryResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Models.Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                (int)Math.Ceiling(Convert.ToDouble(totalRecords / args.CountPerPage.Value)) : null
+                }
+            });
         }
 		catch (Exception ex)
 		{

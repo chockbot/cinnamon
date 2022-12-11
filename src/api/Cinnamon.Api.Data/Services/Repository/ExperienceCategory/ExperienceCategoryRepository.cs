@@ -13,8 +13,66 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
 	{
 		this.dataStore = dataStore;	
 	}
-    //Select All Experience Category
-	public async Task<AppResult<IEnumerable<ExperienceCategoryDTO>>> GetAllAsync()
+    public async Task<AppResult<ExperienceCategoryDTO>> CreateExperienceCategoryAsync(string category, string iconPath)
+    {
+        try
+        {
+            // check if email already existed
+            var categoryCheck = await dataStore.ExperienceCategory.FindFirstAsync(w => w.Category.Contains(category));
+            if (categoryCheck.Succeeded && categoryCheck.Result != null)
+            {
+                return AppResult<ExperienceCategoryDTO>.CreateFailed(new ApplicationException("Can't create already existed experience category"), "Can't create already existed experience category");
+            }
+            var experienceCategory = new Entities.ExperienceCategory
+            {
+                Category = category,
+                IconPath = iconPath
+            };
+            var createdCategory = await dataStore.ExperienceCategory.Add(experienceCategory);
+            if (!createdCategory.Succeeded || createdCategory.Result == null)
+            {
+                return AppResult<ExperienceCategoryDTO>.CreateFailed(createdCategory.Error.Exception, createdCategory.Message);
+            }
+            return AppResult<ExperienceCategoryDTO>.CreateSucceeded(new ExperienceCategoryDTO
+            {
+                Category = category,
+                IconPath = iconPath
+            }, "Successfully created waitlist");
+        }
+        catch (Exception ex)
+        {
+
+            return AppResult<ExperienceCategoryDTO>.CreateFailed(ex, "An error occured when creating experience category");
+        }
+    }
+    public async Task<AppResult<IEnumerable<ExperienceCategoryDTO>>> GetAllAsync(int? count, int? skip)
+    {
+        try
+        {
+            var result = await dataStore.ExperienceCategory.FindAsync(i => true, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ExperienceCategoryDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var category = result.Result.Select(c =>
+            {
+                return new ExperienceCategoryDTO
+                {
+                   Id = c.Id,
+                   Category = c.Category,
+                   IconPath = c.IconPath
+                };
+            });
+
+            return AppResult<IEnumerable<ExperienceCategoryDTO>>.CreateSucceeded(category, "Successfully get category");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ExperienceCategoryDTO>>.CreateFailed(ex, "An error occured in getting category");
+        }
+    }
+    public async Task<AppResult<IEnumerable<ExperienceCategoryDTO>>> GetAllAsync()
 	{
 		try
 		{
@@ -39,7 +97,6 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             return AppResult<IEnumerable<ExperienceCategoryDTO>>.CreateFailed(ex, "An error occured in getting experience categories");
         }
 	}
-    //Select by Id
 	public async Task<AppResult<ExperienceCategoryDTO>> GetByIdAsync(int id)
 	{
         try
@@ -64,35 +121,6 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             return AppResult<ExperienceCategoryDTO>.CreateFailed(ex, "An error occured when getting experience category by id");
         }
     }
-    //Create Category Experience
-    public async Task<AppResult<ExperienceCategoryDTO>> CreateExperienceCategoryAsync(string category, string iconPath)
-    {
-        try
-        {
-            var experienceCategory = new Entities.ExperienceCategory
-            {
-                Category = category,
-                IconPath = iconPath
-            };
-            var creatCategory= await dataStore.ExperienceCategory.Add(experienceCategory);
-            if (!creatCategory.Succeeded || creatCategory.Result == null)
-            {
-                return AppResult<ExperienceCategoryDTO>.CreateFailed(creatCategory.Error.Exception, creatCategory.Message);
-            }
-            var createdExperienceCategory = new ExperienceCategoryDTO
-            {
-                Category = creatCategory.Result.Category,
-                IconPath = creatCategory.Result.IconPath
-            };
-            return AppResult<ExperienceCategoryDTO>.CreateSucceeded(createdExperienceCategory, "Activity successfully created");
-        }
-        catch (Exception ex)
-        {
-
-            return AppResult<ExperienceCategoryDTO>.CreateFailed(ex, "An error occured when creating activity");
-        }
-    }
-    //Update Category Experience
     public async Task<AppResult<ExperienceCategoryDTO>> UpdateExperienceCategoryAsync(int id, string? category, string? iconPath)
     {
         try
@@ -101,7 +129,7 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             var categoryRes = await dataStore.ExperienceCategory.GetByIdAsync(id);
             if (!categoryRes.Succeeded || categoryRes.Result == null)
             {
-                return AppResult<ExperienceCategoryDTO>.CreateFailed(categoryRes.Error.Exception, categoryRes.Message);
+                return AppResult<ExperienceCategoryDTO>.CreateFailed(new ApplicationException("Can't find experience category to update"), "Can't find experience category to update");
             }
 
             var categoryExeperience = categoryRes.Result;
