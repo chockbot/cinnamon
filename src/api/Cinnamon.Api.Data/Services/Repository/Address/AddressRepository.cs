@@ -52,14 +52,11 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
             }
         }
 
-        public async Task<AppResult<IEnumerable<AddressDTO>>> GetAllAsync(int? count, int? skip)
+        public async Task<AppResult<IEnumerable<AddressDTO>>> GetAllAsync()
         {
             try
             {
-                count = count.HasValue ? count.Value : 0;
-                skip = skip.HasValue ? skip.Value : 0;
-
-                var result = await _dataStore.ActivityAddress.FindAsync(a=>a.Id != -1,count.Value, skip.Value);
+                var result = await _dataStore.ActivityAddress.GetAllAsync();
                 if (!result.Succeeded || result.Result == null)
                 {
                     return AppResult<IEnumerable<AddressDTO>>.CreateFailed(result.Error.Exception, result.Message);

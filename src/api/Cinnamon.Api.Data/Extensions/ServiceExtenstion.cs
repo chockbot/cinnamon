@@ -31,6 +31,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.ICustomerRepository, Services.Repository.Customer.CustomerRepository>();
         services.AddTransient<Services.Repository.Interfaces.IWaitListRepository, Services.Repository.Waitlist.WaitListRepository>();
         services.AddTransient<Services.Repository.Interfaces.IResendEmailRepository, Services.Repository.ResendEmail.ResendEmailRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IExperienceTypeRepository, Services.Repository.ExperienceType.ExperienceTypeRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IScheduleRepository, Services.Repository.Schedule.ScheduleRepository>();
 
         return services;
     }
