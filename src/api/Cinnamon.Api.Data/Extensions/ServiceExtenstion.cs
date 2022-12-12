@@ -32,6 +32,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IWaitListRepository, Services.Repository.Waitlist.WaitListRepository>();
         services.AddTransient<Services.Repository.Interfaces.IResendEmailRepository, Services.Repository.ResendEmail.ResendEmailRepository>();
         services.AddTransient<Services.Repository.Interfaces.IPurchaseOrderRepository,Services.Repository.PurchaseOrder.PurchaseOrderRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IOngoingActivityRepository, Services.Repository.OngoingActivity.OngoingActivityRepository>();
 
         return services;
     }
