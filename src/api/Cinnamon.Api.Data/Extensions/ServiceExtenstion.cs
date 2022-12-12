@@ -1,6 +1,7 @@
 ﻿using Cinnamon.Api.Data.Repository.DbSets;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Repository;
+using Cinnamon.Api.Data.Services.Repository.ActivityAddress;
 
 namespace Cinnamon.Api.Data.Extensions;
 
@@ -25,7 +26,8 @@ public static class ServiceExtenstion
         services.AddTransient<IWaitList, WaitListEntity>();
         services.AddTransient<IDataStore, DataStore>();
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
-
+        services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IDescriptionRepository, Services.Repository.ActivityDescription.DescriptionRepository>();
         return services;
     }
 }
