@@ -589,6 +589,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("OverallTotal")
                         .HasColumnType("numeric");
 
@@ -637,6 +640,38 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("Email", "DateResend");
 
                     b.ToTable("ResendEmails");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SubCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CatergoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SubCatergory")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SubCategory");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.WaitList", b =>

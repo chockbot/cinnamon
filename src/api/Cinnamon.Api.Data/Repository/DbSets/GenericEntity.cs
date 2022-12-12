@@ -155,11 +155,26 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
             applicationContext.Set<TTarget>().Update(entity);
             await applicationContext.SaveChangesAsync();
 
-            return AppResult<TTarget>.CreateSucceeded(entity, "Successfully updated entoty");
+            return AppResult<TTarget>.CreateSucceeded(entity, "Successfully updated entity");
         }
         catch (Exception ex)
         {
             return AppResult<TTarget>.CreateFailed(ex, "An error occured when updating the entity");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<TTarget>>> UpdateRange(IEnumerable<TTarget> entities)
+    {
+        try
+        {
+            applicationContext.Set<TTarget>().UpdateRange(entities);
+            await applicationContext.SaveChangesAsync();
+
+            return AppResult<IEnumerable<TTarget>>.CreateSucceeded(entities, "Successfully updated entity");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<TTarget>>.CreateFailed(ex, "An error occured when updating entities");
         }
     }
 }

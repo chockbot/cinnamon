@@ -31,6 +31,12 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.ICustomerRepository, Services.Repository.Customer.CustomerRepository>();
         services.AddTransient<Services.Repository.Interfaces.IWaitListRepository, Services.Repository.Waitlist.WaitListRepository>();
         services.AddTransient<Services.Repository.Interfaces.IResendEmailRepository, Services.Repository.ResendEmail.ResendEmailRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IPurchaseOrderRepository,Services.Repository.PurchaseOrder.PurchaseOrderRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IOngoingActivityRepository, Services.Repository.OngoingActivity.OngoingActivityRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IFamilyMemberRepository, Services.Repository.FamilyMember.FamilyMemberRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IExperienceCategoryRepository, Services.Repository.ExperienceCategory.ExperienceCategoryRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ISubCategoryRepository, Services.Repository.ExperienceSubCategory.SubCategoryRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IActivityImageRepository, Services.Repository.ActivityImage.ActivityImageRepository>();
         services.AddTransient<Services.Repository.Interfaces.IExperienceTypeRepository, Services.Repository.ExperienceType.ExperienceTypeRepository>();
         services.AddTransient<Services.Repository.Interfaces.IScheduleRepository, Services.Repository.Schedule.ScheduleRepository>();
 

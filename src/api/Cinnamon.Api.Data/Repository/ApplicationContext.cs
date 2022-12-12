@@ -37,6 +37,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<WaitList> WaitLists {get; set;}
 
+    public DbSet<SubCategory> SubCategory { get; set; }
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)

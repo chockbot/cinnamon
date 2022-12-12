@@ -1,6 +1,6 @@
 ﻿namespace Cinnamon.Api.Data.Models.Activity.Request;
 
-public class GetAllActivitiesArgs
+public class GetAllActivities
 {
     public bool? IsActive { get; set; }
     public int? PageIndex { get; set; }

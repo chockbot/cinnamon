@@ -40,7 +40,7 @@ public class ActivityController : ControllerBase
     [Route("GetAllActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllActivities([FromQuery] GetAllActivitiesArgs args)
+    public async Task<IActionResult> GetAllActivities([FromQuery] GetAllActivities args)
     {
         try
         {
@@ -128,7 +128,7 @@ public class ActivityController : ControllerBase
                 return new JsonResult(new UpdatedActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
             }
 
-            return new JsonResult(new CreatedActivityResult { IsSuccess = true, Result = result.Result });
+            return new JsonResult(new UpdatedActivityResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
