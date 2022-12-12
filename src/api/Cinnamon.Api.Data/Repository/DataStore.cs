@@ -116,43 +116,43 @@ public class DataStore : IDataStore
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 1,
-                CategoryId = 2, 
+                CategoryId = 2,
                 Subcategory = "Math"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
-                Id          = 2,
-                CategoryId  = 2,
+                Id = 2,
+                CategoryId = 2,
                 Subcategory = "Science"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
-                Id          = 3,
-                CategoryId  = 2,
+                Id = 3,
+                CategoryId = 2,
                 Subcategory = "Filipino"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
-                Id          = 4,
-                CategoryId  = 2,
+                Id = 4,
+                CategoryId = 2,
                 Subcategory = "Social Studies"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
-                Id          = 5,
-                CategoryId  = 2,
+                Id = 5,
+                CategoryId = 2,
                 Subcategory = "Art"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
-                Id          = 6,
-                CategoryId  = 2,
+                Id = 6,
+                CategoryId = 2,
                 Subcategory = "Music"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
-                Id          = 7,
-                CategoryId  = 2,
+                Id = 7,
+                CategoryId = 2,
                 Subcategory = "English"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
@@ -261,7 +261,7 @@ public class DataStore : IDataStore
             {
                 Id = 25,
                 CategoryId = 6,
-                Subcategory = "Swimming Lessons" 
+                Subcategory = "Swimming Lessons"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
