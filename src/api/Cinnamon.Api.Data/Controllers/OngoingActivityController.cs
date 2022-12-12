@@ -5,6 +5,8 @@ using Cinnamon.Api.Data.Models.OngoingActivity.Response;
 
 namespace Cinnamon.Api.Data.Controllers;
 
+[Route("api/[controller]")]
+[ApiController]
 public class OngoingActivityController : ControllerBase 
 {
     private readonly IOngoingActivityRepository ongoingActivityRepository;
@@ -108,7 +110,7 @@ public class OngoingActivityController : ControllerBase
     [Route("UpdateOngoingActivity")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateongoingActivityResult), StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> UpdatePurchaseOrder([FromBody] UpdateOngoingActivityArgs args)
+    public async Task<IActionResult> UpdateOngoingActivity([FromBody] UpdateOngoingActivityArgs args)
     {
         try
         {

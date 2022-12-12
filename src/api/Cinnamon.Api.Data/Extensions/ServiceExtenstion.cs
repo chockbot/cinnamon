@@ -33,6 +33,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IResendEmailRepository, Services.Repository.ResendEmail.ResendEmailRepository>();
         services.AddTransient<Services.Repository.Interfaces.IPurchaseOrderRepository,Services.Repository.PurchaseOrder.PurchaseOrderRepository>();
         services.AddTransient<Services.Repository.Interfaces.IOngoingActivityRepository, Services.Repository.OngoingActivity.OngoingActivityRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IFamilyMemberRepository, Services.Repository.FamilyMember.FamilyMemberRepository>();
 
         return services;
     }

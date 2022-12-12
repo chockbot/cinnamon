@@ -16,4 +16,5 @@ public interface IGenericEntity<TTarget> where TTarget : BaseEntity
     Task<AppResult<TTarget>> Remove(TTarget entity);
     Task<AppResult<IEnumerable<TTarget>>> RemoveRange(IEnumerable<TTarget> entities);
     Task<AppResult<TTarget>> Update(TTarget entity);
+    Task<AppResult<IEnumerable<TTarget>>> UpdateRange(IEnumerable<TTarget> entities);
 }
