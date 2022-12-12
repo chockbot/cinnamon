@@ -37,7 +37,7 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             {
                 Category = category,
                 IconPath = iconPath
-            }, "Successfully created waitlist");
+            }, "Successfully created experience category");
         }
         catch (Exception ex)
         {
@@ -111,7 +111,7 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             {
                 Id = result.Result.Id,
                 Category = result.Result.Category,
-                IconPath = result.Result.IconPath,
+                IconPath = result.Result.IconPath
             };
 
             return AppResult<ExperienceCategoryDTO>.CreateSucceeded(experienceCategoryDTO, "Successfully getting experience category by id");

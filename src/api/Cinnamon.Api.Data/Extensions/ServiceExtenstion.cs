@@ -29,6 +29,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IWaitListRepository, Services.Repository.Waitlist.WaitListRepository>();
         services.AddTransient<Services.Repository.Interfaces.IResendEmailRepository, Services.Repository.ResendEmail.ResendEmailRepository>();
         services.AddTransient<Services.Repository.Interfaces.IExperienceCategoryRepository, Services.Repository.ExperienceCategory.ExperienceCategoryRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ISubCategoryRepository, Services.Repository.ExperienceSubCategory.SubCategoryRepository>();
 
         return services;
     }
