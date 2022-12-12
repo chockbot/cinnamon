@@ -24,21 +24,16 @@ public class ActivityRepository : IActivityRepository
         {
             // check experiencetypeId exist
             var exp = await dataStore.ExperienceType.GetByIdAsync(experienceTypeId);
-            if (!exp.Succeeded)
+            if (!exp.Succeeded || exp.Result == null)
             {
-                return AppResult<ActivityDTO>.CreateFailed(exp.Error.Exception, exp.Message);
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find experience type"), "Can't find experience type");
             }
 
             // check customer if exist
             var customer = await dataStore.Customer.GetByIdAsync(customerId);
             if (!customer.Succeeded || customer.Result == null)
             {
-                return AppResult<ActivityDTO>.CreateFailed(customer.Error.Exception, customer.Message);
-            }
-
-            if(exp.Result == null)
-            {
-                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find experience type"), "Can't find experience type");
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find customer id associated to activity"), "Can't find customer id associated to activity");
             }
 
             // save activity entity
@@ -140,11 +135,39 @@ public class ActivityRepository : IActivityRepository
     {
         try
         {
-            count = count.HasValue ? count.Value : 0;
-            skip = skip.HasValue ? skip.Value : 0;
-            isActive = isActive.HasValue ? isActive.Value : false;
+            var result = await dataStore.Activity.FindAsync(a => isActive.HasValue ? a.IsPublished == isActive.Value : true, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
 
-            var result = await dataStore.Activity.FindAsync(a => a.IsPublished == isActive, count.Value, skip.Value);
+            var activities = result.Result.Select(a =>
+            {
+                return new ActivityDTO
+                {
+                    Id = a.Id,
+                    SubTitle = a.Subtitle,
+                    Title = a.Title,
+                    Description = a.Description,
+                    Price = a.Price,
+                    Remarks = a.Remarks,
+                    IsPublished = a.IsPublished,
+                };
+            });
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(activities, "Successfully get activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured in getting activities");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync()
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetAllAsync();
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
