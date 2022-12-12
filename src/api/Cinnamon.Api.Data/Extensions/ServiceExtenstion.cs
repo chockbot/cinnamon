@@ -36,6 +36,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IFamilyMemberRepository, Services.Repository.FamilyMember.FamilyMemberRepository>();
         services.AddTransient<Services.Repository.Interfaces.IExperienceCategoryRepository, Services.Repository.ExperienceCategory.ExperienceCategoryRepository>();
         services.AddTransient<Services.Repository.Interfaces.ISubCategoryRepository, Services.Repository.ExperienceSubCategory.SubCategoryRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IActivityImageRepository, Services.Repository.ActivityImage.ActivityImageRepository>();
 
         return services;
     }
