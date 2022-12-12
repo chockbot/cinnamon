@@ -1,7 +1,8 @@
-namespace Cinnamon.Api.Data.Repository.Entities;
+namespace Cinnamon.Api.Data.Services.Repository.PurchaseOrder.DTO;
 
-public class PurchaseOrder : BaseEntity
+public class PurchaseOrderDTO 
 {
+    public int Id {get; set;}
     public int ActivityId {get; set;}
     public int ScheduleId {get; set;}
     public int CustomerId {get; set;}
