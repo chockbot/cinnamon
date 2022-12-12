@@ -16,6 +16,7 @@ public interface IDataStore
     IPurchaseOrder PurchaseOrder { get; }
     IResendEmail ResendEmail { get; }
     IWaitList WaitList { get; }
+    ISubCategory SubCategory { get; } 
 
     Task EnsureMigrate();
 

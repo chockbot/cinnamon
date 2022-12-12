@@ -40,7 +40,7 @@ public class ActivityController : ControllerBase
     [Route("GetAllActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAllActivities([FromQuery] GetAllActivitiesArgs args)
+    public async Task<IActionResult> GetAllActivities([FromQuery] GetAllActivities args)
     {
         try
         {

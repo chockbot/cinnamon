@@ -1,6 +1,6 @@
-﻿namespace Cinnamon.Api.Data.Models.Activity.Request;
+﻿namespace Cinnamon.Api.Data.Models.ExperienceCategory.Request;
 
-public class GetAllActivities
+public class GetAllCategoryArgs
 {
     public bool? IsActive { get; set; }
     public int? PageIndex { get; set; }

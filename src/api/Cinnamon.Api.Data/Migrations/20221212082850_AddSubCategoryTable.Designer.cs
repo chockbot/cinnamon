@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20221212082850_AddSubCategoryTable")]
+    partial class AddSubCategoryTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -589,9 +591,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
                     b.Property<decimal>("OverallTotal")
                         .HasColumnType("numeric");
 
@@ -665,11 +664,16 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("ExperienceCategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Subcategory")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ExperienceCategoryId");
 
                     b.ToTable("SubCategory");
                 });
@@ -1006,6 +1010,17 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Activity");
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SubCategory", b =>
+                {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", "ExperienceCategory")
+                        .WithMany()
+                        .HasForeignKey("ExperienceCategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ExperienceCategory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
