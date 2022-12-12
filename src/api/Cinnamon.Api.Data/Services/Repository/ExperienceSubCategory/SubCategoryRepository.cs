@@ -17,15 +17,15 @@ public class SubCategoryRepository: ISubCategoryRepository
     {
 		try
 		{
-			var subCategoryCheck = await dataStore.SubCategory.FindFirstAsync(w => w.Subcategory.Contains(subCategory));
+			var subCategoryCheck = await dataStore.SubCategory.FindFirstAsync(w => w.SubCatergory.Contains(subCategory));
             if (subCategoryCheck.Succeeded && subCategoryCheck.Result != null)
             {
                 return AppResult<SubCategoryDTO>.CreateFailed(new ApplicationException("Can't create already existed sub category"), "Can't create already existed sub category");
             }
             var addSubCategory = new Entities.SubCategory
             {
-                CategoryId= categoryId,
-                Subcategory = subCategory
+                CatergoryId = categoryId,
+                SubCatergory = subCategory
             };
             var createdSubCategory = await dataStore.SubCategory.Add(addSubCategory);
             if (!createdSubCategory.Succeeded || createdSubCategory.Result == null)
@@ -58,8 +58,8 @@ public class SubCategoryRepository: ISubCategoryRepository
                 return new SubCategoryDTO
                 {
                     Id= c.Id,
-                    CategoryId = c.CategoryId,
-                    SubCategory = c.Subcategory
+                    CategoryId = c.CatergoryId,
+                    SubCategory = c.SubCatergory,
                 };
             });
 
@@ -84,8 +84,8 @@ public class SubCategoryRepository: ISubCategoryRepository
                 return new SubCategoryDTO
                 {
                     Id = a.Id,
-                    CategoryId = a.CategoryId,
-                    SubCategory = a.Subcategory
+                    CategoryId = a.CatergoryId,
+                    SubCategory = a.SubCatergory
                 };
             });
             return AppResult<IEnumerable<SubCategoryDTO>>.CreateSucceeded(subCategories, "Successfully get sub category");
@@ -108,8 +108,8 @@ public class SubCategoryRepository: ISubCategoryRepository
             var subCategoryDTO = new SubCategoryDTO
             {
                Id = result.Result.Id,
-               CategoryId = result.Result.CategoryId,
-               SubCategory = result.Result.Subcategory
+               CategoryId = result.Result.CatergoryId,
+               SubCategory = result.Result.SubCatergory
             };
 
             return AppResult<SubCategoryDTO>.CreateSucceeded(subCategoryDTO, "Successfully getting subcategory by id");
@@ -131,8 +131,8 @@ public class SubCategoryRepository: ISubCategoryRepository
             }
 
             var subcategoryExeperience = subcategoryRes.Result;
-            subcategoryExeperience.CategoryId = categoryId ?? subcategoryExeperience.CategoryId;
-            subcategoryExeperience.Subcategory = subCategory ?? subcategoryExeperience.Subcategory;
+            subcategoryExeperience.CatergoryId = categoryId ?? subcategoryExeperience.CatergoryId; 
+            subcategoryExeperience.SubCatergory = subCategory ?? subcategoryExeperience.SubCatergory;
 
             var updatedsubCategory = await dataStore.SubCategory.Update(subcategoryExeperience);
             if (!updatedsubCategory.Succeeded)

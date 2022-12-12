@@ -116,296 +116,296 @@ public class DataStore : IDataStore
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 1,
-                CategoryId = 2,
-                Subcategory = "Math"
+                CatergoryId= 2,
+                SubCatergory = "Math"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 2,
-                CategoryId = 2,
-                Subcategory = "Science"
+                CatergoryId= 2,
+                SubCatergory = "Science"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 3,
-                CategoryId = 2,
-                Subcategory = "Filipino"
+                CatergoryId = 2,
+                SubCatergory = "Filipino"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 4,
-                CategoryId = 2,
-                Subcategory = "Social Studies"
+                CatergoryId = 2,
+                SubCatergory = "Social Studies"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 5,
-                CategoryId = 2,
-                Subcategory = "Art"
+                CatergoryId = 2,
+                SubCatergory = "Art"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 6,
-                CategoryId = 2,
-                Subcategory = "Music"
+                CatergoryId = 2,
+                SubCatergory = "Music"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 7,
-                CategoryId = 2,
-                Subcategory = "English"
+                CatergoryId = 2,
+                SubCatergory = "English"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 8,
-                CategoryId = 2,
-                Subcategory = "Araling Panlipunan"
+                CatergoryId = 2,
+                SubCatergory = "Araling Panlipunan"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 9,
-                CategoryId = 2,
-                Subcategory = "Creative Writing"
+                CatergoryId = 2,
+                SubCatergory = "Creative Writing"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 10,
-                CategoryId = 2,
-                Subcategory = "Coding"
+                CatergoryId = 2,
+                SubCatergory = "Coding"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 11,
-                CategoryId = 2,
-                Subcategory = "Reading"
+                CatergoryId = 2,
+                SubCatergory = "Reading"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 12,
-                CategoryId = 2,
-                Subcategory = "Writing"
+                CatergoryId = 2,
+                SubCatergory = "Writing"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 13,
-                CategoryId = 3,
-                Subcategory = "Mandarin"
+                CatergoryId = 3,
+                SubCatergory = "Mandarin"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 14,
-                CategoryId = 3,
-                Subcategory = "Spanish"
+                CatergoryId = 3,
+                SubCatergory = "Spanish"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 15,
-                CategoryId = 3,
-                Subcategory = "Japanese"
+                CatergoryId = 3,
+                SubCatergory = "Japanese"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 16,
-                CategoryId = 3,
-                Subcategory = "Tagalog"
+                CatergoryId = 3,
+                SubCatergory = "Tagalog"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 17,
-                CategoryId = 3,
-                Subcategory = "Korean"
+                CatergoryId = 3,
+                SubCatergory = "Korean"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 18,
-                CategoryId = 3,
-                Subcategory = "English"
+                CatergoryId = 3,
+                SubCatergory = "English"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 19,
-                CategoryId = 4,
-                Subcategory = "Piano"
+                CatergoryId = 4,
+                SubCatergory = "Piano"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 20,
-                CategoryId = 4,
-                Subcategory = "Guitar"
+                CatergoryId = 4,
+                SubCatergory = "Guitar"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 21,
-                CategoryId = 4,
-                Subcategory = "Drums"
+                CatergoryId = 4,
+                SubCatergory = "Drums"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 22,
-                CategoryId = 4,
-                Subcategory = "Bass"
+                CatergoryId = 4,
+                SubCatergory = "Bass"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 23,
-                CategoryId = 5,
-                Subcategory = "Fun Play"
+                CatergoryId = 5,
+                SubCatergory = "Fun Play"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 24,
-                CategoryId = 6,
-                Subcategory = "Occupational Theraphy"
+                CatergoryId = 6,
+                SubCatergory = "Occupational Theraphy"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 25,
-                CategoryId = 6,
-                Subcategory = "Swimming Lessons"
+                CatergoryId = 6,
+                SubCatergory = "Swimming Lessons"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 26,
-                CategoryId = 6,
-                Subcategory = "Yoga Lessons"
+                CatergoryId = 6,
+                SubCatergory = "Yoga Lessons"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 27,
-                CategoryId = 7,
-                Subcategory = "Archery"
+                CatergoryId = 7,
+                SubCatergory = "Archery"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 28,
-                CategoryId = 7,
-                Subcategory = "Baseball"
+                CatergoryId = 7,
+                SubCatergory = "Baseball"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 29,
-                CategoryId = 7,
-                Subcategory = "Basketball"
+                CatergoryId = 7,
+                SubCatergory = "Basketball"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 30,
-                CategoryId = 7,
-                Subcategory = "Cheerleading"
+                CatergoryId = 7,
+                SubCatergory = "Cheerleading"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 31,
-                CategoryId = 7,
-                Subcategory = "Dance"
+                CatergoryId = 7,
+                SubCatergory = "Dance"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 32,
-                CategoryId = 7,
-                Subcategory = "Equestiran"
+                CatergoryId = 7,
+                SubCatergory = "Equestiran"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 33,
-                CategoryId = 7,
-                Subcategory = "Field Hockey"
+                CatergoryId = 7,
+                SubCatergory = "Field Hockey"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 34,
-                CategoryId = 7,
-                Subcategory = "Football"
+                CatergoryId = 7,
+                SubCatergory = "Football"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 35,
-                CategoryId = 7,
-                Subcategory = "Golf"
+                CatergoryId = 7,
+                SubCatergory = "Golf"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 36,
-                CategoryId = 7,
-                Subcategory = "Gymnastics"
+                CatergoryId = 7,
+                SubCatergory = "Gymnastics"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 37,
-                CategoryId = 7,
-                Subcategory = "Ice Hockey"
+                CatergoryId = 7,
+                SubCatergory = "Ice Hockey"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 38,
-                CategoryId = 7,
-                Subcategory = "Karate"
+                CatergoryId = 7,
+                SubCatergory = "Karate"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 39,
-                CategoryId = 7,
-                Subcategory = "Lacrosse"
+                CatergoryId = 7,
+                SubCatergory = "Lacrosse"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 40,
-                CategoryId = 7,
-                Subcategory = "Rowing"
+                CatergoryId = 7,
+                SubCatergory = "Rowing"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 41,
-                CategoryId = 7,
-                Subcategory = "Snowboarding"
+                CatergoryId = 7,
+                SubCatergory = "Snowboarding"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 42,
-                CategoryId = 7,
-                Subcategory = "Soccer"
+                CatergoryId = 7,
+                SubCatergory = "Soccer"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 43,
-                CategoryId = 7,
-                Subcategory = "Surfing"
+                CatergoryId = 7,
+                SubCatergory = "Surfing"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 44,
-                CategoryId = 7,
-                Subcategory = "Swimming"
+                CatergoryId = 7,
+                SubCatergory = "Swimming"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 45,
-                CategoryId = 7,
-                Subcategory = "Table Tennis"
+                CatergoryId = 7,
+                SubCatergory = "Table Tennis"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 46,
-                CategoryId = 7,
-                Subcategory = "Tennis"
+                CatergoryId = 7,
+                SubCatergory = "Tennis"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 47,
-                CategoryId = 7,
-                Subcategory = "Track and Field"
+                CatergoryId = 7,
+                SubCatergory = "Track and Field"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 48,
-                CategoryId = 7,
-                Subcategory = "Volleyball"
+                CatergoryId = 7,
+                SubCatergory = "Volleyball"
             });
             applicationContext.SubCategory.Add(new Entities.SubCategory
             {
                 Id = 49,
-                CategoryId = 7,
-                Subcategory = "Chess"
+                CatergoryId = 7,
+                SubCatergory = "Chess"
             });
         }
         await applicationContext.SaveChangesAsync();
