@@ -102,7 +102,7 @@ public class ExperienceCategoryController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(UpdatedCategoryResult), StatusCodes.Status202Accepted)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategory args)
+    public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryArgs args)
     {
         try
         {

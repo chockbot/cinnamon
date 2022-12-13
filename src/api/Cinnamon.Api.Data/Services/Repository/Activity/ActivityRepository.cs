@@ -310,7 +310,7 @@ public class ActivityRepository : IActivityRepository
             }
 
             // update activity search tags
-            var activitySearchTagRes = await dataStore.ActivitySearchTag.FindFirstAsync(s => s.ActivityId == activity.Id);
+            var activitySearchTagRes = await dataStore.SearchTags.FindFirstAsync(s => s.ActivityId == activity.Id);
             if(!activitySearchTagRes.Succeeded || activitySearchTagRes.Result == null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(activitySearchTagRes.Error.Exception, activitySearchTagRes.Message);
@@ -323,7 +323,7 @@ public class ActivityRepository : IActivityRepository
             activitySearchTag.SearchTag4 = searchtag4 ?? activitySearchTag.SearchTag4;
             activitySearchTag.SearchTag5 = searchtag5 ?? activitySearchTag.SearchTag5;
 
-            var updatedSearchTag = await dataStore.ActivitySearchTag.Update(activitySearchTag);
+            var updatedSearchTag = await dataStore.SearchTags.Update(activitySearchTag);
             if (!updatedSearchTag.Succeeded)
             {
                 return AppResult<ActivityDTO>.CreateFailed(updatedSearchTag.Error.Exception, updatedSearchTag.Message);

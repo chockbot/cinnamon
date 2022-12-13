@@ -15,7 +15,7 @@ public static class ServiceExtenstion
         services.AddTransient<IActivityDescription, ActivityDescriptionEntity>();
         services.AddTransient<IActivityImage, ActivityImageEntity>();
         services.AddTransient<IActivitySchedule, ActivityScheduleEntity>();
-        services.AddTransient<IActivitySearchTag, ActivitySearchTagEntity>();
+        services.AddTransient<ISearchTags, SearchTagsEntity>();
         services.AddTransient<ICustomer, CustomerEntity>();
         services.AddTransient<IExperienceCategory, ExperienceCategoryEntity>();
         services.AddTransient<IExperienceType, ExperienceTypeEntity>();
@@ -39,6 +39,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IActivityImageRepository, Services.Repository.ActivityImage.ActivityImageRepository>();
         services.AddTransient<Services.Repository.Interfaces.IExperienceTypeRepository, Services.Repository.ExperienceType.ExperienceTypeRepository>();
         services.AddTransient<Services.Repository.Interfaces.IScheduleRepository, Services.Repository.Schedule.ScheduleRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ISearchTagsRepository, Services.Repository.SearchTag.SearchTagRepository>();
 
         return services;
     }

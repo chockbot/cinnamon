@@ -43,8 +43,11 @@ public class DataStore : IDataStore
 
     public ISubCategory SubCategory => new SubCategoryEntity(applicationContext);
 
+    public ISearchTags SearchTags => new SearchTagsEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
+        
         await applicationContext.Database.MigrateAsync();
     }
 
@@ -408,6 +411,7 @@ public class DataStore : IDataStore
                 SubCatergory = "Chess"
             });
         }
+
         await applicationContext.SaveChangesAsync();
     }
 }

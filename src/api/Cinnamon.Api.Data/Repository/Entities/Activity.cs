@@ -17,7 +17,7 @@ public class Activity : BaseEntity
 
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
-    public virtual ActivitySearchTag SearchTag {get; set;}
+    public virtual SearchTags SearchTag {get; set;}
     public virtual IList<ActivitySchedule> Schedules {get; set;}
     public virtual IList<ActivityImage> Images {get; set;}
     public virtual ExperienceType ExperienceType {get; set;}
