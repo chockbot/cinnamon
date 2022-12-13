@@ -55,11 +55,11 @@ namespace Cinnamon.Api.Data.Controllers
         [Route("GetAllAddress")]
         [ProducesResponseType(typeof(GetAllAddressResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllAddressAsync(int? count = null, int? skip = null)
+        public async Task<IActionResult> GetAllAddressAsync()
         {
             try
             {
-                var result = await _AddressRepository.GetAllAsync(count, skip);
+                var result = await _AddressRepository.GetAllAsync();
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new GetAllAddressResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });

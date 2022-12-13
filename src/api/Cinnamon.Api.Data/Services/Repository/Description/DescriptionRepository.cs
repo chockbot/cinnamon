@@ -56,14 +56,11 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
             }
         }
 
-        public async Task<AppResult<IEnumerable<DescriptionDTO>>> GetAllAsync(int? count, int? skip)
+        public async Task<AppResult<IEnumerable<DescriptionDTO>>> GetAllAsync()
         {
             try
             {
-                count = count.HasValue ? count.Value : 0;
-                skip = skip.HasValue ? skip.Value : 0;
-
-                var result = await _dataStore.ActivityDescription.FindAsync(a => a.Id != -1, count.Value, skip.Value);
+                var result = await _dataStore.ActivityDescription.GetAllAsync();
                 if (!result.Succeeded)
                 {
                     return AppResult<IEnumerable<DescriptionDTO>>.CreateFailed(result.Error.Exception, result.Message);

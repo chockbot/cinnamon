@@ -55,11 +55,11 @@ namespace Cinnamon.Api.Data.Controllers
         [Route("GetAllDescription")]
         [ProducesResponseType(typeof(GetAllDescriptionResult), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<IActionResult> GetAllDescriptionAsync(int? count = null, int? skip = null)
+        public async Task<IActionResult> GetAllDescriptionAsync()
         {
             try
             {
-                var result = await _descriptionRepository.GetAllAsync(count, skip);
+                var result = await _descriptionRepository.GetAllAsync();
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new GetAllDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
@@ -76,7 +76,7 @@ namespace Cinnamon.Api.Data.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CreateDescriptionResult), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateAddress(CreateDescriptionArgs descriptionArgs)
+        public async Task<IActionResult> CreateDescription(CreateDescriptionArgs descriptionArgs)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Cinnamon.Api.Data.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(UpdatedDescriptionResult), StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateAddress(UpdateDescriptionArgs updateDescription)
+        public async Task<IActionResult> UpdateDescription(UpdateDescriptionArgs updateDescription)
         {
             try
             {

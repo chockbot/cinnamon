@@ -2,7 +2,7 @@
 
 public class ActivityImageDTO
 {
-    public string Id { get; set; }
+    public int Id { get; set; }
     public string ImageName { get; set; }
     public string ImageLocation { get; set; }
 }
