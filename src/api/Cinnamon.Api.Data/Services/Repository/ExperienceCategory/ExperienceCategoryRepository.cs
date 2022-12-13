@@ -143,8 +143,8 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
             }
             return AppResult<ExperienceCategoryDTO>.CreateSucceeded(new ExperienceCategoryDTO
             {
-                Id = categoryExeperience.Id,
                 Category = categoryExeperience.Category,
+                IconPath = categoryExeperience.IconPath,
             }, "Successfully updated experience category");
 
         }

@@ -19,8 +19,6 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<ActivitySchedule> ActivitySchedules {get; set;}
 
-    public DbSet<ActivitySearchTag> ActivitySearchTags {get; set;}
-
     public DbSet<Customer> Customers {get; set;}
 
     public DbSet<ExperienceCategory> ExperienceCategories {get; set;}
@@ -38,6 +36,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<WaitList> WaitLists {get; set;}
 
     public DbSet<SubCategory> SubCategory { get; set; }
+
+    public DbSet<SearchTags> SearchTags { get; set; }
 
     #endregion
 
@@ -72,9 +72,9 @@ public class ApplicationContext : IdentityDbContext
             .HasForeignKey<ActivityDescription>(d => d.ActivityId);
 
         modelBuilder.Entity<Activity>()
-            .HasOne<ActivitySearchTag>(a => a.SearchTag)
+            .HasOne<SearchTags>(a => a.SearchTag)
             .WithOne(s => s.Activity)
-            .HasForeignKey<ActivitySearchTag>(s => s.ActivityId);
+            .HasForeignKey<SearchTags>(s => s.ActivityId);
 
         // experience type
         modelBuilder.Entity<ExperienceType>()

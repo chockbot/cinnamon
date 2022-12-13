@@ -17,6 +17,7 @@ public interface IDataStore
     IResendEmail ResendEmail { get; }
     IWaitList WaitList { get; }
     ISubCategory SubCategory { get; } 
+    ISearchTags SearchTags { get; }
 
     Task EnsureMigrate();
 

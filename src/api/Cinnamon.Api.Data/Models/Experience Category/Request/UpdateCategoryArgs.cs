@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Cinnamon.Api.Data.Models.Activity.Request;
+namespace Cinnamon.Api.Data.Models.ExperienceCategory.Request;
 
-public class UpdateCategory
+public class UpdateCategoryArgs
 {
     [Required]
     public int Id { get; set; }
