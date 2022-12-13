@@ -5,6 +5,7 @@ using Serilog;
 using Newtonsoft.Json.Serialization;
 using Cinnamon.Api.Core.Extensions;
 using Cinnamon.Api.Core.Config;
+using Flurl.Http.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 ApplicationConfig applicationConfig = new ApplicationConfig();
 builder.Configuration.GetSection("Applicationconfig").Bind(applicationConfig);
 builder.Services.AddSingleton(applicationConfig);
+
+// register flurl
+builder.Services.AddSingleton<IFlurlClientFactory,DefaultFlurlClientFactory>();
 
 // register application services
 builder.Services.ExtendServices();
