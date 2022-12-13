@@ -1,5 +1,5 @@
 ﻿using Cinnamon.Framework.Common;
-using Cinnamon.Api.Data.Services.Repository.ExperienceCategory.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ExperienceCategory;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 

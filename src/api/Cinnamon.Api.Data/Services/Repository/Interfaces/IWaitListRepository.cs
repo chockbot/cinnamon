@@ -1,4 +1,4 @@
-﻿using Cinnamon.Api.Data.Services.Repository.Waitlist.DTO;
+﻿using Cinnamon.Framework.ApiCommand.ApiData.DTO.Waitlist;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;

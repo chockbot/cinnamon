@@ -1,8 +1,9 @@
 ﻿using System.Globalization;
 using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Models.ResendEmail.Request;
-using Cinnamon.Api.Data.Models.ResendEmail.Response;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.ResendEmail.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.ResendEmail.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -27,14 +28,14 @@ public class ResendEmailController : ControllerBase
             var result = await resendEmailRepository.GetByIdAsync(id);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetResendEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetResendEmailResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetResendEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -52,14 +53,14 @@ public class ResendEmailController : ControllerBase
             var result = await resendEmailRepository.GetByEmailDateRange(args.Email, from, to);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetResendEmailByEmailDateRange { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetResendEmailByEmailDateRange { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetResendEmailByEmailDateRange { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetResendEmailByEmailDateRange { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetResendEmailByEmailDateRange { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -77,7 +78,7 @@ public class ResendEmailController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -87,7 +88,7 @@ public class ResendEmailController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -95,7 +96,7 @@ public class ResendEmailController : ControllerBase
             {
                 Result = result.Result,
                 IsSuccess = true,
-                Pagination = new Models.Pagination
+                Pagination = new Pagination
                 {
                     PageIndex = args.PageIndex,
                     PerPage = args.CountPerPage,
@@ -107,7 +108,7 @@ public class ResendEmailController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetAllResendEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -122,14 +123,14 @@ public class ResendEmailController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreatedEmailResendResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreatedEmailResendResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreatedEmailResendResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreatedEmailResendResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreatedEmailResendResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -144,14 +145,14 @@ public class ResendEmailController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdateEmailResendResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdateEmailResendResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdateEmailResendResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdateEmailResendResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdateEmailResendResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

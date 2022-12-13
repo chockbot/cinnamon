@@ -1,5 +1,5 @@
 using Cinnamon.Framework.Common;
-using Cinnamon.Api.Data.Services.Repository.PurchaseOrder.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 

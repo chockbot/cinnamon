@@ -1,9 +1,6 @@
-﻿using Cinnamon.Api.Data.Models.Description.Request;
-using Cinnamon.Api.Data.Models.Description.Response;
-using Cinnamon.Api.Data.Models.ExperienceType.Response;
-using Cinnamon.Api.Data.Services.Repository.ActivityDescription;
-using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.ExperienceType.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Api.Data.Controllers
@@ -34,7 +31,7 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _experienceTypeRepository.GetByIdAsync(id);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
 
                 if (result.Result == null)
@@ -46,7 +43,7 @@ namespace Cinnamon.Api.Data.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -61,13 +58,13 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _experienceTypeRepository.GetAllAsync();
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetAllExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetAllExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new GetAllExperienceTypeResult { Result = result.Result, IsSuccess = true });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetAllExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetAllExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -82,13 +79,13 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _experienceTypeRepository.CreateExperienceType(name);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new CreateExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new CreateExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new CreateExperienceTypeResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CreateExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new CreateExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -103,13 +100,13 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _experienceTypeRepository.UpdateExperienceType(id,name);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new UpdateExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new UpdateExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new UpdateExperienceTypeResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new UpdateExperienceTypeResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new UpdateExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

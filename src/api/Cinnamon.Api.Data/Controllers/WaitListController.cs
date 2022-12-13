@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Models.Waitlist.Request;
-using Cinnamon.Api.Data.Models.Waitlist.Response;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.Waitlist.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.Waitlist.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -26,14 +27,14 @@ public class WaitListController : ControllerBase
             var result = await waitListRepository.GetByIdAsync(id);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetWaitlistResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -47,14 +48,14 @@ public class WaitListController : ControllerBase
             var result = await waitListRepository.GetByGuidAsync(guid);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetWaitlistResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -68,14 +69,14 @@ public class WaitListController : ControllerBase
             var result = await waitListRepository.GetByEmailAsync(email);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetWaitlistResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -93,7 +94,7 @@ public class WaitListController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -103,7 +104,7 @@ public class WaitListController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -111,7 +112,7 @@ public class WaitListController : ControllerBase
             {
                 Result = result.Result,
                 IsSuccess = true,
-                Pagination = new Models.Pagination
+                Pagination = new Pagination
                 {
                     PageIndex = args.PageIndex,
                     PerPage = args.CountPerPage,
@@ -123,7 +124,7 @@ public class WaitListController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetAllWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -138,14 +139,14 @@ public class WaitListController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreatedWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreatedWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreatedWaitlistResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreatedWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreatedWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -160,14 +161,14 @@ public class WaitListController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdateWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdateWaitlistResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdateWaitlistResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdateWaitlistResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdateWaitlistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

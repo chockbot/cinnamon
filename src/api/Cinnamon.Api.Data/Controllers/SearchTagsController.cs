@@ -1,10 +1,8 @@
-﻿using Cinnamon.Api.Data.Models.ExperienceCategory.Request;
-using Cinnamon.Api.Data.Models.ExperienceCategory.Response;
-using Cinnamon.Api.Data.Models.SearchTags.Request;
-using Cinnamon.Api.Data.Models.SearchTags.Response;
-using Cinnamon.Api.Data.Services.Repository.ExperienceCategory;
+﻿using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Framework.ApiCommand.ApiData.SearchTags.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.SearchTags.Request;
 
 namespace Cinnamon.Api.Data.Controllers
 {
@@ -25,13 +23,13 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await searchTagsRepository.GetByIdAsync(id);
                 if (!result.Succeeded || result.Result == null)
                 {
-                    return new JsonResult(new GetSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetSearchTagsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new GetSearchTagsResult { Result = result.Result, IsSuccess = true });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
         [Route("GetAllSearchTags")]
@@ -48,7 +46,7 @@ namespace Cinnamon.Api.Data.Controllers
                    await searchTagsRepository.GetAllAsync();
                 if (!result.Succeeded || result.Result == null)
                 {
-                    return new JsonResult(new GetAllSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetAllSearchTagsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 // get all without pagination to get all rows
                 var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
@@ -57,7 +55,7 @@ namespace Cinnamon.Api.Data.Controllers
 
                 if (!all.Succeeded || all.Result == null)
                 {
-                    return new JsonResult(new GetAllSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                    return new JsonResult(new GetAllSearchTagsResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
                 }
 
                 var totalRecords = all.Result.Count();
@@ -65,7 +63,7 @@ namespace Cinnamon.Api.Data.Controllers
                 {
                     Result = result.Result,
                     IsSuccess = true,
-                    Pagination = new Models.Pagination
+                    Pagination = new Pagination
                     {
                         PageIndex = args.PageIndex,
                         PerPage = args.CountPerPage,
@@ -77,7 +75,7 @@ namespace Cinnamon.Api.Data.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetAllSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetAllSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
         [Route("CreateSearchTags")]
@@ -91,14 +89,14 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await searchTagsRepository.CreateSearchTagsAsync(args.activityId, args.searchTag1, args.searchTag2, args.searchTag3, args.searchTag4, args.searchTag5);
                 if (!result.Succeeded || result.Result == null)
                 {
-                    return new JsonResult(new CreateSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new CreateSearchTagsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
 
                 return new JsonResult(new CreateSearchTagsResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CreateSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new CreateSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
         [Route("UpdateSearchTags")]
@@ -113,14 +111,14 @@ namespace Cinnamon.Api.Data.Controllers
 
                 if (!result.Succeeded || result.Result == null)
                 {
-                    return new JsonResult(new UpdateSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new UpdateSearchTagsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
 
                 return new JsonResult(new UpdateSearchTagsResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new UpdateSearchTagsResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new UpdateSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

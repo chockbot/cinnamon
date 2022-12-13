@@ -1,5 +1,5 @@
 ﻿using Cinnamon.Framework.Common;
-using Cinnamon.Api.Data.Services.Repository.Customer.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 

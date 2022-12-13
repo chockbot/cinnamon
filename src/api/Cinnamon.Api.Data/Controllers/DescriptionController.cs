@@ -1,11 +1,9 @@
-﻿using Cinnamon.Api.Data.Models.Address.Request;
-using Cinnamon.Api.Data.Models.Address.Response;
-using Cinnamon.Api.Data.Models.Description.Request;
-using Cinnamon.Api.Data.Models.Description.Response;
-using Cinnamon.Api.Data.Services.Repository.ActivityAddress;
+﻿using Cinnamon.Api.Data.Services.Repository.ActivityAddress;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Microsoft.AspNetCore.Http;
+using Cinnamon.Framework.ApiCommand.ApiData.Description.Response;
 using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.Description.Request;
 
 namespace Cinnamon.Api.Data.Controllers
 {
@@ -35,7 +33,7 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _descriptionRepository.GetByIdAsync(id);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetDescriptionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
 
                 if (result.Result == null)
@@ -47,7 +45,7 @@ namespace Cinnamon.Api.Data.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetDescriptionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -62,13 +60,13 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _descriptionRepository.GetAllAsync();
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetAllDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetAllDescriptionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new GetAllDescriptionResult { Result = result.Result, IsSuccess = true });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetAllDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetAllDescriptionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -85,13 +83,13 @@ namespace Cinnamon.Api.Data.Controllers
                                                               descriptionArgs.SkillLevel, descriptionArgs.MinimumAge, descriptionArgs.CanAdultsJoin);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new CreateDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new CreateDescriptionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new CreateDescriptionResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CreateDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new CreateDescriptionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -108,13 +106,13 @@ namespace Cinnamon.Api.Data.Controllers
                                                               updateDescription.SkillLevel, updateDescription.MinimumAge, updateDescription.CanAdultsJoin);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new UpdatedDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new UpdatedDescriptionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new UpdatedDescriptionResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new UpdatedDescriptionResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new UpdatedDescriptionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

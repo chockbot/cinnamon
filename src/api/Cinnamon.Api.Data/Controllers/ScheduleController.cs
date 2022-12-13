@@ -1,10 +1,7 @@
-﻿using Cinnamon.Api.Data.Models.Description.Request;
-using Cinnamon.Api.Data.Models.Description.Response;
-using Cinnamon.Api.Data.Models.Schedule.Request;
-using Cinnamon.Api.Data.Models.Schedule.Response;
-using Cinnamon.Api.Data.Services.Repository.ActivityDescription;
-using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Response;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Api.Data.Controllers
@@ -35,7 +32,7 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _scheduleRepository.GetByIdAsync(id);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
 
                 if (result.Result == null)
@@ -47,7 +44,7 @@ namespace Cinnamon.Api.Data.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -62,13 +59,13 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _scheduleRepository.GetAllAsync();
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetAllScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetAllScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new GetAllScheduleResult { Result = result.Result, IsSuccess = true });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetAllScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetAllScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -85,13 +82,13 @@ namespace Cinnamon.Api.Data.Controllers
                                                                       scheduleArgs.PriceUnit1, scheduleArgs.PerUnit2, scheduleArgs.PriceUnit2);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new CreateScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new CreateScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new CreateScheduleResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CreateScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new CreateScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -108,13 +105,13 @@ namespace Cinnamon.Api.Data.Controllers
                                                                       updateScheduleArgs.PriceUnit1, updateScheduleArgs.PerUnit2, updateScheduleArgs.PriceUnit2);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new UpdateScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new UpdateScheduleResult { IsSuccess = true, Result = result.Result });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new UpdateScheduleResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

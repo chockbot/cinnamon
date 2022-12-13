@@ -1,8 +1,8 @@
 using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.ActivityImage.DTO;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ActivityImage;
 
 namespace Cinnamon.Api.Data.Services.Repository.ActivityImage;
 

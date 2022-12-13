@@ -1,4 +1,4 @@
-using Cinnamon.Api.Data.Services.Repository.OngoingActivity.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.OngoingActivity;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;

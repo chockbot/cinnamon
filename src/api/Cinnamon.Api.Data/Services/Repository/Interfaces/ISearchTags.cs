@@ -1,6 +1,5 @@
 ﻿using Cinnamon.Framework.Common;
-using Cinnamon.Api.Data.Services.Repository.SearchTag.DTO;
-using Cinnamon.Api.Data.Services.Repository.ExperienceCategory.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.SearchTag;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 public interface ISearchTagsRepository

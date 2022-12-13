@@ -1,6 +1,6 @@
 ﻿using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.Schedule.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Schedule;
 using Cinnamon.Framework.Common;
 using System.Collections.Generic;
 

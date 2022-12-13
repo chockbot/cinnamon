@@ -1,4 +1,4 @@
-using Cinnamon.Api.Data.Services.Repository.FamilyMember.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.FamilyMember;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;

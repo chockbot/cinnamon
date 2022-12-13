@@ -1,10 +1,8 @@
-﻿using Cinnamon.Api.Data.Models.Activity.Response;
-using Cinnamon.Api.Data.Models.Address.Request;
-using Cinnamon.Api.Data.Models.Address.Response;
-using Cinnamon.Api.Data.Services.Repository.Activity;
-using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Microsoft.AspNetCore.Http;
+﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.Address.Response;
 using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.Address.Request;
 
 namespace Cinnamon.Api.Data.Controllers
 {
@@ -35,7 +33,7 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _AddressRepository.GetByIdAsync(id);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetAddressResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
 
                 if (result.Result == null)
@@ -47,7 +45,7 @@ namespace Cinnamon.Api.Data.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetAddressResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -62,13 +60,13 @@ namespace Cinnamon.Api.Data.Controllers
                 var result = await _AddressRepository.GetAllAsync();
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new GetAllAddressResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new GetAllAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new GetAllAddressResult { Result = result.Result, IsSuccess = true });
             }
             catch (Exception ex)
             {
-                return new JsonResult(new GetAllAddressResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new GetAllAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -84,13 +82,13 @@ namespace Cinnamon.Api.Data.Controllers
                                                               , addressArgs.District, addressArgs.City);
                 if (!result.Succeeded)
                 {
-                    return new JsonResult(new CreateAddressResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new CreateAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new CreateAddressResult { IsSuccess = true, Result = result.Result });
             }
             catch(Exception ex)
             {
-                return new JsonResult(new CreateAddressResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new CreateAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
 
@@ -106,13 +104,13 @@ namespace Cinnamon.Api.Data.Controllers
                                                               addressArgs.District, addressArgs.City);
                 if(!result.Succeeded)
                 {
-                    return new JsonResult(new UpdatedAddressResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new UpdatedAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 return new JsonResult(new UpdatedAddressResult { IsSuccess = true, Result = result.Result });
             }
             catch(Exception ex)
             {
-                return new JsonResult(new UpdatedAddressResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new UpdatedAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

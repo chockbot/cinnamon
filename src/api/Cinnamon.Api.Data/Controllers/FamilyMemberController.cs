@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Models.FamilyMember.Request;
-using Cinnamon.Api.Data.Models.FamilyMember.Response;
-using Cinnamon.Api.Data.Services.Repository.FamilyMember.DTO;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.FamilyMember.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.FamilyMember.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.FamilyMember;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -27,14 +28,14 @@ public class FamilyMemberController : ControllerBase
             var result = await familyMemberRepository.GetByIdAsync(id);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetFamilyMemberResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -52,7 +53,7 @@ public class FamilyMemberController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetAllFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetAllFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -62,7 +63,7 @@ public class FamilyMemberController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return new JsonResult(new GetAllFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                return new JsonResult(new GetAllFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -70,7 +71,7 @@ public class FamilyMemberController : ControllerBase
             {
                 Result = result.Result,
                 IsSuccess = true,
-                Pagination = new Models.Pagination
+                Pagination = new Pagination
                 {
                     PageIndex = args.PageIndex,
                     PerPage = args.CountPerPage,
@@ -82,7 +83,7 @@ public class FamilyMemberController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetAllFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -97,14 +98,14 @@ public class FamilyMemberController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreateFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreateFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreateFamilyMemberResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreateFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreateFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -127,14 +128,14 @@ public class FamilyMemberController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreateManyFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreateManyFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreateManyFamilyMemberResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreateManyFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreateManyFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -149,14 +150,14 @@ public class FamilyMemberController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdateFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdateFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdateFamilyMemberResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdateFamilyMemberResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdateFamilyMemberResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -182,14 +183,14 @@ public class FamilyMemberController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdateManyFamilyMembersResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdateManyFamilyMembersResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdateManyFamilyMembersResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdateManyFamilyMembersResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdateManyFamilyMembersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

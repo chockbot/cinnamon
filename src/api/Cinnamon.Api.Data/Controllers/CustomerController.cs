@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Models.Customer.Response;
-using Cinnamon.Api.Data.Models.Customer.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -26,14 +27,14 @@ public class CustomerController : ControllerBase
             var result = await customerRepository.GetByIdAsync(id);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetCustomerResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -52,7 +53,7 @@ public class CustomerController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -62,7 +63,7 @@ public class CustomerController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -70,7 +71,7 @@ public class CustomerController : ControllerBase
             {
                 Result = result.Result,
                 IsSuccess = true,
-                Pagination = new Models.Pagination
+                Pagination = new Pagination
                 {
                     PageIndex = args.PageIndex,
                     PerPage = args.CountPerPage,
@@ -82,7 +83,7 @@ public class CustomerController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -98,14 +99,14 @@ public class CustomerController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreateCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreateCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreateCustomerResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreateCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreateCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -121,14 +122,14 @@ public class CustomerController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdateCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdateCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdateCustomerResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdateCustomerResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdateCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

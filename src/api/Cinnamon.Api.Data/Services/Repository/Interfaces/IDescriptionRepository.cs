@@ -1,5 +1,5 @@
-﻿using Cinnamon.Api.Data.Services.Repository.ActivityDescription.DTO;
-using Cinnamon.Framework.Common;
+﻿using Cinnamon.Framework.Common;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Description;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces
 {

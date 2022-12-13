@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Models.Activity.Request;
-using Cinnamon.Api.Data.Models.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -26,14 +27,14 @@ public class ActivityController : ControllerBase
             var result = await activityRepository.GetByIdAsync(id);
             if(!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult( new GetActivityResult { Result = result.Result, IsSuccess = true});
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetActivityResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -51,7 +52,7 @@ public class ActivityController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -61,7 +62,7 @@ public class ActivityController : ControllerBase
 
             if(!all.Succeeded || all.Result == null)
             {
-                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -69,7 +70,7 @@ public class ActivityController : ControllerBase
                 { 
                     Result = result.Result,
                     IsSuccess = true,
-                    Pagination = new Models.Pagination 
+                    Pagination = new Pagination 
                         { 
                             PageIndex = args.PageIndex,
                             PerPage = args.CountPerPage,
@@ -81,7 +82,7 @@ public class ActivityController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message} });
+            return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message} });
         }
     }
 
@@ -100,14 +101,14 @@ public class ActivityController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreatedActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreatedActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreatedActivityResult { IsSuccess = true, Result = result.Result });
         }
         catch(Exception ex)
         {
-            return new JsonResult(new CreatedActivityResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message} });
+            return new JsonResult(new CreatedActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message} });
         }
     }
 
@@ -125,14 +126,14 @@ public class ActivityController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdatedActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdatedActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdatedActivityResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdatedActivityResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdatedActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

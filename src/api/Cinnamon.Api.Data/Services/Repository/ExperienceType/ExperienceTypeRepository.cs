@@ -1,6 +1,6 @@
 ﻿using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.ExperienceType.DTO;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ExperienceType;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.ExperienceType

@@ -1,8 +1,8 @@
-using Cinnamon.Api.Data.Services.Repository.PurchaseOrder.DTO;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 
 namespace Cinnamon.Api.Data.Services.Repository.PurchaseOrder;
 

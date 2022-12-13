@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using Cinnamon.Api.Data.Services.Repository.Customer.DTO;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 
 namespace Cinnamon.Api.Data.Services.Repository.Customer;
 

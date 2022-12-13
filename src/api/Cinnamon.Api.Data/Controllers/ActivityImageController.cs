@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Models.ActivityImage.Request;
-using Cinnamon.Api.Data.Models.ActivityImage.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.ActivityImage.Response;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.ActivityImage.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -26,14 +27,14 @@ public class ActivityImageController : ControllerBase
             var result = await activityImageRepository.GetByIdAsync(id);
             if(!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetActivityImageResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetActivityImageResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult( new GetActivityImageResult { Result = result.Result, IsSuccess = true});
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetActivityImageResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetActivityImageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -51,7 +52,7 @@ public class ActivityImageController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetAllActivityImagesResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetAllActivityImagesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -61,7 +62,7 @@ public class ActivityImageController : ControllerBase
 
             if(!all.Succeeded || all.Result == null)
             {
-                return new JsonResult(new GetAllActivityImagesResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                return new JsonResult(new GetAllActivityImagesResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -69,7 +70,7 @@ public class ActivityImageController : ControllerBase
                 { 
                     Result = result.Result,
                     IsSuccess = true,
-                    Pagination = new Models.Pagination 
+                    Pagination = new Pagination 
                         { 
                             PageIndex = args.PageIndex,
                             PerPage = args.CountPerPage,
@@ -81,7 +82,7 @@ public class ActivityImageController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllActivityImagesResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message} });
+            return new JsonResult(new GetAllActivityImagesResult { ErrorInfo = new ErrorInfo { Message = ex.Message} });
         }
     }
 
@@ -96,14 +97,14 @@ public class ActivityImageController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreateActivityImageResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreateActivityImageResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreateActivityImageResult { IsSuccess = true, Result = result.Result });
         }
         catch(Exception ex)
         {
-            return new JsonResult(new CreateActivityImageResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message} });
+            return new JsonResult(new CreateActivityImageResult { ErrorInfo = new ErrorInfo { Message = ex.Message} });
         }
     }
 
@@ -118,14 +119,14 @@ public class ActivityImageController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdateActivityImageResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdateActivityImageResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdateActivityImageResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdateActivityImageResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdateActivityImageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

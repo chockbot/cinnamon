@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Models.OngoingActivity.Request;
-using Cinnamon.Api.Data.Models.OngoingActivity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.OngoingActivity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.OngoingActivity.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -26,14 +27,14 @@ public class OngoingActivityController : ControllerBase
             var result = await ongoingActivityRepository.GetByIdAsync(id);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetOngoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new GetOngoingActivityResult { Result = result.Result, IsSuccess = true });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetOngoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -51,7 +52,7 @@ public class OngoingActivityController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetAllOngoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetAllOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             // get all without pagination to get all rows
@@ -61,7 +62,7 @@ public class OngoingActivityController : ControllerBase
 
             if (!all.Succeeded || all.Result == null)
             {
-                return new JsonResult(new GetAllOngoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = all.Message } });
+                return new JsonResult(new GetAllOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
             }
 
             var totalRecords = all.Result.Count();
@@ -69,7 +70,7 @@ public class OngoingActivityController : ControllerBase
             {
                 Result = result.Result,
                 IsSuccess = true,
-                Pagination = new Models.Pagination
+                Pagination = new Pagination
                 {
                     PageIndex = args.PageIndex,
                     PerPage = args.CountPerPage,
@@ -81,7 +82,7 @@ public class OngoingActivityController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllOngoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetAllOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -96,14 +97,14 @@ public class OngoingActivityController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new CreateOngoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new CreateOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new CreateOngoingActivityResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new CreateOngoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new CreateOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -119,14 +120,14 @@ public class OngoingActivityController : ControllerBase
 
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new UpdateongoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = result.Message } });
+                return new JsonResult(new UpdateongoingActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
             }
 
             return new JsonResult(new UpdateongoingActivityResult { IsSuccess = true, Result = result.Result });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new UpdateongoingActivityResult { ErrorInfo = new Models.ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new UpdateongoingActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

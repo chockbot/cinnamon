@@ -1,7 +1,6 @@
 ﻿using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.Activity.DTO;
-using Cinnamon.Api.Data.Services.Repository.ActivityAddress.DTO;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Address;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress

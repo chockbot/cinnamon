@@ -1,4 +1,4 @@
-﻿using Cinnamon.Api.Data.Services.Repository.ResendEmail.DTO;
+﻿using Cinnamon.Framework.ApiCommand.ApiData.DTO.ResendEmail;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;

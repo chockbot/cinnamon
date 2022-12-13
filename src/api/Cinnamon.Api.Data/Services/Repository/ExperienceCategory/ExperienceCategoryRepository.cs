@@ -1,6 +1,6 @@
 ﻿using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.ExperienceCategory.DTO;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ExperienceCategory;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 

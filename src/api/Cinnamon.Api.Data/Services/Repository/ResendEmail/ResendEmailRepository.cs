@@ -1,9 +1,9 @@
 ﻿using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.ResendEmail.DTO;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ResendEmail;
 
 namespace Cinnamon.Api.Data.Services.Repository.ResendEmail;
 

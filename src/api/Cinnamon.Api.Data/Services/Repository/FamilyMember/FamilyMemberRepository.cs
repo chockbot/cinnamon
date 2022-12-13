@@ -1,8 +1,8 @@
 using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Api.Data.Services.Repository.FamilyMember.DTO;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.FamilyMember;
 
 namespace Cinnamon.Api.Data.Services.Repository.FamilyMember;
 
