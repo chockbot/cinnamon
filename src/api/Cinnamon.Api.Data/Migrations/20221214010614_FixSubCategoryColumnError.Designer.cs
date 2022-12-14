@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20221213041807_AddSearchTagsTable")]
-    partial class AddSearchTagsTable
+    [Migration("20221214010614_FixSubCategoryColumnError")]
+    partial class FixSubCategoryColumnError
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

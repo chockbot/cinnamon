@@ -1,13 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Api.Core.Services.AccountService.Handlers;
+using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
+
+namespace Cinnamon.Api.Core.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
 public class AccountController : ControllerBase 
 {
-    [Route("/")]
-    [HttpGet]
-    public IActionResult Index()
+    private readonly ISubmitRegisterHandler submitRegisterHandler;
+
+    public AccountController(ISubmitRegisterHandler submitRegisterHandler)
     {
-        return new JsonResult(new {success = true, });
+        this.submitRegisterHandler = submitRegisterHandler;
+    }
+
+    [Route("Register")]
+    [HttpPost]
+    public async Task<IActionResult> Register([FromBody] SubmitRegisterArgs args)
+    {
+        var result = await submitRegisterHandler.ExecuteAsync(args);
+        return new JsonResult(result.Result);
     }
 }

@@ -36,6 +36,16 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddLogging(logBuilder => 
     logBuilder.AddSerilog(dispose: true));
 
+builder.Services.Configure<IdentityOptions>(options =>
+{
+    options.Password.RequireDigit = false;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+
+    options.User.RequireUniqueEmail = true;
+});
+
 var app = builder.Build();
 
 // seed database data and ensure table are created

@@ -10,6 +10,8 @@ public interface ICustomerRepository
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync();
     Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate,
         string? about, string profilePath, bool ismaker, bool externalLogin);
+    Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, DateTime birthdate,
+        string? about, string profilePath, bool isMaker, bool externalLogin, string pasword);
     Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh);
 }

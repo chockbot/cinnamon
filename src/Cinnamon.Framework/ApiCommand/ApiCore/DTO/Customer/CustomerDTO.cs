@@ -1,6 +1,6 @@
-namespace Cinnamon.Api.Core.Modules.DataAccess.Interactors.CustomerData;
+﻿namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
 
-public class Customer 
+public class CustomerDTO
 {
     public int Id { get; set; }
     public string FirstName { get; set; }

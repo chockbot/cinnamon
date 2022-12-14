@@ -1,6 +1,14 @@
+using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
+using Cinnamon.Framework.Common;
+
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
 public interface ICustomerData 
 {
-    
+    Task<AppResult<GetCustomerResult>> GetCustomerById(int id);
+    Task<AppResult<GetAllCustomerResult>> GetAllCustomers(GetAllCustomersArgs args);
+    Task<AppResult<CreateCustomerResult>> CreateCustomer(CreateCustomerArgs args);
+    Task<AppResult<CreateCustomerResult>> CreateCustomerWithPassword(CreateCustomerWithPasswordArgs args);
+    Task<AppResult<UpdateCustomerResult>> UpdateCustomer(UpdateCustomerArgs args);
 }

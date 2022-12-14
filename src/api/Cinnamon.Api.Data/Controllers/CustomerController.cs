@@ -110,6 +110,29 @@ public class CustomerController : ControllerBase
         }
     }
 
+    [Route("CreateCustomerWithPassword")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateCustomerResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateCustomerWithPassword([FromBody] CreateCustomerWithPasswordArgs args)
+    {
+        try
+        {
+            var result = await customerRepository.CreateWithPassword(args.FirstName, args.LastName, args.Email, args.Birthdate,
+                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateCustomerResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("UpdateCustomer")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateCustomerResult), StatusCodes.Status202Accepted)]

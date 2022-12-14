@@ -1,4 +1,4 @@
-﻿namespace Cinnamon.Api.Core.Modules.DataAccess.Interactors;
+﻿namespace Cinnamon.Framework.ApiCommand.ApiCore;
 
 public abstract class AbstractModel<TTarget>
 {

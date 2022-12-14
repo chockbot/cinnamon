@@ -12,11 +12,15 @@ public class CustomerRepository : ICustomerRepository
 
     private readonly IDataStore dataStore;
     private readonly UserManager<IdentityUser> userManager;
+    private readonly IUserStore<IdentityUser> userStore;
+    private readonly IUserEmailStore<IdentityUser> emailStore;
 
-    public CustomerRepository(IDataStore dataStore, UserManager<IdentityUser> userManager)
+    public CustomerRepository(IDataStore dataStore, UserManager<IdentityUser> userManager,IUserStore<IdentityUser> userStore)
     {
         this.dataStore = dataStore;
         this.userManager = userManager;
+        this.userStore = userStore;
+        this.emailStore = GetEmailStore();
     }
 
     public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, 
@@ -71,6 +75,39 @@ public class CustomerRepository : ICustomerRepository
         catch (Exception ex)
         {
             return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in creating customer");
+        }
+    }
+
+    public async Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, 
+        DateTime birthdate, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword)
+    {
+        try
+        {
+            var user = CreateUser();
+
+            // register user using identity framework
+            await userStore.SetUserNameAsync(user, email, CancellationToken.None);
+            await emailStore.SetEmailAsync(user, email, CancellationToken.None);
+            var createUserResult = await userManager.CreateAsync(user, pasword);
+
+            if(!createUserResult.Succeeded)
+            {
+                string errors = string.Empty;
+                foreach(var error in createUserResult.Errors)
+                {
+                    errors += error.Description + ". ";
+                }
+
+                return AppResult<CustomerDTO>.CreateFailed(new ApplicationException(errors), errors);
+            }
+
+            var userId = await userManager.GetUserIdAsync(user);
+
+            return await Create(userId, firstname, lastname, email, birthdate, about, profilePath, isMaker, externalLogin);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in getting customers");
         }
     }
 
@@ -229,5 +266,28 @@ public class CustomerRepository : ICustomerRepository
         {
             return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in updating customer data");
         }
+    }
+
+    private IdentityUser CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<IdentityUser>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(IdentityUser)}'. " +
+                $"Ensure that '{nameof(IdentityUser)}' is not an abstract class and has a parameterless constructor, or alternatively " +
+                $"override the register page in /Areas/Identity/Pages/Account/Register.cshtml");
+        }
+    }
+
+    private IUserEmailStore<IdentityUser> GetEmailStore()
+    {
+        if (!userManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<IdentityUser>)userStore;
     }
 }
