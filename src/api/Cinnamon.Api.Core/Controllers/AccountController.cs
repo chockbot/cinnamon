@@ -4,6 +4,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Waitlist;
 using Microsoft.AspNetCore.Authorization;
 
 namespace Cinnamon.Api.Core.Controllers;
@@ -14,10 +15,12 @@ namespace Cinnamon.Api.Core.Controllers;
 public class AccountController : ControllerBase 
 {
     private readonly ISubmitRegisterHandler submitRegisterHandler;
+    private readonly ISubmitWaitlistHandler submitWaitlistHandler;
 
-    public AccountController(ISubmitRegisterHandler submitRegisterHandler)
+    public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
+        this.submitWaitlistHandler = submitWaitlistHandler;
     }
 
     [Route("Register")]
@@ -60,6 +63,40 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new SubmitRegisterResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("RegisterWaitlist")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RegisterWaitlistResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> RegisterWaitlist(RegisterWaitlistArgs args)
+    {
+        try
+        {
+            var result = await submitWaitlistHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitWaitlistArgs{
+                Email = args.Email
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RegisterWaitlistResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new RegisterWaitlistResult {
+                Result = new WaitlistDTO {
+                    Email = created.Email,
+                    Guid = created.Guid,
+                    Token = created.Token,
+                    Id = created.Id
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RegisterWaitlistResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
