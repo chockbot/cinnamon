@@ -53,10 +53,7 @@ public class UploadImagesHandler : IUploadImages
     private async Task<string> UploadImages(CloudBlobContainer container, byte[] data, string name)
     {
         CloudBlockBlob blockBlob = container.GetBlockBlobReference(name);
-        using (var ms = new MemoryStream(data, false))
-        {
-            await blockBlob.UploadFromStreamAsync(ms);
-        }
+        await blockBlob.UploadFromByteArrayAsync(data,0,data.Length);
         return blockBlob.Uri.ToString();
     }
 }
