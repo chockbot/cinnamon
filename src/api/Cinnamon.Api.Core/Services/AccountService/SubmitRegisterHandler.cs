@@ -1,9 +1,9 @@
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
-using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
-using Cinnamon.Framework.ApiCommand.ApiCore.Customer.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
+using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
+using Cinnamon.Api.Core.Services.AccountService.Interactors;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 
@@ -59,7 +59,6 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 ExternalLogin = args.ExternalLogin,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
-                IsMaker = args.IsMaker,
                 ProfilePath = args.ProfilePath,
                 Password = args.Password
             });
@@ -78,18 +77,12 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
             var created = createCustomer.Result.Result;
 
             return AppResult<SubmitRegisterResult>.CreateSucceeded(new SubmitRegisterResult {
-                Result = new Framework.ApiCommand.ApiCore.DTO.Customer.CustomerDTO {
-                    About = created.About,
-                    Birthdate = created.Birthdate,
-                    Email = created.Email,
-                    ExternalLogin = created.ExternalLogin,
-                    FirstName = created.FirstName,
-                    Id = created.Id,
-                    IsMaker = created.IsMaker,
-                    IsVerified = created.IsVerified,
-                    LastName = created.LastName,
-                    ProfileImg = created.ProfileImg
-                }
+                Birthdate = created.Birthdate,
+                Email = created.Email,
+                FirstName = created.FirstName,
+                Id = created.Id,
+                LastName = created.LastName,
+                ProfileImg = created.ProfileImg
             }, "Successfully registered");
         }
         catch (Exception ex)

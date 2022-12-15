@@ -6,6 +6,8 @@ using Newtonsoft.Json.Serialization;
 using Cinnamon.Api.Core.Extensions;
 using Cinnamon.Api.Core.Config;
 using Flurl.Http.Configuration;
+using Flurl.Http;
+using Cinnamon.Api.Core.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +19,7 @@ builder.Configuration.GetSection("Applicationconfig").Bind(applicationConfig);
 builder.Services.AddSingleton(applicationConfig);
 
 // register flurl
-builder.Services.AddSingleton<IFlurlClientFactory,DefaultFlurlClientFactory>();
+builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
 
 // register application services
 builder.Services.ExtendServices();
@@ -58,6 +60,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+
+    // for development only to disable flurl untrusted certificates
+    FlurlHttp.Configure(settings => {
+        settings.HttpClientFactory = new UntrustedCertClientFactory();
+    });
 }
 
 app.UseHttpsRedirection();
