@@ -38,7 +38,7 @@ public class SearchTagsData:ISearchTagsData
         }
     }
 
-    public async Task<AppResult<GetAllSearchTagsResult>> GetAlSearchTags(GetAllSearchTagsArgs args)
+    public async Task<AppResult<GetAllSearchTagsResult>> GetAllSearchTags(GetAllSearchTagsArgs args)
     {
         try
         {
