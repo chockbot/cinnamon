@@ -16,11 +16,14 @@ public class AccountController : ControllerBase
 {
     private readonly ISubmitRegisterHandler submitRegisterHandler;
     private readonly ISubmitWaitlistHandler submitWaitlistHandler;
+    private readonly ISubmitVerifyEmailHandler submitVerifyEmailHandler;
 
-    public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler)
+    public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
+        ISubmitVerifyEmailHandler submitVerifyEmailHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
+        this.submitVerifyEmailHandler = submitVerifyEmailHandler;
     }
 
     [Route("Register")]
@@ -99,6 +102,42 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new RegisterWaitlistResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("VerifyRegisteredEmail")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifyRegisteredEmailResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyRegisteredEmail(VerifyRegisteredEmailArgs args)
+    {
+        try
+        {
+            var result = await submitVerifyEmailHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitVerifyEmailArgs {
+                Token = args.Token,
+                UserId = args.UserId
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifyRegisteredEmailResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var verified = result.Result;
+
+            return new JsonResult(new VerifyRegisteredEmailResult {
+                Result = new WaitlistDTO {
+                    Email = verified.Email,
+                    Guid = verified.Guid,
+                    Token = verified.Token,
+                    Id = verified.Id,
+                    IsVerified = verified.IsVerified
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifyRegisteredEmailResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
