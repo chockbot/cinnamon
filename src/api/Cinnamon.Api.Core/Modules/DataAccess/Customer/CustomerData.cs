@@ -104,6 +104,26 @@ public class CustomerData : ICustomerData
         }
     }
 
+    public async Task<AppResult<GetCustomerResult>> GetCustomerByEmail(string email)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Customer/GetCustomerByEmail/{email}")
+                            .GetJsonAsync<GetCustomerResult>();
+            
+            return AppResult<GetCustomerResult>.CreateSucceeded(result, "Successfully getting customer by email api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, "An error occured when getting customer by email api");
+        }
+    }
+
     public async Task<AppResult<UpdateCustomerResult>> UpdateCustomer(UpdateCustomerArgs args)
     {
         try

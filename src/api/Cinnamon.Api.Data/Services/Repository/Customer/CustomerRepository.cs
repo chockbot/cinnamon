@@ -183,6 +183,39 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
+    public async Task<AppResult<CustomerDTO>> GetByEmailAsync(string email)
+    {
+        try
+        {
+            var result = await dataStore.Customer.GetCustomerByEmail(email);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var customerDTO = new CustomerDTO
+            {
+                About = result.Result.About,
+                Birthdate = result.Result.Birthdate,
+                DateJoined = result.Result.CreatedOn,
+                Email = result.Result.Email,
+                ExternalLogin = result.Result.ExternalLogin,
+                FirstName = result.Result.FirstName,
+                LastName = result.Result.LastName,
+                Id = result.Result.Id,
+                IsMaker = result.Result.IsMaker,
+                IsVerified = result.Result.IsVerified,
+                ProfileImg = result.Result.ProfilePath,
+            };
+
+            return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by email");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in getting customer by email");
+        }
+    }
+
     public async Task<AppResult<CustomerDTO>> GetByIdAsync(int id)
     {
         try

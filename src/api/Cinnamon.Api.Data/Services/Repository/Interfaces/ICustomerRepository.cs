@@ -6,6 +6,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 public interface ICustomerRepository
 {
     Task<AppResult<CustomerDTO>> GetByIdAsync(int id);
+    Task<AppResult<CustomerDTO>> GetByEmailAsync(string email);
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isActive, int? count, int? skip);
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync();
     Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate,

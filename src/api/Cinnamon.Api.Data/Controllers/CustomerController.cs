@@ -38,6 +38,27 @@ public class CustomerController : ControllerBase
         }
     }
 
+    [Route("GetCustomerByEmail/{email}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCustomerByEmail(string email)
+    {
+        try
+        {
+            var result = await customerRepository.GetByEmailAsync(email);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetCustomerResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetAllCustomers")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllCustomerResult), StatusCodes.Status200OK)]
