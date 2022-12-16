@@ -75,7 +75,8 @@ public class AccountController : ControllerBase
         try
         {
             var result = await submitWaitlistHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitWaitlistArgs{
-                Email = args.Email
+                Email = args.Email,
+                ValidationRoute = args.ValidationRoute
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -85,11 +86,12 @@ public class AccountController : ControllerBase
             var created = result.Result;
 
             return new JsonResult(new RegisterWaitlistResult {
-                Result = new WaitlistDTO {
+                Result = new VerificationLinkDTO {
                     Email = created.Email,
                     Guid = created.Guid,
                     Token = created.Token,
-                    Id = created.Id
+                    Id = created.Id,
+                    VerificationLink = created.VerificationLink
                 },
                 IsSuccess = true
             });

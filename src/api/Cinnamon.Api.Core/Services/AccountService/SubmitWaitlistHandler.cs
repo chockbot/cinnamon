@@ -6,16 +6,20 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.Waitlist.Request;
 using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
+using Flurl;
+using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 
 public class SubmitWaitlistHandler : ISubmitWaitlistHandler
 {
     private readonly IWaitListData waitListData;
+    private readonly ISendVerifyEmailHandler sendVerifyEmailHandler;
 
-    public SubmitWaitlistHandler(IWaitListData waitListData)
+    public SubmitWaitlistHandler(IWaitListData waitListData, ISendVerifyEmailHandler sendVerifyEmailHandler)
     {
         this.waitListData = waitListData;
+        this.sendVerifyEmailHandler = sendVerifyEmailHandler;
     }
 
     public AppResult<SubmitWaitlistResult> Execute(SubmitWaitlistArgs args)
@@ -65,11 +69,25 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
             }
             var created = createRes.Result.Result;
 
+            var verificationLink = args.ValidationRoute.SetQueryParams(new {userid = guid.ToString(), token = encodedToken}).ToString();
+
+            // send email verification link
+            var sendEmailRes = await sendVerifyEmailHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.SendVerifyEmailArgs {
+                Email = args.Email,
+                VerificationLink = verificationLink
+            });
+            if(!sendEmailRes.Succeeded)
+            {
+                return AppResult<SubmitWaitlistResult>.CreateFailed(
+                    new ApplicationException("An error occured when sending email verification link"), "An error occured when sending email verification link");
+            }
+
             return AppResult<SubmitWaitlistResult>.CreateSucceeded(new SubmitWaitlistResult {
                 Email = created.Email,
                 Guid = created.Guid,
                 Token = encodedToken,
-                Id = created.Id
+                Id = created.Id,
+                VerificationLink = verificationLink
             }, "Successfully submit waitlist");
         }
         catch (Exception ex)

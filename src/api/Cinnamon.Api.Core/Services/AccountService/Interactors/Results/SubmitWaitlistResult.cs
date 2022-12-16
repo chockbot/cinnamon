@@ -6,4 +6,5 @@ public class SubmitWaitlistResult
     public string Email {get; set;}
     public string Guid {get; set;}
     public string Token {get; set;}
+    public string VerificationLink {get; set;}
 }
