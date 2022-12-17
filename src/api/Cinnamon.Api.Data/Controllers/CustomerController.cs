@@ -176,4 +176,26 @@ public class CustomerController : ControllerBase
             return new JsonResult(new UpdateCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("CheckCustomerLogin")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CheckCustomerLoginResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> CheckCustomerLogin([FromBody] CheckCustomerLoginArgs args)
+    {
+        try
+        {
+            var result = await customerRepository.CheckLogin(args.Email, args.Password);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CheckCustomerLoginResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CheckCustomerLoginResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CheckCustomerLoginResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

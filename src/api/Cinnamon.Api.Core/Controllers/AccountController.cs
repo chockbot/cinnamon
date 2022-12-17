@@ -17,13 +17,15 @@ public class AccountController : ControllerBase
     private readonly ISubmitRegisterHandler submitRegisterHandler;
     private readonly ISubmitWaitlistHandler submitWaitlistHandler;
     private readonly ISubmitVerifyEmailHandler submitVerifyEmailHandler;
+    private readonly ISubmitLoginHandler submitLoginHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
-        ISubmitVerifyEmailHandler submitVerifyEmailHandler)
+        ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
         this.submitVerifyEmailHandler = submitVerifyEmailHandler;
+        this.submitLoginHandler = submitLoginHandler;
     }
 
     [Route("Register")]
@@ -138,6 +140,44 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifyRegisteredEmailResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("Login")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifiedLoginResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login(VerifiedLoginArgs args)
+    {
+        try
+        {
+            var result = await submitLoginHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitLoginArgs {
+                Email = args.Email,
+                Password = args.Password
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifiedLoginResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var verified = result.Result;
+
+            return new JsonResult(new VerifiedLoginResult {
+                Result = new VerifiedLoginDTO {
+                    Email = verified.Email,
+                    ExternalLogin = verified.ExternalLogin,
+                    FirstName = verified.FirstName,
+                    LastName = verified.LastName,
+                    IsMaker = verified.IsMaker,
+                    Id = verified.Id,
+                    GeneratedToken = verified.GeneratedToken
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifiedLoginResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

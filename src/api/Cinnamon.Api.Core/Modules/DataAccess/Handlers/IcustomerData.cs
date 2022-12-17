@@ -12,4 +12,5 @@ public interface ICustomerData
     Task<AppResult<CreateCustomerResult>> CreateCustomer(CreateCustomerArgs args);
     Task<AppResult<CreateCustomerResult>> CreateCustomerWithPassword(CreateCustomerWithPasswordArgs args);
     Task<AppResult<UpdateCustomerResult>> UpdateCustomer(UpdateCustomerArgs args);
+    Task<AppResult<CheckCustomerLoginResult>> CheckCustomerLogin(CheckCustomerLoginArgs args);
 }

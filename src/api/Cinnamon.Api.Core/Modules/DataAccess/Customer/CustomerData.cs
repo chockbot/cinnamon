@@ -144,4 +144,25 @@ public class CustomerData : ICustomerData
             return AppResult<UpdateCustomerResult>.CreateFailed(ex, "An error occured when posting update customer api");
         }
     }
+
+    public async Task<AppResult<CheckCustomerLoginResult>> CheckCustomerLogin(CheckCustomerLoginArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Customer/CheckCustomerLogin")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CheckCustomerLoginResult>();
+            
+            return AppResult<CheckCustomerLoginResult>.CreateSucceeded(result, "Successfully checking customer login api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CheckCustomerLoginResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CheckCustomerLoginResult>.CreateFailed(ex, "An error occured when checking customer login api");
+        }
+    }
 }

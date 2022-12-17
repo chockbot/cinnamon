@@ -13,6 +13,7 @@ public interface ICustomerRepository
         string? about, string profilePath, bool ismaker, bool externalLogin);
     Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, DateTime birthdate,
         string? about, string profilePath, bool isMaker, bool externalLogin, string pasword);
+    Task<AppResult<CustomerDTO>> CheckLogin(string email, string password);
     Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh);
 }
