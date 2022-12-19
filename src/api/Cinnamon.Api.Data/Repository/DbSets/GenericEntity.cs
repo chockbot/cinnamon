@@ -50,15 +50,10 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
     {
         try
         {
-            var query = applicationContext.Set<TTarget>().Where(expression);
-            if (skip.HasValue)
-            {
-                query = query.Skip(skip.Value);
-            }
-            if (take.HasValue)
-            {
-                query.Take(take.Value);
-            }
+            int limitCount = take.HasValue ? take.Value : int.MaxValue;
+            int skipCount = skip.HasValue ? skip.Value : 0;
+
+            var query = applicationContext.Set<TTarget>().Where(expression).Skip(skipCount).Take(limitCount);
 
             var results = await query.ToListAsync();
             return AppResult<IEnumerable<TTarget>>.CreateSucceeded(results, "Successfully find entities");

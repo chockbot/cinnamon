@@ -76,7 +76,7 @@ public class ActivityController : ControllerBase
                             PerPage = args.CountPerPage,
                             TotalRecords = totalRecords,
                             TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ? 
-                                (int)Math.Ceiling(Convert.ToDouble(totalRecords / args.CountPerPage.Value)) : null 
+                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
                         }
                 });
         }
