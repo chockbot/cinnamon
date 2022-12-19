@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace Cinnamon.Framework.ApiCommand.ApiData.ExperienceType.Request
+namespace Cinnamon.Framework.ApiCommand.ApiData.ExperienceType.Request;
+public class UpdateExperienceTypeArgs
 {
-    public class UpdateExperienceTypeArgs
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
+    [Required]
+    public int Id { get; set; }
+    public string name { get; set; }
 }

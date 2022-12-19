@@ -1,6 +1,6 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
 
-namespace Cinnamon.Framework.ApiCommand.ApiCore.Customer.Response;
+namespace Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 
 public class SubmitRegisterResult : AbstractModel<CustomerDTO>
 {

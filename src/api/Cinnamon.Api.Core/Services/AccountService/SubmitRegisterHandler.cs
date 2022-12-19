@@ -1,9 +1,9 @@
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
-using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
-using Cinnamon.Framework.ApiCommand.ApiCore.Customer.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
+using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
+using Cinnamon.Api.Core.Services.AccountService.Interactors;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 
@@ -37,7 +37,9 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
             // check first if already in wait list
             var waitlistRes = await waitListData.GetWaitListByEmail(args.Email);
             if(!waitlistRes.Succeeded)
+            {
                 return AppResult<SubmitRegisterResult>.CreateFailed(waitlistRes.Error.Exception, waitlistRes.Message);
+            }
             
             if(waitlistRes.Result != null && !waitlistRes.Result.IsSuccess)
             {
@@ -53,13 +55,26 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                     new ApplicationException("Email not yet verified"),"Email not yet verified");
             }
 
+            // check if email already in used
+            var checkCustomer = await customerData.GetCustomerByEmail(args.Email);
+            if(!checkCustomer.Succeeded || checkCustomer.Result == null)
+            {
+                return AppResult<SubmitRegisterResult>.CreateFailed(
+                    new ApplicationException("An error occured in SubmitRegisterHandler"), "An error occured in SubmitRegisterHandler");
+            }
+
+            if(checkCustomer.Succeeded && checkCustomer.Result.IsSuccess)
+            {
+                return AppResult<SubmitRegisterResult>.CreateFailed(
+                    new ApplicationException("Email address already registered by other user"), "Email address already registered by other user");
+            }
+
             var createCustomer = await customerData.CreateCustomerWithPassword(new CreateCustomerWithPasswordArgs {
                 Birthdate = args.Birthdate,
                 Email = args.Email,
                 ExternalLogin = args.ExternalLogin,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
-                IsMaker = args.IsMaker,
                 ProfilePath = args.ProfilePath,
                 Password = args.Password
             });
@@ -78,18 +93,12 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
             var created = createCustomer.Result.Result;
 
             return AppResult<SubmitRegisterResult>.CreateSucceeded(new SubmitRegisterResult {
-                Result = new Framework.ApiCommand.ApiCore.DTO.Customer.CustomerDTO {
-                    About = created.About,
-                    Birthdate = created.Birthdate,
-                    Email = created.Email,
-                    ExternalLogin = created.ExternalLogin,
-                    FirstName = created.FirstName,
-                    Id = created.Id,
-                    IsMaker = created.IsMaker,
-                    IsVerified = created.IsVerified,
-                    LastName = created.LastName,
-                    ProfileImg = created.ProfileImg
-                }
+                Birthdate = created.Birthdate,
+                Email = created.Email,
+                FirstName = created.FirstName,
+                Id = created.Id,
+                LastName = created.LastName,
+                ProfileImg = created.ProfileImg
             }, "Successfully registered");
         }
         catch (Exception ex)

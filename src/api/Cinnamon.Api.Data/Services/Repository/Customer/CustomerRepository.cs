@@ -23,6 +23,53 @@ public class CustomerRepository : ICustomerRepository
         this.emailStore = GetEmailStore();
     }
 
+    public async Task<AppResult<CustomerDTO>> CheckLogin(string email, string password)
+    {
+        try
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(new ApplicationException("Invalid username or password"), "Invalid username or password");
+            }
+
+            var checkLogin = await userManager.CheckPasswordAsync(user, password);
+            if(!checkLogin)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(new ApplicationException("Invalid username or password"), "Invalid username or password"); 
+            }
+
+            // get customer information
+            var customerData = await dataStore.Customer.FindFirstAsync(c => c.UserId == user.Id);
+            if(!customerData.Succeeded || customerData.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(
+                    new ApplicationException("An error occured when checking login credential"), "An error occured when checking login credential");
+            }
+            var validCustomer = customerData.Result;
+
+            var customer = new CustomerDTO {
+                About = validCustomer.About,
+                Birthdate = validCustomer.Birthdate,
+                Email = validCustomer.Email,
+                ExternalLogin = validCustomer.ExternalLogin,
+                FirstName = validCustomer.FirstName,
+                Id = validCustomer.Id,
+                IsMaker = validCustomer.IsMaker,
+                IsVerified = validCustomer.IsVerified,
+                LastName = validCustomer.LastName,
+                ProfileImg = validCustomer.ProfilePath,
+                DateJoined = validCustomer.DateJoined
+            };
+
+            return AppResult<CustomerDTO>.CreateSucceeded(customer, "Success checking login credential");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured when checking login credential");
+        }
+    }
+
     public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, 
         string? about, string profilePath, bool ismaker, bool externalLogin)
     {
@@ -180,6 +227,39 @@ public class CustomerRepository : ICustomerRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(ex, "An error occured in getting customers");
+        }
+    }
+
+    public async Task<AppResult<CustomerDTO>> GetByEmailAsync(string email)
+    {
+        try
+        {
+            var result = await dataStore.Customer.GetCustomerByEmail(email);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var customerDTO = new CustomerDTO
+            {
+                About = result.Result.About,
+                Birthdate = result.Result.Birthdate,
+                DateJoined = result.Result.CreatedOn,
+                Email = result.Result.Email,
+                ExternalLogin = result.Result.ExternalLogin,
+                FirstName = result.Result.FirstName,
+                LastName = result.Result.LastName,
+                Id = result.Result.Id,
+                IsMaker = result.Result.IsMaker,
+                IsVerified = result.Result.IsVerified,
+                ProfileImg = result.Result.ProfilePath,
+            };
+
+            return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by email");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in getting customer by email");
         }
     }
 

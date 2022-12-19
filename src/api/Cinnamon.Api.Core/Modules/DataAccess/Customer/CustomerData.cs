@@ -104,6 +104,26 @@ public class CustomerData : ICustomerData
         }
     }
 
+    public async Task<AppResult<GetCustomerResult>> GetCustomerByEmail(string email)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Customer/GetCustomerByEmail/{email}")
+                            .GetJsonAsync<GetCustomerResult>();
+            
+            return AppResult<GetCustomerResult>.CreateSucceeded(result, "Successfully getting customer by email api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, "An error occured when getting customer by email api");
+        }
+    }
+
     public async Task<AppResult<UpdateCustomerResult>> UpdateCustomer(UpdateCustomerArgs args)
     {
         try
@@ -122,6 +142,27 @@ public class CustomerData : ICustomerData
         catch (Exception ex)
         {
             return AppResult<UpdateCustomerResult>.CreateFailed(ex, "An error occured when posting update customer api");
+        }
+    }
+
+    public async Task<AppResult<CheckCustomerLoginResult>> CheckCustomerLogin(CheckCustomerLoginArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Customer/CheckCustomerLogin")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CheckCustomerLoginResult>();
+            
+            return AppResult<CheckCustomerLoginResult>.CreateSucceeded(result, "Successfully checking customer login api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CheckCustomerLoginResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CheckCustomerLoginResult>.CreateFailed(ex, "An error occured when checking customer login api");
         }
     }
 }

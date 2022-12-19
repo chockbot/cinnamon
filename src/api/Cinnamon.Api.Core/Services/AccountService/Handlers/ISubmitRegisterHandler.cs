@@ -1,11 +1,10 @@
-using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
-using Cinnamon.Framework.ApiCommand.ApiCore.Customer.Response;
+using Cinnamon.Api.Core.Services.AccountService.Interactors;
+using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Cinnamon.Framework.Interactor;
 
 namespace Cinnamon.Api.Core.Services.AccountService.Handlers;
 
-public interface ISubmitRegisterHandler 
+public interface ISubmitRegisterHandler : IInteractorHandler<SubmitRegisterArgs,AppResult<SubmitRegisterResult>>
 {
-    AppResult<SubmitRegisterResult> Execute(SubmitRegisterArgs args);
-    Task<AppResult<SubmitRegisterResult>> ExecuteAsync(SubmitRegisterArgs args);
 }

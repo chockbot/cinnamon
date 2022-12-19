@@ -254,4 +254,35 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             return AppResult<IEnumerable<FamilyMemberDTO>>.CreateFailed(ex, "An error occured when updating all entities");
         }
     }
+
+    public async Task<AppResult<bool>> DeleteFamilyMembers(IEnumerable<int> ids)
+    {
+        try
+        {
+            var familyRes = await dataStore.FamilyMember.FindAsync(f => ids.Contains(f.Id), null, null);
+            if(!familyRes.Succeeded || familyRes.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(
+                    new ApplicationException("An error occured when deleting family member records"), "An error occured when deleting family member records");
+            }
+
+            if(familyRes.Result.Count() == 0)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Family member ids not found"), "Family member ids not found");
+            }
+
+            var result = await dataStore.FamilyMember.RemoveRange(familyRes.Result);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(
+                    new ApplicationException("An error occured when deleting family member records"), "An error occured when deleting family member records");
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully deleted family members");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when deleting family members");
+        }
+    }
 }

@@ -193,4 +193,26 @@ public class FamilyMemberController : ControllerBase
             return new JsonResult(new UpdateManyFamilyMembersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("DeleteManyFamilyMember")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteManyFamilyMembersResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteManyFamilyMember([FromBody] DeleteManyFamilyMembersArgs args)
+    {
+        try
+        {
+            var result = await familyMemberRepository.DeleteFamilyMembers(args.Ids);
+
+            if (!result.Succeeded)
+            {
+                return new JsonResult(new DeleteManyFamilyMembersResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteManyFamilyMembersResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteManyFamilyMembersResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
