@@ -6,6 +6,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Waitlist;
 using Microsoft.AspNetCore.Authorization;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.FamilyMember;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -20,10 +21,15 @@ public class AccountController : ControllerBase
     private readonly ISubmitLoginHandler submitLoginHandler;
     private readonly ISubmitResendVerificationHandler submitResendEmailHandler;
     private readonly IGetProfileHandler getProfileHandler;
+    private readonly IGetFamilyMembersHandler getFamilyMembersHandler;
+    private readonly IUpdateFamilyMembersHandler updateFamilyMembersHandler;
+    private readonly ICreateFamilyMembersHandler createFamilyMembersHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
-        ISubmitResendVerificationHandler submitResendEmailHandler, IGetProfileHandler getProfileHandler)
+        ISubmitResendVerificationHandler submitResendEmailHandler, IGetProfileHandler getProfileHandler,
+        IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
+        ICreateFamilyMembersHandler createFamilyMembersHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -31,6 +37,9 @@ public class AccountController : ControllerBase
         this.submitLoginHandler = submitLoginHandler;
         this.submitResendEmailHandler = submitResendEmailHandler;
         this.getProfileHandler = getProfileHandler;
+        this.getFamilyMembersHandler = getFamilyMembersHandler;
+        this.updateFamilyMembersHandler = updateFamilyMembersHandler;
+        this.createFamilyMembersHandler = createFamilyMembersHandler;
     }
 
     [Route("Register")]
@@ -254,6 +263,128 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetProfileResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetFamilyMembers")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetFamilyMemberResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFamilyMembers()
+    {
+        try
+        {
+            var result = await getFamilyMembersHandler.ExecuteAsync(new Services.AccountService.Interactors.GetFamilyMembersArgs {});
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var members = result.Result.FamilyMembers.Select(i => {
+                return new FamilyMemberDTO {
+                    BirthMonth = i.BirthMonth,
+                    BirthYear = i.BirthYear,
+                    Gender = i.Gender,
+                    Id = i.Id,
+                    Name = i.Name
+                };
+            });
+
+            return new JsonResult(new GetFamilyMemberResult {
+                Result = members,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UpdateFamilyMembers")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateFamilyMemberResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateFamilyMembers([FromBody] UpdateFamilyMemberArgs args)
+    {
+        try
+        {
+            var result = await updateFamilyMembersHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateFamilyMembersArgs {
+                FamilyMembers = args.FamilyMembers.Select(f => {
+                    return new Services.AccountService.Interactors.UpdateFamilyMembersArgs.FamilyMember {
+                        BirthMonth = f.BirthMonth,
+                        BirthYear = f.BirthYear,
+                        Gender = f.Gender,
+                        Id = f.Id,
+                        Name = f.Name
+                    };
+                })
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var updated = result.Result.FamilyMembers.Select(i => {
+                return new FamilyMemberDTO {
+                    BirthMonth = i.BirthMonth,
+                    BirthYear = i.BirthYear,
+                    Gender = i.Gender,
+                    Id = i.Id,
+                    Name = i.Name
+                };
+            });
+
+            return new JsonResult(new UpdateFamilyMemberResult {
+                Result = updated,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("CreateFamilyMembers")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateFamilyMemberResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateFamilyMembers([FromBody] CreateFamilyMemberArgs args)
+    {
+        try
+        {
+            var result = await createFamilyMembersHandler.ExecuteAsync(new Services.AccountService.Interactors.CreateFamilyMembersArgs {
+                FamilyMembers = args.FamilyMembers.Select(f => {
+                    return new Services.AccountService.Interactors.CreateFamilyMembersArgs.FamilyMember {
+                        BirthMonth = f.BirthMonth,
+                        BirthYear = f.BirthYear,
+                        Gender = f.Gender,
+                        Name = f.Name
+                    };
+                })
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var created = result.Result.FamilyMembers.Select(i => {
+                return new FamilyMemberDTO {
+                    BirthMonth = i.BirthMonth,
+                    BirthYear = i.BirthYear,
+                    Gender = i.Gender,
+                    Id = i.Id,
+                    Name = i.Name,
+                    CustomerId = i.CustomerId
+                };
+            });
+
+            return new JsonResult(new CreateFamilyMemberResult {
+                Result = created,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

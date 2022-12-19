@@ -39,6 +39,27 @@ public class FamilyMemberController : ControllerBase
         }
     }
 
+    [Route("GetFamilyMemberByCustomerId/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetFamilyMemberByCustomerIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFamilyMemberByCustomerId(int id)
+    {
+        try
+        {
+            var result = await familyMemberRepository.GetByCustomerIdAsync(id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetFamilyMemberByCustomerIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetFamilyMemberByCustomerIdResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetFamilyMemberByCustomerIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetAllFamilyMembers")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllFamilyMemberResult), StatusCodes.Status200OK)]
@@ -175,8 +196,8 @@ public class FamilyMemberController : ControllerBase
                 member.BirthYear = f.BirthYear ?? member.BirthYear;
                 member.Gender = f.Gender ?? member.Gender;
                 member.Name = f.Name ?? member.Name;
-                member.Id = f.FamilyMemberId;
-
+                member.Id = f.Id;
+                member.CustomerId = f.CustomerId;
                 return member;
             });
             var result = await familyMemberRepository.Update(members);

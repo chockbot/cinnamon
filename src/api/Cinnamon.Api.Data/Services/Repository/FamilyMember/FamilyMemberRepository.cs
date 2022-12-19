@@ -84,7 +84,8 @@ public class FamilyMemberRepository : IFamilyMemberRepository
                     BirthYear = f.BirthYear,
                     Gender = f.Gender,
                     Id = f.Id,
-                    Name = f.Name
+                    Name = f.Name,
+                    CustomerId = f.CustomerId
                 };
             });
 
@@ -177,6 +178,35 @@ public class FamilyMemberRepository : IFamilyMemberRepository
         }
     }
 
+    public async Task<AppResult<IEnumerable<FamilyMemberDTO>>> GetByCustomerIdAsync(int id) 
+    {
+        try
+        {
+            var result = await dataStore.FamilyMember.FindAsync(i => i.CustomerId == id, null, null);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<FamilyMemberDTO>>.CreateFailed(
+                    new ApplicationException("Can't find family member by customer id"), "Can't find family member by customer id");
+            }
+
+            var resultDto = result.Result.Select(i => {
+                return new FamilyMemberDTO {
+                    BirthMonth = i.BirthMonth,
+                    BirthYear  = i.BirthYear,
+                    Gender = i.Gender,
+                    Id = i.Id,
+                    Name = i.Name
+                };
+            });
+
+            return AppResult<IEnumerable<FamilyMemberDTO>>.CreateSucceeded(resultDto, "Successfully getting family member by customer id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<FamilyMemberDTO>>.CreateFailed(ex, "An error occured when getting family member by customer id");
+        }
+    }
+
     public async Task<AppResult<FamilyMemberDTO>> Update(int familyMemberId, string? name, string? gender, string? birthmonth, string? birthyear)
     {
         try
@@ -226,7 +256,8 @@ public class FamilyMemberRepository : IFamilyMemberRepository
                     BirthYear = f.BirthYear,
                     Id = f.Id,
                     Gender = f.Gender,
-                    Name = f.Name
+                    Name = f.Name,
+                    CustomerId = f.CustomerId
                 };
             });
 

@@ -35,10 +35,11 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
     {
         try 
         {
-            applicationContext.Set<TTarget>().AddRange(entities);
+            var arrayEntities = entities.ToArray();
+            applicationContext.Set<TTarget>().AddRange(arrayEntities);
             await applicationContext.SaveChangesAsync();
 
-            return AppResult<IEnumerable<TTarget>>.CreateSucceeded(entities, "Entities successfully added");
+            return AppResult<IEnumerable<TTarget>>.CreateSucceeded(arrayEntities, "Entities successfully added");
         }
         catch (Exception ex)
         {
@@ -162,10 +163,11 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
     {
         try
         {
-            applicationContext.Set<TTarget>().UpdateRange(entities);
+            var arrayEntities = entities.ToArray();
+            applicationContext.Set<TTarget>().UpdateRange(arrayEntities);
             await applicationContext.SaveChangesAsync();
 
-            return AppResult<IEnumerable<TTarget>>.CreateSucceeded(entities, "Successfully updated entity");
+            return AppResult<IEnumerable<TTarget>>.CreateSucceeded(arrayEntities, "Successfully updated entity");
         }
         catch (Exception ex)
         {

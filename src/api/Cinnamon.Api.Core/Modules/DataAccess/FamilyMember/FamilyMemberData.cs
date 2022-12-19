@@ -100,6 +100,26 @@ public class FamilyMemberData : IFamilyMemberData
         }
     }
 
+    public async Task<AppResult<GetFamilyMemberByCustomerIdResult>> GetFamilyMemberByCustomerId(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"FamilyMember/GetFamilyMemberByCustomerId/{id}")
+                            .GetJsonAsync<GetFamilyMemberByCustomerIdResult>();
+            
+            return AppResult<GetFamilyMemberByCustomerIdResult>.CreateSucceeded(result, "Successfully getting family member by customer id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetFamilyMemberByCustomerIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetFamilyMemberByCustomerIdResult>.CreateFailed(ex, "An error occured when getting family member by customer id api");
+        }
+    }
+
     public async Task<AppResult<UpdateFamilyMemberResult>> UpdateFamilyMember(UpdateFamilyMemberArgs args)
     {
         try
