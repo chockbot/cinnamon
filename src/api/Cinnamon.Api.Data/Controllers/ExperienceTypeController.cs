@@ -1,5 +1,6 @@
 ﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.ExperienceType.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.ExperienceType.Response;
 using Microsoft.AspNetCore.Mvc;
 
@@ -72,11 +73,11 @@ namespace Cinnamon.Api.Data.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(CreateExperienceTypeResult), StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> CreateExperienceType(string name)
+        public async Task<IActionResult> CreateExperienceType(CreateExperienceTypeArgs args)
         {
             try
             {
-                var result = await _experienceTypeRepository.CreateExperienceType(name);
+                var result = await _experienceTypeRepository.CreateExperienceType(args.Name);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new CreateExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -93,11 +94,11 @@ namespace Cinnamon.Api.Data.Controllers
         [HttpPost]
         [ProducesResponseType(typeof(UpdateExperienceTypeResult), StatusCodes.Status202Accepted)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateExperienceType(int id, string name)
+        public async Task<IActionResult> UpdateExperienceType(UpdateExperienceTypeArgs args)
         {
             try
             {
-                var result = await _experienceTypeRepository.UpdateExperienceType(id,name);
+                var result = await _experienceTypeRepository.UpdateExperienceType(args.Id, args.Name);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new UpdateExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
