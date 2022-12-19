@@ -98,7 +98,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _experienceTypeRepository.UpdateExperienceType(args.Id, args.name);
+                var result = await _experienceTypeRepository.UpdateExperienceType(args.Id, args.Name);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new UpdateExperienceTypeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
