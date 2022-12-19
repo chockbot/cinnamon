@@ -17,12 +17,6 @@ public class ExperienceCategoryRepository: IExperienceCategoryRepository
     {
         try
         {
-            // check if email already existed
-            var categoryCheck = await dataStore.ExperienceCategory.FindFirstAsync(w => w.Category.Contains(category));
-            if (categoryCheck.Succeeded && categoryCheck.Result != null)
-            {
-                return AppResult<ExperienceCategoryDTO>.CreateFailed(new ApplicationException("Can't create already existed experience category"), "Can't create already existed experience category");
-            }
             var experienceCategory = new Entities.ExperienceCategory
             {
                 Category = category,
