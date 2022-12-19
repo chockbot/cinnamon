@@ -21,6 +21,9 @@ builder.Services.AddSingleton(applicationConfig);
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
 
+// register http context accessor
+builder.Services.AddHttpContextAccessor();
+
 // register application services
 builder.Services.ExtendServices();
 

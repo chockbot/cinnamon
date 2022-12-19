@@ -19,16 +19,18 @@ public class AccountController : ControllerBase
     private readonly ISubmitVerifyEmailHandler submitVerifyEmailHandler;
     private readonly ISubmitLoginHandler submitLoginHandler;
     private readonly ISubmitResendVerificationHandler submitResendEmailHandler;
+    private readonly IGetProfileHandler getProfileHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
-        ISubmitResendVerificationHandler submitResendEmailHandler)
+        ISubmitResendVerificationHandler submitResendEmailHandler, IGetProfileHandler getProfileHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
         this.submitVerifyEmailHandler = submitVerifyEmailHandler;
         this.submitLoginHandler = submitLoginHandler;
         this.submitResendEmailHandler = submitResendEmailHandler;
+        this.getProfileHandler = getProfileHandler;
     }
 
     [Route("Register")]
@@ -216,6 +218,42 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifiedLoginResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetProfile")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetProfileResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetProfile([FromQuery] GetProfileArgs args)
+    {
+        try
+        {
+            var result = await getProfileHandler.ExecuteAsync(new Services.AccountService.Interactors.GetProfileArgs {});
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetProfileResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var profile = result.Result;
+
+            return new JsonResult(new GetProfileResult {
+                Result = new ProfileDTO {
+                    Email = profile.Email,
+                    FirstName = profile.FirstName,
+                    LastName = profile.LastName,
+                    IsMaker = profile.IsMaker,
+                    Id = profile.Id,
+                    About = profile.About,
+                    Birthdate = profile.Birthdate,
+                    IsVerified = profile.IsVerified,
+                    ProfileImg = profile.ProfileImagePath
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetProfileResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
