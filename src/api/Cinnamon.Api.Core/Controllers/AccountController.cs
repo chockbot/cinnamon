@@ -18,14 +18,17 @@ public class AccountController : ControllerBase
     private readonly ISubmitWaitlistHandler submitWaitlistHandler;
     private readonly ISubmitVerifyEmailHandler submitVerifyEmailHandler;
     private readonly ISubmitLoginHandler submitLoginHandler;
+    private readonly ISubmitResendVerificationHandler submitResendEmailHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
-        ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler)
+        ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
+        ISubmitResendVerificationHandler submitResendEmailHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
         this.submitVerifyEmailHandler = submitVerifyEmailHandler;
         this.submitLoginHandler = submitLoginHandler;
+        this.submitResendEmailHandler = submitResendEmailHandler;
     }
 
     [Route("Register")]
@@ -140,6 +143,41 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifyRegisteredEmailResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("ResendVerification")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ResendVerificationResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResendVerification(ResendVerificationArgs args)
+    {
+        try
+        {
+            var result = await submitResendEmailHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitResendVerificationArgs {
+                Email = args.Email,
+                ValidationRoute = args.ValidationRoute
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ResendVerificationResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var verified = result.Result;
+
+            return new JsonResult(new ResendVerificationResult {
+                Result = new WaitlistDTO {
+                    Email = verified.Email,
+                    Guid = verified.Guid,
+                    Token = verified.Token,
+                    Id = verified.Id,
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ResendVerificationResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 
