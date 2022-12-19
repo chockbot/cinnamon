@@ -9,7 +9,7 @@ using Flurl.Http.Configuration;
 
 namespace Cinnamon.Api.Core.Modules.DataAccess.ActivityImages;
 
-public class ActivityImagesData:IActivityImages
+public class ActivityImagesData:IActivityImagesData
 {
     private readonly IFlurlClient flurlClient;
 	public ActivityImagesData(ApplicationConfig config, IFlurlClientFactory flurlFac)

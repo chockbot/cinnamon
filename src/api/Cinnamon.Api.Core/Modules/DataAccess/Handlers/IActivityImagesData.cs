@@ -4,7 +4,7 @@ using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 
-public interface IActivityImages
+public interface IActivityImagesData
 {
     Task<AppResult<GetActivityImageResult>> GetActivityImageById(int id);
     Task<AppResult<GetAllActivityImagesResult>> GetAllActivityImages(GetAllActivityImagesArgs args);
