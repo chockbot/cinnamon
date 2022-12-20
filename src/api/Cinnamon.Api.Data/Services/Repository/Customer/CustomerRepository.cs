@@ -4,6 +4,7 @@ using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.Customer;
 
@@ -312,7 +313,7 @@ public class CustomerRepository : ICustomerRepository
             customer.FirstName = firstname ?? customer.FirstName;
             customer.LastName = lastname ?? customer.LastName;
             customer.Email = email ?? customer.Email;
-            customer.Birthdate = birthdate ?? customer.Birthdate;
+            customer.Birthdate = birthdate.HasValue ? birthdate.Value.SetKindUtc() : customer.Birthdate.SetKindUtc();
             customer.About = about ?? customer.About;
             customer.ProfilePath = profilePath ?? customer.ProfilePath;
             customer.IsMaker = ismaker ?? customer.IsMaker;

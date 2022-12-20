@@ -25,12 +25,14 @@ public class AccountController : ControllerBase
     private readonly IUpdateFamilyMembersHandler updateFamilyMembersHandler;
     private readonly ICreateFamilyMembersHandler createFamilyMembersHandler;
     private readonly IDeleteFamilyMembersHandler deleteFamilyMembersHandler;
+    private readonly ISubmitUpdateProfileHandler updateProfileHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
         ISubmitResendVerificationHandler submitResendEmailHandler, IGetProfileHandler getProfileHandler,
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
-        ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler)
+        ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
+        ISubmitUpdateProfileHandler updateProfileHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -42,6 +44,7 @@ public class AccountController : ControllerBase
         this.updateFamilyMembersHandler = updateFamilyMembersHandler;
         this.createFamilyMembersHandler = createFamilyMembersHandler;
         this.deleteFamilyMembersHandler = deleteFamilyMembersHandler;
+        this.updateProfileHandler = updateProfileHandler;
     }
 
     [Route("Register")]
@@ -414,6 +417,41 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteFamilyMembersResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UpdateProfileDetails")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateProfileDetailsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateProfileDetails([FromBody] UpdateProfileDetailsArgs args)
+    {
+        try
+        {
+            var result = await updateProfileHandler.ExecuteAsync(new Services.AccountService.Interactors.SubmitUpdateProfileArgs {
+                About = args.About,
+                Birthdate = args.Datebirth,
+                FirstName = args.FirstName,
+                LastName = args.LastName,
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateProfileDetailsResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new UpdateProfileDetailsResult {
+                Result = new CustomerDTO {
+                    About = result.Result.About,
+                    Birthdate = result.Result.Birthdate,
+                    FirstName = result.Result.FirstName,
+                    LastName = result.Result.LastName,
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateProfileDetailsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
