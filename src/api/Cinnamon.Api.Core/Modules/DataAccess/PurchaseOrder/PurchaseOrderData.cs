@@ -1,0 +1,105 @@
+﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Response;
+using Cinnamon.Framework.Common;
+using Flurl.Http;
+
+namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
+{
+    public class PurchaseOrderData : IPurchaseOrderData
+    {
+        private readonly IFlurlClient _flurlClient;
+        public PurchaseOrderData(IFlurlClient flurlClient)
+        {
+            _flurlClient = flurlClient;
+        }
+
+        public async Task<AppResult<CreatePurchaseOrderResult>> CreatePurchaseOrder(CreatePurchaseOrderArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                    .Request("PurchaseOrder/CreatePurchaseOrder")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<CreatePurchaseOrderResult>();
+
+                return AppResult<CreatePurchaseOrderResult>.CreateSucceeded(result, "Successfully posting create Purchase Order api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<CreatePurchaseOrderResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<CreatePurchaseOrderResult>.CreateFailed(ex, "An error occured when posting create Purchase Order api");
+            }
+        }
+
+        public async Task<AppResult<GetAllPurchaseOrderResult>> GetAllPurchaseOrder(GetAllPurchaseOrderArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("PurchaseOrder/GetAllPurchaseOrder")
+                                .SetQueryParams(
+                                    new
+                                    {
+                                        countPerPage = args.CountPerPage,
+                                        pageIndex = args.PageIndex
+                                    }).GetJsonAsync<GetAllPurchaseOrderResult>();
+
+                return AppResult<GetAllPurchaseOrderResult>.CreateSucceeded(result, "Successfully getting get all PurchaseOrder api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetAllPurchaseOrderResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAllPurchaseOrderResult>.CreateFailed(ex, "An error occured when getting all PurchaseOrder api");
+            }
+        }
+
+        public async Task<AppResult<GetPurchaseOrderResult>> GetPurchaseOrderById(int id)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request($"PurchaseOrder/GetPurchaseOrderById/{id}")
+                                .GetJsonAsync<GetPurchaseOrderResult>();
+
+                return AppResult<GetPurchaseOrderResult>.CreateSucceeded(result, "Successfully getting purchase order by id api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetPurchaseOrderResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetPurchaseOrderResult>.CreateFailed(ex, "An error occured when getting purchase order by id api");
+            }
+        }
+
+        public async Task<AppResult<UpdatePurchaseOrderResult>> UpdatePurchaseOrder(UpdatePurchaseOrderArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("PurchaseOrder/UpdatePurchaseOrder")
+                                .PostJsonAsync(args)
+                                .ReceiveJson<UpdatePurchaseOrderResult>();
+
+                return AppResult<UpdatePurchaseOrderResult>.CreateSucceeded(result, "Successfully posting update purchase order api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<UpdatePurchaseOrderResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<UpdatePurchaseOrderResult>.CreateFailed(ex, "An error occured when posting update purchase order api");
+            }
+        }
+    }
+}

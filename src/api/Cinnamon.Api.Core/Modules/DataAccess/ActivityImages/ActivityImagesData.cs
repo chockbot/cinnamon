@@ -2,7 +2,6 @@
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiData.ActivityImage.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.ActivityImage.Response;
-using Cinnamon.Framework.ApiCommand.ApiData.ExperienceCategory.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
 using Flurl.Http.Configuration;

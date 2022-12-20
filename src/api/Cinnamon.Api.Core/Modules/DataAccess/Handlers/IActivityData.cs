@@ -1,0 +1,12 @@
+﻿using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
+using Cinnamon.Framework.Common;
+namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+
+public interface IActivityData
+{
+    Task<AppResult<GetActivityResult>> GetActivityById(int id);
+    Task<AppResult<GetAllActivitiesResult>> GetAllActivities(GetAllActivities args);
+    Task<AppResult<CreatedActivityResult>> CreateActivity(CreateActivityArgs args);
+    Task<AppResult<UpdatedActivityResult>> UpdateActivity(UpdateActivity args);
+}

@@ -28,7 +28,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
                                 .PostJsonAsync(args)
                                 .ReceiveJson<CreateDescriptionResult>();
 
-                return AppResult<CreateDescriptionResult>.CreateSucceeded(result, "Successfully posting create customer api");
+                return AppResult<CreateDescriptionResult>.CreateSucceeded(result, "Successfully posting create description api");
             }
             catch (FlurlHttpException ex)
             {
@@ -36,7 +36,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
             }
             catch (Exception ex)
             {
-                return AppResult<CreateDescriptionResult>.CreateFailed(ex, "An error occured when posting create customer api");
+                return AppResult<CreateDescriptionResult>.CreateFailed(ex, "An error occured when posting create description api");
             }
         }
 
@@ -48,7 +48,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
                                 .Request("Address/GetAllAddress")
                                 .GetJsonAsync<GetAllDescriptionResult>();
 
-                return AppResult<GetAllDescriptionResult>.CreateSucceeded(result, "Successfully getting get all customers api");
+                return AppResult<GetAllDescriptionResult>.CreateSucceeded(result, "Successfully getting get all description api");
             }
             catch (FlurlHttpException ex)
             {
@@ -56,7 +56,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
             }
             catch (Exception ex)
             {
-                return AppResult<GetAllDescriptionResult>.CreateFailed(ex, "An error occured when getting all customers api");
+                return AppResult<GetAllDescriptionResult>.CreateFailed(ex, "An error occured when getting all description api");
             }
         }
 
@@ -68,7 +68,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
                                 .Request($"Description/GetDescriptionById/{id}")
                                 .GetJsonAsync<GetDescriptionResult>();
 
-                return AppResult<GetDescriptionResult>.CreateSucceeded(result, "Successfully getting customer by id api");
+                return AppResult<GetDescriptionResult>.CreateSucceeded(result, "Successfully getting description by id api");
             }
             catch (FlurlHttpException ex)
             {
@@ -76,7 +76,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
             }
             catch (Exception ex)
             {
-                return AppResult<GetDescriptionResult>.CreateFailed(ex, "An error occured when getting customer by id api");
+                return AppResult<GetDescriptionResult>.CreateFailed(ex, "An error occured when getting description by id api");
             }
         }
 
@@ -89,7 +89,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
                                 .PostJsonAsync(args)
                                 .ReceiveJson<UpdatedDescriptionResult>();
 
-                return AppResult<UpdatedDescriptionResult>.CreateSucceeded(result, "Successfully posting update customer api");
+                return AppResult<UpdatedDescriptionResult>.CreateSucceeded(result, "Successfully posting update description api");
             }
             catch (FlurlHttpException ex)
             {
@@ -97,7 +97,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
             }
             catch (Exception ex)
             {
-                return AppResult<UpdatedDescriptionResult>.CreateFailed(ex, "An error occured when posting update customer api");
+                return AppResult<UpdatedDescriptionResult>.CreateFailed(ex, "An error occured when posting update description api");
             }
         }
     }

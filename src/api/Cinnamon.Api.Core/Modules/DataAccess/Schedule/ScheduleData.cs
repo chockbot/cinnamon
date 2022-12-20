@@ -23,7 +23,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
                                 .Request($"Schedule/GetScheduleById/{id}")
                                 .GetJsonAsync<GetScheduleResult>();
 
-                return AppResult<GetScheduleResult>.CreateSucceeded(result, "Successfully getting customer by id api");
+                return AppResult<GetScheduleResult>.CreateSucceeded(result, "Successfully getting schedule by id api");
             }
             catch (FlurlHttpException ex)
             {
@@ -31,7 +31,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
             }
             catch (Exception ex)
             {
-                return AppResult<GetScheduleResult>.CreateFailed(ex, "An error occured when getting customer by id api");
+                return AppResult<GetScheduleResult>.CreateFailed(ex, "An error occured when getting schedule by id api");
             }
         }
 
@@ -43,7 +43,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
                                 .Request("Schedule/GetAllSchedules")
                                 .GetJsonAsync<GetAllScheduleResult>();
 
-                return AppResult<GetAllScheduleResult>.CreateSucceeded(result, "Successfully getting get all customers api");
+                return AppResult<GetAllScheduleResult>.CreateSucceeded(result, "Successfully getting get all schedule api");
             }
             catch (FlurlHttpException ex)
             {
@@ -51,7 +51,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
             }
             catch (Exception ex)
             {
-                return AppResult<GetAllScheduleResult>.CreateFailed(ex, "An error occured when getting all customers api");
+                return AppResult<GetAllScheduleResult>.CreateFailed(ex, "An error occured when getting all schedule api");
             }
         }
 
@@ -64,7 +64,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
                                 .PostJsonAsync(args)
                                 .ReceiveJson<CreateScheduleResult>();
 
-                return AppResult<CreateScheduleResult>.CreateSucceeded(result, "Successfully posting create customer api");
+                return AppResult<CreateScheduleResult>.CreateSucceeded(result, "Successfully posting create schedule api");
             }
             catch (FlurlHttpException ex)
             {
@@ -85,7 +85,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
                                 .PostJsonAsync(args)
                                 .ReceiveJson<UpdateScheduleResult>();
 
-                return AppResult<UpdateScheduleResult>.CreateSucceeded(result, "Successfully posting update customer api");
+                return AppResult<UpdateScheduleResult>.CreateSucceeded(result, "Successfully posting update schedule api");
             }
             catch (FlurlHttpException ex)
             {
@@ -93,7 +93,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
             }
             catch (Exception ex)
             {
-                return AppResult<UpdateScheduleResult>.CreateFailed(ex, "An error occured when posting update customer api");
+                return AppResult<UpdateScheduleResult>.CreateFailed(ex, "An error occured when posting update schedule api");
             }
         }
     }
