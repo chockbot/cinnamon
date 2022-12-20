@@ -24,12 +24,13 @@ public class AccountController : ControllerBase
     private readonly IGetFamilyMembersHandler getFamilyMembersHandler;
     private readonly IUpdateFamilyMembersHandler updateFamilyMembersHandler;
     private readonly ICreateFamilyMembersHandler createFamilyMembersHandler;
+    private readonly IDeleteFamilyMembersHandler deleteFamilyMembersHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
         ISubmitResendVerificationHandler submitResendEmailHandler, IGetProfileHandler getProfileHandler,
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
-        ICreateFamilyMembersHandler createFamilyMembersHandler)
+        ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -40,6 +41,7 @@ public class AccountController : ControllerBase
         this.getFamilyMembersHandler = getFamilyMembersHandler;
         this.updateFamilyMembersHandler = updateFamilyMembersHandler;
         this.createFamilyMembersHandler = createFamilyMembersHandler;
+        this.deleteFamilyMembersHandler = deleteFamilyMembersHandler;
     }
 
     [Route("Register")]
@@ -385,6 +387,33 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("DeleteFamilyMembers")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteFamilyMembersResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteFamilyMembers([FromBody] DeleteFamilyMembersArgs args)
+    {
+        try
+        {
+            var result = await deleteFamilyMembersHandler.ExecuteAsync(new Services.AccountService.Interactors.DeleteFamilyMembersArgs {
+                Ids = args.Ids
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new DeleteFamilyMembersResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new DeleteFamilyMembersResult {
+                Result = true,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteFamilyMembersResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

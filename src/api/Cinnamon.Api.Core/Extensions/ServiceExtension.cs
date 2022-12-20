@@ -27,6 +27,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IGetFamilyMembersHandler, Services.AccountService.GetFamilyMemberHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateFamilyMembersHandler, Services.AccountService.UpdateFamilyMembersHandler>();
         services.AddTransient<Services.AccountService.Handlers.ICreateFamilyMembersHandler, Services.AccountService.CreateFamilyMembersHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IDeleteFamilyMembersHandler, Services.AccountService.DeleteFamilyMembersHandler>();
 
         return services;
     }
