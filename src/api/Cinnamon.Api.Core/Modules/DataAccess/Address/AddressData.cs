@@ -27,7 +27,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
                                 .PostJsonAsync(args)
                                 .ReceiveJson<CreateAddressResult>();
 
-                return AppResult<CreateAddressResult>.CreateSucceeded(result, "Successfully posting create customer api");
+                return AppResult<CreateAddressResult>.CreateSucceeded(result, "Successfully posting create address api");
             }
             catch (FlurlHttpException ex)
             {
@@ -35,7 +35,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
             }
             catch (Exception ex)
             {
-                return AppResult<CreateAddressResult>.CreateFailed(ex, "An error occured when posting create customer api");
+                return AppResult<CreateAddressResult>.CreateFailed(ex, "An error occured when posting create address api");
             }
         }
 
@@ -47,7 +47,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
                                 .Request("Address/GetAllAddress")
                                 .GetJsonAsync<GetAllAddressResult>();
 
-                return AppResult<GetAllAddressResult>.CreateSucceeded(result, "Successfully getting get all customers api");
+                return AppResult<GetAllAddressResult>.CreateSucceeded(result, "Successfully getting get all address api");
             }
             catch (FlurlHttpException ex)
             {
@@ -55,7 +55,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
             }
             catch (Exception ex)
             {
-                return AppResult<GetAllAddressResult>.CreateFailed(ex, "An error occured when getting all customers api");
+                return AppResult<GetAllAddressResult>.CreateFailed(ex, "An error occured when getting all address api");
             }
         }
 
@@ -67,7 +67,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
                                 .Request($"Address/GetAddressById/{id}")
                                 .GetJsonAsync<GetAddressResult>();
 
-                return AppResult<GetAddressResult>.CreateSucceeded(result, "Successfully getting customer by id api");
+                return AppResult<GetAddressResult>.CreateSucceeded(result, "Successfully getting address by id api");
             }
             catch (FlurlHttpException ex)
             {
@@ -75,7 +75,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
             }
             catch (Exception ex)
             {
-                return AppResult<GetAddressResult>.CreateFailed(ex, "An error occured when getting customer by id api");
+                return AppResult<GetAddressResult>.CreateFailed(ex, "An error occured when getting address by id api");
             }
         }
 
@@ -88,7 +88,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
                                 .PostJsonAsync(args)
                                 .ReceiveJson<UpdatedAddressResult>();
 
-                return AppResult<UpdatedAddressResult>.CreateSucceeded(result, "Successfully posting update customer api");
+                return AppResult<UpdatedAddressResult>.CreateSucceeded(result, "Successfully posting update address api");
             }
             catch (FlurlHttpException ex)
             {
@@ -96,7 +96,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
             }
             catch (Exception ex)
             {
-                return AppResult<UpdatedAddressResult>.CreateFailed(ex, "An error occured when posting update customer api");
+                return AppResult<UpdatedAddressResult>.CreateFailed(ex, "An error occured when posting update address api");
             }
         }
     }
