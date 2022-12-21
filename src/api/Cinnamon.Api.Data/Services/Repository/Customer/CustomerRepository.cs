@@ -297,6 +297,27 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
+    public async Task<AppResult<GovernmentIDsDTO>> GetGovermentId(int customerID)
+    {
+        try
+        {
+            var result = await dataStore.Customer.GetByIdAsync(customerID);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<GovernmentIDsDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            return AppResult<GovernmentIDsDTO>.CreateSucceeded(new GovernmentIDsDTO {
+                BackIdImagePath = string.IsNullOrEmpty(result.Result.BackIdImagePath) ? string.Empty : result.Result.BackIdImagePath,
+                FrontIdImagePath = string.IsNullOrEmpty(result.Result.FrontIdImagePath) ? string.Empty : result.Result.FrontIdImagePath
+            }, "Successfully getting customer government id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GovernmentIDsDTO>.CreateFailed(ex, "An error occured when getting customer government ids");
+        }
+    }
+
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, 
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh)
     {

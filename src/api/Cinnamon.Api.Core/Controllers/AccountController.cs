@@ -26,13 +26,16 @@ public class AccountController : ControllerBase
     private readonly ICreateFamilyMembersHandler createFamilyMembersHandler;
     private readonly IDeleteFamilyMembersHandler deleteFamilyMembersHandler;
     private readonly ISubmitUpdateProfileHandler updateProfileHandler;
+    private readonly IGetGovernmentIdsHandler getGovernmentIdsHandler;
+    private readonly IUploadGovernmentIdHandler uploadGovernmentIdHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
         ISubmitResendVerificationHandler submitResendEmailHandler, IGetProfileHandler getProfileHandler,
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
-        ISubmitUpdateProfileHandler updateProfileHandler)
+        ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -45,6 +48,8 @@ public class AccountController : ControllerBase
         this.createFamilyMembersHandler = createFamilyMembersHandler;
         this.deleteFamilyMembersHandler = deleteFamilyMembersHandler;
         this.updateProfileHandler = updateProfileHandler;
+        this.getGovernmentIdsHandler = getGovernmentIdsHandler;
+        this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
     }
 
     [Route("Register")]
@@ -452,6 +457,65 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateProfileDetailsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetGovermentIds")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetGovernmentIdsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGovermentIds()
+    {
+        try
+        {
+            var result = await getGovernmentIdsHandler.ExecuteAsync(new Services.AccountService.Interactors.GetGovernmentIdsArgs {});
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetGovernmentIdsResult {
+                Result = new GovernmentIdsDTO {
+                    BackIdImagePath = result.Result.BackImageSrc,
+                    FrontIdImagePath = result.Result.FrontImageSrc
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UploadGovernmentIds")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UploadGovernmentIdsResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UploadGovernmentIds([FromForm] UploadGovernmentIdsArgs args)
+    {
+        try
+        {
+            var result = await uploadGovernmentIdHandler.ExecuteAsync(new Services.AccountService.Interactors.UploadGovernmentIDArgs {
+                BackImage = args.BackImageId,
+                FrontImage = args.FrontImageId
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UploadGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new UploadGovernmentIdsResult {
+                Result = new GovernmentIdsDTO {
+                    BackIdImagePath = result.Result.BackImage.UploadedPath,
+                    FrontIdImagePath = result.Result.FrontImage.UploadedPath
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UploadGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

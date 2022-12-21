@@ -59,6 +59,27 @@ public class CustomerController : ControllerBase
         }
     }
 
+    [Route("GetGovernmendId/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetGovernmentIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetGovernmendId(int id)
+    {
+        try
+        {
+            var result = await customerRepository.GetGovermentId(id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetGovernmentIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetGovernmentIdResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetGovernmentIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetAllCustomers")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllCustomerResult), StatusCodes.Status200OK)]

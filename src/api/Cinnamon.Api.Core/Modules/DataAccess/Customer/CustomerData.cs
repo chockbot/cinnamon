@@ -165,4 +165,24 @@ public class CustomerData : ICustomerData
             return AppResult<CheckCustomerLoginResult>.CreateFailed(ex, "An error occured when checking customer login api");
         }
     }
+
+    public async Task<AppResult<GetGovernmentIdResult>> GetGovernmentIds(int customerId)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Customer/GetGovernmendId/{customerId}")
+                            .GetJsonAsync<GetGovernmentIdResult>();
+            
+            return AppResult<GetGovernmentIdResult>.CreateSucceeded(result, "Successfully getting customer government id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetGovernmentIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetGovernmentIdResult>.CreateFailed(ex, "An error occured when getting customer government id api");
+        }
+    }
 }

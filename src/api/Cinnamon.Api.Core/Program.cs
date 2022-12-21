@@ -8,6 +8,7 @@ using Cinnamon.Api.Core.Config;
 using Flurl.Http.Configuration;
 using Flurl.Http;
 using Cinnamon.Api.Core.Providers;
+using Microsoft.AspNetCore.Http.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +56,11 @@ builder.Services.AddSwaggerGen();
 // logger
 builder.Services.AddLogging(logBuilder => 
     logBuilder.AddSerilog(dispose: true));
+
+builder.Services.Configure<FormOptions>(opts => {
+    // 10mb
+    opts.MemoryBufferThreshold = 10000000;
+});
 
 var app = builder.Build();
 
