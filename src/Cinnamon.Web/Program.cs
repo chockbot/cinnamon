@@ -74,6 +74,11 @@ CoreConfig coreConfig = new CoreConfig();
 builder.Configuration.GetSection("AppConfig").Bind(coreConfig);
 builder.Services.AddSingleton(coreConfig);
 
+// add config
+Cinnamon.Web.Config.Config  config = new Cinnamon.Web.Config.Config();
+builder.Configuration.GetSection("AppConfig").Bind(config);
+builder.Services.AddSingleton(config);
+
 builder.Services.ExtendServices();
 
 builder.Services.Configure<IdentityOptions>(options =>

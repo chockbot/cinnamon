@@ -99,7 +99,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(RegisterWaitlistResult), StatusCodes.Status201Created)]
     [AllowAnonymous]
-    public async Task<IActionResult> RegisterWaitlist(RegisterWaitlistArgs args)
+    public async Task<IActionResult> RegisterWaitlist([FromBody] RegisterWaitlistArgs args)
     {
         try
         {
@@ -135,7 +135,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(VerifyRegisteredEmailResult), StatusCodes.Status201Created)]
     [AllowAnonymous]
-    public async Task<IActionResult> VerifyRegisteredEmail(VerifyRegisteredEmailArgs args)
+    public async Task<IActionResult> VerifyRegisteredEmail([FromBody] VerifyRegisteredEmailArgs args)
     {
         try
         {
@@ -171,7 +171,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ResendVerificationResult), StatusCodes.Status201Created)]
     [AllowAnonymous]
-    public async Task<IActionResult> ResendVerification(ResendVerificationArgs args)
+    public async Task<IActionResult> ResendVerification([FromBody] ResendVerificationArgs args)
     {
         try
         {
@@ -206,7 +206,7 @@ public class AccountController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(VerifiedLoginResult), StatusCodes.Status201Created)]
     [AllowAnonymous]
-    public async Task<IActionResult> Login(VerifiedLoginArgs args)
+    public async Task<IActionResult> Login([FromBody] VerifiedLoginArgs args)
     {
         try
         {
