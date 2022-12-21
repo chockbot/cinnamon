@@ -293,4 +293,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<UploadGovernmentIdsResult>.CreateFailed(ex, "An error occured when posting upload government ids api");
         }
     }
+    public async Task<AppResult<UploadProfilePictureResult>> UploadProfilePicture(UploadProfilePictureArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/UploadProfilePicture")
+                .PostJsonAsync(args)
+                .ReceiveJson<UploadProfilePictureResult>();
+
+            return AppResult<UploadProfilePictureResult>.CreateSucceeded(result, "Successfully posting upload profile picture api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UploadProfilePictureResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UploadProfilePictureResult>.CreateFailed(ex, "An error occured when posting upload profile picture api");
+        }
+    }
 }

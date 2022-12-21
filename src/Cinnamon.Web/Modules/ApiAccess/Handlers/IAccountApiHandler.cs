@@ -19,4 +19,5 @@ public interface IAccountApiHandler
     Task<AppResult<UpdateProfileDetailsResult>> UpdateProfileDetails(UpdateProfileDetailsArgs args, string token);
     Task<AppResult<GetGovernmentIdsResult>> GetGovermentIds(string token);
     Task<AppResult<UploadGovernmentIdsResult>> UploadGovernmentIds(UploadGovernmentIdsArgs args, string token);
+    Task<AppResult<UploadProfilePictureResult>> UploadProfilePicture(UploadProfilePictureArgs args, string token);
 } 

@@ -28,6 +28,7 @@ public class AccountController : ControllerBase
     private readonly ISubmitUpdateProfileHandler updateProfileHandler;
     private readonly IGetGovernmentIdsHandler getGovernmentIdsHandler;
     private readonly IUploadGovernmentIdHandler uploadGovernmentIdHandler;
+    private readonly IUploadProfilePictureHandler uploadProfilePictureHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
@@ -35,7 +36,7 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler)
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -50,6 +51,7 @@ public class AccountController : ControllerBase
         this.updateProfileHandler = updateProfileHandler;
         this.getGovernmentIdsHandler = getGovernmentIdsHandler;
         this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
+        this.uploadProfilePictureHandler = uploadProfilePictureHandler;
     }
 
     [Route("Register")]
@@ -516,6 +518,38 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UploadGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UploadProfilePicture")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UploadProfilePictureResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UploadProfilePicture([FromForm] UploadProfilePictureArgs args)
+    {
+        try
+        {
+            var result = await uploadProfilePictureHandler.ExecuteAsync(new Services.AccountService.Interactors.UploadProfilePictureArgs
+            {
+                ProfileImage = args.ProfileImage,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UploadGovernmentIdsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UploadProfilePictureResult
+            {
+                Result = new ProfilePictureDTO
+                {
+                    ProfileImagePath = result.Result.ProfileImage.UploadedPath,
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UploadProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
