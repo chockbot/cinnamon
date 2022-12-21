@@ -7,7 +7,10 @@ using Cinnamon.Core.Extensions;
 using Cinnamon.Core.Models;
 using Cinnamon.Data;
 using Cinnamon.Web.Areas.Identity;
+using Cinnamon.Web.Providers;
 using Dna;
+using Flurl.Http;
+using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Components.Authorization;
@@ -25,10 +28,10 @@ Framework.Construct<DefaultFrameworkConstruction>()
     .Build();
 
 // Ensure the client data store 
-await Framework.Service<IDataStore>().EnsuredataStoreAsync();
+// await Framework.Service<IDataStore>().EnsuredataStoreAsync();
 
 // Apply Seed Data
-await Framework.Service<ApplicationViewModel>().applySeedDemoData();
+// await Framework.Service<ApplicationViewModel>().applySeedDemoData();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
@@ -39,6 +42,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<DataStoreDbContext>();
+
+// register flurl
+builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
 
 builder.Services.AddControllers();
 builder.Services.AddRazorPages(opts => {
@@ -87,6 +93,11 @@ AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+
+    // for development only to disable flurl untrusted certificates
+    FlurlHttp.Configure(settings => {
+        settings.HttpClientFactory = new UntrustedCertClientFactory();
+    });
 }
 else
 {
