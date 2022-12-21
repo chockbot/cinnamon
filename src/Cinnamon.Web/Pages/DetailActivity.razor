@@ -96,14 +96,14 @@
                 @if (String.IsNullOrEmpty(actModel.Description))
                 {
                     <label class="fw-bold mb-2 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
-                    <p>
+                    <p style="white-space: pre-line">
                         @actModel.DescriptionSectionModel.Description
                     </p>
                 }
                 else {
                     <p>
                         @(
-                        (MarkupString)actModel.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>")
+                        (MarkupString)actModel.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br />")
                         )
                     </p>
                 }
@@ -214,8 +214,8 @@
                     }
                     else{
                         <div class="px-4">
-                            <span>
-                                @((MarkupString)actModel.Schedules.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
+                            <span style="white-space: pre-line">
+                                @actModel.Schedules
                             </span>
                         </div>
                     }
@@ -271,14 +271,14 @@
                 <hr />
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
                     <label class="fw-bold mb-3 detail-label">What's included</label>
-                    <p>
+                    <p style="white-space: pre-line">
                         @actModel.DescriptionSectionModel.SpecificsYouWillProvide
                     </p>
                 </div>
                 <hr />
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
                     <label class="fw-bold mb-3 detail-label">What you should bring</label>
-                    <p>
+                    <p style="white-space: pre-line">
                         @actModel.DescriptionSectionModel.CustomerBringWithThem
                     </p>
                 </div>
@@ -300,7 +300,7 @@
                     <hr />
                     <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
                         <label class="fw-bold mb-3 detail-label">Additional Requirements</label>
-                        <p>
+                        <p style="white-space: pre-line">
                             @actModel.DescriptionSectionModel.AdditionalRequirements
                         </p>
                     </div>
