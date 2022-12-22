@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Identity;
 using Cinnamon.Web.Models.Account;
 using Cinnamon.Core;
 using Cinnamon.Core.Module.CinnamonMakerService.Handler;
+using Cinnamon.Web.Modules.ApiAccess.Handlers;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
 
 namespace Cinnamon.Web.Controllers;
 
@@ -10,18 +14,13 @@ namespace Cinnamon.Web.Controllers;
 [Route("/api/[controller]")]
 public class AccountController : Controller 
 {
-    private readonly SignInManager<IdentityUser> signInManager;
-    private readonly UserManager<IdentityUser> userManager;
-    private readonly ISubmitWaitngList submitWaitingListHandler;
-    private readonly IRegisterMaker registerMaker;
+    private readonly IAccountApiHandler accountApiHandler;
+    private readonly Cinnamon.Web.Config.Config config;
 
-    public AccountController(SignInManager<IdentityUser> signInManager, ISubmitWaitngList submitWaitingListHandler,
-        UserManager<IdentityUser> userManager, IRegisterMaker registerMaker)
+    public AccountController(IAccountApiHandler accountApiHandler, Cinnamon.Web.Config.Config config)
     {
-        this.signInManager = signInManager;
-        this.submitWaitingListHandler = submitWaitingListHandler;
-        this.userManager = userManager;
-        this.registerMaker = registerMaker;
+        this.accountApiHandler = accountApiHandler;
+        this.config = config;
     }
 
     [Route("login")]
@@ -34,15 +33,34 @@ public class AccountController : Controller
             {
                 return Json(new { success = false, message = "Please provide valid email or password" });
             }
-            var login = await signInManager.PasswordSignInAsync(model.Email,model.Password, true, false);
-            if(login.IsLockedOut)
+
+            // login to api
+            var loginResult = await accountApiHandler.Login(new Framework.ApiCommand.ApiCore.Account.Request.VerifiedLoginArgs {
+                Email = model.Email,
+                Password = model.Password
+            });
+
+            if(!loginResult.Succeeded || loginResult.Result == null)
             {
-                return  Json(new { success = false, message = "You account was locked" });
+                return Json(new { success = false, message = "An error occured please try again later" });
             }
-            if(!login.Succeeded)
+
+            if(loginResult.Succeeded && !loginResult.Result.IsSuccess)
             {
-                return Json(new { success = false, message = "Please provide valid email or password" });
+                return Json(new { success = false, message = loginResult.Result.ErrorInfo?.Message });
             }
+
+            var claims = new List<Claim>
+            {
+                new Claim("Email", loginResult.Result.Result.Email),
+                new Claim("Token", loginResult.Result.Result.GeneratedToken),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties {IsPersistent = true};
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
             return Json(new { success = true, message = "Successfully login" });
         }
@@ -63,33 +81,32 @@ public class AccountController : Controller
                 return Json(new { success = false, message = "Please provide valid email" });
             }
 
-            var waitListRes = await CoreDI.DataStore.WaitList.GetWaitListByEmail(model.Email);
-            if(waitListRes != null && waitListRes.IsVerified)
-            {
-                // check if email already registered
-                var res = await userManager.FindByEmailAsync(model.Email);
-                if(res == null)
-                {
-                    return Json(new { success = true, message = "Email already verified but not yet registered", code = "NOTREGISTERED" });
-                }
-                return Json(new { success = true, message = "Email already verified", code = "VERIFIED" });
-            }
-            else if(waitListRes != null && !waitListRes.IsVerified)
-            {
-                return Json(new { success = true, message = "Email not yet verified", code = "NOTVERIFIED" });
-            }
-            else 
-            {
-                var register = await submitWaitingListHandler.ExecuteAsync
-                    (new Core.Module.CinnamonMakerService.Interactors.SubmitWaitingList { Email = model.Email });
-                
-                if(!register.Succeeded)
-                {
-                    return Json(new { success = false, message = "An error occured please try again later", code = "ERRORREGISTER" });
-                }
+            var registerWaitlist = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs {
+                Email = model.Email,
+                ValidationRoute = config.BaseUrl + "/confirm-email"
+            });
 
-                return Json(new { success = true, message = "Please confirm your email to proceed.", code = "EMAILREGISTERED" });
+            if(!registerWaitlist.Succeeded || registerWaitlist.Result == null)
+            {
+                return Json(new { success = false, message = "An error occured please try again later" });
             }
+
+            if(registerWaitlist.Succeeded && !registerWaitlist.Result.IsSuccess)
+            {
+                switch(registerWaitlist.Result.ErrorInfo?.Code)
+                {
+                    case "EMAIL-ALREADY-REGISTERED":
+                        return Json(new { success = true, message = "Email already verified", code = "VERIFIED" });
+                    case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
+                        return Json(new { success = true, message = "Email not yet verified", code = "NOTVERIFIED" });
+                    case "EMAIL-ALREADY-REGISTERED-VERIFIED":
+                        return Json(new { success = true, message = "Email already verified but not yet registered", code = "NOTREGISTERED" });
+                    default:
+                        return Json(new { success = false, message = "An error occured please try again later", code = "ERRORREGISTER" });
+                }
+            }
+
+            return Json(new { success = true, message = "Please confirm your email to proceed.", code = "EMAILREGISTERED" });
         }
         catch
         {
@@ -108,39 +125,53 @@ public class AccountController : Controller
                 return Json(new { success = false, message = "Please provide required fields" });
             }
 
-            var waitListRes = await CoreDI.DataStore.WaitList.GetWaitListByEmail(model.Email);
-            if(waitListRes == null)
-            {
-                return Json(new { success = false, message = "Please register your email first" });
-            }
-            
-            if(!waitListRes.IsVerified)
-            {
-                return Json(new { success = false, message = "Please verified your email first" });
-            }
-
-            // register customer information
-            var register = await registerMaker.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.RegisterMaker {
-                AcceptFlag = model.AcceptFlag,
+            var registerResult = await accountApiHandler.Register(new Framework.ApiCommand.ApiCore.Account.Request.SubmitRegisterArgs {
                 Birthdate = model.Birthdate,
                 Email = model.Email,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,
-                ProfilePath = "/images/Profile/user.png" // add default image
+                ProfilePath = "/images/Profile/user.png",
+                IsMaker = false,
             });
 
-            if(!register.Succeeded)
+            if(!registerResult.Succeeded || registerResult.Result == null)
             {
                 return Json(new { success = false, message = "An error occured please try again later" });
+            }
+
+            if(registerResult.Succeeded && !registerResult.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = registerResult.Result.ErrorInfo?.Message });
             }
 
             // auto login
-            var login = await signInManager.PasswordSignInAsync(model.Email,model.Password, true, false);
-            if(!login.Succeeded)
+            var loginResult = await accountApiHandler.Login(new Framework.ApiCommand.ApiCore.Account.Request.VerifiedLoginArgs {
+                Email = model.Email,
+                Password = model.Password
+            });
+
+            if(!loginResult.Succeeded || loginResult.Result == null)
             {
                 return Json(new { success = false, message = "An error occured please try again later" });
             }
+
+            if(loginResult.Succeeded && !loginResult.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = loginResult.Result.ErrorInfo?.Message });
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim("Email", loginResult.Result.Result.Email),
+                new Claim("Token", loginResult.Result.Result.GeneratedToken),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties {IsPersistent = true};
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
             return Json(new { success = true, message = "Successfully registered" });
         }

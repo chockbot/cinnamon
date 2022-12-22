@@ -15,11 +15,14 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
 {
     private readonly IWaitListData waitListData;
     private readonly ISendVerifyEmailHandler sendVerifyEmailHandler;
+    private readonly ICustomerData customerData;
 
-    public SubmitWaitlistHandler(IWaitListData waitListData, ISendVerifyEmailHandler sendVerifyEmailHandler)
+    public SubmitWaitlistHandler(IWaitListData waitListData, ISendVerifyEmailHandler sendVerifyEmailHandler,
+        ICustomerData customerData)
     {
         this.waitListData = waitListData;
         this.sendVerifyEmailHandler = sendVerifyEmailHandler;
+        this.customerData = customerData;
     }
 
     public AppResult<SubmitWaitlistResult> Execute(SubmitWaitlistArgs args)
@@ -38,14 +41,35 @@ public class SubmitWaitlistHandler : ISubmitWaitlistHandler
     {
         try
         {
+            // check if email already registered
+            var customerRes = await customerData.GetCustomerByEmail(args.Email);
+            if(!customerRes.Succeeded || customerRes.Result == null)
+            {
+                return AppResult<SubmitWaitlistResult>.CreateFailed(customerRes.Error.Exception, customerRes.Message);
+            }
+
+            if(customerRes.Succeeded && customerRes.Result.IsSuccess)
+            {
+                return AppResult<SubmitWaitlistResult>.CreateFailed(
+                    new ApplicationException("Email already in registered"), "Email already registered", "EMAIL-ALREADY-REGISTERED");
+            }
+
             // check first if email already in the wait list
             var emailCheck = await waitListData.GetWaitListByEmail(args.Email);
-            if(!emailCheck.Succeeded)
+            if(!emailCheck.Succeeded || emailCheck.Result == null)
                 return AppResult<SubmitWaitlistResult>.CreateFailed(emailCheck.Error.Exception, emailCheck.Message);
 
-            // email already existed
-            if(emailCheck.Result != null && emailCheck.Result.IsSuccess)
-                return AppResult<SubmitWaitlistResult>.CreateFailed(new ApplicationException("Email already existed."),"Email already existed.");
+            if(emailCheck.Succeeded && emailCheck.Result.IsSuccess && !emailCheck.Result.Result.IsVerified)
+            {
+                return AppResult<SubmitWaitlistResult>.CreateFailed(
+                    new ApplicationException("Email already existed but not verified."),"Email already existed but not verified.", "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED");
+            }
+
+            if(emailCheck.Succeeded && emailCheck.Result.IsSuccess && emailCheck.Result.Result.IsVerified)
+            {
+                return AppResult<SubmitWaitlistResult>.CreateFailed(
+                    new ApplicationException("Email already existed but already verified."),"Email already existed but already verified.", "EMAIL-ALREADY-REGISTERED-VERIFIED");
+            }
             
             // generate token and guid
             var guid = Guid.NewGuid();

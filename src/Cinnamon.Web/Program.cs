@@ -7,11 +7,13 @@ using Cinnamon.Core.Extensions;
 using Cinnamon.Core.Models;
 using Cinnamon.Data;
 using Cinnamon.Web.Areas.Identity;
+using Cinnamon.Web.Extensions;
 using Cinnamon.Web.Providers;
 using Dna;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -40,9 +42,6 @@ builder.Services.AddDbContext<DataStoreDbContext>(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
-    .AddEntityFrameworkStores<DataStoreDbContext>();
-
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
 
@@ -59,6 +58,14 @@ builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddFontAwesomeIcons();
 
 builder.Services.AddScoped<TokenProvider>();
+
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(opts => {
+        opts.ExpireTimeSpan = TimeSpan.FromDays(1);
+        opts.SlidingExpiration = true;
+        opts.AccessDeniedPath = "/explore";
+        opts.Cookie.Name = "auth";
+    });
 
 builder.Services.AddAuthentication().AddGoogle(o =>
 {
@@ -80,19 +87,9 @@ builder.Configuration.GetSection("AppConfig").Bind(config);
 builder.Services.AddSingleton(config);
 
 builder.Services.ExtendServices();
-
-builder.Services.Configure<IdentityOptions>(options =>
-{
-    options.Password.RequireDigit = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireUppercase = false;
-
-    options.User.RequireUniqueEmail = true;
-});
+builder.Services.AppExtendServices();
 
 var app = builder.Build();
-AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

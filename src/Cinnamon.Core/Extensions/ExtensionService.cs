@@ -33,7 +33,7 @@ public static class ExtensionService
         services.AddTransient<ISendMailHandler, SendMailHandler>();
         services.AddTransient<IEmailVerification, EmailVerificationHandler>();
         services.AddTransient<IWelcomeNotification, WelcomeNotificationHandler>();
-        services.AddTransient<IRegisterMaker, RegisterMakerHandler>();
+        // services.AddTransient<IRegisterMaker, RegisterMakerHandler>();
         services.AddTransient<IEmailVerification, EmailVerificationHandler>();
         services.AddTransient<ISubmitWaitngList, SubmitWaitingListHandler>();
         services.AddTransient<IVerifyEmail, VerifyEmailHandler>();

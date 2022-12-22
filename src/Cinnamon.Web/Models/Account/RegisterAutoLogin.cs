@@ -15,7 +15,7 @@ public class RegisterAutoLogin
     public string Email { get; set; }
 
     [Required]
-    public string Birthdate { get; set; }
+    public DateTime Birthdate { get; set; }
 
     [Required]
     public string Password { get; set; }

@@ -36,7 +36,7 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler)
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -51,7 +51,7 @@ public class AccountController : ControllerBase
         this.updateProfileHandler = updateProfileHandler;
         this.getGovernmentIdsHandler = getGovernmentIdsHandler;
         this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
-        this.uploadProfilePictureHandler = uploadProfilePictureHandler;
+        // this.uploadProfilePictureHandler = uploadProfilePictureHandler;
     }
 
     [Route("Register")]
@@ -112,7 +112,7 @@ public class AccountController : ControllerBase
 
             if(!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new RegisterWaitlistResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+                return new JsonResult(new RegisterWaitlistResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
             }
             var created = result.Result;
 

@@ -83,6 +83,9 @@ public class CustomerRepository : ICustomerRepository
                 return AppResult<CustomerDTO>.CreateFailed(new ApplicationException("Can't find provided user id"), "Can't find provided user id");
             }
 
+            // set utc for postgres reason
+            birthdate = birthdate.SetKindUtc();
+
             var customer = new Entities.Customer
             {
                 About = about,
