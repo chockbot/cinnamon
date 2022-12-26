@@ -93,11 +93,11 @@
     {
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
-        {
-            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
-            UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
-        }
+        //if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
+        //{
+        //    var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
+        //    UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
+        //}
     }
 
     private void NavigateToDashboard()

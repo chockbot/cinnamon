@@ -32,7 +32,7 @@
     private string GetFrontImageSrc()
     {
         if(isImageLoading) return "/images/loading_indicator.gif";
-        
+
         if(Model.ImageData != null)
         {
             var imageSrc = Convert.ToBase64String(Model.ImageData);
@@ -48,6 +48,8 @@
     {
         var file = e.File;
         errorMessage = string.Empty;
+        //Model.ImageFile = file
+        
 
         if(!file.ContentType.Contains("image"))
         {

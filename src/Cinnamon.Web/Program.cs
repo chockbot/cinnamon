@@ -36,11 +36,11 @@ Framework.Construct<DefaultFrameworkConstruction>()
 // await Framework.Service<ApplicationViewModel>().applySeedDemoData();
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
-builder.Services.AddDbContext<DataStoreDbContext>(options =>
-    options.UseNpgsql(connectionString),ServiceLifetime.Transient);
+//var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
+//builder.Services.AddDbContext<DataStoreDbContext>(options =>
+//    options.UseNpgsql(connectionString),ServiceLifetime.Transient);
 
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();

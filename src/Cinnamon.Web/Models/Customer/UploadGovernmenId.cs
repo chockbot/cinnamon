@@ -6,4 +6,5 @@ public class UploadGovernmenId
     public string ImageName { get; set; }
     public string ImageFileName { get; set; }
     public byte[] ImageData { get; set; }
+    public IFormFile ImageFile { get; set; }
 }

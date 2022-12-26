@@ -25,6 +25,10 @@ builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>(
 // register http context accessor
 builder.Services.AddHttpContextAccessor();
 
+// logger
+builder.Services.AddLogging(logBuilder =>
+    logBuilder.AddSerilog(dispose: true));
+
 // register application services
 builder.Services.ExtendServices();
 
@@ -47,15 +51,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true
         };
     });
-builder.Services.AddAuthorization();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-// logger
-builder.Services.AddLogging(logBuilder => 
-    logBuilder.AddSerilog(dispose: true));
 
 builder.Services.Configure<FormOptions>(opts => {
     // 10mb
@@ -76,7 +75,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();

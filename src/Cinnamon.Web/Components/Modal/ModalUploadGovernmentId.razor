@@ -1,8 +1,8 @@
 @namespace Cinnamon.Web.Components.Modals
 @using Cinnamon.Web.Models.Customer;
 @using Cinnamon.Web.Components.Pages.Customer.Profile;
-@using Cinnamon.Core.Module.CustomerService.Handler;
-@inject IUploadCustomerGovernmentId uploadGovermentIdHandler;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IAccountApiHandler accountApiHandler;
 
 <Modal @ref="modalRef" class="upload-government-id">
     <ModalContent>
@@ -34,7 +34,7 @@
 @code 
 {
     [Parameter]
-    public Models.Customer.Profile Model {get; set;}
+    public string Token { get; set; }
 
     private Modal modalRef;
 
@@ -42,15 +42,21 @@
 
     private UploadGovernmenId backData = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
+        var result = await accountApiHandler.GetGovermentIds(Token);
+        if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            throw new ApplicationException("An error occured when getting government ids");
+        }
+
         frontData.Label = "Front of ID";
         frontData.ImageName = "front-image";
-        frontData.ImageFileName = Model.Customer.FrontIdImagePath;
+        frontData.ImageFileName = result.Result.Result.FrontIdImagePath;
 
         backData.Label = "Back of ID";
         backData.ImageName = "back-data";
-        backData.ImageFileName = Model.Customer.BackIdImagePath;
+        backData.ImageFileName = result.Result.Result.BackIdImagePath;
     }
 
     public Task ShowModal()
@@ -65,23 +71,23 @@
 
     public async Task OnUploadClick()
     {
-        if(frontData.ImageData != null && backData.ImageData != null)
-        {
-            var uploadResult = await uploadGovermentIdHandler.ExecuteAsync(
-                new Core.Module.CustomerService.Interactors.UploadGovernmenId 
-                {
-                    BackFileName = backData.ImageFileName,
-                    BackImageData = backData.ImageData,
-                    FrontFileName = frontData.ImageFileName,
-                    FrontImageData = frontData.ImageData,
-                    CustomerId = Model.Customer.Id
-                });
+        //if(frontData.ImageData != null && backData.ImageData != null)
+        //{
+        //    var uploadResult = await uploadGovermentIdHandler.ExecuteAsync(
+        //        new Core.Module.CustomerService.Interactors.UploadGovernmenId 
+        //        {
+        //            BackFileName = backData.ImageFileName,
+        //            BackImageData = backData.ImageData,
+        //            FrontFileName = frontData.ImageFileName,
+        //            FrontImageData = frontData.ImageData,
+        //            CustomerId = Model.Customer.Id
+        //        });
             
-            if(uploadResult.Succeeded)
-            {
-                modalRef.Hide();
-            }
-        }
+        //    if(uploadResult.Succeeded)
+        //    {
+        //        modalRef.Hide();
+        //    }
+        //}
     }
 }
 

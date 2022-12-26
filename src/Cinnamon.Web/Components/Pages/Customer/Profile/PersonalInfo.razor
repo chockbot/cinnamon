@@ -1,9 +1,9 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Core.Models;
 @using Cinnamon.Core.Module.CustomerService.Handler;
-@inject IUpdateCustomerLegalName updateLegalNameHandler;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject IUpdateCustomerFamilyMembers updateFamilyMembers;
-@inject IUpdateBirthDate updateBirthDateHandler;
+@inject IAccountApiHandler accountApiHandler;
 
 <article class="personal-info-wrapper p-3">
     <div class="p-section name-section">
@@ -14,7 +14,7 @@
                     @if(!isEditLegalName)
                     {
                         <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                            <span class="text-capitalize">@Model.Customer.FirstName @Model.Customer.LastName</span>
+                            <span class="text-capitalize">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</span>
                             <span class="edit" @onclick="EditLegalNameClick">Edit</span>
                         </Div>
                     }
@@ -46,7 +46,7 @@
                     @if(!isEditBirthDate)
                     {
                         <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
-                            <span class="text-capitalize">@Model.Customer.Birthdate</span>
+                            <span class="text-capitalize">@Model.CustomerProfile.Birthdate.ToString("MM/dd/yyyy")</span>
                             <span class="edit" @onclick="EditBirthDate">Edit</span>
                         </Div>
                     }
@@ -82,7 +82,7 @@
                     </Div>
                     <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                         <Column>
-                            @foreach (var item in Model.Customer.FamilyMembers)
+                            @*@foreach (var item in Model.Customer.FamilyMembers)
                             {
                                 <Row style="flex: 0 0 auto;" class="mb-2">
                                     <Column>
@@ -95,7 +95,7 @@
                                         <p class="text-capitalize text-end">@item.BirthMonth @item.BirthYear</p>
                                     </Column>
                                 </Row>
-                            }
+                            }*@
                         </Column>
                     </Div>
                 </Column>
@@ -180,11 +180,11 @@
 
     [Parameter]
     public EventCallback OnEditIdClick {get; set;}
-    
+
     private bool isEditLegalName = false;
-    
+
     private string firstNameLocalState = string.Empty;
-    
+
     private string lastNameLocalState = string.Empty;
 
     private bool isEditFamilyMember = false;
@@ -200,8 +200,8 @@
         isEditLegalName = !isEditLegalName;
         if(isEditLegalName)
         {
-            firstNameLocalState = Model.Customer.FirstName;
-            lastNameLocalState = Model.Customer.LastName;
+            firstNameLocalState = Model.CustomerProfile.FirstName;
+            lastNameLocalState = Model.CustomerProfile.LastName;
         }
         else
         {
@@ -214,13 +214,16 @@
     {
         if(isEditLegalName)
         {
-            var result = await updateLegalNameHandler.ExecuteAsync(
-                new Core.Module.CustomerService.Interactors.UpdateLegalName {CustomerId = Model.Customer.Id, FirstName = firstNameLocalState, LastName = lastNameLocalState});
-            
-            if(result.Succeeded)
+            var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                {
+                    FirstName = firstNameLocalState,
+                    LastName = lastNameLocalState
+                }, Model.Token);
+
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                Model.Customer.FirstName = firstNameLocalState;
-                Model.Customer.LastName = lastNameLocalState;
+                Model.CustomerProfile.FirstName = firstNameLocalState;
+                Model.CustomerProfile.LastName = lastNameLocalState;
 
                 await ModelChanged.InvokeAsync(Model);
             }
@@ -235,7 +238,7 @@
             localStateFamilyMembers.Add(new () {BirthMonth = "january", BirthYear = 1900, Gender = "male"});
         }
     }
-    
+
     private void OnDeleteFamily(FamilyMemberModel member)
     {
         localStateFamilyMembers.Remove(member);
@@ -246,7 +249,7 @@
         localStateFamilyMembers = Model.Customer.FamilyMembers;
         isEditFamilyMember = true;
     }
-    
+
     private async Task SaveEditedFamilyMember()
     {
         if(isEditFamilyMember)
@@ -256,7 +259,7 @@
 
             var update = await updateFamilyMembers.ExecuteAsync(
                 new Core.Module.CustomerService.Interactors.UpdateFamilyMember {CustomerId = Model.Customer.Id, FamilyMembers = members});
-            
+
             if(update.Succeeded)
             {
                 Model.Customer = update.Result.Customer;
@@ -270,7 +273,7 @@
         isEditBirthDate = !isEditBirthDate;
         if(isEditBirthDate)
         {
-            birthDateLocalstate = Model.Customer.Birthdate;
+            birthDateLocalstate = Model.CustomerProfile.Birthdate.ToString("MM/dd/yyyy");
         }
         else
         {
@@ -282,14 +285,14 @@
     {
         if(isEditBirthDate)
         {
-            var result = await updateBirthDateHandler.ExecuteAsync(new Core.Module.CustomerService.Interactors.UpdateBirthDateArgs {
-                CustomerId = Model.Customer.Id,
-                BirthDate = birthDateLocalstate
-            });
-            
-            if(result.Succeeded)
+            var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
             {
-                Model.Customer.Birthdate = birthDateLocalstate;
+                Datebirth = Convert.ToDateTime(birthDateLocalstate)
+            }, Model.Token);
+
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                Model.CustomerProfile.Birthdate = result.Result.Result.Birthdate;
                 await ModelChanged.InvokeAsync(Model);
             }
         }

@@ -4,6 +4,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using System.Net.Http.Headers;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Account;
 
@@ -127,13 +128,14 @@ public class AccountApiHandler : IAccountApiHandler
         {
             var result = await flurlClient
                             .WithOAuthBearerToken(token)
-                            .Request($"Account/GetProfile")
+                            .Request("/Account/GetProfile")
                             .GetJsonAsync<GetProfileResult>();
 
             return AppResult<GetProfileResult>.CreateSucceeded(result, "Successfully getting profile api");
         }
         catch (FlurlHttpException ex)
         {
+            var r = ex.Call.Request.Headers;
             return AppResult<GetProfileResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
