@@ -7,6 +7,8 @@ using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Cinnamon.Web.Models.Forms;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Cinnamon.Web.Controllers;
 
@@ -176,6 +178,47 @@ public class AccountController : Controller
             return Json(new { success = true, message = "Successfully registered" });
         }
         catch 
+        {
+            return Json(new { success = false, message = "An error occured please try again later" });
+        }
+    }
+
+    [Route("UploadGovernmentIds")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> UploadGovernmentIds([FromForm] UploadGovernmentIds args)
+    {
+        try
+        {
+            if(!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Please provide required fields" });
+            }
+
+            var token = User.FindFirstValue("Token");
+            if(token == null)
+            {
+                return Json(new { success = false, message = "Unable to identify current user" });
+            }
+
+            var result = await accountApiHandler.UploadGovernmentIds(new Framework.ApiCommand.ApiCore.Account.Request.UploadGovernmentIdsArgs {
+                BackImageId = args.BackId,
+                FrontImageId = args.FrontId
+            }, token);
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+
+            if(result.Succeeded && !result.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = result.Result.ErrorInfo?.Message });
+            }
+
+            return Json(new { success = true, message = "Successfully uploaded" });
+        }
+        catch
         {
             return Json(new { success = false, message = "An error occured please try again later" });
         }

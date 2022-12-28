@@ -281,7 +281,13 @@ public class AccountApiHandler : IAccountApiHandler
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
                 .Request("Account/UploadGovernmentIds")
-                .PostJsonAsync(args)
+                .PostMultipartAsync(mp => 
+                    {
+                        mp.AddFile("FrontImageId", args.FrontImageId.OpenReadStream(), 
+                            args.FrontImageId.FileName, args.FrontImageId.ContentType)
+                        .AddFile("BackImageId", args.BackImageId.OpenReadStream(), 
+                            args.BackImageId.FileName, args.BackImageId.ContentType);
+                    })
                 .ReceiveJson<UploadGovernmentIdsResult>();
 
             return AppResult<UploadGovernmentIdsResult>.CreateSucceeded(result, "Successfully posting upload government ids api");
