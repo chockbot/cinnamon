@@ -14,4 +14,5 @@ public interface ICustomerData
     Task<AppResult<UpdateCustomerResult>> UpdateCustomer(UpdateCustomerArgs args);
     Task<AppResult<CheckCustomerLoginResult>> CheckCustomerLogin(CheckCustomerLoginArgs args);
     Task<AppResult<GetGovernmentIdResult>> GetGovernmentIds(int customerId);
+    Task<AppResult<GetProfilePictureResult>> GetProfilePicture(int customerId);
 }
