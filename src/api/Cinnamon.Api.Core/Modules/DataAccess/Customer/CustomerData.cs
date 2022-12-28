@@ -173,7 +173,7 @@ public class CustomerData : ICustomerData
             var result = await flurlClient
                             .Request($"Customer/GetGovernmendId/{customerId}")
                             .GetJsonAsync<GetGovernmentIdResult>();
-            
+
             return AppResult<GetGovernmentIdResult>.CreateSucceeded(result, "Successfully getting customer government id api");
         }
         catch (FlurlHttpException ex)
@@ -183,6 +183,26 @@ public class CustomerData : ICustomerData
         catch (Exception ex)
         {
             return AppResult<GetGovernmentIdResult>.CreateFailed(ex, "An error occured when getting customer government id api");
+        }
+    }
+    public async Task<AppResult<GetProfilePictureResult>> GetProfilePicture(int customerId)
+    {
+
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Customer/GetProfilePicture/{customerId}")
+                            .GetJsonAsync<GetProfilePictureResult>();
+
+            return AppResult<GetProfilePictureResult>.CreateSucceeded(result, "Successfully getting customer profile picture api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetProfilePictureResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetProfilePictureResult>.CreateFailed(ex, "An error occured when getting customer profile picture api");
         }
     }
 }

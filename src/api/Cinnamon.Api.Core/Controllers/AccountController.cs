@@ -27,6 +27,7 @@ public class AccountController : ControllerBase
     private readonly IDeleteFamilyMembersHandler deleteFamilyMembersHandler;
     private readonly ISubmitUpdateProfileHandler updateProfileHandler;
     private readonly IGetGovernmentIdsHandler getGovernmentIdsHandler;
+    private readonly IGetProfilePictureHandler getProfilePictureHandler;
     private readonly IUploadGovernmentIdHandler uploadGovernmentIdHandler;
     private readonly IUploadProfilePictureHandler uploadProfilePictureHandler;
 
@@ -36,7 +37,7 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler)
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler,IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -51,7 +52,8 @@ public class AccountController : ControllerBase
         this.updateProfileHandler = updateProfileHandler;
         this.getGovernmentIdsHandler = getGovernmentIdsHandler;
         this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
-        // this.uploadProfilePictureHandler = uploadProfilePictureHandler;
+        this.uploadProfilePictureHandler = uploadProfilePictureHandler;
+        this.getProfilePictureHandler = getProfilePictureHandler;   
     }
 
     [Route("Register")]
@@ -489,7 +491,32 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
-
+    [Route("GetProfilePicture")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetProfilePictureResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetProfilePicture()
+    {
+        try
+        {
+            var result= await getProfilePictureHandler.ExecuteAsync(new Services.AccountService.Interactors.GetProfilePictureArgs {});
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetProfilePictureResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetProfilePictureResult
+            {
+                Result = new ProfilePictureDTO
+                {
+                    ProfileImagePath = result.Result.ProfileImagseSrc
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
     [Route("UploadGovernmentIds")]
     [HttpPost]
     [ProducesResponseType(typeof(UploadGovernmentIdsResult), StatusCodes.Status201Created)]
