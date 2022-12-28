@@ -18,13 +18,13 @@
                             <p class="details">
                                 We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
                             </p>
-                            @for (int i = 0; i < localStateFamilyMembers.Count; i++)
+                            @* @for (int i = 0; i < localStateFamilyMembers.Count; i++)
                             {
                                 if (localStateFamilyMembers[i].Id == 0)
                                 {
                                     <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
                                 }
-                            }
+                            } *@
                             <Div Display="Display.Flex">
                                 <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop"
                                         TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">

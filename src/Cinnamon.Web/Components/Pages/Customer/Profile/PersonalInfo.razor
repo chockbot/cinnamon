@@ -82,7 +82,7 @@
                     </Div>
                     <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                         <Column>
-                            @*@foreach (var item in Model.Customer.FamilyMembers)
+                            @foreach (var item in Model.FamilyMembers)
                             {
                                 <Row style="flex: 0 0 auto;" class="mb-2">
                                     <Column>
@@ -95,7 +95,7 @@
                                         <p class="text-capitalize text-end">@item.BirthMonth @item.BirthYear</p>
                                     </Column>
                                 </Row>
-                            }*@
+                            }
                         </Column>
                     </Div>
                 </Column>
@@ -193,7 +193,7 @@
 
     private string birthDateLocalstate = string.Empty;
 
-    private IList<FamilyMemberModel> localStateFamilyMembers = new List<FamilyMemberModel>();
+    private IList<Models.Entities.FamilyMember> localStateFamilyMembers = new List<Models.Entities.FamilyMember>();
 
     private void EditLegalNameClick()
     {
@@ -239,14 +239,14 @@
         }
     }
 
-    private void OnDeleteFamily(FamilyMemberModel member)
+    private void OnDeleteFamily(Models.Entities.FamilyMember member)
     {
         localStateFamilyMembers.Remove(member);
     }
 
     private void EditFamilyMemberClick()
     {
-        localStateFamilyMembers = Model.Customer.FamilyMembers;
+        localStateFamilyMembers = Model.FamilyMembers;
         isEditFamilyMember = true;
     }
 
@@ -255,7 +255,7 @@
         if(isEditFamilyMember)
         {
             // get only not empty members
-            var members = localStateFamilyMembers.Where(i => !string.IsNullOrEmpty(i.Name)).ToList();
+            /*var members = localStateFamilyMembers.Where(i => !string.IsNullOrEmpty(i.Name)).ToList();
 
             var update = await updateFamilyMembers.ExecuteAsync(
                 new Core.Module.CustomerService.Interactors.UpdateFamilyMember {CustomerId = Model.Customer.Id, FamilyMembers = members});
@@ -263,7 +263,7 @@
             if(update.Succeeded)
             {
                 Model.Customer = update.Result.Customer;
-            }
+            }*/
         }
         isEditFamilyMember = false;
     }

@@ -13,5 +13,5 @@ public class CreateFamilyMemberArgs
     [Required]
     public string BirthMonth {get; set;}
     [Required]
-    public string BirthYear {get; set;}
+    public int BirthYear {get; set;}
 }

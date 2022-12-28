@@ -15,14 +15,14 @@ public class FamilyMemberRepository : IFamilyMemberRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<FamilyMemberDTO>> Create(int customerId, string name, string gender, string birthmonth, string birthyear)
+    public async Task<AppResult<FamilyMemberDTO>> Create(int customerId, string name, string gender, string birthmonth, int birthyear)
     {
         try
         {
             var familyMember = new Entities.FamilyMember 
             {
                 BirthMonth = birthmonth,
-                BirthYear = birthyear,
+                BirthYear = birthyear.ToString(),
                 CustomerId = customerId,
                 Gender = gender,
                 Name = name,
@@ -64,7 +64,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var members = familyMembers.Select(f => {
                 return new Entities.FamilyMember {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear,
+                    BirthYear = f.BirthYear.ToString(),
                     CustomerId = customerId,
                     Gender = f.Gender,
                     Name = f.Name,
@@ -81,7 +81,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var createdMembers = createdRes.Result.Select(f => {
                 return new FamilyMemberDTO {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear,
+                    BirthYear = Convert.ToInt32(f.BirthYear),
                     Gender = f.Gender,
                     Id = f.Id,
                     Name = f.Name,
@@ -110,7 +110,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var members = result.Result.Select(f => {
                 return new FamilyMemberDTO {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear,
+                    BirthYear = Convert.ToInt32(f.BirthYear),
                     Gender = f.Gender,
                     Name = f.Name,
                     Id = f.Id
@@ -138,7 +138,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var members = result.Result.Select(f => {
                 return new FamilyMemberDTO {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear,
+                    BirthYear = Convert.ToInt32(f.BirthYear),
                     Gender = f.Gender,
                     Name = f.Name,
                     Id = f.Id
@@ -166,7 +166,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
 
             return AppResult<FamilyMemberDTO>.CreateSucceeded(new FamilyMemberDTO {
                 BirthMonth = result.Result.BirthMonth,
-                BirthYear = result.Result.BirthYear,
+                BirthYear = Convert.ToInt32(result.Result.BirthYear),
                 Gender = result.Result.Gender,
                 Name = result.Result.Name,
                 Id = result.Result.Id
@@ -192,7 +192,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var resultDto = result.Result.Select(i => {
                 return new FamilyMemberDTO {
                     BirthMonth = i.BirthMonth,
-                    BirthYear  = i.BirthYear,
+                    BirthYear  = Convert.ToInt32(i.BirthYear),
                     Gender = i.Gender,
                     Id = i.Id,
                     Name = i.Name
@@ -207,7 +207,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
         }
     }
 
-    public async Task<AppResult<FamilyMemberDTO>> Update(int familyMemberId, string? name, string? gender, string? birthmonth, string? birthyear)
+    public async Task<AppResult<FamilyMemberDTO>> Update(int familyMemberId, string? name, string? gender, string? birthmonth, int? birthyear)
     {
         try
         {
@@ -223,7 +223,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             member.Name = name ?? member.Name;
             member.Gender = gender ?? member.Gender;
             member.BirthMonth = birthmonth ?? member.BirthMonth;
-            member.BirthYear = birthyear ?? member.BirthYear;
+            member.BirthYear = birthyear?.ToString() ?? member.BirthYear;
 
             var updatedRes = await dataStore.FamilyMember.Update(member);
             if(!updatedRes.Succeeded || updatedRes.Result == null)
@@ -234,7 +234,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
 
             return AppResult<FamilyMemberDTO>.CreateSucceeded(new FamilyMemberDTO {
                 BirthMonth =  updatedRes.Result.BirthMonth,
-                BirthYear = result.Result.BirthYear,
+                BirthYear = Convert.ToInt32(result.Result.BirthYear),
                 Gender = result.Result.Gender,
                 Name = result.Result.Name,
                 Id = result.Result.Id
@@ -253,7 +253,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var members = familyMembers.Select(f => {
                 return new Entities.FamilyMember {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear,
+                    BirthYear = f.BirthYear.ToString(),
                     Id = f.Id,
                     Gender = f.Gender,
                     Name = f.Name,
@@ -271,7 +271,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var updatedDTO = updatedRes.Result.Select(f => {
                 return new FamilyMemberDTO {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear,
+                    BirthYear = Convert.ToInt32(f.BirthYear),
                     Gender = f.Gender,
                     Name = f.Name,
                     Id = f.Id

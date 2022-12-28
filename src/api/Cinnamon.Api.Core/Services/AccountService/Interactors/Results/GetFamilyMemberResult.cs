@@ -8,7 +8,7 @@ public class GetFamilyMemberResult
     {
         public int Id {get; set;}
         public string Name {get; set;}
-        public string BirthYear {get; set;}
+        public int BirthYear {get; set;}
         public string BirthMonth {get; set;}
         public string Gender {get; set;}
 

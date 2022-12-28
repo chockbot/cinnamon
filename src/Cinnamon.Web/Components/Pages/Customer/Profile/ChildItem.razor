@@ -45,13 +45,13 @@
 {
 
     [Parameter]
-    public FamilyMemberModel Model {get; set;}
+    public Models.Entities.FamilyMember Model {get; set;}
 
     [Parameter]
-    public EventCallback<FamilyMemberModel> ModelChanged {get; set;}
+    public EventCallback<Models.Entities.FamilyMember> ModelChanged {get; set;}
 
     [Parameter]
-    public EventCallback<FamilyMemberModel> OnDelete {get; set;}
+    public EventCallback<Models.Entities.FamilyMember> OnDelete {get; set;}
 
     private IList<string> genders = new List<string>();
 

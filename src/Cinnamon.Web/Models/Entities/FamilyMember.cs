@@ -1,9 +1,8 @@
-namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.FamilyMember;
+namespace Cinnamon.Web.Models.Entities;
 
-public class FamilyMemberDTO
+public class FamilyMember 
 {
     public int Id { get; set; }
-    public int CustomerId {get; set;}
     public string Name {get; set;}
     public int BirthYear {get; set;}
     public string BirthMonth {get; set;}

@@ -165,6 +165,22 @@
         Model = new();
         var profile = result.Result.Result;
 
+        // get family members information
+        Model.FamilyMembers = new List<Models.Entities.FamilyMember>();
+        var members = await accountApiHandler.GetFamilyMembers(token);
+        if(members.Succeeded && members.Result != null && members.Succeeded)
+        {
+            Model.FamilyMembers = members.Result.Result.Select(m => {
+                return new Models.Entities.FamilyMember {
+                    BirthMonth = m.BirthMonth,
+                    BirthYear = m.BirthYear,
+                    Gender = m.Gender,
+                    Name = m.Name,
+                    Id = m.Id
+                };
+            }).ToList();
+        }
+
         Model.Token = token;
         Model.CustomerProfile = new Models.Entities.CustomerProfile
             {
@@ -183,7 +199,6 @@
 
         //Get Maker Activities
         //activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(Model.CustomerProfile.Id)).OrderBy(i => i.Id).ToList();
-
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
