@@ -22,7 +22,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var familyMember = new Entities.FamilyMember 
             {
                 BirthMonth = birthmonth,
-                BirthYear = birthyear.ToString(),
+                BirthYear = birthyear,
                 CustomerId = customerId,
                 Gender = gender,
                 Name = name,
@@ -64,7 +64,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var members = familyMembers.Select(f => {
                 return new Entities.FamilyMember {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear.ToString(),
+                    BirthYear = f.BirthYear,
                     CustomerId = customerId,
                     Gender = f.Gender,
                     Name = f.Name,
@@ -223,7 +223,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             member.Name = name ?? member.Name;
             member.Gender = gender ?? member.Gender;
             member.BirthMonth = birthmonth ?? member.BirthMonth;
-            member.BirthYear = birthyear?.ToString() ?? member.BirthYear;
+            member.BirthYear = birthyear ?? member.BirthYear;
 
             var updatedRes = await dataStore.FamilyMember.Update(member);
             if(!updatedRes.Succeeded || updatedRes.Result == null)
@@ -253,7 +253,7 @@ public class FamilyMemberRepository : IFamilyMemberRepository
             var members = familyMembers.Select(f => {
                 return new Entities.FamilyMember {
                     BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear.ToString(),
+                    BirthYear = f.BirthYear,
                     Id = f.Id,
                     Gender = f.Gender,
                     Name = f.Name,
