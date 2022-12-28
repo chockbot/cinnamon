@@ -1,5 +1,4 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
-@using Cinnamon.Core.Models;
 @using Cinnamon.Core.Module.CustomerService.Handler;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject IUpdateCustomerFamilyMembers updateFamilyMembers;
@@ -195,6 +194,8 @@
 
     private IList<Models.Entities.FamilyMember> localStateFamilyMembers = new List<Models.Entities.FamilyMember>();
 
+    private IList<int> RemovedIds = new List<int>();
+
     private void EditLegalNameClick()
     {
         isEditLegalName = !isEditLegalName;
@@ -242,6 +243,7 @@
     private void OnDeleteFamily(Models.Entities.FamilyMember member)
     {
         localStateFamilyMembers.Remove(member);
+        RemovedIds.Add(member.Id);
     }
 
     private void EditFamilyMemberClick()
@@ -254,16 +256,40 @@
     {
         if(isEditFamilyMember)
         {
-            // get only not empty members
-            /*var members = localStateFamilyMembers.Where(i => !string.IsNullOrEmpty(i.Name)).ToList();
+            // delete family members
+            var deleted = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs {
+                Ids = RemovedIds
+            }, Model.Token);
 
-            var update = await updateFamilyMembers.ExecuteAsync(
-                new Core.Module.CustomerService.Interactors.UpdateFamilyMember {CustomerId = Model.Customer.Id, FamilyMembers = members});
+            // add members
+            var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs {
+                FamilyMembers = localStateFamilyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                                    .Select(m => {
+                                        return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
+                                            BirthMonth = m.BirthMonth,
+                                            BirthYear = m.BirthYear,
+                                            Gender = m.Gender,
+                                            Id = m.Id,
+                                            Name = m.Name
+                                        };
+                                    }),
+            }, Model.Token);
 
-            if(update.Succeeded)
-            {
-                Model.Customer = update.Result.Customer;
-            }*/
+            // update members
+            var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs {
+                FamilyMembers = localStateFamilyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                                    .Select(m => {
+                                        return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
+                                            BirthMonth = m.BirthMonth,
+                                            BirthYear = m.BirthYear,
+                                            Gender = m.Gender,
+                                            Id = m.Id,
+                                            Name = m.Name
+                                        };
+                                    })
+            }, Model.Token);
+
+            Model.FamilyMembers = localStateFamilyMembers.Where(m => !string.IsNullOrEmpty(m.Name)).ToList();
         }
         isEditFamilyMember = false;
     }
