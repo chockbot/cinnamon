@@ -17,4 +17,5 @@ public interface ICustomerRepository
     Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh);
     Task<AppResult<GovernmentIDsDTO>> GetGovermentId(int customerID);
+    Task<AppResult<ProfilePictureDTO>> GetProfilePicture(int customerID);
 }
