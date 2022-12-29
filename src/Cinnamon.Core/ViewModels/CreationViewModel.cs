@@ -223,10 +223,8 @@ namespace Cinnamon.Core
                     CloudBlockBlob blockBlob = container.GetBlockBlobReference(guid + ".jpg");
                     blockBlob.Properties.ContentType = "image/jpg";
 
-                    using (var ms = new MemoryStream(image.ImageData, false))
-                    {
-                        await blockBlob.UploadFromStreamAsync(ms);
-                    }
+                     await blockBlob.UploadFromByteArrayAsync(image.ImageData,0,image.ImageData.Length);
+
                     images.Add(new ActivityImagesModels() { ImageLocation = blockBlob.Uri.ToString(), ImageName = guid });
                 }
                 return images;

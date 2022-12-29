@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Data.Migrations
 {
     [DbContext(typeof(DataStoreDbContext))]
-    partial class DataStoreDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221202033058_AddColumnInExperienceCategory")]
+    partial class AddColumnInExperienceCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,9 +96,6 @@ namespace Cinnamon.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<int?>("ExperienceCategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("ExperienceSubCategoryId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ExperienceTypeId")
@@ -678,43 +677,6 @@ namespace Cinnamon.Data.Migrations
                     b.ToTable("SearchTags");
                 });
 
-            modelBuilder.Entity("Cinnamon.Core.Models.SubCategoryModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CatergoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("DeletionFlag")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("SubCatergory")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CatergoryId");
-
-                    b.ToTable("SubCategory");
-                });
-
             modelBuilder.Entity("Cinnamon.Core.ScheduleModel", b =>
                 {
                     b.Property<int?>("Id")
@@ -1111,17 +1073,6 @@ namespace Cinnamon.Data.Migrations
                     b.Navigation("Activity");
                 });
 
-            modelBuilder.Entity("Cinnamon.Core.Models.SubCategoryModel", b =>
-                {
-                    b.HasOne("Cinnamon.Core.Models.ExperienceCategoryModel", "CategoryModel")
-                        .WithMany("SubCategory")
-                        .HasForeignKey("CatergoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("CategoryModel");
-                });
-
             modelBuilder.Entity("Cinnamon.Core.ScheduleModel", b =>
                 {
                     b.HasOne("Cinnamon.Core.ActivityModel", "Activity")
@@ -1212,11 +1163,6 @@ namespace Cinnamon.Data.Migrations
                     b.Navigation("FamilyMembers");
 
                     b.Navigation("OngoingActivities");
-                });
-
-            modelBuilder.Entity("Cinnamon.Core.Models.ExperienceCategoryModel", b =>
-                {
-                    b.Navigation("SubCategory");
                 });
 #pragma warning restore 612, 618
         }

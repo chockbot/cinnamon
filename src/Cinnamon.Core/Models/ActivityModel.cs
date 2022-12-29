@@ -10,6 +10,7 @@ namespace Cinnamon.Core
         public int ActivityTypeId { get; set; } = 1;
         public int ExperienceTypeId { get; set; } = 1;
         public int? ExperienceCategoryId { get; set; } = null;
+        public int? ExperienceSubCategoryId { get; set; } = null;
         public string Title { get; set; } = "";
         public string Location { get; set; } = "";
         public string Price { get; set; } = "";

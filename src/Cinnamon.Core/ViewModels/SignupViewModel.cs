@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Core.Models;
+using Microsoft.Graph;
 
 namespace Cinnamon.Core.ViewModels
 {

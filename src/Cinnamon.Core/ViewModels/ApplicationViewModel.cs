@@ -4,9 +4,6 @@ namespace Cinnamon.Core
 {
     public class ApplicationViewModel
     {
-        public List<ActivityTypeModel> type;
-        public List<ActivityModel> act;
-        public List<ActivityImagesModels> images;
         public async Task applySeedDemoData() {
 
             // Create Experience Types 
@@ -162,36 +159,381 @@ namespace Cinnamon.Core
                 });
             }
 
+            //Experience Category
             var ExperienceCategory = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
             if (ExperienceCategory.Count == 0)
             {
                 await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
                 {
                     Id = 1,
-                    Category = "Sports"
+                    Category = "New",
+                    IconPath = "images/Category/New.png"
+
                 });
                 await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
                 {
                     Id = 2,
-                    Category = "Academics"
+                    Category = "Academics",
+                    IconPath = "images/Category/Academic.png"
+                    
                 });
                 await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
                 {
                     Id = 3,
-                    Category = "Toddler Experience"
+                    Category = "Language",
+                    IconPath = "images/Category/Language.png"
                 });
                 await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
                 {
                     Id = 4,
-                    Category = "Language"
+                    Category = "Music",
+                    IconPath = "images/Category/Music.png"
                 });
                 await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
                 {
                     Id = 5,
-                    Category = "Music"
+                    Category = "Skill",
+                    IconPath = "images/Category/Skill.png"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 6,
+                    Category = "SPED",
+                    IconPath = "images/Category/SPED.png"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 7,
+                    Category = "Sports",
+                    IconPath = "images/Category/Sports.png"
                 });
             }
-        }  
+
+            //Experience SubCategory
+            var subcategories = await CoreDI.DataStore.SubCategory.GetAllAsync();
+            if (subcategories.Count == 0)
+            {
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 1,
+                    CatergoryId = 2,
+                    SubCatergory = "Math"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 2,
+                    CatergoryId = 2,
+                    SubCatergory = "Science"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 3,
+                    CatergoryId = 2,
+                    SubCatergory = "Filipino"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 4,
+                    CatergoryId = 2,
+                    SubCatergory = "Social Studies"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 5,
+                    CatergoryId = 2,
+                    SubCatergory = "Art"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 6,
+                    CatergoryId = 2,
+                    SubCatergory = "Music"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 7,
+                    CatergoryId = 2,
+                    SubCatergory = "English"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 8,
+                    CatergoryId = 2,
+                    SubCatergory = "Araling Panlipunan"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 9,
+                    CatergoryId = 2,
+                    SubCatergory = "Creative Writing"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 10,
+                    CatergoryId = 2,
+                    SubCatergory = "Coding"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 11,
+                    CatergoryId = 2,
+                    SubCatergory = "Reading"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 12,
+                    CatergoryId = 2,
+                    SubCatergory = "Writing"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 13,
+                    CatergoryId = 3,
+                    SubCatergory = "Mandarin"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 14,
+                    CatergoryId = 3,
+                    SubCatergory = "Spanish"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 15,
+                    CatergoryId = 3,
+                    SubCatergory = "Japanese"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 16,
+                    CatergoryId = 3,
+                    SubCatergory = "Tagalog"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 17,
+                    CatergoryId = 3,
+                    SubCatergory = "Korean"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 18,
+                    CatergoryId = 3,
+                    SubCatergory = "English"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 19,
+                    CatergoryId = 4,
+                    SubCatergory = "Piano"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 20,
+                    CatergoryId = 4,
+                    SubCatergory = "Guitar"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 21,
+                    CatergoryId = 4,
+                    SubCatergory = "Drums"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 22,
+                    CatergoryId = 4,
+                    SubCatergory = "Bass"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 23,
+                    CatergoryId = 5,
+                    SubCatergory = "Fun Play"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 24,
+                    CatergoryId = 6,
+                    SubCatergory = "Occupational Theraphy"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 25,
+                    CatergoryId = 6,
+                    SubCatergory = "Swimming Lessons"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 26,
+                    CatergoryId = 6,
+                    SubCatergory = "Yoga Lessons"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 26,
+                    CatergoryId = 7,
+                    SubCatergory = "Archery"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 28,
+                    CatergoryId = 7,
+                    SubCatergory = "Baseball"
+                });
+
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 29,
+                    CatergoryId = 7,
+                    SubCatergory = "Basketball"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 30,
+                    CatergoryId = 7,
+                    SubCatergory = "Cheerleading"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 31,
+                    CatergoryId = 7,
+                    SubCatergory = "Dance"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 32,
+                    CatergoryId = 7,
+                    SubCatergory = "Equestiran (Equine Sports)"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 33,
+                    CatergoryId = 7,
+                    SubCatergory = "Field Hockey"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 34,
+                    CatergoryId = 7,
+                    SubCatergory = "Football"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 35,
+                    CatergoryId = 7,
+                    SubCatergory = "Golf"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 36,
+                    CatergoryId = 7,
+                    SubCatergory = "Gymnastics"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 37,
+                    CatergoryId = 7,
+                    SubCatergory = "Ice Hockey"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 38,
+                    CatergoryId = 7,
+                    SubCatergory = "Karate"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 39,
+                    CatergoryId = 7,
+                    SubCatergory = "Lacrosse"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 40,
+                    CatergoryId = 7,
+                    SubCatergory = "Rowing"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 41,
+                    CatergoryId = 7,
+                    SubCatergory = "Snowboarding"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 42,
+                    CatergoryId = 7,
+                    SubCatergory = "Soccer"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 43,
+                    CatergoryId = 7,
+                    SubCatergory = "Surfing"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 44,
+                    CatergoryId = 7,
+                    SubCatergory = "Swimming"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 55,
+                    CatergoryId = 7,
+                    SubCatergory = "Table Tennis"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 46,
+                    CatergoryId = 7,
+                    SubCatergory = "Tennis"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 47,
+                    CatergoryId = 7,
+                    SubCatergory = "Track and Field"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 48,
+                    CatergoryId = 7,
+                    SubCatergory = "Volleyball"
+                });
+                await CoreDI.DataStore.SubCategory.SaveDataAsync(new SubCategoryModel()
+                {
+                    Id = 49,
+                    CatergoryId = 7,
+                    SubCatergory = "Chess"
+                });
+                await CoreDI.DataStore.ExperienceCategory.SaveDataAsync(new ExperienceCategoryModel
+                {
+                    Id = 6,
+                    Category = "SPED"
+                });
+            }
+
+        }
 
     }
 }

@@ -6,11 +6,13 @@
 @using Cinnamon.Data
 @using System
 @using System.IO
+@using System.Text.RegularExpressions;
 @using Cinnamon.Core.Module.UploadService.Handler
 @inject IWebHostEnvironment Environment
 @inject IUploadImages uploadImageHandler
 @inject IDeleteImage deleteImageHandler
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
 
 @if (!viewModel.isSubmit)
 {
@@ -35,26 +37,46 @@
                             <div class="figure-profile">
                                  <label for="fileinput" class="upload-image">
                                     <Figure Border="Border.RoundedCircle">
-                                        <CardImage Source="@viewModel.profilepicture" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                        <CardImage Source="@viewModel.profilepicture" id="avatar-crop" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                                     </Figure>
                                  </label>
-                                    <InputFile style="display: none;" id="fileinput" name="fileinput" accept=".png,.jpg,.jpeg" OnChange="@LoadImage" />
+                                     <input type="file" name="photo" accept="image/*" class="js-photo-upload" style="display:none;">
                                 <div class="round">
-                                    <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadImage" />
-                                    <i class="fa fa-camera" style="color: black;"></i>
+                                    <form method="post">
+                                        <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" type="file" name="photo" class="js-photo-upload"/>
+                                        <i class="fa fa-camera" style="color: black;"></i>
+                                    </form>
                                 </div>
                             </div>
                         </Card>
                     </div>
-                        <p class="bottom-text">JPEG or PNG only</p>
+                    <p class="bottom-text">JPEG or PNG only</p>
                     <div class="btn-upload">
-                        <SignupButton id="update-profile" Width="100%" Text="Upload" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" Height="0.5vw" OnClick="@Upload"/>
+                        <SignupButton id="update-profile" Width="100%" Text="Upload" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" Height="0.5vw"/>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </EditForm>
+<!--ModalEdit-->
+    <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center">Edit Profile Photo</p>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                     <div class="col-12-lg d-flex justify-content-center">
+                        <img class="js-avatar-preview" src="">
+                    </div>
+                    <button class="btn btn-primary js-save-cropped-avatar">Save</button>
+                </div>
+            </div> 
+        </div>
+    </div>
 }
 @if (viewModel.ShowErrorMessage)
 {
@@ -76,6 +98,10 @@
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
 @code {
+    IJSObjectReference module;
+
+    private DotNetObjectReference<ModalUploadingProfile>? objRef;
+
     private readonly IConfiguration configuration;
 
     private List<IBrowserFile> loadedFiles = new();
@@ -84,6 +110,26 @@
 
     private CustomerModel customer = new CustomerModel();
 
+    public string ParaContent = "Some Text Content";
+
+    private Modal modalRef;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/editprofileModal.js");
+        }
+    }
+    private async Task ShowModal()
+    {
+        await modalRef.Show();
+    }
+
+    private async Task HideModal()
+    {
+        await modalRef.Hide();
+    }
     public bool ButtonIsClicked()
     {
         return viewModel.isClickButton ? true : false;
@@ -98,55 +144,9 @@
         viewModel.profilepicture    = filepath[4];
         await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
     }
-    private async Task LoadImage(InputFileChangeEventArgs e)
-    {
-        var file = e.File;
-        viewModel.isLoading     = true;
-        viewModel.isClickButton = true;
-        loadedFiles.Clear();
-
-        //Check file content
-        if (!file.ContentType.Contains("image"))
-        {
-            viewModel.ShowErrorMessage = true;
-            HideMessageAfterDelay();
-            return;
-        }
-        try
-        {
-            using (var ms = new MemoryStream())
-            {
-                await file.OpenReadStream(viewModel.maxFileSize).CopyToAsync(ms);
-                byte[] imageByte = ms.ToArray();
-
-                // Upload to Azure Blob
-                var upload = await uploadImageHandler.ExecuteAsync(
-                        new Core.Module.UploadService.Interactors.ImageUpload
-                            { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, file.Name) } });
-                //Display Image
-                if (upload.Succeeded)
-                {
-                    if (upload.Result != null)
-                    {
-                        foreach (var imagePath in upload.Result.ImagesPath)
-                        {
-                            viewModel.profilepicture = imagePath;
-                            viewModel.isClickButton  = false;
-                        }
-                    }
-                }
-            }
-        }
-        catch (Exception ex)
-        {
-            viewModel.ShowErrorMessage = true;
-            HideMessageAfterDelay();
-        }
-        viewModel.isLoading = false;
-    }
     private async Task DeleteBlob(string filename, string container1)
     {
-        // Upload to Azure Blob
+        // Delete to Azure Blob
         var result = await deleteImageHandler.ExecuteAsync(
                 new Core.Module.UploadService.Interactors.DeleteImage
                 { Container = "upload-profile-picture", FileName = filename });
@@ -163,8 +163,57 @@
     }
     private async Task Upload()
     {
-        // Check if Customer exist
-        viewModel.isSpinnerShow = true;
+         viewModel.isSpinnerShow = true;
+
+        //Get Image Data Url from JS
+        await module.InvokeVoidAsync("ChangeContentJS", objRef);
+
+        //Get Image Data
+        var match = Regex.Match(ParaContent, @"data:(?<type>.+?);base64,(?<data>.+)");
+        var base64Data = match.Groups["data"].Value;
+        var contentType = match.Groups["type"].Value;
+        var binData = Convert.FromBase64String(base64Data);
+
+        using (var ms = new MemoryStream(binData))
+        {
+            //Get image Byte
+            byte[] imageByte = ms.ToArray();
+
+            //Generate File Name
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var stringChars = new char[8];
+            var random = new Random();
+
+            for (int i = 0; i < stringChars.Length; i++)
+            {
+                stringChars[i] = chars[random.Next(chars.Length)];
+            }
+            var randomStr = new String(stringChars);
+
+            //Set image FileName
+            string[] type= contentType.Split("/");
+            string extension = type[1];
+            string filename = new String(randomStr + "." + extension);
+
+            //Upload to Azure Blob
+            var upload = await uploadImageHandler.ExecuteAsync(
+                new Core.Module.UploadService.Interactors.ImageUpload
+                    { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, filename) } });
+           
+            //Display Image
+            if (upload.Succeeded)
+            {
+                if (upload.Result != null)
+                {
+                    foreach (var imagePath in upload.Result.ImagesPath)
+                    {
+                        viewModel.profilepicture = imagePath;
+                        viewModel.isClickButton = false;
+                    }
+                }
+            }
+        }
+        //Save image location to DB
         var res = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
         if (res != null)
         {
@@ -174,6 +223,7 @@
             viewModel.isSpinnerShow      = false;
             viewModel.ShowSuccessMessage = true;
             HideMessageAfterDelay();
+            await CloseModal();
         }
         else
         {
@@ -181,6 +231,13 @@
             HideMessageAfterDelay();
         }
     }
+
+    [JSInvokable]
+    public void ChangeParaContentValue(string value)
+    {
+        ParaContent = value;
+    }
+
     public async Task OpenModal(string email, string path)
     {
         viewModel.ModalDisplay   = "block;";
@@ -190,6 +247,7 @@
         viewModel.profilepicture = path;
         StateHasChanged();
     }
+
     public async Task CloseModal()
     {
         viewModel.ModalClass   = "";
@@ -198,11 +256,18 @@
         StateHasChanged();
         NavigationManager.NavigateTo("/customer/profile",true);
     }
+
     private async void HideMessageAfterDelay()
     {
-        await Task.Delay(3000);
+        await Task.Delay(20000);
         viewModel.ShowErrorMessage  = false;
         viewModel.ShowSuccessMessage = false;
         StateHasChanged();
     }
+
+    protected override void OnInitialized()
+    {
+        objRef = DotNetObjectReference.Create(this);
+    }
 }
+

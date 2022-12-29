@@ -40,6 +40,7 @@ namespace Cinnamon.Data
         public IOngoingActivity OngoingActivity => new OngoingActivity(mDbContext);
         public IPurchaseOrder PurchaseOrder => new PurchaseOrder(mDbContext);
         public IResendEmail ResendEmail => new ResendEmail(mDbContext);
+        public ISubCategory SubCategory => new SubCategory(mDbContext);
         #endregion
 
         #region Constructor
