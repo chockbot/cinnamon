@@ -37,8 +37,10 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,
-        IGetProfilePictureHandler getProfilePictureHandler )
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler
+        // , IUploadProfilePictureHandler uploadProfilePictureHandler,
+        // IGetProfilePictureHandler getProfilePictureHandler 
+        )
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -53,8 +55,8 @@ public class AccountController : ControllerBase
         this.updateProfileHandler = updateProfileHandler;
         this.getGovernmentIdsHandler = getGovernmentIdsHandler;
         this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
-        this.uploadProfilePictureHandler = uploadProfilePictureHandler;
-        this.getProfilePictureHandler = getProfilePictureHandler;   
+        // this.uploadProfilePictureHandler = uploadProfilePictureHandler;
+        // this.getProfilePictureHandler = getProfilePictureHandler;   
     }
 
     [Route("Register")]
