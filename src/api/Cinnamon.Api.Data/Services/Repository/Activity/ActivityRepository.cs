@@ -18,7 +18,8 @@ public class ActivityRepository : IActivityRepository
     public async Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price, 
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, 
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel, 
-        int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5)
+        int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
+        int experienceCategoryId, int subCategoryId)
     {
         try
         {
@@ -36,6 +37,20 @@ public class ActivityRepository : IActivityRepository
                 return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find customer id associated to activity"), "Can't find customer id associated to activity");
             }
 
+            // check experience category id
+            var category = await dataStore.ExperienceCategory.GetByIdAsync(experienceCategoryId);
+            if(!category.Succeeded || category.Result == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find experience category id associated to activity"), "Can't find experience category id associated to activity");
+            }
+
+            // check sub category
+            var subcategory = await dataStore.SubCategory.GetByIdAsync(subCategoryId);
+            if(!subcategory.Succeeded || subcategory.Result == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find sub category id associated to activity"), "Can't find sub category id associated to activity");
+            }
+
             // save activity entity
             var ativity = new Entities.Activity
             {
@@ -45,7 +60,9 @@ public class ActivityRepository : IActivityRepository
                 ScheduleIndicator = scheduleIndicator,
                 Remarks = remarks,
                 IsPublished = isPublished,
-                CreatedBy = customerId
+                CreatedBy = customerId,
+                ExperienceCategoryId = experienceCategoryId,
+                SubCategoryId = subCategoryId
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -152,6 +169,8 @@ public class ActivityRepository : IActivityRepository
                     Price = a.Price,
                     Remarks = a.Remarks,
                     IsPublished = a.IsPublished,
+                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId = a.SubCategoryId ?? 0
                 };
             });
 
@@ -184,6 +203,8 @@ public class ActivityRepository : IActivityRepository
                     Price = a.Price,
                     Remarks = a.Remarks,
                     IsPublished = a.IsPublished,
+                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId = a.SubCategoryId ?? 0
                 };
             });
 
@@ -214,6 +235,8 @@ public class ActivityRepository : IActivityRepository
                 Price = result.Result.Price,
                 Remarks = result.Result.Remarks,
                 IsPublished = result.Result.IsPublished,
+                ExperienceCategoryId = result.Result.ExperienceCategoryId ?? 0,
+                SubCategoryId = result.Result.SubCategoryId ?? 0
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDao, "Successfully getting activity by id");
@@ -228,7 +251,7 @@ public class ActivityRepository : IActivityRepository
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, 
         string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4, 
-        string? searchtag5)
+        string? searchtag5, int? experienceCategoryId, int? subCategoryId)
     {
         try
         {
@@ -252,6 +275,31 @@ public class ActivityRepository : IActivityRepository
                 }
 
                 activity.ExperienceTypeId = experienceTypeId.Value;
+            }
+
+            // update experience category field
+            if(experienceCategoryId.HasValue)
+            {
+                // check id if existed
+                var cat = await dataStore.ExperienceCategory.GetByIdAsync(experienceCategoryId.Value);
+                if(!cat.Succeeded || cat.Result == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(cat.Error.Exception, cat.Message);
+                }
+
+                activity.ExperienceCategoryId = experienceCategoryId.Value;
+            }
+
+            // update sub category field
+            if(subCategoryId.HasValue)
+            {
+                var sub = await dataStore.SubCategory.GetByIdAsync(subCategoryId.Value);
+                if(!sub.Succeeded || sub.Result == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(sub.Error.Exception, sub.Message);
+                }
+
+                activity.SubCategoryId = subCategoryId.Value;
             }
 
             activity.Title = title ?? activity.Title;
@@ -348,7 +396,9 @@ public class ActivityRepository : IActivityRepository
                 SkillLevel = activityDescription.SkillLevel,
                 SpecificsYouWillProvide = activityDescription.SpecificsYouWillProvide,
                 Title = activity.Title,
-                SubTitle = activity.Subtitle
+                SubTitle = activity.Subtitle,
+                ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
+                SubCategoryId = activity.SubCategoryId ?? 0
             }, "Successfully updated activity details");
 
         }

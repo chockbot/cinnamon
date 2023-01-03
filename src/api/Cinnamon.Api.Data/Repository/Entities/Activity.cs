@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace Cinnamon.Api.Data.Repository.Entities;
 
 public class Activity : BaseEntity
@@ -14,6 +12,8 @@ public class Activity : BaseEntity
     public string Guarantee {get; set;}
     public string Remarks {get; set;}
     public bool IsPublished { get; set;}
+    public int? ExperienceCategoryId {get; set;}
+    public int? SubCategoryId {get; set;}
 
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
@@ -21,4 +21,6 @@ public class Activity : BaseEntity
     public virtual IList<ActivitySchedule> Schedules {get; set;}
     public virtual IList<ActivityImage> Images {get; set;}
     public virtual ExperienceType ExperienceType {get; set;}
+    public virtual ExperienceCategory ExperienceCategory {get; set;}
+    public virtual SubCategory SubCategory {get; set;}
 }

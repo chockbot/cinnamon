@@ -36,4 +36,8 @@ public class CreateActivityArgs
     public string? Searhtag3 { get; set; }
     public string? Searchtag4 { get; set; }
     public string? Searchtag5 { get; set; }
+    [Required]
+    public int ExperienceCategoryId {get; set;}
+    [Required]
+    public int SubCategoryId {get; set;}
 }

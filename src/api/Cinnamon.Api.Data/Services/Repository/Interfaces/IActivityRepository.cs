@@ -12,10 +12,10 @@ public interface IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district,
         string city, string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements,
         string activityLevel, string skillLevel, int minimumAge, bool canAdultsJoin, string? searchtag1, string? searhtag2,
-        string? searchtag3, string? searchtag4, string? searchtag5);
+        string? searchtag3, string? searchtag4, string? searchtag5, int experienceCategoryId, int subCategoryId);
     Task<AppResult<ActivityDTO>> UpdateActivityAsync(int activityId, int? experienceTypeId,string? title, string? description, string? price,
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district,
         string? city, string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements,
         string? activityLevel, string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2,
-        string? searchtag3, string? searchtag4, string? searchtag5);
+        string? searchtag3, string? searchtag4, string? searchtag5, int? experienceCategoryId, int? subCategoryId);
 }

@@ -1,5 +1,6 @@
 ﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Schedule;
 using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -112,6 +113,42 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("CreateManySchedules")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateManySchedulesResult), StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> CreateManySchedules([FromBody] CreateManySchedulesArgs args)
+        {
+            try
+            {
+                var schedules =  args.Schedules.Select(s => {
+                    return new ScheduleDTO {
+                        ActivityId = args.ActivityId,
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice
+                    };
+                });
+
+                var result = await _scheduleRepository.CreateSchedules(args.ActivityId, schedules);
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new CreateManySchedulesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new CreateManySchedulesResult { IsSuccess = true, Result = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateManySchedulesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

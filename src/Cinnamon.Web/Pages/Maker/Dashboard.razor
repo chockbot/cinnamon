@@ -1,10 +1,11 @@
 @page "/maker/dashboard"
 @using Cinnamon.Core
-@using Cinnamon.Core.Module.CustomerService.Handler;
+@using System.Security.Claims
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject NavigationManager NavigationManager
-@inject ISignedCustomer signedCustomer;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAccountApiHandler accountApiHandler;
 
 <section class="mt-5 maker-dashboard">
     <div class="container">
@@ -43,22 +44,41 @@
 {
     private IList<ActivityModel> activities = new List<ActivityModel>();
     private int activeActivityCount = 0;
+    private string token;
 
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user});
-        if(!currentCustomer.Succeeded)
+        var token = user.FindFirstValue("Token");
+        if(token == null)
         {
             // don't have current user login
             NavigationManager.NavigateTo("explore");
+            return;
         }
 
-        var customer = currentCustomer.Result.Customer;
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var customer = result.Result.Result;
 
-        activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
-        activeActivityCount = activities.Where(i => i.IsPublished).Count(); 
+        // check if customer is maker
+        /**if(!customer.IsMaker)
+        {
+            // account is not maker
+            NavigationManager.NavigateTo("explore");
+            return;
+        }*/
+
+        //var customer = currentCustomer.Result.Customer;
+
+        //activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
+        //activeActivityCount = activities.Where(i => i.IsPublished).Count(); 
     }
 
     private void ActiveCountChanged(int count)
