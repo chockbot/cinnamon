@@ -29,4 +29,6 @@ public class UpdateActivity
     public string? Searhtag3 { get; set; }
     public string? Searchtag4 { get; set; }
     public string? Searchtag5 { get; set; }
+    public int? ExperienceCategoryId {get; set;}
+    public int? SubCategoryId {get; set;}
 }

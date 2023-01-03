@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Schedule;
 using Cinnamon.Framework.Common;
 using System.Collections.Generic;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Schedule
 {
@@ -62,6 +63,61 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             catch (Exception ex)
             {
                 return AppResult<ScheduleDTO>.CreateFailed(ex.InnerException, ex.Message);
+            }
+        }
+
+        public async Task<AppResult<IEnumerable<ScheduleDTO>>> CreateSchedules(int activityId, IEnumerable<ScheduleDTO> schedules)
+        {
+            try
+            {
+                // check activity id if existed
+                var activity = await _dataStore.Activity.GetByIdAsync(activityId);
+                if(!activity.Succeeded || activity.Result == null)
+                {
+                    return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(
+                        new ApplicationException("Can't find provided activity id"), "Can't find provided activity id");
+                }
+
+                var entities = schedules.Select(s => {
+                    return new Entities.ActivitySchedule {
+                        ActivityId = activityId,
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                    };
+                });
+
+                var result = await _dataStore.ActivitySchedule.AddRange(entities);
+                if(!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(result.Message), "An error occured when creating multiple schedules");
+                }
+
+                var dtos = result.Result.Select(s => {
+                    return new ScheduleDTO {
+                        ActivityId = s.ActivityId,
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                    };
+                });
+
+                return AppResult<IEnumerable<ScheduleDTO>>.CreateSucceeded(dtos, "Successfully create multiple schedules");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(ex, "An error occured when creating multiple schedules");
             }
         }
 

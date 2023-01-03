@@ -1,9 +1,8 @@
-using Cinnamon.Framework.Interactor;
+namespace Cinnamon.Web.Models.Entities;
 
-namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
-
-public class CreateActivityArgs : IInteractor
+public class Activity 
 {
+    public int ActivityId {get; set;}
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
@@ -26,17 +25,4 @@ public class CreateActivityArgs : IInteractor
     public bool CanAdultsJoin {get; set;}
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
-    
-
-    public class ActivitySchedule 
-    {
-        public string Name {get; set;}
-        public string DateTime {get; set;}
-        public decimal Price {get; set;}
-        public string UnitPrice {get; set;}
-        public int PerUnit1 {get; set;}
-        public string PriceUnit1 {get; set;}
-        public int PerUnit2 {get; set;}
-        public string PriceUnit2 {get; set;}
-    }
 }

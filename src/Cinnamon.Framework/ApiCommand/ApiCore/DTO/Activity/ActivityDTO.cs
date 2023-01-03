@@ -1,9 +1,8 @@
-using Cinnamon.Framework.Interactor;
+namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
-namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
-
-public class CreateActivityArgs : IInteractor
+public class ActivityDTO 
 {
+    public int ActivityId {get; set;}
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
@@ -26,7 +25,6 @@ public class CreateActivityArgs : IInteractor
     public bool CanAdultsJoin {get; set;}
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
-    
 
     public class ActivitySchedule 
     {

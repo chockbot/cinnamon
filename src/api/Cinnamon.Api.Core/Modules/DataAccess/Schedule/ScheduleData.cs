@@ -1,18 +1,21 @@
-﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+﻿using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiData.Address.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Schedule.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
+using Flurl.Http.Configuration;
 
 namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
 {
     public class ScheduleData : IScheduleData
     {
         private readonly IFlurlClient _flurlClient;
-        public ScheduleData(IFlurlClient flurlClient)
+        
+        public ScheduleData(IFlurlClientFactory flurlFac, ApplicationConfig config)
         {
-            _flurlClient = flurlClient;
+            _flurlClient = flurlFac.Get(config.ApiDataUrl);
         }
 
         public async Task<AppResult<GetScheduleResult>> GetScheduleById(int id)
@@ -94,6 +97,27 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
             catch (Exception ex)
             {
                 return AppResult<UpdateScheduleResult>.CreateFailed(ex, "An error occured when posting update schedule api");
+            }
+        }
+
+        public async Task<AppResult<CreateManySchedulesResult>> CreateManySchedules(CreateManySchedulesArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("Schedule/CreateManySchedules")
+                                .PostJsonAsync(args)
+                                .ReceiveJson<CreateManySchedulesResult>();
+
+                return AppResult<CreateManySchedulesResult>.CreateSucceeded(result, "Successfully posting create schedule api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<CreateManySchedulesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<CreateManySchedulesResult>.CreateFailed(ex, "An error occured when posting create customer api");
             }
         }
     }

@@ -25,6 +25,8 @@ public class ActivityDTO
     public string[] SearchTags { get; set; }
     public string ExperienceType { get; set; }
     public bool IsPublished { get; set; }
+    public int ExperienceCategoryId {get; set;}
+    public int SubCategoryId {get; set;}
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }
