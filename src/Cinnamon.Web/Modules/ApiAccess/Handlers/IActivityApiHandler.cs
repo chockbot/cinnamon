@@ -7,4 +7,5 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 public interface IActivityApiHandler 
 {
     Task<AppResult<CreateActivityResult>> CreateActivity(CreateActivityArgs args, string token);
+    Task<AppResult<GetExperienceTypesResult>> GetExperienceTypes();
 } 

@@ -13,10 +13,12 @@ namespace Cinnamon.Api.Core.Controllers;
 public class ActivityController : ControllerBase
 {
     private readonly ICreateActivityHandler createActivityHandler;
+    private readonly IGetExperienceTypesHandler getExperienceTypesHandler;
 
-    public ActivityController(ICreateActivityHandler createActivityHandler)
+    public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler)
     {
         this.createActivityHandler = createActivityHandler;
+        this.getExperienceTypesHandler = getExperienceTypesHandler;
     }
 
     [Route("CreateActivity")]
@@ -108,6 +110,33 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetExperienceTypes")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExperienceTypesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetExperienceTypes()
+    {
+        try
+        {
+            var result = await getExperienceTypesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceTypesArgs {});
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExperienceTypesResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetExperienceTypesResult {Result = result.Result.ExperienceTypes.Select(e => {
+                return new Framework.ApiCommand.ApiCore.DTO.ExperienceType.ExperienceTypeDTO {
+                    Id = e.Id,
+                    Name = e.Name
+                };
+            }), IsSuccess = true});
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetExperienceTypesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
