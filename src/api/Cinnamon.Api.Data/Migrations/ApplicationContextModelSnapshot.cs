@@ -629,23 +629,18 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("SearchTag1")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag2")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag3")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag4")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("SearchTag5")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.HasKey("Id");

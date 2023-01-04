@@ -5,12 +5,12 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.SearchTags.Request;
 public class CreateSearchTagsArgs
 {
     [Required]
-    public int searchTagId { get; set; }
+    public int SearchTagId { get; set; }
     [Required]  
-    public int activityId { get; set; } 
-    public string searchTag1 { get; set; }
-    public string searchTag2 { get; set; }
-    public string searchTag3 { get; set; }
-    public string searchTag4 { get; set; }
-    public string searchTag5 { get; set; }
+    public int ActivityId { get; set; } 
+    public string? SearchTag1 { get; set; }
+    public string? SearchTag2 { get; set; }
+    public string? SearchTag3 { get; set; }
+    public string? SearchTag4 { get; set; }
+    public string? SearchTag5 { get; set; }
 }

@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Cinnamon.Api.Data.Migrations
 {
-    public partial class DatabaseStructure : Migration
+    public partial class ReInitializeDatabase : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -85,6 +85,7 @@ namespace Cinnamon.Api.Data.Migrations
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Category = table.Column<string>(type: "text", nullable: false),
+                    IconPath = table.Column<string>(type: "text", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<int>(type: "integer", nullable: false),
                     ChangedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -120,6 +121,7 @@ namespace Cinnamon.Api.Data.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ActivityId = table.Column<int>(type: "integer", nullable: false),
                     ScheduleId = table.Column<int>(type: "integer", nullable: false),
+                    CustomerId = table.Column<int>(type: "integer", nullable: false),
                     Total = table.Column<decimal>(type: "numeric", nullable: false),
                     ConvinienceFee = table.Column<decimal>(type: "numeric", nullable: false),
                     Coupon = table.Column<string>(type: "text", nullable: true),
@@ -151,6 +153,24 @@ namespace Cinnamon.Api.Data.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ResendEmails", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SubCategory",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CatergoryId = table.Column<int>(type: "integer", nullable: false),
+                    SubCatergory = table.Column<string>(type: "text", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<int>(type: "integer", nullable: false),
+                    ChangedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ChangedBy = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SubCategory", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -289,7 +309,7 @@ namespace Cinnamon.Api.Data.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     Gender = table.Column<string>(type: "text", nullable: false),
                     BirthMonth = table.Column<string>(type: "text", nullable: false),
-                    BirthYear = table.Column<string>(type: "text", nullable: false),
+                    BirthYear = table.Column<int>(type: "integer", nullable: false),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<int>(type: "integer", nullable: false),
                     ChangedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -321,6 +341,9 @@ namespace Cinnamon.Api.Data.Migrations
                     MapDetails = table.Column<string>(type: "text", nullable: false),
                     Guarantee = table.Column<string>(type: "text", nullable: false),
                     Remarks = table.Column<string>(type: "text", nullable: false),
+                    IsPublished = table.Column<bool>(type: "boolean", nullable: false),
+                    ExperienceCategoryId = table.Column<int>(type: "integer", nullable: true),
+                    SubCategoryId = table.Column<int>(type: "integer", nullable: true),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     CreatedBy = table.Column<int>(type: "integer", nullable: false),
                     ChangedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
@@ -330,11 +353,21 @@ namespace Cinnamon.Api.Data.Migrations
                 {
                     table.PrimaryKey("PK_Activities", x => x.Id);
                     table.ForeignKey(
+                        name: "FK_Activities_ExperienceCategories_ExperienceCategoryId",
+                        column: x => x.ExperienceCategoryId,
+                        principalTable: "ExperienceCategories",
+                        principalColumn: "Id");
+                    table.ForeignKey(
                         name: "FK_Activities_ExperienceTypes_ExperienceTypeId",
                         column: x => x.ExperienceTypeId,
                         principalTable: "ExperienceTypes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Activities_SubCategory_SubCategoryId",
+                        column: x => x.SubCategoryId,
+                        principalTable: "SubCategory",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -452,34 +485,6 @@ namespace Cinnamon.Api.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ActivitySearchTags",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    ActivityId = table.Column<int>(type: "integer", nullable: false),
-                    SearchTag1 = table.Column<string>(type: "text", nullable: true),
-                    SearchTag2 = table.Column<string>(type: "text", nullable: true),
-                    SearchTag3 = table.Column<string>(type: "text", nullable: true),
-                    SearchTag4 = table.Column<string>(type: "text", nullable: true),
-                    SearchTag5 = table.Column<string>(type: "text", nullable: true),
-                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    CreatedBy = table.Column<int>(type: "integer", nullable: false),
-                    ChangedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    ChangedBy = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ActivitySearchTags", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ActivitySearchTags_Activities_ActivityId",
-                        column: x => x.ActivityId,
-                        principalTable: "Activities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "OngoingActivities",
                 columns: table => new
                 {
@@ -510,10 +515,48 @@ namespace Cinnamon.Api.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "SearchTags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ActivityId = table.Column<int>(type: "integer", nullable: false),
+                    SearchTag1 = table.Column<string>(type: "text", nullable: true),
+                    SearchTag2 = table.Column<string>(type: "text", nullable: true),
+                    SearchTag3 = table.Column<string>(type: "text", nullable: true),
+                    SearchTag4 = table.Column<string>(type: "text", nullable: true),
+                    SearchTag5 = table.Column<string>(type: "text", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    CreatedBy = table.Column<int>(type: "integer", nullable: false),
+                    ChangedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ChangedBy = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SearchTags", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SearchTags_Activities_ActivityId",
+                        column: x => x.ActivityId,
+                        principalTable: "Activities",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_ExperienceCategoryId",
+                table: "Activities",
+                column: "ExperienceCategoryId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Activities_ExperienceTypeId",
                 table: "Activities",
                 column: "ExperienceTypeId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Activities_SubCategoryId",
+                table: "Activities",
+                column: "SubCategoryId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ActivityAddress_ActivityId",
@@ -536,12 +579,6 @@ namespace Cinnamon.Api.Data.Migrations
                 name: "IX_ActivitySchedules_ActivityId",
                 table: "ActivitySchedules",
                 column: "ActivityId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ActivitySearchTags_ActivityId",
-                table: "ActivitySearchTags",
-                column: "ActivityId",
-                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -621,6 +658,12 @@ namespace Cinnamon.Api.Data.Migrations
                 columns: new[] { "Email", "DateResend" });
 
             migrationBuilder.CreateIndex(
+                name: "IX_SearchTags_ActivityId",
+                table: "SearchTags",
+                column: "ActivityId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_WaitLists_Guid",
                 table: "WaitLists",
                 column: "Guid");
@@ -641,9 +684,6 @@ namespace Cinnamon.Api.Data.Migrations
                 name: "ActivitySchedules");
 
             migrationBuilder.DropTable(
-                name: "ActivitySearchTags");
-
-            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
             migrationBuilder.DropTable(
@@ -659,9 +699,6 @@ namespace Cinnamon.Api.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "ExperienceCategories");
-
-            migrationBuilder.DropTable(
                 name: "FamilyMembers");
 
             migrationBuilder.DropTable(
@@ -674,6 +711,9 @@ namespace Cinnamon.Api.Data.Migrations
                 name: "ResendEmails");
 
             migrationBuilder.DropTable(
+                name: "SearchTags");
+
+            migrationBuilder.DropTable(
                 name: "WaitLists");
 
             migrationBuilder.DropTable(
@@ -683,13 +723,19 @@ namespace Cinnamon.Api.Data.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Activities");
-
-            migrationBuilder.DropTable(
                 name: "Customers");
 
             migrationBuilder.DropTable(
+                name: "Activities");
+
+            migrationBuilder.DropTable(
+                name: "ExperienceCategories");
+
+            migrationBuilder.DropTable(
                 name: "ExperienceTypes");
+
+            migrationBuilder.DropTable(
+                name: "SubCategory");
         }
     }
 }

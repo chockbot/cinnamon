@@ -23,8 +23,6 @@ public class DataStore : IDataStore
 
     public IActivitySchedule ActivitySchedule => new ActivityScheduleEntity(applicationContext);
 
-    public IActivitySearchTag ActivitySearchTag => new ActivitySearchTagEntity(applicationContext);
-
     public ICustomer Customer => new CustomerEntity(applicationContext);
 
     public IExperienceCategory ExperienceCategory => new ExperienceCategoryEntity(applicationContext);

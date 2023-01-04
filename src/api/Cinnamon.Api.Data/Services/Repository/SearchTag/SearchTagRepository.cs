@@ -9,11 +9,13 @@ namespace Cinnamon.Api.Data.Services.Repository.SearchTag;
 public class SearchTagRepository: ISearchTagsRepository
 {
     private readonly IDataStore dataStore;
+
 	public SearchTagRepository(IDataStore dataStore)
 	{
         this.dataStore = dataStore;
     }
-    public async Task<AppResult<SearchTagsDTO>> CreateSearchTagsAsync(int activityId, string searchTag1, string searchTag2, string searchTag3, string searchTag4, string searchTag5)
+
+    public async Task<AppResult<SearchTagsDTO>> CreateSearchTagsAsync(int activityId, string? searchTag1, string? searchTag2, string? searchTag3, string? searchTag4, string? searchTag5)
     {
         try
         {
@@ -46,6 +48,7 @@ public class SearchTagRepository: ISearchTagsRepository
             return AppResult<SearchTagsDTO>.CreateFailed(ex, "An error occured when creating experience category");
         }
     }
+
     public async Task<AppResult<IEnumerable<SearchTagsDTO>>> GetAllAsync(int? count, int? skip)
     {
         try
@@ -77,6 +80,7 @@ public class SearchTagRepository: ISearchTagsRepository
             return AppResult<IEnumerable<SearchTagsDTO>>.CreateFailed(ex, "An error occured in getting search tags");
         }
     }
+
     public async Task<AppResult<IEnumerable<SearchTagsDTO>>> GetAllAsync()
     {
         try
@@ -106,6 +110,7 @@ public class SearchTagRepository: ISearchTagsRepository
             return AppResult<IEnumerable<SearchTagsDTO>>.CreateFailed(ex, "An error occured in getting search tags");
         }
     }
+
     public async Task<AppResult<SearchTagsDTO>> GetByIdAsync(int id)
     {
         try
@@ -134,6 +139,7 @@ public class SearchTagRepository: ISearchTagsRepository
             return AppResult<SearchTagsDTO>.CreateFailed(ex, "An error occured when getting search tag by id");
         }
     }
+    
     public async Task<AppResult<SearchTagsDTO>> UpdateSearchTagsAsync(int id, int? activityId, string? searchTag1, string? searchTag2, string? searchTag3, string? searchTag4, string? searchTag5)
     {
         try

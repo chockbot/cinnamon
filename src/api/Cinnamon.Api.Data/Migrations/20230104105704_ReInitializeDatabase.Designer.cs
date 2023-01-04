@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20221212084550_UpdateSubCategoryTable")]
-    partial class UpdateSubCategoryTable
+    [Migration("20230104105704_ReInitializeDatabase")]
+    partial class ReInitializeDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -48,6 +48,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("ExperienceCategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("ExperienceTypeId")
                         .HasColumnType("integer");
 
@@ -74,6 +77,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int?>("SubCategoryId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Subtitle")
                         .IsRequired()
                         .HasColumnType("text");
@@ -84,7 +90,11 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("ExperienceCategoryId");
+
                     b.HasIndex("ExperienceTypeId");
+
+                    b.HasIndex("SubCategoryId");
 
                     b.ToTable("Activities");
                 });
@@ -293,52 +303,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("ActivitySchedules");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ActivitySearchTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("SearchTag1")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SearchTag2")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SearchTag3")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SearchTag4")
-                        .HasColumnType("text");
-
-                    b.Property<string>("SearchTag5")
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId")
-                        .IsUnique();
-
-                    b.ToTable("ActivitySearchTags");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -485,9 +449,8 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("BirthYear")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("BirthYear")
+                        .HasColumnType("integer");
 
                     b.Property<int>("ChangedBy")
                         .HasColumnType("integer");
@@ -591,6 +554,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("OverallTotal")
                         .HasColumnType("numeric");
 
@@ -641,7 +607,7 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("ResendEmails");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SubCategory", b =>
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SearchTags", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -649,7 +615,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int>("ActivityId")
                         .HasColumnType("integer");
 
                     b.Property<int>("ChangedBy")
@@ -664,7 +630,53 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Subcategory")
+                    b.Property<string>("SearchTag1")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag2")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag3")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag4")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SearchTag5")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId")
+                        .IsUnique();
+
+                    b.ToTable("SearchTags");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SubCategory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CatergoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("SubCatergory")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -913,13 +925,25 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Activity", b =>
                 {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", "ExperienceCategory")
+                        .WithMany()
+                        .HasForeignKey("ExperienceCategoryId");
+
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.ExperienceType", "ExperienceType")
                         .WithMany("Activities")
                         .HasForeignKey("ExperienceTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.SubCategory", "SubCategory")
+                        .WithMany()
+                        .HasForeignKey("SubCategoryId");
+
+                    b.Navigation("ExperienceCategory");
+
                     b.Navigation("ExperienceType");
+
+                    b.Navigation("SubCategory");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ActivityAddress", b =>
@@ -966,17 +990,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Activity");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ActivitySearchTag", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
-                        .WithOne("SearchTag")
-                        .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.ActivitySearchTag", "ActivityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.FamilyMember", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
@@ -1005,6 +1018,17 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Activity");
 
                     b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SearchTags", b =>
+                {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
+                        .WithOne("SearchTag")
+                        .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.SearchTags", "ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

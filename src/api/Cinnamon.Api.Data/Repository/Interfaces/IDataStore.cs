@@ -7,7 +7,6 @@ public interface IDataStore
     IActivityDescription ActivityDescription { get; }
     IActivityImage ActivityImage { get; }
     IActivitySchedule ActivitySchedule { get; }
-    IActivitySearchTag ActivitySearchTag { get; }
     ICustomer Customer { get; }
     IExperienceCategory ExperienceCategory { get; }
     IExperienceType ExperienceType { get; }

@@ -6,13 +6,17 @@ using Cinnamon.Framework.ApiCommand.ApiData.SearchTags.Request;
 
 namespace Cinnamon.Api.Data.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class SearchTagsController : ControllerBase
     {
         private readonly ISearchTagsRepository searchTagsRepository;
+
         public SearchTagsController(ISearchTagsRepository searchTagsRepository)
         {
             this.searchTagsRepository = searchTagsRepository;   
         }
+
         [Route("GetSearchTagsById/{id}")]
         [HttpGet]
         [ProducesResponseType(typeof(GetSearchTagsResult), StatusCodes.Status200OK)]
@@ -32,6 +36,7 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new GetSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
         [Route("GetAllSearchTags")]
         [HttpGet]
         [ProducesResponseType(typeof(GetAllSearchTagsResult), StatusCodes.Status200OK)]
@@ -78,6 +83,7 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new GetAllSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
         [Route("CreateSearchTags")]
         [HttpPost]
         [ProducesResponseType(typeof(CreateSearchTagsResult), StatusCodes.Status201Created)]
@@ -86,7 +92,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await searchTagsRepository.CreateSearchTagsAsync(args.activityId, args.searchTag1, args.searchTag2, args.searchTag3, args.searchTag4, args.searchTag5);
+                var result = await searchTagsRepository.CreateSearchTagsAsync(args.ActivityId, args.SearchTag1, args.SearchTag2, args.SearchTag3, args.SearchTag4, args.SearchTag5);
                 if (!result.Succeeded || result.Result == null)
                 {
                     return new JsonResult(new CreateSearchTagsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -99,6 +105,7 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new CreateSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
         [Route("UpdateSearchTags")]
         [HttpPost]
         [ProducesResponseType(typeof(UpdateSearchTagsResult), StatusCodes.Status202Accepted)]
