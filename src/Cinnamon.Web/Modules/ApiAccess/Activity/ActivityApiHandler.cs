@@ -30,6 +30,7 @@ public class ActivityApiHandler : IActivityApiHandler
         }
         catch (FlurlHttpException ex)
         {
+            var error = await ex.GetResponseJsonAsync();
             return AppResult<CreateActivityResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
@@ -43,7 +44,7 @@ public class ActivityApiHandler : IActivityApiHandler
         try
         {
             var result = await flurlClient
-                .Request("Activity/CreateActivity")
+                .Request("Activity/GetExperienceTypes")
                 .GetJsonAsync<GetExperienceTypesResult>();
 
             return AppResult<GetExperienceTypesResult>.CreateSucceeded(result, "Successfully getting experience types api");
@@ -55,6 +56,46 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<GetExperienceTypesResult>.CreateFailed(ex, "An error occured when getting experience types api");
+        }
+    }
+
+    public async Task<AppResult<GetExperienceCategoriesResult>> GetExperienceCategories()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/GetExperienceCategories")
+                .GetJsonAsync<GetExperienceCategoriesResult>();
+
+            return AppResult<GetExperienceCategoriesResult>.CreateSucceeded(result, "Successfully getting experience types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetExperienceCategoriesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetExperienceCategoriesResult>.CreateFailed(ex, "An error occured when getting experience types api");
+        }
+    }
+
+    public async Task<AppResult<GetSubCategoriesResult>> GetSubCategories()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/GetSubCategories")
+                .GetJsonAsync<GetSubCategoriesResult>();
+
+            return AppResult<GetSubCategoriesResult>.CreateSucceeded(result, "Successfully getting experience types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetSubCategoriesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetSubCategoriesResult>.CreateFailed(ex, "An error occured when getting experience types api");
         }
     }
 }

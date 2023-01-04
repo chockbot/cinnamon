@@ -62,6 +62,7 @@ public class ActivityRepository : IActivityRepository
                 IsPublished = isPublished,
                 CreatedBy = customerId,
                 ExperienceCategoryId = experienceCategoryId,
+                ExperienceTypeId = experienceTypeId,
                 SubCategoryId = subCategoryId
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
@@ -105,19 +106,20 @@ public class ActivityRepository : IActivityRepository
             }
 
             // save activity searchTAg
-            var activitySearcTag = new Entities.ActivitySearchTag
-            {
-                SearchTag1 = searchtag1,
-                SearchTag2 = searchtag2,
-                SearchTag3 = searchtag3,
-                SearchTag4 = searchtag4,
-                SearchTag5 = searchtag5,
-            };
-            var createdActivitySearchTag = await dataStore.ActivitySearchTag.Add(activitySearcTag);
-            if (!createdActivitySearchTag.Succeeded)
-            {
-                return AppResult<ActivityDTO>.CreateFailed(createdActivitySearchTag.Error.Exception, createdActivitySearchTag.Message);
-            }
+            // var activitySearcTag = new Entities.ActivitySearchTag
+            // {
+            //     SearchTag1 = searchtag1,
+            //     SearchTag2 = searchtag2,
+            //     SearchTag3 = searchtag3,
+            //     SearchTag4 = searchtag4,
+            //     SearchTag5 = searchtag5,
+            //     ActivityId = createdActitivityRes.Result.Id,
+            // };
+            // var createdActivitySearchTag = await dataStore.ActivitySearchTag.Add(activitySearcTag);
+            // if (!createdActivitySearchTag.Succeeded)
+            // {
+            //     return AppResult<ActivityDTO>.CreateFailed(createdActivitySearchTag.Error.Exception, createdActivitySearchTag.Message);
+            // }
 
             var createdActivityDTO = new ActivityDTO
             {

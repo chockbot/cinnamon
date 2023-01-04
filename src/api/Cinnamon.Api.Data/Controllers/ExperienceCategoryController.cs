@@ -5,13 +5,18 @@ using Cinnamon.Framework.ApiCommand.ApiData.ExperienceCategory.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.ExperienceCategory.Request;
 
 namespace Cinnamon.Api.Data.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
 public class ExperienceCategoryController : ControllerBase
 {
 	private readonly IExperienceCategoryRepository experienceCategoryRepository;
+
 	public ExperienceCategoryController(IExperienceCategoryRepository experienceCategoryRepository)
 	{
 		this.experienceCategoryRepository = experienceCategoryRepository;
 	}
+
     [Route("GetCategoryById/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetCategoryResult), StatusCodes.Status200OK)]
@@ -31,6 +36,7 @@ public class ExperienceCategoryController : ControllerBase
             return new JsonResult(new GetCategoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("GetAllCategory")]
 	[HttpGet]
 	[ProducesResponseType(typeof(GetAllCategoryResult), StatusCodes.Status200OK)]
@@ -77,6 +83,7 @@ public class ExperienceCategoryController : ControllerBase
             return new JsonResult(new GetAllCategoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
 	}
+
     [Route("CreateCategory")]
     [HttpPost]
     [ProducesResponseType(typeof(CreatedCategoryResult), StatusCodes.Status201Created)]
@@ -98,6 +105,7 @@ public class ExperienceCategoryController : ControllerBase
             return new JsonResult(new CreatedCategoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    
     [Route("UpdateCategory")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdatedCategoryResult), StatusCodes.Status202Accepted)]

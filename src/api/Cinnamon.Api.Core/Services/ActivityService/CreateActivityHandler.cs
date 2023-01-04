@@ -129,11 +129,23 @@ public class CreateActivityHandler : ICreateActivityHandler
                 MinimumAge = activity.MinimumAge,
                 Price = activity.Price,
                 Remarks = activity.Remarks,
-                SearchTags = activity.SearchTags,
+                SearchTags = args.SearchTags,
                 SkillLevel = activity.SkillLevel,
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
-                Title = activity.Title
+                Title = activity.Title,
+                ActivitySchedules = createdSchedules.Result.Result.Select(s => {
+                    return new CreateActivityResult.ActivitySchedule {
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice
+                    };
+                })
 
             }, "Successfully creating activity");
         }

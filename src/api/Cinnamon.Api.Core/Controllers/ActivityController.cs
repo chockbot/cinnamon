@@ -14,11 +14,16 @@ public class ActivityController : ControllerBase
 {
     private readonly ICreateActivityHandler createActivityHandler;
     private readonly IGetExperienceTypesHandler getExperienceTypesHandler;
+    private readonly IGetExperienceCategoriesHandler getExperienceCategoriesHandler;
+    private readonly IGetSubCategoriesHandler getSubCategoriesHandler;
 
-    public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler)
+    public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
+        IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler)
     {
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
+        this.getExperienceCategoriesHandler = getExperienceCategoriesHandler;
+        this.getSubCategoriesHandler = getSubCategoriesHandler;
     }
 
     [Route("CreateActivity")]
@@ -137,6 +142,68 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetExperienceTypesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetExperienceCategories")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExperienceCategoriesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetExperienceCategories()
+    {
+        try
+        {
+            var result = await getExperienceCategoriesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetExperienceCategoriesArgs{});
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExperienceCategoriesResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetExperienceCategoriesResult {
+                IsSuccess = true,
+                Result = result.Result.ExperienceCategories.Select(e => {
+                    return new Framework.ApiCommand.ApiCore.DTO.ExperienceCategory.ExperienceCategoryDTO {
+                        IconPath = e.IconPath,
+                        Id = e.Id,
+                        Name = e.Category
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetExperienceCategoriesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetSubCategories")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetSubCategoriesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetSubCategories()
+    {
+        try
+        {
+            var result = await getSubCategoriesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetSubCategoriesArgs {});
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetSubCategoriesResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetSubCategoriesResult {
+                IsSuccess = true,
+                Result = result.Result.SubCategories.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.SubCategory.SubCategoryDTO {
+                        CategoryId = s.CategoryId,
+                        Id = s.Id,
+                        Name = s.Name
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetSubCategoriesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

@@ -4,13 +4,13 @@ public class Activity : BaseEntity
 {
     public int ExperienceTypeId {get; set;}
     public string Title {get; set;}
-    public string Subtitle {get; set;}
-    public string Description {get; set;}
-    public string Price {get; set;}
-    public string ScheduleIndicator {get; set;}
-    public string MapDetails {get; set;}
-    public string Guarantee {get; set;}
-    public string Remarks {get; set;}
+    public string Subtitle {get; set;} = string.Empty;
+    public string Description {get; set;} = string.Empty;
+    public string Price {get; set;} = string.Empty;
+    public string ScheduleIndicator {get; set;} = string.Empty;
+    public string MapDetails {get; set;} = string.Empty;
+    public string Guarantee {get; set;} = string.Empty;
+    public string Remarks {get; set;} = string.Empty;
     public bool IsPublished { get; set;}
     public int? ExperienceCategoryId {get; set;}
     public int? SubCategoryId {get; set;}

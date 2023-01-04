@@ -21,6 +21,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IActivityData, Modules.DataAccess.Activity.ActivityData>();
         services.AddTransient<Modules.DataAccess.Handlers.IScheduleData, Modules.DataAccess.Schedule.ScheduleData>();
         services.AddTransient<Modules.DataAccess.Handlers.IExperienceTypeData, Modules.DataAccess.ExperienceType.ExperienceTypeData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IExperienceCategoryData, Modules.DataAccess.ExperienceCategory.CategoryData>();
+        services.AddTransient<Modules.DataAccess.Handlers.ISubCategoryData, Modules.DataAccess.SubCategory.SubCategoryData>();
 
         // services
         services.AddTransient<Services.AccountService.Handlers.ISubmitRegisterHandler, Services.AccountService.SubmitRegisterHandler>();
@@ -38,6 +40,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IUploadGovernmentIdHandler, Services.AccountService.SubmitUploadGovernmentHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceTypesHandler, Services.ActivityService.GetExperienceTypesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetExperienceCategoriesHandler, Services.ActivityService.GetExperienceCategoriesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetSubCategoriesHandler, Services.ActivityService.GetSubCategoriesHandler>();
 
         return services;
     }

@@ -20,7 +20,7 @@ public class CategoryData: IExperienceCategoryData
         try
         {
             var result = await flurlClient
-                .Request("Category/CreateCategory")
+                .Request("ExperienceCategory/CreateCategory")
                 .PostJsonAsync(args)
                 .ReceiveJson<CreatedCategoryResult>();
 
@@ -41,13 +41,9 @@ public class CategoryData: IExperienceCategoryData
         try
         {
             var result = await flurlClient
-                            .Request("Category/GetAllCategory")
-                            .SetQueryParams(
-                                new
-                                {
-                                    countPerPage = args.CountPerPage,
-                                    pageIndex = args.PageIndex
-                                }).GetJsonAsync<GetAllCategoryResult>();
+                            .Request("ExperienceCategory/GetAllCategory")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetAllCategoryResult>();
 
             return AppResult<GetAllCategoryResult>.CreateSucceeded(result, "Successfully getting get all category api");
         }
@@ -66,7 +62,7 @@ public class CategoryData: IExperienceCategoryData
         try
         {
             var result = await flurlClient
-                            .Request($"Category/GetCategoryById/{id}")
+                            .Request($"ExperienceCategory/GetCategoryById/{id}")
                             .GetJsonAsync<GetCategoryResult>();
 
             return AppResult<GetCategoryResult>.CreateSucceeded(result, "Successfully getting category by id api");
@@ -86,7 +82,7 @@ public class CategoryData: IExperienceCategoryData
         try
         {
             var result = await flurlClient
-                            .Request("Category/UpdateCategory")
+                            .Request("ExperienceCategory/UpdateCategory")
                             .PostJsonAsync(args)
                             .ReceiveJson<UpdatedCategoryResult>();
 

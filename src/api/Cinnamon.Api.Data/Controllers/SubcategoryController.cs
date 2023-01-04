@@ -6,13 +6,17 @@ using Cinnamon.Framework.ApiCommand.ApiData.Subcategory.Request;
 
 namespace Cinnamon.Api.Data.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class SubcategoryController : ControllerBase
     {
         private readonly ISubCategoryRepository subCategoryRepository;
+
         public SubcategoryController(ISubCategoryRepository subCategoryRepository)
         {
             this.subCategoryRepository = subCategoryRepository;
         }
+
         [Route("GetSubCategoryById/{id}")]
         [HttpGet]
         [ProducesResponseType(typeof(GetSubcategorytResult), StatusCodes.Status200OK)]
@@ -33,6 +37,7 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new GetSubcategorytResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
         [Route("GetAllSubCategory")]
         [HttpGet]
         [ProducesResponseType(typeof(GetAllSubcategoryResult), StatusCodes.Status200OK)]
@@ -79,6 +84,7 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new GetAllSubcategoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
         [Route("CreateSubCategory")]
         [HttpPost]
         [ProducesResponseType(typeof(CreatedSubcategoryResult), StatusCodes.Status201Created)]
@@ -100,6 +106,7 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new CreatedSubcategoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+        
         [Route("UpdateSubCategory")]
         [HttpPost]
         [ProducesResponseType(typeof(UpdateSubcategoryResult), StatusCodes.Status202Accepted)]
