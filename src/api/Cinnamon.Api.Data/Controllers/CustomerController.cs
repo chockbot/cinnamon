@@ -79,7 +79,26 @@ public class CustomerController : ControllerBase
             return new JsonResult(new GetGovernmentIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("GetProfilePicture/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetProfilePictureResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetProfilePicture(int id)
+    {
+        try
+        {
+            var result = await customerRepository.GetProfilePicture(id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetProfilePictureResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
 
+            return new JsonResult(new GetProfilePictureResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
     [Route("GetAllCustomers")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllCustomerResult), StatusCodes.Status200OK)]

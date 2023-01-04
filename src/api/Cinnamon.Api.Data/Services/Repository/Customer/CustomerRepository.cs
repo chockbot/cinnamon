@@ -321,6 +321,26 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
+    public async Task<AppResult<ProfilePictureDTO>> GetProfilePicture(int customerID)
+    {
+        try
+        {
+            var result = await dataStore.Customer.GetByIdAsync(customerID);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<ProfilePictureDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            return AppResult<ProfilePictureDTO>.CreateSucceeded(new ProfilePictureDTO
+            {
+                ProfileImagePath = string.IsNullOrEmpty(result.Result.ProfilePath) ? string.Empty : result.Result.ProfilePath,
+            }, "Successfully getting customer government id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ProfilePictureDTO>.CreateFailed(ex, "An error occured when getting customer profile picture");
+        }
+    }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, 
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh)
     {
