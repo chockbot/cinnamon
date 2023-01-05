@@ -12,7 +12,9 @@
 @using System.Linq;
 @using System.Globalization
 @using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @inject IVerifyEmail verifyEmailHandler;
@@ -389,11 +391,11 @@
         </div> 
     </div>
 </body>
-<ModalLogin TypeValue="@UserType.Customer"></ModalLogin>
+@*<ModalLogin TypeValue="@UserType.Customer"></ModalLogin>*@
 <!--Filter-->
 <FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>
-<ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
-<ModalPassword @ref="modalPassword"></ModalPassword>
+@*<ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
+<ModalPassword @ref="modalPassword"></ModalPassword>*@
 </html>
 @code {
     public List<ActivityModel>           activity           = new List<ActivityModel>();
@@ -416,87 +418,120 @@
     protected override async Task OnInitializedAsync()
     {
         await FetchActivities();
-        Address             = await CoreDI.DataStore.Addresses.GetAllAsync();
-        activityImages      = await CoreDI.DataStore.ActivityImages.GetAllAsync();
-        activityTypes       = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
-        experienceCategory  = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
+        //Address             = await CoreDI.DataStore.Addresses.GetAllAsync();
+        //activityImages      = await CoreDI.DataStore.ActivityImages.GetAllAsync();
 
-        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        //activityTypes       = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
+        //experienceCategory  = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
 
-        if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
+        //AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+
+        //if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
+        //{
+        //    var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
+        //    UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
+        //}
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if (token == null)
         {
-            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
-            UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        // get experience types
+        var activityTypes = await activityApiHandler.GetExperienceTypes();
+        if ((!activityTypes.Succeeded || activityTypes.Result == null) || (activityTypes.Succeeded && !activityTypes.Result.IsSuccess))
+        {
+            // an error occured when getting experience types to api
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+         // get experience categories
+        var experienceCategory = await activityApiHandler.GetExperienceCategories();
+        if((!experienceCategory.Succeeded || experienceCategory.Result == null) || (experienceCategory.Succeeded && !experienceCategory.Result.IsSuccess))
+        {
+            // an error occured when getting experience categories to api
+            NavigationManager.NavigateTo("explore");
+            return;
         }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
-        {
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
-        }
+        //if (firstRender)
+        //{
+        //    await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
+        //}
 
-        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
-        var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
+        //var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        //var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
+        //var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
 
-        try
-        {
-            if (userSuccess && tokenSuccess)
-            {
-                // get waiting list if email already verified
-                var waitingRes = await CoreDI.DataStore.WaitList.GetWaitListByGuid(userId);
-                if(waitingRes == null)
-                {
-                    // invalid guid
-                    NavigationManager.NavigateTo("/onboarding", forceLoad: true);
-                    return;
-                }
+        //try
+        //{
+        //    if (userSuccess && tokenSuccess)
+        //    {
+        //        // get waiting list if email already verified
+        //        var waitingRes = await CoreDI.DataStore.WaitList.GetWaitListByGuid(userId);
+        //        if(waitingRes == null)
+        //        {
+        //            // invalid guid
+        //            NavigationManager.NavigateTo("/onboarding", forceLoad: true);
+        //            return;
+        //        }
 
-                // check if email already verified so that will not call verify email every request
-                if(!waitingRes.IsVerified)
-                {
-                    // need to verified
-                    var verifyRes = await verifyEmailHandler.ExecuteAsync(
-                            new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId });
-                    if(!verifyRes.Succeeded)
-                    {
-                        // invalid userid and token redirect to onboargin page
-                        NavigationManager.NavigateTo("/onboarding");
-                        return;
-                    }
+        //        // check if email already verified so that will not call verify email every request
+        //        if(!waitingRes.IsVerified)
+        //        {
+        //            // need to verified
+        //            var verifyRes = await verifyEmailHandler.ExecuteAsync(
+        //                    new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId });
+        //            if(!verifyRes.Succeeded)
+        //            {
+        //                // invalid userid and token redirect to onboargin page
+        //                NavigationManager.NavigateTo("/onboarding");
+        //                return;
+        //            }
 
-                    // proceed to populate customer information
-                    await modalFinishSignUp.OpenModal(waitingRes.Email);
-                }
-                else 
-                {
-                    // email already verified. Need to check if customer info already populated. 
-                    // if not open modal information
-                    var customerRes = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(waitingRes.Email);
-                    if(customerRes == null)
-                    {
-                        await modalFinishSignUp.OpenModal(waitingRes.Email);
-                    }
-                    else 
-                    {
-                        await modalPassword.OpenModal(waitingRes.Email);
-                    }
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            e.Message.ToString();
-        }
+        //            // proceed to populate customer information
+        //            await modalFinishSignUp.OpenModal(waitingRes.Email);
+        //        }
+        //        else 
+        //        {
+        //            // email already verified. Need to check if customer info already populated. 
+        //            // if not open modal information
+        //            var customerRes = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(waitingRes.Email);
+        //            if(customerRes == null)
+        //            {
+        //                await modalFinishSignUp.OpenModal(waitingRes.Email);
+        //            }
+        //            else 
+        //            {
+        //                await modalPassword.OpenModal(waitingRes.Email);
+        //            }
+        //        }
+        //    }
+        //}
+        //catch (Exception e)
+        //{
+        //    e.Message.ToString();
+        //}
     }
 
     private async Task FetchActivities()
     {
-        var ActivityListData = await CoreDI.DataStore.Activities.GetAllAsync();
-        var fetchActivities = ActivityListData.Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(ActivityListData.Count < 10 ? ActivityListData.Count : 10);
-        activity.AddRange(fetchActivities);
+        var ActivityListData = await activityApiHandler.GetAllActivities();
+        if ((!ActivityListData.Succeeded || ActivityListData.Result == null) || (ActivityListData.Succeeded && !ActivityListData.Result.IsSuccess))
+        {
+            // an error occured when getting experience types to api
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        //var ActivityListData = await CoreDI.DataStore.Activities.GetAllAsync();
+        //var fetchActivities = ActivityListData.Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(ActivityListData.Count < 10 ? ActivityListData.Count : 10);
+        //activity.AddRange(fetchActivities);
     }
 
     private void NavigateToDashboard()
