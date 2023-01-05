@@ -62,7 +62,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         Address2 = e.Address2,
                         District = e.District,
                         City = e.City,
-                        SearchTags = e.SearchTags,
+                        SearchTags = e.SearchTags.ToArray(),
                         ExperienceType = e.ExperienceType,
                         IsPublished = e.IsPublished,
                         ExperienceCategoryId = e.ExperienceCategoryId,
