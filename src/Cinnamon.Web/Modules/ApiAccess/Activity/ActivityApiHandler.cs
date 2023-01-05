@@ -98,4 +98,23 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetSubCategoriesResult>.CreateFailed(ex, "An error occured when getting experience types api");
         }
     }
+    public async Task<AppResult<GetAllActivitiesResult>> GetAllActivities()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/GetAllActivities")
+                .GetJsonAsync<GetAllActivitiesResult>();
+
+            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting experience types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting experience types api");
+        }
+    }
 }
