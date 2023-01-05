@@ -63,12 +63,8 @@ public class ActivityData: IActivityData
         {
             var result = await flurlClient
                             .Request("Activity/GetAllActivities")
-                            .SetQueryParams(
-                                new
-                                {
-                                    countPerPage = args.CountPerPage,
-                                    pageIndex = args.PageIndex
-                                }).GetJsonAsync<GetAllActivitiesResult>();
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetAllActivitiesResult>();
 
             return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting get all activities api");
         }

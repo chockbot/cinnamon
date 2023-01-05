@@ -25,6 +25,7 @@ public class ActivityDTO
     public bool CanAdultsJoin {get; set;}
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
+    public IEnumerable<ActivityImage> Images {get; set;}
 
     public class ActivitySchedule 
     {
@@ -36,5 +37,11 @@ public class ActivityDTO
         public string PriceUnit1 {get; set;}
         public int PerUnit2 {get; set;}
         public string PriceUnit2 {get; set;}
+    }
+
+    public class ActivityImage 
+    {
+        public string ImageSrc {get; set;}
+        public string Name {get; set;}
     }
 }

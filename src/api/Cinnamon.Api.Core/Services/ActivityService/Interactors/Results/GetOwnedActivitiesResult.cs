@@ -2,6 +2,8 @@ namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 public class GetOwnedActivitiesResult 
 {
+    public IEnumerable<Activity> Activities {get; set;}
+
     public class Activity 
     {
         public int Id {get; set;}
@@ -27,6 +29,7 @@ public class GetOwnedActivitiesResult
         public bool CanAdultsJoin {get; set;}
         public IEnumerable<string> SearchTags {get; set;}
         public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
+        public IEnumerable<ActivityImage> Images {get; set;}
         
 
         public class ActivitySchedule 
@@ -39,6 +42,12 @@ public class GetOwnedActivitiesResult
             public string PriceUnit1 {get; set;}
             public int PerUnit2 {get; set;}
             public string PriceUnit2 {get; set;}
+        }
+
+        public class ActivityImage 
+        {
+            public string ImageSrc {get; set;}
+            public string Name {get; set;}
         }
     }
 }
