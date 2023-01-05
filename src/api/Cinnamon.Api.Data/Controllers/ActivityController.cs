@@ -45,10 +45,19 @@ public class ActivityController : ControllerBase
     {
         try
         {
+            var isUsedFilters = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.IsActive.HasValue ||
+                args.IncludeAddress.HasValue || args.IncludeDescription.HasValue || args.IncludeImages.HasValue ||
+                args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue;
+            
+            var includeAddress = args.IncludeAddress ?? false;
+                
             var result =
-                args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await activityRepository.GetAllAsync(args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
-                await activityRepository.GetAllAsync();
+                isUsedFilters ?
+                    await activityRepository
+                        .GetAllAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
+                            args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
+                            args.IncludeSchedules ?? false, args.IncludeImages ?? false) :
+                    await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -56,9 +65,9 @@ public class ActivityController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await activityRepository.GetAllAsync(args.IsActive, null, null) :
-                await activityRepository.GetAllAsync();
+            var all = isUsedFilters ?
+                        await activityRepository.GetAllAsync(args.CustomerId,args.IsActive, null, null) :
+                        await activityRepository.GetAllAsync();
 
             if(!all.Succeeded || all.Result == null)
             {

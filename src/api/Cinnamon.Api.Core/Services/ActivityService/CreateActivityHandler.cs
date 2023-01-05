@@ -12,12 +12,15 @@ public class CreateActivityHandler : ICreateActivityHandler
     private readonly IHttpContextAccessor httpContext;
     private readonly IActivityData activityData;
     private readonly IScheduleData scheduleData;
+    private readonly ICustomerData customerData;
 
-    public CreateActivityHandler(IHttpContextAccessor httpContext, IActivityData activityData, IScheduleData scheduleData)
+    public CreateActivityHandler(IHttpContextAccessor httpContext, IActivityData activityData, 
+        IScheduleData scheduleData, ICustomerData customerData)
     {
         this.httpContext = httpContext;
         this.activityData = activityData;
         this.scheduleData = scheduleData;
+        this.customerData = customerData;
     }
 
     public AppResult<CreateActivityResult> Execute(CreateActivityArgs args)
@@ -110,6 +113,32 @@ public class CreateActivityHandler : ICreateActivityHandler
             if(createdSchedules.Succeeded && !createdSchedules.Result.IsSuccess)
             {
                 return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(createdSchedules.Result.ErrorInfo?.Message), "An error occured in CreateActivityHandler");
+            }
+
+            // update customer to maker status
+            var customer = await customerData.GetCustomerById(id);
+            if(!customer.Succeeded || customer.Result == null)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(customer.Message), customer.Message);
+            }
+
+            if(customer.Succeeded && !customer.Result.IsSuccess)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(customer.Result.ErrorInfo?.Message), "An error occured in CreateActivityHandler");
+            }
+
+            if(!customer.Result.Result.IsMaker)
+            {
+                var updatedCustomer = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
+                    IsMaker = true,
+                    CustomerId = id
+                });
+                
+                if((updatedCustomer.Succeeded || updatedCustomer.Result == null) || (updatedCustomer.Succeeded && !updatedCustomer.Result.IsSuccess))
+                {
+                    return AppResult<CreateActivityResult>.CreateFailed(
+                        new ApplicationException("An error occured when trying to update customer to maker"), "An error occured when trying to update customer to maker");
+                }
             }
 
             return AppResult<CreateActivityResult>.CreateSucceeded(new CreateActivityResult {

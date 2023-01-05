@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
+using System.Linq.Expressions;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -150,11 +151,24 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(bool? isActive, int? count, int? skip)
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
+        bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
+        bool includeSchedules = false, bool includeImages = false)
     {
         try
         {
-            var result = await dataStore.Activity.FindAsync(a => isActive.HasValue ? a.IsPublished == isActive.Value : true, count, skip);
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            if(includeAddres) includes.Add(a => a.Address);
+            if(includeDescription) includes.Add(a => a.ActivityDescription);
+            if(includeSearchTags) includes.Add(a => a.SearchTag);
+            if(includeSchedules) includes.Add(a => a.Schedules);
+            if(includeImages) includes.Add(a => a.Images);
+
+            Expression<Func<Entities.Activity,bool>> filter = 
+                a => (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                        (customerId.HasValue ? a.CreatedBy == customerId.Value : true);
+
+            var result = await dataStore.Activity.FindAsync(filter, count, skip, includes);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -162,7 +176,7 @@ public class ActivityRepository : IActivityRepository
 
             var activities = result.Result.Select(a =>
             {
-                return new ActivityDTO
+                var activityDTO = new ActivityDTO
                 {
                     Id = a.Id,
                     SubTitle = a.Subtitle,
@@ -172,8 +186,64 @@ public class ActivityRepository : IActivityRepository
                     Remarks = a.Remarks,
                     IsPublished = a.IsPublished,
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0
+                    SubCategoryId = a.SubCategoryId ?? 0,
                 };
+
+                // address fields
+                if(includeAddres && a.Address != null)
+                {
+                    activityDTO.Address1 = a.Address.Address1;
+                    activityDTO.Address2 = a.Address.Address2;
+                    activityDTO.City = a.Address.City;
+                    activityDTO.District = a.Address.District;
+                }
+
+                // description fields
+                if(includeDescription && a.ActivityDescription != null)
+                {
+                    var description = a.ActivityDescription;
+                    activityDTO.ActivityLevel = description.ActivityLevel;
+                    activityDTO.AdditionalRequirements = description.AdditionalRequirements;
+                    activityDTO.CanAdultsJoin = description.CanAdultsJoin;
+                    activityDTO.CustomerBringWithThem = description.CustomerBringWithThem;
+                    activityDTO.Description = description.Description;
+                    activityDTO.MinimumAge = description.MinimumAge;
+                    activityDTO.SkillLevel = description.SkillLevel;
+                    activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+                }
+
+                // schedules
+                if(includeSchedules && a.Schedules != null)
+                {
+                    activityDTO.Schedules = a.Schedules.Select(s => {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
+                            DateTime = s.DateTime,
+                            Id = s.Id,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice,
+                            PerUnit2 = s.PerUnit2
+                        };
+                    }).ToList();
+                }
+
+                // search tags
+                if(includeSearchTags && a.SearchTag != null)
+                {
+                    var tags = new List<string>();
+                    if(a.SearchTag.SearchTag1 != null) tags.Add(a.SearchTag.SearchTag1);
+                    if(a.SearchTag.SearchTag2 != null) tags.Add(a.SearchTag.SearchTag2);
+                    if(a.SearchTag.SearchTag3 != null) tags.Add(a.SearchTag.SearchTag3);
+                    if(a.SearchTag.SearchTag4 != null) tags.Add(a.SearchTag.SearchTag4);
+                    if(a.SearchTag.SearchTag5 != null) tags.Add(a.SearchTag.SearchTag5);
+
+                    activityDTO.SearchTags = tags;
+                }
+
+                return activityDTO;
             });
 
             return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(activities, "Successfully get activities");

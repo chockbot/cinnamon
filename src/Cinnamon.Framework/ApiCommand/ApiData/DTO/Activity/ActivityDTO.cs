@@ -22,7 +22,7 @@ public class ActivityDTO
     public string Address2 { get; set; }
     public string District { get; set; }
     public string City { get; set; }
-    public string[] SearchTags { get; set; }
+    public IEnumerable<string> SearchTags { get; set; }
     public string ExperienceType { get; set; }
     public bool IsPublished { get; set; }
     public int ExperienceCategoryId {get; set;}

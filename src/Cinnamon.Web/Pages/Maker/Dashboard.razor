@@ -6,6 +6,7 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler;
+@attribute [Authorize]
 
 <section class="mt-5 maker-dashboard">
     <div class="container">
@@ -68,12 +69,12 @@
         var customer = result.Result.Result;
 
         // check if customer is maker
-        /**if(!customer.IsMaker)
+        if(!customer.IsMaker)
         {
-            // account is not maker
+            // account is not maker redirect to explore page
             NavigationManager.NavigateTo("explore");
             return;
-        }*/
+        }
 
         //var customer = currentCustomer.Result.Customer;
 
