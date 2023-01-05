@@ -40,10 +40,10 @@ public class CreateActivityArgs
     [Required]
     public IEnumerable<string> SearchTags {get; set;}
     [Required]
-    public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
+    public IEnumerable<Schedule> ActivitySchedules {get; set;}
     
 
-    public class ActivitySchedule 
+    public class Schedule 
     {
         [Required]
         public string Name {get; set;}

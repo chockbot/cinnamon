@@ -255,7 +255,7 @@
             var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs {
                 ActivityLevel = Model.Activity.ActivityLevel,
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s => {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivitySchedule {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule {
                         DateTime = s.DateTime,
                         Name = s.Name,
                         PerUnit1 = s.PerUnit1,
