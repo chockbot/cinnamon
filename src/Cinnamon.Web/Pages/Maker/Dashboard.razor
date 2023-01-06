@@ -3,49 +3,53 @@
 @using System.Security.Claims
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Models.Maker;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler;
+@inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-<section class="mt-5 maker-dashboard">
-    <div class="container">
-        <Row>
-            <Column>
-                <h3 class="text-capitalize fw-bold">experiences</h3>
-            </Column>
-            <Column>
-            </Column>
-        </Row>
-        <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-            <Items>
-                <Tab Display="Display.Flex" Flex="Flex.AlignItems.Center" Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">
-                    active
-                    <Badge TextColor="TextColor.White" Border="Border.RoundedCircle" Color="Color.Primary">@activeActivityCount</Badge>
-                </Tab>
-                <Tab Name="attendance-monitoring" TextTransform="TextTransform.Capitalize">attendance monitoring</Tab>
-                <Tab Name="chat-room" TextTransform="TextTransform.Capitalize">chat room</Tab>
-            </Items>
-            <Content>
-                <TabPanel Name="active">
-                    <ExperienceList OnPublishChanged="ActiveCountChanged" Activities="activities" />
-                </TabPanel>
-                <TabPanel Name="attendance-monitoring">
-                    Content for attendance monitoring
-                </TabPanel>
-                <TabPanel Name="chat-room">
-                    Content for chat-room
-                </TabPanel>
-            </Content>
-        </Tabs>
-    </div>
-</section>
+@if(Model != null)
+{
+    <section class="mt-5 maker-dashboard">
+        <div class="container">
+            <Row>
+                <Column>
+                    <h3 class="text-capitalize fw-bold">experiences</h3>
+                </Column>
+                <Column>
+                </Column>
+            </Row>
+            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                <Items>
+                    <Tab Display="Display.Flex" Flex="Flex.AlignItems.Center" Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">
+                        active
+                        <Badge TextColor="TextColor.White" Border="Border.RoundedCircle" Color="Color.Primary">@Model.ActiveActivityCount</Badge>
+                    </Tab>
+                    <Tab Name="attendance-monitoring" TextTransform="TextTransform.Capitalize">attendance monitoring</Tab>
+                    <Tab Name="chat-room" TextTransform="TextTransform.Capitalize">chat room</Tab>
+                </Items>
+                <Content>
+                    <TabPanel Name="active">
+                        <ExperienceList OnPublishChanged="ActiveCountChanged" Activities="Model.Activities" Token="@Model.Token" />
+                    </TabPanel>
+                    <TabPanel Name="attendance-monitoring">
+                        Content for attendance monitoring
+                    </TabPanel>
+                    <TabPanel Name="chat-room">
+                        Content for chat-room
+                    </TabPanel>
+                </Content>
+            </Tabs>
+        </div>
+    </section>
+}
 
 @code
 {
-    private IList<ActivityModel> activities = new List<ActivityModel>();
-    private int activeActivityCount = 0;
-    private string token;
+    private DashboardModel Model;
 
     protected override async Task OnInitializedAsync()
     {
@@ -76,15 +80,31 @@
             return;
         }
 
-        //var customer = currentCustomer.Result.Customer;
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {}, token);
+        var activities = new List<Activity>();
 
-        //activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
-        //activeActivityCount = activities.Where(i => i.IsPublished).Count(); 
+        if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.Select(a => {
+                // map only required fields
+                return new Activity {
+                    ActivityId = a.ActivityId,
+                    IsPublished = a.IsPublished,
+                    Title = a.Title
+                };
+            }).ToList();
+        }
+
+        Model = new DashboardModel {
+            Activities = activities,
+            ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
+            Token = token
+        };
     }
 
     private void ActiveCountChanged(int count)
     {
-        activeActivityCount-= count;
+        Model.ActiveActivityCount-= count;
     }
 
     string selectedTab = "active";

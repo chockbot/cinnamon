@@ -49,6 +49,32 @@ namespace Cinnamon.Api.Data.Controllers
             }
         }
 
+        [Route("GetAddressByActivityId/{id}")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetAddressResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAddressByActivityId(int id)
+        {
+            try
+            {
+                var result = await _AddressRepository.GetByActivityIdAsync(id);
+                if (!result.Succeeded)
+                {
+                    return new JsonResult(new GetAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                if (result.Result == null)
+                {
+                    return NotFound();
+                }
+
+                return new JsonResult(new GetAddressResult { Result = result.Result, IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetAddressResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
         [HttpGet]
         [Route("GetAllAddress")]
         [ProducesResponseType(typeof(GetAllAddressResult), StatusCodes.Status200OK)]

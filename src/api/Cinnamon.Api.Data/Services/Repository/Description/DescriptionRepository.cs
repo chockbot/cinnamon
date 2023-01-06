@@ -122,6 +122,37 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityDescription
             }
         }
 
+        public async Task<AppResult<DescriptionDTO>> GetByActivityIdAsync(int id)
+        {
+            try
+            {
+                var result = await _dataStore.ActivityDescription.FindFirstAsync(d => d.ActivityId == id);
+                if(!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<DescriptionDTO>.CreateFailed(result.Error.Exception, result.Message);
+                }
+
+                return AppResult<DescriptionDTO>.CreateSucceeded(new DescriptionDTO()
+                {
+                    Id = result.Result.Id,
+                    ActivityId = result.Result.ActivityId,
+                    Description = result.Result.Description,
+                    SpecificsYouWillProvide = result.Result.SpecificsYouWillProvide,
+                    CustomerBringWithThem = result.Result.CustomerBringWithThem,
+                    AdditionalRequirements = result.Result.AdditionalRequirements,
+                    ActivityLevel = result.Result.ActivityLevel,
+                    MinimumAge = result.Result.MinimumAge,
+                    SkillLevel = result.Result.SkillLevel,
+                    CanAdultsJoin = result.Result.CanAdultsJoin
+                },
+                "Successfully get description by activity id");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<DescriptionDTO>.CreateFailed(ex, ex.Message);
+            }
+        }
+
         public async Task<AppResult<DescriptionDTO>> UpdateDescription(int DescriptionId, string Description, string SpecificsYouWillProvide, string CustomerBringWithThem, string? AdditionalRequirements, string ActivityLevel, string SkillLevel, int MinimumAge, bool CanAdultsJoin)
         {
             try

@@ -37,6 +37,27 @@ namespace Cinnamon.Api.Data.Controllers
             }
         }
 
+        [Route("GetSearchTagsByActivityId/{id}")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetSearchTagsResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetSearchTagsByActivityId(int id)
+        {
+            try
+            {
+                var result = await searchTagsRepository.GetByActivityIdAsync(id);
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetSearchTagsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                
+                return new JsonResult(new GetSearchTagsResult { Result = result.Result, IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetSearchTagsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
         [Route("GetAllSearchTags")]
         [HttpGet]
         [ProducesResponseType(typeof(GetAllSearchTagsResult), StatusCodes.Status200OK)]

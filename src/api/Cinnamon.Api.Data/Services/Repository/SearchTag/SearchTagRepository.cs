@@ -139,6 +139,35 @@ public class SearchTagRepository: ISearchTagsRepository
             return AppResult<SearchTagsDTO>.CreateFailed(ex, "An error occured when getting search tag by id");
         }
     }
+
+    public async Task<AppResult<SearchTagsDTO>> GetByActivityIdAsync(int id)
+    {
+        try
+        {
+            var result = await dataStore.SearchTags.FindFirstAsync(s => s.ActivityId == id);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<SearchTagsDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var searchTagsDTO = new SearchTagsDTO
+            {
+                Id         = result.Result.Id,
+                ActivityId = result.Result.ActivityId,
+                SearchTag1 = result.Result.SearchTag1,
+                SearchTag2 = result.Result.SearchTag2,
+                SearchTag3 = result.Result.SearchTag3,
+                SearchTag4 = result.Result.SearchTag4,
+                SearchTag5 = result.Result.SearchTag5,
+            };
+
+            return AppResult<SearchTagsDTO>.CreateSucceeded(searchTagsDTO, "Successfully getting search tag by id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SearchTagsDTO>.CreateFailed(ex, "An error occured when getting search tag by id");
+        }
+    }
     
     public async Task<AppResult<SearchTagsDTO>> UpdateSearchTagsAsync(int id, int? activityId, string? searchTag1, string? searchTag2, string? searchTag3, string? searchTag4, string? searchTag5)
     {

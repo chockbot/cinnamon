@@ -9,6 +9,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers
     public interface IDescriptionData
     {
         Task<AppResult<GetDescriptionResult>> GetDescriptionById(int id);
+        Task<AppResult<GetDescriptionResult>> GetDescriptionByActivityId(int id);
         Task<AppResult<GetAllDescriptionResult>> GetAllDescription();
         Task<AppResult<CreateDescriptionResult>> CreateDescription(CreateDescriptionArgs args);
         Task<AppResult<UpdatedDescriptionResult>> UpdateDescription(UpdateDescriptionArgs args);

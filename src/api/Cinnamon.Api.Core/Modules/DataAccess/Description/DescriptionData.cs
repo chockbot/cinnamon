@@ -80,6 +80,26 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Description
             }
         }
 
+        public async Task<AppResult<GetDescriptionResult>> GetDescriptionByActivityId(int id)
+        {
+            try
+            {
+                var result = await flurlClient
+                                .Request($"Description/GetDescriptionByActivityId/{id}")
+                                .GetJsonAsync<GetDescriptionResult>();
+
+                return AppResult<GetDescriptionResult>.CreateSucceeded(result, "Successfully getting description by id api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetDescriptionResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetDescriptionResult>.CreateFailed(ex, "An error occured when getting description by id api");
+            }
+        }
+
         public async Task<AppResult<UpdatedDescriptionResult>> UpdateDescription(UpdateDescriptionArgs args)
         {
             try

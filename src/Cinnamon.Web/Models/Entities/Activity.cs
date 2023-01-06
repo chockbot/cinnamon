@@ -25,4 +25,5 @@ public class Activity
     public bool CanAdultsJoin {get; set;}
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
+    public IList<ActivityImage> Images {get; set;}
 }
