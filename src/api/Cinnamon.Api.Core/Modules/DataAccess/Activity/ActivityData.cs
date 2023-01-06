@@ -37,12 +37,13 @@ public class ActivityData: IActivityData
         }
     }
 
-    public async Task<AppResult<GetActivityResult>> GetActivityById(int id)
+    public async Task<AppResult<GetActivityResult>> GetActivityById(int id, GetActivityArgs? args = null)
     {
         try
         {
             var result = await flurlClient
                             .Request($"Activity/GetActivityById/{id}")
+                            .SetQueryParams(args)
                             .GetJsonAsync<GetActivityResult>();
 
             return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting activity by id api");

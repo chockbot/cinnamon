@@ -20,11 +20,12 @@ public class ActivityController : ControllerBase
     [Route("GetActivityById/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetActivityResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetActivityById(int id)
+    public async Task<IActionResult> GetActivityById(int id, [FromQuery] GetActivityArgs args)
     {
         try
         {
-            var result = await activityRepository.GetByIdAsync(id);
+            var result = await activityRepository.GetByIdAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -37,6 +38,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
 
     [Route("GetAllActivities")]
     [HttpGet]

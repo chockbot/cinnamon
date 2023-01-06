@@ -74,11 +74,23 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
         }
     }
 
-    public async Task<AppResult<TTarget>> FindFirstAsync(Expression<Func<TTarget, bool>> expression)
+    public async Task<AppResult<TTarget>> FindFirstAsync(Expression<Func<TTarget, bool>> expression, 
+        IEnumerable<Expression<Func<TTarget, object>>>? includes = null)
     {
         try
         {
-            var result = await applicationContext.Set<TTarget>().FirstOrDefaultAsync(expression);
+            var query = applicationContext.Set<TTarget>().Where(expression); //.FirstOrDefaultAsync(expression);
+            
+            if(includes != null)
+            {
+                foreach(var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            var result = await query.FirstOrDefaultAsync();
+
             if(result == null)
             {
                 return AppResult<TTarget>.CreateFailed(new ApplicationException("Can't find entity"), "Can't find entity");

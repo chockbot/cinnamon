@@ -1,8 +1,8 @@
-namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
+namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
-public class ActivityDTO 
+public class GetOwnedActivityResult 
 {
-    public int ActivityId {get; set;}
+    public int Id {get; set;}
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
@@ -26,6 +26,7 @@ public class ActivityDTO
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
+        
 
     public class ActivitySchedule 
     {

@@ -44,6 +44,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetSubCategoriesHandler, Services.ActivityService.GetSubCategoriesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivitiesHandler, Services.ActivityService.GetOwnedActivitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityHandler, Services.ActivityService.UpdateActivityHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivityHandler, Services.ActivityService.GetOwnedActivityHandler>();
 
         return services;
     }

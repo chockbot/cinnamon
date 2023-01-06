@@ -18,10 +18,12 @@ public class ActivityController : ControllerBase
     private readonly IGetSubCategoriesHandler getSubCategoriesHandler;
     private readonly IGetOwnedActivitiesHandler getOwnedActivitiesHandler;
     private readonly IUpdateActivityHandler updateActivityHandler;
+    private readonly IGetOwnedActivityHandler getOwnedActivityHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
-        IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IUpdateActivityHandler updateActivityHandler)
+        IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IUpdateActivityHandler updateActivityHandler,
+        IGetOwnedActivityHandler getOwnedActivityHandler)
     {
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
@@ -29,6 +31,7 @@ public class ActivityController : ControllerBase
         this.getSubCategoriesHandler = getSubCategoriesHandler;
         this.getOwnedActivitiesHandler = getOwnedActivitiesHandler;
         this.updateActivityHandler = updateActivityHandler;
+        this.getOwnedActivityHandler = getOwnedActivityHandler;
     }
 
     [Route("CreateActivity")]
@@ -152,7 +155,20 @@ public class ActivityController : ControllerBase
                 SkillLevel = args.SkillLevel,
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide,
                 SubCategoryId = args.SubCategoryId,
-                Title = args.Title
+                Title = args.Title,
+                ActivitySchedules = args.ActivitySchedules != null ? 
+                    args.ActivitySchedules.Select(s => {
+                        return new Services.ActivityService.Interactors.UpdateActivityArgs.ActivitySchedule {
+                            DateTime = s.DateTime,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            PerUnit2 = s.PerUnit2,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice
+                        };
+                    }) : null,
             });
             if(!result.Succeeded || result.Result == null)
             {
@@ -352,6 +368,83 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetOwnedActivitiesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetOwnedActivity/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivityResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOwnedActivity(int id, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            var result = await getOwnedActivityHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOwnedActivityArgs {
+                ActivityId = id,
+                IncludeActivityAddress = args.IncludeActivityAddress ?? false,
+                IncludeActivityDescription = args.IncludeActivityDescription ?? false,
+                IncludeActivityImages = args.IncludeActivityImages ?? false,
+                IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
+                IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
+                IsActive = args.IsActive
+            });
+            
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetActivityResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var activity = result.Result;
+
+            return new JsonResult(new GetActivityResult {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                    ActivityId = activity.Id,
+                    ActivityLevel = activity.ActivityLevel,
+                    ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule {
+                            Id = s.Id,
+                            DateTime = s.DateTime,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            PerUnit2 = s.PerUnit2,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice
+                        };
+                    }),
+                    AdditionalRequirements = activity.AdditionalRequirements,
+                    Address1 = activity.Address1,
+                    Address2 = activity.Address2,
+                    CanAdultsJoin = activity.CanAdultsJoin,
+                    City = activity.City,
+                    CustomerBringWithThem = activity.CustomerBringWithThem,
+                    Description = activity.Description,
+                    District = activity.District,
+                    ExperienceCategoryId = activity.ExperienceCategoryId,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    Images = activity.Images.Select(i => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }),
+                    IsPublished = activity.IsPublished,
+                    MinimumAge = activity.MinimumAge,
+                    Price = activity.Price,
+                    Remarks = activity.Remarks,
+                    ScheduleIndicator = activity.ScheduleIndicator,
+                    SearchTags = activity.SearchTags,
+                    SkillLevel = activity.SkillLevel,
+                    SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
+                    SubCategoryId = activity.SubCategoryId,
+                    Title = activity.Title
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

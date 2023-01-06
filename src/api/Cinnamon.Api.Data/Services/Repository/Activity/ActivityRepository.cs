@@ -288,30 +288,98 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id)
+    public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
+        bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false)
     {
         try
         {
-            var result = await dataStore.Activity.GetByIdAsync(id);
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            if(includeAddres.HasValue && includeAddres.Value) includes.Add(a => a.Address);
+            if(includeDescription.HasValue && includeDescription.Value) includes.Add(a => a.ActivityDescription);
+            if(includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
+            if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
+            if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+
+            Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
+                (customerId.HasValue ? a.CreatedBy == customerId : true) &&
+                (isActive.HasValue ? a.IsPublished == isActive : true);
+
+            var result = await dataStore.Activity.FindFirstAsync(filter, includes);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<ActivityDTO>.CreateFailed(result.Error.Exception, result.Message);
             }
+            var activity = result.Result;
 
-            var activityDao = new ActivityDTO
+            var activityDTO = new ActivityDTO
             {
-                Id = result.Result.Id,
-                SubTitle = result.Result.Subtitle,
-                Title = result.Result.Title,
-                Description = result.Result.Description,
-                Price = result.Result.Price,
-                Remarks = result.Result.Remarks,
-                IsPublished = result.Result.IsPublished,
-                ExperienceCategoryId = result.Result.ExperienceCategoryId ?? 0,
-                SubCategoryId = result.Result.SubCategoryId ?? 0
+                Id = activity.Id,
+                SubTitle = activity.Subtitle,
+                Title = activity.Title,
+                Description = activity.Description,
+                Price = activity.Price,
+                Remarks = activity.Remarks,
+                IsPublished = activity.IsPublished,
+                ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
+                SubCategoryId = activity.SubCategoryId ?? 0,
             };
 
-            return AppResult<ActivityDTO>.CreateSucceeded(activityDao, "Successfully getting activity by id");
+            // address fields
+            if(includeAddres.HasValue && includeAddres.Value && activity.Address != null)
+            {
+                activityDTO.Address1 = activity.Address.Address1;
+                activityDTO.Address2 = activity.Address.Address2;
+                activityDTO.City = activity.Address.City;
+                activityDTO.District = activity.Address.District;
+            }
+
+            // description fields
+            if(includeDescription.HasValue && includeDescription.Value && activity.ActivityDescription != null)
+            {
+                var description = activity.ActivityDescription;
+                activityDTO.ActivityLevel = description.ActivityLevel;
+                activityDTO.AdditionalRequirements = description.AdditionalRequirements;
+                activityDTO.CanAdultsJoin = description.CanAdultsJoin;
+                activityDTO.CustomerBringWithThem = description.CustomerBringWithThem;
+                activityDTO.Description = description.Description;
+                activityDTO.MinimumAge = description.MinimumAge;
+                activityDTO.SkillLevel = description.SkillLevel;
+                activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+            }
+
+            // schedules
+            if(includeSchedules.HasValue && includeSchedules.Value && activity.Schedules != null)
+            {
+                activityDTO.Schedules = activity.Schedules.Select(s => {
+                    return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        PerUnit2 = s.PerUnit2
+                    };
+                }).ToList();
+            }
+
+            // search tags
+            if(includeSearchTags.HasValue && includeSearchTags.Value && activity.SearchTag != null)
+            {
+                var tags = new List<string>();
+                if(activity.SearchTag.SearchTag1 != null) tags.Add(activity.SearchTag.SearchTag1);
+                if(activity.SearchTag.SearchTag2 != null) tags.Add(activity.SearchTag.SearchTag2);
+                if(activity.SearchTag.SearchTag3 != null) tags.Add(activity.SearchTag.SearchTag3);
+                if(activity.SearchTag.SearchTag4 != null) tags.Add(activity.SearchTag.SearchTag4);
+                if(activity.SearchTag.SearchTag5 != null) tags.Add(activity.SearchTag.SearchTag5);
+
+                activityDTO.SearchTags = tags;
+            }
+
+            return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
         catch (Exception ex)
         {

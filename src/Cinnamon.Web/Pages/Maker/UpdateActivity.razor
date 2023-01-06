@@ -1,5 +1,6 @@
 @page "/maker/update-activity";
 @layout CreationLayout;
+@using System.Security.Claims
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Core;
 @using Cinnamon.Core.Models;
@@ -7,10 +8,12 @@
 @using Cinnamon.Web.Models;
 @using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @using Cinnamon.Core.Module.CustomerService.Handler;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject NavigationManager NavigationManager;
 @inject ISubmitUpdatedActivity submitUpdatedActivityHandler;
 @inject ISignedCustomer signedCustomer;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IActivityApiHandler activityApiHandler;
 
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
@@ -42,14 +45,14 @@
 </div>
 
 <div id="regForm" class="shadow-lg">
-    @if(ExperienceUpdateModel != null)
+    @if(Model != null)
     {
-        <EditForm Model="ExperienceUpdateModel.Activity">
+        <EditForm Model="Model.Activity">
             <div class='tab @(currentIndex == 0 ? "show" : "")'>
-                <ExperienceUpdate @ref="experienceUpdateComponent" Model="ExperienceUpdateModel" />
+                <ExperienceUpdate @ref="experienceUpdateComponent" Model="Model" />
             </div>
             <div class='tab @(currentIndex == 1 ? "show" : "")'>
-                <ExperienceSetupUpdate @ref="experienceSetupUpdateComponent" Model="ExperienceUpdateModel" />
+                <ExperienceSetupUpdate @ref="experienceSetupUpdateComponent" Model="Model" />
             </div>
             <div class='tab @(currentIndex == 2 ? "show" : "")'>
                 <div class="text-center publish-container">
@@ -65,9 +68,14 @@
                     {
                         <button type="button" id="prevBtn" @onclick="() => OnBackClick()" style="border:none;background-color:transparent">Back</button>
                     }
-                    <button class="btn-primary" @onclick="() => OnNextClick()" type="button" id="nextBtn">
-                        @(currentIndex == 2 ? "Submit" : "Continue")
-                    </button>
+                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        </LoadingTemplate>
+                        <ChildContent>
+                            @(currentIndex == 3 ? "Submit" : "Continue")
+                        </ChildContent>
+                    </Button>
                 </div>
             </div>
         </EditForm>
@@ -76,13 +84,15 @@
 
 @code 
 {
-    private ExperienceUpdateModel ExperienceUpdateModel;
+    private ExperienceUpdateModel Model;
 
     private ExperienceUpdate experienceUpdateComponent {get; set;}
 
     private ExperienceSetupUpdate experienceSetupUpdateComponent {get; set;}
 
     private int currentIndex = 0;
+
+    private bool isLoading = false;
 
     private int GetPerentCompletion {
         get {
@@ -92,13 +102,15 @@
 
     protected override async Task OnInitializedAsync()
     {
+        // get user token
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin {User = user});
-        if(!currentCustomer.Succeeded)
+        var token = user.FindFirstValue("Token");
+        if(token == null)
         {
             // don't have current user login
             NavigationManager.NavigateTo("explore");
+            return;
         }
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
@@ -107,106 +119,119 @@
         // if cant find the activity id in the query string
         int activityId = 0;
         if(!res || !int.TryParse(id, out activityId))
+        {
             NavigationManager.NavigateTo("/maker/dashboard");
-
-        var activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(activityId);
-       
-        if(activity == null)
-            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
         
-        // check activity is related to signed in customer
-        if(currentCustomer.Result.Customer.Id != activity.CreatedBy)
+        var activityRes = await activityApiHandler.GetOwnedActivity(activityId, token, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
+            IncludeActivityAddress = true,
+            IncludeActivityDescription = true,
+            IncludeActivityImages = true,
+            IncludeActivitySearchTags = true,
+            IncludeAtivitySchedules = true
+        });
+        if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
+        {
+            // navigate to maker dashboard, an error occured
             NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
+        var activity = activityRes.Result.Result;
 
-        var experienceTypes = await CoreDI.DataStore.ExperienceTypes.GetAllAsync();
-        if(experienceTypes == null || experienceTypes.Count == 0)
+        // get experience types
+        var experienceTypes = await activityApiHandler.GetExperienceTypes();
+        if((!experienceTypes.Succeeded || experienceTypes.Result == null) || (experienceTypes.Succeeded && !experienceTypes.Result.IsSuccess))
+        {
+            // an error occured when getting experience types to api
             NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
 
-        var experienceCategories = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
-        if(experienceCategories == null || experienceCategories.Count == 0)
+        // get experience categories
+        var categories = await activityApiHandler.GetExperienceCategories();
+        if((!categories.Succeeded || categories.Result == null) || (categories.Succeeded && !categories.Result.IsSuccess))
+        {
+            // an error occured when getting experience categories to api
             NavigationManager.NavigateTo("/maker/dashboard");
-
-        // initiate address if null
-        if(activity.Address == null)
-        {
-            activity.Address = new AddressModel {
-                Address1 = "",
-                Address2 = "",
-                City = "",
-                District = ""
-            };
-        };
-        // initiate search tag if null
-        if(activity.SearchTagsModel == null)
-        {
-            activity.SearchTagsModel = new SearchTagsModel();
-        }
-        // initiate description if null
-        if(activity.DescriptionSectionModel == null)
-        {
-            activity.DescriptionSectionModel = new DescriptionSectionModel();
-        }
-        // initiate schedules if null
-        if(activity.ScheduleList == null)
-        {
-            activity.ScheduleList = new List<ScheduleModel>();
-        }
-        // initiate images if null
-        if(activity.ActivityImages == null) 
-        {
-            activity.ActivityImages = new List<ActivityImagesModels>();
+            return;
         }
 
-        var sortPrice = activity.ScheduleList.OrderBy(x => x.Price).ToList();
-        activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
-                                                            sortPrice.ElementAtOrDefault(0).UnitPrice,
-                                                            sortPrice.ElementAtOrDefault(0).Price,
-                                                            sortPrice.ElementAtOrDefault(sortPrice.Count - 1).Price) : String.Format("{0} {1} / {2} {3} / {4} {5}",
-                                                            sortPrice.ElementAtOrDefault(0).UnitPrice,
-                                                            sortPrice.ElementAtOrDefault(0).Price.ToString(),
-                                                            sortPrice.ElementAtOrDefault(0).PerUnit1.ToString(),
-                                                            sortPrice.ElementAtOrDefault(0).PriceUnit1,
-                                                            sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
-                                                            sortPrice.ElementAtOrDefault(0).PriceUnit2);
+        // get sub categories
+        var subCategories = await activityApiHandler.GetSubCategories();
+        if((!subCategories.Succeeded || subCategories.Result == null) || (subCategories.Succeeded && !subCategories.Result.IsSuccess))
+        {
+            // an error occured when getting sub categories to api
+            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
 
-        // initiate Images
-        ExperienceUpdateModel.ActivityImages images = new();
-        if(activity.ActivityImages.Count > 0)
-        {
-            images.FirstImage.Id = activity.ActivityImages.ElementAt(0).Id;
-            images.FirstImage.ImageSrc = activity.ActivityImages.ElementAt(0).ImageLocation;
-        }
-        if(activity.ActivityImages.Count > 1)
-        {
-            images.SecondImage.Id = activity.ActivityImages.ElementAt(1).Id;
-            images.SecondImage.ImageSrc = activity.ActivityImages.ElementAt(1).ImageLocation;
-        }
-        if(activity.ActivityImages.Count > 2)
-        {
-            images.ThridImage.Id = activity.ActivityImages.ElementAt(2).Id;
-            images.ThridImage.ImageSrc = activity.ActivityImages.ElementAt(2).ImageLocation;
-        }
-        // initialize search tags
-        IList<ExperienceUpdateModel.SearchTag> searchTags = new List<ExperienceUpdateModel.SearchTag>();
-        searchTags = new List<ExperienceUpdateModel.SearchTag>();
-        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag1))
-            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 1, Value = activity.SearchTagsModel.SearchTag1});
-        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag2))
-            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 2, Value = activity.SearchTagsModel.SearchTag2});
-        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag3))
-            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 3, Value = activity.SearchTagsModel.SearchTag3});
-        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag4))
-            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 4, Value = activity.SearchTagsModel.SearchTag4});
-        if(!string.IsNullOrEmpty(activity.SearchTagsModel.SearchTag5))
-            searchTags.Add(new ExperienceUpdateModel.SearchTag {Key = 5, Value = activity.SearchTagsModel.SearchTag5});
-
-        ExperienceUpdateModel = new ExperienceUpdateModel {
-            Activity = activity,
-            HasError = false,
-            ExperienceTypes = experienceTypes,
-            ExperienceCategories = experienceCategories,
-            Images = images,
-            SearchTags = searchTags
+        Model = new ExperienceUpdateModel {
+            Activity = new Models.Entities.Activity {
+                ActivityId = activity.ActivityId,
+                ActivityLevel = activity.ActivityLevel,
+                ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                    return new Models.Entities.ActivitySchedule {
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                    };
+                }).ToList(),
+                AdditionalRequirements = activity.AdditionalRequirements,
+                Address1 = activity.Address1,
+                Address2 = activity.Address2,
+                CanAdultsJoin = activity.CanAdultsJoin,
+                City = activity.City,
+                CustomerBringWithThem = activity.CustomerBringWithThem,
+                Description = activity.Description,
+                District = activity.District,
+                ExperienceCategoryId = activity.ExperienceCategoryId,
+                ExperienceTypeId = activity.ExperienceTypeId,
+                Images = activity.Images.Select(i => {
+                    return new Models.Entities.ActivityImage {
+                        ImageSrc = i.ImageSrc,
+                        Name = i.Name,
+                        Id = i.Id
+                    };
+                }).ToList(),
+                IsPublished = activity.IsPublished,
+                MinimumAge = activity.MinimumAge,
+                Price = activity.Price,
+                Remarks = activity.Remarks,
+                ScheduleIndicator = activity.ScheduleIndicator,
+                SearchTags = activity.SearchTags.ToList(),
+                SkillLevel = activity.SkillLevel,
+                SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
+                SubCategoryId = activity.SubCategoryId,
+                Title = activity.Title,
+            },
+            ExperienceTypes = experienceTypes.Result.Result.Select(e => {
+                return new Models.Entities.ExperienceType {
+                    Id = e.Id,
+                    Name = e.Name
+                };
+            }),
+            ExperienceCategories = categories.Result.Result.Select(c => {
+                return new Models.Entities.ExperienceCategory {
+                    Category = c.Name,
+                    IconPath = c.IconPath,
+                    Id = c.Id
+                };
+            }),
+            SubCategories = subCategories.Result.Result.Select(s => {
+                return new Models.Entities.SubCategory {
+                    CategoryId = s.CategoryId,
+                    Id = s.Id,
+                    Name = s.Name
+                };
+            }),
+            Token = token
         };
     }
 
@@ -219,29 +244,62 @@
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
-        if(index == 0 && currentIndex == 2)
+        if(index == 0 && currentIndex == 3)
         {
-            // popuplate images
-            var images = new List<Tuple<int,byte[],string>>();
-            var firstImage = ExperienceUpdateModel.Images.FirstImage;
-            var secondImage = ExperienceUpdateModel.Images.SecondImage;
-            var thridImage = ExperienceUpdateModel.Images.ThridImage;
+            isLoading = true;
+            StateHasChanged();
 
-            images.Add(new Tuple<int, byte[], string>(firstImage.Id, firstImage.ImageData, firstImage.ImageSrc));
-            images.Add(new Tuple<int, byte[], string>(secondImage.Id, secondImage.ImageData, secondImage.ImageSrc));
-            images.Add(new Tuple<int, byte[], string>(thridImage.Id, thridImage.ImageData, thridImage.ImageSrc));
+            var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
+            Model.Activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
+                                                                        sortPrice.ElementAtOrDefault(0).Price, 
+                                                                        sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1} / {2} {3} / {4} {5}",
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
+                                                                        sortPrice.ElementAtOrDefault(0).Price.ToString(), 
+                                                                        sortPrice.ElementAtOrDefault(0).PerUnit1.ToString(),
+                                                                        sortPrice.ElementAtOrDefault(0).PriceUnit1,
+                                                                        sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
+                                                                        sortPrice.ElementAtOrDefault(0).PriceUnit2);
 
-            var submit = await submitUpdatedActivityHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.SubmitUpdatedActivity 
-                {
-                    Activity = ExperienceUpdateModel.Activity,
-                    SearchTags = ExperienceUpdateModel.SearchTags
-                        .Select(i => new Tuple<int,string>(i.Key,i.Value)).ToList(),
-                    Images = images
-                });
+            var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs {
+                ActivityLevel = Model.Activity.ActivityLevel,
+                ActivitySchedules = Model.Activity.ActivitySchedules.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule {
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                    };
+                }),
+                AdditionalRequirements = Model.Activity.AdditionalRequirements,
+                Address1 = Model.Activity.Address1,
+                Address2 = Model.Activity.Address2,
+                CanAdultsJoin = Model.Activity.CanAdultsJoin,
+                City = Model.Activity.City,
+                CustomerBringWithThem = Model.Activity.CustomerBringWithThem,
+                Description = Model.Activity.Description,
+                District = Model.Activity.District,
+                ExperienceCategoryId = Model.Activity.ExperienceCategoryId,
+                ExperienceTypeId = Model.Activity.ExperienceTypeId,
+                IsPublished = Model.Activity.IsPublished,
+                MinimumAge = Model.Activity.MinimumAge,
+                Price = Model.Activity.Price,
+                Remarks = Model.Activity.Remarks,
+                ScheduleIndicator = Model.Activity.ScheduleIndicator,
+                SearchTags = Model.Activity.SearchTags,
+                SkillLevel = Model.Activity.SkillLevel,
+                SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
+                SubCategoryId = Model.Activity.SubCategoryId,
+                Title = Model.Activity.Title
+            }, Model.Token);
             
-            if(!submit.Succeeded)
+            if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
-                throw submit.Error.Exception;
+                throw new ApplicationException();
             }
 
             NavigationManager.NavigateTo("/maker/dashboard");
@@ -254,20 +312,20 @@
             switch(index)
             {
                 case 1:
-                    if(!experienceUpdateComponent.IsAllFieldsValidated()) return;
+                    if(Model.HasError = !experienceUpdateComponent.IsAllFieldsValidated()) return;
                     currentIndex = 1;
                     break;
                 case 2:
-                    if(!experienceUpdateComponent.IsAllFieldsValidated()) return;
-                    if(!experienceSetupUpdateComponent.IsAllFieldsValidated()) return;
+                    if(Model.HasError = !experienceUpdateComponent.IsAllFieldsValidated()) return;
+                    if(Model.HasError = !experienceSetupUpdateComponent.IsAllFieldsValidated()) return;
                     currentIndex = 2;
                     break;
             }
             return;
         }
-        if(currentIndex == 0 && !experienceUpdateComponent.IsAllFieldsValidated()) return;
-        if(currentIndex == 1 && !experienceSetupUpdateComponent.IsAllFieldsValidated()) return;
-
+        if(currentIndex == 1 && (Model.HasError = !experienceUpdateComponent.IsAllFieldsValidated())) return;
+        if(currentIndex == 2 && (Model.HasError = !experienceSetupUpdateComponent.IsAllFieldsValidated())) return;
+        
         currentIndex++;
     }
 }

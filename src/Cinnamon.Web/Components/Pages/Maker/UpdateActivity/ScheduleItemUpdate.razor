@@ -30,14 +30,14 @@
 </div>
 @code {
     [Parameter]
-    public ScheduleModel scheduleModel { get; set; }
+    public Models.Entities.ActivitySchedule scheduleModel { get; set; }
 
     [Parameter]
-    public EventCallback<ScheduleModel> OnScheduleRemoved {get; set;}
+    public EventCallback<Models.Entities.ActivitySchedule> OnScheduleRemoved {get; set;}
 
-    private ScheduleModel? DraggedItem;
+    private Models.Entities.ActivitySchedule? DraggedItem;
     private int DraggedItemPosition;
-    private ScheduleModel? DragEnter;
+    private Models.Entities.ActivitySchedule? DragEnter;
 
     private void DeleteSchedule() 
     {

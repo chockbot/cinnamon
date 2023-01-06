@@ -13,4 +13,5 @@ public interface IActivityApiHandler
     Task<AppResult<GetExperienceCategoriesResult>> GetExperienceCategories();
     Task<AppResult<GetSubCategoriesResult>> GetSubCategories();
     Task<AppResult<GetOwnedActivitiesResult>> GetOwnedActivities(GetOwnedActivitiesArgs args, string token);
+    Task<AppResult<GetActivityResult>> GetOwnedActivity(int id, string token, GetActivityArgs? args = null);
 } 
