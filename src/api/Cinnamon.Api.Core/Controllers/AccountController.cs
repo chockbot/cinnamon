@@ -560,7 +560,7 @@ public class AccountController : ControllerBase
         {
             var result = await uploadProfilePictureHandler.ExecuteAsync(new Services.AccountService.Interactors.UploadProfilePictureArgs
             {
-                ProfileImage = args.ProfileImage,
+                ProfileImage = args.ProfileImageId,
             });
 
             if (!result.Succeeded || result.Result == null)

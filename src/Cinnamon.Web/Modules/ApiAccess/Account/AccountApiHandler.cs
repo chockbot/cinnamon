@@ -308,7 +308,11 @@ public class AccountApiHandler : IAccountApiHandler
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
                 .Request("Account/UploadProfilePicture")
-                .PostJsonAsync(args)
+                 .PostMultipartAsync(mp =>
+                 {
+                     mp.AddFile("ProfileImageId", args.ProfileImageId.OpenReadStream(),
+                         args.ProfileImageId.FileName, args.ProfileImageId.ContentType);
+                 })
                 .ReceiveJson<UploadProfilePictureResult>();
 
             return AppResult<UploadProfilePictureResult>.CreateSucceeded(result, "Successfully posting upload profile picture api");
@@ -320,6 +324,27 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<UploadProfilePictureResult>.CreateFailed(ex, "An error occured when posting upload profile picture api");
+        }
+    }
+
+    public async Task<AppResult<GetProfilePictureResult>> GetProfilePicture(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .WithOAuthBearerToken(token)
+                            .Request($"Account/GetProfilePicture")
+                            .GetJsonAsync<GetProfilePictureResult>();
+
+            return AppResult<GetProfilePictureResult>.CreateSucceeded(result, "Successfully getting profile picture api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetProfilePictureResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetProfilePictureResult>.CreateFailed(ex, "An error occured when getting profile picture api");
         }
     }
 }

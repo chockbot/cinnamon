@@ -15,6 +15,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @inject IVerifyEmail verifyEmailHandler;
@@ -113,7 +114,7 @@
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in experienceCategory)
+                                @foreach (var category in Model.ExperienceCategories)
                                         {
                                             if (category.Id <= 5)
                                             {
@@ -158,7 +159,7 @@
             <div class="activity-lg">
                 <div class="col-lg-10 p-4 d-flex justify-content-center">
                     <div class="cards-wrapper">
-                        @foreach(var category in experienceCategory)
+                        @foreach (var category in Model.ExperienceCategories)
                         {
                             if(category.Id <= 10)
                             {
@@ -185,7 +186,7 @@
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in experienceCategory)
+                                    @foreach (var category in Model.ExperienceCategories)
                                         {
                                             if (category.Id <= 7)
                                             {
@@ -398,6 +399,8 @@
 <ModalPassword @ref="modalPassword"></ModalPassword>*@
 </html>
 @code {
+    private Models.ExploreModel Model {get; set;}
+
     public List<ActivityModel>           activity           = new List<ActivityModel>();
     public List<ActivityTypeModel>       activityTypes      = new List<ActivityTypeModel>();
     public List<ActivityImagesModels>    activityImages     = new List<ActivityImagesModels>();
@@ -417,20 +420,45 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await FetchActivities();
-        //Address             = await CoreDI.DataStore.Addresses.GetAllAsync();
-        //activityImages      = await CoreDI.DataStore.ActivityImages.GetAllAsync();
+        // get experience categories
+        var experienceCategory = await activityApiHandler.GetExperienceCategories();
+        if((!experienceCategory.Succeeded || experienceCategory.Result == null) || (experienceCategory.Succeeded && !experienceCategory.Result.IsSuccess))
+        {
+            // an error occured when getting experience categories to api
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        // get sub categories
+        var subCategories = await activityApiHandler.GetSubCategories();
+        if((!subCategories.Succeeded || subCategories.Result == null) || (subCategories.Succeeded && !subCategories.Result.IsSuccess))
+        {
+            // an error occured when getting sub categories to api
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
 
-        //activityTypes       = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
-        //experienceCategory  = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
+        Model = new Models.ExploreModel
+            {
+                ExperienceCategories = experienceCategory.Result.Result.Select(c =>
+                {
+                    return new Models.Entities.ExperienceCategory
+                    {
+                        Category = c.Name,
+                        IconPath = c.IconPath,
+                        Id = c.Id
+                    };
+                }),
+                SubCategories = subCategories.Result.Result.Select(s =>
+                {
+                    return new Models.Entities.SubCategory
+                    {
+                        CategoryId = s.CategoryId,
+                        Id = s.Id,
+                        Name = s.Name
+                    };
+                })
+            };
 
-        //AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-        //if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
-        //{
-        //    var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
-        //    UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
-        //}
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
@@ -440,30 +468,24 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
-        // get experience types
-        var activityTypes = await activityApiHandler.GetExperienceTypes();
-        if ((!activityTypes.Succeeded || activityTypes.Result == null) || (activityTypes.Succeeded && !activityTypes.Result.IsSuccess))
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
         {
-            // an error occured when getting experience types to api
+            // an error occured
             NavigationManager.NavigateTo("explore");
             return;
         }
-         // get experience categories
-        var experienceCategory = await activityApiHandler.GetExperienceCategories();
-        if((!experienceCategory.Succeeded || experienceCategory.Result == null) || (experienceCategory.Succeeded && !experienceCategory.Result.IsSuccess))
-        {
-            // an error occured when getting experience categories to api
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
+        //Get Customer Information
+        Model = new();
+        var profile = result.Result.Result;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        //if (firstRender)
-        //{
-        //    await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
-        //}
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
+        }
 
         //var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         //var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
@@ -529,9 +551,38 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
-        //var ActivityListData = await CoreDI.DataStore.Activities.GetAllAsync();
-        //var fetchActivities = ActivityListData.Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(ActivityListData.Count < 10 ? ActivityListData.Count : 10);
-        //activity.AddRange(fetchActivities);
+        Model.Activities =new List<Models.Entities.Activity>();
+        var activities = await activityApiHandler.GetAllActivities();
+        if (activities.Succeeded && activities.Result != null && activities.Succeeded)
+        {
+            Model.Activities = activities.Result.Result.Select(r =>
+            {
+                return new Models.Entities.Activity
+                {
+                    ActivityId = r.ActivityId,
+                    ExperienceTypeId = r.ExperienceTypeId,
+                    ExperienceCategoryId = r.ExperienceCategoryId,
+                    SubCategoryId = r.SubCategoryId,
+                    Title = r.Title,
+                    Description = r.Description,
+                    Price = r.Price,
+                    ScheduleIndicator = r.ScheduleIndicator,
+                    Remarks = r.Remarks,
+                    IsPublished = r.IsPublished,
+                    Address1 = r.Address1,
+                    Address2 = r.Address2,
+                    District = r.District,
+                    City = r.City,
+                    SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                    CustomerBringWithThem = r.CustomerBringWithThem,
+                    AdditionalRequirements = r.AdditionalRequirements,
+                    ActivityLevel = r.ActivityLevel,
+                    SkillLevel = r.SkillLevel,
+                    MinimumAge = r.MinimumAge,
+                    CanAdultsJoin = r.CanAdultsJoin
+                };
+            }).ToList();
+        }
     }
 
     private void NavigateToDashboard()
@@ -563,34 +614,34 @@
 
     public async Task Search()
     {
-        activity       = await CoreDI.DataStore.Activities.GetAllAsync();
-        if(searchValue!= string.Empty)
-        {
-            activity   = activity.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Location,
-            searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
-            searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
-        }
-        else
-        {
-            activity = activity.Where(i => i.IsPublished).ToList();
-        }
+        //activity       = await CoreDI.DataStore.Activities.GetAllAsync();
+        //if(searchValue!= string.Empty)
+        //{
+        //    activity   = activity.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Location,
+        //    searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
+        //    searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
+        //}
+        //else
+        //{
+        //    activity = activity.Where(i => i.IsPublished).ToList();
+        //}
     }
 
     public async Task Filter(int id, string type)
     {
-        searchValue = type;
-        activity    = (await CoreDI.DataStore.Activities.GetActivitiesByCategoriesAsync(id)).ToList();
-        //activity    = activity.Where(p=> p.Id == id && p.IsPublished).ToList();
+        //searchValue = type;
+        //activity    = (await CoreDI.DataStore.Activities.GetActivitiesByCategoriesAsync(id)).ToList();
+        ////activity    = activity.Where(p=> p.Id == id && p.IsPublished).ToList();
     }
 
     public async Task Clear()
     {
-        searchValue = string.Empty;
-        activity    = await CoreDI.DataStore.Activities.GetAllAsync();
-        activity = activity.Where(p => p.IsPublished).ToList();
+        //searchValue = string.Empty;
+        //activity    = await CoreDI.DataStore.Activities.GetAllAsync();
+        //activity = activity.Where(p => p.IsPublished).ToList();
     }
     private async Task OnFilterSelectedChanged(int[] ids)
     {
-        activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
+        //activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
     }
 }
