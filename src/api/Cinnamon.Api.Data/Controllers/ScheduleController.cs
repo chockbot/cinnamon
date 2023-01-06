@@ -184,5 +184,26 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new UpdateManySchedulesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
+        [Route("DeleteManySchedules")]
+        [HttpPost]
+        [ProducesResponseType(typeof(DeleteManySchedulesResult), StatusCodes.Status202Accepted)]
+        public async Task<IActionResult> DeleteManySchedules([FromBody] DeleteManySchedulesArgs args)
+        {
+            try
+            {
+                var result = await _scheduleRepository.DeleteManySchedules(args.ScheduleIds);
+                if (!result.Succeeded || !result.Result)
+                {
+                    return new JsonResult(new DeleteManySchedulesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new DeleteManySchedulesResult { IsSuccess = true, Result = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new DeleteManySchedulesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
     }
 }

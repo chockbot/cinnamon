@@ -27,10 +27,12 @@ public class UpdateActivityArgs : IInteractor
     public bool? CanAdultsJoin {get; set;}
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<ActivitySchedule>? ActivitySchedules {get; set;}
+    public IEnumerable<int> DeletedScheduleIds {get; set;}
     
 
     public class ActivitySchedule 
     {
+        public int Id {get; set;}
         public string? Name {get; set;}
         public string? DateTime {get; set;}
         public decimal? Price {get; set;}

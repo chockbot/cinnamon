@@ -120,5 +120,47 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Schedule
                 return AppResult<CreateManySchedulesResult>.CreateFailed(ex, "An error occured when posting create customer api");
             }
         }
+
+        public async Task<AppResult<UpdateManySchedulesResult>> UpdateManySchedules(UpdateManySchedulesArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("Schedule/UpdateManySchedules")
+                                .PostJsonAsync(args)
+                                .ReceiveJson<UpdateManySchedulesResult>();
+
+                return AppResult<UpdateManySchedulesResult>.CreateSucceeded(result, "Successfully posting update many schedule api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<UpdateManySchedulesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<UpdateManySchedulesResult>.CreateFailed(ex, "An error occured when posting update many schedule api");
+            }
+        }
+
+        public async Task<AppResult<DeleteManySchedulesResult>> DeleteManySchedules(DeleteManySchedulesArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("Schedule/DeleteManySchedules")
+                                .PostJsonAsync(args)
+                                .ReceiveJson<DeleteManySchedulesResult>();
+
+                return AppResult<DeleteManySchedulesResult>.CreateSucceeded(result, "Successfully posting delete many schedule api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<DeleteManySchedulesResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<DeleteManySchedulesResult>.CreateFailed(ex, "An error occured when posting delete many schedule api");
+            }
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
@@ -8,18 +9,23 @@ namespace Cinnamon.Api.Core.Services.ActivityService;
 
 public class UpdateActivityHandler : IUpdateActivityHandler
 {
+    private readonly IHttpContextAccessor httpContext;
     private readonly IActivityData activityData;
     private readonly IExperienceCategoryData categoryData;
     private readonly ISubCategoryData subCategoryData;
     private readonly IExperienceTypeData experienceTypeData;
+    private readonly IScheduleData scheduleData;
 
     public UpdateActivityHandler(IActivityData activityData, IExperienceCategoryData categoryData,
-        ISubCategoryData subCategoryData, IExperienceTypeData experienceTypeData)
+        ISubCategoryData subCategoryData, IExperienceTypeData experienceTypeData, IScheduleData scheduleData,
+        IHttpContextAccessor httpContext)
     {
         this.activityData = activityData;
         this.categoryData = categoryData;
         this.subCategoryData = subCategoryData;
         this.experienceTypeData = experienceTypeData;
+        this.scheduleData = scheduleData;
+        this.httpContext = httpContext;
     }
 
     public AppResult<UpdateActivityResult> Execute(UpdateActivityArgs args)
@@ -38,8 +44,18 @@ public class UpdateActivityHandler : IUpdateActivityHandler
     {
         try
         {
+            // get customer id saved in claims
+            var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
+            if(customerId == null)
+            {
+                return AppResult<UpdateActivityResult>.CreateFailed(
+                    new ApplicationException("Unable to determine current account login"), "Unable to determine current account login");
+            }
+            int id = Convert.ToInt32(customerId);
+
             // check activity if existed
-            var activity = await activityData.GetActivityById(args.ActivityId);
+            var activity = await activityData.GetActivityById(args.ActivityId, 
+                            new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs {IncludeSchedules = true, CustomerId = id });
             if(!activity.Succeeded || activity.Result == null)
             {
                 return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(activity.Message), activity.Message);
@@ -136,6 +152,95 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                     new ApplicationException(updatedActivity.Result.ErrorInfo?.Message), "An error occured in UpdateActivityHandler");
             }
             var updated = updatedActivity.Result.Result;
+
+            // update activity schedules
+            if(args.ActivitySchedules != null)
+            {
+                var associatedIds = activity.Result.Result.Schedules.Select(s => s.Id);
+                var newSchedules = args.ActivitySchedules.Where(s => s.Id == 0);
+                var updatedSchedules = args.ActivitySchedules.Where(s => associatedIds.Contains(s.Id));
+
+                if(newSchedules.Count() > 0)
+                {
+                    // create new schedules
+                    var createdSchedules = await scheduleData.CreateManySchedules(new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs {
+                        ActivityId = args.ActivityId,
+                        Schedules = newSchedules.Select(s => {
+                            return new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.Schedule {
+                                DateTime = s.DateTime ?? string.Empty,
+                                Name = s.Name ?? string.Empty,
+                                PerUnit1 = s.PerUnit1 ?? 1,
+                                PerUnit2 = s.PerUnit2 ?? 1,
+                                Price = s.Price ?? 1,
+                                PriceUnit1 = s.PriceUnit1 ?? string.Empty,
+                                PriceUnit2 = s.PriceUnit2 ?? string.Empty,
+                                UnitPrice = s.UnitPrice ?? string.Empty
+                            };
+                        })
+                    });
+                    if(!createdSchedules.Succeeded || createdSchedules.Result == null)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(createdSchedules.Message), createdSchedules.Message);
+                    }
+                    if(createdSchedules.Succeeded && !createdSchedules.Result.IsSuccess)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(
+                            new ApplicationException(createdSchedules.Result.ErrorInfo?.Message), "An error occured in UpdateActivityHandler");
+                    }
+                }
+
+                if(updatedSchedules.Count() > 0)
+                {
+                    var updatedSchedulesRes = await scheduleData.UpdateManySchedules(new Framework.ApiCommand.ApiData.Schedule.Request.UpdateManySchedulesArgs {
+                        Schedules = updatedSchedules.Select(s => {
+                            return new Framework.ApiCommand.ApiData.Schedule.Request.UpdateManySchedulesArgs.UpdateSchedule {
+                                ActivityId = args.ActivityId,
+                                DateTime = s.DateTime ?? string.Empty,
+                                Id = s.Id,
+                                Name = s.Name ?? string.Empty,
+                                PerUnit1 = s.PerUnit1 ?? 1,
+                                PerUnit2 = s.PerUnit2 ?? 1,
+                                Price = s.Price ?? 1,
+                                PriceUnit1 = s.PriceUnit1 ?? string.Empty,
+                                PriceUnit2 = s.PriceUnit2 ?? string.Empty,
+                                UnitPrice = s.UnitPrice ?? string.Empty
+                            };
+                        })
+                    });
+                    if(!updatedSchedulesRes.Succeeded || updatedSchedulesRes.Result == null)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(updatedSchedulesRes.Message), updatedSchedulesRes.Message);
+                    }
+                    if(updatedSchedulesRes.Succeeded && !updatedSchedulesRes.Result.IsSuccess)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(
+                            new ApplicationException(updatedSchedulesRes.Result.ErrorInfo?.Message), "An error occured in UpdateActivityHandler");
+                    }
+                }
+            }
+            
+            // delete schedules
+            if(args.DeletedScheduleIds != null && args.DeletedScheduleIds.Count() > 0)
+            {
+                var associatedIds = activity.Result.Result.Schedules.Select(s => s.Id);
+                var idsMustDelete = args.DeletedScheduleIds.Where(i => i > 0 && associatedIds.Contains(i));
+
+                if(idsMustDelete.Count() > 0)
+                {
+                    var deletedSchedules = await scheduleData.DeleteManySchedules(new Framework.ApiCommand.ApiData.Schedule.Request.DeleteManySchedulesArgs {
+                        ScheduleIds = idsMustDelete
+                    });
+                    if(!deletedSchedules.Succeeded || deletedSchedules.Result == null)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(deletedSchedules.Message), deletedSchedules.Message);
+                    }
+                    if(deletedSchedules.Succeeded && !deletedSchedules.Result.IsSuccess)
+                    {
+                        return AppResult<UpdateActivityResult>.CreateFailed(
+                            new ApplicationException(deletedSchedules.Result.ErrorInfo?.Message), "An error occured in UpdateActivityHandler");
+                    }
+                }
+            }
 
             return AppResult<UpdateActivityResult>.CreateSucceeded(new UpdateActivityResult {
                 ActivityId = updated.Id,

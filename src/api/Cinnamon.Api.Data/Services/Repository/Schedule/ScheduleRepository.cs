@@ -121,6 +121,39 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             }
         }
 
+        public async Task<AppResult<bool>> DeleteManySchedules(IEnumerable<int> schedulesIds)
+        {
+            try
+            {
+                if(schedulesIds == null || schedulesIds.Count() == 0)
+                {
+                    return AppResult<bool>.CreateFailed(new ApplicationException("No schedules to delete"), "No schedules to delete");
+                }
+                schedulesIds = schedulesIds.Where(i => i > 0);
+                if(schedulesIds.Count() == 0)
+                {
+                    return AppResult<bool>.CreateFailed(new ApplicationException("No schedules to delete"), "No schedules to delete");
+                }
+
+                var result = await _dataStore.ActivitySchedule.RemoveRange(schedulesIds.Select(i => {
+                    return new Entities.ActivitySchedule {
+                        Id = i
+                    };
+                }));
+                
+                if(!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+                }
+
+                return AppResult<bool>.CreateSucceeded(true, "Successfully deleted schedules");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<bool>.CreateFailed(ex, "An error occured in deleting many schedules");
+            }
+        }
+
         public async Task<AppResult<IEnumerable<ScheduleDTO>>> GetAllAsync()
         {
             try
