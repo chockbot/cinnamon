@@ -18,6 +18,7 @@ public class ActivityController : ControllerBase
     private readonly IGetSubCategoriesHandler getSubCategoriesHandler;
     private readonly IGetOwnedActivitiesHandler getOwnedActivitiesHandler;
     private readonly IUpdateActivityHandler updateActivityHandler;
+    private readonly IGetAllActivitiesHandler getAllActivitiesHandler;
     private readonly IGetOwnedActivityHandler getOwnedActivityHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -29,6 +30,7 @@ public class ActivityController : ControllerBase
         this.getExperienceTypesHandler = getExperienceTypesHandler;
         this.getExperienceCategoriesHandler = getExperienceCategoriesHandler;
         this.getSubCategoriesHandler = getSubCategoriesHandler;
+        this.getAllActivitiesHandler = getAllActivitiesHandler;
         this.getOwnedActivitiesHandler = getOwnedActivitiesHandler;
         this.updateActivityHandler = updateActivityHandler;
         this.getOwnedActivityHandler = getOwnedActivityHandler;
@@ -368,6 +370,56 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetOwnedActivitiesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+    [Route("GetAllActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllActivities()
+    {
+        try
+        {
+            var result = await getAllActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllActivitiesArgs { });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllActivitiesResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Activities.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                    {
+                        ActivityId = s.ActivityId,
+                        ExperienceTypeId = s.ExperienceTypeId,
+                        ExperienceCategoryId = s.ExperienceCategoryId,
+                        SubCategoryId = s.SubCategoryId,
+                        Title = s.Title,
+                        Description = s.Description,
+                        Price = s.Price,
+                        ScheduleIndicator = s.ScheduleIndicator,
+                        Remarks = s.Remarks,
+                        IsPublished = s.IsPublished,
+                        Address1 = s.Address1,
+                        Address2 = s.Address2,
+                        District = s.District,
+                        City = s.City,
+                        SpecificsYouWillProvide = s.SpecificsYouWillProvide,
+                        CustomerBringWithThem = s.CustomerBringWithThem,
+                        AdditionalRequirements = s.AdditionalRequirements,
+                        ActivityLevel = s.ActivityLevel,
+                        SkillLevel = s.SkillLevel,
+                        MinimumAge = s.MinimumAge,
+                        CanAdultsJoin = s.CanAdultsJoin
+                    };
+                })
+            });
+        }
+        catch (Exception ex )
+        {
+            return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 

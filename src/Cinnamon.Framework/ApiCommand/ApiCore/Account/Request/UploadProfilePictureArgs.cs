@@ -6,5 +6,5 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
 public class UploadProfilePictureArgs
 {
     [Required]
-    public IFormFile ProfileImage { get; set; }
+    public IFormFile ProfileImageId { get; set; }
 }

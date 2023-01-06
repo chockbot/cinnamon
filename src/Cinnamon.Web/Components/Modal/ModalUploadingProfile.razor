@@ -7,7 +7,10 @@
 @using System
 @using System.IO
 @using System.Text.RegularExpressions
+@using Cinnamon.Web.Models.Customer;
 @using Cinnamon.Core.Module.UploadService.Handler
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IAccountApiHandler accountApiHandler;
 @inject IWebHostEnvironment Environment
 @inject IUploadImages uploadImageHandler
 @inject IDeleteImage deleteImageHandler
@@ -20,42 +23,52 @@
     <DataAnnotationsValidator />
     <div class="modal @viewModel.ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
         <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <p class="col-11 modal-title text-center">Profile Photo</p>
-                    <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
-                </div>
-                <div class="modal-body">
-                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
-                    <div class="col-12-lg d-flex justify-content-center">
-                        <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center" >
-                            <div class="btn-delete">
-                                <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
-                                    <i class="fa fa-trash" style="color:black;"></i>
-                                </button>
-                            </div>
-                            <div class="figure-profile">
-                                 <label for="fileinput" class="upload-image">
-                                    <Figure Border="Border.RoundedCircle">
-                                        <CardImage Source="@viewModel.profilepicture" id="avatar-crop" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
-                                    </Figure>
-                                 </label>
-                                     <input type="file" name="photo" accept="image/*" class="js-photo-upload" style="display:none;">
-                                <div class="round">
-                                    <form method="post">
-                                        <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" type="file" name="photo" class="js-photo-upload"/>
-                                        <i class="fa fa-camera" style="color: black;"></i>
-                                    </form>
+            <form id="submit-profile-picture" method="post" enctype="multipart/form-data">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center">Profile Photo</p>
+                        <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                        <div class="col-12-lg d-flex justify-content-center">
+                            <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
+                                <div class="btn-delete">
+                                    <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
+                                        <i class="fa fa-trash" style="color:black;"></i>
+                                    </button>
                                 </div>
-                            </div>
-                        </Card>
-                    </div>
-                    <p class="bottom-text">JPEG or PNG only</p>
-                    <div class="btn-upload">
-                        <SignupButton id="update-profile" Width="100%" Text="Upload" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" Height="0.5vw"/>
+                                <div class="figure-profile">
+                                    <label for="fileinput" class="upload-image">
+                                        <Figure Border="Border.RoundedCircle">
+                                            <CardImage Source="@GetProfileSrc()" id="@profilePicture.ImageId" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                        </Figure>
+                                    </label>
+                                    <input id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;">
+                                    <div class="round">
+                                        <form method="post">
+                                            <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload"/>
+                                            <i class="fa fa-camera" style="color: black;"></i>
+                                        </form>
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                        <p class="bottom-text">JPEG or PNG only</p>
+                        <div class="btn-upload">
+                            <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Type="ButtonType.Submit"
+                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18" Loading="isLoading" Disabled="isLoading">
+                                <LoadingTemplate>
+                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Upload
+                                </ChildContent>
+                            </Button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </EditForm>
@@ -80,7 +93,7 @@
 }
 @if (viewModel.ShowErrorMessage)
 {
-    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" id="@profilePicture.ErrorId" style="z-index:99999">
         <strong>Error!</strong>Error occured while uploading image. Please try again.
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -100,6 +113,12 @@
 @code {
     IJSObjectReference module;
 
+    [Parameter]
+    public string Token { get; set; }
+
+    private UploadProfilePicture profilePicture = new();
+
+    private InputFile? inputFile;
     private DotNetObjectReference<ModalUploadingProfile>? objRef;
 
     private readonly IConfiguration configuration;
@@ -112,139 +131,42 @@
 
     public string ParaContent = "Some Text Content";
 
-    private Modal modalRef;
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await accountApiHandler.GetProfilePicture(Token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            throw new ApplicationException("An error occured when getting customer profile picture");
+        }
+
+        objRef = DotNetObjectReference.Create(this);
+        profilePicture.ImageFileName = result.Result.Result.ProfileImagePath;
+        profilePicture.ImageName = "ProfilePicture";
+        profilePicture.ImageId       = "avatar-crop";
+        profilePicture.ErrorId       = "id-profile-image";
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/editprofileModal.js");
+            //module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/editprofileModal.js");
+            await jsRuntime.InvokeAsync("MyLib.Components.modal.uploadProfilePicture.init", objRef);
         }
     }
-    private async Task ShowModal()
+    private string GetProfileSrc()
     {
-        await modalRef.Show();
+        if (!string.IsNullOrEmpty(profilePicture.ImageFileName)) return profilePicture.ImageFileName;
+
+        return "/images/Profile/user.png";
     }
-
-    private async Task HideModal()
-    {
-        await modalRef.Hide();
-    }
-    public bool ButtonIsClicked()
-    {
-        return viewModel.isClickButton ? true : false;
-    }
-    public string showSpinner()
-    {
-        return viewModel.isSpinnerShow ? "visible" : "hidden";
-    }
-    private async Task DeleteProfile()
-    {
-        string[] filepath           = viewModel.profilepicture.Split("/");
-        viewModel.profilepicture    = filepath[4];
-        await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
-    }
-    private async Task DeleteBlob(string filename, string container1)
-    {
-        // Delete to Azure Blob
-        var result = await deleteImageHandler.ExecuteAsync(
-                new Core.Module.UploadService.Interactors.DeleteImage
-                { Container = "upload-profile-picture", FileName = filename });
-
-        if(result.Succeeded)
-        {
-            customer = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
-            viewModel.profilepicture = customer.ProfilePath;
-        }
-        else
-        {
-            ResultModel.error("Error occurred while deleting image");
-        }
-    }
-    private async Task Upload()
-    {
-         viewModel.isSpinnerShow = true;
-
-        //Get Image Data Url from JS
-        await module.InvokeVoidAsync("ChangeContentJS", objRef);
-
-        //Get Image Data
-        var match = Regex.Match(ParaContent, @"data:(?<type>.+?);base64,(?<data>.+)");
-        var base64Data = match.Groups["data"].Value;
-        var contentType = match.Groups["type"].Value;
-        var binData = Convert.FromBase64String(base64Data);
-
-        using (var ms = new MemoryStream(binData))
-        {
-            //Get image Byte
-            byte[] imageByte = ms.ToArray();
-
-            //Generate File Name
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-            var stringChars = new char[8];
-            var random = new Random();
-
-            for (int i = 0; i < stringChars.Length; i++)
-            {
-                stringChars[i] = chars[random.Next(chars.Length)];
-            }
-            var randomStr = new String(stringChars);
-
-            //Set image FileName
-            string[] type= contentType.Split("/");
-            string extension = type[1];
-            string filename = new String(randomStr + "." + extension);
-
-            //Upload to Azure Blob
-            var upload = await uploadImageHandler.ExecuteAsync(
-                new Core.Module.UploadService.Interactors.ImageUpload
-                    { Container = "upload-profile-picture", Images = new List<Tuple<byte[], string>> { new Tuple<byte[], string>(imageByte, filename) } });
-           
-            //Display Image
-            if (upload.Succeeded)
-            {
-                if (upload.Result != null)
-                {
-                    foreach (var imagePath in upload.Result.ImagesPath)
-                    {
-                        viewModel.profilepicture = imagePath;
-                        viewModel.isClickButton = false;
-                    }
-                }
-            }
-        }
-        //Save image location to DB
-        var res = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
-        if (res != null)
-        {
-            res.ProfilePath              = viewModel.profilepicture;
-            var update                   = await CoreDI.DataStore.Customers.SaveDataAsync(res);
-            viewModel.isClickButton      = false;
-            viewModel.isSpinnerShow      = false;
-            viewModel.ShowSuccessMessage = true;
-            HideMessageAfterDelay();
-            await CloseModal();
-        }
-        else
-        {
-            viewModel.ShowErrorMessage = true;
-            HideMessageAfterDelay();
-        }
-    }
-
-    [JSInvokable]
-    public void ChangeParaContentValue(string value)
-    {
-        ParaContent = value;
-    }
-
-    public async Task OpenModal(string email, string path)
+    public async Task OpenModal()
     {
         viewModel.ModalDisplay   = "block;";
         viewModel.ModalClass     = "show";
         viewModel.ShowBackdrop   = true;
-        viewModel.UserEmail      = email;
-        viewModel.profilepicture = path;
         StateHasChanged();
     }
 
@@ -264,10 +186,20 @@
         viewModel.ShowSuccessMessage = false;
         StateHasChanged();
     }
-
-    protected override void OnInitialized()
+    [JSInvokable]
+    public Task ShowLoading()
     {
-        objRef = DotNetObjectReference.Create(this);
+        isLoading = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task HideLoading()
+    {
+        isLoading = false;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }
 

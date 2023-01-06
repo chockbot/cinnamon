@@ -30,7 +30,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 	{
 		try
 		{
-			var result = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities { });
+			var result = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {});
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<GetAllActivitiesResult>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -45,9 +45,10 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 Activities = result.Result.Result.Select(e => {
                     return new GetAllActivitiesResult.Activity
                     {
-                        Id = e.Id,
-                        SubTitle = e.SubTitle,
-                        Title=e.Title,  
+                        ActivityId = e.Id,
+                        ExperienceCategoryId = e.ExperienceCategoryId,
+                        SubCategoryId = e.SubCategoryId,
+                        Title =e.Title,  
                         Description=e.Description,  
                         SpecificsYouWillProvide=e.SpecificsYouWillProvide,
                         CustomerBringWithThem = e.CustomerBringWithThem,
@@ -63,18 +64,14 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         District = e.District,
                         City = e.City,
                         SearchTags = e.SearchTags.ToArray(),
-                        ExperienceType = e.ExperienceType,
-                        IsPublished = e.IsPublished,
-                        ExperienceCategoryId = e.ExperienceCategoryId,
-                        SubCategoryId = e.SubCategoryId
+                        IsPublished = e.IsPublished
                     };
                 })
             }, "Successfully get all activities");
         }
         catch (Exception ex)
 		{
-
-			throw;
-		}
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured in GetAllActivitiesHandler");
+        }
 	}
 }
