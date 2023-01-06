@@ -1,7 +1,6 @@
-@using Cinnamon.Core
-@using Cinnamon.Core.Module.ActivityService.Handler;
+@using Cinnamon.Web.Models.Entities;
 @inject NavigationManager NavigationManager
-@inject IPublishActivityHandler publishedActivityHandler;
+@inject Modules.ApiAccess.Handlers.IActivityApiHandler activityApiHandler;
 
 <TableRow>
     <TableRowCell>@Activity.Title</TableRowCell>
@@ -16,18 +15,22 @@
 @code
 {
     [Parameter]
-    public ActivityModel Activity {get; set;}
+    public Activity Activity {get; set;}
+    
+    [Parameter]
+    public string Token {get; set;}
 
     private async Task OnPublishedChange(bool value)
     {
         Activity.IsPublished = value;
-        var res = await publishedActivityHandler.ExecuteAsync(
-                new Core.Module.ActivityService.Interactors.Publish {ActivityId = Activity.Id, IsPublished = value});
-        if(!res.Succeeded){
-            throw res.Error.Exception;
+        var res = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs {
+            IsPublished = value,
+            ActivityId = Activity.ActivityId
+        }, Token);
+        if(res.Succeeded && res.Result != null && res.Result.IsSuccess)
+        {
+            await OnPublishChanged.InvokeAsync(value ? -1 : 1);
         }
-        
-        await OnPublishChanged.InvokeAsync(value ? -1 : 1);
     }
 
     [Parameter]
@@ -35,6 +38,6 @@
 
     private void NavigateToCreation()
     {
-        NavigationManager.NavigateTo($"maker/update-activity?activityId={Activity.Id}");
+        NavigationManager.NavigateTo($"maker/update-activity?activityId={Activity.ActivityId}");
     }
 }

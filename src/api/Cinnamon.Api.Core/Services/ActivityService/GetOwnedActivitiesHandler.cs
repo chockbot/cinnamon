@@ -20,7 +20,14 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
 
     public AppResult<GetOwnedActivitiesResult> Execute(GetOwnedActivitiesArgs args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetOwnedActivitiesResult>.CreateFailed(ex, "An error occured in GetOwnedActivitiesHandler");
+        }
     }
 
     public async Task<AppResult<GetOwnedActivitiesResult>> ExecuteAsync(GetOwnedActivitiesArgs args)
@@ -36,8 +43,72 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
             }
             int id = Convert.ToInt32(customerId);
 
-            return null;
-            
+            var result = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {
+                CustomerId = id,
+                IncludeAddress = args.IncludeActivityAddress,
+                IncludeDescription = args.IncludeActivityDescription,
+                IncludeSchedules = args.IncludeAtivitySchedules,
+                IncludeImages = args.IncludeActivityImages,
+                IncludeSearchTags = args.IncludeActivitySearchTags,
+                IsActive = args.IsActive
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<GetOwnedActivitiesResult>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            if(result.Succeeded && !result.Result.IsSuccess)
+            {
+                return AppResult<GetOwnedActivitiesResult>.CreateFailed(
+                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetOwnedActivitiesHandler");
+            }
+
+            return AppResult<GetOwnedActivitiesResult>.CreateSucceeded(new GetOwnedActivitiesResult {
+                Activities = result.Result.Result.Select(a => {
+                    return new GetOwnedActivitiesResult.Activity {
+                        ActivityLevel = a.ActivityLevel,
+                        AdditionalRequirements = a.AdditionalRequirements,
+                        Address1 = a.Address1,
+                        Address2 = a.Address2,
+                        CanAdultsJoin = a.CanAdultsJoin,
+                        City = a.City,
+                        CustomerBringWithThem = a.CustomerBringWithThem,
+                        Description = a.Description,
+                        District = a.District,
+                        ExperienceCategoryId = a.ExperienceCategoryId,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        Id = a.Id,
+                        IsPublished = a.IsPublished,
+                        MinimumAge = a.MinimumAge,
+                        Price = a.Price,
+                        Remarks = a.Remarks,
+                        SearchTags = a.SearchTags,
+                        SkillLevel = a.SkillLevel,
+                        SpecificsYouWillProvide = a.SpecificsYouWillProvide,
+                        SubCategoryId = a.SubCategoryId,
+                        Title = a.Title,
+                        ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
+                            return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice
+                            };
+                        }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivitySchedule>(),
+                        Images = a.Images != null ? a.Images.Select(i => {
+                            return new GetOwnedActivitiesResult.Activity.ActivityImage {
+                                ImageSrc = i.ImageLocation,
+                                Name = i.ImageName
+                            };
+                        }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivityImage>()
+                    };
+                })
+            }, "Successfully get owned activities");
         }
         catch (Exception ex)
         {

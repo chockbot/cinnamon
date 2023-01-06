@@ -49,6 +49,27 @@ namespace Cinnamon.Api.Data.Controllers
             }
         }
 
+        [Route("GetDescriptionByActivityId/{id}")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetDescriptionResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetDescriptionByActivityId(int id)
+        {
+            try
+            {
+                var result = await _descriptionRepository.GetByIdAsync(id);
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetDescriptionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new GetDescriptionResult { Result = result.Result, IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetDescriptionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
         [HttpGet]
         [Route("GetAllDescription")]
         [ProducesResponseType(typeof(GetAllDescriptionResult), StatusCodes.Status200OK)]

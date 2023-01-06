@@ -1,6 +1,5 @@
 ﻿using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Framework.ApiCommand.ApiData.ExperienceCategory.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.SearchTags.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.SearchTags.Response;
 using Cinnamon.Framework.Common;
@@ -9,9 +8,10 @@ using Flurl.Http.Configuration;
 
 namespace Cinnamon.Api.Core.Modules.DataAccess.SearchTags;
 
-public class SearchTagsData:ISearchTagsData
+public class SearchTagsData : ISearchTagsData
 {
     private readonly IFlurlClient flurlClient;
+
     public SearchTagsData(ApplicationConfig config, IFlurlClientFactory flurlFac)
 	{
         flurlClient = flurlFac.Get(config.ApiDataUrl);
@@ -69,6 +69,26 @@ public class SearchTagsData:ISearchTagsData
         {
             var result = await flurlClient
                             .Request($"SearchTags/GetSearchTagsById/{id}")
+                            .GetJsonAsync<GetSearchTagsResult>();
+
+            return AppResult<GetSearchTagsResult>.CreateSucceeded(result, "Successfully getting search tags by id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetSearchTagsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetSearchTagsResult>.CreateFailed(ex, "An error occured when getting search tags by id api");
+        }
+    }
+    
+    public async Task<AppResult<GetSearchTagsResult>> GetSearchTagsByActivityId(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"SearchTags/GetSearchTagsByActivityId/{id}")
                             .GetJsonAsync<GetSearchTagsResult>();
 
             return AppResult<GetSearchTagsResult>.CreateSucceeded(result, "Successfully getting search tags by id api");

@@ -42,6 +42,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceTypesHandler, Services.ActivityService.GetExperienceTypesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceCategoriesHandler, Services.ActivityService.GetExperienceCategoriesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetSubCategoriesHandler, Services.ActivityService.GetSubCategoriesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivitiesHandler, Services.ActivityService.GetOwnedActivitiesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityHandler, Services.ActivityService.UpdateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetAllActivitiesHandler,Services.ActivityService.GetAllActivitiesHandler>();
 
         return services;

@@ -7,6 +7,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 public interface ISearchTagsData
 {
     Task<AppResult<GetSearchTagsResult>> GetSearchTagsById(int id);
+    Task<AppResult<GetSearchTagsResult>> GetSearchTagsByActivityId(int id);
     Task<AppResult<GetAllSearchTagsResult>> GetAllSearchTags(GetAllSearchTagsArgs args);
     Task<AppResult<CreateSearchTagsResult>> CreateSearchTags(CreateSearchTagsArgs args);
     Task<AppResult<UpdateSearchTagsResult>> UpdateSearchTags(UpdateSearchTagsArgs args);

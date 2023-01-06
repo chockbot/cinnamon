@@ -79,6 +79,26 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
             }
         }
 
+        public async Task<AppResult<GetAddressResult>> GetAddressByActivityId(int id)
+        {
+            try
+            {
+                var result = await flurlClient
+                                .Request($"Address/GetAddressByActivityId/{id}")
+                                .GetJsonAsync<GetAddressResult>();
+
+                return AppResult<GetAddressResult>.CreateSucceeded(result, "Successfully getting address by id api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetAddressResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAddressResult>.CreateFailed(ex, "An error occured when getting address by id api");
+            }
+        }
+
         public async Task<AppResult<UpdatedAddressResult>> UpdateAddress(UpdateAddressArgs args)
         {
             try

@@ -110,6 +110,34 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
             }
         }
 
+        public async Task<AppResult<AddressDTO>> GetByActivityIdAsync(int id)
+        {
+            try
+            {
+                var result = await _dataStore.ActivityAddress.FindFirstAsync(d => d.ActivityId == id);
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<AddressDTO>.CreateFailed(result.Error.Exception, result.Message);
+                }
+
+                var activitieAddress = new AddressDTO
+                {
+                    Id = result.Result.Id,
+                    ActivityId = result.Result.ActivityId,
+                    Address1 = result.Result.Address1,
+                    Address2 = result.Result.Address2,
+                    District = result.Result.District,
+                    City = result.Result.City
+                };
+
+                return AppResult<AddressDTO>.CreateSucceeded(activitieAddress, "Successfully getting address by activity id");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<AddressDTO>.CreateFailed(ex, "An error occured when getting address by activity id");
+            }
+        }
+
         public async Task<AppResult<AddressDTO>> RemoveAddress(int AddressId)
         {
             try
