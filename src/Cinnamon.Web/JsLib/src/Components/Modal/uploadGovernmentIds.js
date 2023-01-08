@@ -38,6 +38,8 @@ uploadGovernmentIds._initForm = (dotnetObj) => {
 
     if (data.success) {
       dotnetObj.invokeMethodAsync("HideModal");
+    } else {
+      dotnetObj.invokeMethodAsync("ShowError", data.message);
     }
   });
 };

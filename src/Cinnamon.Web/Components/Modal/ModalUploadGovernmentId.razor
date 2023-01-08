@@ -36,6 +36,11 @@
                         Upload
                     </ChildContent>
                 </Button>
+                <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="isShowErrorMessage" >
+                    <AlertMessage>
+                        @errorMessage
+                    </AlertMessage>
+                </Alert>
             </ModalFooter>
         </ModalContent>
     </form>
@@ -55,6 +60,10 @@
     private DotNetObjectReference<ModalUploadGovernmentId>? obj;
     
     private bool isLoading = false;
+
+    private bool isShowErrorMessage = false;
+
+    private string errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -112,6 +121,14 @@
         isLoading = false;
         StateHasChanged();
         return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public void ShowError(string message)
+    {
+        errorMessage = message;
+        isShowErrorMessage = true;
+        StateHasChanged();
     }
 }
 
