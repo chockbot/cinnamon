@@ -13,6 +13,9 @@
 @using System.Globalization
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Models.Entities
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler;
@@ -32,6 +35,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 </head>
 <body>
+@if(Model != null)
+{
      <!--Search-->
     <div class="top-row px-4">
         <!--App Name-->
@@ -70,7 +75,7 @@
                     {
                         @if(AuthState.User.Identity.IsAuthenticated)
                         {
-                            if(UserModel != null && UserModel.IsMaker)
+                            if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
@@ -114,7 +119,7 @@
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                @foreach (var category in Model.ExperienceCategories)
+                                    @foreach (var category in categories)
                                         {
                                             if (category.Id <= 5)
                                             {
@@ -128,7 +133,7 @@
                                 </div>
                                 <div class="carousel-item">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in experienceCategory)
+                                    @foreach (var category in categories)
                                             {
                                                 if (category.Id > 5 && category.Id <= 10)
                                                 {
@@ -159,7 +164,7 @@
             <div class="activity-lg">
                 <div class="col-lg-10 p-4 d-flex justify-content-center">
                     <div class="cards-wrapper">
-                        @foreach (var category in Model.ExperienceCategories)
+                            @foreach (var category in categories)
                         {
                             if(category.Id <= 10)
                             {
@@ -186,7 +191,7 @@
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                    @foreach (var category in Model.ExperienceCategories)
+                                        @foreach (var category in categories)
                                         {
                                             if (category.Id <= 7)
                                             {
@@ -230,7 +235,7 @@
                     <div class="row d-flex justify-content-start">
                         @foreach (var act in activity)
                         {
-                         cnt = 0;
+                         cnt = 0; 
                          images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
            
                          <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center">
@@ -391,24 +396,25 @@
             </div>
         </div> 
     </div>
+}
 </body>
-@*<ModalLogin TypeValue="@UserType.Customer"></ModalLogin>*@
+<ModalLogin TypeValue="@UserType.Customer"></ModalLogin>
 <!--Filter-->
-<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>
+@*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
 @*<ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>*@
 </html>
 @code {
-    private Models.ExploreModel Model {get; set;}
-
+    private ExploreModel Model= new ExploreModel();
+    private Profile CustomerModel= new Profile();
     public List<ActivityModel>           activity           = new List<ActivityModel>();
     public List<ActivityTypeModel>       activityTypes      = new List<ActivityTypeModel>();
     public List<ActivityImagesModels>    activityImages     = new List<ActivityImagesModels>();
     public List<ActivityImagesModels>    images             = new List<ActivityImagesModels>();
     public List<AddressModel>            Address            = new List<AddressModel>();
-    public List<CustomerModel>           UserList           = new List<CustomerModel>();
-    public List<ExperienceCategoryModel> experienceCategory = new List<ExperienceCategoryModel>();
-    public CustomerModel                 UserModel          = new CustomerModel();
+    public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
+    public CustomerProfile               customers           = new CustomerProfile();
+    public List<Activity>                activities         = new List<Activity>();
     public string                        searchValue        = string.Empty;
     public string                        filterId           = string.Empty;
     public int                           cnt                = 0;
@@ -422,64 +428,47 @@
     {
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
-        if((!experienceCategory.Succeeded || experienceCategory.Result == null) || (experienceCategory.Succeeded && !experienceCategory.Result.IsSuccess))
+        if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
         {
-            // an error occured when getting experience categories to api
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        // get sub categories
-        var subCategories = await activityApiHandler.GetSubCategories();
-        if((!subCategories.Succeeded || subCategories.Result == null) || (subCategories.Succeeded && !subCategories.Result.IsSuccess))
-        {
-            // an error occured when getting sub categories to api
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-
-        Model = new Models.ExploreModel
+            categories = experienceCategory.Result.Result.Select(i =>
             {
-                ExperienceCategories = experienceCategory.Result.Result.Select(c =>
-                {
-                    return new Models.Entities.ExperienceCategory
+                return new ExperienceCategory
                     {
-                        Category = c.Name,
-                        IconPath = c.IconPath,
-                        Id = c.Id
+                        Id = i.Id,
+                        Category = i.Name,
+                        IconPath = i.IconPath
                     };
-                }),
-                SubCategories = subCategories.Result.Result.Select(s =>
-                {
-                    return new Models.Entities.SubCategory
-                    {
-                        CategoryId = s.CategoryId,
-                        Id = s.Id,
-                        Name = s.Name
-                    };
-                })
+            }).ToList();
+        }
+        Model = new ExploreModel
+            {
+                ExperienceCategories = categories
             };
 
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var token = user.FindFirstValue("Token");
-        if (token == null)
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var token = AuthState.User.FindFirstValue("Token");
+        if (AuthState != null && AuthState.User.Identity.IsAuthenticated)
         {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
+            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
+            //Get Customer by Email
+            var customer = await accountApiHandler.GetCustomerByEmail(token, email);
+            CustomerModel = new();
+            if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+            {
+                var args = customer.Result.Result;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
+            }
         }
-        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-        {
-            // an error occured
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        //Get Customer Information
-        Model = new();
-        var profile = result.Result.Result;
     }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -487,9 +476,9 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
         }
 
-        //var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
-        //var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
-        //var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
+        var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
 
         //try
         //{
@@ -545,46 +534,41 @@
     private async Task FetchActivities()
     {
         var ActivityListData = await activityApiHandler.GetAllActivities();
-        if ((!ActivityListData.Succeeded || ActivityListData.Result == null) || (ActivityListData.Succeeded && !ActivityListData.Result.IsSuccess))
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
-            // an error occured when getting experience types to api
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        Model.Activities =new List<Models.Entities.Activity>();
-        var activities = await activityApiHandler.GetAllActivities();
-        if (activities.Succeeded && activities.Result != null && activities.Succeeded)
-        {
-            Model.Activities = activities.Result.Result.Select(r =>
+            activities = ActivityListData.Result.Result.Select(r =>
             {
-                return new Models.Entities.Activity
-                {
-                    ActivityId = r.ActivityId,
-                    ExperienceTypeId = r.ExperienceTypeId,
-                    ExperienceCategoryId = r.ExperienceCategoryId,
-                    SubCategoryId = r.SubCategoryId,
-                    Title = r.Title,
-                    Description = r.Description,
-                    Price = r.Price,
-                    ScheduleIndicator = r.ScheduleIndicator,
-                    Remarks = r.Remarks,
-                    IsPublished = r.IsPublished,
-                    Address1 = r.Address1,
-                    Address2 = r.Address2,
-                    District = r.District,
-                    City = r.City,
-                    SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                    CustomerBringWithThem = r.CustomerBringWithThem,
-                    AdditionalRequirements = r.AdditionalRequirements,
-                    ActivityLevel = r.ActivityLevel,
-                    SkillLevel = r.SkillLevel,
-                    MinimumAge = r.MinimumAge,
-                    CanAdultsJoin = r.CanAdultsJoin
-                };
+                return new Activity
+                    {
+                        ActivityId = r.ActivityId,
+                        ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceCategoryId = r.ExperienceCategoryId,
+                        SubCategoryId = r.SubCategoryId,
+                        Title = r.Title,
+                        Description = r.Description,
+                        Price = r.Price,
+                        ScheduleIndicator = r.ScheduleIndicator,
+                        Remarks = r.Remarks,
+                        IsPublished = r.IsPublished,
+                        Address1 = r.Address1,
+                        Address2 = r.Address2,
+                        District = r.District,
+                        City = r.City,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem = r.CustomerBringWithThem,
+                        AdditionalRequirements = r.AdditionalRequirements,
+                        ActivityLevel = r.ActivityLevel,
+                        SkillLevel = r.SkillLevel,
+                        MinimumAge = r.MinimumAge,
+                        CanAdultsJoin = r.CanAdultsJoin
+                    };
             }).ToList();
+            Model = new ExploreModel
+            {
+                Activities = activities
+            };
         }
     }
-
     private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");

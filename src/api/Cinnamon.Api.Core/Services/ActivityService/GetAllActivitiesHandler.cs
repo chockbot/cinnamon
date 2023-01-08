@@ -26,7 +26,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
         }
     }
 
-	public async Task<AppResult<GetAllActivitiesResult>> ExecuteAsync(GetAllActivitiesArgs interactor)
+	public async Task<AppResult<GetAllActivitiesResult>> ExecuteAsync(GetAllActivitiesArgs args)
 	{
 		try
 		{

@@ -22,6 +22,7 @@ public class AccountController : ControllerBase
     private readonly ISubmitResendVerificationHandler submitResendEmailHandler;
     private readonly IGetProfileHandler getProfileHandler;
     private readonly IGetFamilyMembersHandler getFamilyMembersHandler;
+    private readonly IGetWaitListHandler getWaitListHandler;
     private readonly IUpdateFamilyMembersHandler updateFamilyMembersHandler;
     private readonly ICreateFamilyMembersHandler createFamilyMembersHandler;
     private readonly IDeleteFamilyMembersHandler deleteFamilyMembersHandler;
@@ -37,10 +38,8 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler
-        // , IUploadProfilePictureHandler uploadProfilePictureHandler,
-        // IGetProfilePictureHandler getProfilePictureHandler 
-        )
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
+        IGetWaitListHandler getWaitListHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -55,8 +54,9 @@ public class AccountController : ControllerBase
         this.updateProfileHandler = updateProfileHandler;
         this.getGovernmentIdsHandler = getGovernmentIdsHandler;
         this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
-        // this.uploadProfilePictureHandler = uploadProfilePictureHandler;
-        // this.getProfilePictureHandler = getProfilePictureHandler;   
+        this.uploadProfilePictureHandler = uploadProfilePictureHandler;
+        this.getProfilePictureHandler = getProfilePictureHandler;   
+        this.getWaitListHandler = getWaitListHandler;
     }
 
     [Route("Register")]
@@ -316,7 +316,41 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
+    [Route("GetAllWaitList")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetWaitListResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllWaitList()
+    {
+        try
+        {
+            var result = await getWaitListHandler.ExecuteAsync(new Services.AccountService.Interactors.GetWaitListArgs { });
 
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetWaitListResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var waitlist = result.Result.WaitLists.Select(i => {
+                return new WaitlistDTO
+                {
+                    Id= i.Id,   
+                    Email= i.Email, 
+                    Guid= i.Guid,   
+                    IsVerified= i.IsVerified,   
+                    Token = i.Token 
+                };
+            });
+
+            return new JsonResult(new GetWaitListResult
+            {
+                Result = waitlist,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetWaitListResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
     [Route("UpdateFamilyMembers")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateFamilyMemberResult), StatusCodes.Status202Accepted)]

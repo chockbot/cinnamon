@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
+﻿using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -147,7 +147,6 @@ public class CustomerController : ControllerBase
             return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
-
     [Route("CreateCustomer")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateCustomerResult), StatusCodes.Status201Created)]

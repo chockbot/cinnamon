@@ -1,0 +1,6 @@
+﻿using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
+
+namespace Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
+public class GetCustomerByEmailResult:AbstractModel<IEnumerable<CustomerDTO>>
+{
+}
