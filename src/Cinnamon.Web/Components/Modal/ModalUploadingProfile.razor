@@ -17,61 +17,55 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
-@if (!viewModel.isSubmit)
-{
-<EditForm Model=viewModel @*OnValidSubmit="Upload" *@>
-    <DataAnnotationsValidator />
-    <div class="modal @viewModel.ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
-        <div class="modal-dialog">
-            <form id="submit-profile-picture" method="post" enctype="multipart/form-data">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <p class="col-11 modal-title text-center">Profile Photo</p>
-                        <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+
+<div class="modal @viewModel.ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
+    <div class="modal-dialog">
+        <form id="submit-profile-picture" method="post" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center">Profile Photo</p>
+                    <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+                </div>
+                <div class="modal-body">
+                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                    <div class="col-12-lg d-flex justify-content-center">
+                        <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
+                            <div class="btn-delete">
+                                <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
+                                    <i class="fa fa-trash" style="color:black;"></i>
+                                </button>
+                            </div>
+                            <div class="figure-profile">
+                                <label for="fileinput" class="upload-image">
+                                    <Figure Border="Border.RoundedCircle">
+                                        <CardImage Source="@GetProfileSrc()" id="@profilePicture.ImageId" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                    </Figure>
+                                </label>
+                                <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;" />
+                                <div class="round">
+                                    <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload"/>
+                                    <i class="fa fa-camera" style="color: black;"></i>
+                                </div>
+                            </div>
+                        </Card>
                     </div>
-                    <div class="modal-body">
-                        <p class="top-text">People can get to know you better if your profile shows your face.</p>
-                        <div class="col-12-lg d-flex justify-content-center">
-                            <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
-                                <div class="btn-delete">
-                                    @* <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
-                                        <i class="fa fa-trash" style="color:black;"></i>
-                                    </button> *@
-                                </div>
-                                <div class="figure-profile">
-                                    <label for="fileinput" class="upload-image">
-                                        <Figure Border="Border.RoundedCircle">
-                                            <CardImage Source="@GetProfileSrc()" id="@profilePicture.ImageId" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
-                                        </Figure>
-                                    </label>
-                                    @* <input id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;"> *@
-                                    <div class="round">
-                                        <form method="post">
-                                            <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload"/>
-                                            <i class="fa fa-camera" style="color: black;"></i>
-                                        </form>
-                                    </div>
-                                </div>
-                            </Card>
-                        </div>
-                        <p class="bottom-text">JPEG or PNG only</p>
-                        <div class="btn-upload">
-                            <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Type="ButtonType.Submit"
-                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18" Loading="isLoading" Disabled="isLoading">
-                                <LoadingTemplate>
-                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
-                                </LoadingTemplate>
-                                <ChildContent>
-                                    Upload
-                                </ChildContent>
-                            </Button>
-                        </div>
+                    <p class="bottom-text">JPEG or PNG only</p>
+                    <div class="btn-upload">
+                        <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Type="ButtonType.Submit"
+                            Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18" Loading="isLoading" Disabled="isLoading">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Upload
+                            </ChildContent>
+                        </Button>
                     </div>
                 </div>
-            </form>
-        </div>
+            </div>
+        </form>
     </div>
-</EditForm>
+</div>
 <!--ModalEdit-->
     <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
         <div class="modal-dialog" role="document">
@@ -90,7 +84,6 @@
             </div> 
         </div>
     </div>
-}
 @if (viewModel.ShowErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" id="@profilePicture.ErrorId" style="z-index:99999">
@@ -143,7 +136,7 @@
 
         objRef = DotNetObjectReference.Create(this);
         profilePicture.ImageFileName = result.Result.Result.ProfileImagePath;
-        profilePicture.ImageName = "ProfilePicture";
+        profilePicture.ImageName     = "ProfilePicture";
         profilePicture.ImageId       = "avatar-crop";
         profilePicture.ErrorId       = "id-profile-image";
     }
@@ -153,7 +146,7 @@
         if (firstRender)
         {
             //module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/editprofileModal.js");
-            //await jsRuntime.InvokeAsync("MyLib.Components.modal.uploadProfilePicture.init", objRef);
+            await jsRuntime.InvokeAsync<IJSObjectReference>("MyLib.Components.modal.uploadProfilePicture.init", objRef);
         }
     }
     private string GetProfileSrc()
@@ -200,6 +193,29 @@
         isLoading = false;
         StateHasChanged();
         return Task.CompletedTask;
+    }
+    private async Task DeleteProfile()
+    {
+        string[] filepath = viewModel.profilepicture.Split("/");
+        viewModel.profilepicture = filepath[4];
+        await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
+    }
+    private async Task DeleteBlob(string filename, string container1)
+    {
+        // Delete to Azure Blob
+        var result = await deleteImageHandler.ExecuteAsync(
+                new Core.Module.UploadService.Interactors.DeleteImage
+                    { Container = "upload-profile-picture", FileName = filename });
+
+        if (result.Succeeded)
+        {
+            customer = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
+            viewModel.profilepicture = customer.ProfilePath;
+        }
+        else
+        {
+            ResultModel.error("Error occurred while deleting image");
+        }
     }
 }
 
