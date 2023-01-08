@@ -322,6 +322,7 @@ public class ActivityRepository : IActivityRepository
                 Remarks = activity.Remarks,
                 IsPublished = activity.IsPublished,
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
+                ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
             };
 

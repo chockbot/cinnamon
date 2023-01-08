@@ -41,14 +41,14 @@
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             @foreach (var schedule in Model.Activity.ActivitySchedules)
             {
-                <div draggable="true" @key=@schedule.Id id="@schedule.Id"
+                <div draggable="true" @key=@schedule.TempId id="@schedule.TempId"
                     ondragover="event.preventDefault();" 
                     @ondragstart="@( (e) => HandleDragStart(e, schedule))"
                     @ondrop="@(() => HandleOnDrop(schedule))"
                     @ondragenter="@( () => HandleDragEnter(schedule))"
                     @ondragend="HandleDragEnd"
                 >
-                    <ScheduleItemUpdate @key="schedule" scheduleModel="schedule" OnScheduleRemoved="RemoveSchedule" />
+                    <ScheduleItemUpdate @key="schedule.TempId" scheduleModel="schedule" OnScheduleRemoved="RemoveSchedule" />
                     <div class="center" style="width:100%;">
                         <img class="drag-icon" draggable="false" src="/images//reorder-icon.png"/>
                     </div>
@@ -264,7 +264,7 @@
 
     private string ShowErrorMessage()
     {
-        return "none";
+        return Model.ExperienceSetupHasError ? "block" : "none";
     }
 
     public void HandleOnDrop(Models.Entities.ActivitySchedule item)
@@ -319,10 +319,16 @@
     private Models.Entities.ActivitySchedule? DragEnter;
 
     private void AddEmptySchedule()
-        => Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule {});
+    {
+        int maxId = Model.Activity.ActivitySchedules.Max(s => s.TempId) + 1;
+        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId});
+    }
 
     private void RemoveSchedule(Models.Entities.ActivitySchedule schedule) 
-        => Model.Activity.ActivitySchedules.Remove(schedule);
+    {
+        Model.Activity.ActivitySchedules.Remove(schedule);
+        Model.DeletedScheduleIds.Add(schedule.Id);
+    }
     
     private void ImageDeleted(int index)
     {

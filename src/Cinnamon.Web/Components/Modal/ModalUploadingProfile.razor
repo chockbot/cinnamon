@@ -19,7 +19,7 @@
 
 @if (!viewModel.isSubmit)
 {
-<EditForm Model=viewModel OnValidSubmit="Upload">
+<EditForm Model=viewModel @*OnValidSubmit="Upload" *@>
     <DataAnnotationsValidator />
     <div class="modal @viewModel.ModalClass" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
         <div class="modal-dialog">
@@ -34,9 +34,9 @@
                         <div class="col-12-lg d-flex justify-content-center">
                             <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
                                 <div class="btn-delete">
-                                    <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
+                                    @* <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
                                         <i class="fa fa-trash" style="color:black;"></i>
-                                    </button>
+                                    </button> *@
                                 </div>
                                 <div class="figure-profile">
                                     <label for="fileinput" class="upload-image">
@@ -44,7 +44,7 @@
                                             <CardImage Source="@GetProfileSrc()" id="@profilePicture.ImageId" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                                         </Figure>
                                     </label>
-                                    <input id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;">
+                                    @* <input id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;"> *@
                                     <div class="round">
                                         <form method="post">
                                             <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload"/>
@@ -153,7 +153,7 @@
         if (firstRender)
         {
             //module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/editprofileModal.js");
-            await jsRuntime.InvokeAsync("MyLib.Components.modal.uploadProfilePicture.init", objRef);
+            //await jsRuntime.InvokeAsync("MyLib.Components.modal.uploadProfilePicture.init", objRef);
         }
     }
     private string GetProfileSrc()

@@ -18,19 +18,19 @@
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class='step breadcrumb-item @(currentIndex >= 0 ? "active" : "")' aria-current="page">
-             <a class="button cursor" @onclick="() => currentIndex = 0">
+             <a class="button" style="cursor: pointer;" @onclick="() => currentIndex = 0">
                 <span class='icon-step @(currentIndex >= 0 ? "active" : "")'>1</span>
                 <span class="step-yellow">Experience update</span>
             </a>
         </li>
         <li class='step breadcrumb-item @(currentIndex >= 1 ? "active" : "")' aria-current="page">
-             <a class="button cursor" @onclick="() => OnNextClick(1)">
+             <a class="button" style="cursor: pointer;" @onclick="() => OnNextClick(1)">
                 <span class='icon-step @(currentIndex >= 1 ? "active" : "")'>2</span>
                 <span class="step-yellow">Setup</span>
             </a>
         </li>
         <li class='step breadcrumb-item @(currentIndex >= 2 ? "active" : "")' aria-current="page">
-            <a class="button cursor" @onclick="() => OnNextClick(2)">
+            <a class="button" style="cursor: pointer;" @onclick="() => OnNextClick(2)">
                 <span class='icon-step @(currentIndex >= 2 ? "active" : "")'>3</span>
                 <span class="step-yellow">Publish</span>
             </a>
@@ -73,7 +73,7 @@
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                         </LoadingTemplate>
                         <ChildContent>
-                            @(currentIndex == 3 ? "Submit" : "Continue")
+                            @(currentIndex == 2 ? "Submit" : "Continue")
                         </ChildContent>
                     </Button>
                 </div>
@@ -181,6 +181,7 @@
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        TempId = s.Id
                     };
                 }).ToList(),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -244,7 +245,7 @@
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
-        if(index == 0 && currentIndex == 3)
+        if(index == 0 && currentIndex == 2)
         {
             isLoading = true;
             StateHasChanged();
@@ -261,10 +262,11 @@
                                                                         sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
                                                                         sortPrice.ElementAtOrDefault(0).PriceUnit2);
 
-            var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs {
+            var submit = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs {
                 ActivityLevel = Model.Activity.ActivityLevel,
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s => {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule {
+                        Id = s.Id,
                         DateTime = s.DateTime,
                         Name = s.Name,
                         PerUnit1 = s.PerUnit1,
@@ -294,7 +296,9 @@
                 SkillLevel = Model.Activity.SkillLevel,
                 SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
                 SubCategoryId = Model.Activity.SubCategoryId,
-                Title = Model.Activity.Title
+                Title = Model.Activity.Title,
+                ActivityId = Model.Activity.ActivityId,
+                DeletedScheduleIds = Model.DeletedScheduleIds
             }, Model.Token);
             
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -312,19 +316,27 @@
             switch(index)
             {
                 case 1:
-                    if(Model.HasError = !experienceUpdateComponent.IsAllFieldsValidated()) return;
-                    currentIndex = 1;
+                    if(Model.ExperienceHasError = !experienceUpdateComponent.IsAllFieldsValidated()) return;
+                    currentIndex = index;
                     break;
                 case 2:
-                    if(Model.HasError = !experienceUpdateComponent.IsAllFieldsValidated()) return;
-                    if(Model.HasError = !experienceSetupUpdateComponent.IsAllFieldsValidated()) return;
-                    currentIndex = 2;
+                    if(Model.ExperienceHasError = !experienceUpdateComponent.IsAllFieldsValidated())
+                    {
+                        currentIndex = 0;
+                        return;
+                    }
+                    if(Model.ExperienceSetupHasError = !experienceSetupUpdateComponent.IsAllFieldsValidated())
+                    {
+                        currentIndex = 1;
+                        return;
+                    }
+                    currentIndex = index;
                     break;
             }
             return;
         }
-        if(currentIndex == 1 && (Model.HasError = !experienceUpdateComponent.IsAllFieldsValidated())) return;
-        if(currentIndex == 2 && (Model.HasError = !experienceSetupUpdateComponent.IsAllFieldsValidated())) return;
+        if(currentIndex == 0 && (Model.ExperienceHasError = !experienceUpdateComponent.IsAllFieldsValidated())) return;
+        if(currentIndex == 1 && (Model.ExperienceSetupHasError = !experienceSetupUpdateComponent.IsAllFieldsValidated())) return;
         
         currentIndex++;
     }

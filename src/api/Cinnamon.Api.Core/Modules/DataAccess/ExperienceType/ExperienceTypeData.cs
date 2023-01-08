@@ -62,7 +62,7 @@ public class ExperienceTypeData: IExperienceTypeData
         try
         {
             var result = await flurlClient
-                            .Request($"ExperienceType/GetExperienceTypeById/{id}")
+                            .Request($"ExperienceType/GetExperienceType/{id}")
                             .GetJsonAsync<GetExperienceTypeResult>();
 
             return AppResult<GetExperienceTypeResult>.CreateSucceeded(result, "Successfully getting experience type by id api");

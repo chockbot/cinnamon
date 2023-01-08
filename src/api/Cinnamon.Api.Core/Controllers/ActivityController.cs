@@ -161,6 +161,7 @@ public class ActivityController : ControllerBase
                 ActivitySchedules = args.ActivitySchedules != null ? 
                     args.ActivitySchedules.Select(s => {
                         return new Services.ActivityService.Interactors.UpdateActivityArgs.ActivitySchedule {
+                            Id = s.Id,
                             DateTime = s.DateTime,
                             Name = s.Name,
                             PerUnit1 = s.PerUnit1,
@@ -171,6 +172,7 @@ public class ActivityController : ControllerBase
                             UnitPrice = s.UnitPrice
                         };
                     }) : null,
+                DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
             });
             if(!result.Succeeded || result.Result == null)
             {

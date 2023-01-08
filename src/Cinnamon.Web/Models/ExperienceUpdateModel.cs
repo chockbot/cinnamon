@@ -10,6 +10,8 @@ public class ExperienceUpdateModel
     public IEnumerable<SubCategory> SubCategories {get; set;}
     public IEnumerable<string> ActivityLevels { get; set; } = new List<string> { "Beginner", "Intermediate", "Advance" };
     public IEnumerable<string> SkillLevels { get; set; } = new List<string> { "No experience", "Little experience", "Expert" };
+    public IList<int> DeletedScheduleIds {get; set;} = new List<int>();
     public string Token {get; set;} = string.Empty;
-    public bool HasError {get; set;}
+    public bool ExperienceHasError {get; set;}
+    public bool ExperienceSetupHasError {get; set;}
 }

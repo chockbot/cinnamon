@@ -28,6 +28,7 @@ public class UpdateActivityArgs
     public bool? CanAdultsJoin {get; set;}
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<UpdatedSchedule>? ActivitySchedules {get; set;}
+    public IEnumerable<int>? DeletedScheduleIds {get; set;}
     
 
     public class UpdatedSchedule 

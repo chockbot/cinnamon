@@ -85,7 +85,7 @@
 
         if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
         {
-            activities = activityRes.Result.Result.Select(a => {
+            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a => {
                 // map only required fields
                 return new Activity {
                     ActivityId = a.ActivityId,
