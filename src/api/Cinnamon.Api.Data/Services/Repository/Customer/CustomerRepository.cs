@@ -4,6 +4,8 @@ using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Waitlist;
+
 using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.Customer;
@@ -233,7 +235,6 @@ public class CustomerRepository : ICustomerRepository
             return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(ex, "An error occured in getting customers");
         }
     }
-
     public async Task<AppResult<CustomerDTO>> GetByEmailAsync(string email)
     {
         try

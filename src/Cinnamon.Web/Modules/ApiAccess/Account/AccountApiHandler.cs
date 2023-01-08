@@ -4,6 +4,8 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using Newtonsoft.Json.Linq;
+using NuGet.Common;
 using System.Net.Http.Headers;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Account;
@@ -301,6 +303,7 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<UploadGovernmentIdsResult>.CreateFailed(ex, "An error occured when posting upload government ids api");
         }
     }
+   
     public async Task<AppResult<UploadProfilePictureResult>> UploadProfilePicture(UploadProfilePictureArgs args, string token)
     {
         try
@@ -333,7 +336,7 @@ public class AccountApiHandler : IAccountApiHandler
         {
             var result = await flurlClient
                             .WithOAuthBearerToken(token)
-                            .Request($"Account/GetProfilePicture")
+                            .Request("Account/GetProfilePicture")
                             .GetJsonAsync<GetProfilePictureResult>();
 
             return AppResult<GetProfilePictureResult>.CreateSucceeded(result, "Successfully getting profile picture api");
@@ -345,6 +348,47 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<GetProfilePictureResult>.CreateFailed(ex, "An error occured when getting profile picture api");
+        }
+    }
+
+    public async Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string email, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetOwnedActivity/{email}")
+                .GetJsonAsync<GetCustomerByEmailResult>();
+
+            return AppResult<GetCustomerByEmailResult>.CreateSucceeded(result, "Successfully getting experience types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerByEmailResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerByEmailResult>.CreateFailed(ex, "An error occured when getting experience types api");
+        }
+    }
+
+    public async Task<AppResult<GetWaitListResult>> GetAllWaitList()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/GetAllWaitList")
+                .GetJsonAsync<GetWaitListResult>();
+
+            return AppResult<GetWaitListResult>.CreateSucceeded(result, "Successfully getting customer waitlist api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetWaitListResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetWaitListResult>.CreateFailed(ex, "An error occured when getting customer waitlist api");
         }
     }
 }

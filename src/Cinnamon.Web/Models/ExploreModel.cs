@@ -4,7 +4,7 @@ namespace Cinnamon.Web.Models;
 public class ExploreModel
 {
     public Activity Activity { get; set; } = new();
-    public IList<Activity> Activities { get; set; }   
+    public IEnumerable<Activity> Activities { get; set; }   
     public IEnumerable<ExperienceType> ExperienceTypes { get; set; }
     public IEnumerable<ExperienceCategory> ExperienceCategories { get; set; }
     public IEnumerable<SubCategory> SubCategories { get; set; }

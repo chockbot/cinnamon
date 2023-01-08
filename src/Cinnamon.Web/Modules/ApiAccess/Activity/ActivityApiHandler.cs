@@ -15,7 +15,7 @@ public class ActivityApiHandler : IActivityApiHandler
     {
         flurlClient = flurlFac.Get(config.ApiUrl);
     }
-    
+
     public async Task<AppResult<CreateActivityResult>> CreateActivity(CreateActivityArgs args, string token)
     {
         try
@@ -82,8 +82,7 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<GetExperienceCategoriesResult>> GetExperienceCategories()
-    {
+    public async Task<AppResult<GetExperienceCategoriesResult>> GetExperienceCategories(){
         try
         {
             var result = await flurlClient
@@ -171,7 +170,6 @@ public class ActivityApiHandler : IActivityApiHandler
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
                 .Request($"Activity/GetOwnedActivity/{id}")
-                .SetQueryParams(args)
                 .GetJsonAsync<GetActivityResult>();
 
             return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting experience types api");
@@ -183,6 +181,6 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting experience types api");
-        }
+        }   
     }
 }
