@@ -152,7 +152,7 @@ public class ActivityApiHandler : IActivityApiHandler
                 .SetQueryParams(args)
                 .GetJsonAsync<GetOwnedActivitiesResult>();
 
-            return AppResult<GetOwnedActivitiesResult>.CreateSucceeded(result, "Successfully getting experience types api");
+            return AppResult<GetOwnedActivitiesResult>.CreateSucceeded(result, "Successfully getting owned activities api");
         }
         catch (FlurlHttpException ex)
         {
@@ -160,7 +160,29 @@ public class ActivityApiHandler : IActivityApiHandler
         }
         catch (Exception ex)
         {
-            return AppResult<GetOwnedActivitiesResult>.CreateFailed(ex, "An error occured when getting experience types api");
+            return AppResult<GetOwnedActivitiesResult>.CreateFailed(ex, "An error occured when getting owned activities api");
+        }
+    }
+
+    public async Task<AppResult<GetActivityResult>> GetOwnedActivity(int id, string token, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetOwnedActivity/{id}")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting experience types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting experience types api");
         }
     }
 }

@@ -5,7 +5,9 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 
 public interface IActivityRepository
 {
-    Task<AppResult<ActivityDTO>> GetByIdAsync(int id);
+    Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
+        bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false);

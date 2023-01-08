@@ -1,14 +1,21 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
-@using Cinnamon.Web.Models;
+@inject IJSRuntime JsRuntime
 
 <div class="image-container">
-    <img class="experience-image @RequiredCheck()" src="@GetImageSrc()" />
-    <div class="image-delete-icon" @onclick="@InvokeDelete" hidden="@ShowDelete()">
+    <div class="image-delete-icon" @onclick="@DeleteImage" hidden="@ShowDelete()">
         <i class="fa fa-trash" id="delete-icon"></i>
     </div>
-    <div class="error-message" hidden="@IsError()">
-        @ErrorMessage()
-    </div>
+    <label for="@InputId" style="cursor: pointer;">
+        @if(isBlank)
+        {
+            <img id=@ImageId class="experience-image @RequiredCheck()" src="@blankImageSrc" />
+        }
+        else 
+        {
+            <img id=@ImageId class="experience-image @RequiredCheck()"/>
+        }
+        <InputFile @ref="inputFile" id="@InputId" accept=".png,.jpg,.jpeg" name="@InputId" style="display: none;" OnChange="@LoadFile" />
+    </label>
 </div>
 
 <style scoped>
@@ -57,47 +64,56 @@
 
 @code {
     [Parameter]
-    public ExperienceUpdateModel.ActivityImage Image {get; set;}
+    public string InputId {get; set;}
 
     [Parameter]
-    public int Index {get; set;}
+    public string ImageId {get; set;}
 
-    [Parameter]
-    public EventCallback<int> OnImageDelete {get; set;}
+    private string blankImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
 
-    private string LoadingImage = "/images/loading_indicator.gif";
+    private bool isBlank = true;
 
-    private string BlankImage = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+    private InputFile? inputFile;
 
     private void InvokeDelete() 
     {
-        Image.ImageData = null;
-        Image.ImageSrc = null;
-        OnImageDelete.InvokeAsync(Index);
+        isBlank = true;
+        StateHasChanged();
     }
 
     private bool ShowDelete() 
-        => !(Image.ImageData != null || !string.IsNullOrEmpty(Image.ImageSrc));
+    {
+        if (isBlank) {
+            return true; 
+        }
+        return false; 
+    }
 
     private string RequiredCheck()
     {
-        if(!Image.IsLoading && Image.ImageData == null && string.IsNullOrEmpty(Image.ImageSrc)) return "invalid";
+        if (isBlank)
+        {
+            return "invalid";
+        }
+
         return "";
     }
 
-    private bool IsError() => Image.HasError;
-
-    private string ErrorMessage() => Image.ErrorMessage;
-
-    private string GetImageSrc()
+    public async Task LoadFile(InputFileChangeEventArgs e)
     {
-        if(Image.IsLoading) return LoadingImage;
-        if(Image.ImageData != null) {
-            var imageSrc = Convert.ToBase64String(Image.ImageData);
-            return string.Format("data:image/jpeg;base64,{0}", imageSrc);
-        }
-        if(!string.IsNullOrEmpty(Image.ImageSrc)) return Image.ImageSrc;
-
-        return BlankImage;
+        isBlank = false;
+        StateHasChanged();
+        await ShowPreview();
     }
+
+    private async Task ShowPreview()
+        => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, ImageId);
+
+    private void DeleteImage()
+    {
+        isBlank = true;
+        StateHasChanged();
+    }
+
+    public bool HaveEmptyImage() => isBlank;
 }

@@ -93,11 +93,6 @@
         return "";
     }
 
-    private bool IsError() 
-    {
-        return false;
-    }
-
     public async Task LoadFile(InputFileChangeEventArgs e)
     {
         isBlank = false;
@@ -105,7 +100,7 @@
         await ShowPreview();
     }
 
-    private async Task DeleteImage()
+    private void DeleteImage()
     {
         isBlank = true;
         StateHasChanged();

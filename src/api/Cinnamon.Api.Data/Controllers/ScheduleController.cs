@@ -119,7 +119,6 @@ namespace Cinnamon.Api.Data.Controllers
         [Route("CreateManySchedules")]
         [HttpPost]
         [ProducesResponseType(typeof(CreateManySchedulesResult), StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateManySchedules([FromBody] CreateManySchedulesArgs args)
         {
             try
@@ -149,6 +148,40 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new CreateManySchedulesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("UpdateManySchedules")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateManySchedulesResult), StatusCodes.Status202Accepted)]
+        public async Task<IActionResult> UpdateManySchedules([FromBody] UpdateManySchedulesArgs args)
+        {
+            try
+            {
+                var result = await _scheduleRepository.UpdateManySchedules(args.Schedules.Select(s => {
+                    return new ScheduleDTO {
+                        DateTime = s.DateTime ?? string.Empty,
+                        Id = s.Id,
+                        Name = s.Name ?? string.Empty,
+                        PerUnit1 = s.PerUnit1 ?? 0,
+                        PerUnit2 = s.PerUnit2 ?? 0,
+                        Price = s.Price ?? 0,
+                        PriceUnit1 = s.PriceUnit1 ?? string.Empty,
+                        PriceUnit2 = s.PriceUnit2 ?? string.Empty,
+                        UnitPrice = s.UnitPrice ?? string.Empty,
+                        ActivityId = s.ActivityId
+                    };
+                }));
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new UpdateManySchedulesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new UpdateManySchedulesResult { IsSuccess = true, Result = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new UpdateManySchedulesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

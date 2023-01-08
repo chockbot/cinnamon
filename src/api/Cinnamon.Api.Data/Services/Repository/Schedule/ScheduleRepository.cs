@@ -187,6 +187,59 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             }
         }
 
+        public async Task<AppResult<IEnumerable<ScheduleDTO>>> UpdateManySchedules(IEnumerable<ScheduleDTO> args)
+        {
+            try
+            {
+                if(args.Count() <= 0)
+                {
+                    return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException("No schedules to update"), "No schedules to update");
+                }
+
+                var scheduleToUpdate = args.Select(s => {
+                    return new Entities.ActivitySchedule {
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        ActivityId = s.ActivityId
+                    };
+                });
+
+                var updated = await _dataStore.ActivitySchedule.UpdateRange(scheduleToUpdate);
+                if(!updated.Succeeded || updated.Result == null)
+                {
+                    return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(updated.Message), updated.Message);
+                }
+
+                return AppResult<IEnumerable<ScheduleDTO>>.CreateSucceeded(
+                    updated.Result.Select(s => {
+                        return new ScheduleDTO {
+                            ActivityId = s.ActivityId,
+                            DateTime = s.DateTime,
+                            Id = s.Id,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            PerUnit2 = s.PerUnit2,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice
+                        };
+                    }), "Successfully update many schedules"
+                );
+            }
+            catch (Exception ex)
+            {
+                return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(ex, "An error occured in updating many schedules");
+            }
+        }
+
         public async Task<AppResult<ScheduleDTO>> UpdateSchedule(int ScheduleId, string Name, string datetime, 
                                     decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
                                     int PerUnit2, string PriceUnit2)
