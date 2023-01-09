@@ -42,7 +42,13 @@ public class UploadAzureBlobHandler : IUploadAzureBlob
 
             var tasksResult = await Task.WhenAll(tasks);
 
-            return AppResult<AzureUploadResult>.CreateSucceeded(new AzureUploadResult {FilePaths = tasksResult.ToList()}, "Files successfull uploaded");
+            return AppResult<AzureUploadResult>.CreateSucceeded(new AzureUploadResult 
+                {FilePaths = tasksResult.Select(s => {
+                    return new AzureUploadResult.Sources {
+                        FileName = s.Item1,
+                        FileSrc = s.Item2
+                    };
+                })}, "Files successfull uploaded");
         }
         catch (Exception ex)
         {
@@ -50,11 +56,11 @@ public class UploadAzureBlobHandler : IUploadAzureBlob
         }
     }
 
-    private async Task<string> UploadImages(CloudBlobContainer container, IFormFile file, string name)
+    private async Task<Tuple<string,string>> UploadImages(CloudBlobContainer container, IFormFile file, string name)
     {
         CloudBlockBlob blockBlob = container.GetBlockBlobReference(name);
         await blockBlob.UploadFromStreamAsync(file.OpenReadStream());
 
-        return blockBlob.Uri.ToString();
+        return Tuple.Create(name, blockBlob.Uri.ToString());
     }
 }

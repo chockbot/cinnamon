@@ -159,4 +159,75 @@ public class ActivityImageRepository : IActivityImageRepository
             return AppResult<ActivityImageDTO>.CreateFailed(ex, "An error occured when updating activity image");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityImageDTO>>> Create(IEnumerable<ActivityImageDTO> images)
+    {
+        try
+        {
+            var entities = images.Select(s => {
+                return new Entities.ActivityImage {
+                    ActivityId = s.ActivityId,
+                    ImageLocation = s.ImageLocation,
+                    ImageName = s.ImageName
+                };
+            });
+
+            var result = await dataStore.ActivityImage.AddRange(entities);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ActivityImageDTO>>.CreateFailed(new ApplicationException("An error occured when creating multiple images"), "An error occured when creating multiple images");
+            }
+
+            var createdImages = result.Result.Select(s => {
+                return new ActivityImageDTO {
+                    ActivityId = s.ActivityId,
+                    Id = s.Id,
+                    ImageLocation = s.ImageLocation,
+                    ImageName = s.ImageName
+                };
+            });
+
+            return AppResult<IEnumerable<ActivityImageDTO>>.CreateSucceeded(createdImages, "Successfully create many activity images");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityImageDTO>>.CreateFailed(ex, "An error occured when creating many activity images");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityImageDTO>>> Update(IEnumerable<ActivityImageDTO> images)
+    {
+        try
+        {
+            var entities = images.Select(s => {
+                return new Entities.ActivityImage {
+                    ActivityId = s.ActivityId,
+                    ImageLocation = s.ImageLocation,
+                    ImageName = s.ImageName,
+                    Id = s.Id
+                };
+            });
+
+            var result = await dataStore.ActivityImage.UpdateRange(entities);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ActivityImageDTO>>.CreateFailed(new ApplicationException("An error occured when updating multiple images"), "An error occured when updating multiple images");
+            }
+
+            var updatedImages = result.Result.Select(s => {
+                return new ActivityImageDTO {
+                    ActivityId = s.ActivityId,
+                    Id = s.Id,
+                    ImageLocation = s.ImageLocation,
+                    ImageName = s.ImageName
+                };
+            });
+
+            return AppResult<IEnumerable<ActivityImageDTO>>.CreateSucceeded(updatedImages, "Successfully update many activity images");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityImageDTO>>.CreateFailed(ex, "An error occured when creating many activity images");
+        }
+    }
 }

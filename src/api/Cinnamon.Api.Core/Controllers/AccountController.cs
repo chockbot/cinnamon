@@ -38,8 +38,11 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
-        IGetWaitListHandler getWaitListHandler)
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler 
+        // IUploadProfilePictureHandler uploadProfilePictureHandler,
+        // IGetProfilePictureHandler getProfilePictureHandler, 
+        //IGetWaitListHandler getWaitListHandler
+        )
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;

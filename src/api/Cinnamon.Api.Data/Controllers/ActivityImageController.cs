@@ -129,4 +129,61 @@ public class ActivityImageController : ControllerBase
             return new JsonResult(new UpdateActivityImageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("UpdateManyActivityImage")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateManyActivityImageResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateManyActivityImage([FromBody] UpdateManyActivityImageArgs args)
+    {
+        try
+        {
+            var result = await activityImageRepository.Update(args.Images.Select(s => {
+                return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                    ActivityId = s.ActivityId,
+                    Id = s.Id,
+                    ImageLocation = s.ImageSrc,
+                    ImageName = s.ImageName
+                };
+            }));
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateManyActivityImageResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateManyActivityImageResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateManyActivityImageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateManyActivityImage")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateManyActivityImageResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> CreateManyActivityImage([FromBody] CreateManyActivityImageArgs args)
+    {
+        try
+        {
+            var result = await activityImageRepository.Create(args.Images.Select(s => {
+                return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                    ActivityId = s.ActivityId,
+                    ImageLocation = s.ImageSrc,
+                    ImageName = s.ImageName
+                };
+            }));
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateManyActivityImageResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateManyActivityImageResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateManyActivityImageResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

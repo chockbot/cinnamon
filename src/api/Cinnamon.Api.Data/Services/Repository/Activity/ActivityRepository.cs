@@ -243,6 +243,19 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.SearchTags = tags;
                 }
 
+                // activity images
+                if(includeImages && a.Images != null)
+                {
+                    activityDTO.Images = a.Images.Select(s => {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                            ActivityId = s.ActivityId,
+                            Id = s.Id,
+                            ImageLocation = s.ImageLocation,
+                            ImageName = s.ImageName
+                        };
+                    }).ToList();
+                }
+
                 return activityDTO;
             });
 
@@ -378,6 +391,19 @@ public class ActivityRepository : IActivityRepository
                 if(activity.SearchTag.SearchTag5 != null) tags.Add(activity.SearchTag.SearchTag5);
 
                 activityDTO.SearchTags = tags;
+            }
+
+            // activity images
+            if(includeImages.HasValue && includeImages.Value && activity.Images != null)
+            {
+                activityDTO.Images = activity.Images.Select(s => {
+                    return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                        ActivityId = s.ActivityId,
+                        Id = s.Id,
+                        ImageLocation = s.ImageLocation,
+                        ImageName = s.ImageName
+                    };
+                }).ToList();
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");

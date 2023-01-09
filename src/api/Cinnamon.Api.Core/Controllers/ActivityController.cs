@@ -20,11 +20,12 @@ public class ActivityController : ControllerBase
     private readonly IUpdateActivityHandler updateActivityHandler;
     private readonly IGetAllActivitiesHandler getAllActivitiesHandler;
     private readonly IGetOwnedActivityHandler getOwnedActivityHandler;
+    private readonly IUploadActivityImageHandler uploadActivityImageHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
         IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IUpdateActivityHandler updateActivityHandler,
-        IGetOwnedActivityHandler getOwnedActivityHandler)
+        IGetOwnedActivityHandler getOwnedActivityHandler, IUploadActivityImageHandler uploadActivityImageHandler)
     {
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
@@ -34,6 +35,7 @@ public class ActivityController : ControllerBase
         this.getOwnedActivitiesHandler = getOwnedActivitiesHandler;
         this.updateActivityHandler = updateActivityHandler;
         this.getOwnedActivityHandler = getOwnedActivityHandler;
+        this.uploadActivityImageHandler = uploadActivityImageHandler;
     }
 
     [Route("CreateActivity")]
@@ -499,6 +501,37 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UploadActivityImage")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UploadActivityImageResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UploadActivityImage([FromForm] UploadActivityImageArgs args)
+    {
+        try
+        {
+            var result = await uploadActivityImageHandler.ExecuteAsync(new Services.ActivityService.Interactors.UploadActivityImageArgs {
+                ActivityId = args.ActivityId,
+                Image1 = args.Image1,
+                Image2 = args.Image2,
+                Image3 = args.Image3
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UploadActivityImageResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new UploadActivityImageResult {IsSuccess = true, Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityImagesDTO {
+                Image1 = result.Result.Image1Path,
+                Image2 = result.Result.Image2Path,
+                Image3 = result.Result.Image3Path
+            }});
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UploadActivityImageResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

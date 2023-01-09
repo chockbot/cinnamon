@@ -123,8 +123,8 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
             // update image government file names
             var paths = uploadResult.Result.FilePaths.ToList();
             var updateIds = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
-                FrontIdImagePath = paths[0],
-                BackIdImagePath = paths[1],
+                FrontIdImagePath = paths[0].FileSrc,
+                BackIdImagePath = paths[1].FileSrc,
                 CustomerId = id
             });
 
@@ -142,11 +142,11 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
             return AppResult<UploadGovernmentIDResult>.CreateSucceeded(new UploadGovernmentIDResult {
                 BackImage = new UploadGovernmentIDResult.UploadedFile {
                     FileName = backUniqueName,
-                    UploadedPath = paths[1]
+                    UploadedPath = paths[1].FileSrc
                 },
                 FrontImage = new UploadGovernmentIDResult.UploadedFile {
                     FileName = frontUniqueName,
-                    UploadedPath = paths[0]
+                    UploadedPath = paths[0].FileSrc
                 }
             }, "Successfully upload government ids");
         }

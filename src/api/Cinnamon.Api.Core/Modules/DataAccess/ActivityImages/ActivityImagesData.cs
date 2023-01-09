@@ -8,9 +8,10 @@ using Flurl.Http.Configuration;
 
 namespace Cinnamon.Api.Core.Modules.DataAccess.ActivityImages;
 
-public class ActivityImagesData:IActivityImagesData
+public class ActivityImagesData : IActivityImagesData
 {
     private readonly IFlurlClient flurlClient;
+
 	public ActivityImagesData(ApplicationConfig config, IFlurlClientFactory flurlFac)
 	{
         flurlClient = flurlFac.Get(config.ApiDataUrl);
@@ -56,6 +57,7 @@ public class ActivityImagesData:IActivityImagesData
             return AppResult<GetActivityImageResult>.CreateFailed(ex, "An error occured when getting activity image by id api");
         }
     }
+
     public async Task<AppResult<GetAllActivityImagesResult>> GetAllActivityImages(GetAllActivityImagesArgs args)
     {
         try
@@ -99,6 +101,48 @@ public class ActivityImagesData:IActivityImagesData
         catch (Exception ex)
         {
             return AppResult<UpdateActivityImageResult>.CreateFailed(ex, "An error occured when posting update activity image api");
+        }
+    }
+
+    public async Task<AppResult<CreateManyActivityImageResult>> CreateManyActivityImage(CreateManyActivityImageArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("ActivityImage/CreateManyActivityImage")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CreateManyActivityImageResult>();
+            
+            return AppResult<CreateManyActivityImageResult>.CreateSucceeded(result, "Successfully posting create many activity images");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateManyActivityImageResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateManyActivityImageResult>.CreateFailed(ex, "An error occured when posting create many activity images");
+        }
+    }
+
+    public async Task<AppResult<UpdateManyActivityImageResult>> UpdateManyActivityImage(UpdateManyActivityImageArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("ActivityImage/UpdateManyActivityImage")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<UpdateManyActivityImageResult>();
+            
+            return AppResult<UpdateManyActivityImageResult>.CreateSucceeded(result, "Successfully posting update many activity images");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateManyActivityImageResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateManyActivityImageResult>.CreateFailed(ex, "An error occured when posting update many activity images");
         }
     }
 }

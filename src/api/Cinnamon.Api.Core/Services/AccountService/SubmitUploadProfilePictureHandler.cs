@@ -108,7 +108,7 @@ public class SubmitUploadProfilePictureHandler: IUploadProfilePictureHandler
             var path = uploadResult.Result.FilePaths.ToList();
             var updateProfile = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs
             {
-                ProfilePath = path[0],
+                ProfilePath = path[0].FileSrc,
                 CustomerId = id
             });
             if (!updateProfile.Succeeded || updateProfile.Result == null)
@@ -126,7 +126,7 @@ public class SubmitUploadProfilePictureHandler: IUploadProfilePictureHandler
                 ProfileImage = new UploadProfilePictureResult.UploadedFile
                 {
                     FileName = profileUniqueName,
-                    UploadedPath = path[0]
+                    UploadedPath = path[0].FileSrc
                 }
             }, "Successfully upload government ids");
         }

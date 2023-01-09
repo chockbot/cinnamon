@@ -23,6 +23,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IExperienceTypeData, Modules.DataAccess.ExperienceType.ExperienceTypeData>();
         services.AddTransient<Modules.DataAccess.Handlers.IExperienceCategoryData, Modules.DataAccess.ExperienceCategory.CategoryData>();
         services.AddTransient<Modules.DataAccess.Handlers.ISubCategoryData, Modules.DataAccess.SubCategory.SubCategoryData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IActivityImagesData, Modules.DataAccess.ActivityImages.ActivityImagesData>();
 
         // services
         services.AddTransient<Services.AccountService.Handlers.ISubmitRegisterHandler, Services.AccountService.SubmitRegisterHandler>();
@@ -46,6 +47,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityHandler, Services.ActivityService.UpdateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetAllActivitiesHandler,Services.ActivityService.GetAllActivitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivityHandler, Services.ActivityService.GetOwnedActivityHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IUploadActivityImageHandler, Services.ActivityService.UploadActivityImageHandler>();
 
         return services;
     }

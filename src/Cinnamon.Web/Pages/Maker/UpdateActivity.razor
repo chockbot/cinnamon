@@ -2,14 +2,13 @@
 @layout CreationLayout;
 @using System.Security.Claims
 @using Microsoft.AspNetCore.WebUtilities;
-@using Cinnamon.Core;
-@using Cinnamon.Core.Models;
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
 @using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @using Cinnamon.Core.Module.CustomerService.Handler;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject NavigationManager NavigationManager;
+@inject IJSRuntime jsRuntime
 @inject ISubmitUpdatedActivity submitUpdatedActivityHandler;
 @inject ISignedCustomer signedCustomer;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
@@ -82,6 +81,14 @@
     }
 </div>
 
+@if(showErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+      <strong>Error!</strong> @errorMessage
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 @code 
 {
     private ExperienceUpdateModel Model;
@@ -93,6 +100,12 @@
     private int currentIndex = 0;
 
     private bool isLoading = false;
+
+    private bool showErrorMessage = false;
+
+    private string errorMessage = string.Empty;
+
+    private DotNetObjectReference<UpdateActivity>? obj;
 
     private int GetPerentCompletion {
         get {
@@ -129,7 +142,7 @@
             IncludeActivityDescription = true,
             IncludeActivityImages = true,
             IncludeActivitySearchTags = true,
-            IncludeAtivitySchedules = true
+            IncludeAtivitySchedules = true,
         });
         if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
@@ -234,6 +247,8 @@
             }),
             Token = token
         };
+
+        obj = DotNetObjectReference.Create(this);
     }
 
     private void OnBackClick(int index = 0) 
@@ -306,7 +321,13 @@
                 throw new ApplicationException();
             }
 
-            NavigationManager.NavigateTo("/maker/dashboard");
+            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
+
+            if(isSuccess)
+            {
+                NavigationManager.NavigateTo("/maker/dashboard");
+                return;
+            }
 
             return;
         }
@@ -339,5 +360,13 @@
         if(currentIndex == 1 && (Model.ExperienceSetupHasError = !experienceSetupUpdateComponent.IsAllFieldsValidated())) return;
         
         currentIndex++;
+    }
+
+    [JSInvokable]
+    public void ShowError(string message)
+    {
+        errorMessage = message;
+        showErrorMessage = true;
+        StateHasChanged();
     }
 }

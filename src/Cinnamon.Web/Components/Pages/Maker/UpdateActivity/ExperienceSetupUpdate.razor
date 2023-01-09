@@ -188,21 +188,21 @@
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
             <div>
-                <ImageCacheItemUpdate @ref="Image1" InputId="image-input-1" ImageId="image-src-1" /> 
+                <ImageCacheItemUpdate @ref="Image1" DefaultSrc="@GetDefaultImage1()" InputId="image-input-1" ImageId="image-src-1" /> 
                 <p>This is your cover photo</p>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
             <div>
-                <ImageCacheItemUpdate @ref="Image2" InputId="image-input-2" ImageId="image-src-2" /> 
+                <ImageCacheItemUpdate @ref="Image2" DefaultSrc="@GetDefaultImage2()" InputId="image-input-2" ImageId="image-src-2" /> 
                 <p>Supporting photo</p>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
              <div>
-                <ImageCacheItemUpdate @ref="Image3" InputId="image-input-3" ImageId="image-src-3" /> 
+                <ImageCacheItemUpdate @ref="Image3" DefaultSrc="@GetDefaultImage3()" InputId="image-input-3" ImageId="image-src-3" /> 
                 <p>Supporting photo</p>
             </div>
         </div>
@@ -368,5 +368,23 @@
     private bool IsAllImagesValid()
     {
         return !(Image1.HaveEmptyImage() || Image2.HaveEmptyImage() || Image3.HaveEmptyImage());
+    }
+
+    private string GetDefaultImage1()
+    {
+        if(Model.Activity.Images.Count >= 1) return Model.Activity.Images.ElementAt(0).ImageSrc;
+        return string.Empty;
+    }
+
+    private string GetDefaultImage2()
+    {
+       if(Model.Activity.Images.Count >= 2) return Model.Activity.Images.ElementAt(1).ImageSrc;
+        return string.Empty; 
+    }
+
+    private string GetDefaultImage3()
+    {
+       if(Model.Activity.Images.Count >= 3) return Model.Activity.Images.ElementAt(2).ImageSrc;
+        return string.Empty; 
     }
 }

@@ -170,6 +170,7 @@ public class ActivityApiHandler : IActivityApiHandler
             var result = await flurlClient
                 .WithOAuthBearerToken(token)
                 .Request($"Activity/GetOwnedActivity/{id}")
+                .SetQueryParams(args)
                 .GetJsonAsync<GetActivityResult>();
 
             return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting experience types api");
@@ -182,5 +183,41 @@ public class ActivityApiHandler : IActivityApiHandler
         {
             return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting experience types api");
         }   
+    }
+
+    public async Task<AppResult<UploadActivityImageResult>> UploadActivityImages(UploadActivityImageArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/UploadActivityImage")
+                .PostMultipartAsync(mp => {
+                    if(args.Image1 != null)
+                    {
+                        mp.AddFile("Image1", args.Image1.OpenReadStream(), args.Image1.FileName, args.Image1.ContentType);
+                    }
+                    if(args.Image2 != null)
+                    {
+                        mp.AddFile("Image2", args.Image2.OpenReadStream(), args.Image2.FileName, args.Image2.ContentType);
+                    }
+                    if(args.Image3 != null)
+                    {
+                        mp.AddFile("Image3", args.Image3.OpenReadStream(), args.Image3.FileName, args.Image3.ContentType);
+                    }
+                    mp.AddString("ActivityId", args.ActivityId.ToString());
+                })
+                .ReceiveJson<UploadActivityImageResult>();
+
+            return AppResult<UploadActivityImageResult>.CreateSucceeded(result, "Successfully upload activity images api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UploadActivityImageResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UploadActivityImageResult>.CreateFailed(ex, "An error occured when uploading activity images api");
+        } 
     }
 }

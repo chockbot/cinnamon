@@ -1,7 +1,5 @@
 ﻿@layout CreationLayout
 @page "/Creation"
-@using Cinnamon.Core
-@using Cinnamon.Core.Models;
 @using Cinnamon.Web.Components
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -50,7 +48,7 @@
     </div>
 
     <div id="regForm" class="shadow-lg">
-        <EditForm Model="Model.Activity">
+        <EditForm Model="Model.Activity" id="form-cretion">
             <div class='tab @(currentIndex == 0 ? "show" : "")'>
                 <Overview></Overview>
             </div>
@@ -95,7 +93,7 @@
 @if(ShowErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-      <strong>Error!</strong> There was a problem publishing the experience creation. Please refresh the page and try again.
+      <strong>Error!</strong> @errorMessage
       <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
@@ -124,6 +122,10 @@
     private ExperienceSetup experienceSetupComponent {get; set;}
 
     private bool isLoading = false;
+
+    private DotNetObjectReference<Creation>? obj;
+
+    private string errorMessage = "There was a problem publishing the experience creation. Please refresh the page and try again.";
 
     protected override async Task OnInitializedAsync()
     {
@@ -188,6 +190,8 @@
                 };
             })
         };
+
+        obj = DotNetObjectReference.Create(this);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -238,7 +242,6 @@
         if(index == 0 && currentIndex == 3)
         {
             isLoading = true;
-            StateHasChanged();
 
             var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
             Model.Activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
@@ -293,7 +296,15 @@
                 throw new ApplicationException();
             }
 
-            navigationManager.NavigateTo("/maker/dashboard");
+            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.init", obj, submit.Result.Result.ActivityId);
+
+            if(isSuccess)
+            {
+                navigationManager.NavigateTo("/maker/dashboard");
+                return;
+            }
+
+            isLoading = false;
 
             return;
         }
@@ -330,5 +341,13 @@
         get {
             return currentIndex * 25;
         }
+    }
+
+    [JSInvokable]
+    public void ShowError(string message)
+    {
+        errorMessage = message;
+        ShowErrorMessage = true;
+        StateHasChanged();
     }
 }

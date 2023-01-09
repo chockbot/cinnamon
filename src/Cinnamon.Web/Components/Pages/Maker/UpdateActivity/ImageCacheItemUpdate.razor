@@ -8,7 +8,14 @@
     <label for="@InputId" style="cursor: pointer;">
         @if(isBlank)
         {
-            <img id=@ImageId class="experience-image @RequiredCheck()" src="@blankImageSrc" />
+            if(string.IsNullOrEmpty(DefaultSrc))
+            {
+                <img id=@ImageId class="experience-image @RequiredCheck()" src="@blankImageSrc" />
+            }
+            else 
+            {
+                <img id=@ImageId class="experience-image @RequiredCheck()" src="@DefaultSrc" />
+            }
         }
         else 
         {
@@ -69,6 +76,9 @@
     [Parameter]
     public string ImageId {get; set;}
 
+    [Parameter]
+    public string DefaultSrc {get; set;}
+
     private string blankImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
 
     private bool isBlank = true;
@@ -83,7 +93,7 @@
 
     private bool ShowDelete() 
     {
-        if (isBlank) {
+        if (isBlank && string.IsNullOrEmpty(DefaultSrc)) {
             return true; 
         }
         return false; 
@@ -91,7 +101,7 @@
 
     private string RequiredCheck()
     {
-        if (isBlank)
+        if (isBlank && string.IsNullOrEmpty(DefaultSrc))
         {
             return "invalid";
         }
@@ -111,9 +121,10 @@
 
     private void DeleteImage()
     {
+        DefaultSrc = string.Empty;
         isBlank = true;
         StateHasChanged();
     }
 
-    public bool HaveEmptyImage() => isBlank;
+    public bool HaveEmptyImage() => isBlank && string.IsNullOrEmpty(DefaultSrc);
 }
