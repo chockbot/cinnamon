@@ -37,7 +37,14 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IDeleteFamilyMembersHandler, Services.AccountService.DeleteFamilyMembersHandler>();
         services.AddTransient<Services.AccountService.Handlers.ISubmitUpdateProfileHandler, Services.AccountService.SubmitUpdateProfileHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetGovernmentIdsHandler, Services.AccountService.GetGovernmentIdsHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetProfilePictureHandler,Services.AccountService.GetProfilePictureHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUploadGovernmentIdHandler, Services.AccountService.SubmitUploadGovernmentHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IUploadProfilePictureHandler, Services.AccountService.SubmitUploadProfilePictureHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetWaitListHandler, Services.AccountService.GetWaitListHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetCustomerByEmailHandler, Services.AccountService.GetCustomerByEmailHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetWaitListByGuidHandler, Services.AccountService.GetWaitListByGuidHandler>();
+        
+        
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceTypesHandler, Services.ActivityService.GetExperienceTypesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceCategoriesHandler, Services.ActivityService.GetExperienceCategoriesHandler>();
@@ -46,6 +53,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityHandler, Services.ActivityService.UpdateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetAllActivitiesHandler,Services.ActivityService.GetAllActivitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivityHandler, Services.ActivityService.GetOwnedActivityHandler>();
+
 
         return services;
     }

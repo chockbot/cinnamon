@@ -6,13 +6,9 @@
 @using Cinnamon.Core.Enums
 @using Cinnamon.Core.ViewModels
 @using Cinnamon.Data
-@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @using System.Linq.Expressions
-@inject DataStoreDbContext user
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-@inject IRegisterMaker registerMakerHandler;
-@inject UserManager<IdentityUser> userManager;
 
 <div class="modal @viewModel.ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -62,12 +58,12 @@
                             <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
                             <SignupButton id="signup-waiting-finish" Width="100%" Text="Agree and continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" />
                             <div class="col-12">
-                                <div class="form-check">
+                                @*<div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @bind=viewModel.Customer.AcceptFlag>
                                     <label class="form-check-label" for="defaultCheck1" style="font-family:'Nunito';font-size:12px;font-weight:400;">
                                         I do not wish to receive promotional communications from Cinnamon.
                                   </label>
-                                </div>
+                                </div>*@
                             </div>
                         </div>  
                     </EditForm>

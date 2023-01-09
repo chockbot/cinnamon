@@ -1,14 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
 using Cinnamon.Web.Models.Account;
-using Cinnamon.Core;
-using Cinnamon.Core.Module.CinnamonMakerService.Handler;
-using Cinnamon.Web.Modules.ApiAccess.Handlers;
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication;
 using Cinnamon.Web.Models.Forms;
+using Cinnamon.Web.Modules.ApiAccess.Handlers;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Cinnamon.Web.Controllers;
 

@@ -1,10 +1,8 @@
-﻿using Cinnamon.Api.Core.Modules.DataAccess.FamilyMember;
-using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.AccountService.Interactors;
 using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using System.Security.Claims;
 
 namespace Cinnamon.Api.Core.Services.AccountService;
 public class GetCustomerByEmailHandler: IGetCustomerByEmailHandler
@@ -42,7 +40,7 @@ public class GetCustomerByEmailHandler: IGetCustomerByEmailHandler
             //}
             //int id = Convert.ToInt32(customerId);
 
-            var result = await customerData.GetCustomerByEmail(args.email);
+            var result = await customerData.GetCustomerByEmail(args.Email);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<GetCustomerByEmailResult>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -56,7 +54,14 @@ public class GetCustomerByEmailHandler: IGetCustomerByEmailHandler
 
             return AppResult<GetCustomerByEmailResult>.CreateSucceeded(new GetCustomerByEmailResult
             {
-                
+                About= result.Result.Result.About,
+                Birthdate =result.Result.Result.Birthdate,
+                DateJoined= result.Result.Result.DateJoined,
+                Email= result.Result.Result.Email,  
+                Id= result.Result.Result.Id,
+                IsMaker= result.Result.Result.IsMaker,
+                IsVerified= result.Result.Result.IsVerified,
+                ProfileImg  = result.Result.Result.ProfileImg,
             }, "Successfully getting customer information");
         }
         catch (Exception ex)

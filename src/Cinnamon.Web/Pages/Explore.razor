@@ -401,8 +401,8 @@
 <ModalLogin TypeValue="@UserType.Customer"></ModalLogin>
 <!--Filter-->
 @*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
-@*<ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
-<ModalPassword @ref="modalPassword"></ModalPassword>*@
+<ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
+<ModalPassword @ref="modalPassword"></ModalPassword>
 </html>
 @code {
     private ExploreModel Model= new ExploreModel();
@@ -456,6 +456,7 @@
             if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
             {
                 var args = customer.Result.Result;
+                CustomerModel.Token = token;
                 CustomerModel.CustomerProfile = new CustomerProfile
                 {
                     Birthdate = args.Birthdate,
@@ -480,55 +481,53 @@
         var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
         var tokenSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("token", out var token);
 
-        //try
-        //{
-        //    if (userSuccess && tokenSuccess)
-        //    {
-        //        // get waiting list if email already verified
-        //        var waitingRes = await CoreDI.DataStore.WaitList.GetWaitListByGuid(userId);
-        //        if(waitingRes == null)
-        //        {
-        //            // invalid guid
-        //            NavigationManager.NavigateTo("/onboarding", forceLoad: true);
-        //            return;
-        //        }
-
-        //        // check if email already verified so that will not call verify email every request
-        //        if(!waitingRes.IsVerified)
-        //        {
-        //            // need to verified
-        //            var verifyRes = await verifyEmailHandler.ExecuteAsync(
-        //                    new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId });
-        //            if(!verifyRes.Succeeded)
-        //            {
-        //                // invalid userid and token redirect to onboargin page
-        //                NavigationManager.NavigateTo("/onboarding");
-        //                return;
-        //            }
-
-        //            // proceed to populate customer information
-        //            await modalFinishSignUp.OpenModal(waitingRes.Email);
-        //        }
-        //        else 
-        //        {
-        //            // email already verified. Need to check if customer info already populated. 
-        //            // if not open modal information
-        //            var customerRes = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(waitingRes.Email);
-        //            if(customerRes == null)
-        //            {
-        //                await modalFinishSignUp.OpenModal(waitingRes.Email);
-        //            }
-        //            else 
-        //            {
-        //                await modalPassword.OpenModal(waitingRes.Email);
-        //            }
-        //        }
-        //    }
-        //}
-        //catch (Exception e)
-        //{
-        //    e.Message.ToString();
-        //}
+        try
+        {
+            if (userSuccess && tokenSuccess)
+            {
+                var waitingRes = await accountApiHandler.GetWaitListByGuid(token, userId);
+                if(waitingRes == null)
+                {
+                    // invalid guid
+                    NavigationManager.NavigateTo("/onboarding", forceLoad: true);
+                    return;
+                }
+                // check if email already verified so that will not call verify email every request
+                if(!waitingRes.Result.Result.IsVerified)
+                {
+                    // need to verified
+                    var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs
+                        {
+                            Token  = CustomerModel.Token,
+                            UserId = userId
+                        });
+                    if ((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
+                    {
+                        // invalid userid and token redirect to onboargin page
+                        NavigationManager.NavigateTo("/onboarding");
+                        return;
+                    }
+                    // proceed to populate customer information
+                    await modalFinishSignUp.OpenModal(waitingRes.Result.Result.Email);
+                }
+                else 
+                {
+                    var customerRes = await accountApiHandler.GetCustomerByEmail(token, waitingRes.Result.Result.Email);
+                    if(customerRes == null)
+                    {
+                        await modalFinishSignUp.OpenModal(waitingRes.Result.Result.Email);
+                    }
+                    else
+                    {
+                        await modalPassword.OpenModal(waitingRes.Result.Result.Email);
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.Message.ToString();
+        }
     }
 
     private async Task FetchActivities()
