@@ -1,9 +1,8 @@
 @page "/customer/profile"
-@using Cinnamon.Core
-@using Cinnamon.Core.Models;
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Modals;
+@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using System.Security.Claims
 @inject IModalService modal
@@ -11,6 +10,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject IAccountApiHandler accountApiHandler;
+@inject IActivityApiHandler activityApiHandler;
 
 @if(Model != null)
 {
@@ -132,7 +132,7 @@
                     @if(Model.CustomerProfile.IsMaker)
                     {
                         <TabPanel Name="maker-experience">
-                            <MakerExperiences @ref="makerExperiences" Activities="activities" />
+                            <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" />
                         </TabPanel>
                     }
                 </Content>
@@ -145,8 +145,6 @@
 
 @code 
 {
-    private IList<ActivityModel> activities = new List<ActivityModel>();
-
     private ModalUploadGovernmentId uploadIdModal;
 
     private MakerExperiences makerExperiences;
@@ -188,17 +186,48 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
-
-        //Get Customer Information
-        Model = new();
         var profile = result.Result.Result;
 
+        // get owned activities
+        var ownedActivities = new List<Activity>();
+        var ownedActivitiesRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {
+            IncludeActivityAddress = true,
+            IncludeActivityDescription = true,
+            IncludeActivityImages = true
+        }, token);
+        if(ownedActivitiesRes.Succeeded && ownedActivitiesRes.Result != null && ownedActivitiesRes.Result.IsSuccess)
+        {
+            ownedActivities = ownedActivitiesRes.Result.Result.Select(a => {
+                // map only required fields
+                return new Activity {
+                    ActivityId = a.ActivityId,
+                    District = a.District,
+                    City = a.City,
+                    Address1 = a.Address1,
+                    Address2 = a.Address2,
+                    ExperienceTypeId = a.ExperienceTypeId,
+                    Description = a.Description,
+                    IsPublished = a.IsPublished,
+                    Price = a.Price,
+                    Title = a.Title,
+                    Images = a.Images.Select(i => {
+                        return new ActivityImage {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList()
+                };
+            }).ToList();
+        }
+
         // get family members information
-        Model.FamilyMembers = new List<Models.Entities.FamilyMember>();
+        var familyMembers = new List<Models.Entities.FamilyMember>();
         var members = await accountApiHandler.GetFamilyMembers(token);
+
         if(members.Succeeded && members.Result != null && members.Succeeded)
         {
-            Model.FamilyMembers = members.Result.Result.Select(m => {
+            familyMembers = members.Result.Result.Select(m => {
                 return new Models.Entities.FamilyMember {
                     BirthMonth = m.BirthMonth,
                     BirthYear = m.BirthYear,
@@ -209,8 +238,9 @@
             }).ToList();
         }
 
-        Model.Token = token;
-        Model.CustomerProfile = new Models.Entities.CustomerProfile
+        Model = new Models.Customer.Profile {
+            Token = token,
+            CustomerProfile = new Models.Entities.CustomerProfile
             {
                 About = profile.About,
                 Birthdate = profile.Birthdate,
@@ -221,12 +251,12 @@
                 IsMaker = profile.IsMaker,
                 IsVerified = profile.IsVerified,
                 ProfilePath = profile.ProfileImg,
-            };
+            },
+            FamilyMembers = familyMembers,
+            OwnedActivities = ownedActivities
+        };
 
         ImageSource = Model.CustomerProfile.ProfilePath;
-
-        //Get Maker Activities
-        //activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(Model.CustomerProfile.Id)).OrderBy(i => i.Id).ToList();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -269,13 +299,5 @@
         }
 
         isEditAbout = false;
-    }
-
-    private IList<ActivityModel> OngoingActivities 
-    {
-        get 
-        {
-            return Model.Customer.OngoingActivities.Select(i => i.Activity).ToList();
-        }    
     }
 }
