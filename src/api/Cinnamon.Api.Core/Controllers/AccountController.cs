@@ -31,6 +31,8 @@ public class AccountController : ControllerBase
     private readonly IGetProfilePictureHandler getProfilePictureHandler;
     private readonly IUploadGovernmentIdHandler uploadGovernmentIdHandler;
     private readonly IUploadProfilePictureHandler uploadProfilePictureHandler;
+    private readonly IGetCustomerByEmailHandler getCustomerByEmailHandler;
+    private readonly IGetWaitListByGuidHandler getWaitListByGuidHandler;
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
@@ -38,11 +40,8 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler 
-        // IUploadProfilePictureHandler uploadProfilePictureHandler,
-        // IGetProfilePictureHandler getProfilePictureHandler, 
-        //IGetWaitListHandler getWaitListHandler
-        )
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
+        IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -60,6 +59,8 @@ public class AccountController : ControllerBase
         this.uploadProfilePictureHandler = uploadProfilePictureHandler;
         this.getProfilePictureHandler = getProfilePictureHandler;   
         this.getWaitListHandler = getWaitListHandler;
+        this.getCustomerByEmailHandler = getCustomerByEmailHandler; 
+        this.getWaitListByGuidHandler= getWaitListByGuidHandler;
     }
 
     [Route("Register")]
@@ -319,6 +320,87 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
+
+    [Route("GetCustomerByEmail")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomerByEmailResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCustomerByEmail([FromQuery] GetCustomerByEmailArgs args)
+    {
+        try
+        {
+            var result = await getCustomerByEmailHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByEmailArgs
+            {
+                Email = args.Email
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetCustomerByEmailResult
+            {
+                Result = new CustomerDTO
+                {
+                   IsVerified= objResult.IsVerified,
+                   Id= objResult.Id,    
+                   Email= objResult.Email,  
+                   FirstName= objResult.FirstName,
+                   About = objResult.About,
+                   Birthdate =objResult.Birthdate,
+                   DateJoined= objResult.DateJoined,
+                   ExternalLogin= objResult.ExternalLogin,
+                   IsMaker= objResult.IsMaker,
+                   LastName= objResult.LastName,
+                   ProfileImg = objResult.ProfileImg
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetWaitListByGuid")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetWaitListByGuidResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetWaitListByGuid([FromQuery] GetWaitListByGuidArgs args)
+    {
+        try
+        {
+            var result = await getWaitListByGuidHandler.ExecuteAsync(new Services.AccountService.Interactors.GetWaitListByGuidArgs
+            {
+                Guid = args.Guid
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetWaitListByGuidResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetWaitListByGuidResult
+            {
+                Result = new WaitlistDTO
+                {
+                    Email = result.Result.Email,
+                    Guid = result.Result.Guid,
+                    Id = result.Result.Id,
+                    IsVerified = result.Result.IsVerified,
+                    Token = result.Result.Token 
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetAllWaitList")]
     [HttpGet]
     [ProducesResponseType(typeof(GetWaitListResult), StatusCodes.Status200OK)]
@@ -354,6 +436,7 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetWaitListResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("UpdateFamilyMembers")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateFamilyMemberResult), StatusCodes.Status202Accepted)]
