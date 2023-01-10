@@ -1,18 +1,20 @@
-﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+﻿using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Response;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
+using Flurl.Http.Configuration;
 
 namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
 {
     public class PurchaseOrderData : IPurchaseOrderData
     {
         private readonly IFlurlClient _flurlClient;
-        public PurchaseOrderData(IFlurlClient flurlClient)
+        public PurchaseOrderData(ApplicationConfig config, IFlurlClientFactory flurlFac)
         {
-            _flurlClient = flurlClient;
+            _flurlClient = flurlFac.Get(config.ApiDataUrl);
         }
 
         public async Task<AppResult<CreatePurchaseOrderResult>> CreatePurchaseOrder(CreatePurchaseOrderArgs args)

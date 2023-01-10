@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Schedule;
 using Cinnamon.Framework.Common;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Schedule
@@ -189,12 +190,15 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             }
         }
 
-        public async Task<AppResult<ScheduleDTO>> GetByIdAsync(int id)
+        public async Task<AppResult<ScheduleDTO>> GetByIdAsync(int id, bool? includeActivity = null)
         {
             try
             {
-                var result = await _dataStore.ActivitySchedule.GetByIdAsync(id);
-                if(!result.Succeeded)
+                var includes = new List<Expression<Func<Entities.ActivitySchedule, object>>>();
+                if(includeActivity.HasValue && includeActivity.Value) includes.Add(s => s.Activity);
+
+                var result = await _dataStore.ActivitySchedule.FindFirstAsync(s => s.Id == id, includes);
+                if(!result.Succeeded || result.Result == null)
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(result.Error.Exception, result.Message);
                 }
@@ -216,7 +220,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             }
             catch (Exception ex)
             {
-                return AppResult<ScheduleDTO>.CreateFailed(ex.InnerException, ex.Message);
+                return AppResult<ScheduleDTO>.CreateFailed(ex, ex.Message);
             }
         }
 
