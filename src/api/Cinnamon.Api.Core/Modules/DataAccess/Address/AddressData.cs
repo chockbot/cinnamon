@@ -39,7 +39,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Address
             }
         }
 
-        public async Task<AppResult<GetAllAddressResult>> GetAllAddress()
+        public async Task<AppResult<GetAllAddressResult>> GetAllAddress(GetAllAddressArgs args)
         {
             try
             {

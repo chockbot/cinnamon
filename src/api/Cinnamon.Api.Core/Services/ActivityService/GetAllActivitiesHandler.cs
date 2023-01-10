@@ -13,7 +13,6 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 	{
 		this.activityData = activityData;	
 	}
-
 	public AppResult<GetAllActivitiesResult> Execute(GetAllActivitiesArgs args)
 	{
         try

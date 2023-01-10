@@ -39,7 +39,6 @@ public class ActivityController : ControllerBase
         }
     }
 
-
     [Route("GetAllActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
@@ -146,6 +145,28 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdatedActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetActivitiesByCategories/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivitiesByCategoriesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetActivitiesByCategories(int id, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.GetActivitieByCategoriesAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetActivityResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

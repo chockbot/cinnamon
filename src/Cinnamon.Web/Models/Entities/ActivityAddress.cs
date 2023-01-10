@@ -1,5 +1,5 @@
 ﻿namespace Cinnamon.Web.Models.Entities;
-public class Address
+public class ActivityAddress
 {
     public int Id { get; set; }
     public int ActivityId { get; set; }

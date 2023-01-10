@@ -4,6 +4,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using NuGet.Common;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Activity;
 
@@ -240,5 +241,66 @@ public class ActivityApiHandler : IActivityApiHandler
         {
             return AppResult<UploadActivityImageResult>.CreateFailed(ex, "An error occured when uploading activity images api");
         } 
+    }
+
+    public async Task<AppResult<GetAddressResult>> GetAddress()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/GetAllAddress")
+                .GetJsonAsync<GetAddressResult>();
+
+            return AppResult<GetAddressResult>.CreateSucceeded(result, "Successfully getting activity addresses api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAddressResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAddressResult>.CreateFailed(ex, "An error occured when getting activity addresses api");
+        }
+    }
+
+    public async Task<AppResult<GetActivityImagesResult>> GetActivityImages()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/GetAllActivityImages")
+                .GetJsonAsync<GetActivityImagesResult>();
+
+            return AppResult<GetActivityImagesResult>.CreateSucceeded(result, "Successfully getting activity images api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityImagesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityImagesResult>.CreateFailed(ex, "An error occured when getting activity images api");
+        }
+    }
+
+    public async Task<AppResult<GetActivitiesByCategoriesResult>> GetActivitiesByCategories(int id, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/GetActivitiesByCategories/{id}")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetActivitiesByCategoriesResult>();
+
+            return AppResult<GetActivitiesByCategoriesResult>.CreateSucceeded(result, "Successfully getting activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured when getting activities api");
+        }
     }
 }

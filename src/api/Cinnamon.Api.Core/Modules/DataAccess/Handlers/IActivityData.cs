@@ -9,4 +9,6 @@ public interface IActivityData
     Task<AppResult<GetAllActivitiesResult>> GetAllActivities(GetAllActivities args);
     Task<AppResult<CreatedActivityResult>> CreateActivity(CreateActivityArgs args);
     Task<AppResult<UpdatedActivityResult>> UpdateActivity(UpdateActivity args);
+    Task<AppResult<GetActivitiesByCategoriesResult>> GetActivitiesByCategories(int id, GetActivityArgs? args = null);
+
 }
