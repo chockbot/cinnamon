@@ -57,6 +57,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivityHandler, Services.ActivityService.GetOwnedActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUploadActivityImageHandler, Services.ActivityService.UploadActivityImageHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActivityHandler, Services.ActivityService.GetActivityHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetAddressHandler, Services.ActivityService.GetAddressHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetAllActivitiesHandler, Services.ActivityService.GetAllActivitiesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetActivityImagesHandler, Services.ActivityService.GetActivityImagesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetActiviesByCategoriesHandler, Services.ActivityService.GetActivitiesByCategoriesHandler>();
 
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();

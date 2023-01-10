@@ -22,6 +22,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @inject IVerifyEmail verifyEmailHandler;
+@inject Cinnamon.Web.Config.Config AppConfig;
 
 <!DOCTYPE html>
 
@@ -526,6 +527,7 @@
             }
         }
     }
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -541,41 +543,36 @@
         {
             if (userSuccess && tokenSuccess)
             {
-                var waitingRes = await accountApiHandler.GetWaitListByGuid(token,userId);
-                if(waitingRes == null)
+                var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs {
+                    Token = token,
+                    UserId = userId
+                });
+                if((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
                 {
                     // invalid guid
-                    NavigationManager.NavigateTo("/onboarding", forceLoad: true);
                     return;
                 }
-                // check if email already verified so that will not call verify email every request
-                if(!waitingRes.Result.Result.IsVerified)
+
+                // try to register again to check if already have account details
+                var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs {
+                    Email = verifyRes.Result.Result.Email,
+                    ValidationRoute = AppConfig.BaseUrl + "/explore"
+                });
+                if(!checkRegistered.Succeeded || checkRegistered.Result == null)
                 {
-                    // need to verified
-                    var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs
-                        {
-                            Token  = CustomerModel.Token,
-                            UserId = userId
-                        });
-                    if ((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
-                    {
-                        // invalid userid and token redirect to onboargin page
-                        NavigationManager.NavigateTo("/onboarding");
-                        return;
-                    }
-                    // proceed to populate customer information
-                    await modalFinishSignUp.OpenModal(waitingRes.Result.Result.Email);
+                    // error
+                    return;
                 }
-                else 
+
+                if(checkRegistered.Succeeded && !checkRegistered.Result.IsSuccess)
                 {
-                    var customerRes = await accountApiHandler.GetCustomerByEmail(token, waitingRes.Result.Result.Email);
-                    if(customerRes == null)
+                    if(checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
                     {
-                        await modalFinishSignUp.OpenModal(waitingRes.Result.Result.Email);
+                        await modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
                     }
-                    else
+                    if(checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
                     {
-                        await modalPassword.OpenModal(waitingRes.Result.Result.Email);
+                        await modalPassword.OpenModal(verifyRes.Result.Result.Email);
                     }
                 }
             }
