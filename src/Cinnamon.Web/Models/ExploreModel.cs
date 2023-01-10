@@ -9,7 +9,7 @@ public class ExploreModel
     public IEnumerable<ExperienceCategory> ExperienceCategories { get; set; }
     public IEnumerable<SubCategory> SubCategories { get; set; }
     public IEnumerable<ActivityImage> ActivityImages { get; set; } 
-    public IEnumerable<Address> Address { get; set; }
+    public IEnumerable<ActivityAddress> Address { get; set; }
     public string Token { get; set; } = string.Empty;
     public bool HasError { get; set; }
 }

@@ -2,7 +2,6 @@ using Cinnamon.Core.Common;
 using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
-using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 
@@ -14,7 +13,11 @@ public interface IActivityApiHandler
     Task<AppResult<GetExperienceTypesResult>> GetExperienceTypes();
     Task<AppResult<GetExperienceCategoriesResult>> GetExperienceCategories();
     Task<AppResult<GetSubCategoriesResult>> GetSubCategories();
+    Task<AppResult<GetActivityImagesResult>> GetActivityImages();
+    Task<AppResult<GetAddressResult>> GetAddress();
     Task<AppResult<GetOwnedActivitiesResult>> GetOwnedActivities(GetOwnedActivitiesArgs args, string token);
     Task<AppResult<GetActivityResult>> GetOwnedActivity(int id, string token, GetActivityArgs? args = null);
     Task<AppResult<UploadActivityImageResult>> UploadActivityImages(UploadActivityImageArgs args, string token);
+    Task<AppResult<GetActivitiesByCategoriesResult>> GetActivitiesByCategories(int id, GetActivityArgs? args = null);
+
 } 

@@ -37,6 +37,27 @@ public class ActivityData: IActivityData
         }
     }
 
+    public async Task<AppResult<GetActivitiesByCategoriesResult>> GetActivitiesByCategories(int id, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Activity/GetActivitiesByCategories/{id}")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetActivitiesByCategoriesResult>();
+
+            return AppResult<GetActivitiesByCategoriesResult>.CreateSucceeded(result, "Successfully getting activity by id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured when getting activity by id api");
+        }
+    }
+
     public async Task<AppResult<GetActivityResult>> GetActivityById(int id, GetActivityArgs? args = null)
     {
         try

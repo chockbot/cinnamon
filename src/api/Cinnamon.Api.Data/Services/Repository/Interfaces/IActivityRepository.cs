@@ -22,4 +22,7 @@ public interface IActivityRepository
         string? city, string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements,
         string? activityLevel, string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2,
         string? searchtag3, string? searchtag4, string? searchtag5, int? experienceCategoryId, int? subCategoryId);
+    Task<AppResult<ActivityDTO>> GetActivitieByCategoriesAsync(int experienceCategoryId, int? customerId = null,
+        bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false);
 }
