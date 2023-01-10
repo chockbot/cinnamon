@@ -247,7 +247,7 @@ public class ActivityApiHandler : IActivityApiHandler
         try
         {
             var result = await flurlClient
-                .Request("Activity/GetAllActivityImages")
+                .Request("Activity/GetActivityImages")
                 .GetJsonAsync<GetActivityImagesResult>();
 
             return AppResult<GetActivityImagesResult>.CreateSucceeded(result, "Successfully getting activity images api");
