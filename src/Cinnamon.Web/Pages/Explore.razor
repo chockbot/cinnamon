@@ -73,7 +73,7 @@
                 <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">  
                     @if(AuthState != null)
                     {
-                        @if(AuthState.User.Identity.IsAuthenticated)
+                        @if(AuthState.Identity.IsAuthenticated)
                         {
                             if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
                             {
@@ -418,11 +418,11 @@
     public string                        searchValue        = string.Empty;
     public string                        filterId           = string.Empty;
     public int                           cnt                = 0;
-    private string value { get; set; }
-    public bool clickButton { get; set; }
-    public AuthenticationState AuthState { get; set; }
-    private ModalFinishSignUp modalFinishSignUp {get; set;}
-    private ModalPassword modalPassword {get; set;}
+    private string                       value              { get; set; }
+    public bool                          clickButton        { get; set; }
+    public ClaimsPrincipal               AuthState          { get; set; }
+    private ModalFinishSignUp            modalFinishSignUp  { get; set; }
+    private ModalPassword                modalPassword      { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -445,11 +445,12 @@
                 ExperienceCategories = categories
             };
 
-        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var token = AuthState.User.FindFirstValue("Token");
-        if (AuthState != null && AuthState.User.Identity.IsAuthenticated)
+        AuthState = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = AuthState.FindFirstValue("Token");
+
+        if (AuthState != null && AuthState.Identity.IsAuthenticated)
         {
-            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
+            var email = AuthState.FindFirstValue(ClaimTypes.Email);
             //Get Customer by Email
             var customer = await accountApiHandler.GetCustomerByEmail(token, email);
             CustomerModel = new();
@@ -485,7 +486,7 @@
         {
             if (userSuccess && tokenSuccess)
             {
-                var waitingRes = await accountApiHandler.GetWaitListByGuid(token, userId);
+                var waitingRes = await accountApiHandler.GetWaitListByGuid(token,userId);
                 if(waitingRes == null)
                 {
                     // invalid guid

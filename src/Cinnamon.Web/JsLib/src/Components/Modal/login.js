@@ -51,7 +51,7 @@ login._initEmailSignup = () => {
 };
 
 login._initFormRegister = () => {
-    $("#form-register-information").submit(async function (e) {
+    k$("#form-register-information").submit(async function (e) {
         e.preventDefault();
 
         const firstname = $("#firstname-signup-register").val();
