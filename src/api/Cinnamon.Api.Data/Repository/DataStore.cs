@@ -45,8 +45,7 @@ public class DataStore : IDataStore
 
     public async Task EnsureMigrate()
     {
-        
-        //await applicationContext.Database.MigrateAsync();
+        await applicationContext.Database.MigrateAsync();
     }
 
     public async Task SeedData()
