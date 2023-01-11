@@ -69,7 +69,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         Address2 = e.Address2,
                         District = e.District,
                         City = e.City,
-                        SearchTags = e.SearchTags.ToArray(),
+                        SearchTags = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
                         IsPublished = e.IsPublished,
                         CreatedBy = e.CreatedBy,
                         

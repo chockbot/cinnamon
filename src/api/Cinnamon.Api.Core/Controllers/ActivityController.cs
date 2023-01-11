@@ -461,7 +461,7 @@ public class ActivityController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
     [AllowAnonymous]
-    public async Task<IActionResult> GetAllActivities(GetAllActivitiesArgs args)
+    public async Task<IActionResult> GetAllActivities([FromQuery] GetAllActivitiesArgs args)
     {
         try
         {
