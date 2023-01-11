@@ -432,6 +432,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await FetchActivities();
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
         if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
@@ -586,7 +587,12 @@
 
     private async Task FetchActivities()
     {
-        var ActivityListData = await activityApiHandler.GetAllActivities();
+        var ActivityListData = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true
+            });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
             activities = ActivityListData.Result.Result.Select(r =>
@@ -651,7 +657,12 @@
 
     public async Task Search()
     {
-        var activityList = await activityApiHandler.GetAllActivities();
+        var activityList = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true
+            });
         if (activityList.Succeeded && activityList.Result != null && activityList.Result.IsSuccess)
         {
             activities = activityList.Result.Result.Select(r =>
@@ -733,7 +744,11 @@
     public async Task Clear()
     {
         searchValue = string.Empty;
-        var activityList = await activityApiHandler.GetAllActivities();
+        var activityList = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs {
+            IncludeActivityAddress = true,
+            IncludeActivityDescription = true,
+            IncludeActivityImages = true
+        });
         if (activityList.Succeeded && activityList.Result != null && activityList.Result.IsSuccess)
         {
             activities = activityList.Result.Result.Select(r =>
@@ -760,8 +775,15 @@
                         ActivityLevel = r.ActivityLevel,
                         SkillLevel = r.SkillLevel,
                         MinimumAge = r.MinimumAge,
-                        CanAdultsJoin = r.CanAdultsJoin
-                    };
+                        CanAdultsJoin = r.CanAdultsJoin,
+                        Images = r.Images.Select(i => {
+                        return new ActivityImage {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList()
+                };
             }).ToList();
             Model = new ExploreModel
                 {

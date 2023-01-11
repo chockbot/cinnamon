@@ -29,7 +29,14 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
 	{
 		try
 		{
-			var result = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {});
+			var result = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {
+                IncludeAddress = args.IncludeActivityAddress,
+                IncludeDescription = args.IncludeActivityDescription,
+                IncludeSchedules = args.IncludeAtivitySchedules,
+                IncludeImages = args.IncludeActivityImages,
+                IncludeSearchTags = args.IncludeActivitySearchTags,
+                IsActive = args.IsActive
+            });
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<GetAllActivitiesResult>.CreateFailed(new ApplicationException(result.Message), result.Message);

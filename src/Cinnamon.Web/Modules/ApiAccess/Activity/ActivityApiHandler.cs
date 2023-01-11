@@ -122,12 +122,13 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<GetAllActivitiesResult>> GetAllActivities()
+    public async Task<AppResult<GetAllActivitiesResult>> GetAllActivities(GetAllActivitiesArgs? args = null)
     {
         try
         {
             var result = await flurlClient
                 .Request("Activity/GetAllActivities")
+                .SetQueryParams(args)
                 .GetJsonAsync<GetAllActivitiesResult>();
 
             return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting all activities api");
