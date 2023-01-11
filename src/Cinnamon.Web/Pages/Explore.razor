@@ -432,26 +432,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //get experience type
-        var experiencetype = await activityApiHandler.GetExperienceTypes();
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
-        // get experience addresses
-        var address = await activityApiHandler.GetAddress();
-        //get activity images
-        var activityImage = await activityApiHandler.GetActivityImages();
-
-        if (experiencetype.Succeeded && experiencetype.Result != null && experiencetype.Result.IsSuccess)
-        {
-            experienceTypes = experiencetype.Result.Result.Select(i =>
-            {
-                return new ExperienceType
-                    {
-                        Id = i.Id,
-                        Name = i.Name
-                    };
-            }).ToList();
-        }
         if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
         {
             categories = experienceCategory.Result.Result.Select(i =>
@@ -464,7 +446,24 @@
                     };
             }).ToList();
         }
-        if (address.Succeeded && address.Result != null && address.Result.IsSuccess)
+
+        //get experience type
+        var experiencetype = await activityApiHandler.GetExperienceTypes();
+        if (experiencetype.Succeeded && experiencetype.Result != null && experiencetype.Result.IsSuccess)
+        {
+            experienceTypes = experiencetype.Result.Result.Select(i =>
+            {
+                return new ExperienceType
+                    {
+                        Id = i.Id,
+                        Name = i.Name
+                    };
+            }).ToList();
+        }
+        
+        // get experience addresses
+        var address = await activityApiHandler.GetAddress();
+         if (address.Succeeded && address.Result != null && address.Result.IsSuccess)
         {
             addresses = address.Result.Result.Select(a =>
             {
@@ -479,6 +478,8 @@
                     };
             }).ToList();
         }
+        //get activity images
+        var activityImage = await activityApiHandler.GetActivityImages();
         if (activityImage.Succeeded && activityImage.Result != null && activityImage.Result.IsSuccess)
         {
             activityImages = activityImage.Result.Result.Select(i =>

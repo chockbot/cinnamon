@@ -5,6 +5,12 @@
 @using Cinnamon.Core
 @using Cinnamon.Core.Enums
 @using Cinnamon.Data
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Models.Entities
+@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler;
 
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
     <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 col-md-10 col-sm-12 col-12">
@@ -327,6 +333,13 @@
     IJSObjectReference module;
     [Parameter]
     public int Id { get; set; }
+    public ExploreModel                  Model              = new ExploreModel();
+    public List<Activity>                activities         = new List<Activity>();
+    public List<ActivityImage>           activityImages     = new List<ActivityImage>();
+    public Activity                      activity           = new Activity();
+    public Profile                       customer           = new Profile();
+
+
 
     public List<ActivityModel> ActivityModel = new List<ActivityModel>();
     public List<ActivityImagesModels> _Images = new List<ActivityImagesModels>();
@@ -344,9 +357,69 @@
     }
     protected override async Task OnInitializedAsync()   
     {
-        ActivityModel = Task.Run(() => CoreDI.DataStore.Activities.GetAllAsync()).Result;
-        _Images =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Id).ToList();
-        actModel = ActivityModel.Where(c => c.Id == Id).ElementAt(0);
-        Customer = await CoreDI.DataStore.Customers.GetCustomerById(actModel.CreatedBy);
+        //get all activities
+        var activityList = await activityApiHandler.GetAllActivities();
+        if (activityList.Succeeded && activityList.Result != null && activityList.Result.IsSuccess)
+        {
+            activities = activityList.Result.Result.Select(r =>
+            {
+                return new Activity
+                    {
+                        ActivityId = r.ActivityId,
+                        ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceCategoryId = r.ExperienceCategoryId,
+                        SubCategoryId = r.SubCategoryId,
+                        Title = r.Title,
+                        Description = r.Description,
+                        Price = r.Price,
+                        ScheduleIndicator = r.ScheduleIndicator,
+                        Remarks = r.Remarks,
+                        IsPublished = r.IsPublished,
+                        Address1 = r.Address1,
+                        Address2 = r.Address2,
+                        District = r.District,
+                        City = r.City,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem = r.CustomerBringWithThem,
+                        AdditionalRequirements = r.AdditionalRequirements,
+                        ActivityLevel = r.ActivityLevel,
+                        SkillLevel = r.SkillLevel,
+                        MinimumAge = r.MinimumAge,
+                        CanAdultsJoin = r.CanAdultsJoin,
+                    };
+            }).ToList();
+        }
+        //Get Activity Images
+        var activityImage = await activityApiHandler.GetActivityImages();
+        if (activityImage.Succeeded && activityImage.Result != null && activityImage.Result.IsSuccess)
+        {
+            activityImages = activityImage.Result.Result.Select(i =>
+            {
+                return new ActivityImage
+                    {
+                        Id = i.Id,
+                        ActivityId = i.ActivityId,
+                        ImageSrc = i.ImageLocation,
+                        Name = i.ImageName
+                    };
+            }).ToList();
+        }
+
+        Model = new ExploreModel
+            {
+                Activities = activities,
+                ActivityImages = activityImages
+            };
+        //Get Image
+        activityImages.Where(c => c.ActivityId == Id).ToList();
+        //Get Activity
+        activity = activities.Where(c => c.ActivityId == Id).ElementAt(0);
+        //Get Customer
+        //customer = await accountApiHandler.GetCustomerById();
+
+        //ActivityModel = Task.Run(() => CoreDI.DataStore.Activities.GetAllAsync()).Result;
+        //_Images =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Id).ToList();
+        //actModel = ActivityModel.Where(c => c.Id == Id).ElementAt(0);
+        //Customer = await CoreDI.DataStore.Customers.GetCustomerById(actModel.CreatedBy);
     }
 }

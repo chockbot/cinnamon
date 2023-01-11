@@ -24,4 +24,5 @@ public interface IAccountApiHandler
     Task<AppResult<GetWaitListResult>> GetAllWaitList();
     Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string token, string email);
     Task<AppResult<GetWaitListByGuidResult>> GetWaitListByGuid(string token, string guid);
+    Task<AppResult<GetCustomerByIdResult>> GetCustomerById(int id);
 } 
