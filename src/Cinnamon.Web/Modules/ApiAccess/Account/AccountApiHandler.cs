@@ -412,4 +412,24 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetWaitListByGuidResult>.CreateFailed(ex, "An error occured when getting waitlist by guid api");
         }
     }
+
+    public async Task<AppResult<GetCustomerByIdResult>> GetCustomerById(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Account/GetCustomerById/{id}")
+                .GetJsonAsync<GetCustomerByIdResult>();
+
+            return AppResult<GetCustomerByIdResult>.CreateSucceeded(result, "Successfully getting cutomer by email api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerByIdResult>.CreateFailed(ex, "An error occured when getting cutomer by email api");
+        }
+    }
 }
