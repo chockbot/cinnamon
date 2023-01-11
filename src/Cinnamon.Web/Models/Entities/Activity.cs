@@ -23,6 +23,7 @@ public class Activity
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
+    public int CreatedBy { get; set; }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
     public IList<ActivityImage> Images {get; set;}

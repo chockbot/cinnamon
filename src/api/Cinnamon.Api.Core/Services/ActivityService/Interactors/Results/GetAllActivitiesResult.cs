@@ -30,6 +30,7 @@ public class GetAllActivitiesResult
         public bool CanAdultsJoin { get; set; }
         public IList<string> SearchTags { get; set; } = new List<string>();
         public IList<ActivitySchedule> ActivitySchedules { get; set; } = new List<ActivitySchedule>();
+        public int CreatedBy { get; set; }
     }
     public class ActivitySchedule
     {

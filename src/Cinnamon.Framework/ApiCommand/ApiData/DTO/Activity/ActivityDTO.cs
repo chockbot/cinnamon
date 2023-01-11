@@ -28,6 +28,7 @@ public class ActivityDTO
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
+    public int CreatedBy { get; set; }
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }

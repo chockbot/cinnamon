@@ -493,7 +493,8 @@ public class ActivityController : ControllerBase
                         ActivityLevel = s.ActivityLevel,
                         SkillLevel = s.SkillLevel,
                         MinimumAge = s.MinimumAge,
-                        CanAdultsJoin = s.CanAdultsJoin
+                        CanAdultsJoin = s.CanAdultsJoin,
+                        CreatedBy = s.CreatedBy,
                     };
                 })
             });

@@ -118,11 +118,11 @@
             {
                 <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
                     <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
-                    <img class="rounded-2 rounded-circle m-3" src="@Customer.ProfilePath" width="60" height="60" />
+                            <img class="rounded-2 rounded-circle m-3" src="@Customer.CustomerProfile.ProfilePath" width="60" height="60" />
                     <div class="d-flex flex-column m-2">
                         <span style="font-size:0.7rem;">Owner</span>
-                        <span class="fw-bold text-capitalize" style="font-size:1rem;">@Customer.FirstName @Customer.LastName</span>
-                        <a class="text-decoration-none" href="/maker/profile/@Customer.Id">View Profile</a>
+                                <span class="fw-bold text-capitalize" style="font-size:1rem;">@Customer.CustomerProfile.FirstName @Customer.CustomerProfile.LastName</span>
+                                <a class="text-decoration-none" href="/maker/profile/@Customer.CustomerProfile.Id">View Profile</a>
                     </div>
                     <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
                         <img class="px-3" src="images/details_profile_badge.png" />
@@ -330,11 +330,12 @@
     IJSObjectReference module;
     [Parameter]
     public int Id { get; set; }
+
     public ExploreModel                  Model              = new ExploreModel();
     public List<Activity>                activities         = new List<Activity>();
     public List<ActivityImage>           activityImages     = new List<ActivityImage>();
     public Activity                      activity           = new Activity();
-    public Profile                       customer           = new Profile();
+    public Profile                       Customer           = new Profile();
 
 
 
@@ -344,7 +345,6 @@
     public DescriptionSectionModel DescriptionSection = new DescriptionSectionModel();
     public AddressModel Address = new AddressModel();
     private SchedulesModal ModalSched { get; set; }
-    private CustomerModel Customer { get; set; }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
@@ -383,6 +383,7 @@
                         SkillLevel = r.SkillLevel,
                         MinimumAge = r.MinimumAge,
                         CanAdultsJoin = r.CanAdultsJoin,
+                        CreatedBy = r.CreatedBy
                     };
             }).ToList();
         }
@@ -412,8 +413,22 @@
         //Get Activity
         activity = activities.Where(c => c.ActivityId == Id).ElementAt(0);
         //Get Customer
-        //customer = await accountApiHandler.GetCustomerById();
-
+        var customer = await accountApiHandler.GetCustomerById(activity.CreatedBy);
+        Customer = new();
+        if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+        {
+            var args = customer.Result.Result;
+            Customer.CustomerProfile = new CustomerProfile
+            {
+                Birthdate = args.Birthdate,
+                Email = args.Email,
+                FirstName = args.FirstName,
+                LastName = args.LastName,
+                Id = args.Id,
+                IsMaker = args.IsMaker,
+                IsVerified = args.IsVerified,
+            };
+        }
         //ActivityModel = Task.Run(() => CoreDI.DataStore.Activities.GetAllAsync()).Result;
         //_Images =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Id).ToList();
         //actModel = ActivityModel.Where(c => c.Id == Id).ElementAt(0);

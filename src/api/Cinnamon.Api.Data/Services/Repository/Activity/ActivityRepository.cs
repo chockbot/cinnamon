@@ -303,6 +303,7 @@ public class ActivityRepository : IActivityRepository
                     IsPublished = a.IsPublished,
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
                     SubCategoryId = a.SubCategoryId ?? 0,
+                    CreatedBy = a.CreatedBy,
                 };
 
                 // address fields
@@ -405,7 +406,8 @@ public class ActivityRepository : IActivityRepository
                     Remarks = a.Remarks,
                     IsPublished = a.IsPublished,
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0
+                    SubCategoryId = a.SubCategoryId ?? 0,
+                    CreatedBy = a.CreatedBy,
                 };
             });
 

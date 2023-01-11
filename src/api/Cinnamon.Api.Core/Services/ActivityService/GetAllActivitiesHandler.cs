@@ -63,7 +63,9 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         District = e.District,
                         City = e.City,
                         SearchTags = e.SearchTags.ToArray(),
-                        IsPublished = e.IsPublished
+                        IsPublished = e.IsPublished,
+                        CreatedBy = e.CreatedBy,
+                        
                     };
                 })
             }, "Successfully get all activities");
