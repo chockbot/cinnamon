@@ -7,7 +7,7 @@ namespace Cinnamon.Data
     {
         public DataStoreDbContext CreateDbContext(string[] args) {
             var options = new DbContextOptionsBuilder<DataStoreDbContext>();
-            options.UseNpgsql($"Host=db;Database=CINNAMON;Username=postgres;Password=postgres");
+            options.UseNpgsql($"Host=192.168.254.106;Database=CINNAMON;Username=postgres;Password=postgres");
             return new DataStoreDbContext(options.Options);
         }
     }

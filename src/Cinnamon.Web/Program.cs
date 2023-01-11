@@ -20,7 +20,7 @@ Framework.Construct<DefaultFrameworkConstruction>()
 await Framework.Service<IDataStore>().EnsuredataStoreAsync();
 
 // Apply Seed Data
-await Framework.Service<ApplicationViewModel>().applySeedDemoData();
+// await Framework.Service<ApplicationViewModel>().applySeedDemoData();
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("CinnamonDB");
