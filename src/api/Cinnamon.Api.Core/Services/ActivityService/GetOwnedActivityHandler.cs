@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
@@ -9,12 +8,12 @@ namespace Cinnamon.Api.Core.Services.ActivityService;
 
 public class GetOwnedActivityHandler : IGetOwnedActivityHandler
 {
-    private readonly IActivityData activityData;
+    private readonly IGetActivityHandler getActivityHandler;
     private readonly IHttpContextAccessor httpContext;
 
-    public GetOwnedActivityHandler(IActivityData activityData, IHttpContextAccessor httpContext)
+    public GetOwnedActivityHandler(IGetActivityHandler getActivityHandler, IHttpContextAccessor httpContext)
     {
-        this.activityData = activityData;
+        this.getActivityHandler = getActivityHandler;
         this.httpContext = httpContext;
     }
 
@@ -43,13 +42,14 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
             }
             int id = Convert.ToInt32(customerId);
 
-            var result = await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs {
+            var result = await getActivityHandler.ExecuteAsync(new GetActivityArgs {
+                ActivityId = args.ActivityId,
                 CustomerId = id,
-                IncludeAddress = args.IncludeActivityAddress,
-                IncludeDescription = args.IncludeActivityDescription,
-                IncludeImages = args.IncludeActivityImages,
-                IncludeSchedules = args.IncludeAtivitySchedules,
-                IncludeSearchTags = args.IncludeActivitySearchTags,
+                IncludeActivityAddress = args.IncludeActivityAddress,
+                IncludeActivityDescription = args.IncludeActivityDescription,
+                IncludeActivityImages = args.IncludeActivityImages,
+                IncludeActivitySearchTags = args.IncludeActivitySearchTags,
+                IncludeAtivitySchedules = args.IncludeAtivitySchedules,
                 IsActive = args.IsActive
             });
 
@@ -58,12 +58,7 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 return AppResult<GetOwnedActivityResult>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
 
-            if(result.Succeeded && !result.Result.IsSuccess)
-            {
-                return AppResult<GetOwnedActivityResult>.CreateFailed(
-                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetOwnedActivityHandler");
-            }
-            var activity = result.Result.Result;
+            var activity = result.Result;
 
             var activityEntity = new GetOwnedActivityResult {
                 ActivityLevel = activity.ActivityLevel,
@@ -87,7 +82,7 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
-                ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
+                ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityResult.ActivitySchedule {
                         Id = s.Id,
                         DateTime = s.DateTime,
@@ -103,8 +98,8 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 Images = activity.Images != null ? activity.Images.Select(i => {
                     return new GetOwnedActivityResult.ActivityImage {
                         Id = i.Id,
-                        ImageSrc = i.ImageLocation,
-                        Name = i.ImageName
+                        ImageSrc = i.ImageSrc,
+                        Name = i.Name
                     };
                 }) : Enumerable.Empty<GetOwnedActivityResult.ActivityImage>()
             };

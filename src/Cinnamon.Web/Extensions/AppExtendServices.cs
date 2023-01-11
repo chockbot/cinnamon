@@ -6,6 +6,7 @@ public static class ExtensionService
     {
         services.AddTransient<Modules.ApiAccess.Handlers.IAccountApiHandler, Modules.ApiAccess.Account.AccountApiHandler>();
         services.AddTransient<Modules.ApiAccess.Handlers.IActivityApiHandler, Modules.ApiAccess.Activity.ActivityApiHandler>();
+        services.AddTransient<Modules.ApiAccess.Handlers.ITransactionApiHandler, Modules.ApiAccess.Transaction.TransactionApiHandler>();
 
         return services;
     } 

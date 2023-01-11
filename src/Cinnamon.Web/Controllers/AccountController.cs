@@ -82,7 +82,7 @@ public class AccountController : Controller
 
             var registerWaitlist = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs {
                 Email = model.Email,
-                ValidationRoute = config.BaseUrl + "/confirm-email"
+                ValidationRoute = config.BaseUrl + "/explore"
             });
 
             if(!registerWaitlist.Succeeded || registerWaitlist.Result == null)

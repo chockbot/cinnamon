@@ -1,9 +1,6 @@
-@using Cinnamon.Core.Enums
-@using Cinnamon.Web.Components
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
-@using Cinnamon.Core.Models;
-@using Cinnamon.Core.Module.CustomerService.Handler;
-
+@using Cinnamon.Web.Components
+@using Models.Entities
 
 <div class="modal fade @ModalClass" id="addChildrenModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display:@ModalDisplay">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -50,23 +47,28 @@
 }
 
 
-@code {
+@code 
+{
     [Parameter]
-    public Models.Customer.Profile Model { get; set; }
+    public IList<FamilyMember> Model { get; set; }
+
     [Parameter]
-    public EventCallback<IList<FamilyMemberModel>> SaveEditedFamilyMember { get; set; } 
+    public EventCallback<IList<FamilyMember>> SaveEditedFamilyMember { get; set; } 
     
-    private IList<FamilyMemberModel> localStateFamilyMembers = new List<FamilyMemberModel>();
+    private IList<FamilyMember> localStateFamilyMembers = new List<FamilyMember>();
 
     public string ModalDisplay = "none;";
+
     public string ModalClass = "";
+
     public bool ShowBackdrop = false;
 
-    private void OnSaveFamilyMember(){
+    private void OnSaveFamilyMember()
+    {
         SaveEditedFamilyMember.InvokeAsync(localStateFamilyMembers);
     }
 
-    private void OnDeleteFamily(FamilyMemberModel member)
+    private void OnDeleteFamily(FamilyMember member)
     {
         localStateFamilyMembers.Remove(member);
     }
@@ -78,7 +80,7 @@
 
     public void Open()
     {
-        localStateFamilyMembers = Model.Customer.FamilyMembers;
+        localStateFamilyMembers = Model;
         ModalDisplay = "block;";
         ModalClass = "show";
         ShowBackdrop = true;

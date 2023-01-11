@@ -130,7 +130,7 @@ public class ActivityApiHandler : IActivityApiHandler
                 .Request("Activity/GetAllActivities")
                 .GetJsonAsync<GetAllActivitiesResult>();
 
-            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting experience types api");
+            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting all activities api");
         }
         catch (FlurlHttpException ex)
         {
@@ -138,7 +138,7 @@ public class ActivityApiHandler : IActivityApiHandler
         }
         catch (Exception ex)
         {
-            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting experience types api");
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
         }
     }
 
@@ -174,7 +174,7 @@ public class ActivityApiHandler : IActivityApiHandler
                 .SetQueryParams(args)
                 .GetJsonAsync<GetActivityResult>();
 
-            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting experience types api");
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting owned activity api");
         }
         catch (FlurlHttpException ex)
         {
@@ -182,8 +182,29 @@ public class ActivityApiHandler : IActivityApiHandler
         }
         catch (Exception ex)
         {
-            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting experience types api");
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting owned activity api");
         }   
+    }
+
+    public async Task<AppResult<GetActivityResult>> GetActivity(int id, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/GetActivity/{id}")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting activity api");
+        }  
     }
 
     public async Task<AppResult<UploadActivityImageResult>> UploadActivityImages(UploadActivityImageArgs args, string token)

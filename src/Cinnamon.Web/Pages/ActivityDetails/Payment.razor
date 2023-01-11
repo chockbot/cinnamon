@@ -1,289 +1,300 @@
-﻿@page "/Payment/{Id:int}"
+﻿@page "/Payment/{ActivityId:int}/{ScheduleId:int}"
 @layout LandingMainLayout
-@using Cinnamon.Core
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core.Models
+@using System.Security.Claims
+@using Cinnamon.Web.Enums;
+@using Cinnamon.Web.Models;
+@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Core.Module.CustomerService.Handler
 @using Cinnamon.Core.Module.PurchaseService.Handler
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Shared
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject ISignedCustomer signedCustomer;
 @inject IUpdateCustomerFamilyMembers updateFamilyMembers;
 @inject ISubmitOrderHandler submitOrerHandler;
+@inject IAccountApiHandler accountApiHandler;
+@inject IActivityApiHandler activityApiHandler;
+@inject ITransactionApiHandler transactionApiHandler;
 
-<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
-    <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
-        <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0"> 
-            <a class="text-decoration-none text-reset" href="/Explore/@Schedule.ActivityId"><img src="/images/previous.png" style="width:20px;" /></a>
-            <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
+
+@if(Model != null)
+{
+    <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
+        <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
+            <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0"> 
+                <a class="text-decoration-none text-reset" href="/Explore/@Model.Activity.ActivityId"><img src="/images/previous.png" style="width:20px;" /></a>
+                <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
-    <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
-        <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
-            <div class="col-lg-5 col-md-5 col-sm-12 col-12">
-                <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
-                <CarouselItemSchedule ScheduleModel="@Schedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange"></CarouselItemSchedule>
-            </div>
-            <hr />
-            <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
-                @if (isLoaded)
-                {
-                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
-                        <Div class="details overflow-auto" Display="Display.Flex">
-                            <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
-                                @foreach (var item in Model.Customer.FamilyMembers)
-                                {
-                                    <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                        <input type="checkbox" id="@item.Id" value="@item.Id" class="mx-2 checkbox-round" @onchange="() => OnSelectAttend(item)"/> <label for="@item.Id">@item.Name</label> 
+    <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
+        <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
+            <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
+                <div class="col-lg-5 col-md-5 col-sm-12 col-12">
+                    <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
+                    <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange"></CarouselItemSchedule>
+                </div>
+                <hr />
+                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                    <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                    @if (isLoaded)
+                    {
+                        <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                            <Div class="details overflow-auto" Display="Display.Flex">
+                                <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
+                                    @foreach (var item in Model.Customer.FamilyMembers)
+                                    {
+                                        <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
+                                            <input type="checkbox" id="@item.Id" value="@item.Id" class="mx-2 checkbox-round" @onchange="() => OnSelectAttend(item)"/> <label for="@item.Id">@item.Name</label> 
+                                        </div>
+                                    }
+                                </Column>
+                            </Div>
+                        </Column>
+                    }
+                    <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
+                </div>
+                <hr />
+                <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div><h5 class="fw-bold">Pay with</h5></div>
+                        <div class="d-flex d-md-block d-lg-block d-none d-sm-none">
+                            <img class="img-thumbnail" src="/images/mastercard.png" />
+                            <img class="img-thumbnail" src="/images/paypal.png" />
+                        </div>
+                    </div>
+                    <button class="d-md-none d-lg-none d-block d-sm-block" style="border:none;background-color:white" data-bs-toggle="modal" data-bs-target="#paymentModal"><i class="fas fa-credit-card mx-2"></i>Credit or debit card</button>
+                    <div class="col-lg-12 col-md-12 col-12 d-md-block d-lg-block d-none d-sm-none">
+                        <div class="form-outline mb-4 pb-1"> 
+                            <label>Credit or debit card</label>
+                            <select Class="form-control">
+                                <option value="1">Credit or debit card</option>
+                            </select>
+                            </div>
+
+                            <label class="mb-2">Enter Your Card Details</label>
+
+                            <div class="row mb-2">
+                                <div class="col-7">
+                                <input type="text" id="formControlLgXsd" class="form-control" value="" placeholder="Card number" />
+                                </div>
+                                <div class="col-3">
+                                    <div class="form-outline">
+                                        <input type="password" id="formControlLgExpk" class="form-control"
+                                                placeholder="MM/YYYY" />
                                     </div>
-                                }
-                            </Column>
-                        </Div>
-                    </Column>
-                }
-                <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
+                                </div>
+                                <div class="col-2">
+                                    <div class="form-outline">
+                                        <input type="password" id="formControlLgcvv" class="form-control"
+                                                placeholder="CVV" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mb-4">
+                                <div class="col-7">
+                                    <div class="form-outline">
+                                    <label class="form-label" for="formControlLgXM">Name on card</label>
+                                    <input type="text" id="formControlLgXM" class="form-control"
+                                                value="" placeholder="Name"/>
+                                    </div>
+                                </div>
+                                    <div class="col-5">
+                                    <div class="form-outline">
+                                    <label class="form-label" for="formControlLgXM">Contact number</label>
+                                        <input type="text" id="formControlLgXM" class="form-control"
+                                            value="" placeholder="contact no." />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <hr />
+                    <br />
+                    <div class="form-outline">
+                        <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
+                        <br />
+                        <br />
+                        <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" style="width:100% !important" @onclick="OnPayConfirmedClicked">Pay and confirm</button>
+                        @if(isShowPayErrorMessage)
+                        {
+                            <p class="text-danger">@payErrorMessage</p>
+                        }
+                    </div>
+                </div>
             </div>
-            <hr />
-            <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
-                <div class="d-flex align-items-center justify-content-between">
-                    <div><h5 class="fw-bold">Pay with</h5></div>
-                    <div class="d-flex d-md-block d-lg-block d-none d-sm-none">
+            <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
+                <div class="card shadow p-lg-3 p-3 mr-5 d-flex flex-column sticky-top mb-3" style="top:80px;">
+                    <div style="font-size:1.125rem">
+                        <span class="fw-bold">@Model.Activity.Title</span>
+                        <div style="font-size:0.6rem">
+                            @Model.SelectedSchedule.Name
+                        </div>
+                        <div style="font-size:0.6rem">
+                            @Model.SelectedSchedule.DateTime
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="d-flex align-items-center" style="font-size:0.8rem">
+                        Your booking is protected by <div class="app-name">
+                            @Resources.App.appName
+                        </div>
+                    </div>
+                    <hr />
+                    <div>
+                        <span class="fw-bold" style="font-size:1.125rem">Price details</span>
+                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                        <div>
+                            @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.Price x @Model.SelectedAttendees.Count head
+                        </div>
+                            <div>
+                            Php@((@Model.SelectedSchedule.Price * Model.SelectedAttendees.Count).ToString("#,###.00"))
+                        </div>
+                        </div>
+                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                        <div>
+                                Convinience fee - 15%
+                        </div>
+                            <div>
+                                Php@((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m)
+                        </div>
+                        </div>
+                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                            @if(couponAction == CouponAction.NoCoupon)
+                            {
+                                <div>
+                                    <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">enter coupon</span>
+                                </div>
+                            }
+                            else if(couponAction == CouponAction.EnteringCoupon)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <span class="enter-coupon" @onclick="() => couponAction = CouponAction.AppliedCoupon">add coupon</span>
+                                </div>
+                                <div>
+                                    <TextEdit class="text-end" required Placeholder="enter coupon code" Size="Size.ExtraSmall" />
+                                </div>
+                            }
+                            else if(couponAction == CouponAction.AppliedCoupon)
+                            {
+                                <div class="d-flex align-items-center">
+                                    <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">remove coupon</span>
+                                </div>
+                                <div>
+                                - <span>Php</span>@couponAmount.ToString("#,###.00")
+                                </div>
+                            }
+                        </div>
+                        <br>
+                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
+                            <div>
+                                Total (PHP)
+                            </div>
+                            <div>
+                                @if(Model.SelectedAttendees.Count > 0)
+                                {
+                                    <span>Php</span>@((((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00"))
+                                }
+                                else 
+                                {
+                                    <span>Php0.00</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (isLoaded)
+    {
+        <AddChildrenModal @ref="AddChildrenModal" Model="Model.Customer.FamilyMembers" />
+        <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" />
+    }
+
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Pay with</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="d-flex">
                         <img class="img-thumbnail" src="/images/mastercard.png" />
                         <img class="img-thumbnail" src="/images/paypal.png" />
                     </div>
-                </div>
-                <button class="d-md-none d-lg-none d-block d-sm-block" style="border:none;background-color:white" data-bs-toggle="modal" data-bs-target="#paymentModal"><i class="fas fa-credit-card mx-2"></i>Credit or debit card</button>
-                <div class="col-lg-12 col-md-12 col-12 d-md-block d-lg-block d-none d-sm-none">
-                    <div class="form-outline mb-4 pb-1"> 
+                    <div class="form-outline mb-2 pb-1">
                         <label>Credit or debit card</label>
                         <select Class="form-control">
                             <option value="1">Credit or debit card</option>
                         </select>
-                        </div>
+                    </div>
 
-                        <label class="mb-2">Enter Your Card Details</label>
+                    <p class="fw-bold mb-1">Enter Your Card Details</p>
 
-                        <div class="row mb-2">
-                            <div class="col-7">
+                    <div class="row mb-2">
+                        <div class="col-12 mb-2">
                             <input type="text" id="formControlLgXsd" class="form-control" value="" placeholder="Card number" />
-                            </div>
-                            <div class="col-3">
-                                <div class="form-outline">
-                                    <input type="password" id="formControlLgExpk" class="form-control"
-                                            placeholder="MM/YYYY" />
-                                </div>
-                            </div>
-                            <div class="col-2">
-                                <div class="form-outline">
-                                    <input type="password" id="formControlLgcvv" class="form-control"
-                                            placeholder="CVV" />
-                                </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-outline">
+                                <input type="password" id="formControlLgExpk" class="form-control"
+                                    placeholder="MM/YYYY" />
                             </div>
                         </div>
+                        <div class="col-6">
+                            <div class="form-outline">
+                                <input type="password" id="formControlLgcvv" class="form-control"
+                                    placeholder="CVV" />
+                            </div>
+                        </div>
+                    </div>
 
-                        <div class="row mb-4">
-                            <div class="col-7">
-                                <div class="form-outline">
+                    <div class="row mb-2">
+                        <div class="col-12">
+                            <div class="form-outline">
                                 <label class="form-label" for="formControlLgXM">Name on card</label>
                                 <input type="text" id="formControlLgXM" class="form-control"
-                                            value="" placeholder="Name"/>
-                                </div>
+                                    value="" placeholder="Name" />
                             </div>
-                                <div class="col-5">
-                                <div class="form-outline">
+                        </div>
+                        <div class="col-12">
+                            <div class="form-outline">
                                 <label class="form-label" for="formControlLgXM">Contact number</label>
-                                    <input type="text" id="formControlLgXM" class="form-control"
-                                        value="" placeholder="contact no." />
-                                </div>
+                                <input type="text" id="formControlLgXM" class="form-control"
+                                    value="" placeholder="contact no." />
                             </div>
                         </div>
                     </div>
-                <hr />
-                <br />
-                <div class="form-outline">
-                    <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
-                    <br />
-                    <br />
-                    <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" style="width:100% !important" @onclick="OnPayConfirmedClicked">Pay and confirm</button>
-                    @if(isShowPayErrorMessage)
-                    {
-                        <p class="text-danger">@payErrorMessage</p>
-                    }
                 </div>
-            </div>
-        </div>
-        <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
-            <div class="card shadow p-lg-3 p-3 mr-5 d-flex flex-column sticky-top mb-3" style="top:80px;">
-                <div style="font-size:1.125rem">
-                    <span class="fw-bold">@Activity.Title</span>
-                    <div style="font-size:0.6rem">
-                        @Schedule.Name
-                    </div>
-                    <div style="font-size:0.6rem">
-                        @Schedule.DateTime
-                    </div>
-                </div>
-                <hr />
-                <div class="d-flex align-items-center" style="font-size:0.8rem">
-                    Your booking is protected by <div class="app-name">
-                        @Resources.App.appName
-                    </div>
-                </div>
-                <hr />
-                 <div>
-                    <span class="fw-bold" style="font-size:1.125rem">Price details</span>
-                    <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                       <div>
-                           @Schedule.UnitPrice @Schedule.Price x @SelectedAttendees.Count head
-                       </div>
-                        <div>
-                           Php@((@Schedule.Price * @SelectedAttendees.Count).ToString("#,###.00"))
-                       </div>
-                    </div>
-                    <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                       <div>
-                            Convinience fee - 15%
-                       </div>
-                        <div>
-                            Php@((@Schedule.Price * @SelectedAttendees.Count) * .15m)
-                       </div>
-                    </div>
-                     <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                        @if(couponAction == CouponAction.NoCoupon)
-                        {
-                            <div>
-                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">enter coupon</span>
-                            </div>
-                        }
-                        else if(couponAction == CouponAction.EnteringCoupon)
-                        {
-                            <div class="d-flex align-items-center">
-                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.AppliedCoupon">add coupon</span>
-                            </div>
-                            <div>
-                                <TextEdit class="text-end" required Placeholder="enter coupon code" Size="Size.ExtraSmall" />
-                            </div>
-                        }
-                        else if(couponAction == CouponAction.AppliedCoupon)
-                        {
-                            <div class="d-flex align-items-center">
-                                <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">remove coupon</span>
-                            </div>
-                            <div>
-                               - <span>Php</span>@couponAmount.ToString("#,###.00")
-                            </div>
-                        }
-                    </div>
-                    <br>
-                    <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                        <div>
-                            Total (PHP)
-                        </div>
-                        <div>
-                            @if(SelectedAttendees.Count > 0)
-                            {
-                                <span>Php</span>@((((Schedule.Price * SelectedAttendees.Count) + ((@Schedule.Price * @SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00"))
-                            }
-                            else 
-                            {
-                                <span>Php0.00</span>
-                            }
-                        </div>
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn" style="background-color:#ffa942;color:white" data-bs-dismiss="modal">Done</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-
-@if (isLoaded)
-{
-    <AddChildrenModal @ref="AddChildrenModal" Model="@Model" SaveEditedFamilyMember="SaveEditedFamilyMember"></AddChildrenModal>
-    <SchedulesModal @ref="ModalSched" ScheduleModel="Activity.ScheduleList.ToList()"></SchedulesModal>
 }
 
-<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="paymentModalLabel">Pay with</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="d-flex">
-                    <img class="img-thumbnail" src="/images/mastercard.png" />
-                    <img class="img-thumbnail" src="/images/paypal.png" />
-                </div>
-                <div class="form-outline mb-2 pb-1">
-                    <label>Credit or debit card</label>
-                    <select Class="form-control">
-                        <option value="1">Credit or debit card</option>
-                    </select>
-                </div>
-
-                <p class="fw-bold mb-1">Enter Your Card Details</p>
-
-                <div class="row mb-2">
-                    <div class="col-12 mb-2">
-                        <input type="text" id="formControlLgXsd" class="form-control" value="" placeholder="Card number" />
-                    </div>
-                    <div class="col-6">
-                        <div class="form-outline">
-                            <input type="password" id="formControlLgExpk" class="form-control"
-                                   placeholder="MM/YYYY" />
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="form-outline">
-                            <input type="password" id="formControlLgcvv" class="form-control"
-                                   placeholder="CVV" />
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-2">
-                    <div class="col-12">
-                        <div class="form-outline">
-                            <label class="form-label" for="formControlLgXM">Name on card</label>
-                            <input type="text" id="formControlLgXM" class="form-control"
-                                   value="" placeholder="Name" />
-                        </div>
-                    </div>
-                    <div class="col-12">
-                        <div class="form-outline">
-                            <label class="form-label" for="formControlLgXM">Contact number</label>
-                            <input type="text" id="formControlLgXM" class="form-control"
-                                   value="" placeholder="contact no." />
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn" style="background-color:#ffa942;color:white" data-bs-dismiss="modal">Done</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-@code {
+@code 
+{
     [Parameter]
-    public int Id { get; set; }
-    private Models.Customer.Profile Model;
-    public List<ScheduleModel> Schedules { get; set; }
-    public ScheduleModel Schedule { get; set; } = new ScheduleModel();
-    public ActivityModel Activity { get; set; } = new ActivityModel();
-    public IList<FamilyMemberModel> SelectedAttendees { get; set; } = new List<FamilyMemberModel>();
-    public AuthenticationState AuthState { get; set; }
+    public int ActivityId { get; set; }
+
+    [Parameter]
+    public int ScheduleId { get; set; }
+
+    private PurchaseModel Model {get; set;}
+
     private SchedulesModal ModalSched { get; set; }
+
     public AddChildrenModal AddChildrenModal { get; set; }
+
     public bool isLoaded { get; set; } = false;
 
     private enum CouponAction {
@@ -298,61 +309,181 @@
     
     protected override async Task OnInitializedAsync()
     {
-        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        if (AuthState.User.Identity.IsAuthenticated)
-        {
-            Schedules = await CoreDI.DataStore.Schedules.GetAllAsync();
-            Schedule = Schedules.Find(x=>x.Id == Id);
-            Activity = await CoreDI.DataStore.Activities.GetActivityByIdAsync(Schedule.ActivityId);
-        }
-
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user });
-        if (!currentCustomer.Succeeded)
+        var token = user.FindFirstValue("Token");
+        if(token == null)
         {
             // don't have current user login
             NavigationManager.NavigateTo("explore");
             return;
         }
 
-        //Get Customer Information
-        Model = new();
-        Model.Customer = currentCustomer.Result.Customer;
+        // get profile details
+        var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if((!profileResult.Succeeded || profileResult.Result == null) || (profileResult.Succeeded && !profileResult.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var profile = profileResult.Result.Result;
+
+        // get family members information
+        var familyMembers = new List<Models.Entities.FamilyMember>();
+        var members = await accountApiHandler.GetFamilyMembers(token);
+
+        if(members.Succeeded && members.Result != null && members.Succeeded)
+        {
+            familyMembers = members.Result.Result.Select(m => {
+                return new Models.Entities.FamilyMember {
+                    BirthMonth = m.BirthMonth,
+                    BirthYear = m.BirthYear,
+                    Gender = m.Gender,
+                    Name = m.Name,
+                    Id = m.Id
+                };
+            }).ToList();
+        }
+
+        // get activity
+        var activityRes = await activityApiHandler.GetActivity(ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
+            IncludeActivityAddress = true,
+            IncludeActivityDescription = true,
+            IncludeAtivitySchedules = true,
+            IsActive = true
+        });
+        if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
+        {
+            // error when getting activity
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var activity = activityRes.Result.Result;
+        var selectedSchedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
+        if(selectedSchedule == null)
+        {
+            // schedule id not associated to activity
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        Model = new PurchaseModel {
+            // map only required fields
+            Activity = new Activity {
+                ActivityId = activity.ActivityId,
+                ActivityLevel = activity.ActivityLevel,
+                AdditionalRequirements = activity.AdditionalRequirements,
+                Address1 = activity.Address1,
+                Address2 = activity.Address2,
+                CanAdultsJoin = activity.CanAdultsJoin,
+                City = activity.City,
+                CustomerBringWithThem = activity.CustomerBringWithThem,
+                Description = activity.Description,
+                District = activity.District,
+                ExperienceCategoryId = activity.ExperienceCategoryId,
+                ExperienceTypeId = activity.ExperienceTypeId,
+                IsPublished = activity.IsPublished,
+                MinimumAge = activity.MinimumAge,
+                Price = activity.Price,
+                Remarks = activity.Remarks,
+                ScheduleIndicator = activity.ScheduleIndicator,
+                SkillLevel = activity.SkillLevel,
+                SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
+                SubCategoryId = activity.SubCategoryId,
+                Title = activity.Title,
+                ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                    return new ActivitySchedule {
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice
+                    };
+                }).ToList()
+            },
+            // map customer data fields
+            Customer = new CustomerProfile {
+                About = profile.About,
+                Birthdate = profile.Birthdate,
+                Email = profile.Email,
+                FamilyMembers = familyMembers,
+                FirstName = profile.FirstName,
+                IsMaker = profile.IsMaker,
+                LastName = profile.LastName,
+                IsVerified = profile.IsVerified,
+                ProfilePath = profile.ProfileImg
+            },
+            SelectedSchedule = new ActivitySchedule {
+                DateTime = selectedSchedule.DateTime,
+                Id = selectedSchedule.Id,
+                Name = selectedSchedule.Name,
+                PerUnit1 = selectedSchedule.PerUnit1,
+                PerUnit2 = selectedSchedule.PerUnit2,
+                Price = selectedSchedule.Price,
+                PriceUnit1 = selectedSchedule.PriceUnit1,
+                PriceUnit2 = selectedSchedule.PriceUnit2,
+                UnitPrice = selectedSchedule.UnitPrice
+            },
+            Token = token
+        };
 
         isLoaded= true;
     }
 
-    private void OnClickChange(){
+    private void OnClickChange()
+    {
         ModalSched.Open();
     }
 
-    private async Task SaveEditedFamilyMember(IList<FamilyMemberModel> familyMembers)
+    private async Task SaveEditedFamilyMember(IList<FamilyMember> familyMembers)
     {
-        // get only not empty members
-        var members = familyMembers.Where(i => !string.IsNullOrEmpty(i.Name)).ToList();
+        // add members
+        var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs {
+            FamilyMembers = Model.Customer.FamilyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                                .Select(m => {
+                                    return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
+                                        BirthMonth = m.BirthMonth,
+                                        BirthYear = m.BirthYear,
+                                        Gender = m.Gender,
+                                        Id = m.Id,
+                                        Name = m.Name
+                                    };
+                                }),
+        }, Model.Token);
 
-        var update = await updateFamilyMembers.ExecuteAsync(
-            new Core.Module.CustomerService.Interactors.UpdateFamilyMember { CustomerId = Model.Customer.Id, FamilyMembers = members });
-
-        if (update.Succeeded)
-        {
-            Model.Customer = update.Result.Customer;
-        }
+        // update members
+        var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs {
+            FamilyMembers = Model.Customer.FamilyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                                .Select(m => {
+                                    return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
+                                        BirthMonth = m.BirthMonth,
+                                        BirthYear = m.BirthYear,
+                                        Gender = m.Gender,
+                                        Id = m.Id,
+                                        Name = m.Name
+                                    };
+                                })
+        }, Model.Token);
 
         AddChildrenModal.Close();
     }
 
-    private void OnSelectAttend(FamilyMemberModel familyMember){
-        if(SelectedAttendees.Where(x=>x.Id == familyMember.Id).FirstOrDefault() == null)
+    private void OnSelectAttend(FamilyMember familyMember)
+    {
+        var member = Model.SelectedAttendees.FirstOrDefault(m => m.Id == familyMember.Id);
+        if(member == null)
         {
-            SelectedAttendees.Add(familyMember);
+            Model.SelectedAttendees.Add(familyMember);
         }
-        else{
-            SelectedAttendees.Remove(familyMember);
+        else
+        {
+            Model.SelectedAttendees.Remove(member);
         }
-
-        SelectedAttendees = SelectedAttendees;
     }
 
     private string payErrorMessage = string.Empty;
@@ -360,25 +491,23 @@
 
     private async Task OnPayConfirmedClicked()
     {
-        if(SelectedAttendees.Count > 0)
+        if(Model.SelectedAttendees.Count > 0)
         {
-            var submit = await submitOrerHandler.ExecuteAsync(new Core.Module.PurchaseService.Interactors.SubmitOrderArgs {
-                ActivityId = Activity.Id,
-                ScheduleId = Schedule.Id.Value,
-                CustomerId = Model.Customer.Id,
+            var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs {
+                ActivityId = Model.Activity.ActivityId,
                 CouponCode = "temporary coupon code",
-                NumberOfHeads = SelectedAttendees.Count
-            });
+                NumberOfHeads = Model.SelectedAttendees.Count,
+                ScheduleId = Model.SelectedSchedule.Id
+            }, Model.Token);
 
-            if(!submit.Succeeded)
+            if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
                 payErrorMessage = "An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
             }
             else 
             {
-                NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.PurchaseOrder.Id}");
-                return;
+                NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
             }
         }
         else 
