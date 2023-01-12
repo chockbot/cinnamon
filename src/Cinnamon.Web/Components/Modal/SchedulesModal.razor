@@ -1,10 +1,5 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core.Enums
-@using Cinnamon.Web.Components
-@using Cinnamon.Data
-@using Cinnamon.Core
-@using System.Text
-@using System.Globalization
+@using Models.Entities
 
 <div class="modal fade @ModalClass" id="scheduleModal" tabindex="-1" aria-labelledby="ScheduleModalLabel" aria-hidden="true" style="display:@ModalDisplay">
     <div class="modal-dialog modal-lg modal-dialog-scrollable">
@@ -14,10 +9,10 @@
             </div>
             <div class="modal-body">
                 <div class="row col-lg-12 col-md-12 col-sm-12 d-flex flex-row flex-wrap">
-                    @for (int x = 0; x < ScheduleModel.Count; x++)
+                    @foreach (var item in ScheduleModel)
                     {
                         <div class="col-md-4 mb-2">
-                            <CarouselItemSchedule ScheduleModel="@ScheduleModel.ElementAt(x)"></CarouselItemSchedule>
+                            <CarouselItemSchedule ScheduleModel="item" />
                         </div>
                     }
                 </div>
@@ -31,12 +26,15 @@
     <div class="modal-backdrop fade show"></div>
 }
 
-@code {
+@code 
+{
     [Parameter]
-    public List<ScheduleModel> ScheduleModel { get; set; }
+    public IList<ActivitySchedule> ScheduleModel { get; set; }
 
     public string ModalDisplay = "none;";
+
     public string ModalClass = "";
+
     public bool ShowBackdrop = false;
 
     public void Open()

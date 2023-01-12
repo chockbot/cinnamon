@@ -1,11 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
-@using Cinnamon.Web.Components
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core
-@using Cinnamon.Core.Models;
-@using Cinnamon.Data
-@using System.Security.Claims
+@using Cinnamon.Web.Components.Modals
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 
@@ -44,12 +39,12 @@
                         {
                             @if (AuthState.User.Identity.IsAuthenticated)
                             {
-                                if (UserModel != null && UserModel.IsMaker)
+                                @* if (UserModel != null && UserModel.IsMaker)
                                 {
                                     <li class="dropdown-item">
                                         <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
                                     </li>
-                                }
+                                } *@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAccount" Text="Account" />
                                 </li>
@@ -88,25 +83,27 @@
     </main>
     <ModalSignUp></ModalSignUp>
 </div>
+
 @if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
 {
-    <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@NavigationManager.Uri"></ModalLogin>
+    <ModalLogin ReturnUrl="@NavigationManager.Uri"></ModalLogin>
 }
-@code {
+
+@code 
+{
     public bool clickButton { get; set; }
-    public List<CustomerModel> UserList = new List<CustomerModel>();
-    public CustomerModel UserModel = new CustomerModel();
+    //public CustomerModel UserModel = new CustomerModel();
     public AuthenticationState AuthState { get; set; }
     private bool mouseEnter { get; set; }
      protected override async Task OnInitializedAsync()
     {
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 
-        if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
-        {
-            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
-            UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
-        }
+        //if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
+        //{
+        //    var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
+        //    UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
+        //}
     }
 
     private void NavigateToDashboard()

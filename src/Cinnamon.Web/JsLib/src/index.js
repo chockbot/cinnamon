@@ -2,12 +2,19 @@
 import pages from "./Pages";
 import components from "./Components";
 
-export function TestJS() {
-  return "Hello World";
-}
-
 export function Track(event) {
   return track(event);
+}
+
+export function previewImage(inputElem, imgElemId) {
+  const url = URL.createObjectURL(inputElem.files[0]);
+  const el = document.getElementById(imgElemId);
+  if (!el) return;
+
+  el.addEventListener("load", () => URL.revokeObjectURL(url), {
+    once: true,
+  });
+  el.src = url;
 }
 
 export const Pages = pages;

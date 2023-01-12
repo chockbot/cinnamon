@@ -2,20 +2,21 @@
 @page "/confirm-email"
 @layout EmptyLayout
 @using Microsoft.AspNetCore.WebUtilities;
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core.Models
-@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @using Cinnamon.Web.Components
-@using Cinnamon.Data
-@using Cinnamon.Core
 @using System.Text
 @using System.Linq;
 @using System.Globalization
 @using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Models.Entities
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-@inject IVerifyEmail verifyEmailHandler;
+@inject Cinnamon.Web.Config.Config AppConfig;
 
 <!DOCTYPE html>
 
@@ -29,6 +30,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 </head>
 <body>
+@if(Model != null)
+{
      <!--Search-->
     <div class="top-row px-4">
         <!--App Name-->
@@ -73,9 +76,9 @@
                 <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">  
                     @if(AuthState != null)
                     {
-                        @if(AuthState.User.Identity.IsAuthenticated)
+                        @if(AuthState.Identity.IsAuthenticated)
                         {
-                            if(UserModel != null && UserModel.IsMaker)
+                            if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
@@ -119,7 +122,7 @@
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in experienceCategory)
+                                    @foreach (var category in categories)
                                         {
                                             if (category.Id <= 5)
                                             {
@@ -133,7 +136,7 @@
                                 </div>
                                 <div class="carousel-item">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in experienceCategory)
+                                    @foreach (var category in categories)
                                             {
                                                 if (category.Id > 5 && category.Id <= 10)
                                                 {
@@ -164,7 +167,7 @@
             <div class="activity-lg">
                 <div class="col-lg-10 p-4 d-flex justify-content-center">
                     <div class="cards-wrapper">
-                        @foreach(var category in experienceCategory)
+                            @foreach (var category in categories)
                         {
                             if(category.Id <= 10)
                             {
@@ -191,7 +194,7 @@
                             <div class="carousel-inner">
                                 <div class="carousel-item active">
                                     <div class="cards-wrapper">
-                                        @foreach (var category in experienceCategory)
+                                        @foreach (var category in categories)
                                         {
                                             if (category.Id <= 7)
                                             {
@@ -226,22 +229,22 @@
         </div>
     <!--Section 2-->
         <div class="section-2-lg">
-            @if (activity == null)
+            @if (activities == null)
             {
                 <p><em>Loading...</em></p>
             }
             else{
                 <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> FetchActivities()">
                     <div class="row d-flex justify-content-start">
-                        @foreach (var act in activity)
+                        @foreach (var act in activities)
                         {
-                         cnt = 0;
-                         images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
+                         cnt = 0; 
+                         images = activityImages.Where(p=> p.ActivityId == act.ActivityId).ToList();
            
                          <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center">
-                            <a class="button carousel-card text-center" href="/explore/@act.Id">
+                                    <a class="button carousel-card text-center" href="/explore/@act.ActivityId">
                             <div class="card">
-                                <div id="carousel1-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
+                                <div id="carousel1-@act.ActivityId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                     <div class="carousel-indicators">
                                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                         <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -251,25 +254,25 @@
                                         @foreach(var item in images)
                                         {
                                             cnt++;
-                                            if (item.ImageId == act.Id && cnt == 1)
+                                            if (item.ActivityId == act.ActivityId && cnt == 1)
                                             {
                                                 <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
                                                 <div class="carousel-item active">
-                                                <img src=@item.ImageLocation alt="First slide" class="card-img">
+                                                <img src=@item.ImageSrc  alt="First slide" class="card-img">
                                                 </div>
                                             }
-                                            else if (item.ImageId == act.Id && cnt == 2)
+                                            else if (item.ActivityId == act.ActivityId && cnt == 2)
                                             {
                                                 <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
                                                 <div class="carousel-item">
-                                                <img src=@item.ImageLocation alt="Second slide" class="card-img">
+                                                <img src=@item.ImageSrc alt="Second slide" class="card-img">
                                                 </div>
                                             }
-                                            else if(item.ImageId == act.Id && cnt == 3)
+                                                        else if (item.ActivityId == act.ActivityId && cnt == 3)
                                             {
                                                  <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
                                                 <div class="carousel-item">
-                                                <img src=@item.ImageLocation alt="Third slide" class="card-img">
+                                                <img src=@item.ImageSrc alt="Third slide" class="card-img">
                                                 </div>
                                             }
                                             else
@@ -278,11 +281,11 @@
                                             }
                                         }
                                     </div>
-                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.Id" data-bs-slide="prev">
+                                        <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="prev">
                                         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                         <span class="visually-hidden"></span>
                                     </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.Id" data-bs-slide="next">
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="next">
                                         <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                         <span class="visually-hidden"></span>
                                     </button>
@@ -290,18 +293,20 @@
                                 <div class="card-body1 text-start">
                                     <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
                                     <h4 class="card-title1 mb-0" >@act.Title</h4>
-                                    @if(act.ExperienceType.Id == 1)
+                                    @if(act.ExperienceTypeId == 1)
                                     {
-                                        if(String.IsNullOrEmpty(act.Location))
+                                        address = addresses.Where(p=> p.ActivityId == act.ActivityId).ElementAt(0);
+                                        experienceType = experienceTypes.Where(e => e.Id == 1).FirstOrDefault();
+                                        if (String.IsNullOrEmpty(address.Address1) || String.IsNullOrEmpty(address.Address2))
                                         {
-                                            <p class="card-title2 mb-0">@act.Address.City</p>
+                                            <p class="card-title2 mb-0">@address.City</p>
                                         }
                                         else{
-                                            <p class="card-title2 mb-0">@act.Location</p>
+                                           <p class="card-title2 mb-0">@address.Address1</p>
                                         }
                                     }
                                     else{
-                                         <p class="card-title2 mb-0">@act.ExperienceType.Name</p>
+                                         <p class="card-title2 mb-0">@experienceType.Name</p>
                                     }
                                    @* <p class="card-title2 mb-0">@act.Location</p>*@
                                     <p class="card-title3">@act.Price</p>
@@ -318,14 +323,14 @@
     <!--Section 3-->
         <div class="section-3-md">
             <div class="row d-flex justify-content-start">
-                @foreach (var act in activity.OrderBy(a => a.Id))
+                @foreach (var act in activities.OrderBy(a => a.ActivityId))
                 {
                  cnt = 0;
-                 images = activityImages.Where(p=> p.ImageId == act.Id).ToList();
+                 images = activityImages.Where(p => p.ActivityId == act.ActivityId).ToList();
                  <div class="col-md-6 d-flex flex-column align-items-center">
                  <a class="button carousel-card text-center" href="/explore/DetailActivity">
                     <div class="card">
-                        <div id="carousel2-@act.Id" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
+                        <div id="carousel2-@act.ActivityId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                             <div class="carousel-indicators">
                                 <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                 <button type="button" data-bs-target="#carouselExampleIndicaors" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -335,25 +340,25 @@
                                 @foreach(var item in images)
                                 {
                                     cnt++;
-                                    if (item.ImageId == act.Id && cnt == 1)
+                                    if (item.ActivityId == act.ActivityId && cnt == 1)
                                     {
                                         <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
                                         <div class="carousel-item active">
-                                        <img src=@item.ImageLocation alt="First slide" class="card-img">
+                                        <img src=@item.ImageSrc alt="First slide" class="card-img">
                                         </div>
                                     }
-                                    else if (item.ImageId == act.Id && cnt == 2)
+                                    else if (item.ActivityId == act.ActivityId && cnt == 2)
                                     {
                                         <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
                                         <div class="carousel-item">
-                                        <img src=@item.ImageLocation alt="Second slide" class="card-img">
+                                        <img src=@item.ImageSrc alt="Second slide" class="card-img">
                                         </div>
                                     }
-                                    else if(item.ImageId == act.Id && cnt == 3)
+                                    else if (item.ActivityId == act.ActivityId && cnt == 3)
                                     {
                                         <span class="wish-icon"><button type="button" class="btn border-0"><i class="fa fa-heart-o"></i></button></span>
                                         <div class="carousel-item">
-                                        <img src=@item.ImageLocation alt="Third slide" class="card-img">
+                                        <img src=@item.ImageSrc alt="Third slide" class="card-img">
                                         </div>
                                     }
                                     else
@@ -362,11 +367,11 @@
                                     }
                                 }
                             </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel2-@act.Id" data-bs-slide="prev">
+                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel2-@act.ActivityId" data-bs-slide="prev">
                                 <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
                             </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#carousel2-@act.Id" data-bs-slide="next">
+                                        <button class="carousel-control-next" type="button" data-bs-target="#carousel2-@act.ActivityId" data-bs-slide="next">
                                 <span class="carousel-control-next-icon" aria-hidden="true"></span>
                                 <span class="visually-hidden"></span>
                             </button>
@@ -374,18 +379,20 @@
                         <div class="card-body1 text-start">
                             <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
                             <h4 class="card-title1 mb-0" >@act.Title</h4>
-                           @if(act.ExperienceType.Id == 1)
+                           address = addresses.Where(p=> p.ActivityId == act.ActivityId).ElementAt(0);
+                           experienceType = experienceTypes.Where(e => e.Id == 1).FirstOrDefault();
+                           @if(act.ExperienceTypeId == 1)
                             {
-                                if(String.IsNullOrEmpty(act.Location))
+                                if (String.IsNullOrEmpty(address.Address1) || String.IsNullOrEmpty(address.Address2))
                                 {
-                                    <p class="card-title2 mb-0">@act.Address.City</p>
+                                <p class="card-title2 mb-0">@address.City</p>
                                 }
                                 else{
-                                    <p class="card-title2 mb-0">@act.Location</p>
+                                <p class="card-title2 mb-0">@address.Address1</p>
                                 }
                             }
                             else{
-                                 <p class="card-title2 mb-0">@act.ExperienceType.Name</p>
+                            <p class="card-title2 mb-0">@experienceType.Name</p>
                             }
                             <p class="card-title3">@act.Price</p>
                         </div>
@@ -396,48 +403,135 @@
             </div>
         </div> 
     </div>
+}
 </body>
-<ModalLogin TypeValue="@UserType.Customer"></ModalLogin>
+<ModalLogin />
 <!--Filter-->
-<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>
+@*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 </html>
 @code {
-    public List<ActivityModel>           activity           = new List<ActivityModel>();
-    public List<ActivityTypeModel>       activityTypes      = new List<ActivityTypeModel>();
-    public List<ActivityImagesModels>    activityImages     = new List<ActivityImagesModels>();
-    public List<ActivityImagesModels>    images             = new List<ActivityImagesModels>();
-    public List<AddressModel>            Address            = new List<AddressModel>();
-    public List<CustomerModel>           UserList           = new List<CustomerModel>();
-    public List<ExperienceCategoryModel> experienceCategory = new List<ExperienceCategoryModel>();
-    public CustomerModel                 UserModel          = new CustomerModel();
+    public ExploreModel Model= new ExploreModel();
+    public Profile CustomerModel= new Profile();
+    public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
+    public List<ExperienceType>          experienceTypes    = new List<ExperienceType>();
+    public ExperienceType                experienceType     = new ExperienceType();
+    public List<ActivityAddress>         addresses          = new List<ActivityAddress>();
+    public ActivityAddress               address            = new ActivityAddress();
+    public List<ActivityImage>           activityImages     = new List<ActivityImage>();
+    public List<ActivityImage>           images             = new List<ActivityImage>();
+    public CustomerProfile               customers          = new CustomerProfile();
+    public List<Activity>                activities         = new List<Activity>();
     public string                        searchValue        = string.Empty;
     public string                        filterId           = string.Empty;
     public int                           cnt                = 0;
-    private string value { get; set; }
-    public bool clickButton { get; set; }
-    public AuthenticationState AuthState { get; set; }
-    private ModalFinishSignUp modalFinishSignUp {get; set;}
-    private ModalPassword modalPassword {get; set;}
+    private string                       value              { get; set; }
+    public bool                          clickButton        { get; set; }
+    public ClaimsPrincipal               AuthState          { get; set; }
+    private ModalFinishSignUp            modalFinishSignUp  { get; set; }
+    private ModalPassword                modalPassword      { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await FetchActivities();
-        Address             = await CoreDI.DataStore.Addresses.GetAllAsync();
-        activityImages      = await CoreDI.DataStore.ActivityImages.GetAllAsync();
-        activityTypes       = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
-        experienceCategory  = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
-
-        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-
-        if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
+        // get experience categories
+        var experienceCategory = await activityApiHandler.GetExperienceCategories();
+        if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
         {
-            var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
-            UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
+            categories = experienceCategory.Result.Result.Select(i =>
+            {
+                return new ExperienceCategory
+                    {
+                        Id = i.Id,
+                        Category = i.Name,
+                        IconPath = i.IconPath
+                    };
+            }).ToList();
+        }
+
+        //get experience type
+        var experiencetype = await activityApiHandler.GetExperienceTypes();
+        if (experiencetype.Succeeded && experiencetype.Result != null && experiencetype.Result.IsSuccess)
+        {
+            experienceTypes = experiencetype.Result.Result.Select(i =>
+            {
+                return new ExperienceType
+                    {
+                        Id = i.Id,
+                        Name = i.Name
+                    };
+            }).ToList();
+        }
+        
+        // get experience addresses
+        var address = await activityApiHandler.GetAddress();
+         if (address.Succeeded && address.Result != null && address.Result.IsSuccess)
+        {
+            addresses = address.Result.Result.Select(a =>
+            {
+                return new ActivityAddress
+                    {
+                       ActivityId=a.ActivityId,
+                       Address1 = a.Address1,
+                       Address2 = a.Address2,
+                       City = a.City,
+                       District = a.District,
+                       Id = a.Id
+                    };
+            }).ToList();
+        }
+        //get activity images
+        var activityImage = await activityApiHandler.GetActivityImages();
+        if (activityImage.Succeeded && activityImage.Result != null && activityImage.Result.IsSuccess)
+        {
+            activityImages = activityImage.Result.Result.Select(i =>
+            {
+                return new ActivityImage
+                {
+                    Id= i.Id,
+                    ActivityId = i.ActivityId,
+                    ImageSrc = i.ImageLocation,
+                    Name   = i.ImageName
+                };
+            }).ToList();
+        }
+        Model = new ExploreModel
+            {
+                ExperienceCategories = categories,
+                Address = addresses,
+                ActivityImages = activityImages,
+                ExperienceTypes = experienceTypes
+
+            };
+
+        AuthState = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = AuthState.FindFirstValue("Token");
+
+        if (AuthState != null && AuthState.Identity.IsAuthenticated)
+        {
+            var email = AuthState.FindFirstValue(ClaimTypes.Email);
+            //Get Customer by Email
+            var customer = await accountApiHandler.GetCustomerByEmail(token, email);
+            CustomerModel = new();
+            if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+            {
+                var args = customer.Result.Result;
+                CustomerModel.Token = token;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
+            }
         }
     }
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -453,43 +547,36 @@
         {
             if (userSuccess && tokenSuccess)
             {
-                // get waiting list if email already verified
-                var waitingRes = await CoreDI.DataStore.WaitList.GetWaitListByGuid(userId);
-                if(waitingRes == null)
+                var verifyRes = await accountApiHandler.VerifyRegisteredEmail(new Framework.ApiCommand.ApiCore.Account.Request.VerifyRegisteredEmailArgs {
+                    Token = token,
+                    UserId = userId
+                });
+                if((!verifyRes.Succeeded || verifyRes.Result == null) || (verifyRes.Succeeded && !verifyRes.Result.IsSuccess))
                 {
                     // invalid guid
-                    NavigationManager.NavigateTo("/onboarding", forceLoad: true);
                     return;
                 }
 
-                // check if email already verified so that will not call verify email every request
-                if(!waitingRes.IsVerified)
+                // try to register again to check if already have account details
+                var checkRegistered = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs {
+                    Email = verifyRes.Result.Result.Email,
+                    ValidationRoute = AppConfig.BaseUrl + "/explore"
+                });
+                if(!checkRegistered.Succeeded || checkRegistered.Result == null)
                 {
-                    // need to verified
-                    var verifyRes = await verifyEmailHandler.ExecuteAsync(
-                            new Core.Module.CinnamonMakerService.Interactors.VerifyEmail { Token = token, UserId = userId });
-                    if(!verifyRes.Succeeded)
-                    {
-                        // invalid userid and token redirect to onboargin page
-                        NavigationManager.NavigateTo("/onboarding");
-                        return;
-                    }
-
-                    // proceed to populate customer information
-                    await modalFinishSignUp.OpenModal(waitingRes.Email);
+                    // error
+                    return;
                 }
-                else 
+
+                if(checkRegistered.Succeeded && !checkRegistered.Result.IsSuccess)
                 {
-                    // email already verified. Need to check if customer info already populated. 
-                    // if not open modal information
-                    var customerRes = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(waitingRes.Email);
-                    if(customerRes == null)
+                    if(checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED-VERIFIED")
                     {
-                        await modalFinishSignUp.OpenModal(waitingRes.Email);
+                        modalFinishSignUp.OpenModal(verifyRes.Result.Result.Email);
                     }
-                    else 
+                    if(checkRegistered.Result.ErrorInfo?.Code == "EMAIL-ALREADY-REGISTERED")
                     {
-                        await modalPassword.OpenModal(waitingRes.Email);
+                        await modalPassword.OpenModal(verifyRes.Result.Result.Email);
                     }
                 }
             }
@@ -502,11 +589,47 @@
 
     private async Task FetchActivities()
     {
-        var ActivityListData = await CoreDI.DataStore.Activities.GetAllAsync();
-        var fetchActivities = ActivityListData.Where(i => i.IsPublished).OrderBy(a => a.Id).Skip(activity.Count).Take(ActivityListData.Count < 10 ? ActivityListData.Count : 10);
-        activity.AddRange(fetchActivities);
+        var ActivityListData = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true
+            });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        {
+            activities = ActivityListData.Result.Result.Select(r =>
+            {
+                return new Activity
+                    {
+                        ActivityId = r.ActivityId,
+                        ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceCategoryId = r.ExperienceCategoryId,
+                        SubCategoryId = r.SubCategoryId,
+                        Title = r.Title,
+                        Description = r.Description,
+                        Price = r.Price,
+                        ScheduleIndicator = r.ScheduleIndicator,
+                        Remarks = r.Remarks,
+                        IsPublished = r.IsPublished,
+                        Address1 = r.Address1,
+                        Address2 = r.Address2,
+                        District = r.District,
+                        City = r.City,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem = r.CustomerBringWithThem,
+                        AdditionalRequirements = r.AdditionalRequirements,
+                        ActivityLevel = r.ActivityLevel,
+                        SkillLevel = r.SkillLevel,
+                        MinimumAge = r.MinimumAge,
+                        CanAdultsJoin = r.CanAdultsJoin
+                    };
+            }).ToList();
+            Model = new ExploreModel
+            {
+                Activities = activities
+            };
+        }
     }
-
     private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");
@@ -536,34 +659,143 @@
 
     public async Task Search()
     {
-        activity       = await CoreDI.DataStore.Activities.GetAllAsync();
+        var activityList = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true
+            });
+        if (activityList.Succeeded && activityList.Result != null && activityList.Result.IsSuccess)
+        {
+            activities = activityList.Result.Result.Select(r =>
+            {
+                return new Activity
+                    {
+                        ActivityId = r.ActivityId,
+                        ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceCategoryId = r.ExperienceCategoryId,
+                        SubCategoryId = r.SubCategoryId,
+                        Title = r.Title,
+                        Description = r.Description,
+                        Price = r.Price,
+                        ScheduleIndicator = r.ScheduleIndicator,
+                        Remarks = r.Remarks,
+                        IsPublished = r.IsPublished,
+                        Address1 = r.Address1,
+                        Address2 = r.Address2,
+                        District = r.District,
+                        City = r.City,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem = r.CustomerBringWithThem,
+                        AdditionalRequirements = r.AdditionalRequirements,
+                        ActivityLevel = r.ActivityLevel,
+                        SkillLevel = r.SkillLevel,
+                        MinimumAge = r.MinimumAge,
+                        CanAdultsJoin = r.CanAdultsJoin
+                    };
+            }).ToList();
+            Model = new ExploreModel
+                {
+                    Activities = activities
+                };
+        }
         if(searchValue!= string.Empty)
         {
-            activity   = activity.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Location,
+            activities = activities.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1,
             searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
+            searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2,
             searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
         }
         else
         {
-            activity = activity.Where(i => i.IsPublished).ToList();
+            activities = activities.Where(i => i.IsPublished).ToList();
         }
     }
 
     public async Task Filter(int id, string type)
     {
         searchValue = type;
-        activity    = (await CoreDI.DataStore.Activities.GetActivitiesByCategoriesAsync(id)).ToList();
-        //activity    = activity.Where(p=> p.Id == id && p.IsPublished).ToList();
+        var activitiesRes = await activityApiHandler.GetActivitiesByCategories(id ,new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+        {
+            IncludeActivityAddress = true,
+            IncludeActivityDescription = true,
+            IncludeActivityImages = true
+        });
+        if (activitiesRes.Succeeded && activitiesRes.Result != null && activitiesRes.Result.IsSuccess)
+        {
+            activities = activitiesRes.Result.Result.Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                    {
+                        ActivityId = a.ActivityId,
+                        District = a.District,
+                        City = a.City,
+                        Address1 = a.Address1,
+                        Address2 = a.Address2,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        Description = a.Description,
+                        IsPublished = a.IsPublished,
+                        Price = a.Price,
+                        Title = a.Title
+                    };
+            }).ToList();
+        }
+        activities = activities.Where(p => p.ActivityId == id && p.IsPublished).ToList();
     }
-
     public async Task Clear()
     {
         searchValue = string.Empty;
-        activity    = await CoreDI.DataStore.Activities.GetAllAsync();
-        activity = activity.Where(p => p.IsPublished).ToList();
+        var activityList = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs {
+            IncludeActivityAddress = true,
+            IncludeActivityDescription = true,
+            IncludeActivityImages = true
+        });
+        if (activityList.Succeeded && activityList.Result != null && activityList.Result.IsSuccess)
+        {
+            activities = activityList.Result.Result.Select(r =>
+            {
+                return new Activity
+                    {
+                        ActivityId = r.ActivityId,
+                        ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceCategoryId = r.ExperienceCategoryId,
+                        SubCategoryId = r.SubCategoryId,
+                        Title = r.Title,
+                        Description = r.Description,
+                        Price = r.Price,
+                        ScheduleIndicator = r.ScheduleIndicator,
+                        Remarks = r.Remarks,
+                        IsPublished = r.IsPublished,
+                        Address1 = r.Address1,
+                        Address2 = r.Address2,
+                        District = r.District,
+                        City = r.City,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem = r.CustomerBringWithThem,
+                        AdditionalRequirements = r.AdditionalRequirements,
+                        ActivityLevel = r.ActivityLevel,
+                        SkillLevel = r.SkillLevel,
+                        MinimumAge = r.MinimumAge,
+                        CanAdultsJoin = r.CanAdultsJoin,
+                        Images = r.Images.Select(i => {
+                        return new ActivityImage {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList()
+                };
+            }).ToList();
+            Model = new ExploreModel
+                {
+                    Activities = activities
+                };
+        }
+        activities = activities.Where(p => p.IsPublished).ToList();
     }
     private async Task OnFilterSelectedChanged(int[] ids)
     {
-        activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
+        //activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
     }
 }

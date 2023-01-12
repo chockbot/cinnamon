@@ -1,5 +1,4 @@
 @page
-@using Cinnamon.Core.Enums
 @using Cinnamon.Web.Areas.Identity.Pages.Account
 @model Onboarding
 
@@ -262,7 +261,6 @@
                                 method="post">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="provider" value="Google">
-                                <input type="hidden" name="userType"  value="@UserType.Maker">
                                 <input type="hidden" name="returnUrl" value="/Creation">
                                 <button class="btn btn-md btn-google" type="submit"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail</button>
                             </form>

@@ -1,14 +1,21 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core
+@inject IJSRuntime JsRuntime
 
 <div class="image-container">
-    <img class="experience-image @RequiredCheck()" src="@image.imageSource()" />
-    <div class="image-delete-icon" @onclick="@InvokeDelete" hidden="@ShowDelete()">
+    <div class="image-delete-icon" @onclick="@DeleteImage" hidden="@ShowDelete()">
         <i class="fa fa-trash" id="delete-icon"></i>
     </div>
-    <div class="error-message" hidden="@IsError()">
-        @ErrorMessage()
-    </div>
+    <label for="@InputId" style="cursor: pointer;">
+        @if(isBlank)
+        {
+            <img id=@ImageId class="experience-image @RequiredCheck()" src="@blankImageSrc" />
+        }
+        else 
+        {
+            <img id=@ImageId class="experience-image @RequiredCheck()"/>
+        }
+        <InputFile @ref="inputFile" id="@InputId" accept=".png,.jpg,.jpeg" name="@InputId" style="display: none;" OnChange="@LoadFile" />
+    </label>
 </div>
 
 <style>
@@ -57,16 +64,20 @@
 
 @code {
     [Parameter]
-    public ImageCacheModel image { get; set; }
+    public string InputId {get; set;}
+
     [Parameter]
-    public Action<ImageCacheModel> DeleteAction { get; set; }
+    public string ImageId {get; set;}
 
-    private void InvokeDelete() {
-        DeleteAction?.Invoke(image);
-    }
+    private string blankImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
 
-    private bool ShowDelete() {
-        if (image.IsBlank()) {
+    private bool isBlank = true;
+
+    private InputFile? inputFile;
+
+    private bool ShowDelete() 
+    {
+        if (isBlank) {
             return true; 
         }
         return false; 
@@ -74,7 +85,7 @@
 
     private string RequiredCheck()
     {
-        if (image.IsBlank())
+        if (isBlank)
         {
             return "invalid";
         }
@@ -82,18 +93,21 @@
         return "";
     }
 
-    private bool IsError() {
-        if (image.Status != null && image.Status.Type == Core.MessageType.Error) {
-            return false; 
-        }
-        return false;
+    public async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        isBlank = false;
+        StateHasChanged();
+        await ShowPreview();
     }
 
-    private string ErrorMessage() {
-        var errorMessage = "";
-        if (!IsError() && image.Status != null) {
-            errorMessage = image.Status.Message; 
-        }
-        return errorMessage ?? "";
+    private void DeleteImage()
+    {
+        isBlank = true;
+        StateHasChanged();
     }
+
+    private async Task ShowPreview()
+        => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, ImageId);
+    
+    public bool HaveEmptyImage() => isBlank;
 }

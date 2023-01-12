@@ -1,16 +1,20 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.Identity;
+using Cinnamon.Web.Modules.ApiAccess.Handlers;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+
 namespace Cinnamon.Web.Areas.Identity.Pages.Account;
 
 public class Onboarding : PageModel
 {
-    private readonly SignInManager<IdentityUser> signInManager;
+    private readonly IAccountApiHandler accountApiHandler;
 
-    public Onboarding(SignInManager<IdentityUser> signInManager)
+    public Onboarding(IAccountApiHandler accountApiHandler)
     {
-        this.signInManager = signInManager;
+        this.accountApiHandler = accountApiHandler;
     }
 
     [BindProperty]
@@ -25,15 +29,37 @@ public class Onboarding : PageModel
     {
         if(ModelState.IsValid)
         {
-            var login = await signInManager.PasswordSignInAsync(Input.Email,Input.Password, true, false);
-            if(login.Succeeded)
+            // login to api
+            var loginResult = await accountApiHandler.Login(new Framework.ApiCommand.ApiCore.Account.Request.VerifiedLoginArgs {
+                Email = Input.Email,
+                Password = Input.Password
+            });
+
+            if(!loginResult.Succeeded || loginResult.Result == null)
             {
-                return Redirect("/Creation");
-                
-                
-            } else {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                ModelState.AddModelError(string.Empty, "An error occured please try again later");
+                return Page();
             }
+
+            if(loginResult.Succeeded && !loginResult.Result.IsSuccess)
+            {
+                ModelState.AddModelError(string.Empty, loginResult.Result.ErrorInfo?.Message);
+                return Page();
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim("Email", loginResult.Result.Result.Email),
+                new Claim("Token", loginResult.Result.Result.GeneratedToken),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties {IsPersistent = true};
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+            return Redirect("/Creation");
         }
         return Page();
     }

@@ -1,0 +1,62 @@
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Cinnamon.Web.Models.Forms;
+using Microsoft.AspNetCore.Authorization;
+using Cinnamon.Web.Modules.ApiAccess.Handlers;
+
+namespace Cinnamon.Web.Controllers;
+
+[ApiController]
+[Route("/api/[controller]")]
+public class ActivityController : Controller 
+{
+    private readonly IActivityApiHandler activityApiHandler;
+
+    public ActivityController(IActivityApiHandler activityApiHandler)
+    {
+        this.activityApiHandler = activityApiHandler;
+    }
+
+    [Route("UploadActivityImage")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> UploadActivityImage([FromForm] UploadActivityImages args)
+    {
+        try
+        {
+            if(!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Please provide required fields" });
+            }
+
+            var token = User.FindFirstValue("Token");
+            if(token == null)
+            {
+                return Json(new { success = false, message = "Unable to identify current user" });
+            }
+
+            var result = await activityApiHandler.UploadActivityImages(new Framework.ApiCommand.ApiCore.Activity.Request.UploadActivityImageArgs {
+                ActivityId = args.ActivityId,
+                Image1 = args.Image1,
+                Image2 = args.Image2,
+                Image3 = args.Image3
+            }, token);
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+
+            if(result.Succeeded && !result.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = result.Result.ErrorInfo?.Message });
+            }
+
+            return Json(new { success = true, message = "Successfully uploaded" });
+        }
+        catch
+        {
+            return Json(new { success = false, message = "An error occured please try again later" });
+        }
+    }
+}

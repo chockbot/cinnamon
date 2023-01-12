@@ -1,4 +1,4 @@
-@using Cinnamon.Core
+@using Cinnamon.Web.Models.Entities;
 @inject NavigationManager NavigationManager
 
 <div class="mt-4 experience-list">
@@ -20,7 +20,7 @@
             {
                 foreach (var item in Activities)
                 {
-                    <ExperienceItem Activity="item" OnPublishChanged="PublishChanged" />
+                    <ExperienceItem Activity="item" Token="@Token" OnPublishChanged="PublishChanged" />
                 }
             }
         </TableBody>
@@ -30,10 +30,13 @@
 @code 
 {
     [Parameter]
-    public IList<ActivityModel> Activities {get; set;}
+    public IEnumerable<Activity> Activities {get; set;}
 
     [Parameter]
     public EventCallback<int> OnPublishChanged {get; set;}
+
+    [Parameter]
+    public string Token {get; set;}
 
     private void PublishChanged(int count)
     {

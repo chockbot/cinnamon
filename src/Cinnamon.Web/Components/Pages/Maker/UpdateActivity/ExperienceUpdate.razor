@@ -1,5 +1,4 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
-@using Cinnamon.Core
 @using Cinnamon.Web.Models;
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
@@ -64,7 +63,7 @@
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if(Model.Activity.ExperienceType?.Name.ToLower() == "online")
+            @if(Model.Activity.ExperienceTypeId == 2)
             {
                 <input class="form-control" placeholder="Address 1" disabled/>
                 <input class="form-control my-3" placeholder="Address 2" disabled />
@@ -72,14 +71,14 @@
                 <input class="form-control my-3" placeholder="City" disabled />
             }
             else{
-                <input class="form-control @RequiredCheck(Model.Activity.Address?.Address1)" placeholder="Address 1" 
-                    required @bind="Model.Activity.Address.Address1"/>
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Address?.Address2)" placeholder="Address 2" 
-                    required @bind="Model.Activity.Address.Address2"/>
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Address?.District)" placeholder="District" 
-                    required @bind="Model.Activity.Address.District"/>
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Address?.City)" placeholder="City" 
-                    required @bind="Model.Activity.Address.City"/>
+                <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Address 1" 
+                    required @bind="Model.Activity.Address1"/>
+                <input class="form-control my-3 @RequiredCheck(Model.Activity.Address2)" placeholder="Address 2" 
+                    required @bind="Model.Activity.Address2"/>
+                <input class="form-control my-3 @RequiredCheck(Model.Activity.District)" placeholder="District" 
+                    required @bind="Model.Activity.District"/>
+                <input class="form-control my-3 @RequiredCheck(Model.Activity.City)" placeholder="City" 
+                    required @bind="Model.Activity.City"/>
             }
         </div>
     </div>
@@ -106,19 +105,19 @@
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if (Model.Activity.ExperienceCategoryId != null)
+            @if (Model.Activity.ExperienceCategoryId != 0)
             {
-                <select @bind="Model.Activity.ExperienceSubCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceSubCategoryId)">
+                <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
                     <option disabled selected>Select Subcategory</option>
-                    @foreach (var cat in Model.ExperienceCategories.Where(x => x.Id == Model.Activity.ExperienceCategoryId).FirstOrDefault().SubCategory)
+                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId))
                     {
-                        <option value="@cat.Id">@cat.SubCatergory</option>
+                        <option value="@cat.Id">@cat.Name</option>
                     }
                 </select>
             }
             else
             {
-                <select class="form-control @RequiredCheck(Model.Activity.ExperienceSubCategoryId)" disabled>
+                <select class="form-control @RequiredCheck(Model.Activity.SubCategoryId)" disabled>
                     <option disabled selected>Select Sub-category</option>
                 </select>
             }
@@ -131,12 +130,12 @@
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            <div class="bootstrap-tagsinput @RequiredCheck(Model.SearchTags) d-flex flex-row flex-wrap ">
-                @foreach (var tag in Model.SearchTags)
+            <div class="bootstrap-tagsinput @RequiredCheck(Model.Activity.SearchTags) d-flex flex-row flex-wrap ">
+                @foreach (var tag in Model.Activity.SearchTags)
                 {
                     <span class="tag label label-info m-1">
-                        @tag.Value
-                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag.Key))">
+                        @tag
+                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag))">
                         </span>
                     </span>
                 }
@@ -158,31 +157,29 @@
     private void CheckboxChanged(int val)
     {
         Model.Activity.ExperienceTypeId = val;
-        Model.Activity.ExperienceType = Model.ExperienceTypes.FirstOrDefault(i => i.Id == val);
     }
 
     public void Enter(KeyboardEventArgs e)
     {
         if (e.Code == "Enter" || e.Code == "NumpadEnter")
         {
-            if (Model.SearchTags.Count < 5 && (Model.SearchTags.Where(x=> x.Value == searchTag).FirstOrDefault()) == null)
+            if (Model.Activity.SearchTags.Count < 5 && (Model.Activity.SearchTags.Where(x=> x == searchTag).FirstOrDefault()) == null)
             {
-                Model.SearchTags.Add(new ExperienceUpdateModel.SearchTag { Key = Model.SearchTags.Count + 1, Value = searchTag });
+                Model.Activity.SearchTags.Add(searchTag);
             }
             searchTag = string.Empty;
         }
     }
 
-    private string RequiredCheck(IList<ExperienceUpdateModel.SearchTag> searchTags)
+    private string RequiredCheck(IList<string> searchTags)
     {
         if (searchTags.Count <= 0) return "invalid";
         return "";
     }
 
-    private void RemoveSearchTag(int id)
+    private void RemoveSearchTag(string tag)
     {
-        var tag = Model.SearchTags.FirstOrDefault(s => s.Key == id);
-        Model.SearchTags.Remove(tag);
+        Model.Activity.SearchTags.Remove(tag);
     }
 
     private string RequiredCheck(string? value) {
@@ -197,10 +194,10 @@
     }
 
     private string ShowErrorMessage() {
-        return Model.HasError ? "block" : "none";
+        return Model.ExperienceHasError ? "block" : "none";
     }
 
-    private ExperienceTypeModel? GetExperience(string name)
+    private Models.Entities.ExperienceType? GetExperience(string name)
         => Model.ExperienceTypes.FirstOrDefault(i => i.Name.ToLower() == name);
     
     private bool SelectedExperience(int id)
@@ -209,15 +206,15 @@
     public bool IsAllFieldsValidated()
     {
         if(string.IsNullOrEmpty(Model.Activity.Title.Trim())) return false;
-        if(Model.Activity.ExperienceType.Name.ToLower() == "in-person")
+        if(Model.Activity.ExperienceTypeId == 1)
         {
-            if(string.IsNullOrEmpty(Model.Activity.Address.Address1) ||
-                string.IsNullOrEmpty(Model.Activity.Address.Address2) ||
-                string.IsNullOrEmpty(Model.Activity.Address.District) ||
-                string.IsNullOrEmpty(Model.Activity.Address.City)) return false;
+            if(string.IsNullOrEmpty(Model.Activity.Address1.Trim()) ||
+                string.IsNullOrEmpty(Model.Activity.Address2.Trim()) ||
+                string.IsNullOrEmpty(Model.Activity.District.Trim()) ||
+                string.IsNullOrEmpty(Model.Activity.City.Trim())) return false;
         }
         if(Model.Activity.ExperienceCategoryId <= 0) return false;
-        if(Model.SearchTags.Count == 0) return false;
+        if(Model.Activity.SearchTags.Count == 0) return false;
 
         return true;
     }
