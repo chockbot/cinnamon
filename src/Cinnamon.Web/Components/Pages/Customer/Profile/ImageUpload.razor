@@ -1,18 +1,16 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Models.Customer;
+@inject IJSRuntime JsRuntime
 
 <Div class="image-wrapper">
     <label for="@Model.ImageName" class="upload-image">
         <Figure Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0">
-            <FigureImage Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0" Source="@GetFrontImageSrc()" />
+            <FigureImage id="@Model.ImageId" Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0" Source="@GetFrontImageSrc()" />
         </Figure>
     </label>
-    <InputFile style="display: none;" id="@Model.ImageName" name="@Model.ImageName" accept=".png,.jpg,.jpeg" OnChange="LoadImage" />
+    <InputFile @ref="inputFile" style="display: none;" id="@Model.ImageName" name="@Model.ImageName" accept=".png,.jpg,.jpeg" OnChange="ShowPreview" />
     <p class="m-0">@Model.Label</p>
-    @if(!string.IsNullOrEmpty(errorMessage))
-    {
-        <p class="mt-2 mb-0">@errorMessage</p>
-    }
+    <p class="m-0 error-message" id="@Model.ErrorId" style="font-size: 12px; color: red; display: none;">Please provide image</p>
 </Div>
 
 @code 
@@ -20,63 +18,15 @@
     [Parameter]
     public UploadGovernmenId Model {get; set;}
 
-    [Parameter]
-    public EventCallback<UploadGovernmenId> ModelChanged {get; set;}
-
-    private bool isImageLoading = false;
-
-    private string errorMessage = "";
-
-    private const int maxFileSize = 10000000;
+    private InputFile? inputFile;
 
     private string GetFrontImageSrc()
     {
-        if(isImageLoading) return "/images/loading_indicator.gif";
-        
-        if(Model.ImageData != null)
-        {
-            var imageSrc = Convert.ToBase64String(Model.ImageData);
-            return string.Format("data:image/jpeg;base64,{0}", imageSrc);
-        }
-
         if(!string.IsNullOrEmpty(Model.ImageFileName)) return Model.ImageFileName;
 
         return "/images/Profile/blank.png";
     }
 
-    private async Task LoadImage(InputFileChangeEventArgs e)
-    {
-        var file = e.File;
-        errorMessage = string.Empty;
-
-        if(!file.ContentType.Contains("image"))
-        {
-            errorMessage = "Please provide valid image file";
-            return;
-        }
-
-        try
-        {
-            isImageLoading = true;
-            using(var ms = new MemoryStream())
-            {
-                await file.OpenReadStream(maxFileSize).CopyToAsync(ms);
-                Model.ImageData = ms.ToArray();
-
-                var guid = Guid.NewGuid().ToString();
-                var extension = file.ContentType.Split("/")[1];
-                Model.ImageFileName = $"{guid}.{extension}";
-
-                await ModelChanged.InvokeAsync(Model);
-            }
-        }
-        catch 
-        {
-            errorMessage = "An error occured. Please try again later";
-        }
-        finally 
-        {
-            isImageLoading = false;
-        }
-    }
+    private async Task ShowPreview()
+        => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, Model.ImageId);
 }

@@ -68,12 +68,14 @@ onboarding._initFormRegister = () => {
     if (!email) errors.push("Please provide your email address");
     if (!password) errors.push("Please provide your password");
 
-      //Validate Birtday
-      var today = new Date(); var birthDate = new Date(birthdate); var age = today.getFullYear() - birthDate.getFullYear(); if (age < 18) errors.push("Invalid Birthday");
+    //Validate Birtday
+    var today = new Date();
+    var birthDate = new Date(birthdate);
+    var age = today.getFullYear() - birthDate.getFullYear();
+    if (age < 18) errors.push("Invalid Birthday");
 
     // prettier-ignore
     if(confirmPassword !== password) errors.push("Password mismatch");
-    
 
     let errorHTML = "";
     errors.forEach((item) => {
@@ -108,32 +110,31 @@ onboarding._initFormRegister = () => {
 };
 
 onboarding._initTouchSwipe = () => {
-    $(document).ready(function () {
-        $(".carousel").carousel({
-            interval: false,
-            pause: true
-        });
-
-        $(".carousel .carousel-inner").swipe({
-            swipeLeft: function (event, direction, distance, duration, fingerCount) {
-                this.parent().carousel('next');
-            },
-            swipeRight: function () {
-                this.parent().carousel('prev');
-            },
-            threshold: 0,
-            tap: function (event, target) {
-                window.location = $(this).find('.carousel-item.active a').attr('href');
-            },
-            excludedElements: "label, button, input, select, textarea, .noSwipe"
-        });
-
-        $('.carousel .carousel-inner').on('dragstart', 'a', function () {
-            return false;
-        });
-
+  $(document).ready(function () {
+    $(".carousel").carousel({
+      interval: false,
+      pause: true,
     });
-}
+
+    $(".carousel .carousel-inner").swipe({
+      swipeLeft: function (event, direction, distance, duration, fingerCount) {
+        this.parent().carousel("next");
+      },
+      swipeRight: function () {
+        this.parent().carousel("prev");
+      },
+      threshold: 0,
+      tap: function (event, target) {
+        window.location = $(this).find(".carousel-item.active a").attr("href");
+      },
+      excludedElements: "label, button, input, select, textarea, .noSwipe",
+    });
+
+    $(".carousel .carousel-inner").on("dragstart", "a", function () {
+      return false;
+    });
+  });
+};
 
 onboarding.init = () => {
   console.log("onboarding page initiated");

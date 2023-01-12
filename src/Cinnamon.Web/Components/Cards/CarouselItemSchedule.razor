@@ -1,6 +1,6 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core
-@using Cinnamon.Core.Enums
+@using Cinnamon.Web.Enums;
+@using Models.Entities
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
@@ -37,19 +37,23 @@
 
 @if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
 {
-    <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@($"/Payment/{ScheduleModel.Id}")"></ModalLogin>
+    <ModalLogin ReturnUrl="@($"/Payment/{ScheduleModel.Id}")"></ModalLogin>
 }
 @code {
     [Parameter]
-    public ScheduleModel ScheduleModel { get; set; }
+    public ActivitySchedule ScheduleModel { get; set; }
+
     [Parameter]
     public ScheduleButtonType ButtonType { get; set; } = ScheduleButtonType.Choose;
+
     [Parameter]
     public EventCallback<MouseEventArgs> OnClickChange { get; set; } = new EventCallback<MouseEventArgs>();
+
     [Parameter]
     public EventCallback<MouseEventArgs> OnClickLogin { get; set; } = new EventCallback<MouseEventArgs>();
 
     public AuthenticationState AuthState { get; set; }
+
     private bool mouseEnter { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -57,11 +61,13 @@
         AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
     }
 
-    private void OnClickChoose(){
+    private void OnClickChoose()
+    {
         NavigationManager.NavigateTo($"/Payment/{ScheduleModel.Id}", true);
     }
 
-    private void OnMouseEnter(){
+    private void OnMouseEnter()
+    {
         mouseEnter = !mouseEnter;
     }
 }

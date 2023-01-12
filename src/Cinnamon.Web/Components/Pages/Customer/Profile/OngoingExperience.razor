@@ -1,4 +1,4 @@
-@using Cinnamon.Core
+@using Cinnamon.Web.Models.Entities;
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <article class="ongoing-experience-wrapper py-3">
@@ -9,7 +9,7 @@
             {
                 foreach (var item in Activities)
                 {
-                    <OngoingExperienceItem Activity="item" @ref="ongoingExperienceItem" />
+                    <OngoingExperienceItem Activity="item" />
                 }
             }
         </div>
@@ -58,8 +58,9 @@
     border-radius: 14px;
 }
 </style>
-@code {
+
+@code 
+{
     [Parameter]
-    public IList<ActivityModel> Activities { get; set; }
-    private OngoingExperienceItem ongoingExperienceItem;
+    public IList<Activity> Activities { get; set; }
 }

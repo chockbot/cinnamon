@@ -17,26 +17,21 @@
   <ItemGroup>
     <PackageReference Include="Blazorise.Bootstrap" Version="1.1.3.1" />
     <PackageReference Include="Blazorise.Icons.FontAwesome" Version="1.1.3.1" />
-    <PackageReference Include="Dna.Framework" Version="1.0.7.19" />
+    <PackageReference Include="Flurl.Http" Version="3.2.0" />
     <PackageReference Include="jQuery" Version="3.6.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="6.0.11" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.7" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.10">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.10" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Remove="Components\Modal\LoginModal.razor" />
     <Content Remove="wwwroot\images\" />
+    <Content Remove="wwwroot\js\login.js" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Components\Inputs\" />
@@ -50,12 +45,7 @@
     <None Include="wwwroot\js\editprofileModal.js" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cinnamon.Core\Cinnamon.Core.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
-    <ProjectReference Include="..\Cinnamon.Data\Cinnamon.Data.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
+    <ProjectReference Include="..\Cinnamon.Framework\Cinnamon.Framework.csproj" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Update="Resources\App.resx">

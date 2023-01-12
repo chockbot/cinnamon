@@ -1,0 +1,47 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
+
+public class UpdateActivityArgs 
+{
+    [Required]
+    public int ActivityId {get; set;}
+    public int? ExperienceTypeId {get; set;}
+    public int? ExperienceCategoryId {get; set;}
+    public int? SubCategoryId {get; set;}
+    public string? Title {get; set;}
+    public string? Description {get; set;}
+    public string? Price {get; set;}
+    public string? ScheduleIndicator {get; set;}
+    public string? Remarks {get; set;}
+    public bool? IsPublished {get; set;}
+    public string? Address1 {get; set;}
+    public string? Address2 {get; set;}
+    public string? District {get; set;}
+    public string? City {get; set;}
+    public string? SpecificsYouWillProvide {get; set;}
+    public string? CustomerBringWithThem {get; set;}
+    public string? AdditionalRequirements {get; set;}
+    public string? ActivityLevel {get; set;}
+    public string? SkillLevel {get; set;}
+    public int? MinimumAge {get; set;}
+    public bool? CanAdultsJoin {get; set;}
+    public IEnumerable<string>? SearchTags {get; set;}
+    public IEnumerable<UpdatedSchedule>? ActivitySchedules {get; set;}
+    public IEnumerable<int>? DeletedScheduleIds {get; set;}
+    
+
+    public class UpdatedSchedule 
+    {
+        [Required]
+        public int Id {get; set;}
+        public string? Name {get; set;}
+        public string? DateTime {get; set;}
+        public decimal? Price {get; set;}
+        public string? UnitPrice {get; set;}
+        public int? PerUnit1 {get; set;}
+        public string? PriceUnit1 {get; set;}
+        public int? PerUnit2 {get; set;}
+        public string? PriceUnit2 {get; set;}
+    }
+}

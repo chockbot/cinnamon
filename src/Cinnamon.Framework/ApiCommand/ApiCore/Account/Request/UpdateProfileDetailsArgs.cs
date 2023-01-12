@@ -1,0 +1,11 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
+
+public class UpdateProfileDetailsArgs 
+{
+    public string? FirstName {get; set;}
+    public string? LastName {get; set;}
+    public DateTime? Datebirth {get; set;}
+    public string? About {get; set;}
+}

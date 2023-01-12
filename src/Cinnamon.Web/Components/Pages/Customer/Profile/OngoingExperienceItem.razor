@@ -1,13 +1,12 @@
-@using Cinnamon.Core
-@using Cinnamon.Core.Models
+@using Cinnamon.Web.Models.Entities;
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <div class="swiper-slide">
-    <a class="button" href="/explore/@Activity.Id" style="text-decoration:none;">
+    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
     <Card class="card-experience-item" Border="Border.Is0">
         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
             <Figure class="figure-container" Overflow="Overflow.Hidden" Width="Width.Max100" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
-                <FigureImage Margin="Margin.Is0" Source="@_Images.ElementAt(0).ImageLocation" AlternateText="banner" Width="Width.Is100" />
+                <FigureImage Margin="Margin.Is0" Source="@GetImage()" AlternateText="banner" Width="Width.Is100" />
             </Figure>
         </CardHeader>
         <CardBody Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is2.FromTop">
@@ -15,20 +14,13 @@
                 <Row>
                     <Column ColumnSize="ColumnSize.Is8">
                         <p class="name mb-0 text-color-343D">@Activity.Title</p>
-                        @if (activityModel.ExperienceType.Id == 1)
+                        @if (Activity.ExperienceTypeId == 1)
                         {
-                            if (String.IsNullOrEmpty(activityModel.Location))
-                            {
-                                <p class="price mb-0 text-color-343D">@activityModel.Address.District, @activityModel.Address.City</p>
-                            }
-                            else
-                            {
-                                <p class="price mb-0 text-color-343D">@activityModel.Location</p>
-                            }
+                            <p class="price mb-0 text-color-343D">@Activity.District, @Activity.City</p>
                         }
                         else
                         {
-                            <p class="price mb-0 text-color-343D">@activityModel.ExperienceType.Name</p>
+                            <p class="price mb-0 text-color-343D">@(Activity.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
                         }
                         <p class="price mb-0 text-color-343D">@Activity.Price</p>
                     </Column>
@@ -44,18 +36,15 @@
     </Card>
     </a>
 </div>
-@code{
-    [Parameter]
-    public ActivityModel Activity {get; set;}
-    public ActivityModel              activityModel = new ActivityModel();
-    public List<ActivityModel>        ActivityModel = new List<ActivityModel>();
-    public AddressModel               Address       = new AddressModel();
-    public List<ActivityImagesModels> _Images       = new List<ActivityImagesModels>();
 
-    protected override void OnInitialized()   
+@code
+{
+    [Parameter]
+    public Activity Activity {get; set;}
+
+    private string GetImage()
     {
-        ActivityModel = Task.Run(() => CoreDI.DataStore.Activities.GetAllAsync()).Result;
-        _Images       =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Activity.Id).ToList();
-        activityModel = ActivityModel.Where(c => c.Id == Activity.Id).ElementAt(0);
+        if(Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
+        return string.Empty;
     }
 }

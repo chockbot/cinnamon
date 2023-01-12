@@ -1,7 +1,4 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
-@inject IResendEmail resendEmailHandler;
 
 <div class="modal @ModalClass" id="verificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
     <div class="modal-dialog">
@@ -87,6 +84,7 @@
         errorMessage = string.Empty;
         successMessage = string.Empty;
 
+        /*
         var resendRes = await resendEmailHandler.ExecuteAsync(new Core.Module.CinnamonMakerService.Interactors.ResendEmailArgs {Email = Email});
 
         if(!resendRes.Succeeded)
@@ -104,6 +102,8 @@
         {
             successMessage = "Confirmation link successfully resend to your email.";
         }
+        */
+        
         isResendLoading = false;
     }
 }

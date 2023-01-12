@@ -1,14 +1,14 @@
-@using Cinnamon.Core
+@using Cinnamon.Web.Models.Entities;
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <div>
-    <OngoingExperience @ref="ongoingExperience" Activities="Activities" />
+    <OngoingExperience Activities="Activities" />
     <Divider class="my-3" />
     <ExperienceReview />
 </div>
-@code{
-    [Parameter]
-    public IList<ActivityModel> Activities { get; set; }
 
-    private OngoingExperience ongoingExperience;
+@code
+{
+    [Parameter]
+    public IList<Activity> Activities { get; set; }
 }

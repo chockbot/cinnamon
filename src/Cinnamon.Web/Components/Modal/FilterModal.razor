@@ -1,12 +1,5 @@
 ﻿@namespace Cinnamon.Web.Components
 @using System.Linq;
-@using Cinnamon.Core.Enums
-@using Cinnamon.Web.Components
-@using Cinnamon.Data
-@using Cinnamon.Core
-@using Cinnamon.Core.Models;
-@using System.Text
-@using System.Globalization
 
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -22,11 +15,11 @@
                             <h5 class="font-weight-bold align-items-start">Location</h5>
                             <select class="form-control" aria-label="Default select example">
                                 <option selected>All Location</option>
-                                @foreach (var act in address)
+                                @* @foreach (var act in address)
                                 {
                                     cnt++;
                                     <option value=@cnt>@act.District, @act.City</option>
-                                }
+                                } *@
                             </select>
                             <br />
                         </li>
@@ -35,7 +28,7 @@
                             <div class="row">
                                 @foreach(var type in activityTypes)
                                 {
-                                    if(type.SubCategory.Id%2==0)
+                                    @* if(type.SubCategory.Id%2==0)
                                     {
                                         <div class="col-lg-6 col-md-6 col-sm-6">
                                             <div class="form-check">
@@ -56,7 +49,7 @@
                                                 </label>
                                             </div>
                                         </div>
-                                    }
+                                    } *@
                                     cnt++;
                                 }
                             </div>
@@ -73,9 +66,11 @@
 
 @code 
 {
+    /*
     public List<ActivityModel> activity               = new List<ActivityModel>();
     public List<ActivityModel> distinctActivity       = new List<ActivityModel>();
     public List<AddressModel>  address                = new List<AddressModel>();
+    */
     public IList<SelectedSubCategories> activityTypes = new List<SelectedSubCategories>();
     public int cnt                                   = 0;
     private string selectedString { get; set; }
@@ -83,6 +78,7 @@
     public EventCallback<int[]> OnSelectedIdsChanged { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        /**
         activity         = await CoreDI.DataStore.Activities.GetAllAsync();
         address          = await CoreDI.DataStore.Addresses.GetAllAsync();
         activityTypes    = (await CoreDI.DataStore.SubCategory.GetAllAsync())
@@ -93,19 +89,24 @@
                             .ToList();
 
         address = address.GroupBy(p => p.City).Select(grp => grp.First()).ToList();
+        **/
     }
+    
     public class SelectedSubCategories 
     {
         public bool IsSelected {get; set;}
-        public SubCategoryModel SubCategory {get; set;}
+
+        // public SubCategoryModel SubCategory {get; set;}
     }
 
     private async Task OnSelecteCategories()
     {
+        /*
         var selectedIds = activityTypes
             .Where(i => i.IsSelected)
             .Select(i => i.SubCategory.Id)
             .ToArray();
         await OnSelectedIdsChanged.InvokeAsync(selectedIds);
+        */
     }
 }
