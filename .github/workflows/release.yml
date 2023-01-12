@@ -34,7 +34,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14
-        
+
       - name: Build JS Library
         run: |
           cd src/Cinnamon.Web/JsLib
@@ -64,7 +64,7 @@ jobs:
         run: rsync -avz output/publish/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src
 
       - name: Copy Environment File
-        run: rsync -avz .env.prod cinnamon@${{ secrets.SERVER_IP }}:build-prd/.env.prod
+        run: rsync -avz .env.prod cinnamon@${{ secrets.SERVER_IP }}:build-prd/.env
 
       - name: Copy docker-compose
         run: rsync -avz output/docker-compose.prod.yml cinnamon@${{ secrets.SERVER_IP }}:build-prd/docker-compose.yml
@@ -73,4 +73,4 @@ jobs:
         run: rsync -avz output/Dockerfile cinnamon@${{ secrets.SERVER_IP }}:build-prd/Dockerfile
 
       - name: Run Server Script
-        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker-compose down && sudo docker-compose --env-file .env.prod up -d'
+        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker compose down && sudo docker compose --env-file .env up -d'
