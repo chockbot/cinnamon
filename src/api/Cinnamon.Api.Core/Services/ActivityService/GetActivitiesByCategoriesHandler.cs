@@ -31,7 +31,6 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
     {
         try
         {
-            // get customer id saved in claims
             var result = await activityData.GetActivitiesByCategories(args.CategoryId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs
             {
                 IncludeAddress = args.IncludeActivityAddress,
