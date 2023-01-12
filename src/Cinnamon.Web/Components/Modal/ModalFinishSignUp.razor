@@ -1,11 +1,4 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Microsoft.AspNetCore.Identity;
-@using Cinnamon.Core.Common;
-@using Cinnamon.Core
-@using Cinnamon.Core.Models;
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core.ViewModels
-@using Cinnamon.Data
 @using System.Linq.Expressions
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
@@ -77,7 +70,9 @@
 {
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
-@code {
+
+@code 
+{
     IJSObjectReference module;
 
     [Parameter]

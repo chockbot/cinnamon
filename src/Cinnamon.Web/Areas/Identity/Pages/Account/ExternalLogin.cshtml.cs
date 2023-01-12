@@ -2,25 +2,14 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.Options;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using System.ComponentModel;
-using Cinnamon.Core;
-using Cinnamon.Core.Models;
-using Cinnamon.Core.Enums;
 using Microsoft.AspNetCore.Authentication;
 
 namespace Cinnamon.Web.Areas.Identity.Pages.Account
@@ -101,118 +90,118 @@ namespace Cinnamon.Web.Areas.Identity.Pages.Account
             [Required]
             [DisplayName("Birthdate")]
             public DateTime? BirthDate { get; set; } = null;
-            public UserType UserType { get; set; }
+            //public UserType UserType { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
 
-        public IActionResult OnPost(string provider, UserType userType, string returnUrl = null)
-        {
-            // Request a redirect to the external login provider.
-            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { userType, returnUrl });
-            var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
-            return new ChallengeResult(provider, properties);
-        }
+        // public IActionResult OnPost(string provider, UserType userType, string returnUrl = null)
+        // {
+        //     // Request a redirect to the external login provider.
+        //     var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { userType, returnUrl });
+        //     var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+        //     return new ChallengeResult(provider, properties);
+        // }
 
-        public async Task<IActionResult> OnGetCallbackAsync(UserType userType,string returnUrl = null, string remoteError = null)
-        {
-            returnUrl = returnUrl ?? Url.Content("~/Explore");
-            if (remoteError != null)
-            {
-                ErrorMessage = $"Error from external provider: {remoteError}";
-                return LocalRedirect("/Error");
-            }
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                ErrorMessage = "Error loading external login information.";
-                return LocalRedirect("/Error");
-            }
+        // public async Task<IActionResult> OnGetCallbackAsync(UserType userType,string returnUrl = null, string remoteError = null)
+        // {
+        //     returnUrl = returnUrl ?? Url.Content("~/Explore");
+        //     if (remoteError != null)
+        //     {
+        //         ErrorMessage = $"Error from external provider: {remoteError}";
+        //         return LocalRedirect("/Error");
+        //     }
+        //     var info = await _signInManager.GetExternalLoginInfoAsync();
+        //     if (info == null)
+        //     {
+        //         ErrorMessage = "Error loading external login information.";
+        //         return LocalRedirect("/Error");
+        //     }
 
-            // Sign in the user with this external login provider if the user already has a login.
-            var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+        //     // Sign in the user with this external login provider if the user already has a login.
+        //     var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
            
-            if (result.Succeeded)
-            {
-                //var user = CreateUser();
-                var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
-                var props = new AuthenticationProperties();
-                props.StoreTokens(info.AuthenticationTokens);
-                await _signInManager.SignInAsync(user, props, info.LoginProvider);
-                _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
-                if (userType == UserType.Maker)
-                {
-                    return Redirect("/Creation");
-                }
-                else
-                {
-                    return Redirect(returnUrl);
-                }
-            }
-            else
-            {
-                // If the user does not have an account, then ask the user to create an account.
-                ReturnUrl = returnUrl;
-                ProviderDisplayName = info.ProviderDisplayName;
-                if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
-                {
-                    Input = new InputModel
-                    {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                        FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                        LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
-                        UserType = userType
-                    };
-                }
-                return Page();
-            }
-        }
+        //     if (result.Succeeded)
+        //     {
+        //         //var user = CreateUser();
+        //         var user = await _userManager.FindByLoginAsync(info.LoginProvider, info.ProviderKey);
+        //         var props = new AuthenticationProperties();
+        //         props.StoreTokens(info.AuthenticationTokens);
+        //         await _signInManager.SignInAsync(user, props, info.LoginProvider);
+        //         _logger.LogInformation("{Name} logged in with {LoginProvider} provider.", info.Principal.Identity.Name, info.LoginProvider);
+        //         if (userType == UserType.Maker)
+        //         {
+        //             return Redirect("/Creation");
+        //         }
+        //         else
+        //         {
+        //             return Redirect(returnUrl);
+        //         }
+        //     }
+        //     else
+        //     {
+        //         // If the user does not have an account, then ask the user to create an account.
+        //         ReturnUrl = returnUrl;
+        //         ProviderDisplayName = info.ProviderDisplayName;
+        //         if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
+        //         {
+        //             Input = new InputModel
+        //             {
+        //                 Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+        //                 FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+        //                 LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+        //                 UserType = userType
+        //             };
+        //         }
+        //         return Page();
+        //     }
+        // }
 
-        public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
-        {
-            // Get the information about the user from the external login provider
-            var info = await _signInManager.GetExternalLoginInfoAsync();
-            if (info == null)
-            {
-                ErrorMessage = "Error loading external login information during confirmation.";
-                return LocalRedirect("/Error");
-            }
+        // public async Task<IActionResult> OnPostConfirmationAsync(string returnUrl = null)
+        // {
+        //     // Get the information about the user from the external login provider
+        //     var info = await _signInManager.GetExternalLoginInfoAsync();
+        //     if (info == null)
+        //     {
+        //         ErrorMessage = "Error loading external login information during confirmation.";
+        //         return LocalRedirect("/Error");
+        //     }
 
-            if (ModelState.IsValid)
-            {
-                var user = CreateUser();
-                await _emailStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
-                await _emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);
-                var result = await _userManager.CreateAsync(user);
+        //     if (ModelState.IsValid)
+        //     {
+        //         var user = CreateUser();
+        //         await _emailStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
+        //         await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+        //         await _emailStore.SetEmailConfirmedAsync(user, true, CancellationToken.None);
+        //         var result = await _userManager.CreateAsync(user);
 
-                if (result.Succeeded)
-                {
-                    result = await _userManager.AddLoginAsync(user, info);
-                    if (result.Succeeded)
-                    {
-                        var userId = await _userManager.GetUserIdAsync(user);
-                        // Include the access token in the properties
-                        var props = new AuthenticationProperties();
-                        props.StoreTokens(info.AuthenticationTokens);
-                        await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { UserId = userId, ProfilePath = "/images/Profile/user.png", FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true : false, About = "", DateJoined = "" });
-                        await _signInManager.SignInAsync(user, props, authenticationMethod: info.LoginProvider);
-                        _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
-                    }
-                }
-            }
+        //         if (result.Succeeded)
+        //         {
+        //             result = await _userManager.AddLoginAsync(user, info);
+        //             if (result.Succeeded)
+        //             {
+        //                 var userId = await _userManager.GetUserIdAsync(user);
+        //                 // Include the access token in the properties
+        //                 var props = new AuthenticationProperties();
+        //                 props.StoreTokens(info.AuthenticationTokens);
+        //                 await CoreDI.DataStore.Customers.SaveDataAsync(new CustomerModel() { UserId = userId, ProfilePath = "/images/Profile/user.png", FirstName = Input.FirstName, LastName = Input.LastName, Birthdate = Input.BirthDate.ToString(), Email = Input.Email, ExternalLogin = true, IsMaker = Input.UserType == UserType.Maker ? true : false, About = "", DateJoined = "" });
+        //                 await _signInManager.SignInAsync(user, props, authenticationMethod: info.LoginProvider);
+        //                 _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+        //             }
+        //         }
+        //     }
             
-            if(Input.UserType == UserType.Maker)
-            {
+        //     if(Input.UserType == UserType.Maker)
+        //     {
 
-                return Redirect("/Creation");
-            }
-            else
-            {
+        //         return Redirect("/Creation");
+        //     }
+        //     else
+        //     {
 
-                return Redirect(returnUrl);
-            }
-        }
+        //         return Redirect(returnUrl);
+        //     }
+        // }
 
         private IdentityUser CreateUser()
         {

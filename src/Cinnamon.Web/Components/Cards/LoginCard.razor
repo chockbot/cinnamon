@@ -1,20 +1,11 @@
 ﻿@namespace Cinnamon.Web.Components
 @using System.Linq.Expressions
-@using Cinnamon.Core.Enums;
-@using Microsoft.AspNetCore.Antiforgery
-@using Microsoft.AspNetCore.Authentication
-@using Microsoft.AspNetCore.Authentication.Google
-@using Microsoft.AspNetCore.Identity
-@using Microsoft.AspNetCore.Mvc
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
-@using Cinnamon.Web.Models
 @using Cinnamon.Web.Models.Account
-@using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Models.Entities
 @inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-@inject Cinnamon.Core.Models.TokenProvider _tokenProvider;
 
  <div class="w-100 text-center"> 
     <form id="email-submit" method="post">
@@ -37,10 +28,8 @@
                     asp-route-returnUrl="/onboarding" 
                     method="post">
                 <input type="hidden" name="provider" value="Google">
-                <input type="hidden" name="userType"  value="@TypeValue">
                 <input type="hidden" name="returnUrl" value="@ReturnUrl">
                 <button class="btn btn-md btn-google" type="submit"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail</button>
-                <input name="__RequestVerificationToken" type="hidden" value="@_tokenProvider.AntiForgeryToken" />
             </form>
         </div>
 </div>
@@ -108,9 +97,6 @@
     public List<WaitList> waitLists = new List<WaitList>();
 
     public LoginModel Input = new LoginModel();
-
-    [Parameter]
-    public UserType TypeValue { get; set; }
 
     [Parameter]
     public Expression<Func<string>>? For { get; set; }
