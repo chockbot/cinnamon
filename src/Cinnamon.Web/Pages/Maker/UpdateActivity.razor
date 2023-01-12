@@ -1,0 +1,368 @@
+@page "/maker/update-activity";
+@layout CreationLayout;
+@using System.Security.Claims
+@using Microsoft.AspNetCore.WebUtilities;
+@using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
+@using Cinnamon.Web.Models;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject NavigationManager NavigationManager;
+@inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IActivityApiHandler activityApiHandler;
+
+<nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class='step breadcrumb-item @(currentIndex >= 0 ? "active" : "")' aria-current="page">
+             <a class="button" style="cursor: pointer;" @onclick="() => currentIndex = 0">
+                <span class='icon-step @(currentIndex >= 0 ? "active" : "")'>1</span>
+                <span class="step-yellow">Experience update</span>
+            </a>
+        </li>
+        <li class='step breadcrumb-item @(currentIndex >= 1 ? "active" : "")' aria-current="page">
+             <a class="button" style="cursor: pointer;" @onclick="() => OnNextClick(1)">
+                <span class='icon-step @(currentIndex >= 1 ? "active" : "")'>2</span>
+                <span class="step-yellow">Setup</span>
+            </a>
+        </li>
+        <li class='step breadcrumb-item @(currentIndex >= 2 ? "active" : "")' aria-current="page">
+            <a class="button" style="cursor: pointer;" @onclick="() => OnNextClick(2)">
+                <span class='icon-step @(currentIndex >= 2 ? "active" : "")'>3</span>
+                <span class="step-yellow">Publish</span>
+            </a>
+        </li>
+    </ol>
+</nav>
+
+<div class="progress-container landing-sm shadow-sm">
+    <div class="progress mx-4">
+        <div id="myBar" class="progress-bar" style='width: @(GetPerentCompletion)%;' role="progressbar" aria-valuemin="1" aria-valuemax="100">@GetPerentCompletion</div>
+    </div>
+</div>
+
+<div id="regForm" class="shadow-lg">
+    @if(Model != null)
+    {
+        <EditForm Model="Model.Activity">
+            <div class='tab @(currentIndex == 0 ? "show" : "")'>
+                <ExperienceUpdate @ref="experienceUpdateComponent" Model="Model" />
+            </div>
+            <div class='tab @(currentIndex == 1 ? "show" : "")'>
+                <ExperienceSetupUpdate @ref="experienceSetupUpdateComponent" Model="Model" />
+            </div>
+            <div class='tab @(currentIndex == 2 ? "show" : "")'>
+                <div class="text-center publish-container">
+                    <div class="w-100 publish-text">
+                        <h2 class="fw-bold">You're all set!!</h2>
+                        <h6>Live your passion, share your knowledge and leave a mark in people's lives!</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="button-container" style="overflow:auto;">
+                <div style="float:right;">
+                    @if(currentIndex > 0) 
+                    {
+                        <button type="button" id="prevBtn" @onclick="() => OnBackClick()" style="border:none;background-color:transparent">Back</button>
+                    }
+                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        </LoadingTemplate>
+                        <ChildContent>
+                            @(currentIndex == 2 ? "Submit" : "Continue")
+                        </ChildContent>
+                    </Button>
+                </div>
+            </div>
+        </EditForm>
+    }
+</div>
+
+@if(showErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+      <strong>Error!</strong> @errorMessage
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+@code 
+{
+    private ExperienceUpdateModel Model;
+
+    private ExperienceUpdate experienceUpdateComponent {get; set;}
+
+    private ExperienceSetupUpdate experienceSetupUpdateComponent {get; set;}
+
+    private int currentIndex = 0;
+
+    private bool isLoading = false;
+
+    private bool showErrorMessage = false;
+
+    private string errorMessage = string.Empty;
+
+    private DotNetObjectReference<UpdateActivity>? obj;
+
+    private int GetPerentCompletion {
+        get {
+            return currentIndex * 50;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        // get user token
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if(token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var res = QueryHelpers.ParseQuery(uri.Query).TryGetValue("activityId", out var id);
+
+        // if cant find the activity id in the query string
+        int activityId = 0;
+        if(!res || !int.TryParse(id, out activityId))
+        {
+            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
+        
+        var activityRes = await activityApiHandler.GetOwnedActivity(activityId, token, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
+            IncludeActivityAddress = true,
+            IncludeActivityDescription = true,
+            IncludeActivityImages = true,
+            IncludeActivitySearchTags = true,
+            IncludeAtivitySchedules = true,
+        });
+        if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
+        {
+            // navigate to maker dashboard, an error occured
+            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
+        var activity = activityRes.Result.Result;
+
+        // get experience types
+        var experienceTypes = await activityApiHandler.GetExperienceTypes();
+        if((!experienceTypes.Succeeded || experienceTypes.Result == null) || (experienceTypes.Succeeded && !experienceTypes.Result.IsSuccess))
+        {
+            // an error occured when getting experience types to api
+            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
+
+        // get experience categories
+        var categories = await activityApiHandler.GetExperienceCategories();
+        if((!categories.Succeeded || categories.Result == null) || (categories.Succeeded && !categories.Result.IsSuccess))
+        {
+            // an error occured when getting experience categories to api
+            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
+
+        // get sub categories
+        var subCategories = await activityApiHandler.GetSubCategories();
+        if((!subCategories.Succeeded || subCategories.Result == null) || (subCategories.Succeeded && !subCategories.Result.IsSuccess))
+        {
+            // an error occured when getting sub categories to api
+            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
+
+        Model = new ExperienceUpdateModel {
+            Activity = new Models.Entities.Activity {
+                ActivityId = activity.ActivityId,
+                ActivityLevel = activity.ActivityLevel,
+                ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                    return new Models.Entities.ActivitySchedule {
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        TempId = s.Id
+                    };
+                }).ToList(),
+                AdditionalRequirements = activity.AdditionalRequirements,
+                Address1 = activity.Address1,
+                Address2 = activity.Address2,
+                CanAdultsJoin = activity.CanAdultsJoin,
+                City = activity.City,
+                CustomerBringWithThem = activity.CustomerBringWithThem,
+                Description = activity.Description,
+                District = activity.District,
+                ExperienceCategoryId = activity.ExperienceCategoryId,
+                ExperienceTypeId = activity.ExperienceTypeId,
+                Images = activity.Images.Select(i => {
+                    return new Models.Entities.ActivityImage {
+                        ImageSrc = i.ImageSrc,
+                        Name = i.Name,
+                        Id = i.Id
+                    };
+                }).ToList(),
+                IsPublished = activity.IsPublished,
+                MinimumAge = activity.MinimumAge,
+                Price = activity.Price,
+                Remarks = activity.Remarks,
+                ScheduleIndicator = activity.ScheduleIndicator,
+                SearchTags = activity.SearchTags.ToList(),
+                SkillLevel = activity.SkillLevel,
+                SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
+                SubCategoryId = activity.SubCategoryId,
+                Title = activity.Title,
+            },
+            ExperienceTypes = experienceTypes.Result.Result.Select(e => {
+                return new Models.Entities.ExperienceType {
+                    Id = e.Id,
+                    Name = e.Name
+                };
+            }),
+            ExperienceCategories = categories.Result.Result.Select(c => {
+                return new Models.Entities.ExperienceCategory {
+                    Category = c.Name,
+                    IconPath = c.IconPath,
+                    Id = c.Id
+                };
+            }),
+            SubCategories = subCategories.Result.Result.Select(s => {
+                return new Models.Entities.SubCategory {
+                    CategoryId = s.CategoryId,
+                    Id = s.Id,
+                    Name = s.Name
+                };
+            }),
+            Token = token
+        };
+
+        obj = DotNetObjectReference.Create(this);
+    }
+
+    private void OnBackClick(int index = 0) 
+    {
+        if(currentIndex == 0) return;
+        currentIndex --;
+    }
+
+    private async Task OnNextClick(int index = 0)
+    {
+        // for submit action
+        if(index == 0 && currentIndex == 2)
+        {
+            isLoading = true;
+            StateHasChanged();
+
+            var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
+            Model.Activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
+                                                                        sortPrice.ElementAtOrDefault(0).Price, 
+                                                                        sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1} / {2} {3} / {4} {5}",
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
+                                                                        sortPrice.ElementAtOrDefault(0).Price.ToString(), 
+                                                                        sortPrice.ElementAtOrDefault(0).PerUnit1.ToString(),
+                                                                        sortPrice.ElementAtOrDefault(0).PriceUnit1,
+                                                                        sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
+                                                                        sortPrice.ElementAtOrDefault(0).PriceUnit2);
+
+            var submit = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs {
+                ActivityLevel = Model.Activity.ActivityLevel,
+                ActivitySchedules = Model.Activity.ActivitySchedules.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule {
+                        Id = s.Id,
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                    };
+                }),
+                AdditionalRequirements = Model.Activity.AdditionalRequirements,
+                Address1 = Model.Activity.Address1,
+                Address2 = Model.Activity.Address2,
+                CanAdultsJoin = Model.Activity.CanAdultsJoin,
+                City = Model.Activity.City,
+                CustomerBringWithThem = Model.Activity.CustomerBringWithThem,
+                Description = Model.Activity.Description,
+                District = Model.Activity.District,
+                ExperienceCategoryId = Model.Activity.ExperienceCategoryId,
+                ExperienceTypeId = Model.Activity.ExperienceTypeId,
+                IsPublished = Model.Activity.IsPublished,
+                MinimumAge = Model.Activity.MinimumAge,
+                Price = Model.Activity.Price,
+                Remarks = Model.Activity.Remarks,
+                ScheduleIndicator = Model.Activity.ScheduleIndicator,
+                SearchTags = Model.Activity.SearchTags,
+                SkillLevel = Model.Activity.SkillLevel,
+                SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
+                SubCategoryId = Model.Activity.SubCategoryId,
+                Title = Model.Activity.Title,
+                ActivityId = Model.Activity.ActivityId,
+                DeletedScheduleIds = Model.DeletedScheduleIds
+            }, Model.Token);
+            
+            if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+            {
+                throw new ApplicationException();
+            }
+
+            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
+
+            if(isSuccess)
+            {
+                NavigationManager.NavigateTo("/maker/dashboard");
+                return;
+            }
+
+            return;
+        }
+
+        if(index != 0)
+        {
+            switch(index)
+            {
+                case 1:
+                    if(Model.ExperienceHasError = !experienceUpdateComponent.IsAllFieldsValidated()) return;
+                    currentIndex = index;
+                    break;
+                case 2:
+                    if(Model.ExperienceHasError = !experienceUpdateComponent.IsAllFieldsValidated())
+                    {
+                        currentIndex = 0;
+                        return;
+                    }
+                    if(Model.ExperienceSetupHasError = !experienceSetupUpdateComponent.IsAllFieldsValidated())
+                    {
+                        currentIndex = 1;
+                        return;
+                    }
+                    currentIndex = index;
+                    break;
+            }
+            return;
+        }
+        if(currentIndex == 0 && (Model.ExperienceHasError = !experienceUpdateComponent.IsAllFieldsValidated())) return;
+        if(currentIndex == 1 && (Model.ExperienceSetupHasError = !experienceSetupUpdateComponent.IsAllFieldsValidated())) return;
+        
+        currentIndex++;
+    }
+
+    [JSInvokable]
+    public void ShowError(string message)
+    {
+        errorMessage = message;
+        showErrorMessage = true;
+        StateHasChanged();
+    }
+}

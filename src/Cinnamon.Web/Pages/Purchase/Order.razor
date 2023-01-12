@@ -1,0 +1,124 @@
+@page "/purchase/order"
+@using System.Security.Claims
+@using Microsoft.AspNetCore.WebUtilities;
+@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Models
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject ITransactionApiHandler transactionApiHandler;
+@inject IActivityApiHandler activityApiHandler;
+
+@if(Model != null)
+{
+    <section class="container order-banner text-center">
+        <h1 class="order-banner-h1">
+            Thank you for choosing
+            <br>
+            <span class="text-capitalize cinnamon-banner-text">cinnamon</span>
+        </h1>
+        <Divider />
+        <div class="order-details text-start text-center">
+            <h3 class="text-capitalize mt-5">payment confirmed!</h3>
+            <p class="text-capitalize mt-5 mb-0">purchase details:</p>
+            <p class="text-capitalize">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
+            <div class="schedule-ordered text-center">
+                <p>@Model.SelectedSchedule.Name</p>
+                <p>@Model.SelectedSchedule.DateTime</p>
+                <p>PHP @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.Price / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
+                <p>Total: @Model.PurchaseOrder.OverallTotal</p>
+            </div>
+            <p class="text-center">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
+            <div class="text-center mt-5 mb-5">
+                <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
+            </div> 
+        </div>
+    </section>
+}
+
+@code
+{
+    private PurchaseOrderModel Model {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+        var purchaseSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("purchaseid", out var purchaseIdString);
+
+        if(!purchaseSuccess)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        if(!int.TryParse(purchaseIdString, out int purchasedId))
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        if(token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        // purchase order details
+        var purchaseRes = await transactionApiHandler.GetPurchaseOrder(purchasedId, token);
+        if((!purchaseRes.Succeeded || purchaseRes.Result == null) || (purchaseRes.Succeeded && !purchaseRes.Result.IsSuccess))
+        {
+            // error occured when getting purchase order id
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var purchaseOrder = purchaseRes.Result.Result;
+
+        // get related activity and schedules
+        var activityRes = await activityApiHandler.GetActivity(purchaseOrder.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
+            IncludeAtivitySchedules = true
+        });
+        if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
+        {
+            // error occured when getting activity
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var schedule = activityRes.Result.Result.ActivitySchedules.FirstOrDefault(s => s.Id == purchaseOrder.ScheduleId);
+        if(schedule == null)
+        {
+            // can't find schedule associated to activity
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        Model = new PurchaseOrderModel {
+            PurchaseOrder = new Models.Entities.PurchaseOrder {
+                ActivityId = purchaseOrder.ActivityId,
+                ConvinienceFee = purchaseOrder.ConvinienceFee,
+                Coupon = purchaseOrder.Coupon,
+                CouponAmount = purchaseOrder.CouponAmount,
+                CustomerId = purchaseOrder.CustomerId,
+                Id = purchaseOrder.Id,
+                OverallTotal = purchaseOrder.OverallTotal,
+                ScheduleId = purchaseOrder.ScheduleId,
+                Total = purchaseOrder.Total
+            },
+            SelectedSchedule = new Models.Entities.ActivitySchedule {
+                DateTime = schedule.DateTime,
+                Id = schedule.Id,
+                Name = schedule.Name,
+                PerUnit1 = schedule.PerUnit1,
+                PerUnit2 = schedule.PerUnit2,
+                Price = schedule.Price,
+                PriceUnit1 = schedule.PriceUnit1,
+                PriceUnit2 = schedule.PriceUnit2,
+                UnitPrice = schedule.UnitPrice
+            },
+            Token = token
+        };
+    }
+}

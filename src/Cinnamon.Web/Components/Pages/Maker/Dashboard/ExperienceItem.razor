@@ -1,0 +1,43 @@
+@using Cinnamon.Web.Models.Entities;
+@inject NavigationManager NavigationManager
+@inject Modules.ApiAccess.Handlers.IActivityApiHandler activityApiHandler;
+
+<TableRow>
+    <TableRowCell>@Activity.Title</TableRowCell>
+    <TableRowCell TextAlignment="TextAlignment.Center">
+        <Check TValue="bool" Checked="Activity.IsPublished" CheckedChanged="OnPublishedChange"  />
+    </TableRowCell>
+    <TableRowHeader TextAlignment="TextAlignment.Center">
+        <Button @onclick="NavigateToCreation" Border="Border.Is0" TextColor="TextColor.White" Color="Color.Primary" Size="Size.ExtraSmall">Update</Button>
+    </TableRowHeader>
+</TableRow>
+
+@code
+{
+    [Parameter]
+    public Activity Activity {get; set;}
+    
+    [Parameter]
+    public string Token {get; set;}
+
+    private async Task OnPublishedChange(bool value)
+    {
+        Activity.IsPublished = value;
+        var res = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs {
+            IsPublished = value,
+            ActivityId = Activity.ActivityId
+        }, Token);
+        if(res.Succeeded && res.Result != null && res.Result.IsSuccess)
+        {
+            await OnPublishChanged.InvokeAsync(value ? -1 : 1);
+        }
+    }
+
+    [Parameter]
+    public EventCallback<int> OnPublishChanged {get; set;}
+
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo($"maker/update-activity?activityId={Activity.ActivityId}");
+    }
+}

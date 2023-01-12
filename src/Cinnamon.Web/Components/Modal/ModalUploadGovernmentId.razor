@@ -1,0 +1,134 @@
+@namespace Cinnamon.Web.Components.Modals
+@using Cinnamon.Web.Models.Customer;
+@using Cinnamon.Web.Components.Pages.Customer.Profile;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IAccountApiHandler accountApiHandler;
+@inject IJSRuntime JsRuntime
+
+<Modal @ref="modalRef" class="upload-government-id">
+    <form id="submit-government-ids" method="post" enctype="multipart/form-data">
+        <ModalContent>
+            <ModalHeader Border="Border.Is0" Position="Position.Relative" Flex="Flex.JustifyContent.Center">
+                <p class="mb-0 header-label">Upload your Government ID</p>
+                <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-close" @onclick="() => modalRef.Hide()"> 
+                    <Icon Name="IconName.Times" IconStyle="IconStyle.Solid" IconSize="IconSize.Large" />
+                </Button>
+            </ModalHeader>
+            <ModalBody Border="Border.Is0" Padding="Padding.Is0.OnY">
+                <Divider Margin="Margin.Is0" />
+                <p class="body-label">Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.</p>
+                <Row>
+                    <Column>
+                        <ImageUpload Model="frontData" />
+                    </Column>
+                    <Column>
+                        <ImageUpload Model="backData" />
+                    </Column>
+                </Row>
+            </ModalBody>
+            <ModalFooter Border="Border.Is0" Margin="Margin.Is3.FromBottom">
+                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Type="ButtonType.Submit"
+                    Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18" Loading="isLoading" Disabled="isLoading">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Upload
+                    </ChildContent>
+                </Button>
+                <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="isShowErrorMessage" >
+                    <AlertMessage>
+                        @errorMessage
+                    </AlertMessage>
+                </Alert>
+            </ModalFooter>
+        </ModalContent>
+    </form>
+</Modal>
+
+@code 
+{
+    [Parameter]
+    public string Token { get; set; }
+
+    private Modal modalRef;
+
+    private UploadGovernmenId frontData = new();
+
+    private UploadGovernmenId backData = new();
+
+    private DotNetObjectReference<ModalUploadGovernmentId>? obj;
+    
+    private bool isLoading = false;
+
+    private bool isShowErrorMessage = false;
+
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await accountApiHandler.GetGovermentIds(Token);
+        if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            throw new ApplicationException("An error occured when getting government ids");
+        }
+
+        obj = DotNetObjectReference.Create(this);
+
+        frontData.Label = "Front of ID";
+        frontData.ImageName = "FrontId";
+        frontData.ImageFileName = result.Result.Result.FrontIdImagePath;
+        frontData.ImageId = "id-front-image";
+        frontData.ErrorId = "id-front-error";
+
+        backData.Label = "Back of ID";
+        backData.ImageName = "BackId";
+        backData.ImageFileName = result.Result.Result.BackIdImagePath;
+        backData.ImageId = "id-back-image";
+        backData.ErrorId = "id-back-error";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("MyLib.Components.modal.uploadGovenmentId.init", obj);
+        }
+    }
+
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    [JSInvokable]
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+
+    [JSInvokable]
+    public Task ShowLoading()
+    {
+        isLoading = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task HideLoading()
+    {
+        isLoading = false;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public void ShowError(string message)
+    {
+        errorMessage = message;
+        isShowErrorMessage = true;
+        StateHasChanged();
+    }
+}
+

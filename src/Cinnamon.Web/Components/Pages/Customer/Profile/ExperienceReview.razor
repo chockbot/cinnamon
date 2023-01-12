@@ -1,0 +1,66 @@
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+
+<article class="experience-review-wrapper py-3">
+    <h3 class="title">Your Reviews</h3>
+    <Div class="experience-reviews-container experience-review-swiper" Margin="Margin.Is3.FromTop">
+        <div class="swiper-wrapper">
+           @* @for(int i =0; i < 6; i++)
+            {
+                <ExperienceReviewItem />
+            }*@
+        </div>
+    </Div>
+</article>
+
+<style scoped>
+.experience-review-wrapper {
+    font-family: "Nunito";
+    overflow: hidden;
+}
+.experience-review-wrapper .title 
+{
+    font-size: 24px;
+    font-weight: 700;
+    color: #343D4C;
+}
+.card-review-item {
+  width: 100%;
+  box-shadow: 0 0 10px -5px rgb(0 0 0 / 50%) !important;
+}
+.card-review-item .reviewer-name 
+{
+    font-size: 18px;
+    text-transform: capitalize;
+    font-weight: 700;
+    color: #344050;
+}
+.card-review-item .reviewer-position 
+{
+    font-size: 14px;
+    text-transform: capitalize;
+    font-weight: 400px;
+    color: #717171;
+}
+.card-review-item .reviewer-content 
+{
+    font-size: 14px;
+    font-weight: 400px;
+    color: #717171;
+}
+.card-review-item .review-star
+{
+    width: 15px;
+    height: auto;
+}
+.card-review-item .review-count
+{
+    font-size: 14px;
+    margin-left: 5px;
+}
+.card-review-item .review-badge
+{
+    background-color: #F8F8F8;
+    border-radius: 14px;
+    width: 50px;
+}
+</style>

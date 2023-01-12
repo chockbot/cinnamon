@@ -1,0 +1,216 @@
+﻿@namespace Cinnamon.Web.Components
+@using System
+@using Cinnamon.Web.Models.Customer;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IAccountApiHandler accountApiHandler;
+@inject IWebHostEnvironment Environment
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+
+<div class="modal @* @viewModel.ModalClass *@" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden; @* display:@viewModel.ModalDisplay *@">
+    <div class="modal-dialog">
+        <form id="submit-profile-picture" method="post" enctype="multipart/form-data">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center">Profile Photo</p>
+                    <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+                </div>
+                <div class="modal-body">
+                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                    <div class="col-12-lg d-flex justify-content-center">
+                        <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
+                            <div class="btn-delete">
+                                @* <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
+                                    <i class="fa fa-trash" style="color:black;"></i>
+                                </button> *@
+                            </div>
+                            <div class="figure-profile">
+                                <label for="fileinput" class="upload-image">
+                                    <Figure Border="Border.RoundedCircle">
+                                        <CardImage Source="@GetProfileSrc()" id="@profilePicture.ImageId" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                    </Figure>
+                                </label>
+                                <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;" />
+                                <div class="round">
+                                    <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload"/>
+                                    <i class="fa fa-camera" style="color: black;"></i>
+                                </div>
+                            </div>
+                        </Card>
+                    </div>
+                    <p class="bottom-text">JPEG or PNG only</p>
+                    <div class="btn-upload">
+                        <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Type="ButtonType.Submit"
+                            Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18" Loading="isLoading" Disabled="isLoading">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Upload
+                            </ChildContent>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--ModalEdit-->
+    <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center">Edit Profile Photo</p>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                     <div class="col-12-lg d-flex justify-content-center">
+                        <img class="js-avatar-preview" src="">
+                    </div>
+                    <button class="btn btn-primary js-save-cropped-avatar">Save</button>
+                </div>
+            </div> 
+        </div>
+    </div>
+@* @if (viewModel.ShowErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" id="@profilePicture.ErrorId" style="z-index:99999">
+        <strong>Error!</strong>Error occured while uploading image. Please try again.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+} *@
+@* @if (viewModel.ShowSuccessMessage)
+{
+    <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+        <strong>Success!</strong> Your profile photo was uploaded successfully.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+} *@
+<!--Confimation Popup-->
+@* @if (viewModel.ShowBackdrop)
+{
+    <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
+} *@
+
+@code {
+    IJSObjectReference module;
+
+    [Parameter]
+    public string Token { get; set; }
+
+    private UploadProfilePicture profilePicture = new();
+
+    private InputFile? inputFile;
+    private DotNetObjectReference<ModalUploadingProfile>? objRef;
+
+    private readonly IConfiguration configuration;
+
+    private List<IBrowserFile> loadedFiles = new();
+
+    //UploadProfileViewModel viewModel = new UploadProfileViewModel();
+
+    //private CustomerModel customer = new CustomerModel();
+
+    public string ParaContent = "Some Text Content";
+
+    private bool isLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await accountApiHandler.GetProfilePicture(Token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            throw new ApplicationException("An error occured when getting customer profile picture");
+        }
+
+        objRef = DotNetObjectReference.Create(this);
+        profilePicture.ImageFileName = result.Result.Result.ProfileImagePath;
+        profilePicture.ImageName     = "ProfilePicture";
+        profilePicture.ImageId       = "avatar-crop";
+        profilePicture.ErrorId       = "id-profile-image";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            //module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/editprofileModal.js");
+            await jsRuntime.InvokeAsync<IJSObjectReference>("MyLib.Components.modal.uploadProfilePicture.init", objRef);
+        }
+    }
+    private string GetProfileSrc()
+    {
+        if (!string.IsNullOrEmpty(profilePicture.ImageFileName)) return profilePicture.ImageFileName;
+
+        return "/images/Profile/user.png";
+    }
+    public async Task OpenModal()
+    {
+        //viewModel.ModalDisplay   = "block;";
+        //viewModel.ModalClass     = "show";
+        //viewModel.ShowBackdrop   = true;
+        StateHasChanged();
+    }
+
+    public async Task CloseModal()
+    {
+        //viewModel.ModalClass   = "";
+        //viewModel.ModalDisplay = "none;";
+        //viewModel.ShowBackdrop = false;
+        StateHasChanged();
+        NavigationManager.NavigateTo("/customer/profile",true);
+    }
+
+    private async void HideMessageAfterDelay()
+    {
+        await Task.Delay(20000);
+        //viewModel.ShowErrorMessage  = false;
+        //viewModel.ShowSuccessMessage = false;
+        StateHasChanged();
+    }
+    [JSInvokable]
+    public Task ShowLoading()
+    {
+        isLoading = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    [JSInvokable]
+    public Task HideLoading()
+    {
+        isLoading = false;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+    private async Task DeleteProfile()
+    {
+        /*
+        string[] filepath = viewModel.profilepicture.Split("/");
+        viewModel.profilepicture = filepath[4];
+        await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
+        */
+    }
+    private async Task DeleteBlob(string filename, string container1)
+    {
+        /*
+        // Delete to Azure Blob
+        var result = await deleteImageHandler.ExecuteAsync(
+                new Core.Module.UploadService.Interactors.DeleteImage
+                    { Container = "upload-profile-picture", FileName = filename });
+
+        if (result.Succeeded)
+        {
+            customer = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
+            viewModel.profilepicture = customer.ProfilePath;
+        }
+        else
+        {
+            ResultModel.error("Error occurred while deleting image");
+        }
+        */
+    }
+}
+

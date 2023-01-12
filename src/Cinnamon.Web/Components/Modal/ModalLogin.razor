@@ -1,0 +1,24 @@
+﻿@namespace Cinnamon.Web.Components
+
+<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Sign Up/Log In</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-filter">
+                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
+                    <br/>
+                    <h6>Email</h6>
+                    <LoginCard ReturnUrl="@ReturnUrl"></LoginCard>
+                </div>
+            </div>
+        </div>  
+    </div>
+</div>
+@code {
+    [Parameter]
+    public string ReturnUrl { get; set; } = "";
+}

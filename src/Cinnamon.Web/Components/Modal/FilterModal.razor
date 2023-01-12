@@ -1,10 +1,5 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core.Enums
-@using Cinnamon.Web.Components
-@using Cinnamon.Data
-@using Cinnamon.Core
-@using System.Text
-@using System.Globalization
+@using System.Linq;
 
 <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-scrollable">
@@ -18,13 +13,13 @@
                     <ul class="list-group list-group-flush">
                         <li class="list-group-item">
                             <h5 class="font-weight-bold align-items-start">Location</h5>
-                            <select class="form-select" aria-label="Default select example" value="@selectedValue">
+                            <select class="form-control" aria-label="Default select example">
                                 <option selected>All Location</option>
-                                @foreach (var act in distinctActivity)
+                                @* @foreach (var act in address)
                                 {
                                     cnt++;
-                                    <option value=@cnt>@act.Location</option>
-                                }
+                                    <option value=@cnt>@act.District, @act.City</option>
+                                } *@
                             </select>
                             <br />
                         </li>
@@ -33,13 +28,13 @@
                             <div class="row">
                                 @foreach(var type in activityTypes)
                                 {
-                                    if(type.Id%2==0)
+                                    @* if(type.SubCategory.Id%2==0)
                                     {
                                         <div class="col-lg-6 col-md-6 col-sm-6">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked+@type.Id">
+                                                <input class="form-check-input" type="checkbox" @bind-value="type.IsSelected" id="flexCheckChecked+@type.SubCategory.Id">
                                                 <label class="form-check-label" for="flexCheckChecked1">
-                                                    @type.Name
+                                                    @type.SubCategory.SubCatergory
                                                 </label>
                                             </div>
                                         </div>
@@ -48,13 +43,13 @@
                                     {
                                         <div class="col-lg-6 col-md-6 col-sm-6">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked+@type.Id">
+                                                <input class="form-check-input" type="checkbox" @bind-value="type.IsSelected" id="flexCheckChecked+@type.SubCategory.Id">
                                                 <label class="form-check-label" for="flexCheckChecked1">
-                                                    @type.Name
+                                                    @type.SubCategory.SubCatergory
                                                 </label>
                                             </div>
                                         </div>
-                                    }
+                                    } *@
                                     cnt++;
                                 }
                             </div>
@@ -63,23 +58,55 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn" style="background-color:#ffa942;color:white">Apply</button>
+                <button @onclick="OnSelecteCategories" type="button" class="btn" style="background-color:#ffa942;color:white" data-bs-dismiss="modal">Apply</button>
             </div>
         </div>
     </div>
 </div>
-@code {
-    public List<ActivityModel> activity              = new List<ActivityModel>();
-    public List<ActivityModel> distinctActivity      = new List<ActivityModel>();
-    public List<ActivityTypeModel> activityTypes     = new List<ActivityTypeModel>();
+
+@code 
+{
+    /*
+    public List<ActivityModel> activity               = new List<ActivityModel>();
+    public List<ActivityModel> distinctActivity       = new List<ActivityModel>();
+    public List<AddressModel>  address                = new List<AddressModel>();
+    */
+    public IList<SelectedSubCategories> activityTypes = new List<SelectedSubCategories>();
     public int cnt                                   = 0;
-    private int selectedValue { get; set; }
+    private string selectedString { get; set; }
+    [Parameter]
+    public EventCallback<int[]> OnSelectedIdsChanged { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        /**
         activity         = await CoreDI.DataStore.Activities.GetAllAsync();
-        activityTypes    = await CoreDI.DataStore.ActivityTypes.GetAllAsync();
-        distinctActivity = activity.GroupBy(p => p.Location).Select(grp => grp.First()).ToList();
+        address          = await CoreDI.DataStore.Addresses.GetAllAsync();
+        activityTypes    = (await CoreDI.DataStore.SubCategory.GetAllAsync())
+                            .Select(i => new SelectedSubCategories {
+                                IsSelected = false,
+                                SubCategory = i
+                            })
+                            .ToList();
+
+        address = address.GroupBy(p => p.City).Select(grp => grp.First()).ToList();
+        **/
+    }
+    
+    public class SelectedSubCategories 
+    {
+        public bool IsSelected {get; set;}
+
+        // public SubCategoryModel SubCategory {get; set;}
     }
 
-
+    private async Task OnSelecteCategories()
+    {
+        /*
+        var selectedIds = activityTypes
+            .Where(i => i.IsSelected)
+            .Select(i => i.SubCategory.Id)
+            .ToArray();
+        await OnSelectedIdsChanged.InvokeAsync(selectedIds);
+        */
+    }
 }

@@ -1,0 +1,97 @@
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Components
+@using Models.Entities
+
+<div class="modal fade @ModalClass" id="addChildrenModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display:@ModalDisplay">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="()=>Close()"></button>
+            </div>
+            <div class="modal-body">
+                <div class="p-section children-section">
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12.OnDesktop.Is10.OnMobile">
+                            <p class="details">
+                                We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
+                            </p>
+                            @* @for (int i = 0; i < localStateFamilyMembers.Count; i++)
+                            {
+                                if (localStateFamilyMembers[i].Id == 0)
+                                {
+                                    <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
+                                }
+                            } *@
+                            <Div Display="Display.Flex">
+                                <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop"
+                                        TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">
+                                    Add
+                                </Button>
+                                <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" @onclick="OnSaveFamilyMember"
+                                    TextColor="TextColor.White" Color="Color.Primary">
+                                    Save
+                                </Button>
+                            </Div>
+                        </Column>
+                    </Row>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
+
+
+@code 
+{
+    [Parameter]
+    public IList<FamilyMember> Model { get; set; }
+
+    [Parameter]
+    public EventCallback<IList<FamilyMember>> SaveEditedFamilyMember { get; set; } 
+    
+    private IList<FamilyMember> localStateFamilyMembers = new List<FamilyMember>();
+
+    public string ModalDisplay = "none;";
+
+    public string ModalClass = "";
+
+    public bool ShowBackdrop = false;
+
+    private void OnSaveFamilyMember()
+    {
+        SaveEditedFamilyMember.InvokeAsync(localStateFamilyMembers);
+    }
+
+    private void OnDeleteFamily(FamilyMember member)
+    {
+        localStateFamilyMembers.Remove(member);
+    }
+
+     private void AddFamilyMember()
+    {
+        localStateFamilyMembers.Add(new() { BirthMonth = "january", BirthYear = 1900, Gender = "male" });
+    }
+
+    public void Open()
+    {
+        localStateFamilyMembers = Model;
+        ModalDisplay = "block;";
+        ModalClass = "show";
+        ShowBackdrop = true;
+        StateHasChanged();
+    }
+
+    public void Close()
+    {
+        ModalDisplay = "none";
+        ModalClass = "hide";
+        ShowBackdrop = false;
+        StateHasChanged();
+    }
+}

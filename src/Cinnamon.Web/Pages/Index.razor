@@ -2,9 +2,7 @@
 @page "/"
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-@using Cinnamon.Core.Enums
 @using Cinnamon.Web.Components
-@using System.Globalization
 <PageTitle>@Resources.App.appName</PageTitle>
 
 <!--Section 1-->
@@ -25,8 +23,8 @@
         <span class="landing-header">@Resources.App.landingHeader</span>
         <span class="landing-subheader">@Resources.App.landingSubHeader</span>
         <div class="btn-explore btn-explore-section1">
-            <PrimaryButton OnClick="NavigateToExplorePage" Width="fit-content" Text=@Resources.App.exploreExperiences/>
-            <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Signup and join us!" />
+            @* <PrimaryButton OnClick="NavigateToExplorePage" Width="fit-content" Text=@Resources.App.exploreExperiences/> *@
+            @*<PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Signup and join us!" />*@
         </div>
     </div>
 </div>
@@ -172,8 +170,10 @@
         <span class="landing-header">@Resources.App.maker!</span>
         <br/> <br/>
         <span class="landing-subheader" >@Resources.App.makerDescription</span>
-        <div class="btn-explore">
-            <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />
+        <div class="btn-explore btn-explore-section4">
+           @* <a href="/Onboarding" class="btn btn-primary rounded-pill shadow-sm" style="width: fit-content;">Sign-up to become a Cinnamon Maker!</a>*@
+             <PrimaryButton OnClick="NavigateToOnboardingPage" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup /> 
+           @* <PrimaryButton ModalTarget="#sigupModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text=@Resources.App.cinnamonMakerSignup />*@
         </div>
     </div>
 </div>
@@ -209,7 +209,6 @@
     </div>
 </div>
 
-<ModalSignUp TypeValue="@UserType.Maker"></ModalSignUp>
 <!--Beta Alert-->
 <BetaAlert></BetaAlert>
 
@@ -221,13 +220,15 @@
     {
         NavigationManager.NavigateTo("explore");
     }
-
+    private void NavigateToOnboardingPage()
+    {
+        NavigationManager.NavigateTo("/Onboarding",true);
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
        if(firstRender)
        {
            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Index.js");
        }
     }
 }

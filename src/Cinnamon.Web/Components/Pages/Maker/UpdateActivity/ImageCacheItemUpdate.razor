@@ -1,0 +1,130 @@
+@namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@inject IJSRuntime JsRuntime
+
+<div class="image-container">
+    <div class="image-delete-icon" @onclick="@DeleteImage" hidden="@ShowDelete()">
+        <i class="fa fa-trash" id="delete-icon"></i>
+    </div>
+    <label for="@InputId" style="cursor: pointer;">
+        @if(isBlank)
+        {
+            if(string.IsNullOrEmpty(DefaultSrc))
+            {
+                <img id=@ImageId class="experience-image @RequiredCheck()" src="@blankImageSrc" />
+            }
+            else 
+            {
+                <img id=@ImageId class="experience-image @RequiredCheck()" src="@DefaultSrc" />
+            }
+        }
+        else 
+        {
+            <img id=@ImageId class="experience-image @RequiredCheck()"/>
+        }
+        <InputFile @ref="inputFile" id="@InputId" accept=".png,.jpg,.jpeg" name="@InputId" style="display: none;" OnChange="@LoadFile" />
+    </label>
+</div>
+
+<style scoped>
+    .experience-image {
+        width: 100%;
+        height: auto;
+    }
+
+    .image-container {
+        position: relative;
+    }
+
+    .image-delete-icon {
+        position: absolute;
+        z-index: 3;
+        border-radius: 50%;
+        top: 10px;
+        right: 10px;
+        width: 25px;
+        height: 25px;
+        background-color: white;
+    }
+
+    .error-message {
+        position: absolute;
+        z-index: 2; 
+        width: 100%;
+        top: 10px;
+        left: 0px;
+        margin-top: auto;
+        margin-bottom: auto;
+        font-weight: bold;
+        color: red;
+        text-align: center;
+    }
+
+    .image-delete-icon .fa-trash {
+        position: center;
+        color: gray;
+        display: block;
+        margin-left: 6px;
+        margin-top: 4px;
+        width: 50%;
+    }
+</style>
+
+@code {
+    [Parameter]
+    public string InputId {get; set;}
+
+    [Parameter]
+    public string ImageId {get; set;}
+
+    [Parameter]
+    public string DefaultSrc {get; set;}
+
+    private string blankImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+
+    private bool isBlank = true;
+
+    private InputFile? inputFile;
+
+    private void InvokeDelete() 
+    {
+        isBlank = true;
+        StateHasChanged();
+    }
+
+    private bool ShowDelete() 
+    {
+        if (isBlank && string.IsNullOrEmpty(DefaultSrc)) {
+            return true; 
+        }
+        return false; 
+    }
+
+    private string RequiredCheck()
+    {
+        if (isBlank && string.IsNullOrEmpty(DefaultSrc))
+        {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    public async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        isBlank = false;
+        StateHasChanged();
+        await ShowPreview();
+    }
+
+    private async Task ShowPreview()
+        => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, ImageId);
+
+    private void DeleteImage()
+    {
+        DefaultSrc = string.Empty;
+        isBlank = true;
+        StateHasChanged();
+    }
+
+    public bool HaveEmptyImage() => isBlank && string.IsNullOrEmpty(DefaultSrc);
+}

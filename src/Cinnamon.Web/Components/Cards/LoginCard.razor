@@ -1,0 +1,115 @@
+﻿@namespace Cinnamon.Web.Components
+@using System.Linq.Expressions
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Account
+@using Cinnamon.Web.Models.Entities
+@inject IAccountApiHandler accountApiHandler;
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+ <div class="w-100 text-center"> 
+    <form id="email-submit" method="post">
+        <div class="d-flex flex-column gap-3 align-items-center">
+            <div class="col-12">
+                <input id="email-signup" required placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
+            </div>
+            <button class="btn-primary rounded-pill shadow-sm text-center" id="signup-waiting" type="submit" style="width:100%;white-space:nowrap;padding-right:50px;">
+                <i id="email-spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Continue
+            </button>
+            <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+        </div>
+    </form>
+    <div class="divider">
+            <hr class="left" />or<hr class="right" />
+        </div>
+        <div class="col-12">
+              <form id="external-account" 
+                    action="/Identity/Account/ExternalLogin" 
+                    asp-route-returnUrl="/onboarding" 
+                    method="post">
+                <input type="hidden" name="provider" value="Google">
+                <input type="hidden" name="returnUrl" value="@ReturnUrl">
+                <button class="btn btn-md btn-google" type="submit"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail</button>
+            </form>
+        </div>
+</div>
+<div class="modal fade" id="login-password-modal" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Log In</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-modal-id="login-password-modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-filter">
+                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+                    <br />
+                    <h6>Password</h6>
+                    <form id="form-signin" method="post">
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <div class="col-12">
+                                <input id="text-password" asp-for="@Input.Password" required placeholder="Password" class="input-group fs-12" type="password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
+                                <span asp-validation-for="@Input.Password" class="text-danger"></span>
+                                <input type="hidden" id="hidden-email" asp-for="@Input.Email" />
+                            </div>
+                            @* <div id="error-message-container" class="mb-4">
+                            <ul id="error-list" class="fw-bold">
+                            <li style="font-family:'Nunito';font-size:12px;">Invalid password! Please insert correct password.</li>
+                            </ul>
+                            </div> *@
+                            <button class="btn-primary rounded-pill shadow-sm text-center" id="login-password" type="submit" style="width:100%;white-space:nowrap;padding-right:50px;">
+                                <i id="spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Log In
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="verificationModal" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Verification Email</p>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card-filter">
+                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+                    <br />
+                    <div class="col-12 text-center">
+                        <p>We've sent an email to your inbox. Please check and click verify.</p>
+                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    IJSObjectReference module;  
+
+    public WaitListModel Model = new WaitListModel();
+
+    public List<WaitList> waitLists = new List<WaitList>();
+
+    public LoginModel Input = new LoginModel();
+
+    [Parameter]
+    public Expression<Func<string>>? For { get; set; }
+
+    [Parameter]
+    public string ReturnUrl { get; set; } = "";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
+            await jsRuntime.InvokeVoidAsync("MyLib.Components.modal.login.init", "");
+        }
+    }
+} 

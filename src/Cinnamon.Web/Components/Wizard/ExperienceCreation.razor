@@ -1,52 +1,47 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core
-@using Cinnamon.Core.Models
-@using Cinnamon.Data
-@using Cinnamon.Data.DbSets
-@using Microsoft.EntityFrameworkCore
+@using Cinnamon.Web.Models;
 @inject IJSRuntime jsRuntime
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
-<div id="error-message-container" class="mb-4" style="display:none;">
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
-
+        <li>Fill in required field</li>
     </ul>
 </div>
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Let's name that experience!
+                @Resources.App.nameThatExperience
             </label>
             <p>
-                Make it informative and distinctive so that your customers
-                may understand what you are offering
+                @Resources.App.nameThatExperienceParagraph
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea maxlength="80" @bind="activityModel.Title"></textarea>
-                <label>80 Max</label>
+                <textarea maxlength="80" @bind="Model.Activity.Title" class="@RequiredCheck(Model.Activity.Title)"></textarea>
+                <label>@Resources.App.textAreaExperienceMax</label>
             </div>
         </div>
     </div>
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                What type of experience are you sharing?
+                @Resources.App.typeofExperience
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="experience-type" id="in-person" value="inPerson" checked @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="experience-type" id="in-person" checked @onchange="@(()=>CheckboxChanged(1))">
                 <label class="form-check-label" for="in-person">
-                    In-person - join in the real world to participate actively
+                    @Resources.App.inPersonType
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="experience-type" id="online" value="Online" @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="experience-type" id="online" @onchange="@(()=>CheckboxChanged(2))">
                 <label class="form-check-label" for="online">
-                    Online - join via video conferencing software (provided by Cinnamon Maker)
+                    @Resources.App.onlineType
                 </label>
             </div>
         </div>
@@ -54,73 +49,154 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Where is your experience located?
+                @Resources.App.experienceLocated
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if(IsChecked)
+            @if(Model.Activity.ExperienceTypeId == 2)
             {
                 <input class="form-control" placeholder="Address 1" disabled/>
                 <input class="form-control my-3" placeholder="Address 2" disabled />
                 <input class="form-control my-3" placeholder="District" disabled />
                 <input class="form-control my-3" placeholder="City" disabled />
             }
-            else{
-                <input class="form-control" placeholder="Address 1" required/>
-                <input class="form-control my-3" placeholder="Address 2" required />
-                <input class="form-control my-3" placeholder="District" required/>
-                <input class="form-control my-3" placeholder="City" required />
+            else
+            {
+                <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Address 1" required @bind="Model.Activity.Address1"/>
+                <input class="form-control my-3 @RequiredCheck(Model.Activity.Address2)" placeholder="Address 2" required @bind="Model.Activity.Address2"/>
+                <input class="form-control my-3 @RequiredCheck(Model.Activity.District)" placeholder="District" required @bind="Model.Activity.District"/>
+                <input class="form-control my-3 @RequiredCheck(Model.Activity.City)" placeholder="City" required @bind="Model.Activity.City"/>
             }
         </div>
     </div>
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Experience Category
+               @Resources.App.experienceCategory
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <select class="form-control" >
+            <select @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
                 <option disabled selected>Select Category</option>
-               @foreach(var cat in ExperienceModel)
-               {
-                   <option value="@cat.Category">@cat.Category</option>
-               }
-            </select>
+                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
+                {
+                    <option value="@cat.Id">@cat.Category</option>
+                }
+           </select>
         </div>
     </div>
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Search Tags
+                Sub-category
             </label>
         </div>
-        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <input id="tagsSearch" class="form-control" type="text" name="tags" value="" data-role="tagsinput" />
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @if (Model.Activity.ExperienceCategoryId != 0)
+            {
+                <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
+                    <option disabled selected>Select Subcategory</option>
+                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId))
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+            }
+            else 
+            {
+                <select class="form-control @RequiredCheck(Model.Activity.SubCategoryId)" disabled>
+                    <option disabled selected>Select Sub-category</option>
+                </select>
+            }
+        </div>
+    </div>
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Sub-category missing? Suggest up to five!
+            </label>
+        </div>
+        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
+            <div class="bootstrap-tagsinput @RequiredCheck(Model.Activity.SearchTags) d-flex flex-row flex-wrap ">
+                @foreach (var tag in Model.Activity.SearchTags)
+                {
+                    <span class="tag label label-info m-1">
+                        @tag
+                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag))">
+                        </span>
+                    </span>
+                }
+                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
+            </div>
+            <label>Suggest sub-category for approval (up to 5 suggestions)</label>
         </div>
     </div>
 </div>
 
-    @code {
-    IJSObjectReference module;
+@code 
+{
     [Parameter]
-    public ActivityModel activityModel { get; set; }
-    public string DisableAddress { get; set; }
-    public bool IsChecked { get; set; } = true;
-    private bool isChecked;
+    public ExperienceCreationModel Model {get; set;}
 
-    public List<ExperienceCategoryModel> ExperienceModel = new List<ExperienceCategoryModel>();
-    // updates the internal value whwenever the component is updated
-    // You may not want that??
-    protected override void OnParametersSet()
+    public string SearchTag { get; set; }
+    
+    public int SearchTagLength { get; set; } = 0;
+
+    private void CheckboxChanged(int val)
     {
-        this.IsChecked = isChecked;
+        Model.Activity.ExperienceTypeId = val;
     }
 
-    private void CheckboxChanged(ChangeEventArgs e)
+    public void Enter(KeyboardEventArgs e)
     {
-        isChecked = !this.IsChecked;
-        OnParametersSet();
+        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            bool condition = Model.Activity.SearchTags.Count < 5 && 
+                                (Model.Activity.SearchTags.Where(x => x.ToLower() == SearchTag.ToLower())
+                                    .FirstOrDefault()) == null;
+            if (condition)
+            {
+                Model.Activity.SearchTags.Add(SearchTag);
+            }
+
+            SearchTag = string.Empty;
+        }
+    }
+
+    private string RequiredCheck(IEnumerable<string> searchTags)
+    {
+        if (Model.HasError && Model.Activity.SearchTags.Count == 0)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private void RemoveSearchTag(string tag)
+    {
+        Model.Activity.SearchTags.Remove(tag);
+    }
+
+    private string RequiredCheck(String? value) 
+    {
+        if (Model.HasError && String.IsNullOrEmpty(value)) {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (Model.HasError && value == null)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string ShowErrorMessage() 
+    {
+        return Model.HasError ? "block" : "none";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -128,14 +204,23 @@
         if (firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ExperienceCreation.js");
         }
-        await module.InvokeVoidAsync("TagsInputInit");
     }
 
-    protected override async void OnInitialized()
+    public bool IsAllFieldsValidated()
     {
-        ExperienceModel = await CoreDI.DataStore.ExperienceCategory.GetAllAsync();
+        if(string.IsNullOrEmpty(Model.Activity.Title)) return false;
+        if(Model.Activity.ExperienceTypeId == 1)
+        {
+            if(string.IsNullOrEmpty(Model.Activity.Address1) ||
+                string.IsNullOrEmpty(Model.Activity.Address2) ||
+                string.IsNullOrEmpty(Model.Activity.District) ||
+                string.IsNullOrEmpty(Model.Activity.City)) return false;
+        }
+        if(Model.Activity.ExperienceCategoryId <= 0) return false;
+        if(Model.Activity.SearchTags.Count == 0) return false;
+
+        return true;
     }
 }
     
