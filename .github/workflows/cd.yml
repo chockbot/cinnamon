@@ -21,6 +21,14 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
+      # substitute database connection string
+      - name: App Settings Variable Substitution
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/api/Cinnamon.Api.Data/appsettings.json"
+        env:
+          ConnectionStrings.CinnamonDB: ${{ secrets.DEV_DB_CONNECTION }}
+
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
 
