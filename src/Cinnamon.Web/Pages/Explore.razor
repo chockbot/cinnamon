@@ -2,12 +2,7 @@
 @page "/confirm-email"
 @layout EmptyLayout
 @using Microsoft.AspNetCore.WebUtilities;
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core.Models
-@using Cinnamon.Core.Module.CinnamonMakerService.Handler;
 @using Cinnamon.Web.Components
-@using Cinnamon.Data
-@using Cinnamon.Core
 @using System.Text
 @using System.Linq;
 @using System.Globalization
@@ -21,7 +16,6 @@
 @inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-@inject IVerifyEmail verifyEmailHandler;
 @inject Cinnamon.Web.Config.Config AppConfig;
 
 <!DOCTYPE html>
@@ -403,7 +397,7 @@
     </div>
 }
 </body>
-<ModalLogin TypeValue="@UserType.Customer"></ModalLogin>
+<ModalLogin />
 <!--Filter-->
 @*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
