@@ -1,12 +1,6 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Microsoft.AspNetCore.Identity;
-@using Cinnamon.Core.Common;
-@using Cinnamon.Core
-@using Cinnamon.Core.Models;
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core.ViewModels
-@using Cinnamon.Data
 @using System.Linq.Expressions
+@using Cinnamon.Web.Models.Customer;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
@@ -19,28 +13,26 @@
             </div>
             <div class="modal-body">
                 <div class="card-filter">
-                    @if(!viewModel.isSubmit)
-                    {
                     <EditForm Model=viewModel id="submitFinishSignup">
                         <DataAnnotationsValidator />
                         <div class="d-flex flex-column gap-3 align-items-center">
                             <div class="col-12">
-                                <InputText id="firstname-signup-finish" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.FirstName />
-                                    <ValidationMessage style="text-align:left" For="() => viewModel.Customer.FirstName" />
+                                <InputText id="firstname-signup-finish" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.FirstName />
+                                    <ValidationMessage style="text-align:left" For="() => viewModel.FirstName" />
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="lastname-signup-finish" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.LastName />
-                                <ValidationMessage style="text-align:left" For="() => viewModel.Customer.LastName" />
+                                <InputText id="lastname-signup-finish" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.LastName />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.LastName" />
                                 <p>Be sure it's the same as what appears on your government ID.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="birtdate-signup-finish" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.Birthdate />
-                                <ValidationMessage style="text-align:left" For="() => viewModel.Customer.Birthdate" />
+                                <InputText id="birtdate-signup-finish" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Birthdate />
+                                <ValidationMessage style="text-align:left" For="() => viewModel.Birthdate" />
                                 <p>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                             </div>
                             <div class="col-12 justify-content-start">
-                                <InputText id="email-signup-finish" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Customer.Email disabled/>
-                                <ValidationMessage style="text-align:left" For="() => viewModel.Customer.Email" />
+                                <InputText id="email-signup-finish" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Email disabled/>
+                                <ValidationMessage style="text-align:left" For="() => viewModel.Email" />
                                 <p>For email confirmations, and receipts.</p>
                             </div>
                             <div class="col-12">
@@ -67,7 +59,6 @@
                             </div>
                         </div>  
                     </EditForm>
-                    }
                 </div>
             </div>
         </div>  
@@ -77,13 +68,15 @@
 {
     <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
 }
-@code {
+
+@code 
+{
     IJSObjectReference module;
 
     [Parameter]
     public Expression<Func<string>>? For { get; set; }
 
-    SignupViewModel viewModel = new SignupViewModel();
+    private SignupModel viewModel = new SignupModel();
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -96,24 +89,24 @@
 
     public bool ButtonIsClicked()
     {
-        return viewModel.isClickButton ? true : false;
+        return viewModel.IsClickButton ? true : false;
     }
 
     public string showSpinner()
     {
-        return viewModel.isClickButton ? "visible" : "hidden";
+        return viewModel.IsClickButton ? "visible" : "hidden";
     }
 
-    public async Task OpenModal(string Email)
+    public void OpenModal(string Email)
     {
         viewModel.ModalDisplay   = "block;";
         viewModel.ModalClass     = "show";
         viewModel.ShowBackdrop   = true;
-        viewModel.Customer.Email = Email;
+        viewModel.Email = Email;
         StateHasChanged();
     }
 
-    public async Task CloseModal()
+    public void CloseModal()
     {
         viewModel.ModalClass    = "";
         viewModel.ModalDisplay  = "none;";

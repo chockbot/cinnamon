@@ -1,6 +1,6 @@
-﻿@using Cinnamon.Core.Models
-@using Microsoft.AspNetCore.Components.Authorization
-@inject TokenProvider _tokenProvider;
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@* @inject TokenProvider _tokenProvider; *@
+
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
         <Found Context="routeData">
@@ -13,11 +13,14 @@
         </NotFound>
     </Router>
 </CascadingAuthenticationState>
+
 @code 
 {
     
+    /*
     [Parameter]
     public ApplicationInitialState InitialState { get; set; }
+    */
 
     private Theme theme  = new Theme {
         ColorOptions = new ThemeColorOptions {
@@ -27,6 +30,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _tokenProvider.AntiForgeryToken = InitialState.AntiForgeryToken;
+       // _tokenProvider.AntiForgeryToken = InitialState.AntiForgeryToken;
     }
 }

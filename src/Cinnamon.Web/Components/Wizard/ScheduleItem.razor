@@ -1,5 +1,4 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core
 @using Models
 @using Models.Entities
 
@@ -41,10 +40,6 @@
 
     [Parameter]
     public EventCallback<ExperienceCreationModel> ModelChanged {get; set;}
-
-    private ScheduleModel? DraggedItem;
-    private int DraggedItemPosition;
-    private ScheduleModel? DragEnter;
 
     private async Task DeleteSchedule() 
     {

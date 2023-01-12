@@ -21,20 +21,23 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
+      - name: Restore Framework
+        run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
+
+      - name: Restore Api Data
+        run: dotnet restore src/api/Cinnamon.Api.Data/Cinnamon.Api.Data.csproj
+
+      - name: Restore Api Core
+        run: dotnet restore src/api/Cinnamon.Api.Core/Cinnamon.Api.Core.csproj
+
       - name: Restore Web
         run: dotnet restore src/Cinnamon.Web/Cinnamon.Web.csproj
-
-      - name: Restore Core
-        run: dotnet restore src/Cinnamon.Core/Cinnamon.Core.csproj
-
-      - name: Restore Data
-        run: dotnet restore src/Cinnamon.Data/Cinnamon.Data.csproj
 
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 14
-        
+
       - name: Build JS Library
         run: |
           cd src/Cinnamon.Web/JsLib
@@ -42,11 +45,14 @@ jobs:
           npm install
           npm run build
 
-      - name: Build Project
-        run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/build
-      
-      - name: Publish Project
-        run: dotnet publish src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish
+      - name: Publish Cinnamon.Api.Data Project
+        run: dotnet publish src/api/Cinnamon.Api.Data/Cinnamon.Api.Data.csproj -c Release -o output/publish-data
+
+      - name: Publish Cinnamon.Api.Core Project
+        run: dotnet publish src/api/Cinnamon.Api.Core/Cinnamon.Api.Core.csproj -c Release -o output/publish-core
+
+      - name: Publish Cinnamon.Web Project
+        run: dotnet publish src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish-web
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
@@ -57,14 +63,26 @@ jobs:
       - name: Adding Known Hosts
         run: ssh-keyscan -H ${{ secrets.SERVER_IP }} >> ~/.ssh/known_hosts
 
-      - name: Copy Artifacts to DEV Server
-        run: rsync -avz output/publish/ cinnamon@${{ secrets.SERVER_IP }}:build-dev/src
+      - name: Copy Cinnamon.Api.Data Artifacts to DEV Server
+        run: rsync -avz output/publish-data/ cinnamon@${{ secrets.SERVER_IP }}:build-dev/src-data
+
+      - name: Copy Cinnamon.Api.Core Artifacts to DEV Server
+        run: rsync -avz output/publish-core/ cinnamon@${{ secrets.SERVER_IP }}:build-dev/src-core
+
+      - name: Copy Cinnamon.Web Artifacts to DEV Server
+        run: rsync -avz output/publish-web/ cinnamon@${{ secrets.SERVER_IP }}:build-dev/src-web
 
       - name: Copy docker-compose
         run: rsync -avz output/docker-compose.dev.yml cinnamon@${{ secrets.SERVER_IP }}:build-dev/docker-compose.yml
 
-      - name: Copy Dockerfile
-        run: rsync -avz output/Dockerfile cinnamon@${{ secrets.SERVER_IP }}:build-dev/Dockerfile
+      - name: Copy Cinnamon.Api.Data Dockerfile
+        run: rsync -avz output/Dockerfile.Data cinnamon@${{ secrets.SERVER_IP }}:build-dev/Dockerfile.Data
+
+      - name: Copy Cinnamon.Api.Core Dockerfile
+        run: rsync -avz output/Dockerfile.Core cinnamon@${{ secrets.SERVER_IP }}:build-dev/Dockerfile.Core
+
+      - name: Copy Cinnamon.Web Dockerfile
+        run: rsync -avz output/Dockerfile.Web cinnamon@${{ secrets.SERVER_IP }}:build-dev/Dockerfile.Web
 
       - name: Run Server Script
-        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-dev && sudo docker-compose down && sudo docker-compose up -d'
+        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-dev && sudo docker compose down && sudo docker compose up -d'

@@ -1,5 +1,4 @@
 ﻿@namespace Cinnamon.Web.Components
-@using Cinnamon.Core.Enums
 
 <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog">
@@ -13,15 +12,13 @@
                     <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
                     <br/>
                     <h6>Email</h6>
-                    <LoginCard TypeValue="@TypeValue" ReturnUrl="@ReturnUrl"></LoginCard>
+                    <LoginCard ReturnUrl="@ReturnUrl"></LoginCard>
                 </div>
             </div>
         </div>  
     </div>
 </div>
 @code {
-    [Parameter]
-    public UserType TypeValue { get; set; }
     [Parameter]
     public string ReturnUrl { get; set; } = "";
 }

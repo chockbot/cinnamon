@@ -97,7 +97,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to By using this website, you agree to our cookie policy..
+        ///   Looks up a localized string similar to By using this website, you agree to our.
         /// </summary>
         internal static string AlertCookie {
             get {

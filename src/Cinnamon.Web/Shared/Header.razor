@@ -1,11 +1,6 @@
 ﻿@inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
-@using Cinnamon.Web.Components
-@using Cinnamon.Core.Enums
-@using Cinnamon.Core
-@using Cinnamon.Core.Models;
-@using Cinnamon.Data
-@using System.Security.Claims
+@using Cinnamon.Web.Components.Modals
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
 
@@ -20,9 +15,18 @@
         </div>
         <!--Menu-->
             <div class="d-flex flex-row justify-content-end" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
-                <div class="become">
-                     <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
-                </div>
+                @* @if (UserModel != null && UserModel.IsMaker)
+                {
+                    <div class="become">
+                        <a @onclick="NavigateToDashboard" class="btn border-0">Go to Dashboard</a>
+                    </div>
+                }
+                else
+                {
+                    <div class="become">
+                        <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
+                    </div>
+                } *@
                 <div class="dropdown">
                     <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                         <div class="menu">
@@ -35,12 +39,12 @@
                         {
                             @if (AuthState.User.Identity.IsAuthenticated)
                             {
-                                if (UserModel != null && UserModel.IsMaker)
+                                @* if (UserModel != null && UserModel.IsMaker)
                                 {
                                     <li class="dropdown-item">
                                         <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
                                     </li>
-                                }
+                                } *@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAccount" Text="Account" />
                                 </li>
@@ -79,14 +83,16 @@
     </main>
     <ModalSignUp></ModalSignUp>
 </div>
+
 @if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
 {
-    <ModalLogin TypeValue="@UserType.Customer" ReturnUrl="@NavigationManager.Uri"></ModalLogin>
+    <ModalLogin ReturnUrl="@NavigationManager.Uri"></ModalLogin>
 }
-@code {
+
+@code 
+{
     public bool clickButton { get; set; }
-    public List<CustomerModel> UserList = new List<CustomerModel>();
-    public CustomerModel UserModel = new CustomerModel();
+    //public CustomerModel UserModel = new CustomerModel();
     public AuthenticationState AuthState { get; set; }
     private bool mouseEnter { get; set; }
      protected override async Task OnInitializedAsync()
