@@ -32,7 +32,7 @@ services:
       - "8081:80"
       - "443:443"
     env_file:
-      - .env.prod
+      - .env
     environment:
       - ASPNETCORE_URLS=https://+:443;http://+:80
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${SSL_PASSWORD}
