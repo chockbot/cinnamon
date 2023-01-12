@@ -1,30 +1,39 @@
 version: "3.1"
 services:
+  api-data:
+    container_name: cinnamon_api_data_dev
+    build:
+      context: .
+      dockerfile: Dockerfile.Data
+    restart: always
+    volumes:
+      - ./src-data:/app
+    networks:
+      - dev
+
+  api-core:
+    container_name: cinnamon_api_core_dev
+    build:
+      context: .
+      dockerfile: Dockerfile.Core
+    restart: always
+    volumes:
+      - ./src-core:/app
+    networks:
+      - dev
+
   app:
     container_name: cinnamon_app_dev
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.Web
     restart: always
     ports:
       - "8080:80"
     volumes:
       - ./src:/app
-    networks: 
-      - dev
-  
-  db:
-    container_name: cinnamon_db_dev
-    image: postgres:14.5-alpine
-    restart: always
     networks:
-      - dev
-    volumes:
-      - ./database/data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_DB: CINNAMON
+      - devs
 
 networks:
   dev:
