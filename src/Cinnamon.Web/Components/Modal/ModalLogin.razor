@@ -1,24 +1,116 @@
 ﻿@namespace Cinnamon.Web.Components
 
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center">Sign Up/Log In</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card-filter">
-                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
-                    <br/>
-                    <h6>Email</h6>
-                    <LoginCard ReturnUrl="@ReturnUrl"></LoginCard>
+<Modal @ref="Model.EmailModal">
+    <ModalContent>
+        <ModalHeader>
+            <p class="col-11 modal-title text-center">Sign Up/Log In</p>
+            <button type="button" class="btn-close" @onclick="() => Model.EmailModal.Hide()" />
+        </ModalHeader>
+        <ModalBody>
+            <div class="card-filter">
+                <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
+                <br/>
+                <h6>Email</h6>
+                <div class="w-100 text-center">
+                    <EditForm Model="Model.EmailModel">
+                        <div class="d-flex flex-column gap-3 align-items-center">
+                            <div class="col-12">
+                                <InputText id="email" @bind-Value="Model.EmailModel.Email" class="input-group fs-12" 
+                                    style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
+                            </div>
+                            <DataAnnotationsValidator />
+                            <Microsoft.AspNetCore.Components.Forms.ValidationSummary />
+                            <Button Type="ButtonType.Submit" class="btn-primary" Shadow="Shadow.Small" TextAlignment="TextAlignment.Center" 
+                                Border="Border.Is0.RoundedPill" Width="Width.Is100" style="white-space:nowrap;padding-right:50px;">
+                                <LoadingTemplate>
+                                    <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i>
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Continue
+                                </ChildContent>
+                            </Button>
+                            <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+                        </div>
+                    </EditForm>
+                    <div class="divider">
+                        <hr class="left" />or<hr class="right" />
+                    </div>
+                    <div class="col-12">
+                        <form id="external-account" 
+                                action="/Identity/Account/ExternalLogin" 
+                                asp-route-returnUrl="/onboarding" 
+                                method="post">
+                            <input type="hidden" name="provider" value="Google">
+                            <input type="hidden" name="returnUrl" value="@ReturnUrl">
+                            <button class="btn btn-md btn-google" type="submit">
+                                <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-        </div>  
-    </div>
-</div>
-@code {
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="Model.PasswordModal">
+    <ModalContent>
+        <ModalHeader>
+            <p class="col-11 modal-title text-center">Log In</p>
+            <button type="button" class="btn-close" @onclick="() => Model.PasswordModal.Hide()" />
+        </ModalHeader>
+        <ModalBody>
+            <div class="card-filter">
+                <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+                <br />
+                <h6>Password</h6>
+                <EditForm Model="Model.PasswordModel">
+                    <div class="d-flex flex-column gap-3 align-items-center">
+                        <div class="col-12">
+                            <InputText id="password" @bind-Value="Model.PasswordModel.Password" aria-placeholder="Password" class="input-group fs-12"
+                                style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
+                        </div>
+                        <Button Type="ButtonType.Submit" class="btn-primary" Shadow="Shadow.Small" TextAlignment="TextAlignment.Center" 
+                            Border="Border.Is0.RoundedPill" Width="Width.Is100" style="white-space:nowrap;padding-right:50px;">
+                            <LoadingTemplate>
+                                <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i>
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Login
+                            </ChildContent>
+                        </Button>
+                    </div>
+                </EditForm>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="Model.VerificationModal">
+    <ModalContent>
+        <ModalHeader>
+            <p class="col-11 modal-title text-center">Verification Email</p>
+            <button type="button" class="btn-close" @onclick="() => Model.VerificationModal.Hide()" />
+        </ModalHeader>
+        <ModalBody>
+            <div class="card-filter">
+                <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+                <br />
+                <div class="col-12 text-center">
+                    <p>We've sent an email to your inbox. Please check and click verify.</p>
+                    <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code 
+{
+    private Models.Modals.LoginModal Model = new();
+
     [Parameter]
     public string ReturnUrl { get; set; } = "";
+
+    public void Show() => Model.EmailModal.Show();
 }

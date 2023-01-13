@@ -97,17 +97,18 @@
                         }
                         else{
                             <li class="dropdown-item">
-                                <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                     @Resources.App.Sign
-                                </button>
+                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
+                                    @Resources.App.Sign
+                                </Button>
                             </li>
                         }
                     }
-                    else{
+                    else
+                    {
                         <li class="dropdown-item">
-                                <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                 @Resources.App.Sign
-                            </button>
+                            <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
+                                    @Resources.App.Sign
+                            </Button>
                         </li>
                     }
                 </ul>  
@@ -372,13 +373,17 @@
 }
 </body>
 
-@*<ModalLogin></ModalLogin>*@
+<ModalLogin @ref="signinModal" />
+
 <!--Filter-->
 @*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 </html>
-@code {
+@code 
+{
+    private ModalLogin signinModal;
+
     public ExploreModel Model= new ExploreModel();
     public Profile CustomerModel= new Profile();
     public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
