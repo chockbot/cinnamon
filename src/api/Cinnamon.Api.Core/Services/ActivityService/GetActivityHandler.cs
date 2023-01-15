@@ -39,7 +39,7 @@ public class GetActivityHandler : IGetActivityHandler
                     IncludeSchedules = args.IncludeAtivitySchedules,
                     IncludeSearchTags = args.IncludeActivitySearchTags,
                     IsActive = args.IsActive,
-                    CustomerId = args.CustomerId
+                    CustomerId = args.CustomerId,
                 }
             );
 
@@ -77,6 +77,7 @@ public class GetActivityHandler : IGetActivityHandler
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
+                CreatedBy = activity.CreatedBy,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,

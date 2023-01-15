@@ -379,20 +379,20 @@
 <ModalPassword @ref="modalPassword"></ModalPassword>
 </html>
 @code {
-    public ExploreModel Model= new ExploreModel();
-    public Profile CustomerModel= new Profile();
-    public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
-    public List<ExperienceType>          experiencesType    = new List<ExperienceType>();
+    public ExploreModel                  Model              = new ExploreModel();
+    public Profile                       CustomerModel      = new Profile();
     public ExperienceType                exptype            = new ExperienceType();
     public CustomerProfile               customers          = new CustomerProfile();
-    public List<Activity>                activities         = new List<Activity>();
     public Activity                      activity           = new Activity();
+    public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
+    public List<ExperienceType>          experiencesType    = new List<ExperienceType>();
+    public List<Activity>                activities         = new List<Activity>();
     public string                        searchValue        = string.Empty;
     public string                        filterId           = string.Empty;
     public int                           cnt                = 0;
     private string                       value              { get; set; }
     public bool                          clickButton        { get; set; }
-    public ClaimsPrincipal               AuthState          { get; set; }
+    public  ClaimsPrincipal              AuthState          { get; set; }
     private ModalFinishSignUp            modalFinishSignUp  { get; set; }
     private ModalPassword                modalPassword      { get; set; }
     private ModalLogin                   modalLogin         { get; set; }
@@ -433,7 +433,7 @@
                 ExperienceCategories = categories,
                 ExperienceTypes = experiencesType
             };
-
+        // get user login
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
         AuthState = user;

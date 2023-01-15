@@ -44,11 +44,12 @@ public class GetCustomerByIdHandler : IGetCustomerByIdHandler
 
             return AppResult<GetCustomerByIdResult>.CreateSucceeded(new GetCustomerByIdResult
             {
-                About = result.Result.Result.About,
-                Birthdate = result.Result.Result.Birthdate,
-                DateJoined = result.Result.Result.DateJoined,
-                Email = result.Result.Result.Email,
-                Id = result.Result.Result.Id,
+                //About = result.Result.Result.About,
+                //Birthdate = result.Result.Result.Birthdate,
+                //DateJoined = result.Result.Result.DateJoined,
+                //Email = result.Result.Result.Email,
+                FirstName = result.Result.Result.FirstName,
+                LastName = result.Result.Result.LastName,
                 IsMaker = result.Result.Result.IsMaker,
                 IsVerified = result.Result.Result.IsVerified,
                 ProfileImg = result.Result.Result.ProfileImg,

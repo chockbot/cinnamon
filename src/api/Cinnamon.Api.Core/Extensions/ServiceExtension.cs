@@ -45,6 +45,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IGetWaitListHandler, Services.AccountService.GetWaitListHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetCustomerByEmailHandler, Services.AccountService.GetCustomerByEmailHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetWaitListByGuidHandler, Services.AccountService.GetWaitListByGuidHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetCustomerByIdHandler, Services.AccountService.GetCustomerByIdHandler>();
         
         
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

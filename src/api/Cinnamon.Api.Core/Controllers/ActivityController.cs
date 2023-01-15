@@ -510,6 +510,7 @@ public class ActivityController : ControllerBase
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        CreatedBy = a.CreatedBy,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
                             {
@@ -666,6 +667,7 @@ public class ActivityController : ControllerBase
                     District = activity.District,
                     ExperienceCategoryId = activity.ExperienceCategoryId,
                     ExperienceTypeId = activity.ExperienceTypeId,
+                    CreatedBy = activity.CreatedBy,
                     Images = activity.Images.Select(i => {
                         return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                             Id = i.Id,

@@ -5,356 +5,403 @@
 @using Cinnamon.Web.Models
 @using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Models.Entities
-@inject IActivityApiHandler activityApiHandler;
-@inject IAccountApiHandler accountApiHandler;
+@inject IActivityApiHandler activityApiHandler
+@inject IAccountApiHandler accountApiHandler
 
-@foreach (var item in activities)
-{
-    <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
-        <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 col-md-10 col-sm-12 col-12">
-            <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
-                <div class="images-gallery order-lg-last order-md-last order-sm-first d-flex gap-3">
-                    <div class="detail-md">
-                        <div class="gallery">
-                            <figure class="gallery__item gallery__item--1">
-                                <img class="img-fluid shadow rounded gallery__img" src="@item.Images.ElementAt(0).ImageSrc" />
-                            </figure>
-                            <figure class="gallery__item gallery__item--2">
-                                <img class="img-fluid shadow rounded gallery__img" src="@item.Images.ElementAt(1).ImageSrc" />
-                            </figure>
-                            <figure class="gallery__item gallery__item--3">
-                                <img class="img-fluid shadow rounded gallery__img" src="@item.Images.ElementAt(2).ImageSrc" />
-                            </figure>
-                        </div>
-                    </div>
-                    <div class="d-flex flex-row detail-sm mx-auto">
-                        <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
-                            <div class="carousel-indicators">
-                                <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                                <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                            </div>
-                            <div class="carousel-inner">
-                                @if (item.Images.Count > 0)
-                                {
-                                    <div class="carousel-item active">
-                                        <img class="img-fluid shadsow rounded" src="@item.Images.ElementAt(0).ImageSrc" />
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img class="img-fluid shadow rounded" src="@item.Images.ElementAt(1).ImageSrc" />
-                                    </div>
-                                    <div class="carousel-item">
-                                        <img class="img-fluid shadow rounded" src="@item.Images.ElementAt(2).ImageSrc" />
-                                    </div>
-                                }
-                            </div>
-                            <button class="carousel-control-prev" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="prev">
-                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Previous</span>
-                            </button>
-                            <button class="carousel-control-next" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="next">
-                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                <span class="visually-hidden">Next</span>
-                            </button>
-                        </div>
+@if (Model != null){
+<div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
+    <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 col-md-10 col-sm-12 col-12">
+        <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
+            <div class="images-gallery order-lg-last order-md-last order-sm-first d-flex gap-3">
+                <div class="detail-md">
+                    <div class="gallery">
+                        <figure class="gallery__item gallery__item--1">
+                            <img class="img-fluid shadow rounded gallery__img" src="@activity.Images.ElementAt(0).ImageSrc" />
+                        </figure>
+                        <figure class="gallery__item gallery__item--2">
+                            <img class="img-fluid shadow rounded gallery__img" src="@activity.Images.ElementAt(1).ImageSrc" />
+                        </figure>
+                        <figure class="gallery__item gallery__item--3">
+                            <img class="img-fluid shadow rounded gallery__img" src="@activity.Images.ElementAt(2).ImageSrc" />
+                        </figure>
                     </div>
                 </div>
-                <div class="w-100 order-lg-first order-md-first order-sm-last">
-                    <div class="text-black">
-                        <div class="d-flex gap-1 fs-6">
-                            @*  <span class="review">
+                <div class="d-flex flex-row detail-sm mx-auto">
+                    <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            @if (activity.Images.Count > 0)
+                            {
+                                <div class="carousel-item active">
+                                    <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(0).ImageSrc" />
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="img-fluid shadow rounded" src="@activity.Images.ElementAt(1).ImageSrc" />
+                                </div>
+                                <div class="carousel-item">
+                                    <img class="img-fluid shadow rounded" src="@activity.Images.ElementAt(2).ImageSrc" />
+                                </div>
+                            }
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-100 order-lg-first order-md-first order-sm-last">
+                <div class="text-black">
+                    <div class="d-flex gap-1 fs-6">
+                        @*  <span class="review">
                         <span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-star" viewBox="0 0 20 22">
                         <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.565.565 0 0 0-.163-.505L1.71 6.745l4.052-.576a.525.525 0 0 0 .393-.288L8 2.223l1.847 3.658a.525.525 0 0 0 .393.288l4.052.575-2.906 2.77a.565.565 0 0 0-.163.506l.694 3.957-3.686-1.894a.503.503 0 0 0-.461 0z"/>
                         </svg>
                         </span>4.99 · <u>150 reviews</u></span>*@
-                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="d-flex justify-content-between mt-3">
-                <div class="activity-title">
-                    <label class="fw-bold mb-3 col-md-12 col-12" style="font-size:1.9rem">@item.Title</label>
-                    <span class="col-md-12 col-12 d-flex align-items-center">
-                        @if (item.ExperienceTypeId == 1)
-                        {
-                            <img class="img-thumbnail border-0" src="/images/location.png" />
-                        }
-                        else
-                        {
-                            <i class="fa fa-laptop mx-1" aria-hidden="true"></i>
-                        }
-                        <span>@experience.Name</span>
-                    </span>
                 </div>
             </div>
         </div>
-
-        <div class="description-container py-4 d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12">
-            <div class="flex-fill col-lg-12 col-md-12 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last d-flex flex-column">
-                <div class="col-12 d-flex flex-lg-row flex-md-row flex-sm-column flex-column">
-                    <div class="pe-3 mt-lg-0 mt-md-0 mt-3 mt-sm-3 col-lg-8 col-md-8 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last">
-                        @if (String.IsNullOrEmpty(item.Description))
-                        {
-                            <label class="fw-bold mb-2 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
-                            <p>
-                                @item.Description
-                            </p>
-                        }
-                        else
-                        {
-                            <p>
-                                @(
-                                    (MarkupString)item.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>")
-                                 )
-                            </p>
-                        }
-                    </div>
-                    @*@if (Customer != null)
+        <div class="d-flex justify-content-between mt-3">
+            <div class="activity-title">
+                <label class="fw-bold mb-3 col-md-12 col-12" style="font-size:1.9rem">@activity.Title</label>
+                <span class="col-md-12 col-12 d-flex align-items-center">
+                    @if (activity.ExperienceTypeId == 1)
                     {
-                        <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
-                            <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
-                                <img class="rounded-2 rounded-circle m-3" src="@Customer.CustomerProfile.ProfilePath" width="60" height="60" />
-                                <div class="d-flex flex-column m-2">
-                                    <span style="font-size:0.7rem;">Owner</span>
-                                    <span class="fw-bold text-capitalize" style="font-size:1rem;">@Customer.CustomerProfile.FirstName @Customer.CustomerProfile.LastName</span>
-                                    <a class="text-decoration-none" href="/maker/profile/@Customer.CustomerProfile.Id">View Profile</a>
-                                </div>
-                                <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
-                                    <img class="px-3" src="images/details_profile_badge.png" />
-                                </div>
-                            </div>
-                        </div>
+                        <img class="img-thumbnail border-0" src="/images/location.png" />
                     }
                     else
                     {
-                        <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
-                            <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
-                                <img class="rounded-2 rounded-circle m-3" src="/images/Profile/user.png" width="60" height="60" />
-                                <div class="d-flex flex-column m-2">
-                                    <span>Sample Owner</span>
-                                    <span>Owner Name</span>
-                                    <label>View Profile</label>
-                                </div>
-                                <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
-                                    <img class="px-3" src="images/details_profile_badge.png" />
-                                </div>
-                            </div>
-                        </div>
-                    }*@
-                    <hr class="d-block d-sm-block d-md-none" />
-                </div>
-                <hr />
-                @*<div class="col-12">
-                    <label class="fw-bold mb-3 detail-label">Schedule of @(item.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
-                    <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
-                        @if (item.ScheduleIndicator == "selection" || item.ActivitySchedules.Count > 0)
-                        {
-                            @if (string.IsNullOrEmpty(actModel.Schedules))
-                            {
-
-                                @for (int x = 0; x < item.ActivitySchedules.Count; x++)
-                                {
-                                    @if (x <= 3)
-                                    {
-                                        <div class="col-md-3 col-lg-3 col-sm-6 col-6">
-                                            @* commentd first for integration *@
-                                            @* <CarouselItemSchedule ScheduleModel="@actModel.ScheduleList.ElementAt(x)"></CarouselItemSchedule> *@
-                                       @* </div>
-                                    }
-                                    else
-                                    {
-                                        break;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (actModel.Schedules.Split("\r\n\r\n").Length > 1)
-                                {
-                                    @for (int x = 0; x < actModel.Schedules.Split("\r\n\r\n").Length; x++)
-                                    {
-                                        <div class="carousel-item @(x==0 ? "active" : "")">
-                                            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
-                                                <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x)"></CarouselItem>
-                                            </div>
-                                            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
-                                                @if (x + 1 >= actModel.Schedules.Split("\r\n\r\n").Length)
-                                                {
-                                                    <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
-                                                }
-                                                else
-                                                {
-                                                    <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+1)"></CarouselItem>
-                                                }
-                                            </div>
-                                            @if (actModel.Schedules.Split("\r\n\r\n").Length > 2)
-                                            {
-                                                <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
-                                                    @if (x + 2 >= actModel.Schedules.Split("\r\n\r\n").Length)
-                                                    {
-                                                        <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
-                                                    }
-                                                    else
-                                                    {
-                                                        <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+2)"></CarouselItem>
-                                                    }
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                }
-                                else
-                                {
-                                    <div class="carousel-item active">
-                                        <div class="col-lg-2 col-md-2">
-                                        </div>
-                                        <div class="col-lg-8 col-md-8">
-                                            <CarouselItem Text="@actModel.Schedules"></CarouselItem>
-                                        </div>
-                                        <div class="col-lg-2 col-md-2">
-                                        </div>
-                                    </div>
-                                }
-                            }
-                        }
-                        else
-                        {
-                            <div class="px-4">
-                                <span>
-                                    @((MarkupString)actModel.Schedules.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
-                                </span>
-                            </div>
-                        }
-                    </div>
-                    @if (actModel.ScheduleList.Count > 4)
-                    {
-                        <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
-                            Show more
-                        </button>
+                        <i class="fa fa-laptop mx-1" aria-hidden="true"></i>
                     }
-                </div>
-                <hr />
-                <div class="d-flex flex-column align-items-start col-lg-6 col-md-6 col-sm-12 col-12">
-                    <label class="fw-bold mb-3 detail-label">Where you’ll be</label>
-                    @if (string.IsNullOrEmpty(item.MapDetails))
-                    {
-                        @if (actModel.ExperienceType.Id == 1)
-                        {
-                            var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + actModel.Address.Address1 + "+" + actModel.Address.Address2 + "+" + actModel.Address.District + "+" + actModel.Address.City;
-                            <iframe id="mapframe"
-                        frameborder="0" style="border:0"
-                        src="@map"
-                        allowfullscreen>
-                            </iframe>
-                            <span class="mt-3">
-                                @(actModel.Address.Address1 + ", " + actModel.Address.Address2 + ", " + actModel.Address.District + ", " + actModel.Address.City)
-                            </span>
-                        }
-                        else
-                        {
-                            <span class="mt-3">
-                                @actModel.ExperienceType.Name
-                            </span>
-                        }
-                    }
-                    else
-                    {
-                        @if (!actModel.MapDetails.Contains("Online"))
-                        {
-                            var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + actModel.MapDetails.Replace(" ", "+");
-                            <iframe id="mapframe"
-                        frameborder="0" style="border:0"
-                        src="@map"
-                        allowfullscreen>
-                            </iframe>
-                        }
-                        <span class="mt-3">
-                            @actModel.MapDetails
-                        </span>
-                    }
-
-            </div>*@
-                @if (!string.IsNullOrEmpty(item.Description))
-                {
-                    <hr />
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                        <label class="fw-bold mb-3 detail-label">What's included</label>
-                        <p>
-                            @item.SpecificsYouWillProvide
-                        </p>
-                    </div>
-                    <hr />
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                        <label class="fw-bold mb-3 detail-label">What you should bring</label>
-                        <p>
-                            @item.CustomerBringWithThem
-                        </p>
-                    </div>
-                    <hr />
-                    <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                        <label class="fw-bold mb-3 detail-label">Requirements</label>
-                        <p>
-                            Minimum Age: @item.MinimumAge
-                            <br>
-                            Adults: @(item.CanAdultsJoin ? "Can join" : "Can't join")
-                            <br>
-                            Levels of Activity: @item.ActivityLevel
-                            <br>
-                            Skill Level: @item.SkillLevel
-                        </p>
-                    </div>
-                    if (!string.IsNullOrEmpty(item.AdditionalRequirements))
-                    {
-                        <hr />
-                        <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                            <label class="fw-bold mb-3 detail-label">Additional Requirements</label>
-                            <p>
-                                @item.AdditionalRequirements
-                            </p>
-                        </div>
-                    }
-                }
-                <hr />
-                <div class="end-container d-flex flex-column">
-                    <span class="landing-header color-primary fs-2">@Resources.App.appName</span>
-                    <span>
-                        Not happy with the experience? <br /> <a href="mailto:support@cinnamon.ph">Contact us</a> and we'll solve the problem for you.
-                    </span>
-                </div>
+                    <span>@experience.Name</span>
+                </span>
             </div>
         </div>
     </div>
-}
 
+    <div class="description-container py-4 d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12">
+        <div class="flex-fill col-lg-12 col-md-12 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last d-flex flex-column">
+            <div class="col-12 d-flex flex-lg-row flex-md-row flex-sm-column flex-column">
+                <div class="pe-3 mt-lg-0 mt-md-0 mt-3 mt-sm-3 col-lg-8 col-md-8 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last">
+                    @if (String.IsNullOrEmpty(activity.Description))
+                    {
+                        <label class="fw-bold mb-2 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
+                        <p>
+                            @activity.Description
+                        </p>
+                    }
+                    else
+                    {
+                        <p>
+                            @(
+                                (MarkupString)activity.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>")
+                                )
+                        </p>
+                    }
+                </div>
+                @if (customerDetail != null)
+                {
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
+                        <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
+                            <img class="rounded-2 rounded-circle m-3" src="@customerDetail.ProfilePath" width="60" height="60" />
+                            <div class="d-flex flex-column m-2">
+                                <span style="font-size:0.7rem;">Owner</span>
+                                <span class="fw-bold text-capitalize" style="font-size:1rem;">@customerDetail.FirstName @customerDetail.LastName</span>
+                                <a class="text-decoration-none" href="/maker/profile/@customerDetail.Id">View Profile</a>
+                            </div>
+                            <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
+                                <img class="px-3" src="images/details_profile_badge.png" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
+                        <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
+                            <img class="rounded-2 rounded-circle m-3" src="/images/Profile/user.png" width="60" height="60" />
+                            <div class="d-flex flex-column m-2">
+                                <span>Sample Owner</span>
+                                <span>Owner Name</span>
+                                <label>View Profile</label>
+                            </div>
+                            <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
+                                <img class="px-3" src="images/details_profile_badge.png" />
+                            </div>
+                        </div>
+                    </div>
+                }
+                <hr class="d-block d-sm-block d-md-none" />
+            </div>
+            <hr />
+            @*<div class="col-12">
+            <label class="fw-bold mb-3 detail-label">Schedule of @(item.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
+            <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
+            @if (item.ScheduleIndicator == "selection" || item.ActivitySchedules.Count > 0)
+            {
+            @if (string.IsNullOrEmpty(actModel.Schedules))
+            {
 
+            @for (int x = 0; x < item.ActivitySchedules.Count; x++)
+            {
+            @if (x <= 3)
+            {
+            <div class="col-md-3 col-lg-3 col-sm-6 col-6">
+            @* commentd first for integration *@
+            @* <CarouselItemSchedule ScheduleModel="@actModel.ScheduleList.ElementAt(x)"></CarouselItemSchedule> *@
+            @* </div>
+            }
+            else
+            {
+            break;
+            }
+            }
+            }
+            else
+            {
+            if (actModel.Schedules.Split("\r\n\r\n").Length > 1)
+            {
+            @for (int x = 0; x < actModel.Schedules.Split("\r\n\r\n").Length; x++)
+            {
+            <div class="carousel-item @(x==0 ? "active" : "")">
+            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
+            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x)"></CarouselItem>
+            </div>
+            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
+            @if (x + 1 >= actModel.Schedules.Split("\r\n\r\n").Length)
+            {
+            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
+            }
+            else
+            {
+            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+1)"></CarouselItem>
+            }
+            </div>
+            @if (actModel.Schedules.Split("\r\n\r\n").Length > 2)
+            {
+            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
+            @if (x + 2 >= actModel.Schedules.Split("\r\n\r\n").Length)
+            {
+            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
+            }
+            else
+            {
+            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+2)"></CarouselItem>
+            }
+            </div>
+            }
+            </div>
+            }
+            }
+            else
+            {
+            <div class="carousel-item active">
+            <div class="col-lg-2 col-md-2">
+            </div>
+            <div class="col-lg-8 col-md-8">
+            <CarouselItem Text="@actModel.Schedules"></CarouselItem>
+            </div>
+            <div class="col-lg-2 col-md-2">
+            </div>
+            </div>
+            }
+            }
+            }
+            else
+            {
+            <div class="px-4">
+            <span>
+            @((MarkupString)actModel.Schedules.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
+            </span>
+            </div>
+            }
+            </div>
+            @if (actModel.ScheduleList.Count > 4)
+            {
+            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
+            Show more
+            </button>
+            }
+            </div>
+            <hr />
+            <div class="d-flex flex-column align-items-start col-lg-6 col-md-6 col-sm-12 col-12">
+            <label class="fw-bold mb-3 detail-label">Where you’ll be</label>
+            @if (string.IsNullOrEmpty(item.MapDetails))
+            {
+            @if (actModel.ExperienceType.Id == 1)
+            {
+            var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + actModel.Address.Address1 + "+" + actModel.Address.Address2 + "+" + actModel.Address.District + "+" + actModel.Address.City;
+            <iframe id="mapframe"
+            frameborder="0" style="border:0"
+            src="@map"
+            allowfullscreen>
+            </iframe>
+            <span class="mt-3">
+            @(actModel.Address.Address1 + ", " + actModel.Address.Address2 + ", " + actModel.Address.District + ", " + actModel.Address.City)
+            </span>
+            }
+            else
+            {
+            <span class="mt-3">
+            @actModel.ExperienceType.Name
+            </span>
+            }
+            }
+            else
+            {
+            @if (!actModel.MapDetails.Contains("Online"))
+            {
+            var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + actModel.MapDetails.Replace(" ", "+");
+            <iframe id="mapframe"
+            frameborder="0" style="border:0"
+            src="@map"
+            allowfullscreen>
+            </iframe>
+            }
+            <span class="mt-3">
+            @actModel.MapDetails
+            </span>
+            }
+
+            </div>*@
+            @if (!string.IsNullOrEmpty(activity.Description))
+            {
+                <hr />
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                    <label class="fw-bold mb-3 detail-label">What's included</label>
+                    <p>
+                        @activity.SpecificsYouWillProvide
+                    </p>
+                </div>
+                <hr />
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                    <label class="fw-bold mb-3 detail-label">What you should bring</label>
+                    <p>miss universe 2023 live now
+                        @activity.CustomerBringWithThem
+                    </p>
+                </div>
+                <hr />
+                <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                    <label class="fw-bold mb-3 detail-label">Requirements</label>
+                    <p>
+                        Minimum Age: @activity.MinimumAge
+                        <br>
+                        Adults: @(activity.CanAdultsJoin ? "Can join" : "Can't join")
+                        <br>
+                        Levels of Activity: @activity.ActivityLevel
+                        <br>
+                        Skill Level: @activity.SkillLevel
+                    </p>
+                </div>
+                if (!string.IsNullOrEmpty(activity.AdditionalRequirements))
+                {
+                    <hr />
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                        <label class="fw-bold mb-3 detail-label">Additional Requirements</label>
+                        <p>
+                            @activity.AdditionalRequirements
+                        </p>
+                    </div>
+                }
+            }
+            <hr />
+            <div class="end-container d-flex flex-column">
+                <span class="landing-header color-primary fs-2">@Resources.App.appName</span>
+                <span>
+                    Not happy with the experience? <br /> <a href="mailto:support@cinnamon.ph">Contact us</a> and we'll solve the problem for you.
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
 @* commented first for migration *@
 @* <SchedulesModal @ref="ModalSched" ScheduleModel="actModel.ScheduleList.ToList()"></SchedulesModal> *@
 
 <!--Beta Alert-->
 @*<BetaAlert></BetaAlert>*@
+}
 @code {
     IJSObjectReference module;
     [Parameter]
     public int Id { get; set; }
-
-    public ExploreModel                  Model              = new ExploreModel();
-    public List<Activity>                activities         = new List<Activity>();
-    public List<ActivityImage>           activityImages     = new List<ActivityImage>();
+    public DetailActivityModel           Model              = new DetailActivityModel();
     public Activity                      activity           = new Activity();
-    public Profile                       Customer           = new Profile();
+    public CustomerProfile               customerDetail     = new CustomerProfile();
     public List<ExperienceType>          experienceTypes    = new List<ExperienceType>();
     public ExperienceType                experience         = new ExperienceType();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    protected override async Task OnInitializedAsync()
     {
-        if(firstRender)
+        //Get Activity by Id
+        var ActivityListData = await activityApiHandler.GetActivity(Id, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true,
+                IncludeAtivitySchedules = true
+            });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            var result = ActivityListData.Result.Result;
+            activity = new Activity
+                {
+                    ActivityId = result.ActivityId,
+                    ExperienceTypeId = result.ExperienceTypeId,
+                    ExperienceCategoryId = result.ExperienceCategoryId,
+                    SubCategoryId = result.SubCategoryId,
+                    Title = result.Title,
+                    Description = result.Description,
+                    Price = result.Price,
+                    ScheduleIndicator = result.ScheduleIndicator,
+                    Remarks = result.Remarks,
+                    IsPublished = result.IsPublished,
+                    Address1 = result.Address1,
+                    Address2 = result.Address2,
+                    District = result.District,
+                    City = result.City,
+                    SpecificsYouWillProvide = result.SpecificsYouWillProvide,
+                    CustomerBringWithThem = result.CustomerBringWithThem,
+                    AdditionalRequirements = result.AdditionalRequirements,
+                    ActivityLevel = result.ActivityLevel,
+                    SkillLevel = result.SkillLevel,
+                    MinimumAge = result.MinimumAge,
+                    CanAdultsJoin = result.CanAdultsJoin,
+                    CreatedBy = result.CreatedBy,
+                    ActivitySchedules = result.ActivitySchedules.Select(e =>
+                    {
+                        return new ActivitySchedule
+                        {
+                            Id = e.Id,
+                            Name = e.Name,
+                            PerUnit1 = e.PerUnit1,
+                            PerUnit2 = e.PerUnit2,
+                            Price = e.Price,
+                            PriceUnit1 = e.PriceUnit1,
+                            PriceUnit2 = e.PriceUnit2,
+                            UnitPrice = e.UnitPrice
+                        };
+                    }).ToList(),
+                    Images = result.Images.Select(i =>
+                    {
+                        return new ActivityImage
+                        {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList(),
+                };
         }
-    }
-    protected override async Task OnInitializedAsync()   
-    {
         // Get experience types
         var experienceType = await activityApiHandler.GetExperienceTypes();
         if (experienceType.Succeeded && experienceType.Result != null && experienceType.Result.IsSuccess)
@@ -368,96 +415,35 @@
                     };
             }).ToList();
         }
-        //Get All Activity
-        var ActivityListData = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
-            {
-                IncludeActivityAddress = true,
-                IncludeActivityDescription = true,
-                IncludeActivityImages = true,
-                IncludeAtivitySchedules = true
-            });
-        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
-        {
-            activities = ActivityListData.Result.Result.Select(r =>
-            {
-                return new Activity
-                    {
-                        ActivityId = r.ActivityId,
-                        ExperienceTypeId = r.ExperienceTypeId,
-                        ExperienceCategoryId = r.ExperienceCategoryId,
-                        SubCategoryId = r.SubCategoryId,
-                        Title = r.Title,
-                        Description = r.Description,
-                        Price = r.Price,
-                        ScheduleIndicator = r.ScheduleIndicator,
-                        Remarks = r.Remarks,
-                        IsPublished = r.IsPublished,
-                        Address1 = r.Address1,
-                        Address2 = r.Address2,
-                        District = r.District,
-                        City = r.City,
-                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                        CustomerBringWithThem = r.CustomerBringWithThem,
-                        AdditionalRequirements = r.AdditionalRequirements,
-                        ActivityLevel = r.ActivityLevel,
-                        SkillLevel = r.SkillLevel,
-                        MinimumAge = r.MinimumAge,
-                        CanAdultsJoin = r.CanAdultsJoin,
-                        CreatedBy = r.CreatedBy,
-                        ActivitySchedules = r.ActivitySchedules.Select(e =>
-                        {
-                                return new ActivitySchedule
-                                {
-                                    Id = e.Id,
-                                    Name = e.Name,
-                                    PerUnit1 = e.PerUnit1,
-                                    PerUnit2 = e.PerUnit2,
-                                    Price = e.Price,
-                                    PriceUnit1 = e.PriceUnit1,
-                                    PriceUnit2 = e.PriceUnit2,
-                                    UnitPrice = e.UnitPrice
-                                };
-                            }).ToList(),
-                        Images = r.Images.Select(i =>
-                        {
-                                return new ActivityImage
-                                {
-                                    Id = i.Id,
-                                    ImageSrc = i.ImageSrc,
-                                    Name = i.Name
-                                };
-                        }).ToList(),
-                    };
-            }).ToList();
-            Model = new ExploreModel
-                {
-                    Activities = activities
-                };
-        }
-        //Get Activity By ID
-        activities = activities.Where(a=> a.ActivityId == Id).ToList();
         //Get Experience Type
-        experience = experienceTypes.Where(a => a.Id == activities.ElementAt(0).ExperienceTypeId).ElementAt(0);
+        experience = experienceTypes.Where(a => a.Id == activity.ExperienceTypeId).ElementAt(0);
         //Get Customer
         var customer = await accountApiHandler.GetCustomerById(activity.CreatedBy);
-        Customer = new();
         if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
         {
             var args = customer.Result.Result;
-            Customer.CustomerProfile = new CustomerProfile
-            {
-                Birthdate = args.Birthdate,
-                Email = args.Email,
-                FirstName = args.FirstName,
-                LastName = args.LastName,
-                Id = args.Id,
-                IsMaker = args.IsMaker,
-                IsVerified = args.IsVerified,
-            };
+            customerDetail = new CustomerProfile
+                {
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    ProfilePath = args.ProfileImg
+                };
         }
-        //ActivityModel = Task.Run(() => CoreDI.DataStore.Activities.GetAllAsync()).Result;
-        //_Images =  Task.Run(()=>CoreDI.DataStore.ActivityImages.GetAllAsync()).Result.Where(c => c.ImageId == Id).ToList();
-        //actModel = ActivityModel.Where(c => c.Id == Id).ElementAt(0);
-        //Customer = await CoreDI.DataStore.Customers.GetCustomerById(actModel.CreatedBy);
+        Model = new DetailActivityModel
+            {
+                Activity = activity,
+                ExperienceTypes = experienceTypes,
+                Customer = customerDetail
+            };
     }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+        }
+    }
+
 }

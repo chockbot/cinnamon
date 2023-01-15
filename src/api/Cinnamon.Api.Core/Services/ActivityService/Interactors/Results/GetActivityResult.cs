@@ -23,6 +23,7 @@ public class GetActivityResult
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
+    public int CreatedBy { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}

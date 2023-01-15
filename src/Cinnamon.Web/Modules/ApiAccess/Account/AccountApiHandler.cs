@@ -4,6 +4,7 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Account;
 
@@ -347,6 +348,7 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetProfilePictureResult>.CreateFailed(ex, "An error occured when getting profile picture api");
         }
     }
+
     public async Task<AppResult<GetWaitListResult>> GetAllWaitList()
     {
         try

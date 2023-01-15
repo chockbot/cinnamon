@@ -457,6 +457,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
+                CreatedBy = activity.CreatedBy,
             };
 
             // address fields
