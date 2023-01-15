@@ -73,6 +73,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         SearchTags = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
                         IsPublished = e.IsPublished,
                         CreatedBy = e.CreatedBy,
+                        MapDetails = e.MapDetails,
                         ActivitySchedules = e.Schedules != null ? e.Schedules.Select(s => {
                             return new GetAllActivitiesResult.Activity.ActivitySchedule
                             {

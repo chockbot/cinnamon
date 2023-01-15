@@ -410,6 +410,7 @@ public class ActivityRepository : IActivityRepository
                     SubCategoryId = a.SubCategoryId ?? 0,
                     CreatedBy = a.CreatedBy,
                     ExperienceTypeId = a.ExperienceTypeId,
+                    MapDetails = a.MapDetails,
                 };
             });
 
@@ -458,6 +459,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 CreatedBy = activity.CreatedBy,
+                MapDetails = activity.MapDetails,
             };
 
             // address fields

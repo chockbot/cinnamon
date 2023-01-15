@@ -24,6 +24,7 @@ public class GetActivityResult
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
     public int CreatedBy { get; set; }
+    public string MarDetails { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}

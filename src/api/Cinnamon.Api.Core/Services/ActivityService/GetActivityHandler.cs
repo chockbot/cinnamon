@@ -78,6 +78,7 @@ public class GetActivityHandler : IGetActivityHandler
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 CreatedBy = activity.CreatedBy,
+                MarDetails = activity.MapDetails,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,

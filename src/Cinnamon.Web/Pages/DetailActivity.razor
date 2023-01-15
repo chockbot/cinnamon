@@ -7,8 +7,9 @@
 @using Cinnamon.Web.Models.Entities
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
+@using Microsoft.EntityFrameworkCore
 
-@if (Model != null){
+@if (Model.Customer != null){
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
     <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 col-md-10 col-sm-12 col-12">
         <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
@@ -143,137 +144,134 @@
                 }
                 <hr class="d-block d-sm-block d-md-none" />
             </div>
+            @*Experience Schedule*@
             <hr />
             @*<div class="col-12">
-            <label class="fw-bold mb-3 detail-label">Schedule of @(item.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
-            <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
-            @if (item.ScheduleIndicator == "selection" || item.ActivitySchedules.Count > 0)
-            {
-            @if (string.IsNullOrEmpty(actModel.Schedules))
-            {
-
-            @for (int x = 0; x < item.ActivitySchedules.Count; x++)
-            {
-            @if (x <= 3)
-            {
-            <div class="col-md-3 col-lg-3 col-sm-6 col-6">
-            @* commentd first for integration *@
-            @* <CarouselItemSchedule ScheduleModel="@actModel.ScheduleList.ElementAt(x)"></CarouselItemSchedule> *@
-            @* </div>
-            }
-            else
-            {
-            break;
-            }
-            }
-            }
-            else
-            {
-            if (actModel.Schedules.Split("\r\n\r\n").Length > 1)
-            {
-            @for (int x = 0; x < actModel.Schedules.Split("\r\n\r\n").Length; x++)
-            {
-            <div class="carousel-item @(x==0 ? "active" : "")">
-            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
-            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x)"></CarouselItem>
-            </div>
-            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
-            @if (x + 1 >= actModel.Schedules.Split("\r\n\r\n").Length)
-            {
-            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
-            }
-            else
-            {
-            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+1)"></CarouselItem>
-            }
-            </div>
-            @if (actModel.Schedules.Split("\r\n\r\n").Length > 2)
-            {
-            <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
-            @if (x + 2 >= actModel.Schedules.Split("\r\n\r\n").Length)
-            {
-            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
-            }
-            else
-            {
-            <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+2)"></CarouselItem>
-            }
-            </div>
-            }
-            </div>
-            }
-            }
-            else
-            {
-            <div class="carousel-item active">
-            <div class="col-lg-2 col-md-2">
-            </div>
-            <div class="col-lg-8 col-md-8">
-            <CarouselItem Text="@actModel.Schedules"></CarouselItem>
-            </div>
-            <div class="col-lg-2 col-md-2">
-            </div>
-            </div>
-            }
-            }
-            }
-            else
-            {
-            <div class="px-4">
-            <span>
-            @((MarkupString)actModel.Schedules.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
-            </span>
-            </div>
-            }
-            </div>
-            @if (actModel.ScheduleList.Count > 4)
-            {
-            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
+                    <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
+                    <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
+                @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
+                {
+                    @if (string.IsNullOrEmpty(activity.Schedules))
+                    {
+                        @for (int x = 0; x < activity.ActivitySchedules.Count; x++)
+                        {
+                            @if (x <= 3)
+                            {
+                <div class="col-md-3 col-lg-3 col-sm-6 col-6">
+                @* commentd first for integration *@
+                @*<CarouselItemSchedule ScheduleModel="@activity.ActivitySchedules.ElementAt(x)"></CarouselItemSchedule> 
+                </div>
+                }
+                else
+                {
+                break;
+                }
+                }
+                }
+                else
+                {
+                if (actModel.Schedules.Split("\r\n\r\n").Length > 1)
+                {
+                @for (int x = 0; x < actModel.Schedules.Split("\r\n\r\n").Length; x++)
+                {
+                <div class="carousel-item @(x==0 ? "active" : "")">
+                <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
+                <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x)"></CarouselItem>
+                </div>
+                <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
+                @if (x + 1 >= actModel.Schedules.Split("\r\n\r\n").Length)
+                {
+                <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
+                }
+                else
+                {
+                <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+1)"></CarouselItem>
+                }
+                </div>
+                @if (actModel.Schedules.Split("\r\n\r\n").Length > 2)
+                {
+                <div class="@(actModel.Schedules.Split("\r\n\r\n").Length <= 2 ? "col-lg-6 col-md-6" : "col-lg-4 col-md-4") col-sm-12 col-12">
+                @if (x + 2 >= actModel.Schedules.Split("\r\n\r\n").Length)
+                {
+                <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(0)"></CarouselItem>
+                }
+                else
+                {
+                <CarouselItem Text="@actModel.Schedules.Split("\r\n\r\n").ElementAt(x+2)"></CarouselItem>
+                }
+                </div>
+                }
+                </div>
+                }
+                }
+                else
+                {
+                <div class="carousel-item active">
+                <div class="col-lg-2 col-md-2">
+                </div>
+                <div class="col-lg-8 col-md-8">
+                <CarouselItem Text="@actModel.Schedules"></CarouselItem>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                </div>
+                </div>
+                }
+                }
+                }
+                else
+                {
+                <div class="px-4">
+                <span>
+                @((MarkupString)actModel.Schedules.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
+                </span>
+                </div>
+                }
+                </div>
+                    @if (activity.ActivitySchedules.Count > 4)
+                {
+                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
             Show more
             </button>
-            }
-            </div>
+                }
+            </div>*@
+
+            @*Map Details*@
             <hr />
             <div class="d-flex flex-column align-items-start col-lg-6 col-md-6 col-sm-12 col-12">
-            <label class="fw-bold mb-3 detail-label">Where you’ll be</label>
-            @if (string.IsNullOrEmpty(item.MapDetails))
+                 <label class="fw-bold mb-3 detail-label">Where you’ll be</label>
+            @if (string.IsNullOrEmpty(activity.MapDetails))
             {
-            @if (actModel.ExperienceType.Id == 1)
+            @if (activity.ExperienceTypeId == 1)
             {
-            var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + actModel.Address.Address1 + "+" + actModel.Address.Address2 + "+" + actModel.Address.District + "+" + actModel.Address.City;
-            <iframe id="mapframe"
-            frameborder="0" style="border:0"
-            src="@map"
-            allowfullscreen>
-            </iframe>
+                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.Address1 + "+" + activity.Address2 + "+" + activity.District + "+" + activity.City;
+                <iframe id="mapframe"
+                    frameborder="0" style="border:0"
+                    src="@map"
+                    allowfullscreen>
+                </iframe>
             <span class="mt-3">
-            @(actModel.Address.Address1 + ", " + actModel.Address.Address2 + ", " + actModel.Address.District + ", " + actModel.Address.City)
+                 @(activity.Address1 + ", " + activity.Address2 + ", " + activity.District + ", " + activity.City)
             </span>
             }
             else
             {
-            <span class="mt-3">
-            @actModel.ExperienceType.Name
-            </span>
+                 <span class="mt-3">
+                    @experience.Name
+                 </span>
             }
             }
             else
             {
-            @if (!actModel.MapDetails.Contains("Online"))
+            @if (!activity.MapDetails.Contains("Online"))
             {
-            var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + actModel.MapDetails.Replace(" ", "+");
-            <iframe id="mapframe"
-            frameborder="0" style="border:0"
-            src="@map"
-            allowfullscreen>
-            </iframe>
+                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.MapDetails.Replace(" ", "+");
+                <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
             }
             <span class="mt-3">
-            @actModel.MapDetails
+            @activity.MapDetails
             </span>
             }
-
-            </div>*@
+            </div>
             @if (!string.IsNullOrEmpty(activity.Description))
             {
                 <hr />
@@ -325,7 +323,7 @@
     </div>
 </div>
 @* commented first for migration *@
-@* <SchedulesModal @ref="ModalSched" ScheduleModel="actModel.ScheduleList.ToList()"></SchedulesModal> *@
+ <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.ToList()"></SchedulesModal> 
 
 <!--Beta Alert-->
 @*<BetaAlert></BetaAlert>*@
@@ -339,7 +337,7 @@
     public CustomerProfile               customerDetail     = new CustomerProfile();
     public List<ExperienceType>          experienceTypes    = new List<ExperienceType>();
     public ExperienceType                experience         = new ExperienceType();
-
+    private SchedulesModal               ModalSched { get; set; }
     protected override async Task OnInitializedAsync()
     {
         //Get Activity by Id
@@ -377,6 +375,7 @@
                     MinimumAge = result.MinimumAge,
                     CanAdultsJoin = result.CanAdultsJoin,
                     CreatedBy = result.CreatedBy,
+                    MapDetails = result.MapDetails,
                     ActivitySchedules = result.ActivitySchedules.Select(e =>
                     {
                         return new ActivitySchedule
