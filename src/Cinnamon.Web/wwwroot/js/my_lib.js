@@ -10,6 +10,28 @@ var MyLib;
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./src/Account/index.js":
+/*!******************************!*\
+  !*** ./src/Account/index.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _login__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./login */ \"./src/Account/login.js\");\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  login: _login__WEBPACK_IMPORTED_MODULE_0__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Account/index.js?");
+
+/***/ }),
+
+/***/ "./src/Account/login.js":
+/*!******************************!*\
+  !*** ./src/Account/login.js ***!
+  \******************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ \"./node_modules/axios/index.js\");\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (async (email, password) => {\n  try {\n    const payload = {\n      email,\n      password\n    };\n    const {\n      data\n    } = await axios__WEBPACK_IMPORTED_MODULE_0__[\"default\"].post(\"/api/account/login\", payload);\n    return data;\n  } catch {\n    return {\n      success: false,\n      message: \"An error occured. Please try again later\"\n    };\n  }\n});\n\n//# sourceURL=webpack://MyLib/./src/Account/login.js?");
+
+/***/ }),
+
 /***/ "./src/Components/Modal/PasswordModal.js":
 /*!***********************************************!*\
   !*** ./src/Components/Modal/PasswordModal.js ***!
@@ -171,7 +193,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"Components\": () => (/* binding */ Components),\n/* harmony export */   \"Pages\": () => (/* binding */ Pages),\n/* harmony export */   \"Track\": () => (/* binding */ Track),\n/* harmony export */   \"previewImage\": () => (/* binding */ previewImage)\n/* harmony export */ });\n/* harmony import */ var _mixpanel_lib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mixpanel_lib */ \"./src/mixpanel_lib.js\");\n/* harmony import */ var _Pages__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Pages */ \"./src/Pages/index.js\");\n/* harmony import */ var _Components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components */ \"./src/Components/index.js\");\n\n\n\nfunction Track(event) {\n  return (0,_mixpanel_lib__WEBPACK_IMPORTED_MODULE_0__.track)(event);\n}\nfunction previewImage(inputElem, imgElemId) {\n  const url = URL.createObjectURL(inputElem.files[0]);\n  const el = document.getElementById(imgElemId);\n  if (!el) return;\n  el.addEventListener(\"load\", () => URL.revokeObjectURL(url), {\n    once: true\n  });\n  el.src = url;\n}\nconst Pages = _Pages__WEBPACK_IMPORTED_MODULE_1__[\"default\"];\nconst Components = _Components__WEBPACK_IMPORTED_MODULE_2__[\"default\"];\n\n//# sourceURL=webpack://MyLib/./src/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"Account\": () => (/* binding */ Account),\n/* harmony export */   \"Components\": () => (/* binding */ Components),\n/* harmony export */   \"Pages\": () => (/* binding */ Pages),\n/* harmony export */   \"Track\": () => (/* binding */ Track),\n/* harmony export */   \"previewImage\": () => (/* binding */ previewImage)\n/* harmony export */ });\n/* harmony import */ var _mixpanel_lib__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./mixpanel_lib */ \"./src/mixpanel_lib.js\");\n/* harmony import */ var _Pages__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Pages */ \"./src/Pages/index.js\");\n/* harmony import */ var _Components__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Components */ \"./src/Components/index.js\");\n/* harmony import */ var _Account__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Account */ \"./src/Account/index.js\");\n\n\n\n\nfunction Track(event) {\n  return (0,_mixpanel_lib__WEBPACK_IMPORTED_MODULE_0__.track)(event);\n}\nfunction previewImage(inputElem, imgElemId) {\n  const url = URL.createObjectURL(inputElem.files[0]);\n  const el = document.getElementById(imgElemId);\n  if (!el) return;\n  el.addEventListener(\"load\", () => URL.revokeObjectURL(url), {\n    once: true\n  });\n  el.src = url;\n}\nconst Pages = _Pages__WEBPACK_IMPORTED_MODULE_1__[\"default\"];\nconst Components = _Components__WEBPACK_IMPORTED_MODULE_2__[\"default\"];\nconst Account = _Account__WEBPACK_IMPORTED_MODULE_3__[\"default\"];\n\n//# sourceURL=webpack://MyLib/./src/index.js?");
 
 /***/ }),
 
