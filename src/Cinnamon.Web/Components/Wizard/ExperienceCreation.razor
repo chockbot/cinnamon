@@ -149,7 +149,7 @@
 
     public void Enter(KeyboardEventArgs e)
     {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
+        if (e.Code == "Comma")
         {
             bool condition = Model.Activity.SearchTags.Count < 5 && 
                                 (Model.Activity.SearchTags.Where(x => x.ToLower() == SearchTag.ToLower())
