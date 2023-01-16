@@ -18,8 +18,6 @@ uploadProfilePicture._initForm = (dotnetObj) => {
       $("#id-profile-image").hide();
     }
 
-    if (!back || !front) return;
-
     const formData = new FormData(this);
 
     // show loading spinner

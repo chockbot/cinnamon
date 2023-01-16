@@ -44,7 +44,7 @@ public class GetCustomerByIdHandler : IGetCustomerByIdHandler
 
             return AppResult<GetCustomerByIdResult>.CreateSucceeded(new GetCustomerByIdResult
             {
-                //About = result.Result.Result.About,
+                About = result.Result.Result.About,
                 //Birthdate = result.Result.Result.Birthdate,
                 //DateJoined = result.Result.Result.DateJoined,
                 //Email = result.Result.Result.Email,

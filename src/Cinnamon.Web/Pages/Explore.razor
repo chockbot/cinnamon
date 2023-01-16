@@ -168,7 +168,7 @@
             <div class="activity-lg">
                 <div class="col-lg-10 p-4 d-flex justify-content-center">
                     <div class="cards-wrapper">
-                            @foreach (var category in categories)
+                        @foreach (var category in categories)
                         {
                             if(category.Id <= 10)
                             {
@@ -429,7 +429,7 @@
                     };
             }).ToList();
         }
-        exptype = experiencesType.Where(a => a.Id == 1).ElementAt(0);
+        exptype = experiencesType.Where(a => a.Id == 2).ElementAt(0);
         Model = new ExploreModel
             {
                 ExperienceCategories = categories,

@@ -8,13 +8,13 @@
 @inject IJSRuntime jsRuntime
 
 
-<div class="modal @* @viewModel.ModalClass *@" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden; @* display:@viewModel.ModalDisplay *@">
+<Modal @ref="modalRef" class="upload-profile-picture">
     <div class="modal-dialog">
         <form id="submit-profile-picture" method="post" enctype="multipart/form-data">
             <div class="modal-content">
                 <div class="modal-header">
                     <p class="col-11 modal-title text-center">Profile Photo</p>
-                    <button type="button" class="btn-close" @onclick=@(() => CloseModal())></button>
+                    <button type="button" class="btn-close" @onclick="() => modalRef.Hide()"></button>
                 </div>
                 <div class="modal-body">
                     <p class="top-text">People can get to know you better if your profile shows your face.</p>
@@ -22,7 +22,7 @@
                         <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
                             <div class="btn-delete">
                                 @* <button type="button" class="btn border-0" @onclick="@(() => DeleteProfile())" disabled=@viewModel.isClickButton>
-                                    <i class="fa fa-trash" style="color:black;"></i>
+                                <i class="fa fa-trash" style="color:black;"></i>
                                 </button> *@
                             </div>
                             <div class="figure-profile">
@@ -33,7 +33,7 @@
                                 </label>
                                 <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;" />
                                 <div class="round">
-                                    <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload"/>
+                                    <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" />
                                     <i class="fa fa-camera" style="color: black;"></i>
                                 </div>
                             </div>
@@ -42,7 +42,7 @@
                     <p class="bottom-text">JPEG or PNG only</p>
                     <div class="btn-upload">
                         <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Type="ButtonType.Submit"
-                            Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18" Loading="isLoading" Disabled="isLoading">
+                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18" Loading="isLoading" Disabled="isLoading">
                             <LoadingTemplate>
                                 <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                             </LoadingTemplate>
@@ -50,12 +50,17 @@
                                 Upload
                             </ChildContent>
                         </Button>
+                        <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="isShowErrorMessage">
+                            <AlertMessage>
+                                @errorMessage
+                            </AlertMessage>
+                        </Alert>
                     </div>
                 </div>
             </div>
         </form>
     </div>
-</div>
+</Modal>
 <!--ModalEdit-->
     <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
         <div class="modal-dialog" role="document">
@@ -74,48 +79,31 @@
             </div> 
         </div>
     </div>
-@* @if (viewModel.ShowErrorMessage)
-{
-    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" id="@profilePicture.ErrorId" style="z-index:99999">
-        <strong>Error!</strong>Error occured while uploading image. Please try again.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-} *@
-@* @if (viewModel.ShowSuccessMessage)
-{
-    <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-        <strong>Success!</strong> Your profile photo was uploaded successfully.
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-} *@
-<!--Confimation Popup-->
-@* @if (viewModel.ShowBackdrop)
-{
-    <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
-} *@
-
 @code {
     IJSObjectReference module;
 
     [Parameter]
     public string Token { get; set; }
 
+    private Modal modalRef;
+
     private UploadProfilePicture profilePicture = new();
 
     private InputFile? inputFile;
+
     private DotNetObjectReference<ModalUploadingProfile>? objRef;
 
     private readonly IConfiguration configuration;
 
     private List<IBrowserFile> loadedFiles = new();
 
-    //UploadProfileViewModel viewModel = new UploadProfileViewModel();
-
-    //private CustomerModel customer = new CustomerModel();
-
     public string ParaContent = "Some Text Content";
 
     private bool isLoading = false;
+
+    private bool isShowErrorMessage = false;
+
+    private string errorMessage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -146,30 +134,16 @@
 
         return "/images/Profile/user.png";
     }
-    public async Task OpenModal()
+    public Task ShowModal()
     {
-        //viewModel.ModalDisplay   = "block;";
-        //viewModel.ModalClass     = "show";
-        //viewModel.ShowBackdrop   = true;
-        StateHasChanged();
+        return modalRef.Show();
+    }
+    [JSInvokable]
+    public Task HideModal()
+    {
+        return modalRef.Hide();
     }
 
-    public async Task CloseModal()
-    {
-        //viewModel.ModalClass   = "";
-        //viewModel.ModalDisplay = "none;";
-        //viewModel.ShowBackdrop = false;
-        StateHasChanged();
-        NavigationManager.NavigateTo("/customer/profile",true);
-    }
-
-    private async void HideMessageAfterDelay()
-    {
-        await Task.Delay(20000);
-        //viewModel.ShowErrorMessage  = false;
-        //viewModel.ShowSuccessMessage = false;
-        StateHasChanged();
-    }
     [JSInvokable]
     public Task ShowLoading()
     {
@@ -185,32 +159,13 @@
         StateHasChanged();
         return Task.CompletedTask;
     }
-    private async Task DeleteProfile()
-    {
-        /*
-        string[] filepath = viewModel.profilepicture.Split("/");
-        viewModel.profilepicture = filepath[4];
-        await DeleteBlob(viewModel.profilepicture, "upload-profile-picture");
-        */
-    }
-    private async Task DeleteBlob(string filename, string container1)
-    {
-        /*
-        // Delete to Azure Blob
-        var result = await deleteImageHandler.ExecuteAsync(
-                new Core.Module.UploadService.Interactors.DeleteImage
-                    { Container = "upload-profile-picture", FileName = filename });
 
-        if (result.Succeeded)
-        {
-            customer = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(viewModel.UserEmail);
-            viewModel.profilepicture = customer.ProfilePath;
-        }
-        else
-        {
-            ResultModel.error("Error occurred while deleting image");
-        }
-        */
+    [JSInvokable]
+    public void ShowError(string message)
+    {
+        errorMessage = message;
+        isShowErrorMessage = true;
+        StateHasChanged();
     }
 }
 
