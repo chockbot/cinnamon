@@ -90,7 +90,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 CustomerId = id,
                 OverallTotal = overallTotal,
                 ScheduleId = args.ScheduleId,
-                Total = subTotal + fee
+                Total = subTotal + fee,
+                Status = 0
             });
 
             if(!result.Succeeded || result.Result == null)
