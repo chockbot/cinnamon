@@ -376,7 +376,7 @@
 <ModalLogin @ref="signinModal" />
 
 <!--Filter-->
-@*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
+<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 </html>
@@ -642,6 +642,7 @@
 
     private async Task OnFilterSelectedChanged(int[] ids)
     {
+        
         //activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
     }
 }

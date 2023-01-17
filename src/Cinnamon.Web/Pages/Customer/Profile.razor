@@ -26,7 +26,7 @@
                             <div class="edit-icon">
                                 @if (!Model.CustomerProfile.IsVerified)
                                 {
-                                    <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" @onclick="() => uploadIdModal.ShowModal()">
+                                    <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" @onclick="() => upload.ShowModal()">
                                         <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
                                     </Button>
                                 }
@@ -48,7 +48,7 @@
                         <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
                             @if(!Model.CustomerProfile.IsVerified)
                             {
-                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => upload.ShowModal()"
+                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()"
                                 Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
                             }
                         </CardFooter>

@@ -1,10 +1,8 @@
 ﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using System.Security.Claims;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.Http;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
@@ -23,7 +21,7 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
         }
         catch (Exception ex)
         {
-            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured in GetOwnedActivityHandler");
+            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured in GetActivitiesByCategoriesHandler");
         }
     }
 
@@ -49,7 +47,7 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
             if (result.Succeeded && !result.Result.IsSuccess)
             {
                 return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(
-                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetOwnedActivityHandler");
+                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetActivitiesByCategoriesHandler");
             }
             return AppResult<GetActivitiesByCategoriesResult>.CreateSucceeded(new GetActivitiesByCategoriesResult{
                 Activities = result.Result.Result.Select(a => {

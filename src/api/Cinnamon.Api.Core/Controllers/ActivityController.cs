@@ -25,13 +25,14 @@ public class ActivityController : ControllerBase
     private readonly IGetAddressHandler getAddressHandler;
     private readonly IGetActivityImagesHandler getActivityImagesHandler;
     private readonly IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler;
+    private readonly IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
         IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IUpdateActivityHandler updateActivityHandler,
         IGetOwnedActivityHandler getOwnedActivityHandler, IUploadActivityImageHandler uploadActivityImageHandler, 
         IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler, 
-        IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler
+        IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler
         )
     {
         this.createActivityHandler = createActivityHandler;
@@ -47,6 +48,7 @@ public class ActivityController : ControllerBase
         this.getActivityImagesHandler = getActivityImagesHandler;
         this.getActiviesByCategoriesHandler = getActiviesByCategoriesHandler;
         this.getActivityHandler = getActivityHandler;
+        this.getActivitiesBySubCategoriesHandler = getActivitiesBySubCategoriesHandler;
     }
 
     [Route("CreateActivity")]
@@ -801,7 +803,24 @@ public class ActivityController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetActivitiesByCategoriesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetActivitiesBySubCategories/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivitiesBySubCategoriesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetActivitiesBySubCategories(int[] id, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            return null;
+        }
+        catch (Exception)
+        {
+
+            throw;
         }
     }
 }

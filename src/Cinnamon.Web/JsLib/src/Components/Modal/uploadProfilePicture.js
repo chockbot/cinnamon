@@ -3,7 +3,7 @@
 const uploadProfilePicture = {};
 let cropper;
 let cropperModalId = "#cropperModal";
-let $jsPhotoUploadInput = undefined;
+let $jsPhotoUploadInput = $(".js-photo-upload");
 let imageData;
 
 uploadProfilePicture._initForm = (dotnetObj) => {
@@ -102,8 +102,7 @@ uploadProfilePicture._cropImage = () => {
     cropper.destroy();
     cropper = null;
   });
-};
-uploadProfilePicture._roundImage = () => {
+
   function getRoundedCanvas(sourceCanvas) {
     var canvas = document.createElement("canvas");
     var context = canvas.getContext("2d");
@@ -140,7 +139,6 @@ uploadProfilePicture.init = (dotnetObj) => {
   uploadProfilePicture._initForm(dotnetObj);
   uploadProfilePicture._uploadImage();
   uploadProfilePicture._cropImage();
-  uploadProfilePicture._roundImage();
   uploadProfilePicture._closeModal();
 };
 
