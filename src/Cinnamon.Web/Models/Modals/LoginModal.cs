@@ -14,6 +14,10 @@ public class LoginModal
     public LoginEmailModel EmailModel {get; set;} = new();
     public LoginPasswordModel PasswordModel {get; set;} = new();
 
+    public bool IsResendingVerification {get; set;}
+    public bool IsResendVerificationShowError {get; set;}
+    public string ResendVrificationErrorMessage {get; set;}
+
     public class LoginEmailModel 
     {
         [Required(ErrorMessage = "Email address is required")]
