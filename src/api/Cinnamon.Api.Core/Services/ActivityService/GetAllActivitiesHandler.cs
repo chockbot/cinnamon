@@ -51,8 +51,9 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 Activities = result.Result.Result.Select(e => {
                     return new GetAllActivitiesResult.Activity
                     {
-                        ActivityId = e.Id,
+                        Id = e.Id,
                         ExperienceCategoryId = e.ExperienceCategoryId,
+                        ExperienceTypeId = e.ExperienceTypeId,
                         SubCategoryId = e.SubCategoryId,
                         Title =e.Title,  
                         Description=e.Description,  
@@ -72,7 +73,27 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         SearchTags = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
                         IsPublished = e.IsPublished,
                         CreatedBy = e.CreatedBy,
-                        
+                        MapDetails = e.MapDetails,
+                        ActivitySchedules = e.Schedules != null ? e.Schedules.Select(s => {
+                            return new GetAllActivitiesResult.Activity.ActivitySchedule
+                            {
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice
+                            };
+                        }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivitySchedule>(),
+                        Images = e.Images != null ? e.Images.Select(i => {
+                            return new GetAllActivitiesResult.Activity.ActivityImage
+                            {
+                                ImageSrc = i.ImageLocation,
+                                Name = i.ImageName
+                            };
+                        }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivityImage>()
                     };
                 })
             }, "Successfully get all activities");

@@ -45,6 +45,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IGetWaitListHandler, Services.AccountService.GetWaitListHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetCustomerByEmailHandler, Services.AccountService.GetCustomerByEmailHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetWaitListByGuidHandler, Services.AccountService.GetWaitListByGuidHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetCustomerByIdHandler, Services.AccountService.GetCustomerByIdHandler>();
         
         
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -60,6 +61,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetAddressHandler, Services.ActivityService.GetAddressHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActivityImagesHandler, Services.ActivityService.GetActivityImagesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActiviesByCategoriesHandler, Services.ActivityService.GetActivitiesByCategoriesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetActivitiesBySubCategoriesHandler, Services.ActivityService.GetActivitiesBySubCategoriesHandler>();
 
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();

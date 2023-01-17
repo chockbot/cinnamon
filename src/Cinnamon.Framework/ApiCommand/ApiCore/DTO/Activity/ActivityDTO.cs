@@ -24,11 +24,17 @@ public class ActivityDTO
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
     public int CreatedBy { get; set;}   
+    public string MapDetails { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
+    public IEnumerable<ActivityDescription> Descriptions {get; set;}
 
-    public class ActivitySchedule 
+    public IEnumerable<ActivityAddress> Addresses { get; set;}
+
+
+
+public class ActivitySchedule 
     {
         public int Id {get; set;}
         public string Name {get; set;}
@@ -46,5 +52,27 @@ public class ActivityDTO
         public int Id {get; set;}
         public string ImageSrc {get; set;}
         public string Name {get; set;}
+    }
+    public class ActivityDescription
+    {
+        public int Id { get; set; }
+        public int ActivityId { get; set; }
+        public string Description { get; set; }
+        public string SpecificsYouWillProvide { get; set; }
+        public string CustomerBringWithThem { get; set; }
+        public string? AdditionalRequirements { get; set; }
+        public string ActivityLevel { get; set; }
+        public string SkillLevel { get; set; }
+        public int MinimumAge { get; set; }
+        public bool CanAdultsJoin { get; set; }
+    }
+    public class ActivityAddress
+    {
+        public int Id { get; set; }
+        public int ActivityId { get; set; }
+        public string Address1 { get; set; }
+        public string Address2 { get; set; }
+        public string District { get; set; }
+        public string City { get; set; }
     }
 }

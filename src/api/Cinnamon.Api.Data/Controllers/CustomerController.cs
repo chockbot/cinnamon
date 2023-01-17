@@ -2,6 +2,7 @@
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Api.Data.Controllers;

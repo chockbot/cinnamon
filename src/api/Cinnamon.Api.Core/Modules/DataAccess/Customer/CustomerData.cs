@@ -185,6 +185,7 @@ public class CustomerData : ICustomerData
             return AppResult<GetGovernmentIdResult>.CreateFailed(ex, "An error occured when getting customer government id api");
         }
     }
+
     public async Task<AppResult<GetProfilePictureResult>> GetProfilePicture(int customerId)
     {
 

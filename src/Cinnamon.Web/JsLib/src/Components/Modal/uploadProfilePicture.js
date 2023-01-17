@@ -1,43 +1,9 @@
-﻿import axios from "axios";
-
-const uploadProfilePicture = {};
+﻿const uploadProfilePicture = {};
 let cropper;
-let cropperModalId = "#cropperModal";
+let cropperModalId = undefined;
 let $jsPhotoUploadInput = undefined;
 let imageData;
 
-uploadProfilePicture._initForm = (dotnetObj) => {
-  $("#submit-profile-picture").submit(async function (e) {
-    e.preventDefault();
-
-    const profileImage = $("#ProfilePicture").val();
-
-    if (!profileImage) {
-      $("#id-profile-image").show();
-    } else {
-      $("#id-profile-image").hide();
-    }
-
-    if (!back || !front) return;
-
-    const formData = new FormData(this);
-
-    // show loading spinner
-    dotnetObj.invokeMethodAsync("ShowLoading");
-
-    const { data } = await axios.postForm(
-      "api/account/UploadProfilePicture",
-      formData
-    );
-
-    // hide loading
-    dotnetObj.invokeMethodAsync("HideLoading");
-
-    if (data.success) {
-      dotnetObj.invokeMethodAsync("HideModal");
-    }
-  });
-};
 uploadProfilePicture._uploadImage = () => {
   $jsPhotoUploadInput.on("change", function (e) {
     var files = this.files;
@@ -73,6 +39,7 @@ uploadProfilePicture._uploadImage = () => {
     }
   });
 };
+
 uploadProfilePicture._cropImage = () => {
   $(".js-save-cropped-avatar").on("click", function (event) {
     event.preventDefault();
@@ -104,8 +71,11 @@ uploadProfilePicture._cropImage = () => {
     cropper.destroy();
     cropper = null;
   });
-};
-uploadProfilePicture._roundImage = () => {
+
+  function ChangeContentJS(dotnetHelper) {
+      dotnetHelper.invokeMethodAsync("ChangeParaContentValue", imageData);
+  }
+
   function getRoundedCanvas(sourceCanvas) {
     var canvas = document.createElement("canvas");
     var context = canvas.getContext("2d");
@@ -127,8 +97,9 @@ uploadProfilePicture._roundImage = () => {
     );
     context.fill();
     return canvas;
-  }
+    }
 };
+
 uploadProfilePicture._closeModal = () => {
   $(".btn-close").on("click", function (event) {
     $(cropperModalId).modal("hide");
@@ -136,13 +107,13 @@ uploadProfilePicture._closeModal = () => {
     cropper = null;
   });
 };
-uploadProfilePicture.init = (dotnetObj) => {
-  $jsPhotoUploadInput = $(".js-photo-upload");
 
-  uploadProfilePicture._initForm(dotnetObj);
+uploadProfilePicture.init = () => {
+  $jsPhotoUploadInput = $(".js-photo-upload");
+  cropperModalId = "#cropperModal";
+
   uploadProfilePicture._uploadImage();
   uploadProfilePicture._cropImage();
-  uploadProfilePicture._roundImage();
   uploadProfilePicture._closeModal();
 };
 

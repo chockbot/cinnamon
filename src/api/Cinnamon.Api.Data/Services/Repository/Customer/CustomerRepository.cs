@@ -1,12 +1,10 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Entities = Cinnamon.Api.Data.Repository.Entities;
-using Cinnamon.Framework.Common;
+﻿using Cinnamon.Api.Data.Extensions;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Waitlist;
-
-using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Framework.Common;
+using Microsoft.AspNetCore.Identity;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Customer;
 

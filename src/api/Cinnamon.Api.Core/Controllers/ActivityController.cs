@@ -25,13 +25,14 @@ public class ActivityController : ControllerBase
     private readonly IGetAddressHandler getAddressHandler;
     private readonly IGetActivityImagesHandler getActivityImagesHandler;
     private readonly IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler;
+    private readonly IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
         IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IUpdateActivityHandler updateActivityHandler,
         IGetOwnedActivityHandler getOwnedActivityHandler, IUploadActivityImageHandler uploadActivityImageHandler, 
         IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler, 
-        IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler
+        IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler
         )
     {
         this.createActivityHandler = createActivityHandler;
@@ -47,6 +48,7 @@ public class ActivityController : ControllerBase
         this.getActivityImagesHandler = getActivityImagesHandler;
         this.getActiviesByCategoriesHandler = getActiviesByCategoriesHandler;
         this.getActivityHandler = getActivityHandler;
+        this.getActivitiesBySubCategoriesHandler = getActivitiesBySubCategoriesHandler;
     }
 
     [Route("CreateActivity")]
@@ -482,31 +484,52 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetAllActivitiesResult
             {
                 IsSuccess = true,
-                Result = result.Result.Activities.Select(s => {
+                Result = result.Result.Activities.Select(a => {
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
                     {
-                        ActivityId = s.ActivityId,
-                        ExperienceTypeId = s.ExperienceTypeId,
-                        ExperienceCategoryId = s.ExperienceCategoryId,
-                        SubCategoryId = s.SubCategoryId,
-                        Title = s.Title,
-                        Description = s.Description,
-                        Price = s.Price,
-                        ScheduleIndicator = s.ScheduleIndicator,
-                        Remarks = s.Remarks,
-                        IsPublished = s.IsPublished,
-                        Address1 = s.Address1,
-                        Address2 = s.Address2,
-                        District = s.District,
-                        City = s.City,
-                        SpecificsYouWillProvide = s.SpecificsYouWillProvide,
-                        CustomerBringWithThem = s.CustomerBringWithThem,
-                        AdditionalRequirements = s.AdditionalRequirements,
-                        ActivityLevel = s.ActivityLevel,
-                        SkillLevel = s.SkillLevel,
-                        MinimumAge = s.MinimumAge,
-                        CanAdultsJoin = s.CanAdultsJoin,
-                        CreatedBy = s.CreatedBy,
+                        ActivityId = a.Id,
+                        ActivityLevel = a.ActivityLevel,
+                        ActivitySchedules = a.ActivitySchedules.Select(s => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                            {
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice
+                            };
+                        }),
+                        AdditionalRequirements = a.AdditionalRequirements,
+                        Address1 = a.Address1,
+                        Address2 = a.Address2,
+                        CanAdultsJoin = a.CanAdultsJoin,
+                        City = a.City,
+                        CustomerBringWithThem = a.CustomerBringWithThem,
+                        Description = a.Description,
+                        District = a.District,
+                        ExperienceCategoryId = a.ExperienceCategoryId,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        CreatedBy = a.CreatedBy,
+                        Images = a.Images.Select(i => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
+                            {
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }),
+                        IsPublished = a.IsPublished,
+                        MinimumAge = a.MinimumAge,
+                        Price = a.Price,
+                        Remarks = a.Remarks,
+                        ScheduleIndicator = a.ScheduleIndicator,
+                        SearchTags = a.SearchTags,
+                        SkillLevel = a.SkillLevel,
+                        SpecificsYouWillProvide = a.SpecificsYouWillProvide,
+                        SubCategoryId = a.SubCategoryId,
+                        Title = a.Title
                     };
                 })
             });
@@ -646,6 +669,7 @@ public class ActivityController : ControllerBase
                     District = activity.District,
                     ExperienceCategoryId = activity.ExperienceCategoryId,
                     ExperienceTypeId = activity.ExperienceTypeId,
+                    CreatedBy = activity.CreatedBy,
                     Images = activity.Images.Select(i => {
                         return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                             Id = i.Id,
@@ -706,6 +730,7 @@ public class ActivityController : ControllerBase
     [Route("GetActivitiesByCategories/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetActivitiesByCategoriesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
     public async Task<IActionResult> GetActivitiesByCategories(int id, [FromQuery] GetActivityArgs args)
     {
         try
@@ -727,37 +752,75 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetActivitiesByCategoriesResult
             {
                 IsSuccess = true,
-                Result = result.Result.Activities.Select(s => {
+                Result = result.Result.Activities.Select(a => {
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
                     {
-                        ActivityId = s.Id,
-                        ExperienceTypeId = s.ExperienceTypeId,
-                        ExperienceCategoryId = s.ExperienceCategoryId,
-                        SubCategoryId = s.SubCategoryId,
-                        Title = s.Title,
-                        Description = s.Description,
-                        Price = s.Price,
-                        ScheduleIndicator = s.ScheduleIndicator,
-                        Remarks = s.Remarks,
-                        IsPublished = s.IsPublished,
-                        Address1 = s.Address1,
-                        Address2 = s.Address2,
-                        District = s.District,
-                        City = s.City,
-                        SpecificsYouWillProvide = s.SpecificsYouWillProvide,
-                        CustomerBringWithThem = s.CustomerBringWithThem,
-                        AdditionalRequirements = s.AdditionalRequirements,
-                        ActivityLevel = s.ActivityLevel,
-                        SkillLevel = s.SkillLevel,
-                        MinimumAge = s.MinimumAge,
-                        CanAdultsJoin = s.CanAdultsJoin
+                        ActivityId = a.Id,
+                        ActivityLevel = a.ActivityLevel,
+                        ActivitySchedules = a.ActivitySchedules.Select(s => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                            {
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice
+                            };
+                        }),
+                        AdditionalRequirements = a.AdditionalRequirements,
+                        Address1 = a.Address1,
+                        Address2 = a.Address2,
+                        CanAdultsJoin = a.CanAdultsJoin,
+                        City = a.City,
+                        CustomerBringWithThem = a.CustomerBringWithThem,
+                        Description = a.Description,
+                        District = a.District,
+                        ExperienceCategoryId = a.ExperienceCategoryId,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        Images = a.Images.Select(i => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
+                            {
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }),
+                        IsPublished = a.IsPublished,
+                        MinimumAge = a.MinimumAge,
+                        Price = a.Price,
+                        Remarks = a.Remarks,
+                        ScheduleIndicator = a.ScheduleIndicator,
+                        SearchTags = a.SearchTags,
+                        SkillLevel = a.SkillLevel,
+                        SpecificsYouWillProvide = a.SpecificsYouWillProvide,
+                        SubCategoryId = a.SubCategoryId,
+                        Title = a.Title
                     };
                 })
             });
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetActivitiesByCategoriesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetActivitiesBySubCategories/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivitiesBySubCategoriesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetActivitiesBySubCategories(int[] id, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            return null;
+        }
+        catch (Exception)
+        {
+
+            throw;
         }
     }
 }

@@ -26,7 +26,7 @@
                             <div class="edit-icon">
                                 @if (!Model.CustomerProfile.IsVerified)
                                 {
-                                    <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" Clicked="EditProfile"> 
+                                    <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" @onclick="() => upload.ShowModal()">
                                         <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
                                     </Button>
                                 }
@@ -48,8 +48,8 @@
                         <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
                             @if(!Model.CustomerProfile.IsVerified)
                             {
-                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()" 
-                                    Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
+                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()"
+                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
                             }
                         </CardFooter>
                     </Card>
@@ -155,7 +155,7 @@
 
     private Models.Customer.Profile Model;
 
-    protected ModalUploadingProfile upload { get; set; }
+    protected ModalUploadingProfile upload;
 
     private bool isEditAbout = false;
 
@@ -262,12 +262,6 @@
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
-    }
-
-    private async Task EditProfile()
-    {
-        //Display Modal Upload
-        await upload.OpenModal();
     }
 
     private void OnEditAboutClick()

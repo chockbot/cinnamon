@@ -1,8 +1,5 @@
-﻿using System.Diagnostics;
-
-namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
-
-public class GetAllActivitiesResult
+﻿namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
+public class GetActivitiesBySubCategoriesResult
 {
     public IEnumerable<Activity> Activities { get; set; }
     public class Activity
@@ -28,13 +25,9 @@ public class GetAllActivitiesResult
         public string SkillLevel { get; set; }
         public int MinimumAge { get; set; }
         public bool CanAdultsJoin { get; set; }
-        public int CreatedBy { get; set; }
-        public string MapDetails { get; set; }
         public IEnumerable<string> SearchTags { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
-
-
         public class ActivitySchedule
         {
             public int Id { get; set; }
