@@ -14,7 +14,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
             _dataStore = dataStore;
         }
 
-        public async Task<AppResult<AddressDTO>> CreateAddress(int ActivityId, string Address1, string Address2, string District, string City)
+        public async Task<AppResult<AddressDTO>> CreateAddress(int ActivityId, string Address1, string Address2, string District, string City, string Subdivision, string Region, string Barangay, string PostalCode)
         {
             try
             {
@@ -30,7 +30,12 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                     Address1 = Address1,
                     Address2 = Address2,
                     District = District,
-                    City = City
+                    City = City,
+                    Subdivision = Subdivision,
+                    Region = Region,
+                    Barangay = Barangay,
+                    PostalCode = PostalCode 
+                    
                 });
 
                 var createdAddressDTO = new AddressDTO()
@@ -40,7 +45,12 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                     Address1 = result.Result.Address1,
                     Address2 = result.Result.Address2,
                     District = result.Result.District,
-                    City = result.Result.City
+                    City = result.Result.City,
+                    Subdivision = result.Result.Subdivision,
+                    Region = result.Result.Region,
+                    Barangay = Barangay,    
+                    PostalCode = PostalCode
+                    
                 };
 
                 return AppResult<AddressDTO>.CreateSucceeded(createdAddressDTO, "Address successfully created");
@@ -70,7 +80,12 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                         Address1 = a.Address1,
                         Address2 = a.Address2,
                         District = a.District,
-                        City = a.City
+                        City = a.City,
+                        Subdivision = a.Subdivision,    
+                        Region = a.Region,
+                        Barangay = a.Barangay,
+                        PostalCode = a.PostalCode,
+                        
                     };
                 });
 
@@ -99,7 +114,11 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                     Address1 = result.Result.Address1,
                     Address2 = result.Result.Address2,
                     District = result.Result.District,
-                    City = result.Result.City
+                    City = result.Result.City,
+                    Subdivision= result.Result.Subdivision, 
+                    Region = result.Result.Region,
+                    Barangay = result.Result.Barangay,
+                    PostalCode = result.Result.PostalCode  
                 };
 
                 return AppResult<AddressDTO>.CreateSucceeded(activitieAddress, "Successfully getting activity by id");
@@ -127,7 +146,11 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                     Address1 = result.Result.Address1,
                     Address2 = result.Result.Address2,
                     District = result.Result.District,
-                    City = result.Result.City
+                    City = result.Result.City,
+                    Subdivision = result.Result.Subdivision,
+                    Region = result.Result.Region,
+                    Barangay = result.Result.Barangay,
+                    PostalCode = result.Result.PostalCode   
                 };
 
                 return AppResult<AddressDTO>.CreateSucceeded(activitieAddress, "Successfully getting address by activity id");
@@ -154,7 +177,12 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                     Address1 = result.Result.Address1,
                     Address2 = result.Result.Address2,
                     District = result.Result.District,
-                    City = result.Result.City
+                    City = result.Result.City,
+                    Subdivision = result.Result.Subdivision,    
+                    Region = result.Result.Region,  
+                    Barangay = result.Result.Barangay,
+                    PostalCode = result.Result.PostalCode
+
                 },"Deleted Successfully");
             }
             catch(Exception ex)
@@ -163,7 +191,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
             }
         }
 
-        public async Task<AppResult<AddressDTO>> UpdateAddress(int AddressId, string Address1,string Address2, string District, string City)
+        public async Task<AppResult<AddressDTO>> UpdateAddress(int AddressId, string Address1,string Address2, string District, string City, string Subdivision, string Region, string Barangay, string PostalCode)
         {
             try
             {
@@ -179,6 +207,10 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                 address.Address2 = Address2;
                 address.District = District;
                 address.City = City;
+                address.Subdivision = Subdivision;
+                address.Region= Region;
+                address.Barangay = Barangay;
+                address.PostalCode = PostalCode;    
 
                 var result = await _dataStore.ActivityAddress.Update(address);
 
@@ -194,7 +226,12 @@ namespace Cinnamon.Api.Data.Services.Repository.ActivityAddress
                     Address1 = result.Result.Address1,
                     Address2 = result.Result.Address2,
                     District = result.Result.District,
-                    City = result.Result.City
+                    City = result.Result.City,
+                    Region= result.Result.Region,   
+                    Subdivision = result.Result.Subdivision,
+                    PostalCode= result.Result.PostalCode,
+                    Barangay = result.Result.Barangay   
+
                 };
 
                 return AppResult<AddressDTO>.CreateSucceeded(activitieAddress, "Successfully updated");

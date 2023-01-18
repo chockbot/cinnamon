@@ -24,6 +24,10 @@ public class CreateActivityArgs
     public string? Address2 {get; set;}
     public string? District {get; set;}
     public string? City {get; set;}
+    public string? Subdivision { get; set; }
+    public string? Region { get; set; }
+    public string? Barangay { get; set; }
+    public string? PostalCode { get; set; }
     [Required]
     public string SpecificsYouWillProvide {get; set;}
     [Required]

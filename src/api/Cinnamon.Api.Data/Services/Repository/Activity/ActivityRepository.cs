@@ -17,7 +17,7 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price, 
-        string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, 
+        string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel, 
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
         int experienceCategoryId, int subCategoryId)
@@ -99,6 +99,10 @@ public class ActivityRepository : IActivityRepository
                 Address2 = address2,
                 City = city,
                 District = district,
+                Subdivision = subdivision,
+                Region = region,
+                Barangay = barangay,
+                PostalCode = postalcode,
             };
             var createdActivityAddress = await dataStore.ActivityAddress.Add(activityAddress);
             if (!createdActivityAddress.Succeeded)
@@ -132,6 +136,10 @@ public class ActivityRepository : IActivityRepository
                 Address2 = address2,
                 CanAdultsJoin = canAdultsJoin,
                 City = city,
+                Subdivision = subdivision,
+                Region = region,
+                Barangay = barangay,
+                PostalCode = postalcode,
                 CustomerBringWithThem = customerBringWithThem,
                 Description = description,
                 District = district,
@@ -197,6 +205,10 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.Address2 = activity.Address.Address2;
                 activityDTO.City = activity.Address.City;
                 activityDTO.District = activity.Address.District;
+                activityDTO.Subdivision = activity.Address.Subdivision;
+                activityDTO.Region = activity.Address.Region;
+                activityDTO.Barangay = activity.Address.Barangay;
+                activityDTO.PostalCode =activity.Address.PostalCode;
             }
 
             // description fields
@@ -314,6 +326,10 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.Address2 = a.Address.Address2;
                     activityDTO.City = a.Address.City;
                     activityDTO.District = a.Address.District;
+                    activityDTO.Subdivision = a.Address.Subdivision;    
+                    activityDTO.Region = a.Address.Region;
+                    activityDTO.Barangay = a.Address.Barangay;
+                    activityDTO.PostalCode = a.Address.PostalCode;
                 }
 
                 // description fields
@@ -469,6 +485,10 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.Address2 = activity.Address.Address2;
                 activityDTO.City = activity.Address.City;
                 activityDTO.District = activity.Address.District;
+                activityDTO.Subdivision = activity.Address.Subdivision;
+                activityDTO.Region = activity.Address.Region;
+                activityDTO.Barangay = activity.Address.Barangay;
+                activityDTO.PostalCode = activity.Address.PostalCode;
             }
 
             // description fields
@@ -538,8 +558,8 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<ActivityDTO>> UpdateActivityAsync(int activityId,int? experienceTypeId, string? title, string? description, string? price, 
-        string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, 
-        string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
+        string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, string? subdivision, string? region,
+        string? barangay, string? postalcode,string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4, 
         string? searchtag5, int? experienceCategoryId, int? subCategoryId)
     {
@@ -617,6 +637,10 @@ public class ActivityRepository : IActivityRepository
             activityAddress.Address2 = address2 ?? activityAddress.Address2;
             activityAddress.District = district ?? activityAddress.District;
             activityAddress.City = city ?? activityAddress.City;
+            activityAddress.Subdivision = subdivision?? activityAddress.Subdivision;    
+            activityAddress.Region = region?? activityAddress.Region;
+            activityAddress.Barangay = barangay?? activityAddress.Barangay; 
+            activityAddress.PostalCode = postalcode?? activityAddress.PostalCode;
 
             var updatedActivityAddress = await dataStore.ActivityAddress.Update(activityAddress);
             if (!updatedActivityAddress.Succeeded)
@@ -676,6 +700,10 @@ public class ActivityRepository : IActivityRepository
                 Address2 = activityAddress.Address2,
                 CanAdultsJoin = activityDescription.CanAdultsJoin,
                 City = activityAddress.City,
+                Subdivision = activityAddress.Subdivision,
+                Region = activityAddress.Region,
+                Barangay = activityAddress.Barangay,
+                PostalCode = activityAddress.PostalCode,    
                 CustomerBringWithThem = activityDescription.CustomerBringWithThem,
                 Description = activityDescription.Description,
                 District = activityAddress.District,
