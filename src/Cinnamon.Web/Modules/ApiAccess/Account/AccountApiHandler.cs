@@ -38,6 +38,27 @@ public class AccountApiHandler : IAccountApiHandler
         }
     }
 
+    public async Task<AppResult<SubmitRegisterResult>> ExternalRegister(SubmitExternalRegisterArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/ExternalRegister")
+                .PostJsonAsync(args)
+                .ReceiveJson<SubmitRegisterResult>();
+
+            return AppResult<SubmitRegisterResult>.CreateSucceeded(result, "Successfully posting register api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SubmitRegisterResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubmitRegisterResult>.CreateFailed(ex, "An error occured when posting register api");
+        }
+    }
+
     public async Task<AppResult<RegisterWaitlistResult>> RegisterWaitlist(RegisterWaitlistArgs args)
     {
         try
@@ -119,6 +140,47 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<VerifiedLoginResult>.CreateFailed(ex, "An error occured when posting account login api");
+        }
+    }
+
+    public async Task<AppResult<ExternalLoginResult>> ExternalLogin(ExternalLoginArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/tMSSMcKhx9YpmcYCAfCkGnSfau8SE8")
+                .PostJsonAsync(args)
+                .ReceiveJson<ExternalLoginResult>();
+
+            return AppResult<ExternalLoginResult>.CreateSucceeded(result, "Successfully posting account login api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ExternalLoginResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ExternalLoginResult>.CreateFailed(ex, "An error occured when posting account login api");
+        }
+    }
+
+    public async Task<AppResult<GetExternalLoginDetailResult>> GetExternalLoginDetail(string token, string guid)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Account/GetExternalLoginDetail/{token}/{guid}")
+                .GetJsonAsync<GetExternalLoginDetailResult>();
+
+            return AppResult<GetExternalLoginDetailResult>.CreateSucceeded(result, "Successfully getting external login detail api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetExternalLoginDetailResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetExternalLoginDetailResult>.CreateFailed(ex, "An error occured when getting external login detail api");
         }
     }
 

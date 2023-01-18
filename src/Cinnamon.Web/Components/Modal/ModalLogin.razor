@@ -48,16 +48,9 @@
                         <hr class="left" />or<hr class="right" />
                     </div>
                     <div class="col-12">
-                        <form id="external-account" 
-                                action="/Identity/Account/ExternalLogin" 
-                                asp-route-returnUrl="/onboarding" 
-                                method="post">
-                            <input type="hidden" name="provider" value="Google">
-                            <input type="hidden" name="returnUrl" value="@ReturnUrl">
-                            <button class="btn btn-md btn-google" type="submit">
-                                <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
-                            </button>
-                        </form>
+                        <a class="btn btn-md btn-google" @onclick="GoogleSignInClick">
+                            <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
+                        </a>
                     </div>
                     <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
                         <AlertDescription>An error occured. Please try again later</AlertDescription>
@@ -265,5 +258,10 @@
         Model.ResendVrificationErrorMessage = string.Empty;
         Model.IsResendingVerification = false;
         Model.IsResendVerificationShowError = false;
+    }
+
+    private void GoogleSignInClick()
+    {
+        NavigationManager.NavigateTo("/api/account/GoogleSignIn", true);
     }
 }

@@ -15,6 +15,9 @@ namespace Cinnamon.Api.Core.Controllers;
 [Authorize]
 public class AccountController : ControllerBase 
 {
+
+    #region dependencies declaration
+
     private readonly ISubmitRegisterHandler submitRegisterHandler;
     private readonly ISubmitWaitlistHandler submitWaitlistHandler;
     private readonly ISubmitVerifyEmailHandler submitVerifyEmailHandler;
@@ -34,6 +37,11 @@ public class AccountController : ControllerBase
     private readonly IGetCustomerByEmailHandler getCustomerByEmailHandler;
     private readonly IGetCustomerByIdHandler getCustomerByIdHandler;
     private readonly IGetWaitListByGuidHandler getWaitListByGuidHandler;
+    private readonly IExternalLoginHandler externalLoginHandler;
+    private readonly IExternalRegisterHandler externalRegisterHandler;
+    private readonly IGetExternalLoginDetailHandler getExternalLoginDetailHandler;
+
+    #endregion
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
@@ -43,7 +51,8 @@ public class AccountController : ControllerBase
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
         IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
         IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
-        IGetCustomerByIdHandler getCustomerByIdHandler)
+        IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
+        IGetExternalLoginDetailHandler getExternalLoginDetailHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -64,6 +73,9 @@ public class AccountController : ControllerBase
         this.getCustomerByEmailHandler = getCustomerByEmailHandler; 
         this.getWaitListByGuidHandler= getWaitListByGuidHandler;
         this.getCustomerByIdHandler= getCustomerByIdHandler;
+        this.externalLoginHandler = externalLoginHandler;
+        this.externalRegisterHandler = externalRegisterHandler;
+        this.getExternalLoginDetailHandler = getExternalLoginDetailHandler;
     }
 
     [Route("Register")]
@@ -82,6 +94,50 @@ public class AccountController : ControllerBase
                 LastName = args.LastName,
                 Password = args.Password,
                 ProfilePath = args.ProfilePath
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SubmitRegisterResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new SubmitRegisterResult {
+                Result = new CustomerDTO {
+                    Birthdate = objResult.Birthdate,
+                    Email = objResult.Email,
+                    ExternalLogin = objResult.ExternalLogin,
+                    FirstName = objResult.FirstName,
+                    LastName = objResult.LastName,
+                    ProfileImg = objResult.ProfileImg,
+                    Id = objResult.Id
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SubmitRegisterResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("ExternalRegister")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SubmitRegisterResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> ExternalRegister([FromBody] SubmitExternalRegisterArgs args)
+    {
+        try
+        {
+            var result = await externalRegisterHandler.ExecuteAsync(new Services.AccountService.Interactors.ExternalRegisterArgs {
+                Birthdate = args.Birthdate,
+                Email = args.Email,
+                FirstName = args.FirstName,
+                Guid = args.Guid,
+                LastName = args.LastName,
+                Password = args.Password,
+                ProfilePath = args.ProfilePath,
+                Token = args.Token
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -783,7 +839,85 @@ public class AccountController : ControllerBase
         }
         catch (Exception ex)
         {
-            return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            return new JsonResult(new GetWaitListByGuidResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("tMSSMcKhx9YpmcYCAfCkGnSfau8SE8")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ExternalLoginResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> HiddenExternalLogin([FromBody] ExternalLoginArgs args)
+    {
+        try
+        {
+            var result = await externalLoginHandler.ExecuteAsync(new Services.AccountService.Interactors.ExternalLoginArgs {
+                Email = args.Email,
+                FirstName = args.FirstName ?? string.Empty,
+                LastName = args.LastName ?? string.Empty
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ExternalLoginResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new ExternalLoginResult
+            {
+                Result = new VerifiedLoginDTO {
+                    Email = objResult.Email,
+                    ExternalLogin = objResult.ExternalLogin,
+                    FirstName = objResult.FirstName,
+                    GeneratedToken = objResult.GeneratedToken,
+                    Id = objResult.Id,
+                    IsMaker = objResult.IsMaker,
+                    LastName = objResult.LastName,
+                    IsNew = objResult.IsNew,
+                    GeneratedNewToken = objResult.GeneratedNewToken,
+                    GeneratedNewUid = objResult.GeneratedNewGuid
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ExternalLoginResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetExternalLoginDetail/{token}/{guid}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExternalLoginDetailResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetExternalLoginDetail(string token, string guid)
+    {
+        try
+        {
+            var result = await getExternalLoginDetailHandler.ExecuteAsync(new Services.AccountService.Interactors.GetExternalLoginDetailArgs {
+                Guid = guid,
+                Token = token
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExternalLoginDetailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetExternalLoginDetailResult
+            {
+                Result = new ExternalLoginDetailDTO {
+                    Email = result.Result.Email,
+                    FirstName = result.Result.FirstName,
+                    LastName = result.Result.LastName
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetExternalLoginDetailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

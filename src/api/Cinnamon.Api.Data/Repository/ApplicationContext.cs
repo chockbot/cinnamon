@@ -39,6 +39,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<SearchTags> SearchTags { get; set; }
 
+    public DbSet<ExternalLoginToken> ExternalLoginTokens {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -105,6 +107,10 @@ public class ApplicationContext : IdentityDbContext
         // resendEmail
         modelBuilder.Entity<ResendEmail>().HasIndex(r => r.Email);
         modelBuilder.Entity<ResendEmail>().HasIndex(new string[] { "Email", "DateResend" });
+
+        // exter login tokens
+        modelBuilder.Entity<ExternalLoginToken>().HasIndex(e => e.Token);
+        modelBuilder.Entity<ExternalLoginToken>().HasIndex(new string[] {"Token", "Guid"});
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
