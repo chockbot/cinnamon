@@ -1,0 +1,172 @@
+@page "/external-register"
+@using Cinnamon.Web.Models.Account;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject NavigationManager NavigationManager;
+@inject IAccountApiHandler accountApiHandler;
+@inject IJSRuntime jsRuntime
+
+<div class="d-flex justify-content-center px-3 overflow-hidden w-100 align-items-center">
+    <div class="col-md-4">
+        <div class="text-center mt-3">
+            <h4 id="external-login-title">Finish signing up</h4>
+        </div>
+        <br>
+        <Validations Mode="ValidationMode.Manual" @ref="Model.FormValidation" Model="Model.Model">
+            <Validation>
+                <Field class="form-floating">
+                    <TextEdit Role="TextRole.Text" Placeholder="your firstname" @bind-Text="Model.Model.FirstName">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                    <FieldLabel>First Name</FieldLabel>
+                </Field>
+            </Validation>
+            <br>
+            <Validation>
+                <Field class="form-floating">
+                    <TextEdit Role="TextRole.Text" Placeholder="your lastname" @bind-Text="Model.Model.LastName">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                    <FieldLabel>Last Name</FieldLabel>
+                </Field>
+            </Validation>
+            <span class="font-11">Be sure it's the same as what appears on your government ID.</span>
+            <br />
+            <br />
+            <Validation>
+                <Field class="form-floating">
+                    <DateEdit Placeholder="your birthdate" TValue="DateTime" @bind-Date="Model.Model.Birthdate">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </DateEdit>
+                    <FieldLabel>BirthDate</FieldLabel>
+                </Field>
+            </Validation>
+            <span class="font-11">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</span>
+            <br />
+            <br />
+            <Validation>
+                <Field class="form-floating">
+                    <TextEdit Disabled Role="TextRole.Email" Placeholder="your email" @bind-Text="Model.Model.Email">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                    <FieldLabel>Email Address</FieldLabel>
+                </Field>
+            </Validation>
+            <span class="font-11">For email confirmations and receipts.</span>
+            <br />
+            <br>
+            <Validation>
+                <Field class="form-floating">
+                    <TextEdit Role="TextRole.Password" Placeholder="your password" @bind-Text="Model.Model.Password">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                    <FieldLabel>Password</FieldLabel>
+                </Field>
+            </Validation>
+            <br />
+            <span>By selecting <b>Agree and continue</b>, you agree to our <a style="color:#ffa942" href="Terms" target="_blank">Terms and Conditions</a> and <a href="Policy" target="_blank" style="color:#ffa942">Privacy Policy</a></span>
+            <Button Clicked="SubmitRegiter" Margin="Margin.Is3.FromTop" Shadow="Shadow.Small" class="w-100 btn-primary" Border="Border.Is0.RoundedPill" 
+                Disabled="Model.IsSubmitting" Loading="Model.IsSubmitting">
+                <LoadingTemplate>
+                    <i class="fa fa-spinner fa-spin"></i> Please Wait
+                </LoadingTemplate>
+                <ChildContent>
+                    Agree and continue
+                </ChildContent>
+            </Button>
+            <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.IsShowErrorMessage">
+                <AlertDescription>@Model.ErrorMessage</AlertDescription>
+            </Alert>
+        </Validations>
+    </div>
+</div>
+
+@code
+{
+    private ExternalRegisterModel Model {get; set;} = new();
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Token {get; set;}
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Uid {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        if(string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(Uid))
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        try
+        {
+            var result = await accountApiHandler.GetExternalLoginDetail(Token,Uid);
+            if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+
+            Model.Model.Email = result.Result.Result.Email;
+            Model.Model.FirstName = result.Result.Result.FirstName;
+            Model.Model.LastName = result.Result.Result.LastName;
+        }
+        catch
+        {
+            Model.ErrorMessage = "An error occured. Please try again later";
+            Model.IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task SubmitRegiter()
+    {
+        try
+        {
+            if(await Model.FormValidation.ValidateAll())
+            {
+                Model.IsSubmitting = true;
+
+                var result = await jsRuntime.InvokeAsync<Models.JsResultModel>
+                        ("MyLib.Pages.customer.externalRegister.init",
+                            new 
+                            {
+                                firstname = Model.Model.FirstName,
+                                lastname = Model.Model.LastName,
+                                email = Model.Model.Email,
+                                birthdate = Model.Model.Birthdate,
+                                password = Model.Model.Password,
+                                token = Token,
+                                guid = Uid
+                            });
+                
+                Model.IsSubmitting = false;
+
+                if(!result.Success)
+                {
+                    Model.ErrorMessage = result.Message;
+                    Model.IsShowErrorMessage = true;
+                    return;
+                }
+
+                NavigationManager.NavigateTo("/explore", true);
+            }
+        }
+        catch
+        {
+            Model.ErrorMessage = "An error occured. Please try again later";
+            Model.IsShowErrorMessage = true;
+        }
+    }
+}

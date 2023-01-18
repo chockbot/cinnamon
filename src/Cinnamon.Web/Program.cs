@@ -8,7 +8,6 @@ using Flurl.Http;
 using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 
@@ -22,8 +21,6 @@ builder.Services.AddRazorPages(opts => {
     opts.Conventions.AddAreaPageRoute("Identity", "/Account/Onboarding", "/Onboarding");
 });
 builder.Services.AddServerSideBlazor();
-
-builder.Services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
 
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
@@ -42,9 +39,11 @@ builder.Services.AddAuthentication().AddGoogle(o =>
 {
     o.ClientId = builder.Configuration["AppConfig:Authentication:Google:ClientId"];
     o.ClientSecret = builder.Configuration["AppConfig:Authentication:Google:ClientSecret"];
-    o.CallbackPath = builder.Configuration["AppConfig:Authentication:Google:CallbackPath"];
+    // o.CallbackPath = builder.Configuration["AppConfig:Authentication:Google:CallbackPath"];
     o.ClaimActions.MapJsonKey("urn:google:profile", "link");
     o.ClaimActions.MapJsonKey("urn:google:image", "picture");
+    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
+    };
 });
 
 // add config

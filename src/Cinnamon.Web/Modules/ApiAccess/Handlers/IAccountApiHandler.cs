@@ -7,10 +7,13 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 public interface IAccountApiHandler 
 {
     Task<AppResult<SubmitRegisterResult>> Register(SubmitRegisterArgs args);
+    Task<AppResult<SubmitRegisterResult>> ExternalRegister(SubmitExternalRegisterArgs args);
     Task<AppResult<RegisterWaitlistResult>> RegisterWaitlist(RegisterWaitlistArgs args);
     Task<AppResult<VerifyRegisteredEmailResult>> VerifyRegisteredEmail(VerifyRegisteredEmailArgs args);
     Task<AppResult<ResendVerificationResult>> ResendVerification(ResendVerificationArgs args);
     Task<AppResult<VerifiedLoginResult>> Login(VerifiedLoginArgs args);
+    Task<AppResult<ExternalLoginResult>> ExternalLogin(ExternalLoginArgs args);
+    Task<AppResult<GetExternalLoginDetailResult>> GetExternalLoginDetail(string token, string guid);
     Task<AppResult<GetProfileResult>> GetProfile(GetProfileArgs args, string token);
     Task<AppResult<GetFamilyMemberResult>> GetFamilyMembers(string token);
     Task<AppResult<UpdateFamilyMemberResult>> UpdateFamilyMembers(UpdateFamilyMemberArgs args, string token);

@@ -17,6 +17,7 @@ public interface IDataStore
     IWaitList WaitList { get; }
     ISubCategory SubCategory { get; } 
     ISearchTags SearchTags { get; }
+    IExternalLoginToken ExternalLoginToken { get; }
 
     Task EnsureMigrate();
 

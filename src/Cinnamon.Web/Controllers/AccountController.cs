@@ -3,6 +3,7 @@ using Cinnamon.Web.Models.Forms;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -180,6 +181,74 @@ public class AccountController : Controller
         }
     }
 
+    [Route("externalregisterautologin")]
+    [HttpPost]
+    public async Task<IActionResult> ExternalRegisterAutoLogin(ExternaRegisterAutoLogin model)
+    {
+        try
+        {
+            if(!ModelState.IsValid)
+            {
+                return Json(new { success = false, message = "Please provide required fields" });
+            }
+
+            var registerResult = await accountApiHandler.ExternalRegister(new Framework.ApiCommand.ApiCore.Account.Request.SubmitExternalRegisterArgs {
+                Birthdate = model.Birthdate,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                Guid = model.Guid,
+                LastName = model.LastName,
+                Password = model.Password,
+                ProfilePath = "/images/Profile/user.png",
+                Token = model.Token,
+            });
+
+            if(!registerResult.Succeeded || registerResult.Result == null)
+            {
+                return Json(new { success = false, message = "An error occured please try again later" });
+            }
+
+            if(registerResult.Succeeded && !registerResult.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = registerResult.Result.ErrorInfo?.Message });
+            }
+
+            // auto login
+            var loginResult = await accountApiHandler.Login(new Framework.ApiCommand.ApiCore.Account.Request.VerifiedLoginArgs {
+                Email = model.Email,
+                Password = model.Password
+            });
+
+            if(!loginResult.Succeeded || loginResult.Result == null)
+            {
+                return Json(new { success = false, message = "An error occured please try again later" });
+            }
+
+            if(loginResult.Succeeded && !loginResult.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = loginResult.Result.ErrorInfo?.Message });
+            }
+
+            var claims = new List<Claim>
+            {
+                new Claim("Email", loginResult.Result.Result.Email),
+                new Claim("Token", loginResult.Result.Result.GeneratedToken),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties {IsPersistent = true};
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+
+            return Json(new { success = true, message = "Successfully registered" });
+        }
+        catch 
+        {
+            return Json(new { success = false, message = "An error occured please try again later" });
+        }
+    }
+
     [Route("UploadGovernmentIds")]
     [HttpPost]
     [Authorize]
@@ -218,6 +287,72 @@ public class AccountController : Controller
         catch
         {
             return Json(new { success = false, message = "An error occured please try again later" });
+        }
+    }
+
+    [HttpGet("GoogleSignIn")]
+    public async Task GoogleSignIn()
+    {
+        await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, 
+            new AuthenticationProperties { RedirectUri = "/api/account/GoogleRedirection" });
+    }
+
+    [HttpGet("GoogleRedirection")]
+    [Authorize]
+    public async Task<IActionResult> GoogleRedirection()
+    {
+        try
+        {
+            var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
+            var firstName = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
+            var lastName = HttpContext.User.FindFirstValue(ClaimTypes.Surname);
+
+            if(string.IsNullOrEmpty(email))
+            {
+                await HttpContext.SignOutAsync();
+                return Redirect("/explore");
+            }
+
+            var result = await accountApiHandler.ExternalLogin(new Framework.ApiCommand.ApiCore.Account.Request.ExternalLoginArgs {
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName
+            });
+
+            if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
+            {
+                await HttpContext.SignOutAsync();
+                return Redirect("/explore");
+            }
+
+            if(result.Result.Result.IsNew)
+            {
+                await HttpContext.SignOutAsync();
+                return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}");
+            }
+
+            // sign out and sign again to save the cookie login
+
+            await HttpContext.SignOutAsync();
+
+            var claims = new List<Claim>
+            {
+                new Claim("Email", result.Result.Result.Email),
+                new Claim("Token", result.Result.Result.GeneratedToken),
+            };
+
+            var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties {IsPersistent = true};
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+            
+            return Redirect("/explore");
+        }
+        catch
+        {
+            await HttpContext.SignOutAsync();
+            return Redirect("/explore");
         }
     }
 }

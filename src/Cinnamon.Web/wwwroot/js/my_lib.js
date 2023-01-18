@@ -142,6 +142,17 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 /***/ }),
 
+/***/ "./src/Pages/customer/externalRegister.js":
+/*!************************************************!*\
+  !*** ./src/Pages/customer/externalRegister.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ \"./node_modules/axios/index.js\");\n\nconst externalRegister = {};\n\nexternalRegister.init = async obj => {\n  try {\n    const payload = {\n      firstname: obj.firstname,\n      lastname: obj.lastname,\n      email: obj.email,\n      birthdate: obj.birthdate,\n      password: obj.password,\n      token: obj.token,\n      guid: obj.guid\n    };\n    const {\n      data\n    } = await axios__WEBPACK_IMPORTED_MODULE_0__[\"default\"].post(\"/api/account/externalregisterautologin\", payload);\n    return data;\n  } catch {\n    return {\n      success: false,\n      message: \"An error occured. Please try again later.\"\n    };\n  }\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (externalRegister);\n\n//# sourceURL=webpack://MyLib/./src/Pages/customer/externalRegister.js?");
+
+/***/ }),
+
 /***/ "./src/Pages/customer/index.js":
 /*!*************************************!*\
   !*** ./src/Pages/customer/index.js ***!
@@ -149,7 +160,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _profile__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./profile */ \"./src/Pages/customer/profile.js\");\n/* harmony import */ var _onboarding__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./onboarding */ \"./src/Pages/customer/onboarding.js\");\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  profile: _profile__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  onboarding: _onboarding__WEBPACK_IMPORTED_MODULE_1__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/customer/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _profile__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./profile */ \"./src/Pages/customer/profile.js\");\n/* harmony import */ var _onboarding__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./onboarding */ \"./src/Pages/customer/onboarding.js\");\n/* harmony import */ var _externalRegister__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./externalRegister */ \"./src/Pages/customer/externalRegister.js\");\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  profile: _profile__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  onboarding: _onboarding__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  externalRegister: _externalRegister__WEBPACK_IMPORTED_MODULE_2__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/customer/index.js?");
 
 /***/ }),
 
