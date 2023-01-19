@@ -20,7 +20,9 @@ builder.Services.AddControllers();
 builder.Services.AddRazorPages(opts => {
     opts.Conventions.AddAreaPageRoute("Identity", "/Account/Onboarding", "/Onboarding");
 });
-builder.Services.AddServerSideBlazor();
+builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {
+    opts.DetailedErrors = true;
+});
 
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()

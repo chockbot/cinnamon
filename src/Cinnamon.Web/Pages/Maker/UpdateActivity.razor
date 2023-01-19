@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
+@using Cinnamon.Web.Components.Pages.Creation;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject NavigationManager NavigationManager;
 @inject IJSRuntime jsRuntime
@@ -50,22 +51,19 @@
                 <ExperienceSetupUpdate @ref="experienceSetupUpdateComponent" Model="Model" />
             </div>
             <div class='tab @(currentIndex == 2 ? "show" : "")'>
-                <div class="text-center publish-container">
-                    <div class="w-100 publish-text">
-                        <h2 class="fw-bold">You're all set!!</h2>
-                        <h6>Live your passion, share your knowledge and leave a mark in people's lives!</h6>
-                    </div>
-                </div>
+                <ActivitySummary Activity="Model.Activity" />
             </div>
             <div class="button-container" style="overflow:auto;">
                 <div style="float:right;">
                     @if(currentIndex > 0) 
                     {
-                        <button type="button" id="prevBtn" @onclick="() => OnBackClick()" style="border:none;background-color:transparent">Back</button>
+                        <Button Class="m-width-100" Type="ButtonType.Button" id="prevBtn" @onclick="() => OnBackClick()" 
+                            style="border:none;background-color:transparent">Back</Button>
                     }
-                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" 
+                        id="nextBtn" Loading="isLoading" Disabled="isLoading">
                         <LoadingTemplate>
-                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please Wait
                         </LoadingTemplate>
                         <ChildContent>
                             @(currentIndex == 2 ? "Submit" : "Continue")
