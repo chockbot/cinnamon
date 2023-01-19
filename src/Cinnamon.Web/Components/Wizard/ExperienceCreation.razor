@@ -80,86 +80,18 @@
                 <input class="form-control my-3" placeholder="City" disabled />
                 <input class="form-control my-3" placeholder="Barangay" disabled />
                 <input class="form-control my-3" placeholder="Postal Code" disabled />
-                //<input class="form-control my-3" placeholder="Address 2" disabled />
-                //<input class="form-control my-3" placeholder="District" disabled />
-                
             }
             else
             {
-                <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Address" required @bind="Model.Activity.Address1"/>
+                <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Unit No./ House No.*" required @bind="Model.Activity.Address1"/>
                 <input class="form-control my-3 (Model.Activity.Subdivision)" placeholder="Subdivision/Building" required @bind="Model.Activity.Subdivision" />
                 <input class="form-control my-3 @RequiredCheck(Model.Activity.Region)" placeholder="Region/State" required @bind="Model.Activity.Region" />
                 <input class="form-control my-3 @RequiredCheck(Model.Activity.City)" placeholder="City" required @bind="Model.Activity.City" />
                 <input class="form-control my-3 @RequiredCheck(Model.Activity.Barangay)" placeholder="Barangay" required @bind="Model.Activity.Barangay" />
-                <input class="form-control my-3 (Model.Activity.PostalCode)" placeholder="Postal Code" required @bind="Model.Activity.PostalCode" />
-                //<input class="form-control my-3 @RequiredCheck(Model.Activity.Address2)" placeholder="Address 2" required @bind="Model.Activity.Address2"/>
-                //<input class="form-control my-3 @RequiredCheck(Model.Activity.District)" placeholder="District" required @bind="Model.Activity.District"/>
-                
+                <input class="form-control my-3 (Model.Activity.PostalCode)" placeholder="Postal Code" required @bind="Model.Activity.PostalCode" /> 
             }
         </div>
     </div>
-@*    <div class="row mrow">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-               @Resources.App.experienceCategory
-            </label>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <select @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
-                <option disabled selected>Select Category</option>
-                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
-                {
-                    <option value="@cat.Id">@cat.Category</option>
-                }
-           </select>
-        </div>
-    </div>
-    <div class="row mrow">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-                Sub-category
-            </label>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if (Model.Activity.ExperienceCategoryId != 0)
-            {
-                <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
-                    <option disabled selected>Select Subcategory</option>
-                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId))
-                    {
-                        <option value="@cat.Id">@cat.Name</option>
-                    }
-                </select>
-            }
-            else 
-            {
-                <select class="form-control @RequiredCheck(Model.Activity.SubCategoryId)" disabled>
-                    <option disabled selected>Select Sub-category</option>
-                </select>
-            }
-        </div>
-    </div>
-    <div class="row mrow">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-                Sub-category missing? Suggest up to five!
-            </label>
-        </div>
-        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            <div class="bootstrap-tagsinput @RequiredCheck(Model.Activity.SearchTags) d-flex flex-row flex-wrap ">
-                @foreach (var tag in Model.Activity.SearchTags)
-                {
-                    <span class="tag label label-info m-1">
-                        @tag
-                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag))">
-                        </span>
-                    </span>
-                }
-                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
-            </div>
-            <label>Suggest sub-category for approval (up to 5 suggestions)</label>
-        </div>
-    </div>*@
 </div>
 
 @code 

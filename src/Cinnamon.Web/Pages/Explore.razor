@@ -278,19 +278,11 @@
                                     <h4 class="card-title1 mb-0" >@act.Title</h4>
                                     @if(act.ExperienceTypeId == 1)
                                     {
-                                        if (String.IsNullOrEmpty(act.Address1) || String.IsNullOrEmpty(act.Address2))
-                                        {
-                                            <p class="card-title2 mb-0">@act.City</p>
-                                        }
-                                        else
-                                        {
-                                            <p class="card-title2 mb-0">@act.Address1</p>
-                                        }
+                                        <p class="card-title2 mb-0">@act.City, @act.Region</p>
                                     }
                                     else{
                                         <p class="card-title2 mb-0">@exptype.Name</p>
                                     }
-                                   @* <p class="card-title2 mb-0">@act.Location</p>*@
                                     <p class="card-title3">@act.Price</p>
                                 </div>
                             </div>
@@ -346,19 +338,11 @@
                             <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
                             <h4 class="card-title1 mb-0" >@act.Title</h4>
                            @if(act.ExperienceTypeId == 1)
-                           {
-                                if (String.IsNullOrEmpty(act.Address1) || String.IsNullOrEmpty(act.Address2))
-                                {
-                                    <p class="card-title2 mb-0">@act.City</p>
-                                }
-                                else
-                                {
-                                    <p class="card-title2 mb-0">@act.Address1</p>
-                                }
+                           { 
+                                <p class="card-title2 mb-0">@act.City, @act.Region</p>
                            }
                            else
                            {
-                                
                                 <p class="card-title2 mb-0">@exptype.Name</p>
                            }
                             <p class="card-title3">@act.Price</p>
@@ -522,7 +506,8 @@
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
-                IncludeAtivitySchedules = true
+                IncludeAtivitySchedules = true,
+                IsActive = true
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
@@ -544,6 +529,10 @@
                         Address2 = r.Address2,
                         District = r.District,
                         City = r.City,
+                        Subdivision = r.Subdivision,
+                        Region = r.Region,
+                        Barangay = r.Barangay,
+                        PostalCode = r.PostalCode,
                         SpecificsYouWillProvide = r.SpecificsYouWillProvide,
                         CustomerBringWithThem = r.CustomerBringWithThem,
                         AdditionalRequirements = r.AdditionalRequirements,
@@ -581,6 +570,7 @@
             {
                 Activities = activities
             };
+            activities = activities.Where(i => i.IsPublished).ToList();
         }
     }
 

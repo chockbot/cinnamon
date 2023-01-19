@@ -212,6 +212,7 @@
                 <div class="col-lg-2 col-md-2">
                 </div>
                 </div>
+
                 }
                 }*@
                 @*}
@@ -244,7 +245,7 @@
                 var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.Address1 + "+" + activity.Address2 + "+" + activity.District + "+" + activity.City;
                 <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
             <span class="mt-3">
-                 @(activity.Address1 + ", " + activity.Address2 + ", " + activity.District + ", " + activity.City)
+                 @(activity.Address1 + ", " + activity.Barangay + ", " + activity.City + ", " + activity.Region)
             </span>
             }
             else
@@ -361,6 +362,10 @@
                     Address2 = result.Address2,
                     District = result.District,
                     City = result.City,
+                    Subdivision = result.Subdivision,
+                    Barangay = result.Barangay,
+                    Region = result.Region,
+                    PostalCode = result.PostalCode,
                     SpecificsYouWillProvide = result.SpecificsYouWillProvide,
                     CustomerBringWithThem = result.CustomerBringWithThem,
                     AdditionalRequirements = result.AdditionalRequirements,

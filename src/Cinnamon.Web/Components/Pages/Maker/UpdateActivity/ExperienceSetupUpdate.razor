@@ -8,27 +8,8 @@
     </ul>
 </div>
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+   
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-               @Resources.App.letsDescribeExperience 
-            </label>
-            <p>
-                @Resources.App.whatClientsGoingToDo
-                <br/><br/>
-                @Resources.App.whatClientsGoingToDoItem1<br/>
-                @Resources.App.whatClientsGoingToDoItem2<br/>
-            </p>
-        </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.Description)" maxlength="200" 
-                    @bind="Model.Activity.Description"></textarea>
-                <label>200 Max</label>
-            </div>
-        </div>
-    </div>
-    <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
               @Resources.App.createExperienceSchedule 
@@ -60,12 +41,13 @@
                 @ondragenter="HandleDragEnterBottom"
             />
             <div class="button-container" style="overflow:auto; margin-top: 20px;">
-                <div style="float:left;">
+                <div class="button-add">
                     <button class="btn-primary" type="button" id="addScheduleBtn" @onclick="AddEmptySchedule">Add</button>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
@@ -84,6 +66,7 @@
             </div>
         </div>
     </div>
+
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
@@ -172,36 +155,102 @@
         </div>
     </div>
 
+    @*Category, subcategory and subcategory suggestions*@
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                @Resources.App.experienceCategory
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <select @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
+                <option disabled selected>Select Category</option>
+                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
+                {
+                    <option value="@cat.Id">@cat.Category</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Sub-category
+            </label>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @if (Model.Activity.ExperienceCategoryId != 0)
+            {
+                <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
+                    <option disabled selected>Select Subcategory</option>
+                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId))
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <select class="form-control @RequiredCheck(Model.Activity.SubCategoryId)" disabled>
+                    <option disabled selected>Select Sub-category</option>
+                </select>
+            }
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Sub-category missing? Suggest up to five!
+            </label>
+        </div>
+        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
+            <div class="bootstrap-tagsinput @RequiredCheck(Model.Activity.SearchTags) d-flex flex-row flex-wrap ">
+                @foreach (var tag in Model.Activity.SearchTags)
+                {
+                    <span class="tag label label-info m-1">
+                        @tag
+                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag))">
+                        </span>
+                    </span>
+                }
+                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="searchTag" @bind-value:event="oninput" @onkeydown="Enter">
+            </div>
+           <label>Suggest sub-category for approval (up to 5 suggestions)</label>
+        </div>
+    </div>
+
     <div class="row mrow">
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 Post pictures!
             </label>
             <p>
-                Pictures must have:<br/>
-                -Different angles and details, including photos of people at work<br/>
-                -Innocent, yet illuminating, snippets from the experience<br/>
-                -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br/>
+                Pictures must have:<br />
+                -Different angles and details, including photos of people at work<br />
+                -Innocent, yet illuminating, snippets from the experience<br />
+                -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br />
             </p>
         </div>
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
             <div>
-                <ImageCacheItemUpdate @ref="Image1" DefaultSrc="@GetDefaultImage1()" InputId="image-input-1" ImageId="image-src-1" /> 
+                <ImageCacheItemUpdate @ref="Image1" DefaultSrc="@GetDefaultImage1()" InputId="image-input-1" ImageId="image-src-1" />
                 <p>This is your cover photo</p>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
             <div>
-                <ImageCacheItemUpdate @ref="Image2" DefaultSrc="@GetDefaultImage2()" InputId="image-input-2" ImageId="image-src-2" /> 
+                <ImageCacheItemUpdate @ref="Image2" DefaultSrc="@GetDefaultImage2()" InputId="image-input-2" ImageId="image-src-2" />
                 <p>Supporting photo</p>
             </div>
         </div>
 
         <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
-             <div>
-                <ImageCacheItemUpdate @ref="Image3" DefaultSrc="@GetDefaultImage3()" InputId="image-input-3" ImageId="image-src-3" /> 
+            <div>
+                <ImageCacheItemUpdate @ref="Image3" DefaultSrc="@GetDefaultImage3()" InputId="image-input-3" ImageId="image-src-3" />
                 <p>Supporting photo</p>
             </div>
         </div>
@@ -209,17 +258,9 @@
         <div class="textarea-container col-lg-6 col-md-6 col-sm-6 col-6 text-lg-start text-md-start text-sm-center">
             <div>Upload 3 photos (10MB)</div>
         </div>
-            @* <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center">
-                <label for="fileinput">
-                    <button class="btn-primary" style="pointer-events: none;" type="button">Upload</button>
-                </label>
-                <div class="custom-input-hide">
-                <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadFiles"/>
-                </div>
-            </div> *@
     </div>
 
-      <div class="row mrow">
+    <div class="row mrow">
         <div class="col-lg-4 col-md-4 col-sm-8 col-8 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 Active / Publish experience
@@ -240,6 +281,10 @@
     private int currentImageIndex = 0;
     private const int maxFileSize = 10000000;
 
+    public string searchTag { get; set; }
+
+    public int SearchTagLength { get; set; } = 0;
+
     private ImageCacheItemUpdate Image1 {get; set;}
     
     private ImageCacheItemUpdate Image2 {get; set;}
@@ -254,13 +299,43 @@
             Model.Activity.CanAdultsJoin = value;
         }
     }
-
+     private string RequiredCheck(IList<string> searchTags)
+    {
+        if (searchTags.Count <= 0) return "invalid";
+        return "";
+    }
     private string RequiredCheck(string? value)
     {
         if (string.IsNullOrEmpty(value)) return "invalid";
         return "";
     }
+    private string RequiredCheck(int? value)
+    {
+        if (Model.ExperienceHasError && value == null)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+    private void RemoveSearchTag(string tag)
+    {
+        Model.Activity.SearchTags.Remove(tag);
+    }
+     public void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Comma")
+        {
+            bool condition = Model.Activity.SearchTags.Count < 5 &&
+                                (Model.Activity.SearchTags.Where(x => x.ToLower() == searchTag.ToLower())
+                                    .FirstOrDefault()) == null;
+            if (condition)
+            {
+                Model.Activity.SearchTags.Add(searchTag);
+            }
 
+            searchTag = string.Empty;
+        }
+    }
     private string ShowErrorMessage()
     {
         return Model.ExperienceSetupHasError ? "block" : "none";
@@ -310,7 +385,6 @@
         DragEnter = null;
         Model.Activity.ActivitySchedules.Insert(DraggedItemPosition, DraggedItem!);
     }
-
     private Models.Entities.ActivitySchedule? DraggedItem;
 
     private int DraggedItemPosition;
@@ -338,12 +412,14 @@
 
     public bool IsAllFieldsValidated()
     {
-        if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
+        //if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
         if(!IsAllSchedulesValid()) return false;
         if(string.IsNullOrEmpty(Model.Activity.SpecificsYouWillProvide)) return false;
         if(string.IsNullOrEmpty(Model.Activity.CustomerBringWithThem)) return false;
         if(string.IsNullOrEmpty(Model.Activity.ActivityLevel)) return false;
         if(string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
+        if(Model.Activity.ExperienceCategoryId <= 0) return false;
+        if(Model.Activity.SearchTags.Count == 0) return false;
         if(!IsAllImagesValid()) return false;
         return true;
     }
