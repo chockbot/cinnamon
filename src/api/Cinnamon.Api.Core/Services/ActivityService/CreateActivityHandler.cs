@@ -138,7 +138,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                     CustomerId = id
                 });
                 
-                if((updatedCustomer.Succeeded || updatedCustomer.Result == null) || (updatedCustomer.Succeeded && !updatedCustomer.Result.IsSuccess))
+                if((!updatedCustomer.Succeeded || updatedCustomer.Result == null) || (updatedCustomer.Succeeded && !updatedCustomer.Result.IsSuccess))
                 {
                     return AppResult<CreateActivityResult>.CreateFailed(
                         new ApplicationException("An error occured when trying to update customer to maker"), "An error occured when trying to update customer to maker");

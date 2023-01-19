@@ -102,7 +102,7 @@
     [SupplyParameterFromQuery]
     public string? Uid {get; set;}
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
         if(string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(Uid))
         {

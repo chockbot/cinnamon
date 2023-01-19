@@ -1,0 +1,118 @@
+@namespace Cinnamon.Web.Components.Pages.Creation
+@using Cinnamon.Web.Models.Entities;
+
+<Div class="activity-summary-wrapper">
+    <div class="summary-header margin-botton-3rem margin-top-3rem m-margin-0">
+        <img class="img-human-left" src="images/activity-summary/human-standing.png" alt="image">
+        <img class="img-human-right" src="images/activity-summary/human-sitting.png" alt="image">
+        <Div>
+            <h1 class="font-size-64 font-weight-900 font-family-nunito text-black-100 m-font-size-32 ">You're all set</h1>
+            <p class="text-black-100 font-size-16 font-family-nunito m-font-size-12">Live your passion, share your knowledge and leave a mark in people's lives!</p>
+        </Div>
+    </div>
+    <Divider class="m-margin-5"  />
+    <h3 class="font-weight-700 font-size-40 text-orange-100 text-center font-family-nunito margin-top-50 m-font-size-24 m-margin-top-10">Experience Summary</h3>
+    <Div class="experience-title" Margin="Margin.Is4.OnY">
+        <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
+            @if(Activity.ExperienceTypeId == 1)
+            {
+                <span>
+                    <img class="m-laptop-icon" src="images/activity-summary/location.png" alt="icon">
+                </span>
+                <span class="background-black-100 font-size-10 text-white-100 
+                    font-family-nunito experience-type-button rounded-pill m-font-size-6">
+                    Face to Face
+                </span>
+            }
+            else
+            {
+                <span>
+                    <img class="m-laptop-icon" src="images/activity-summary/laptop-icon.png" alt="icon">
+                </span>
+                <span class="background-black-100 font-size-10 text-white-100 
+                    font-family-nunito experience-type-button rounded-pill m-font-size-6">
+                    Online
+                </span>
+            }
+        </Div>
+        <h3 class="font-size-32 font-family-nunito font-weight-700 text-orange-100 my-3 m-font-size-18">@Activity.Title</h3>
+        <p class="font-size-20 font-family-nunito m-font-size-12">@Activity.Description</p>
+    </Div>
+    <Divider  />
+    <div class="experience-schedules margin-botton-3rem m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito 
+            font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">Schedule</h3>
+        <Row Gutter="(20,20)" TextAlignment="TextAlignment.Center">
+            @foreach (var schedule in Activity.ActivitySchedules)
+            {
+                <Column class="background-black-100" ColumnSize="ColumnSize.Is6.OnMobile.Is4.OnTablet.Is3.OnDesktop">
+                    <div class="background-gray-100 border-radius-20 font-family-nunito p-4 m-padding-10 m-border-radius-10">
+                        <p class="font-size-20 mb-2 m-font-size-10">@Activity.ActivityLevel</p>
+                        <p class="font-size-16 mb-4 m-font-size-10">@schedule.DateTime</p>
+                        <p class="font-size-16 mb-0 m-font-size-10">PHP @schedule.Price / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit1 session</p>
+                    </div>
+                </Column>
+            }
+        </Row>
+    </div>
+    @if(Activity.ExperienceTypeId == 1)
+    {
+        <Divider />
+        <div class="experience-location margin-botton-3rem m-margin-bottom-10">
+            <h3 class="text-capitalize text-orange-100 font-family-nunito 
+                font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">Location</h3>
+            <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">Place: 536 San Juan Sto. Tomas Batangas</p>
+            <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">Remarks: Near Uno Gas Station, left side going north</p>
+        </div>
+    }
+    <Divider />
+    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">What you will provide</h3>
+        <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
+            @Activity.SpecificsYouWillProvide
+        </p>
+    </div>
+    <Divider />
+    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">Customer Requirements</h3>
+        <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
+            @Activity.CustomerBringWithThem
+        </p>
+    </div>
+    <Divider />
+    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">Requirements</h3>
+        <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">Minimum Age: @Activity.MinimumAge</p>
+        <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">Adults/Guardian: @(Activity.CanAdultsJoin ? "Can join" : "Not applicable")</p>
+        <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">Levels of Activity: @Activity.ActivityLevel</p>
+        <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">Skill Level: @Activity.SkillLevel </p>
+    </div>
+    <Divider />
+    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">Additional Requirements</h3>
+        <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
+            @Activity.AdditionalRequirements
+        </p>
+    </div>
+    <Divider />
+    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10 m-font-size-12">
+        <Check TValue="bool" Checked="Activity.IsPublished" CheckedChanged="CheckChange" style="accent-color: #ffa942;">Active</Check>
+    </div>
+</Div>
+
+@code
+{
+    [Parameter]
+    public Activity Activity {get; set;}
+
+    private bool isPublished {get; set;} = true;
+
+    private void CheckChange(bool value)
+    {
+        isPublished = isPublished;
+    }
+}

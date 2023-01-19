@@ -1,6 +1,7 @@
 ﻿@layout CreationLayout
 @page "/Creation"
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages.Creation;
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IJSRuntime jsRuntime
@@ -62,12 +63,7 @@
             </div>
 
             <div class='tab @(currentIndex == 3 ? "show" : "")'>
-                    <div class="text-center publish-container">
-                        <div class="w-100 publish-text">
-                            <h2 class="fw-bold">You're all set!!</h2>
-                            <h6>Live your passion, share your knowledge and leave a mark in people's lives!</h6>
-                        </div>
-                    </div>
+                <ActivitySummary Activity="Model.Activity" />
             </div>
 
             <div class="button-container" style="overflow:auto;">
@@ -78,7 +74,7 @@
                     }
                     <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
                         <LoadingTemplate>
-                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please Wait
                         </LoadingTemplate>
                         <ChildContent>
                             @(currentIndex == 3 ? "Submit" : "Continue")
@@ -341,9 +337,9 @@
         currentIndex --;
     }
 
-    private int GetPerentCompletion {
+    private double GetPerentCompletion {
         get {
-            return currentIndex * 25;
+            return Math.Round(currentIndex * 33.33);
         }
     }
 
