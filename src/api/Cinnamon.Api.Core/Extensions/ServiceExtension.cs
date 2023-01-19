@@ -25,6 +25,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.ISubCategoryData, Modules.DataAccess.SubCategory.SubCategoryData>();
         services.AddTransient<Modules.DataAccess.Handlers.IActivityImagesData, Modules.DataAccess.ActivityImages.ActivityImagesData>();
         services.AddTransient<Modules.DataAccess.Handlers.IPurchaseOrderData, Modules.DataAccess.PurchaseOrder.PurchaseOrderData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IExternalLoginTokenData, Modules.DataAccess.ExternalLoginToken.ExternalLoginTokenData>();
 
         // services
         services.AddTransient<Services.AccountService.Handlers.ISubmitRegisterHandler, Services.AccountService.SubmitRegisterHandler>();
@@ -46,7 +47,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IGetCustomerByEmailHandler, Services.AccountService.GetCustomerByEmailHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetWaitListByGuidHandler, Services.AccountService.GetWaitListByGuidHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetCustomerByIdHandler, Services.AccountService.GetCustomerByIdHandler>();
-        
+        services.AddTransient<Services.AccountService.Handlers.IExternalLoginHandler, Services.AccountService.SubmitExternalLoginHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IExternalRegisterHandler, Services.AccountService.SubmitExternalRegisterHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetExternalLoginDetailHandler, Services.AccountService.GetExternalLoginDetailHandler>();
         
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceTypesHandler, Services.ActivityService.GetExperienceTypesHandler>();

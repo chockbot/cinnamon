@@ -48,16 +48,9 @@
                         <hr class="left" />or<hr class="right" />
                     </div>
                     <div class="col-12">
-                        <form id="external-account" 
-                                action="/Identity/Account/ExternalLogin" 
-                                asp-route-returnUrl="/onboarding" 
-                                method="post">
-                            <input type="hidden" name="provider" value="Google">
-                            <input type="hidden" name="returnUrl" value="@ReturnUrl">
-                            <button class="btn btn-md btn-google" type="submit">
-                                <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
-                            </button>
-                        </form>
+                        <a class="btn btn-md btn-google" @onclick="GoogleSignInClick">
+                            <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
+                        </a>
                     </div>
                     <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
                         <AlertDescription>An error occured. Please try again later</AlertDescription>
@@ -110,7 +103,7 @@
     </ModalContent>
 </Modal>
 
-<Modal @ref="Model.VerificationModal">
+<Modal @ref="Model.VerificationModal" Closed="VerificationModalClosed">
     <ModalContent>
         <ModalHeader>
             <p class="col-11 modal-title text-center">Verification Email</p>
@@ -122,8 +115,21 @@
                 <br />
                 <div class="col-12 text-center">
                     <p>We've sent an email to your inbox. Please check and click verify.</p>
-                    <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
+                    <p>
+                        Haven't received a verification email?
+                        @if(!Model.IsResendingVerification)
+                        {
+                            <span @onclick="ResendVerification" class="resend-link"> Resend</span>
+                        }
+                        else 
+                        {
+                            <span>Please Wait...</span>
+                        }
+                    </p>
                 </div>
+                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.IsResendVerificationShowError">
+                    <AlertDescription>@Model.ResendVrificationErrorMessage</AlertDescription>
+                </Alert>
             </div>
         </ModalBody>
     </ModalContent>
@@ -211,5 +217,51 @@
         {
             Model.PasswordModel.IShowErrorMessage = true;
         }
+    }
+
+    private async Task ResendVerification()
+    {
+        try
+        {
+            Model.IsResendingVerification = true;
+
+            var result = await accountApiHandler.ResendVerification(new Framework.ApiCommand.ApiCore.Account.Request.ResendVerificationArgs {
+                Email = Model.EmailModel.Email,
+                ValidationRoute = "/explore"
+            });
+
+            Model.IsResendingVerification = false;
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                Model.ResendVrificationErrorMessage = "An error occured. Please try again later.";
+                Model.IsResendVerificationShowError = true;
+                return;
+            }
+
+            if(result.Succeeded && !result.Result.IsSuccess)
+            {
+                Model.ResendVrificationErrorMessage = result.Result.ErrorInfo?.Message ?? "An error occured. please try again later.";
+                Model.IsResendVerificationShowError = true;
+                return;
+            }
+        }
+        catch
+        {
+            Model.ResendVrificationErrorMessage = "An error occured. Please try again later.";
+            Model.IsResendVerificationShowError = true;
+        }
+    }
+
+    private void VerificationModalClosed()
+    {
+        Model.ResendVrificationErrorMessage = string.Empty;
+        Model.IsResendingVerification = false;
+        Model.IsResendVerificationShowError = false;
+    }
+
+    private void GoogleSignInClick()
+    {
+        NavigationManager.NavigateTo("/api/account/GoogleSignIn", true);
     }
 }

@@ -15,7 +15,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal)
+    public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, 
+        decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal, int status)
     {
         try
         {
@@ -56,6 +57,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 OverallTotal = overallTotal,
                 ScheduleId = scheduleId,
                 Total = total,
+                Status = status
             };
 
             var createdPurchaseOrder = await dataStore.PurchaseOrder.Add(purchaseOrder);
@@ -176,7 +178,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
     }
 
     public async Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, 
-        decimal? convinienceFee, string? coupon, decimal? couponAmount, decimal? overallTotal)
+        decimal? convinienceFee, string? coupon, decimal? couponAmount, decimal? overallTotal, int? status)
     {
         try
         {
@@ -213,6 +215,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             purchaseOrder.Coupon = coupon ?? purchaseOrder.Coupon;
             purchaseOrder.CouponAmount = couponAmount ?? purchaseOrder.CouponAmount;
             purchaseOrder.OverallTotal = overallTotal ?? purchaseOrder.OverallTotal;
+            purchaseOrder.Status = status ?? purchaseOrder.Status;
 
             var updatedPurchaseOrder = await dataStore.PurchaseOrder.Update(purchaseOrder);
             if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null)

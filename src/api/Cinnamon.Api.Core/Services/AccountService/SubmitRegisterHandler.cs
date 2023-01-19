@@ -34,6 +34,20 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
     {
         try
         {
+            // check if email already in used
+            var checkCustomer = await customerData.GetCustomerByEmail(args.Email);
+            if(!checkCustomer.Succeeded || checkCustomer.Result == null)
+            {
+                return AppResult<SubmitRegisterResult>.CreateFailed(
+                    new ApplicationException("An error occured in SubmitRegisterHandler"), "An error occured in SubmitRegisterHandler");
+            }
+
+            if(checkCustomer.Succeeded && checkCustomer.Result.IsSuccess)
+            {
+                return AppResult<SubmitRegisterResult>.CreateFailed(
+                    new ApplicationException("Email address already registered by other user"), "Email address already registered by other user");
+            }
+
             // check first if already in wait list
             var waitlistRes = await waitListData.GetWaitListByEmail(args.Email);
             if(!waitlistRes.Succeeded)
@@ -53,20 +67,6 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 // email not yet verified
                 return AppResult<SubmitRegisterResult>.CreateFailed(
                     new ApplicationException("Email not yet verified"),"Email not yet verified");
-            }
-
-            // check if email already in used
-            var checkCustomer = await customerData.GetCustomerByEmail(args.Email);
-            if(!checkCustomer.Succeeded || checkCustomer.Result == null)
-            {
-                return AppResult<SubmitRegisterResult>.CreateFailed(
-                    new ApplicationException("An error occured in SubmitRegisterHandler"), "An error occured in SubmitRegisterHandler");
-            }
-
-            if(checkCustomer.Succeeded && checkCustomer.Result.IsSuccess)
-            {
-                return AppResult<SubmitRegisterResult>.CreateFailed(
-                    new ApplicationException("Email address already registered by other user"), "Email address already registered by other user");
             }
 
             var createCustomer = await customerData.CreateCustomerWithPassword(new CreateCustomerWithPasswordArgs {
