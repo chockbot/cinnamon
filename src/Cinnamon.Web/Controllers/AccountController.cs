@@ -23,6 +23,16 @@ public class AccountController : Controller
         this.config = config;
     }
 
+    [Route("logout")]
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync();
+
+        return Redirect("/explore");
+    }
+
     [Route("login")]
     [HttpPost]
     public async Task<IActionResult> Login(LoginModel model)
