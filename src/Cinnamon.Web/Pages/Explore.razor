@@ -88,11 +88,9 @@
                                 <NavButton OnClick="NavigateToAccount" Text="Account" />
                             </li>
                             <li class="dropdown-item">
-                                <form class="form-inline" asp-area="Identity" action="Identity/Account/Logout" method="post">
-                                    <button type="submit" class="btn border-0">
+                                <Button Border="Border.Is0" Clicked="Logout">
                                       Logout
-                                    </button>
-                                </form>
+                                </Button>
                             </li>
                         }
                         else{
@@ -649,5 +647,10 @@
     {
         
         //activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/api/account/logout", true);
     }
 }
