@@ -181,6 +181,10 @@
             //Load Customer Profile Page
             NavigationManager.NavigateTo("/customer/profile", true);
         }
+        else
+        {
+            ShowError("Error encountered while uploading. Please try again!");
+        }
 
     }
     private Task IsEnabled()
@@ -208,8 +212,6 @@
         StateHasChanged();
         return Task.CompletedTask;
     }
-
-    [JSInvokable]
     public void ShowError(string message)
     {
         errorMessage = message;

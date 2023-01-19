@@ -149,29 +149,26 @@
             </div>
             @*Experience Schedule*@
             <hr />
-            @*<div class="col-12">
+            <div class="col-12">
                     <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
                     <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
                 @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
                 {
-                    @if (string.IsNullOrEmpty(activity.Schedules))
-                    {
-                        @for (int x = 0; x < activity.ActivitySchedules.Count; x++)
+                   @for (int x = 0; x < activity.ActivitySchedules.Count; x++)
+                   {
+                        @if (x <= 3)
                         {
-                            @if (x <= 3)
-                            {
-                <div class="col-md-3 col-lg-3 col-sm-6 col-6">*@
-                @* commentd first for integration *@
-                @*<CarouselItemSchedule ScheduleModel="@activity.ActivitySchedules.ElementAt(x)"></CarouselItemSchedule> 
+                <div class="col-md-3 col-lg-3 col-sm-6 col-6">
+                    <CarouselItemSchedule ScheduleModel="@activity.ActivitySchedules.ElementAt(x)" ActivityId="@activity.ActivityId"></CarouselItemSchedule> 
                 </div>
-                }
+                        }
                 else
                 {
-                break;
+                    break;
                 }
+                   }
                 }
-                }
-                else
+                @*else
                 {
                 if (actModel.Schedules.Split("\r\n\r\n").Length > 1)
                 {
@@ -218,25 +215,27 @@
                 <div class="col-lg-2 col-md-2">
                 </div>
                 </div>
+
                 }
-                }
-                }
+                }*@
+                @*}
                 else
-                {
-                <div class="px-4">
+                {*@
+                @*<div class="px-4">
                 <span>
                 @((MarkupString)actModel.Schedules.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>"))
                 </span>
                 </div>
-                }
+                }*@
                 </div>
-                    @if (activity.ActivitySchedules.Count > 4)
+
+                @if (activity.ActivitySchedules.Count > 4)
                 {
-                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
-            Show more
-            </button>
+                    <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
+                         Show more
+                    </button>
                 }
-            </div>*@
+            </div>
 
             @*Map Details*@
             <hr />
@@ -249,7 +248,7 @@
                 var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.Address1 + "+" + activity.Address2 + "+" + activity.District + "+" + activity.City;
                 <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
             <span class="mt-3">
-                 @(activity.Address1 + ", " + activity.Address2 + ", " + activity.District + ", " + activity.City)
+                 @(activity.Address1 + ", " + activity.Barangay + ", " + activity.City + ", " + activity.Region)
             </span>
             }
             else
@@ -366,6 +365,10 @@
                     Address2 = result.Address2,
                     District = result.District,
                     City = result.City,
+                    Subdivision = result.Subdivision,
+                    Barangay = result.Barangay,
+                    Region = result.Region,
+                    PostalCode = result.PostalCode,
                     SpecificsYouWillProvide = result.SpecificsYouWillProvide,
                     CustomerBringWithThem = result.CustomerBringWithThem,
                     AdditionalRequirements = result.AdditionalRequirements,
@@ -381,6 +384,7 @@
                         {
                             Id = e.Id,
                             Name = e.Name,
+                            DateTime = e.DateTime,
                             PerUnit1 = e.PerUnit1,
                             PerUnit2 = e.PerUnit2,
                             Price = e.Price,

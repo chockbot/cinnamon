@@ -17,6 +17,10 @@ public class UpdateActivity
     public string? Address2 { get; set; } = string.Empty;
     public string? District { get; set; } = string.Empty;
     public string? City { get; set; } = string.Empty;
+    public string? Subdivision { get; set; } = string.Empty;
+    public string? Region { get; set; } = string.Empty;
+    public string? Barangay { get; set; } = string.Empty;
+    public string? PostalCode { get; set; } = string.Empty;
     public string? SpecificsYouWillProvide { get; set; }
     public string? CustomerBringWithThem { get; set; }
     public string? AdditionalRequirements { get; set; }

@@ -105,7 +105,8 @@ namespace Cinnamon.Api.Data.Controllers
             try
             {
                 var result = await _AddressRepository.CreateAddress(addressArgs.ActivityId, addressArgs.Address1, addressArgs.Address2
-                                                              , addressArgs.District, addressArgs.City);
+                                                              , addressArgs.District, addressArgs.City, addressArgs.Subdivision, addressArgs.Region
+                                                              ,addressArgs.Barangay, addressArgs.PostalCode);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new CreateAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -127,7 +128,8 @@ namespace Cinnamon.Api.Data.Controllers
             try
             {
                 var result = await _AddressRepository.UpdateAddress(addressArgs.AddressId, addressArgs.Address1, addressArgs.Address2,
-                                                              addressArgs.District, addressArgs.City);
+                                                              addressArgs.District, addressArgs.City, addressArgs.Subdivision, addressArgs.Region
+                                                              , addressArgs.Barangay, addressArgs.PostalCode);
                 if(!result.Succeeded)
                 {
                     return new JsonResult(new UpdatedAddressResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

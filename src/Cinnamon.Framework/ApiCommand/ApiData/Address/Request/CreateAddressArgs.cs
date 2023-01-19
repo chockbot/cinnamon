@@ -14,5 +14,13 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.Address.Request
         public string District { get; set; }
         [Required]
         public string City { get; set; }
+        [Required]
+        public string Subdivision { get; set; }
+        [Required]
+        public string Region { get; set; }
+        [Required]
+        public string Barangay { get; set; }
+        [Required]
+        public string PostalCode { get; set; }
     }
 }

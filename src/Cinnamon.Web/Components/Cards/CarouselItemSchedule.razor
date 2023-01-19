@@ -37,11 +37,14 @@
 
 @if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
 {
-    <ModalLogin ReturnUrl="@($"/Payment/{ScheduleModel.Id}")"></ModalLogin>
+    <ModalLogin ReturnUrl="@($"/Payment/{ActivityId}/{ScheduleModel.Id}")"></ModalLogin>
 }
 @code {
     [Parameter]
     public ActivitySchedule ScheduleModel { get; set; }
+
+    [Parameter]
+    public int ActivityId { get; set; }
 
     [Parameter]
     public ScheduleButtonType ButtonType { get; set; } = ScheduleButtonType.Choose;
@@ -63,7 +66,7 @@
 
     private void OnClickChoose()
     {
-        NavigationManager.NavigateTo($"/Payment/{ScheduleModel.Id}", true);
+        NavigationManager.NavigateTo($"/Payment/{ActivityId}/{ScheduleModel.Id}", true);
     }
 
     private void OnMouseEnter()
