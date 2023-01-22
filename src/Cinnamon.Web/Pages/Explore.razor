@@ -596,8 +596,7 @@
     public async Task Filter(int id, string type)
     {
         searchValue = type;
-        await FetchActivities();
-        activities = activities.Where(p => p.ActivityId == id && p.IsPublished).ToList();
+        activities = activities.Where(e => e.ExperienceCategoryId == id && e.IsPublished).ToList();
     }
 
     public async Task Clear()
