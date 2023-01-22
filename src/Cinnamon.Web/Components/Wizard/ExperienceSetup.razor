@@ -1,5 +1,6 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Models.Entities
+@using Blazorise.RichTextEdit;
 
 <h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -7,7 +8,7 @@
         <li>@Resources.App.fillRequiredField</li>
     </ul>
 </div>
-<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+<div class="content-creation activity-creation-experience-setup-wrapper col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
@@ -59,7 +60,22 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.SpecificsYouWillProvide)" maxlength="200" @bind="Model.Activity.SpecificsYouWillProvide"></textarea>
+                <RichTextEdit @ref="EditSpecificProvide"
+                            Theme="RichTextEditTheme.Snow"
+                            ContentChanged="@EditSpecificChanged"
+                            PlaceHolder="Type your post here..."
+                            SubmitOnEnter="false"
+                            ToolbarPosition="Placement.Start">
+                    <Editor>My example content</Editor>
+                    <Toolbar>
+                        <RichTextEditToolbarGroup>
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                        </RichTextEditToolbarGroup>
+                    </Toolbar>
+                </RichTextEdit>
                 <label>200 Max</label>
             </div>
         </div>
@@ -76,7 +92,22 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.CustomerBringWithThem)" maxlength="200" @bind="Model.Activity.CustomerBringWithThem"></textarea>
+                <RichTextEdit @ref="EditCustomerBring"
+                            Theme="RichTextEditTheme.Snow"
+                            ContentChanged="@EditCustomerRequirement"
+                            PlaceHolder="Type your post here..."
+                            SubmitOnEnter="false"
+                            ToolbarPosition="Placement.Start">
+                    <Editor>My example content</Editor>
+                    <Toolbar>
+                        <RichTextEditToolbarGroup>
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                        </RichTextEditToolbarGroup>
+                    </Toolbar>
+                </RichTextEdit>
                 <label>200 Max</label>
             </div>
         </div>
@@ -279,6 +310,10 @@
     
     public int SearchTagLength { get; set; } = 0;
 
+    private RichTextEdit EditSpecificProvide;
+
+    private RichTextEdit EditCustomerBring;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -441,5 +476,15 @@
     private bool IsAllImagesValid()
     {
         return !(Image1.HaveEmptyImage() || Image2.HaveEmptyImage() || Image3.HaveEmptyImage());
+    }
+
+    private async Task EditSpecificChanged()
+    {
+        Model.Activity.SpecificsYouWillProvide = await EditSpecificProvide.GetHtmlAsync();
+    }
+
+    private async Task EditCustomerRequirement()
+    {
+        Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync();
     }
 }
