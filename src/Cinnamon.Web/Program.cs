@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Blazorise.RichTextEdit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,9 +25,12 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {
     opts.DetailedErrors = true;
 });
 
+// blazorise
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
-    .AddFontAwesomeIcons();
+    .AddFontAwesomeIcons()
+    .AddBlazoriseRichTextEdit();
+
 builder.Services.AddSignalR(options => { options.MaximumReceiveMessageSize = 10 * 1024 * 1024;});
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

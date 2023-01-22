@@ -1,5 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
 @using Cinnamon.Web.Models;
+@using Blazorise.RichTextEdit;
 
 <h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -60,8 +61,23 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.SpecificsYouWillProvide)" 
-                    maxlength="200" @bind="Model.Activity.SpecificsYouWillProvide"></textarea>
+                <RichTextEdit @ref="EditSpecificProvide"
+                            Theme="RichTextEditTheme.Snow"
+                            ReadOnly="editScpecificReadOnly"
+                            ContentChanged="@EditSpecificChanged"
+                            PlaceHolder="Type your post here..."
+                            SubmitOnEnter="false"
+                            ToolbarPosition="Placement.Start">
+                    <Editor>@((MarkupString)Model.Activity.SpecificsYouWillProvide)</Editor>
+                    <Toolbar>
+                        <RichTextEditToolbarGroup>
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                        </RichTextEditToolbarGroup>
+                    </Toolbar>
+                </RichTextEdit>
                 <label>200 Max</label>
             </div>
         </div>
@@ -78,8 +94,23 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.CustomerBringWithThem)" 
-                    maxlength="200" @bind="Model.Activity.CustomerBringWithThem"></textarea>
+                <RichTextEdit @ref="EditCustomerBring"
+                            Theme="RichTextEditTheme.Snow"
+                            ReadOnly="editCustomerRequirementReadOnly"
+                            ContentChanged="@EditCustomerRequirement"
+                            PlaceHolder="Type your post here..."
+                            SubmitOnEnter="false"
+                            ToolbarPosition="Placement.Start">
+                    <Editor>@((MarkupString)Model.Activity.CustomerBringWithThem)</Editor>
+                    <Toolbar>
+                        <RichTextEditToolbarGroup>
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                        </RichTextEditToolbarGroup>
+                    </Toolbar>
+                </RichTextEdit>
                 <label>200 Max</label>
             </div>
         </div>
@@ -277,9 +308,8 @@
     public ExperienceUpdateModel Model {get; set;}
     
     private int uploadedCount = 0;
-    private const int maxUpload = 3;
+
     private int currentImageIndex = 0;
-    private const int maxFileSize = 10000000;
 
     public string searchTag { get; set; }
 
@@ -290,6 +320,24 @@
     private ImageCacheItemUpdate Image2 {get; set;}
 
     private ImageCacheItemUpdate Image3 {get; set;}
+
+    private RichTextEdit EditSpecificProvide;
+
+    private RichTextEdit EditCustomerBring;
+
+    private int maxWords = 40;
+
+    private int editSpecificWordCnt = 0;
+
+    private bool editScpecificReadOnly = false;
+
+    private bool isEditSpecific = false;
+
+    private int editCustomerRequirementWordCnt = 0;
+
+    private bool editCustomerRequirementReadOnly = false;
+
+    private bool isEditCustomerRequirement = false;
 
     private void CheckboxChanged(ChangeEventArgs e)
     {
@@ -461,5 +509,21 @@
     {
        if(Model.Activity.Images.Count >= 3) return Model.Activity.Images.ElementAt(2).ImageSrc;
         return string.Empty; 
+    }
+
+    private async Task EditSpecificChanged()
+    {
+        Model.Activity.SpecificsYouWillProvide = await EditSpecificProvide.GetHtmlAsync();
+        var htmlText = await EditSpecificProvide.GetTextAsync();
+
+        editSpecificWordCnt = htmlText.Trim().Split(" ").Length;
+    }
+
+    private async Task EditCustomerRequirement()
+    {
+        Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync(); 
+        var htmlText = await EditCustomerBring.GetTextAsync();
+
+        editCustomerRequirementWordCnt = htmlText.Trim().Split(" ").Length;
     }
 }
