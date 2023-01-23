@@ -4,6 +4,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Ganss.XSS;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
@@ -13,6 +14,7 @@ public class CreateActivityHandler : ICreateActivityHandler
     private readonly IActivityData activityData;
     private readonly IScheduleData scheduleData;
     private readonly ICustomerData customerData;
+    private readonly HtmlSanitizer htmlSanitizer;
 
     public CreateActivityHandler(IHttpContextAccessor httpContext, IActivityData activityData, 
         IScheduleData scheduleData, ICustomerData customerData)
@@ -21,6 +23,10 @@ public class CreateActivityHandler : ICreateActivityHandler
         this.activityData = activityData;
         this.scheduleData = scheduleData;
         this.customerData = customerData;
+
+        this.htmlSanitizer = new 
+            HtmlSanitizer(
+                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li"});
     }
 
     public AppResult<CreateActivityResult> Execute(CreateActivityArgs args)
@@ -59,7 +65,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Region = args.Region,
                 Barangay = args.Barangay,
                 PostalCode= args.PostalCode,
-                CustomerBringWithThem = args.CustomerBringWithThem,
+                CustomerBringWithThem = htmlSanitizer.Sanitize(args.CustomerBringWithThem),
                 CustomerId = id,
                 Description = args.Description,
                 District = args.District,
@@ -76,7 +82,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Searchtag4 = args.SearchTags.Count() >= 4 ? args.SearchTags.ElementAt(3) : null,
                 Searchtag5 = args.SearchTags.Count() >= 5 ? args.SearchTags.ElementAt(4) : null,
                 SkillLevel = args.SkillLevel,
-                SpecificsYouWillProvide = args.SpecificsYouWillProvide,
+                SpecificsYouWillProvide = htmlSanitizer.Sanitize(args.SpecificsYouWillProvide),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title
             });

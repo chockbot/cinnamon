@@ -70,7 +70,7 @@
         <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 
             margin-botton-1rem m-font-size-16 m-margin-bottom-10">What you will provide</h3>
         <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
-            @Activity.SpecificsYouWillProvide
+            @((MarkupString)Activity.SpecificsYouWillProvide)
         </p>
     </div>
     <Divider />
@@ -78,7 +78,7 @@
         <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 
             margin-botton-1rem m-font-size-16 m-margin-bottom-10">Customer Requirements</h3>
         <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
-            @Activity.CustomerBringWithThem
+            @((MarkupString)@Activity.CustomerBringWithThem)
         </p>
     </div>
     <Divider />
