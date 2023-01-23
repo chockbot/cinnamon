@@ -66,7 +66,7 @@
                             PlaceHolder="Type your post here..."
                             SubmitOnEnter="false"
                             ToolbarPosition="Placement.Start">
-                    <Editor>My example content</Editor>
+                    <Editor></Editor>
                     <Toolbar>
                         <RichTextEditToolbarGroup>
                             <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
@@ -98,7 +98,7 @@
                             PlaceHolder="Type your post here..."
                             SubmitOnEnter="false"
                             ToolbarPosition="Placement.Start">
-                    <Editor>My example content</Editor>
+                    <Editor></Editor>
                     <Toolbar>
                         <RichTextEditToolbarGroup>
                             <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
@@ -230,18 +230,9 @@
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            <div class="bootstrap-tagsinput @RequiredCheck(Model.Activity.SearchTags) d-flex flex-row flex-wrap ">
-                @foreach (var tag in Model.Activity.SearchTags)
-                {
-                    <span class="tag label label-info m-1">
-                        @tag
-                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag))">
-                        </span>
-                    </span>
-                }
-                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
-            </div>
-            <label>Suggest sub-category for approval (up to 5 suggestions)</label>
+            <input type="text" class="form-control @RequiredCheck(Model.Activity.SearchTags)" @onblur="OnSuggestSubCategoryLeave" 
+                placeholder="Sub category name" size="@SearchTagLength" @bind-value="SearchTag">
+            <label>Suggest sub-category for approval</label>
         </div>
     </div>
     @*Upload Experience Pictures*@
@@ -338,6 +329,7 @@
 
         return "";
     }
+
     private string RequiredCheck(int? value)
     {
         if (Model.HasError && value == null)
@@ -346,6 +338,7 @@
         }
         return "";
     }
+
     public void Enter(KeyboardEventArgs e)
     {
         if (e.Code == "Comma")
@@ -452,7 +445,7 @@
         if(string.IsNullOrEmpty(Model.Activity.ActivityLevel)) return false;
         if(string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
         if(Model.Activity.ExperienceCategoryId <= 0) return false;
-        if(Model.Activity.SearchTags.Count == 0) return false;
+        //if(Model.Activity.SearchTags.Count == 0) return false;
         if(!IsAllImagesValid()) return false;
         return true;
     }
@@ -487,4 +480,9 @@
     {
         Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync();
     }
+
+    private void OnSuggestSubCategoryLeave()
+    {
+        Model.Activity.SearchTags.Add(SearchTag);
+    } 
 }
