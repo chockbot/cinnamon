@@ -8,7 +8,7 @@
         <li>@Resources.App.fillRequiredField</li>
     </ul>
 </div>
-<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto activity-update-experience-setup-wrapper">
    
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
@@ -237,18 +237,9 @@
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            <div class="bootstrap-tagsinput @RequiredCheck(Model.Activity.SearchTags) d-flex flex-row flex-wrap ">
-                @foreach (var tag in Model.Activity.SearchTags)
-                {
-                    <span class="tag label label-info m-1">
-                        @tag
-                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag))">
-                        </span>
-                    </span>
-                }
-                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="searchTag" @bind-value:event="oninput" @onkeydown="Enter">
-            </div>
-           <label>Suggest sub-category for approval (up to 5 suggestions)</label>
+            <input class="form-control" type="text" placeholder="Sub category name" 
+                size="@SearchTagLength" @bind-value="searchTag" @onblur="OnSuggestSubCategoryLeave">
+           <label>Suggest sub-category for approval</label>
         </div>
     </div>
 
@@ -339,6 +330,11 @@
 
     private bool isEditCustomerRequirement = false;
 
+    protected override void OnParametersSet()
+    {
+        this.searchTag = Model.Activity.SearchTags.FirstOrDefault() ?? string.Empty;
+    }    
+
     private void CheckboxChanged(ChangeEventArgs e)
     {
         if (e.Value != null)
@@ -365,10 +361,12 @@
         }
         return "";
     }
+
     private void RemoveSearchTag(string tag)
     {
         Model.Activity.SearchTags.Remove(tag);
     }
+
      public void Enter(KeyboardEventArgs e)
     {
         if (e.Code == "Comma")
@@ -384,6 +382,7 @@
             searchTag = string.Empty;
         }
     }
+
     private string ShowErrorMessage()
     {
         return Model.ExperienceSetupHasError ? "block" : "none";
@@ -467,7 +466,7 @@
         if(string.IsNullOrEmpty(Model.Activity.ActivityLevel)) return false;
         if(string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
         if(Model.Activity.ExperienceCategoryId <= 0) return false;
-        if(Model.Activity.SearchTags.Count == 0) return false;
+        //if(Model.Activity.SearchTags.Count == 0) return false;
         if(!IsAllImagesValid()) return false;
         return true;
     }
@@ -526,4 +525,10 @@
 
         editCustomerRequirementWordCnt = htmlText.Trim().Split(" ").Length;
     }
+
+    private void OnSuggestSubCategoryLeave()
+    {
+        Model.Activity.SearchTags.Clear();
+        Model.Activity.SearchTags.Add(searchTag);
+    } 
 }
