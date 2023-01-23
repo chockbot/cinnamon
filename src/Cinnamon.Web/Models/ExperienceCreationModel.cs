@@ -12,4 +12,6 @@ public class ExperienceCreationModel
     public IEnumerable<string> SkillLevels { get; set; } = new List<string> { "No experience", "Little experience", "Expert" };
     public string Token {get; set;} = string.Empty;
     public bool HasError {get; set;}
+
+    public long OverAllImageSize {get; set;}
 }
