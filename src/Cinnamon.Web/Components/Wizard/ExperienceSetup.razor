@@ -6,6 +6,10 @@
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
         <li>@Resources.App.fillRequiredField</li>
+        @if(isShowImageErrorMessage)
+        {
+            <li>Can only upload total of 10mb for all images</li>
+        }
     </ul>
 </div>
 <div class="content-creation activity-creation-experience-setup-wrapper col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
@@ -230,7 +234,7 @@
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            <input type="text" class="form-control @RequiredCheck(Model.Activity.SearchTags)" @onblur="OnSuggestSubCategoryLeave" 
+            <input type="text" class="form-control" @onblur="OnSuggestSubCategoryLeave" 
                 placeholder="Sub category name" size="@SearchTagLength" @bind-value="SearchTag">
             <label>Suggest sub-category for approval</label>
         </div>
@@ -304,6 +308,8 @@
     private RichTextEdit EditSpecificProvide;
 
     private RichTextEdit EditCustomerBring;
+
+    private bool isShowImageErrorMessage = false;
 
     protected override void OnInitialized()
     {
@@ -447,6 +453,7 @@
         if(Model.Activity.ExperienceCategoryId <= 0) return false;
         //if(Model.Activity.SearchTags.Count == 0) return false;
         if(!IsAllImagesValid()) return false;
+        if(!IsAllImageSizeAccepted()) return false;
         return true;
     }
 
@@ -469,6 +476,17 @@
     private bool IsAllImagesValid()
     {
         return !(Image1.HaveEmptyImage() || Image2.HaveEmptyImage() || Image3.HaveEmptyImage());
+    }
+
+    private bool IsAllImageSizeAccepted()
+    {
+        var totalSize = Image1.GetSize + Image2.GetSize + Image3.GetSize;
+        
+        bool isReachLimit = totalSize > 10;
+
+        isShowImageErrorMessage = isReachLimit;
+
+        return !isReachLimit;
     }
 
     private async Task EditSpecificChanged()

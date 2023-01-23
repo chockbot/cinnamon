@@ -127,7 +127,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _creation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creation */ \"./src/Pages/activity/creation.js\");\n/* harmony import */ var _update__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./update */ \"./src/Pages/activity/update.js\");\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  creation: _creation__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  update: _update__WEBPACK_IMPORTED_MODULE_1__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/activity/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _creation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creation */ \"./src/Pages/activity/creation.js\");\n/* harmony import */ var _update__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./update */ \"./src/Pages/activity/update.js\");\n/* harmony import */ var _validateFileSize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./validateFileSize */ \"./src/Pages/activity/validateFileSize.js\");\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  creation: _creation__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  update: _update__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  validateFileSize: _validateFileSize__WEBPACK_IMPORTED_MODULE_2__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/activity/index.js?");
 
 /***/ }),
 
@@ -139,6 +139,17 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 
 "use strict";
 eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ \"./node_modules/axios/index.js\");\n\nconst update = {};\nlet dotnetObj = undefined;\n\nupdate.init = async (obj, activityId) => {\n  dotnetObj = obj;\n  return await update.uploadImages(activityId);\n};\n\nupdate.uploadImages = async activityId => {\n  const formData = new FormData();\n  const img1 = document.getElementById(\"image-input-1\");\n\n  if (img1 && img1.files.length > 0) {\n    formData.append(\"Image1\", img1.files[0]);\n  }\n\n  const img2 = document.getElementById(\"image-input-2\");\n\n  if (img2 && img2.files.length > 0) {\n    formData.append(\"Image2\", img2.files[0]);\n  }\n\n  const img3 = document.getElementById(\"image-input-3\");\n\n  if (img3 && img3.files.length > 0) {\n    formData.append(\"Image3\", img3.files[0]);\n  }\n\n  formData.append(\"ActivityId\", activityId);\n  const {\n    data\n  } = await axios__WEBPACK_IMPORTED_MODULE_0__[\"default\"].postForm(\"api/activity/UploadActivityImage\", formData);\n\n  if (!data.success) {\n    dotnetObj.invokeMethodAsync(\"ShowError\", data.message);\n  }\n\n  return data.success;\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (update);\n\n//# sourceURL=webpack://MyLib/./src/Pages/activity/update.js?");
+
+/***/ }),
+
+/***/ "./src/Pages/activity/validateFileSize.js":
+/*!************************************************!*\
+  !*** ./src/Pages/activity/validateFileSize.js ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (/* binding */ checkFileSize)\n/* harmony export */ });\nfunction checkFileSize(inputElem, overAllFileSize, maxFileSize) {\n  debugger;\n\n  try {\n    if (inputElem && inputElem.files) {\n      const file = inputElem.files[0];\n      const sizeInMB = file.size / 1024 / 1024;\n\n      if (sizeInMB + overAllFileSize > maxFileSize) {\n        inputElem.value = \"\";\n        return {\n          success: false,\n          message: \"Can upload only 10mb for all images\"\n        };\n      }\n\n      return {\n        success: true,\n        message: \"success\"\n      };\n    }\n\n    return {\n      success: false,\n      message: \"An error occured please try again\"\n    };\n  } catch {\n    return {\n      success: false,\n      message: \"Your browser not supported this feature\"\n    };\n  }\n}\n\n//# sourceURL=webpack://MyLib/./src/Pages/activity/validateFileSize.js?");
 
 /***/ }),
 
