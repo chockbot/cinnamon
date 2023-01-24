@@ -85,6 +85,8 @@
 
     private InputFile? inputFile;
 
+    private long ImageSize = 0;
+
     private void InvokeDelete() 
     {
         isBlank = true;
@@ -111,6 +113,7 @@
 
     public async Task LoadFile(InputFileChangeEventArgs e)
     {
+        ImageSize = e.File.Size / 1024 / 1024;
         isBlank = false;
         StateHasChanged();
         await ShowPreview();
@@ -127,4 +130,6 @@
     }
 
     public bool HaveEmptyImage() => isBlank && string.IsNullOrEmpty(DefaultSrc);
+
+    public long GetSize {get {return ImageSize; }}
 }

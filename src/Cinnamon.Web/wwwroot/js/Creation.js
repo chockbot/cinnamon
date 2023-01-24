@@ -1,24 +1,23 @@
 ﻿export function confirmation() {
-    $(document).ready(function () {
+  $(document).ready(function () {
+    $("#regForm").on("mousedown", stopNavigate);
 
-        $('#regForm').on('mousedown', stopNavigate);
-
-        $('#regForm').on('mouseleave', function () {
-            $(window).on('beforeunload', function () {
-                return 'Are you sure you want to leave?';
-            });
-        });
+    $("#regForm").on("mouseleave", function () {
+      $(window).on("beforeunload", function () {
+        return "Are you sure you want to leave?";
+      });
     });
+  });
 
-    function stopNavigate() {
-        $(window).off('beforeunload');
-    }
+  function stopNavigate() {
+    $(window).off("beforeunload");
+  }
 }
 
 export function OffBeforeUnload() {
-   $(window).off('beforeunload');
+  $(window).off("beforeunload");
 }
 
 export function onScrollUp() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }

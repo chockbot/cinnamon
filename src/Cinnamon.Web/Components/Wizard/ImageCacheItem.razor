@@ -75,6 +75,8 @@
 
     private InputFile? inputFile;
 
+    private long ImageSize = 0;
+
     private bool ShowDelete() 
     {
         if (isBlank) {
@@ -93,8 +95,9 @@
         return "";
     }
 
-    public async Task LoadFile(InputFileChangeEventArgs e)
+    private async Task LoadFile(InputFileChangeEventArgs e)
     {
+        ImageSize = e.File.Size / 1024 / 1024;
         isBlank = false;
         StateHasChanged();
         await ShowPreview();
@@ -110,4 +113,6 @@
         => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, ImageId);
     
     public bool HaveEmptyImage() => isBlank;
+
+    public long GetSize {get {return ImageSize; }}
 }
