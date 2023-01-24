@@ -1,0 +1,98 @@
+﻿@layout DashboardLayout
+@page "/maker/dashboard/managestudents"
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Models.Maker;
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject IAccountApiHandler accountApiHandler;
+@inject IActivityApiHandler activityApiHandler;
+
+@if (Model != null)
+{
+    <section class="mt-5 maker-dashboard">
+        <div class="container">
+            <Row>
+                <Column>
+                    <h3 class="text-capitalize fw-bold">Manage Students</h3>
+                </Column>
+                <Column>
+                </Column>
+            </Row>
+            <Table class="table-manage">
+                <TableHeader ThemeContrast="ThemeContrast.Dark" class="table-header">
+                    <TableRow class="table-cell">
+                        <TableHeaderCell>Name</TableHeaderCell>
+                        <TableHeaderCell>Session Attended</TableHeaderCell>
+                        <TableHeaderCell class="table-header-status">Status</TableHeaderCell>
+                        <TableHeaderCell>Student No.</TableHeaderCell>
+                        <TableHeaderCell>Attendance</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody class="table-body">
+                    <TableRow class="table-row">
+                        <TableRowCell>@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</TableRowCell>
+                        <TableRowCell>
+                            <Progress>
+                                <ProgressBar Color="Color.Success" Value=2 Max=10/>
+                            </Progress>
+                        </TableRowCell>
+                        <TableRowCell><p class="table-active">Active</p></TableRowCell>
+                        <TableRowCell>00<Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" class="icon-edit" /></TableRowCell>
+                        <TableRowCell><Button class="update-button">Update</Button></TableRowCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+    </section>
+}
+
+@code {
+    private Models.Customer.Profile Model;
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var customer = result.Result.Result;
+
+        // check if customer is maker
+        if (!customer.IsMaker)
+        {
+            // account is not maker redirect to explore page
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        Model = new Models.Customer.Profile
+        {
+            Token = token,
+            CustomerProfile = new Models.Entities.CustomerProfile
+            {
+                About = customer.About,
+                Birthdate = customer.Birthdate,
+                Email = customer.Email,
+                FirstName = customer.FirstName,
+                LastName = customer.LastName,
+                Id = customer.Id,
+                IsMaker = customer.IsMaker,
+                IsVerified = customer.IsVerified,
+                ProfilePath = customer.ProfileImg,
+            },
+        };
+    }
+}
