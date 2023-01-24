@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OngoingActivity;
+using System.Linq.Expressions;
 
 namespace Cinnamon.Api.Data.Services.Repository.OngoingActivity;
 
@@ -78,11 +79,17 @@ public class OngoingActivityRepository : IOngoingActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<OngoingActivityDTO>>> GetAllAsync(int? count, int? skip)
+    public async Task<AppResult<IEnumerable<OngoingActivityDTO>>> GetAllAsync(int? count, int? skip, int? customerId, bool isIncludeActivity = false)
     {
         try
         {
-            var result = await dataStore.OngoingActivity.FindAsync(p => true, count, skip);
+            var includes = new List<Expression<Func<Entities.OngoingActivity, object>>>();
+            if(isIncludeActivity) includes.Add(o => o.Activity);
+
+            Expression<Func<Entities.OngoingActivity,bool>> filter = 
+                o => (customerId.HasValue ? o.CustomerId == customerId : true);
+
+            var result = await dataStore.OngoingActivity.FindAsync(filter, count, skip, includes);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<OngoingActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -93,7 +100,7 @@ public class OngoingActivityRepository : IOngoingActivityRepository
                     ActivityId = o.ActivityId,
                     CustomerId = o.CustomerId,
                     PurchaseOrderId = o.PurchaseOrderId,
-                    Id = o.Id
+                    Id = o.Id,
                 };
             });
 

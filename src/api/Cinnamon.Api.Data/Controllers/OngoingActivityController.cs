@@ -47,7 +47,8 @@ public class OngoingActivityController : ControllerBase
         {
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await ongoingActivityRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await ongoingActivityRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
+                    args.CustomerId, args.IsIncludeActivity ?? false) :
                 await ongoingActivityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -57,7 +58,7 @@ public class OngoingActivityController : ControllerBase
 
             // get all without pagination to get all rows
             var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await ongoingActivityRepository.GetAllAsync(null, null) :
+                await ongoingActivityRepository.GetAllAsync(null, null, null) :
                 await ongoingActivityRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
