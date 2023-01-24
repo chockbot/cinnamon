@@ -93,7 +93,7 @@ public class OngoingActivityController : ControllerBase
     {
         try
         {
-            var result = await ongoingActivityRepository.Create(args.ActivityId, args.CustomerId, args.PurchaseOrderId);
+            var result = await ongoingActivityRepository.Create(args.ActivityId, args.CustomerId, args.ScheduleId, args.PurchaseOrderId);
 
             if (!result.Succeeded || result.Result == null)
             {

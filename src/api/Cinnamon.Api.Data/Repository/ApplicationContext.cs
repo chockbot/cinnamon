@@ -103,6 +103,8 @@ public class ApplicationContext : IdentityDbContext
 
         // ongoingActivity
         modelBuilder.Entity<OngoingActivity>().HasIndex(o => o.PurchaseOrderId);
+        modelBuilder.Entity<OngoingActivity>()
+            .HasOne<ActivitySchedule>(o => o.Schedule);
 
         // resendEmail
         modelBuilder.Entity<ResendEmail>().HasIndex(r => r.Email);

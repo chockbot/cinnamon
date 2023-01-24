@@ -22,7 +22,7 @@ public class OngoingActivitiesData: IOngoingActivitiesData
         try
         {
             var result = await flurlClient
-                .Request("OngoingActivities/CreateOngoingActivity")
+                .Request("OngoingActivity/CreateOngoingActivity")
                 .PostJsonAsync(args)
                 .ReceiveJson<CreateOngoingActivityResult>();
 
@@ -42,7 +42,7 @@ public class OngoingActivitiesData: IOngoingActivitiesData
         try
         {
             var result = await flurlClient
-                            .Request($"OngoingActivities/GetOngoingActivityById/{id}")
+                            .Request($"OngoingActivity/GetOngoingActivityById/{id}")
                             .GetJsonAsync<GetOngoingActivityResult>();
 
             return AppResult<GetOngoingActivityResult>.CreateSucceeded(result, "Successfully getting activity ongoing activity by id api");
@@ -61,7 +61,7 @@ public class OngoingActivitiesData: IOngoingActivitiesData
         try
         {
             var result = await flurlClient
-                            .Request("OngoingActivities/GetAllOngoingActivities")
+                            .Request("OngoingActivity/GetAllOngoingActivities")
                             .SetQueryParams(
                                 new
                                 {
@@ -85,7 +85,7 @@ public class OngoingActivitiesData: IOngoingActivitiesData
         try
         {
             var result = await flurlClient
-                            .Request("OngoingActivities/UpdateOngoingActivity")
+                            .Request("OngoingActivity/UpdateOngoingActivity")
                             .PostJsonAsync(args)
                             .ReceiveJson<UpdateongoingActivityResult>();
 

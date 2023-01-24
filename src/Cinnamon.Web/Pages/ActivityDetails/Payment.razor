@@ -208,7 +208,7 @@
 
     @if (isLoaded)
     {
-        <AddChildrenModal @ref="AddChildrenModal" Model="Model.Customer.FamilyMembers" />
+        <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember" Model="Model.Customer.FamilyMembers" />
         <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" />
     }
 
@@ -492,7 +492,13 @@
                 ActivityId = Model.Activity.ActivityId,
                 CouponCode = "temporary coupon code",
                 NumberOfHeads = Model.SelectedAttendees.Count,
-                ScheduleId = Model.SelectedSchedule.Id
+                ScheduleId = Model.SelectedSchedule.Id,
+                Students = Model.SelectedAttendees.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.Enrollee {
+                        FamilyMemberId = s.Id,
+                        Name = s.Name
+                    };
+                })
             }, Model.Token);
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))

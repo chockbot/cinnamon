@@ -26,8 +26,12 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IActivityImagesData, Modules.DataAccess.ActivityImages.ActivityImagesData>();
         services.AddTransient<Modules.DataAccess.Handlers.IPurchaseOrderData, Modules.DataAccess.PurchaseOrder.PurchaseOrderData>();
         services.AddTransient<Modules.DataAccess.Handlers.IExternalLoginTokenData, Modules.DataAccess.ExternalLoginToken.ExternalLoginTokenData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IOngoingActivitiesData, Modules.DataAccess.OngoingActivities.OngoingActivitiesData>();
 
-        // services
+        // ongoing activity services
+        services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
+
+        // account services
         services.AddTransient<Services.AccountService.Handlers.ISubmitRegisterHandler, Services.AccountService.SubmitRegisterHandler>();
         services.AddTransient<Services.AccountService.Handlers.ISubmitWaitlistHandler, Services.AccountService.SubmitWaitlistHandler>();
         services.AddTransient<Services.AccountService.Handlers.ISubmitVerifyEmailHandler, Services.AccountService.SubmitVerifyEmailHandler>();
@@ -51,6 +55,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IExternalRegisterHandler, Services.AccountService.SubmitExternalRegisterHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetExternalLoginDetailHandler, Services.AccountService.GetExternalLoginDetailHandler>();
         
+        // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceTypesHandler, Services.ActivityService.GetExperienceTypesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceCategoriesHandler, Services.ActivityService.GetExperienceCategoriesHandler>();
@@ -66,6 +71,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetActiviesByCategoriesHandler, Services.ActivityService.GetActivitiesByCategoriesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActivitiesBySubCategoriesHandler, Services.ActivityService.GetActivitiesBySubCategoriesHandler>();
 
+        // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();
 

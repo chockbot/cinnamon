@@ -15,7 +15,7 @@ public class OngoingActivityRepository : IOngoingActivityRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<OngoingActivityDTO>> Create(int activityId, int customerId, int purchaseOrderId)
+    public async Task<AppResult<OngoingActivityDTO>> Create(int activityId, int customerId, int scheduleId, int purchaseOrderId)
     {
         try
         {
@@ -43,10 +43,19 @@ public class OngoingActivityRepository : IOngoingActivityRepository
                     new ApplicationException("Can't find purchase order id provided"), "Can't find purchase order id provided");
             }
 
+            // check schedule id
+            var scheduleRes = await dataStore.ActivitySchedule.GetByIdAsync(scheduleId);
+            if(!scheduleRes.Succeeded || scheduleRes.Result == null)
+            {
+                return AppResult<OngoingActivityDTO>.CreateFailed(
+                    new ApplicationException("Can't find activity schedule id provided"), "Can't find activity schedule id provided");
+            }
+
             var ongoingActivity = new Entities.OngoingActivity {
                 ActivityId = activityId,
                 CustomerId = customerId,
-                PurchaseOrderId = purchaseOrderId
+                PurchaseOrderId = purchaseOrderId,
+                ScheduleId = scheduleId
             };
 
             var createdRes = await dataStore.OngoingActivity.Add(ongoingActivity);
