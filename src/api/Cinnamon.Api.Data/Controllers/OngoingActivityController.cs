@@ -46,7 +46,7 @@ public class OngoingActivityController : ControllerBase
         try
         {
             var result =
-                args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || args.CustomerId.HasValue ?
                 await ongoingActivityRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
                     args.CustomerId, args.IsIncludeActivity ?? false) :
                 await ongoingActivityRepository.GetAllAsync();

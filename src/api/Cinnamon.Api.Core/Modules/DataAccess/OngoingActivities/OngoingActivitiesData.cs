@@ -37,6 +37,7 @@ public class OngoingActivitiesData: IOngoingActivitiesData
             return AppResult<CreateOngoingActivityResult>.CreateFailed(ex, "An error occured when posting create ongoing activity api");
         }
     }
+    
     public async Task<AppResult<GetOngoingActivityResult>> GetOngoingActivityById(int id)
     {
         try
@@ -56,18 +57,15 @@ public class OngoingActivitiesData: IOngoingActivitiesData
             return AppResult<GetOngoingActivityResult>.CreateFailed(ex, "An error occured when getting activity ongoing activity by id api");
         }
     }
+
     public async Task<AppResult<GetAllOngoingActivityResult>> GetAllOngoingActivities(GetAllOngoingActivityArgs args)
     {
         try
         {
             var result = await flurlClient
                             .Request("OngoingActivity/GetAllOngoingActivities")
-                            .SetQueryParams(
-                                new
-                                {
-                                    countPerPage = args.CountPerPage,
-                                    pageIndex = args.PageIndex
-                                }).GetJsonAsync<GetAllOngoingActivityResult>();
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetAllOngoingActivityResult>();
 
             return AppResult<GetAllOngoingActivityResult>.CreateSucceeded(result, "Successfully getting get all ongoing activities api");
         }
@@ -80,6 +78,7 @@ public class OngoingActivitiesData: IOngoingActivitiesData
             return AppResult<GetAllOngoingActivityResult>.CreateFailed(ex, "An error occured when getting all ongoing activities api");
         }
     }
+
     public async Task<AppResult<UpdateongoingActivityResult>> UpdateOngoingActivity(UpdateOngoingActivityArgs args)
     {
         try
