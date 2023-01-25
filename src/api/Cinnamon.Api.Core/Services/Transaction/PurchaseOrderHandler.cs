@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
+using Cinnamon.Api.Core.Services.OngoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
@@ -14,14 +15,16 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly ICustomerData customerData;
     private readonly IHttpContextAccessor httpContext;
     private readonly IGetActivityHandler getActivityHandler;
+    private readonly ICreateOngoingActivityHandler createOngoingActivityHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
-        IGetActivityHandler getActivityHandler, ICustomerData customerData)
+        IGetActivityHandler getActivityHandler, ICustomerData customerData, ICreateOngoingActivityHandler createOngoingActivityHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
         this.getActivityHandler = getActivityHandler;
         this.customerData = customerData;
+        this.createOngoingActivityHandler = createOngoingActivityHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -103,6 +106,26 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             {
                 return AppResult<PurchaseOrderResult>.CreateFailed(
                     new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in PurchaseOrderHandler");
+            }
+
+            var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs 
+            {
+                ActivityId = args.ActivityId,
+                CustomerId = id,
+                PurchaseOrderId = result.Result.Result.Id,
+                ScheduleId = args.ScheduleId,
+                Students = args.Students.Select(s => {
+                    return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student {
+                        FamilyMemberId = s.FamilyMemberId,
+                        Name = s.Name
+                    };
+                })
+            });
+
+            if(!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
+            {
+                return AppResult<PurchaseOrderResult>.CreateFailed(
+                    new ApplicationException(createOngoingActivityRes.Message), createOngoingActivityRes.Message);
             }
 
             return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {Id = result.Result.Result.Id}, "Successfully create submit purchase order");

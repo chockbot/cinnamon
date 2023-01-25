@@ -19,5 +19,5 @@ public interface IActivityApiHandler
     Task<AppResult<GetActivityResult>> GetActivity(int id, GetActivityArgs? args = null);
     Task<AppResult<UploadActivityImageResult>> UploadActivityImages(UploadActivityImageArgs args, string token);
     Task<AppResult<GetActivitiesByCategoriesResult>> GetActivitiesByCategories(int id, GetActivityArgs? args = null);
-
+    Task<AppResult<GetEnrolledActivitiesResult>> GetEnrolledActivities(GetEnrolledActivitiesArgs args, string token);
 } 

@@ -26,14 +26,15 @@ public class ActivityController : ControllerBase
     private readonly IGetActivityImagesHandler getActivityImagesHandler;
     private readonly IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler;
     private readonly IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler;
+    private readonly IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
         IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IUpdateActivityHandler updateActivityHandler,
         IGetOwnedActivityHandler getOwnedActivityHandler, IUploadActivityImageHandler uploadActivityImageHandler, 
         IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler, 
-        IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler
-        )
+        IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,
+        IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler)
     {
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
@@ -49,6 +50,7 @@ public class ActivityController : ControllerBase
         this.getActiviesByCategoriesHandler = getActiviesByCategoriesHandler;
         this.getActivityHandler = getActivityHandler;
         this.getActivitiesBySubCategoriesHandler = getActivitiesBySubCategoriesHandler;
+        this.getEnrolledActivitiesHandler = getEnrolledActivitiesHandler;
     }
 
     [Route("CreateActivity")]
@@ -397,6 +399,81 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetSubCategoriesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetEnrolledActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEnrolledActivitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEnrolledActivities([FromQuery] GetEnrolledActivitiesArgs args)
+    {
+        try
+        {
+            var result = await getEnrolledActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetEnrolledActivitiesArgs {
+                IncludeActivityAddress = args.IncludeActivityAddress ?? false,
+                IncludeActivityDescription = args.IncludeActivityDescription ?? false,
+                IncludeActivityImages = args.IncludeActivityImages ?? false,
+                IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
+                IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
+                IsActive = args.IsActive
+            });
+            
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetEnrolledActivitiesResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetEnrolledActivitiesResult {
+                IsSuccess = true,
+                Result = result.Result.Activities.Select(a => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                        ActivityId = a.Id,
+                        ActivityLevel = a.ActivityLevel,
+                        ActivitySchedules = a.ActivitySchedules.Select(s => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule {
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice
+                            };
+                        }),
+                        AdditionalRequirements = a.AdditionalRequirements,
+                        Address1 = a.Address1,
+                        Address2 = a.Address2,
+                        CanAdultsJoin = a.CanAdultsJoin,
+                        City = a.City,
+                        CustomerBringWithThem = a.CustomerBringWithThem,
+                        Description = a.Description,
+                        District = a.District,
+                        ExperienceCategoryId = a.ExperienceCategoryId,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        Images = a.Images.Select(i => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }),
+                        IsPublished = a.IsPublished,
+                        MinimumAge = a.MinimumAge,
+                        Price = a.Price,
+                        Remarks = a.Remarks,
+                        ScheduleIndicator = a.ScheduleIndicator,
+                        SearchTags = a.SearchTags,
+                        SkillLevel = a.SkillLevel,
+                        SpecificsYouWillProvide = a.SpecificsYouWillProvide,
+                        SubCategoryId = a.SubCategoryId,
+                        Title = a.Title
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEnrolledActivitiesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 
