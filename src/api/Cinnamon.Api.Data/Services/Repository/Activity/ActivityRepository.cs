@@ -281,7 +281,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
-        bool includeSchedules = false, bool includeImages = false)
+        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null)
     {
         try
         {
@@ -293,7 +293,8 @@ public class ActivityRepository : IActivityRepository
             if(includeImages) includes.Add(a => a.Images);
 
             Expression<Func<Entities.Activity,bool>> filter = 
-                a => (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                a => (ids != null ? ids.Contains(a.Id) : true) &&
+                        (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true);
 
             var result = await dataStore.Activity.FindAsync(filter, count, skip, includes);

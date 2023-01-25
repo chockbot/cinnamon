@@ -195,7 +195,7 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-           // module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
         Task.Run(()=>module.InvokeVoidAsync("confirmation"));
     }
@@ -314,19 +314,39 @@
             switch(index)
             {
                 case 1:
-                    if(Model.HasError = !experienceCreationComponent.IsAllFieldsValidated()) return;
+                    if(Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("onScrollUp");
+                        return;
+                    };
                     currentIndex = 1;
                     break;
                 case 2:
-                    if(Model.HasError = !experienceCreationComponent.IsAllFieldsValidated()) return;
-                    if(Model.HasError = !experienceSetupComponent.IsAllFieldsValidated()) return;
+                    if(Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("onScrollUp");
+                        return;
+                    };
+                    if(Model.HasError = !experienceSetupComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("onScrollUp");
+                        return;
+                    };
                     currentIndex = 2;
                     break;
             }
             return;
         }
-        if(currentIndex == 1 && (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())) return;
-        if(currentIndex == 2 && (Model.HasError = !experienceSetupComponent.IsAllFieldsValidated())) return;
+        if(currentIndex == 1 && (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated()))
+        {
+            await module.InvokeVoidAsync("onScrollUp");
+            return;
+        };
+        if(currentIndex == 2 && (Model.HasError = !experienceSetupComponent.IsAllFieldsValidated()))
+        {
+            await module.InvokeVoidAsync("onScrollUp");
+            return;
+        };
         
         currentIndex++;
     }

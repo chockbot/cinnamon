@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.OngoingActivity;
+using System.Linq.Expressions;
 
 namespace Cinnamon.Api.Data.Services.Repository.OngoingActivity;
 
@@ -15,7 +16,7 @@ public class OngoingActivityRepository : IOngoingActivityRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<OngoingActivityDTO>> Create(int activityId, int customerId, int purchaseOrderId)
+    public async Task<AppResult<OngoingActivityDTO>> Create(int activityId, int customerId, int scheduleId, int purchaseOrderId)
     {
         try
         {
@@ -43,10 +44,19 @@ public class OngoingActivityRepository : IOngoingActivityRepository
                     new ApplicationException("Can't find purchase order id provided"), "Can't find purchase order id provided");
             }
 
+            // check schedule id
+            var scheduleRes = await dataStore.ActivitySchedule.GetByIdAsync(scheduleId);
+            if(!scheduleRes.Succeeded || scheduleRes.Result == null)
+            {
+                return AppResult<OngoingActivityDTO>.CreateFailed(
+                    new ApplicationException("Can't find activity schedule id provided"), "Can't find activity schedule id provided");
+            }
+
             var ongoingActivity = new Entities.OngoingActivity {
                 ActivityId = activityId,
                 CustomerId = customerId,
-                PurchaseOrderId = purchaseOrderId
+                PurchaseOrderId = purchaseOrderId,
+                ScheduleId = scheduleId
             };
 
             var createdRes = await dataStore.OngoingActivity.Add(ongoingActivity);
@@ -69,11 +79,17 @@ public class OngoingActivityRepository : IOngoingActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<OngoingActivityDTO>>> GetAllAsync(int? count, int? skip)
+    public async Task<AppResult<IEnumerable<OngoingActivityDTO>>> GetAllAsync(int? count, int? skip, int? customerId, bool isIncludeActivity = false)
     {
         try
         {
-            var result = await dataStore.OngoingActivity.FindAsync(p => true, count, skip);
+            var includes = new List<Expression<Func<Entities.OngoingActivity, object>>>();
+            if(isIncludeActivity) includes.Add(o => o.Activity);
+
+            Expression<Func<Entities.OngoingActivity,bool>> filter = 
+                o => (customerId.HasValue ? o.CustomerId == customerId : true);
+
+            var result = await dataStore.OngoingActivity.FindAsync(filter, count, skip, includes);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<OngoingActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -84,7 +100,7 @@ public class OngoingActivityRepository : IOngoingActivityRepository
                     ActivityId = o.ActivityId,
                     CustomerId = o.CustomerId,
                     PurchaseOrderId = o.PurchaseOrderId,
-                    Id = o.Id
+                    Id = o.Id,
                 };
             });
 

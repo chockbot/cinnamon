@@ -33,7 +33,13 @@ public class TransactionController : ControllerBase
                 ActivityId = args.ActivityId,
                 CouponCode = args.CouponCode,
                 NumberOfHeads = args.NumberOfHeads,
-                ScheduleId = args.ScheduleId
+                ScheduleId = args.ScheduleId,
+                Students = args.Students.Select(s => {
+                    return new Services.TransactionService.Interactors.PurchaseOrderArgs.Enrollee {
+                        FamilyMemberId = s.FamilyMemberId,
+                        Name = s.Name
+                    };
+                })
             });
 
             if(!result.Succeeded || result.Result == null)

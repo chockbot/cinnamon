@@ -8,4 +8,11 @@ public class PurchaseOrderArgs : IInteractor
     public int ScheduleId {get; set;}
     public int NumberOfHeads {get; set;}
     public string? CouponCode {get; set;}
+    public IEnumerable<Enrollee> Students {get; set;}
+
+    public class Enrollee
+    {
+        public int FamilyMemberId {get; set;}
+        public string Name {get; set;}
+    }
 }

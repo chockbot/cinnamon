@@ -303,4 +303,26 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured when getting activities api");
         }
     }
+
+    public async Task<AppResult<GetEnrolledActivitiesResult>> GetEnrolledActivities(GetEnrolledActivitiesArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GetEnrolledActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetEnrolledActivitiesResult>();
+
+            return AppResult<GetEnrolledActivitiesResult>.CreateSucceeded(result, "Successfully getting enrolled activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEnrolledActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEnrolledActivitiesResult>.CreateFailed(ex, "An error occured when getting enrolled activities api");
+        }
+    }
 }

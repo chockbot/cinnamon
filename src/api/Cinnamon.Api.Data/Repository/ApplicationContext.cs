@@ -103,6 +103,8 @@ public class ApplicationContext : IdentityDbContext
 
         // ongoingActivity
         modelBuilder.Entity<OngoingActivity>().HasIndex(o => o.PurchaseOrderId);
+        modelBuilder.Entity<OngoingActivity>()
+            .HasOne<ActivitySchedule>(o => o.Schedule);
 
         // resendEmail
         modelBuilder.Entity<ResendEmail>().HasIndex(r => r.Email);
@@ -120,7 +122,7 @@ public class ApplicationContext : IdentityDbContext
 
         foreach (var entity in addedEntities) 
         {
-            if (entity.HasProperty("CreatedOn")) 
+            if (entity.Properties.Any(p => p.Metadata.Name == "CreatedOn")) 
             {
                 entity.Property("CreatedOn").CurrentValue = currentDate;
             }
@@ -128,8 +130,8 @@ public class ApplicationContext : IdentityDbContext
 
         var updatedEntities = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified);
         foreach (var entity in updatedEntities) 
-        {
-            if (entity.HasProperty("ChangedOn")) 
+        {   
+            if(entity.Properties.Any(p => p.Metadata.Name == "ChangedOn"))
             {
                 entity.Property("ChangedOn").CurrentValue = currentDate;
             }

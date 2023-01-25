@@ -1,9 +1,15 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <div>
-    @* <OngoingExperience Activities="Activities" /> *@
+    <OngoingExperience Activities="Activities" />
     <Divider class="my-3" />
     <ExperienceReview />
     <Divider class="my-3" />
     <RecommendedExperience />
 </div>
+
+@code
+{
+    [Parameter]
+    public IEnumerable<Models.Entities.Activity> Activities {get; set;}
+}

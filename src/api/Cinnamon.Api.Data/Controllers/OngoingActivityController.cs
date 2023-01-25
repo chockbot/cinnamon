@@ -46,8 +46,9 @@ public class OngoingActivityController : ControllerBase
         try
         {
             var result =
-                args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await ongoingActivityRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || args.CustomerId.HasValue ?
+                await ongoingActivityRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
+                    args.CustomerId, args.IsIncludeActivity ?? false) :
                 await ongoingActivityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -57,7 +58,7 @@ public class OngoingActivityController : ControllerBase
 
             // get all without pagination to get all rows
             var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await ongoingActivityRepository.GetAllAsync(null, null) :
+                await ongoingActivityRepository.GetAllAsync(null, null, null) :
                 await ongoingActivityRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
@@ -93,7 +94,7 @@ public class OngoingActivityController : ControllerBase
     {
         try
         {
-            var result = await ongoingActivityRepository.Create(args.ActivityId, args.CustomerId, args.PurchaseOrderId);
+            var result = await ongoingActivityRepository.Create(args.ActivityId, args.CustomerId, args.ScheduleId, args.PurchaseOrderId);
 
             if (!result.Succeeded || result.Result == null)
             {
