@@ -127,7 +127,18 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _creation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creation */ \"./src/Pages/activity/creation.js\");\n/* harmony import */ var _update__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./update */ \"./src/Pages/activity/update.js\");\n/* harmony import */ var _validateFileSize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./validateFileSize */ \"./src/Pages/activity/validateFileSize.js\");\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  creation: _creation__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  update: _update__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  validateFileSize: _validateFileSize__WEBPACK_IMPORTED_MODULE_2__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/activity/index.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\n/* harmony import */ var _creation__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./creation */ \"./src/Pages/activity/creation.js\");\n/* harmony import */ var _update__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./update */ \"./src/Pages/activity/update.js\");\n/* harmony import */ var _validateFileSize__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./validateFileSize */ \"./src/Pages/activity/validateFileSize.js\");\n/* harmony import */ var _quillLimitWords__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./quillLimitWords */ \"./src/Pages/activity/quillLimitWords.js\");\n\n\n\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({\n  creation: _creation__WEBPACK_IMPORTED_MODULE_0__[\"default\"],\n  update: _update__WEBPACK_IMPORTED_MODULE_1__[\"default\"],\n  validateFileSize: _validateFileSize__WEBPACK_IMPORTED_MODULE_2__[\"default\"],\n  quillLimitWords: _quillLimitWords__WEBPACK_IMPORTED_MODULE_3__[\"default\"]\n});\n\n//# sourceURL=webpack://MyLib/./src/Pages/activity/index.js?");
+
+/***/ }),
+
+/***/ "./src/Pages/activity/quillLimitWords.js":
+/*!***********************************************!*\
+  !*** ./src/Pages/activity/quillLimitWords.js ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => (__WEBPACK_DEFAULT_EXPORT__)\n/* harmony export */ });\nconst quillLimitWords = {};\n\nquillLimitWords.init = (selector, label, wordsLimit) => {\n  const container = document.querySelector(selector);\n  const editorInstance = Quill.find(container);\n\n  function wordsLength() {\n    const text = editorInstance.getText();\n    const words = text.split(\" \").filter(w => w.trim() !== \"\");\n    return words.length;\n  }\n\n  $(label).text(`Max of ${wordsLimit} words (${wordsLength()}/80)`);\n  editorInstance.on(\"text-change\", function (delta, oldDelta, source) {\n    const lengthOfWords = wordsLength();\n    $(label).text(`Max of ${wordsLimit} words (${lengthOfWords}/${wordsLimit})`);\n\n    if (lengthOfWords > wordsLimit) {\n      editorInstance.setContents(oldDelta);\n    }\n  });\n};\n\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (quillLimitWords);\n\n//# sourceURL=webpack://MyLib/./src/Pages/activity/quillLimitWords.js?");
 
 /***/ }),
 

@@ -4,6 +4,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Ganss.XSS;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
@@ -15,6 +16,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
     private readonly ISubCategoryData subCategoryData;
     private readonly IExperienceTypeData experienceTypeData;
     private readonly IScheduleData scheduleData;
+    private readonly HtmlSanitizer htmlSanitizer;
 
     public UpdateActivityHandler(IActivityData activityData, IExperienceCategoryData categoryData,
         ISubCategoryData subCategoryData, IExperienceTypeData experienceTypeData, IScheduleData scheduleData,
@@ -26,6 +28,10 @@ public class UpdateActivityHandler : IUpdateActivityHandler
         this.experienceTypeData = experienceTypeData;
         this.scheduleData = scheduleData;
         this.httpContext = httpContext;
+
+        this.htmlSanitizer = new 
+            HtmlSanitizer(
+                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br"});
     }
 
     public AppResult<UpdateActivityResult> Execute(UpdateActivityArgs args)
@@ -44,6 +50,17 @@ public class UpdateActivityHandler : IUpdateActivityHandler
     {
         try
         {
+            const int maxWords = 80;
+            var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
+            var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
+
+            if(customerBringLength > maxWords || specificProvideLength > maxWords)
+            {
+                return AppResult<UpdateActivityResult>.CreateFailed(
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
+            }
+
             // get customer id saved in claims
             var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
             if(customerId == null)
@@ -120,7 +137,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Region = args.Region,
                 Barangay = args.Barangay,
                 PostalCode = args.PostalCode,
-                CustomerBringWithThem = args.CustomerBringWithThem,
+                CustomerBringWithThem = htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
                 Description = args.Description,
                 District = args.District,
                 ExperienceCategoryId = args.ExperienceCategoryId,
@@ -131,7 +148,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Remarks = args.Remarks,
                 ScheduleIndicator = args.ScheduleIndicator,
                 SkillLevel = args.SkillLevel,
-                SpecificsYouWillProvide = args.SpecificsYouWillProvide,
+                SpecificsYouWillProvide = htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title
             };
@@ -278,5 +295,23 @@ public class UpdateActivityHandler : IUpdateActivityHandler
         {
             return AppResult<UpdateActivityResult>.CreateFailed(ex, "An error occured in UpdateActivityHandler");
         }
+    }
+
+    private int WordsLenght(string text)
+    {
+        var words = htmlSanitizer
+                        .Sanitize(text)
+                        .Replace("<br>"," ").Replace("</br>"," ")
+                        .Replace("<p>","").Replace("</p>","")
+                        .Replace("<strong>","").Replace("</strong>","")
+                        .Replace("<em>","").Replace("</em>","")
+                        .Replace("<ul>","").Replace("</ul>","")
+                        .Replace("<ol>","").Replace("</ol>","")
+                        .Replace("<li>","").Replace("</li>","")
+                        .Trim()
+                        .Split(" ")
+                        .Where(t => !string.IsNullOrEmpty(t.Trim()));
+        
+        return words.Count();
     }
 }

@@ -1,6 +1,7 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
 @using Cinnamon.Web.Models;
 @using Blazorise.RichTextEdit;
+@inject IJSRuntime jsRuntime;
 
 <h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -53,7 +54,7 @@
         </div>
     </div>
 
-    <div class="row mrow">
+    <div class="row mrow editor-specific-will-provide-update">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 Include specifics on what you will provide
@@ -82,12 +83,12 @@
                         </RichTextEditToolbarGroup>
                     </Toolbar>
                 </RichTextEdit>
-                <label>200 Max</label>
+                <label id="label-specific-editor-update"></label>
             </div>
         </div>
     </div>
 
-    <div class="row mrow">
+    <div class="row mrow editor-customer-requirement-provide-update">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 What customers must bring with them
@@ -115,7 +116,7 @@
                         </RichTextEditToolbarGroup>
                     </Toolbar>
                 </RichTextEdit>
-                <label>200 Max</label>
+                <label id="label-customer-requirement-editor-update"></label>
             </div>
         </div>
     </div>
@@ -336,10 +337,25 @@
 
     private bool isShowImageErrorMessage = false;
 
+    private int maxEditorWordLimit = 80;
+
     protected override void OnParametersSet()
     {
         this.searchTag = Model.Activity.SearchTags.FirstOrDefault() ?? string.Empty;
-    }    
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+           await Task.Delay(2000);
+           await jsRuntime
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide-update .ql-container","#label-specific-editor-update",maxEditorWordLimit);
+
+            await jsRuntime
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-customer-requirement-provide-update .ql-container","#label-customer-requirement-editor-update",maxEditorWordLimit);
+        }
+    }
 
     private void CheckboxChanged(ChangeEventArgs e)
     {
