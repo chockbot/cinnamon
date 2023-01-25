@@ -33,7 +33,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#" class="nav-link px-0 align-middle">
+                                <a href="#" class="nav-link px-0 align-middle" @onclick="NavigateToManage">
                                     <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-none d-sm-inline">Manage Students</span>
                                 </a>
                             </li>
@@ -120,6 +120,10 @@
     private void NavigateToAccount()
     {
         navigationManager.NavigateTo("/customer/profile");
+    }
+    private void NavigateToManage()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
 
     private void onClickMenu()

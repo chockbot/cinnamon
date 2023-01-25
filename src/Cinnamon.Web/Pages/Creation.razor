@@ -13,28 +13,28 @@
 @if(Model != null)
 {
     <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
-        <ol class='breadcrumb @(currentIndex >= 0 ? "active" : "")'>
+        <ol class='breadcrumb @(currentIndex == 0 ? "active" : "")'>
             <li class="step breadcrumb-item">
                 <a class="button" @onclick="() => currentIndex = 0">
-                    <span class='icon-step @(currentIndex >= 0 ? "active" : "")'>1</span>
+                    <span class='icon-step @(currentIndex == 0 ? "active" : "")'>1</span>
                     <span class="step-yellow">Overview</span>
                 </a>
             </li>
-            <li class='step breadcrumb-item @(currentIndex >= 1 ? "active" : "")' aria-current="page">
+            <li class='step breadcrumb-item @(currentIndex == 1 ? "active" : "")' aria-current="page">
                 <a class="button" @onclick="() => OnNextClick(1)">
-                    <span class='icon-step @(currentIndex >= 1 ? "active" : "")'>2</span>
+                    <span class='icon-step @(currentIndex == 1 ? "active" : "")'>2</span>
                     <span class="step-yellow">Experience creation</span>
                 </a>
             </li>
-            <li class='step breadcrumb-item @(currentIndex >= 2 ? "active" : "")' aria-current="page">
+            <li class='step breadcrumb-item @(currentIndex == 2 ? "active" : "")' aria-current="page">
                 <a class="button" @onclick="() => OnNextClick(2)">
-                    <span class='icon-step @(currentIndex >= 2 ? "active" : "")'>3</span>
+                    <span class='icon-step @(currentIndex == 2 ? "active" : "")'>3</span>
                     <span class="step-yellow">Setup</span>
                 </a>
             </li>
-            <li class='step breadcrumb-item @(currentIndex >= 3 ? "active" : "")' aria-current="page">
+            <li class='step breadcrumb-item @(currentIndex == 3 ? "active" : "")' aria-current="page">
                 <a class="button" @onclick="() => OnNextClick(3)">
-                    <span class='icon-step @(currentIndex >= 3 ? "active" : "")'>4</span>
+                    <span class='icon-step @(currentIndex == 3 ? "active" : "")'>4</span>
                     <span class="step-yellow">Publish</span>
                 </a>
             </li>
