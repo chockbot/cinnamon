@@ -13,21 +13,21 @@
 
 <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class='step breadcrumb-item @(currentIndex >= 0 ? "active" : "")' aria-current="page">
+        <li class='step breadcrumb-item @(currentIndex == 0 ? "active" : "")' aria-current="page">
              <a class="button" style="cursor: pointer;" @onclick="() => currentIndex = 0">
-                <span class='icon-step @(currentIndex >= 0 ? "active" : "")'>1</span>
+                <span class='icon-step @(currentIndex == 0 ? "active" : "")'>1</span>
                 <span class="step-yellow">Experience update</span>
             </a>
         </li>
-        <li class='step breadcrumb-item @(currentIndex >= 1 ? "active" : "")' aria-current="page">
+        <li class='step breadcrumb-item @(currentIndex == 1 ? "active" : "")' aria-current="page">
              <a class="button" style="cursor: pointer;" @onclick="() => OnNextClick(1)">
-                <span class='icon-step @(currentIndex >= 1 ? "active" : "")'>2</span>
+                <span class='icon-step @(currentIndex == 1 ? "active" : "")'>2</span>
                 <span class="step-yellow">Setup</span>
             </a>
         </li>
-        <li class='step breadcrumb-item @(currentIndex >= 2 ? "active" : "")' aria-current="page">
+        <li class='step breadcrumb-item @(currentIndex == 2 ? "active" : "")' aria-current="page">
             <a class="button" style="cursor: pointer;" @onclick="() => OnNextClick(2)">
-                <span class='icon-step @(currentIndex >= 2 ? "active" : "")'>3</span>
+                <span class='icon-step @(currentIndex == 2 ? "active" : "")'>3</span>
                 <span class="step-yellow">Publish</span>
             </a>
         </li>
