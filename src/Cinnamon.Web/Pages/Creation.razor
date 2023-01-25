@@ -293,7 +293,10 @@
             
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
-                throw new ApplicationException();
+                errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
+                ShowErrorMessage = true;
+                StateHasChanged();
+                return;
             }
 
             bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.init", obj, submit.Result.Result.ActivityId);

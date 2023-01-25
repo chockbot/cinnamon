@@ -1,6 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Models.Entities
 @using Blazorise.RichTextEdit;
+@inject IJSRuntime jsRuntime;
 
 <h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -52,7 +53,7 @@
         </div>
     </div>
 
-    <div class="row mrow">
+    <div class="row mrow editor-specific-will-provide">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 Include specifics on what you will provide
@@ -80,12 +81,12 @@
                         </RichTextEditToolbarGroup>
                     </Toolbar>
                 </RichTextEdit>
-                <label>200 Max</label>
+                <label id="label-specific-editor"></label>
             </div>
         </div>
     </div>
 
-    <div class="row mrow">
+    <div class="row mrow editor-customer-requirement-provide">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 What customers must bring with them
@@ -112,7 +113,7 @@
                         </RichTextEditToolbarGroup>
                     </Toolbar>
                 </RichTextEdit>
-                <label>200 Max</label>
+                <label id="label-customer-requirement-editor"></label>
             </div>
         </div>
     </div>
@@ -310,6 +311,21 @@
     private RichTextEdit EditCustomerBring;
 
     private bool isShowImageErrorMessage = false;
+
+    private int maxEditorWordLimit = 80;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+           await Task.Delay(2000);
+           await jsRuntime
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide .ql-container","#label-specific-editor",maxEditorWordLimit);
+
+            await jsRuntime
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-customer-requirement-provide .ql-container","#label-customer-requirement-editor",maxEditorWordLimit);
+        }
+    }
 
     protected override void OnInitialized()
     {
