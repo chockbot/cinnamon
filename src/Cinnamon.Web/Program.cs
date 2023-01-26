@@ -1,15 +1,12 @@
 using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
-using Cinnamon.Web.Areas.Identity;
 using Cinnamon.Web.Extensions;
 using Cinnamon.Web.Providers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Blazorise.RichTextEdit;
 
 var builder = WebApplication.CreateBuilder(args);

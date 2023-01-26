@@ -1,5 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
 @using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime;
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -20,8 +21,8 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea maxlength="80" @bind="Model.Activity.Title" class="@RequiredCheck(Model.Activity.Title)"></textarea>
-                <label>80 Max</label>
+                <textarea id="update-activity-title" @bind="Model.Activity.Title" class="@RequiredCheck(Model.Activity.Title)"></textarea>
+                <label>Max of 15 words</label>
             </div>
         </div>
     </div>
@@ -40,8 +41,8 @@
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.Description)" maxlength="200" @bind="Model.Activity.Description"></textarea>
-                <label>200 Max</label>
+                <textarea id="update-activity-description" class="@RequiredMin(Model.Activity.Description,20)" @bind="Model.Activity.Description"></textarea>
+                <label>Min of 20 words</label>
             </div>
         </div>
     </div>
@@ -106,13 +107,22 @@
     </div>
 </div>
 
-@code {
+@code 
+{
     [Parameter]
     public ExperienceUpdateModel Model {get; set;}
     
     private string searchTag;
 
     public int SearchTagLength { get; set; } = 0;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max","#update-activity-title",15);
+        }
+    }
     
     private void CheckboxChanged(int val)
     {
@@ -147,6 +157,19 @@
         return "";
     }
 
+    private string RequiredMin(string text, int min)
+    {
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        if(length < min) return "invalid";
+        return string.Empty;
+    }
+
+    private bool IsWordsLengthMin(string text, int min)
+    {
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        return length < min;
+    }
+
     private string RequiredCheck(int? value)
     {
         if (value == null || value == 0) return "invalid";
@@ -167,6 +190,7 @@
     {
         if(string.IsNullOrEmpty(Model.Activity.Title.Trim())) return false;
         if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
+        if(IsWordsLengthMin(Model.Activity.Description, 20)) return false;
         if(Model.Activity.ExperienceTypeId == 1)
         {
             if (string.IsNullOrEmpty(Model.Activity.Address1) ||

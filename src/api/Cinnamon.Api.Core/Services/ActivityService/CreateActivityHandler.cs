@@ -26,7 +26,7 @@ public class CreateActivityHandler : ICreateActivityHandler
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
-                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li"});
+                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br"});
     }
 
     public AppResult<CreateActivityResult> Execute(CreateActivityArgs args)
@@ -45,6 +45,17 @@ public class CreateActivityHandler : ICreateActivityHandler
     {
         try
         {
+            const int maxWords = 80;
+            var customerBringLength = WordsLenght(args.CustomerBringWithThem);
+            var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide);
+
+            if(customerBringLength > maxWords || specificProvideLength > maxWords)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
+            }
+
             // get customer id saved in claims
             var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
             if(customerId == null)
@@ -196,5 +207,23 @@ public class CreateActivityHandler : ICreateActivityHandler
         {
             return AppResult<CreateActivityResult>.CreateFailed(ex, "An error occured in CreateActivityHandler");
         }
+    }
+
+    private int WordsLenght(string text)
+    {
+        var words = htmlSanitizer
+                        .Sanitize(text)
+                        .Replace("<br>"," ").Replace("</br>"," ")
+                        .Replace("<p>","").Replace("</p>","")
+                        .Replace("<strong>","").Replace("</strong>","")
+                        .Replace("<em>","").Replace("</em>","")
+                        .Replace("<ul>","").Replace("</ul>","")
+                        .Replace("<ol>","").Replace("</ol>","")
+                        .Replace("<li>","").Replace("</li>","")
+                        .Trim()
+                        .Split(" ")
+                        .Where(t => !string.IsNullOrEmpty(t.Trim()));
+        
+        return words.Count();
     }
 }
