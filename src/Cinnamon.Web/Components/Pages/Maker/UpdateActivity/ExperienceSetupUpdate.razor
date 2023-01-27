@@ -260,31 +260,37 @@
                 -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br />
             </p>
         </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
-            <div>
-                <ImageCacheItemUpdate @ref="Image1" DefaultSrc="@GetDefaultImage1()" InputId="image-input-1" ImageId="image-src-1" />
-                <p>This is your cover photo</p>
-            </div>
+        <div class="mb-3 px-0">
+            <label for="photo-upload" style="cursor: pointer;" >
+                <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                    Upload 3 photos (10MB)
+                </Button>
+                <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFile" />
+            </label>
         </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
-            <div>
-                <ImageCacheItemUpdate @ref="Image2" DefaultSrc="@GetDefaultImage2()" InputId="image-input-2" ImageId="image-src-2" />
-                <p>Supporting photo</p>
-            </div>
+        <div class="activity-image-dragable">
+            <DropContainer TItem="ImageItem" Items="imageItems" ItemsFilter="@((item,dropZone) => item.Group == dropZone)" Display="Display.Flex">
+                <ChildContent>
+                    <DropZone TItem="ImageItem" Name="Image" AllowReorder>
+                    </DropZone>
+                </ChildContent>
+                <ItemTemplate>
+                    <div>
+                        <img id="@context.Id" name="@context.Id" class='experience-image img-banner'
+                            src="@context.Src" />
+                    </div>
+                </ItemTemplate>
+            </DropContainer>
         </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
-            <div>
-                <ImageCacheItemUpdate @ref="Image3" DefaultSrc="@GetDefaultImage3()" InputId="image-input-3" ImageId="image-src-3" />
-                <p>Supporting photo</p>
-            </div>
+        <div class="activity-image-photos-label">
+            <p>This is your cover photo</p>
+            <p>Supporting photo</p>
+            <p>Supporting photo</p>
         </div>
-
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-6 col-6 text-lg-start text-md-start text-sm-center">
-            <div>Upload 3 photos (10MB)</div>
-        </div>
+        @if(!string.IsNullOrEmpty(imagesErrorMessage))
+        {
+            <p class="activity-image-photos-error-message">@imagesErrorMessage</p>
+        }
     </div>
 
     <div class="row mrow">
@@ -339,9 +345,29 @@
 
     private int maxEditorWordLimit = 80;
 
+    private int selectedImageCount = 0;
+
+    private long totalImageSizeMB = 0;
+
+    private string imagesErrorMessage = string.Empty;
+
+    private IList<ImageItem> imageItems = new List<ImageItem>();
+
+    private string emptyImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+
     protected override void OnParametersSet()
     {
         this.searchTag = Model.Activity.SearchTags.FirstOrDefault() ?? string.Empty;
+    }
+
+    protected override void OnInitialized()
+    {
+        imageItems.Add(new ImageItem {Name = "Image1", Id = "imgSrc1", Group = "Image", 
+            Src = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).ImageSrc : emptyImageSrc});
+        imageItems.Add(new ImageItem {Name = "Image2", Id = "imgSrc2", Group = "Image",
+            Src = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).ImageSrc : emptyImageSrc});
+        imageItems.Add(new ImageItem {Name = "Image3", Id = "imgSrc3", Group = "Image",
+            Src = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).ImageSrc : emptyImageSrc});
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -564,5 +590,55 @@
     {
         Model.Activity.SearchTags.Clear();
         Model.Activity.SearchTags.Add(searchTag);
-    } 
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e)
+    {
+        selectedImageCount = e.FileCount;
+        totalImageSizeMB = 0;
+        imagesErrorMessage = string.Empty;
+
+        if(selectedImageCount > 3)
+        {
+            imagesErrorMessage = "Must only select 3 images only";
+            return;
+        }
+
+        var files = e.GetMultipleFiles();
+        foreach(var file in files)
+        {
+            totalImageSizeMB += file.Size / 1024 / 1024;
+        }
+
+        if(IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 10mb";
+        }
+
+        await jsRuntime
+                .InvokeVoidAsync("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
+        
+        StateHasChanged();
+    }
+
+    private bool IsImagesOverLimit {
+        get{
+            return totalImageSizeMB > 10;
+        }
+    }
+
+    private bool IsImagesInvalid 
+    {
+        get{
+            return IsImagesOverLimit || (selectedImageCount != 3);
+        }
+    }
+
+    private class ImageItem 
+    {
+        public string Name {get; set;}
+        public string Id {get; set;}
+        public string Group {get; set;}
+        public string Src {get; set;}
+    }
 }
