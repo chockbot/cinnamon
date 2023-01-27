@@ -15,7 +15,7 @@ public class ActivityImageRepository : IActivityImageRepository
         this.dataStore = dataStore;
     }
     
-    public async Task<AppResult<ActivityImageDTO>> Create(int activityId, string imageName, string imagePath)
+    public async Task<AppResult<ActivityImageDTO>> Create(int activityId, string imageName, string imagePath, int order)
     {
         try
         {
@@ -31,6 +31,7 @@ public class ActivityImageRepository : IActivityImageRepository
                 ActivityId = activityId,
                 ImageLocation = imagePath,
                 ImageName = imageName,
+                Order = order
             };
 
             var result = await dataStore.ActivityImage.Add(activityImage);
@@ -125,7 +126,7 @@ public class ActivityImageRepository : IActivityImageRepository
         }
     }
 
-    public async Task<AppResult<ActivityImageDTO>> Update(int activityImageId, string? imageName, string? imagePath)
+    public async Task<AppResult<ActivityImageDTO>> Update(int activityImageId, string? imageName, string? imagePath, int? order)
     {
         try
         {
@@ -140,6 +141,7 @@ public class ActivityImageRepository : IActivityImageRepository
 
             activityImage.ImageLocation = imagePath ?? activityImage.ImageLocation;
             activityImage.ImageName = imageName ?? activityImage.ImageName;
+            activityImage.Order = order ?? activityImage.Order;
 
             var updatedRes = await dataStore.ActivityImage.Update(activityImage);
             if(!updatedRes.Succeeded || updatedRes.Result == null)
@@ -168,7 +170,8 @@ public class ActivityImageRepository : IActivityImageRepository
                 return new Entities.ActivityImage {
                     ActivityId = s.ActivityId,
                     ImageLocation = s.ImageLocation,
-                    ImageName = s.ImageName
+                    ImageName = s.ImageName,
+                    Order = s.Order
                 };
             });
 
@@ -183,7 +186,8 @@ public class ActivityImageRepository : IActivityImageRepository
                     ActivityId = s.ActivityId,
                     Id = s.Id,
                     ImageLocation = s.ImageLocation,
-                    ImageName = s.ImageName
+                    ImageName = s.ImageName,
+                    Order = s.Order
                 };
             });
 
@@ -204,7 +208,8 @@ public class ActivityImageRepository : IActivityImageRepository
                     ActivityId = s.ActivityId,
                     ImageLocation = s.ImageLocation,
                     ImageName = s.ImageName,
-                    Id = s.Id
+                    Id = s.Id,
+                    Order = s.Order
                 };
             });
 
@@ -219,7 +224,8 @@ public class ActivityImageRepository : IActivityImageRepository
                     ActivityId = s.ActivityId,
                     Id = s.Id,
                     ImageLocation = s.ImageLocation,
-                    ImageName = s.ImageName
+                    ImageName = s.ImageName,
+                    Order  = s.Order
                 };
             });
 
