@@ -27,6 +27,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IPurchaseOrderData, Modules.DataAccess.PurchaseOrder.PurchaseOrderData>();
         services.AddTransient<Modules.DataAccess.Handlers.IExternalLoginTokenData, Modules.DataAccess.ExternalLoginToken.ExternalLoginTokenData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOngoingActivitiesData, Modules.DataAccess.OngoingActivities.OngoingActivitiesData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IStudentData, Modules.DataAccess.Student.StudentData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
