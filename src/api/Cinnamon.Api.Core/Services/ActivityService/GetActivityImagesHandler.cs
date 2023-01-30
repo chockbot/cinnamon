@@ -43,13 +43,14 @@ public class GetActivityImagesHandler: IGetActivityImagesHandler
 
             return AppResult<GetActivityImagesResult>.CreateSucceeded(new GetActivityImagesResult
             {
-                ActivityImages = result.Result.Result.Select(e => {
+                ActivityImages = result.Result.Result.OrderBy(i => i.Order).Select(e => {
                     return new GetActivityImagesResult.ActivityImage
                     {
                         ActivityId = e.ActivityId,
                         ImageName = e.ImageName,    
                         ImageLocation =e.ImageLocation,
-                        Id = e.Id   
+                        Id = e.Id,
+                        Order = e.Order
                     };
                 })
             }, "Successfully get activity images");

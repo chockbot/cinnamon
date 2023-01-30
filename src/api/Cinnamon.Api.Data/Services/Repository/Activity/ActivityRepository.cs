@@ -386,7 +386,8 @@ public class ActivityRepository : IActivityRepository
                             ActivityId = s.ActivityId,
                             Id = s.Id,
                             ImageLocation = s.ImageLocation,
-                            ImageName = s.ImageName
+                            ImageName = s.ImageName,
+                            Order = s.Order
                         };
                     }).ToList();
                 }
@@ -545,7 +546,8 @@ public class ActivityRepository : IActivityRepository
                         ActivityId = s.ActivityId,
                         Id = s.Id,
                         ImageLocation = s.ImageLocation,
-                        ImageName = s.ImageName
+                        ImageName = s.ImageName,
+                        Order = s.Order
                     };
                 }).ToList();
             }

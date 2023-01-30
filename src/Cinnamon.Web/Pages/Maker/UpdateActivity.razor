@@ -211,7 +211,8 @@
                     return new Models.Entities.ActivityImage {
                         ImageSrc = i.ImageSrc,
                         Name = i.Name,
-                        Id = i.Id
+                        Id = i.Id,
+                        Order = i.Order
                     };
                 }).ToList(),
                 IsPublished = activity.IsPublished,
@@ -336,14 +337,29 @@
                 return;
             }
 
-            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
-
-            if(isSuccess)
+            // update only the image order, not re uploading the image
+            if(!experienceSetupUpdateComponent.IsImagesUpdated)
             {
+                var updateImageOrderRes = await activityApiHandler.UploadActivityImages(new Framework.ApiCommand.ApiCore.Activity.Request.UploadActivityImageArgs {
+                    ImageOrders = experienceSetupUpdateComponent.ImageItems.Select(i => {
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.UploadActivityImageArgs.ImageOrder {
+                            NewOrder = i.NewOrder,
+                            OldOrder = i.Order
+                        };
+                    }).ToList(),
+                    ActivityId = Model.Activity.ActivityId
+                }, Model.Token);
+
+
                 NavigationManager.NavigateTo("/maker/dashboard");
                 return;
             }
 
+            // upload image without checking if there is error so that can't re update another activity
+            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
+            isLoading = false;
+
+            NavigationManager.NavigateTo("/maker/dashboard");
             return;
         }
 

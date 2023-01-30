@@ -2,10 +2,10 @@
 @inject IJSRuntime JsRuntime
 
 <div class="image-container">
-    <div class="image-delete-icon" @onclick="@DeleteImage" hidden="@ShowDelete()">
+    @* <div class="image-delete-icon" @onclick="@DeleteImage" hidden="@ShowDelete()">
         <i class="fa fa-trash" id="delete-icon"></i>
-    </div>
-    <label for="@InputId" style="cursor: pointer;">
+    </div> *@
+    <label>
         @if(isBlank)
         {
             <img id=@ImageId class="experience-image @RequiredCheck()" src="@blankImageSrc" />
@@ -14,7 +14,7 @@
         {
             <img id=@ImageId class="experience-image @RequiredCheck()"/>
         }
-        <InputFile @ref="inputFile" id="@InputId" accept=".png,.jpg,.jpeg" name="@InputId" style="display: none;" OnChange="@LoadFile" />
+        @* <InputFile @ref="inputFile" id="@InputId" accept=".png,.jpg,.jpeg" name="@InputId" style="display: none;" OnChange="@LoadFile" /> *@
     </label>
 </div>
 

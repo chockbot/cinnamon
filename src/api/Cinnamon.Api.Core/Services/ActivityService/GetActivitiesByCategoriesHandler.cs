@@ -87,11 +87,12 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
                                 UnitPrice = s.UnitPrice
                             };
                         }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivitySchedule>(),
-                        Images = a.Images != null ? a.Images.Select(i => {
+                        Images = a.Images != null ? a.Images.OrderBy(i => i.Order).Select(i => {
                             return new GetActivitiesByCategoriesResult.Activity.ActivityImage
                             {
                                 ImageSrc = i.ImageLocation,
-                                Name = i.ImageName
+                                Name = i.ImageName,
+                                Order = i.Order
                             };
                         }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivityImage>()
                     };

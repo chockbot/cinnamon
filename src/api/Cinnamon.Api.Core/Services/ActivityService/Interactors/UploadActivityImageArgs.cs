@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using Cinnamon.Framework.Interactor;
 
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;

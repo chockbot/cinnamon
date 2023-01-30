@@ -46,6 +46,7 @@ public class GetOwnedActivitiesResult
 
         public class ActivityImage 
         {
+            public int Order {get; set;}
             public string ImageSrc {get; set;}
             public string Name {get; set;}
         }
