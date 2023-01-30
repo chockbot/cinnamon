@@ -126,11 +126,12 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                                 UnitPrice = s.UnitPrice
                             };
                         }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivitySchedule>(),
-                        Images = e.Images != null ? e.Images.Select(i => {
+                        Images = e.Images != null ? e.Images.OrderBy(i => i.Order).Select(i => {
                             return new GetEnrolledActivitiesResult.ActivityImage
                             {
                                 ImageSrc = i.ImageLocation,
-                                Name = i.ImageName
+                                Name = i.ImageName,
+                                Order = i.Order
                             };
                         }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivityImage>()
                     };

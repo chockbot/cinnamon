@@ -43,7 +43,8 @@ public class ActivityImageRepository : IActivityImageRepository
             return AppResult<ActivityImageDTO>.CreateSucceeded(new ActivityImageDTO {
                 Id = result.Result.Id,
                 ImageLocation = imagePath,
-                ImageName = imageName
+                ImageName = imageName,
+                Order = result.Result.Order
             },"Successfully created activity image");
         }
         catch (Exception ex)
@@ -66,7 +67,8 @@ public class ActivityImageRepository : IActivityImageRepository
                 return new ActivityImageDTO {
                     Id = f.Id,
                     ImageLocation = f.ImageLocation,
-                    ImageName = f.ImageName
+                    ImageName = f.ImageName,
+                    Order = f.Order
                 };
             });
 
@@ -92,7 +94,8 @@ public class ActivityImageRepository : IActivityImageRepository
                 return new ActivityImageDTO {
                     Id = f.Id,
                     ImageLocation = f.ImageLocation,
-                    ImageName = f.ImageName
+                    ImageName = f.ImageName,
+                    Order = f.Order
                 };
             });
 
@@ -117,7 +120,8 @@ public class ActivityImageRepository : IActivityImageRepository
             return AppResult<ActivityImageDTO>.CreateSucceeded(new ActivityImageDTO {
                 Id = result.Result.Id,
                 ImageLocation = result.Result.ImageLocation,
-                ImageName = result.Result.ImageName
+                ImageName = result.Result.ImageName,
+                Order = result.Result.Order
             }, "Successfully getting activity image by id");
         }
         catch (Exception ex)
@@ -153,7 +157,8 @@ public class ActivityImageRepository : IActivityImageRepository
             return AppResult<ActivityImageDTO>.CreateSucceeded(new ActivityImageDTO {
                 Id = updatedRes.Result.Id,
                 ImageLocation = updatedRes.Result.ImageLocation,
-                ImageName = updatedRes.Result.ImageName
+                ImageName = updatedRes.Result.ImageName,
+                Order = updatedRes.Result.Order
             }, "Successfully updated activity image");
         }
         catch (Exception ex)

@@ -16,8 +16,10 @@ update.uploadImages = async (activityId) => {
     const name = $(this).attr("data-name");
     if (name) {
       const file = getFile(inputEl, name);
-      formData.append(`Image${counter}`, file);
-      counter++;
+      if (file) {
+        formData.append(`Image${counter}`, file);
+        counter++;
+      }
     }
   });
 

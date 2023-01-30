@@ -100,10 +100,11 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                                 UnitPrice = s.UnitPrice
                             };
                         }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivitySchedule>(),
-                        Images = a.Images != null ? a.Images.Select(i => {
+                        Images = a.Images != null ? a.Images.OrderBy(i => i.Order).Select(i => {
                             return new GetOwnedActivitiesResult.Activity.ActivityImage {
                                 ImageSrc = i.ImageLocation,
-                                Name = i.ImageName
+                                Name = i.ImageName,
+                                Order = i.Order
                             };
                         }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivityImage>()
                     };

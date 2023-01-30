@@ -71,6 +71,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetActiviesByCategoriesHandler, Services.ActivityService.GetActivitiesByCategoriesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActivitiesBySubCategoriesHandler, Services.ActivityService.GetActivitiesBySubCategoriesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetEnrolledActivitiesHandler, Services.ActivityService.GetEnrolledActivitiesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityImageOrderHandler, Services.ActivityService.UpdateActivityImageOrderHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

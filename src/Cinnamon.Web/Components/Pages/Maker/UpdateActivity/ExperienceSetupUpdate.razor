@@ -269,15 +269,19 @@
             </label>
         </div>
         <div class="activity-image-dragable">
-            <DropContainer TItem="ImageItem" Items="imageItems" ItemsFilter="@((item,dropZone) => item.Group == dropZone)" Display="Display.Flex">
+            <DropContainer ItemDropped="ItemDropped" TItem="ImageItem" Items="imageItems" ItemsFilter="@((item,dropZone) => item.Group == dropZone)" Display="Display.Flex">
                 <ChildContent>
                     <DropZone TItem="ImageItem" Name="Image" AllowReorder>
                     </DropZone>
                 </ChildContent>
                 <ItemTemplate>
-                    <div>
+                    <div class="image-container">
+                        <div class="hover-move-image">
+                            <Button Border="Border.Is0" class="btn-primary mb-1" Type="ButtonType.Button">&#60;&#60;</Button>
+                            <Button Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
+                        </div>
                         <img id="@context.Id" name="@context.Id" class='experience-image img-banner'
-                            src="@context.Src" />
+                            src="@context.Src" data-order="@context.Order" />
                     </div>
                 </ItemTemplate>
             </DropContainer>
@@ -306,6 +310,7 @@
 </div>
 
 @code {
+    
     [Parameter]
     public ExperienceUpdateModel Model {get; set;}
     
@@ -316,12 +321,6 @@
     public string searchTag { get; set; }
 
     public int SearchTagLength { get; set; } = 0;
-
-    private ImageCacheItemUpdate Image1 {get; set;}
-    
-    private ImageCacheItemUpdate Image2 {get; set;}
-
-    private ImageCacheItemUpdate Image3 {get; set;}
 
     private RichTextEdit EditSpecificProvide;
 
@@ -353,6 +352,8 @@
 
     private IList<ImageItem> imageItems = new List<ImageItem>();
 
+    private bool isImageUpdated = false;
+
     private string emptyImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
 
     protected override void OnParametersSet()
@@ -362,12 +363,19 @@
 
     protected override void OnInitialized()
     {
+        Model.Activity.Images.OrderBy(i => i.Order);
         imageItems.Add(new ImageItem {Name = "Image1", Id = "imgSrc1", Group = "Image", 
-            Src = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).ImageSrc : emptyImageSrc});
+            Order = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0,
+            Src = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).ImageSrc : emptyImageSrc, 
+            NewOrder = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0});
         imageItems.Add(new ImageItem {Name = "Image2", Id = "imgSrc2", Group = "Image",
-            Src = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).ImageSrc : emptyImageSrc});
+            Order = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0,
+            Src = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).ImageSrc : emptyImageSrc,
+            NewOrder = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0});
         imageItems.Add(new ImageItem {Name = "Image3", Id = "imgSrc3", Group = "Image",
-            Src = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).ImageSrc : emptyImageSrc});
+            Order = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0,
+            Src = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).ImageSrc : emptyImageSrc,
+            NewOrder = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0});
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -497,13 +505,6 @@
         Model.Activity.ActivitySchedules.Remove(schedule);
         Model.DeletedScheduleIds.Add(schedule.Id);
     }
-    
-    private void ImageDeleted(int index)
-    {
-        if(currentImageIndex > index)
-            currentImageIndex = index;
-        uploadedCount--;
-    }
 
     public bool IsAllFieldsValidated()
     {
@@ -515,8 +516,11 @@
         if(string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
         if(Model.Activity.ExperienceCategoryId <= 0) return false;
         //if(Model.Activity.SearchTags.Count == 0) return false;
-        if(!IsAllImagesValid()) return false;
-        if(!IsAllImageSizeAccepted()) return false;
+        if(isImageUpdated)
+        {
+            if(!IsAllImageSizeAccepted()) return false;
+            if(IsImagesInvalid) return false;
+        }
         return true;
     }
 
@@ -534,22 +538,6 @@
                 string.IsNullOrEmpty(schedule.PriceUnit2)) return false;
         }
         return true;
-    }
-
-    private bool IsAllImagesValid()
-    {
-        return !(Image1.HaveEmptyImage() || Image2.HaveEmptyImage() || Image3.HaveEmptyImage());
-    }
-
-    private bool IsAllImageSizeAccepted()
-    {
-        var totalSize = Image1.GetSize + Image2.GetSize + Image3.GetSize;
-        
-        bool isReachLimit = totalSize > 10;
-
-        isShowImageErrorMessage = isReachLimit;
-
-        return !isReachLimit;
     }
 
     private string GetDefaultImage1()
@@ -618,6 +606,8 @@
         await jsRuntime
                 .InvokeVoidAsync("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
         
+        isImageUpdated = true;
+        
         StateHasChanged();
     }
 
@@ -627,6 +617,17 @@
         }
     }
 
+    private bool IsAllImageSizeAccepted()
+    {
+        var totalSize = totalImageSizeMB;
+        
+        bool isReachLimit = totalSize > 10;
+
+        isShowImageErrorMessage = isReachLimit;
+
+        return !isReachLimit;
+    }
+
     private bool IsImagesInvalid 
     {
         get{
@@ -634,10 +635,45 @@
         }
     }
 
-    private class ImageItem 
+    private Task ItemDropped(DraggableDroppedEventArgs<ImageItem> dropItem)
+    {
+        if(dropItem.IndexInZone + 1 > dropItem.Item.NewOrder)
+        {
+            for(int i = dropItem.IndexInZone + 1; i > 0; i--)
+            {
+                var item = imageItems.FirstOrDefault(m => m.NewOrder == i);
+                if(item != null)
+                {
+                    item.NewOrder -= 1;
+                }
+            }
+        }
+        else
+        {
+            for(int i = dropItem.IndexInZone + 1; i <= imageItems.Count; i++)
+            {
+                var item = imageItems.FirstOrDefault(m => m.NewOrder == i);
+                if(item != null)
+                {
+                    item.NewOrder += 1;
+                }
+            }
+        }
+
+        dropItem.Item.NewOrder = dropItem.IndexInZone + 1;
+        return Task.CompletedTask;
+    }
+
+    public bool IsImagesUpdated => isImageUpdated;
+
+    public IEnumerable<ImageItem> ImageItems => imageItems;
+
+    public class ImageItem 
     {
         public string Name {get; set;}
         public string Id {get; set;}
+        public int Order {get; set;}
+        public int NewOrder {get; set;}
         public string Group {get; set;}
         public string Src {get; set;}
     }
