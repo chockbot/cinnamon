@@ -816,31 +816,6 @@ public class ActivityController : ControllerBase
     {
         try
         {
-            // for update only imag orders not upload images
-            if(args.ImageOrders != null && args.Image1 == null && args.Image2 == null && args.Image3 == null)
-            {
-                var orderResult = await updateActivityImageOrderHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateActivityImageOrderArgs {
-                    ActivityId = args.ActivityId,
-                    ImageOrders = args.ImageOrders.Select(i => {
-                        return new Services.ActivityService.Interactors.UpdateActivityImageOrderArgs.ImageOrder  {
-                            NewOrder = i.NewOrder,
-                            OldOrder = i.OldOrder
-                        };
-                    }).ToList()
-                });
-
-                if(!orderResult.Succeeded || orderResult.Result == null)
-                {
-                    return new JsonResult(new UploadActivityImageResult {ErrorInfo = new ErrorInfo {Message = orderResult.Message}});
-                }
-
-                return new JsonResult(new UploadActivityImageResult {IsSuccess = true, Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityImagesDTO {
-                    Image1 = orderResult.Result.Image1Path,
-                    Image2 = orderResult.Result.Image2Path,
-                    Image3 = orderResult.Result.Image3Path
-                }});
-            }
-
             var result = await uploadActivityImageHandler.ExecuteAsync(new Services.ActivityService.Interactors.UploadActivityImageArgs {
                 ActivityId = args.ActivityId,
                 Image1 = args.Image1,
@@ -862,6 +837,40 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UploadActivityImageResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UpdateActivityImageOrder")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateActivityImageOrderResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> UpdateActivityImageOrder([FromBody] UpdateActivityImageOrderArgs args)
+    {
+        try
+        {
+            var orderResult = await updateActivityImageOrderHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateActivityImageOrderArgs {
+                ActivityId = args.ActivityId,
+                ImageOrders = args.ImageOrders.Select(i => {
+                    return new Services.ActivityService.Interactors.UpdateActivityImageOrderArgs.ImageOrder  {
+                        NewOrder = i.NewOrder,
+                        OldOrder = i.OldOrder
+                    };
+                }).ToList()
+            });
+
+            if(!orderResult.Succeeded || orderResult.Result == null)
+            {
+                return new JsonResult(new UpdateActivityImageOrderResult {ErrorInfo = new ErrorInfo {Message = orderResult.Message}});
+            }
+
+            return new JsonResult(new UpdateActivityImageOrderResult {IsSuccess = true, Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityImagesDTO {
+                Image1 = orderResult.Result.Image1Path,
+                Image2 = orderResult.Result.Image2Path,
+                Image3 = orderResult.Result.Image3Path
+            }});
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateActivityImageOrderResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 
