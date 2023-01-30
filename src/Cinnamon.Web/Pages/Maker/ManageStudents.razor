@@ -4,12 +4,11 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
-@using Blazorise.DataGrid;
-@using Syncfusion.Blazor.ProgressBar;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
+@using Blazorise.DataGrid
 
 <section class="mt-5 maker-dashboard">
         <div class="container">
@@ -23,25 +22,30 @@
         <DataGrid TItem="SubCategory"
                   Data="@subCategories"
                   Responsive
+                  Editable="true"
                   class="datagrid-data">
-            <DataGridColumn Field="@nameof(SubCategory.Id)" Caption="Name" Sortable="false" />
-            <DataGridColumn Caption="Session Attended">
-               <SfProgressBar Type="ProgressType.Circular" Value="2" Minimum="0" Maximum="10" TrackThickness="10" ProgressThickness="10">
-                    2/10
-                </SfProgressBar>
-            </DataGridColumn>
-            <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Experience" Editable />
-            <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Remarks" Editable />
-            <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Student No." Editable />
-            <DataGridCommandColumn Caption="Attendance">
-                <Button Color="Color.Warning">Update</Button>
-            </DataGridCommandColumn>
+                  <DataGridColumns>
+                    <DataGridColumn Field="@nameof(SubCategory.Id)" Caption="Name" Sortable="false" />
+                    <DataGridColumn Caption="Session Attended">
+                        <Progress>
+                            <ProgressBar Color="Color.Success" Value=2 Max=10 />
+                        </Progress>
+                    </DataGridColumn>
+                    <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Experience" Editable />
+                    <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Remarks" Editable />
+                    <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Student No." Editable />
+                    <DataGridCommandColumn Caption="Attendance">
+                         <EditCommandTemplate>
+                            <Button Color="Color.Primary" Clicked="@Update">Update</Button>
+                         </EditCommandTemplate>                
+                    </DataGridCommandColumn>
+            </DataGridColumns>
         </DataGrid>
     </div>
 </section>
 
 @code {
-    
+
     private Models.Customer.Profile Model; 
 
     public List<SubCategory> subCategories = new List<SubCategory>();
@@ -105,6 +109,11 @@
                     ProfilePath = customer.ProfileImg,
                 },
             };
+    }
+
+    public async Task Update()
+    {
+        
     }
 }
 
