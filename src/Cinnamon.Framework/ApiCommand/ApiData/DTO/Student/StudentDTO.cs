@@ -1,9 +1,9 @@
-namespace Cinnamon.Api.Data.Repository.Entities;
+namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 
-public class Student : BaseEntity
+public class StudentDTO 
 {
+    public int Id {get; set;}
     public int CustomerId {get; set;}
-    public int FamilyMemberId {get; set;}
     public int ActivityId {get; set;}
     public int ScheduleId {get; set;}
     public string Name {get; set;}
@@ -12,8 +12,4 @@ public class Student : BaseEntity
     public int SessionsAttended {get; set;}
     public string Remarks {get; set;}
     public string Status {get; set;}
-
-    public Customer Customer {get; set;}
-    public Activity Activity {get; set;}
-    public ActivitySchedule Schedule {get; set;}
 }

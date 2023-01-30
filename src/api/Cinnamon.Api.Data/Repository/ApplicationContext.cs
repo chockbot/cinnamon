@@ -125,6 +125,9 @@ public class ApplicationContext : IdentityDbContext
         
         modelBuilder.Entity<Student>()
             .HasOne<ActivitySchedule>(s => s.Schedule);
+
+        modelBuilder.Entity<Student>()
+            .HasIndex(s => s.FamilyMemberId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
