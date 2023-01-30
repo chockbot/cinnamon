@@ -10,11 +10,14 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
 {
     private readonly IActivityData activityData;
     private readonly IOngoingActivitiesData ongoingActivitiesData;
+    private readonly IStudentData studentData;
 
-    public CreateOngoingActivityHandler(IActivityData activityData,IOngoingActivitiesData ongoingActivitiesData)
+    public CreateOngoingActivityHandler(IActivityData activityData,IOngoingActivitiesData ongoingActivitiesData,
+        IStudentData studentData)
     {
         this.activityData = activityData;
         this.ongoingActivitiesData = ongoingActivitiesData;
+        this.studentData = studentData;
     }
 
     public AppResult<CreateOngoingActivityResult> Execute(CreateOngoingActivityArgs args)
@@ -55,6 +58,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 return AppResult<CreateOngoingActivityResult>.CreateFailed(
                     new ApplicationException("Invalid activity and schedule selected"), "Invalid activity and schedule selected");
             }
+            var schedule = activityRes.Result.Result.Schedules.First(s => s.Id == args.ScheduleId);
 
             var createOngoingActivityRes = await ongoingActivitiesData.CreateOngoingActivity(
                 new Framework.ApiCommand.ApiData.OngoingActivity.Request.CreateOngoingActivityArgs 
@@ -78,7 +82,26 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             }
 
             // enroll the students
-            
+            var createStudentRes = await studentData.CreateMantStudent(new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs {
+                ActivityId = args.ActivityId,
+                CustomerId = args.CustomerId,
+                NumberOfSessions = schedule.PerUnit2,
+                ScheduleId = schedule.Id,
+                SessionsAttended = 0,
+                Students = args.Students.Select(s => {
+                    return new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs.StudentDetails {
+                        FamilyMemberId = s.FamilyMemberId,
+                        Name = s.Name,
+                        StudentNo = "00"
+                    };
+                })
+            });
+
+            if(!createStudentRes.Succeeded || createStudentRes.Result == null || !createStudentRes.Result.IsSuccess)
+            {
+                return AppResult<CreateOngoingActivityResult>.CreateFailed(
+                    new ApplicationException(createStudentRes.Result?.ErrorInfo?.Message), createStudentRes.Message);
+            }
 
             return AppResult<CreateOngoingActivityResult>.CreateSucceeded(new CreateOngoingActivityResult {
                 CreatedId = createOngoingActivityRes.Result.Result.Id,
