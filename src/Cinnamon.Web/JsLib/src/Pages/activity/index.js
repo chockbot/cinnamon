@@ -3,6 +3,7 @@ import update from "./update";
 import validateFileSize from "./validateFileSize";
 import quillLimitWords from "./quillLimitWords";
 import maxMinWords from "./maxMinWords";
+import previewImage from "./previewImage";
 
 export default {
   creation,
@@ -10,4 +11,5 @@ export default {
   validateFileSize,
   quillLimitWords,
   maxMinWords,
+  previewImage,
 };

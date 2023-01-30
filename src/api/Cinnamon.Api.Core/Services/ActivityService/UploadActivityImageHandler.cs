@@ -114,11 +114,12 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
             if(images.Count == 0)
             {
                 var saveImageSrc = await activityImagesData.CreateManyActivityImage(new Framework.ApiCommand.ApiData.ActivityImage.Request.CreateManyActivityImageArgs {
-                    Images = createBlob.Result.FilePaths.Select(s => {
+                    Images = createBlob.Result.FilePaths.Select((s,index) => {
                         return new Framework.ApiCommand.ApiData.ActivityImage.Request.CreateManyActivityImageArgs.CreateImage {
                             ActivityId = args.ActivityId,
                             ImageName = s.FileName,
-                            ImageSrc = s.FileSrc
+                            ImageSrc = s.FileSrc,
+                            Order = index + 1
                         };
                     })
                 });
@@ -170,12 +171,13 @@ public class UploadActivityImageHandler : IUploadActivityImageHandler
                 }
 
                 var saveUpdated = await activityImagesData.UpdateManyActivityImage(new Framework.ApiCommand.ApiData.ActivityImage.Request.UpdateManyActivityImageArgs {
-                    Images = images.Select(i => {
+                    Images = images.Select((i,index) => {
                         return new Framework.ApiCommand.ApiData.ActivityImage.Request.UpdateManyActivityImageArgs.UpdateImage { 
                             ActivityId = args.ActivityId,
                             Id = i.Id,
                             ImageName = i.Name,
-                            ImageSrc = i.ImageSrc
+                            ImageSrc = i.ImageSrc,
+                            Order = index + 1
                         };
                     })
                 });

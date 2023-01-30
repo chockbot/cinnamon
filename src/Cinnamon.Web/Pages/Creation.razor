@@ -299,16 +299,11 @@
                 return;
             }
 
+            // upload image without checking if there is error so that can't re update another activity
             bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.init", obj, submit.Result.Result.ActivityId);
-
-            if(isSuccess)
-            {
-                navigationManager.NavigateTo("/maker/dashboard");
-                return;
-            }
-
             isLoading = false;
-
+            
+            navigationManager.NavigateTo("/maker/dashboard");
             return;
         }
 
