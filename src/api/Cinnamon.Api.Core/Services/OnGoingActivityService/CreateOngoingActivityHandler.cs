@@ -77,6 +77,9 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                     new ApplicationException(createOngoingActivityRes.Result.ErrorInfo?.Message), "An error occured in CreateOngoingActivityHandler");
             }
 
+            // enroll the students
+            
+
             return AppResult<CreateOngoingActivityResult>.CreateSucceeded(new CreateOngoingActivityResult {
                 CreatedId = createOngoingActivityRes.Result.Result.Id,
             }, "Successfully created ongoing activity");

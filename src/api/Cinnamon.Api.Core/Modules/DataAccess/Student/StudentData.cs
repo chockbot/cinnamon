@@ -99,4 +99,25 @@ public class StudentData: IStudentData
             return AppResult<UpdateStudentResult>.CreateFailed(ex, "An error occured when posting update student api");
         }
     }
+
+    public async Task<AppResult<CreateManyStudentResult>> CreateMantStudent(CreateManyStudentArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Student/CreateManyStudent")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<CreateManyStudentResult>();
+
+            return AppResult<CreateManyStudentResult>.CreateSucceeded(result, "Successfully posting create many student api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateManyStudentResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateManyStudentResult>.CreateFailed(ex, "An error occured when posting create many student api");
+        }
+    }
 }

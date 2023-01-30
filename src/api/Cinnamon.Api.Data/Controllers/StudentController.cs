@@ -113,6 +113,34 @@ public class StudentController : ControllerBase
         }
     }
 
+    [Route("CreateManyStudent")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateManyStudentResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateManyStudent([FromBody] CreateManyStudentArgs args)
+    {
+        try
+        {
+            var result = await studentRepository.Create(args.CustomerId, args.ActivityId, args.ScheduleId, args.NumberOfSessions, args.SessionsAttended, args.Students.Select(s => {
+                return new Framework.ApiCommand.ApiData.DTO.Student.CreateManyStudentDTO {
+                    FamilyMemberId = s.FamilyMemberId,
+                    Name = s.Name,
+                    StudentNo = s.StudentNo
+                };
+            }));
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateManyStudentResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateManyStudentResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateManyStudentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("UpdateStudent")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateStudentResult), StatusCodes.Status202Accepted)]

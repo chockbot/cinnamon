@@ -213,4 +213,61 @@ public class StudentRepository: IStudentRepository
             return AppResult<StudentDTO>.CreateFailed(ex, "An error occured when updating student");
         }
     }
+
+    public async Task<AppResult<IEnumerable<StudentDTO>>> Create(int customerId, int activityId, int scheduleId,int numberOfSessions, 
+        int sessionsAttended,  IEnumerable<CreateManyStudentDTO> familyMembers, string remarks = "", string status = "ACTIVE")
+    {
+        try
+        {
+            // check customer if existed
+            var customerRes = await dataStore.Customer.GetByIdAsync(customerId);
+            if(!customerRes.Succeeded || customerRes.Result == null)
+            {
+                return AppResult<IEnumerable<StudentDTO>>.CreateFailed(
+                    new ApplicationException("Can't find customer id provided"), "Can't find customer id provided");
+            }
+
+            var students = familyMembers.Select(f => {
+                return new Entities.Student {
+                    ActivityId = activityId,
+                    CustomerId = customerId,
+                    FamilyMemberId = f.FamilyMemberId,
+                    Name = f.Name,
+                    NumberOfSessions = numberOfSessions,
+                    Remarks = remarks,
+                    ScheduleId = scheduleId,
+                    SessionsAttended = sessionsAttended,
+                    StudentNo  = f.StudentNo,
+                    Status = status,
+                };
+            });
+
+            var createdRes = await dataStore.Student.AddRange(students);
+            if(!createdRes.Succeeded || createdRes.Result == null)
+            {
+                return AppResult<IEnumerable<StudentDTO>>.CreateFailed(createdRes.Error.Exception, createdRes.Message);
+            }
+
+            var createdStudents = createdRes.Result.Select(s => {
+                return new StudentDTO {
+                    ActivityId = s.ActivityId,
+                    CustomerId = s.CustomerId,
+                    Id = s.Id,
+                    Name = s.Name,
+                    NumberOfSessions = s.NumberOfSessions,
+                    Remarks = s.Remarks,
+                    ScheduleId = s.ScheduleId,
+                    SessionsAttended = s.SessionsAttended,
+                    Status = s.Status,
+                    StudentNo = s.StudentNo
+                };
+            });
+
+            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(createdStudents, "Successfully created studets");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when creating many students");
+        }
+    }
 }
