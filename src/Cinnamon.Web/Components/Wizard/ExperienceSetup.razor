@@ -268,7 +268,11 @@
                     </DropZone>
                 </ChildContent>
                 <ItemTemplate>
-                    <div>
+                    <div class="image-container @context.Id">
+                        <div class="hover-move-image">
+                            <Button Clicked='() => MovePrevious(context)' Border="Border.Is0" class="btn-primary mb-1" Type="ButtonType.Button">&#60;&#60;</Button>
+                            <Button Clicked='() => MoveNext(context)' Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
+                        </div>
                         <img id="@context.Id" name="@context.Id" class='experience-image img-banner invalid'
                             src="https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg" />
                     </div>
@@ -564,6 +568,16 @@
                 .InvokeVoidAsync("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
         
         StateHasChanged();
+    }
+
+    private async Task MoveNext(ImageItem item)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.moveNext",$".{item.Id}");
+    }
+
+    private async Task MovePrevious(ImageItem item)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.movePrevious",$".{item.Id}");
     }
 
     private bool IsImagesOverLimit {

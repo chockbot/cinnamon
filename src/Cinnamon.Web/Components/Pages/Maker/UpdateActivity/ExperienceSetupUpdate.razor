@@ -275,10 +275,10 @@
                     </DropZone>
                 </ChildContent>
                 <ItemTemplate>
-                    <div class="image-container">
+                    <div class="image-container @context.Id">
                         <div class="hover-move-image">
-                            <Button Border="Border.Is0" class="btn-primary mb-1" Type="ButtonType.Button">&#60;&#60;</Button>
-                            <Button Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
+                            <Button Clicked='() => MovePrevious(context)' Border="Border.Is0" class="btn-primary mb-1" Type="ButtonType.Button">&#60;&#60;</Button>
+                            <Button Clicked='() => MoveNext(context)' Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
                         </div>
                         <img id="@context.Id" name="@context.Id" class='experience-image img-banner'
                             src="@context.Src" data-order="@context.Order" />
@@ -667,6 +667,40 @@
     public bool IsImagesUpdated => isImageUpdated;
 
     public IEnumerable<ImageItem> ImageItems => imageItems;
+
+    private async Task MoveNext(ImageItem item)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.moveNext",$".{item.Id}");
+        if(item.NewOrder < 3)
+        {
+            for(int i = item.NewOrder + 1; i > item.NewOrder; i--)
+            {
+                var imageItem = imageItems.FirstOrDefault(m => m.NewOrder == i);
+                if(imageItem != null)
+                {
+                    imageItem.NewOrder -= 1;
+                }
+            }
+            item.NewOrder += 1;
+        }
+    }
+
+    private async Task MovePrevious(ImageItem item)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.movePrevious",$".{item.Id}");
+        if(item.NewOrder > 1)
+        {
+            for(int i = item.NewOrder -1; i <= imageItems.Count; i++)
+            {
+                var imageItem = imageItems.FirstOrDefault(m => m.NewOrder == i);
+                if(imageItem != null)
+                {
+                    imageItem.NewOrder += 1;
+                }
+            }
+            item.NewOrder -= 1;
+        }
+    }
 
     public class ImageItem 
     {

@@ -103,6 +103,23 @@ hr.solid {
   object-position: center;
 }
 
+.image-container {
+  position: relative;
+}
+
+.hover-move-image {
+  opacity: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
 @media screen and (max-width: 767px) {
   .landing-sm {
     display: block;
@@ -136,6 +153,12 @@ hr.solid {
 
   .landing-md {
     display: block;
+  }
+}
+
+@media only screen and (max-width: 550px) {
+  .hover-move-image:hover {
+    opacity: 1;
   }
 }
 
