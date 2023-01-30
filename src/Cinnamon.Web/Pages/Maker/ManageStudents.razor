@@ -1,6 +1,7 @@
 ﻿@layout DashboardLayout
 @page "/maker/dashboard/managestudents"
 @using System.Security.Claims
+@using System.Globalization
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
@@ -16,30 +17,44 @@
             <Column>
                 <h3 class="text-capitalize fw-bold" style="color:#FFA942;">Manage Students</h3>
             </Column>
-            <Column>
+            <Column class="justify-content-end">
+                <TextEdit Text="@customFilterValue" Placeholder="Search" TextChanged="@OnCustomFilterValueChanged" class="search-bar"></TextEdit>
+            </Column>
+            <Column class="justify-content-start">
+                <Select TValue="string" class="dropdown-select" SelectedValue="@selectedFilter" SelectedValueChanged="@OnFilterValueChanged">
+                    <SelectItem Value="@("*")">Select Experience</SelectItem>
+                    @foreach(var item in subCategories)
+                    {
+                        <SelectItem Value="@(item.Name)">@item.Name</SelectItem>
+                    }
+                </Select>
             </Column>
         </Row>
-        <DataGrid TItem="SubCategory"
-                  Data="@subCategories"
-                  Responsive
-                  Editable="true"
-                  class="datagrid-data">
-                  <DataGridColumns>
-                    <DataGridColumn Field="@nameof(SubCategory.Id)" Caption="Name" Sortable="false" />
-                    <DataGridColumn Caption="Session Attended">
-                        <Progress>
-                            <ProgressBar Color="Color.Success" Value=2 Max=10 />
-                        </Progress>
-                    </DataGridColumn>
-                    <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Experience" Editable />
-                    <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Remarks" Editable />
-                    <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Student No." Editable />
-                    <DataGridCommandColumn Caption="Attendance">
-                         <EditCommandTemplate>
-                            <Button Color="Color.Primary" Clicked="@Update">Update</Button>
-                         </EditCommandTemplate>                
-                    </DataGridCommandColumn>
-            </DataGridColumns>
+        <DataGrid @ref="dataGrid" 
+            TItem="SubCategory" 
+            Data="@subCategories" 
+            Responsive CustomFilter="@OnCustomFilter" 
+            ShowPager 
+            HeaderThemeContrast="ThemeContrast.Dark"
+             class="datagrid-data">
+            <DataGridColumns>
+                 <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Name" Sortable="false" />
+                 <DataGridColumn Caption="Session Attended">
+                     <DisplayTemplate>
+                         <Progress>
+                             <ProgressBar Color="Color.Success" Value=2 Max=10 />
+                         </Progress>
+                     </DisplayTemplate>
+                 </DataGridColumn>
+                 <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Experience" Editable />
+                 <DataGridColumn Field="@nameof(SubCategory.CategoryId)"  Caption="Remarks" Editable />
+                 <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Student No." Editable />
+                 <DataGridColumn Caption="Attendance">
+                      <DisplayTemplate>
+                         <Button Color="Color.Primary" Border="Border.Is0" Clicked="@Update">Update</Button>
+                      </DisplayTemplate>                
+                 </DataGridColumn>
+            </DataGridColumns> 
         </DataGrid>
     </div>
 </section>
@@ -51,6 +66,12 @@
     public List<SubCategory> subCategories = new List<SubCategory>();
 
     private SubCategory selectedSubCategory;
+
+    private string customFilterValue;
+
+    private string selectedFilter;
+
+    private DataGrid<SubCategory> dataGrid;
 
     protected override async Task OnInitializedAsync()
     {
@@ -111,6 +132,43 @@
             };
     }
 
+    private Task OnCustomFilterValueChanged(string e)
+    {
+        customFilterValue = e;
+        return dataGrid.Reload();
+    }
+    private async Task OnFilterValueChanged(string e)
+    {
+        selectedFilter = e;
+        if (string.IsNullOrEmpty(selectedFilter) || selectedFilter == "Select Experience" || selectedFilter == "*")
+        {
+            var sub = await activityApiHandler.GetSubCategories();
+            if (sub.Succeeded && sub.Result != null && sub.Result.IsSuccess)
+            {
+                subCategories = sub.Result.Result.Select(s =>
+                {
+                    return new SubCategory
+                        {
+                            Id = s.Id,
+                            Name = s.Name,
+                            CategoryId = s.CategoryId
+                        };
+                }).ToList();
+            }
+        }
+        else
+        {
+            subCategories = subCategories.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Name,
+            selectedFilter, CompareOptions.IgnoreCase) >= 0).ToList();
+        }
+        await dataGrid.Reload();
+    }
+    private bool OnCustomFilter(SubCategory model)
+    {
+        if (string.IsNullOrEmpty(customFilterValue))
+            return true;
+        return model.Name?.Contains(customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
+    }
     public async Task Update()
     {
         
