@@ -96,11 +96,12 @@ public class GetActivityHandler : IGetActivityHandler
                         UnitPrice = s.UnitPrice
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),
-                Images = activity.Images != null ? activity.Images.Select(i => {
+                Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
                     return new GetActivityResult.ActivityImage {
                         Id = i.Id,
                         ImageSrc = i.ImageLocation,
-                        Name = i.ImageName
+                        Name = i.ImageName,
+                        Order = i.Order
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivityImage>()
             };

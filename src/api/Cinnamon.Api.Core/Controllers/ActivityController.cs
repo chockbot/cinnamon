@@ -27,6 +27,7 @@ public class ActivityController : ControllerBase
     private readonly IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler;
     private readonly IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler;
     private readonly IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler;
+    private readonly IUpdateActivityImageOrderHandler updateActivityImageOrderHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -34,7 +35,8 @@ public class ActivityController : ControllerBase
         IGetOwnedActivityHandler getOwnedActivityHandler, IUploadActivityImageHandler uploadActivityImageHandler, 
         IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler, 
         IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,
-        IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler)
+        IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
+        IUpdateActivityImageOrderHandler updateActivityImageOrderHandler)
     {
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
@@ -51,6 +53,7 @@ public class ActivityController : ControllerBase
         this.getActivityHandler = getActivityHandler;
         this.getActivitiesBySubCategoriesHandler = getActivitiesBySubCategoriesHandler;
         this.getEnrolledActivitiesHandler = getEnrolledActivitiesHandler;
+        this.updateActivityImageOrderHandler = updateActivityImageOrderHandler;
     }
 
     [Route("CreateActivity")]
@@ -454,7 +457,8 @@ public class ActivityController : ControllerBase
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name
+                                Name = i.Name,
+                                Order = i.Order
                             };
                         }),
                         IsPublished = a.IsPublished,
@@ -529,7 +533,8 @@ public class ActivityController : ControllerBase
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name
+                                Name = i.Name,
+                                Order = i.Order
                             };
                         }),
                         IsPublished = a.IsPublished,
@@ -614,7 +619,8 @@ public class ActivityController : ControllerBase
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
                             {
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name
+                                Name = i.Name,
+                                Order = i.Order
                             };
                         }),
                         IsPublished = a.IsPublished,
@@ -696,7 +702,8 @@ public class ActivityController : ControllerBase
                         return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                             Id = i.Id,
                             ImageSrc = i.ImageSrc,
-                            Name = i.Name
+                            Name = i.Name,
+                            Order = i.Order
                         };
                     }),
                     IsPublished = activity.IsPublished,
@@ -779,7 +786,8 @@ public class ActivityController : ControllerBase
                         return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
                             Id = i.Id,
                             ImageSrc = i.ImageSrc,
-                            Name = i.Name
+                            Name = i.Name,
+                            Order = i.Order
                         };
                     }),
                     IsPublished = activity.IsPublished,
@@ -808,6 +816,31 @@ public class ActivityController : ControllerBase
     {
         try
         {
+            // for update only imag orders not upload images
+            if(args.ImageOrders != null && args.Image1 == null && args.Image2 == null && args.Image3 == null)
+            {
+                var orderResult = await updateActivityImageOrderHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateActivityImageOrderArgs {
+                    ActivityId = args.ActivityId,
+                    ImageOrders = args.ImageOrders.Select(i => {
+                        return new Services.ActivityService.Interactors.UpdateActivityImageOrderArgs.ImageOrder  {
+                            NewOrder = i.NewOrder,
+                            OldOrder = i.OldOrder
+                        };
+                    }).ToList()
+                });
+
+                if(!orderResult.Succeeded || orderResult.Result == null)
+                {
+                    return new JsonResult(new UploadActivityImageResult {ErrorInfo = new ErrorInfo {Message = orderResult.Message}});
+                }
+
+                return new JsonResult(new UploadActivityImageResult {IsSuccess = true, Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityImagesDTO {
+                    Image1 = orderResult.Result.Image1Path,
+                    Image2 = orderResult.Result.Image2Path,
+                    Image3 = orderResult.Result.Image3Path
+                }});
+            }
+
             var result = await uploadActivityImageHandler.ExecuteAsync(new Services.ActivityService.Interactors.UploadActivityImageArgs {
                 ActivityId = args.ActivityId,
                 Image1 = args.Image1,
@@ -889,7 +922,8 @@ public class ActivityController : ControllerBase
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
                             {
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name
+                                Name = i.Name,
+                                Order = i.Order
                             };
                         }),
                         IsPublished = a.IsPublished,
