@@ -40,7 +40,7 @@ public class UpdateActivityImageOrderHandler : IUpdateActivityImageOrderHandler
             }
 
             var images = ownedActivity.Result.Images.OrderBy(i => i.Order).ToList();
-            args.ImageOrders = args.ImageOrders.OrderBy(i => i.OldOrder).ToList();
+            args.ImageOrders = args.ImageOrders.OrderBy(i => i.NewOrder).ToList();
 
             // check if have images
             if(images.Count == 0 || images.Count != args.ImageOrders.Count) 

@@ -243,6 +243,28 @@ public class ActivityApiHandler : IActivityApiHandler
         } 
     }
 
+    public async Task<AppResult<UpdateActivityImageOrderResult>> UpdateActivityImageOrder(UpdateActivityImageOrderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateActivityImageOrder")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateActivityImageOrderResult>();
+
+            return AppResult<UpdateActivityImageOrderResult>.CreateSucceeded(result, "Successfully update activity image order api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateActivityImageOrderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateActivityImageOrderResult>.CreateFailed(ex, "An error occured when updating activity image order api");
+        } 
+    }
+
     public async Task<AppResult<GetAddressResult>> GetAddress()
     {
         try
