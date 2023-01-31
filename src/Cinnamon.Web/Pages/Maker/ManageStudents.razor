@@ -32,11 +32,12 @@
         </Row>
         <DataGrid @ref="dataGrid" 
             TItem="SubCategory" 
-            Data="@subCategories" 
+            Data="@subCategories"
+            @bind-SelectedRow="@selectedSubCategory"
             Responsive CustomFilter="@OnCustomFilter" 
             ShowPager 
-            HeaderThemeContrast="ThemeContrast.Dark"
-             class="datagrid-data">
+            Editable="true"
+            class="datagrid-data">
             <DataGridColumns>
                  <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Name" Sortable="false" />
                  <DataGridColumn Caption="Session Attended">
@@ -46,10 +47,39 @@
                          </Progress>
                      </DisplayTemplate>
                  </DataGridColumn>
-                 <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Experience" Editable />
-                 <DataGridColumn Field="@nameof(SubCategory.CategoryId)"  Caption="Remarks" Editable />
-                 <DataGridColumn Field="@nameof(SubCategory.Name)"  Caption="Student No." Editable />
-                 <DataGridColumn Caption="Attendance">
+                 <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Experience"/>
+                <DataGridColumn TItem="SubCategory" Field="Name" Caption="Remarks" Editable="true">
+                    <DisplayTemplate>
+                       @context.Name
+                    </DisplayTemplate>
+                <EditTemplate>
+                         <TextEdit TValue="string"
+                          Text="@((string)context.CellValue)"
+                          TextChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( SubCategory.Name ), v);})" />
+                </EditTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="SubCategory" Field="Id" Caption="Student No." Editable="true">
+                    <DisplayTemplate>
+                        @context.Id
+                    </DisplayTemplate>
+                 <EditTemplate>
+                         <NumericEdit TValue="int"
+                          Value="@((int)context.CellValue)"
+                          ValueChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( SubCategory.Id ), v);})" />
+                </EditTemplate>
+                </DataGridColumn>
+                <DataGridCommandColumn TItem="SubCategory" Caption="Student Details">
+                    <EditCommandTemplate>
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@context.Clicked">
+                            Edit <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
+                        </Button>
+                    </EditCommandTemplate>
+                    <NewCommandTemplate>
+                    </NewCommandTemplate>
+                    <DeleteCommandTemplate>
+                    </DeleteCommandTemplate>
+                </DataGridCommandColumn>
+                <DataGridColumn Caption="Attendance">
                       <DisplayTemplate>
                          <Button Color="Color.Primary" Border="Border.Is0" Clicked="@Update">Update</Button>
                       </DisplayTemplate>                
@@ -70,6 +100,16 @@
     private string customFilterValue;
 
     private string selectedFilter;
+
+    private string studentRemark = "Enter remarks here...";
+
+    private float studentNo = 0;
+
+    private bool isEditStudentNo = false;
+
+    private bool isEditRemarks = false;
+
+    public TextEdit textEdit;
 
     private DataGrid<SubCategory> dataGrid;
 
@@ -168,6 +208,10 @@
         if (string.IsNullOrEmpty(customFilterValue))
             return true;
         return model.Name?.Contains(customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
+    }
+    private async Task OnEditRemarksClick()
+    {
+        await textEdit.Focus();
     }
     public async Task Update()
     {
