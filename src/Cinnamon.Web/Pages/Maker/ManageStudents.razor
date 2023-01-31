@@ -94,6 +94,7 @@
     private Models.Customer.Profile Model; 
 
     public List<SubCategory> subCategories = new List<SubCategory>();
+    public List<Activity>    activities    = new List<Activity>();
 
     private SubCategory selectedSubCategory;
 
@@ -170,6 +171,24 @@
                     ProfilePath = customer.ProfileImg,
                 },
             };
+        //Get Enrolled Experience by ActivityId
+         
+        //Get Owned Activities
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {}, token);
+        if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a => {
+                // map only required fields
+                return new Activity {
+                    ActivityId = a.ActivityId,
+                    IsPublished = a.IsPublished,
+                    Title = a.Title
+                };
+            }).ToList();
+        }
+        
+
+
     }
 
     private Task OnCustomFilterValueChanged(string e)
