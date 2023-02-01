@@ -24,52 +24,58 @@
             <Column class="justify-content-start">
                 <Select TValue="string" class="dropdown-select" SelectedValue="@selectedFilter" SelectedValueChanged="@OnFilterValueChanged">
                     <SelectItem Value="@("*")">Select Experience</SelectItem>
-                    @foreach(var item in subCategories)
+                    @foreach(var item in activities)
                     {
-                        <SelectItem Value="@(item.Name)">@item.Name</SelectItem>
+                        <SelectItem Value="@(item.Title)">@item.Title</SelectItem>
                     }
                 </Select>
             </Column>
         </Row>
         <DataGrid @ref="dataGrid" 
-            TItem="SubCategory" 
-            Data="@subCategories"
-            @bind-SelectedRow="@selectedSubCategory"
-            Responsive CustomFilter="@OnCustomFilter" 
+            TItem="ManageStudentsData"
+            Data="@manageStudents"
+            @bind-SelectedRow="@selectedStudents"
+            Responsive 
+            CustomFilter="@OnCustomFilter" 
             ShowPager 
             Editable="true"
             class="datagrid-data">
             <DataGridColumns>
-                 <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Name" Sortable="false" />
-                 <DataGridColumn Caption="Session Attended">
+                 <DataGridColumn Field="@nameof(ManageStudentsData.Name)" Caption="Name" Sortable="false" />
+                <DataGridColumn TItem="ManageStudentsData" Caption="Session Attended">
                      <DisplayTemplate>
-                         <Progress>
-                             <ProgressBar Color="Color.Success" Value=2 Max=10 />
-                         </Progress>
+                        <Progress>
+                            <ProgressBar Color="Color.Success" Value="@context.SessionsAttended" Max="@context.NumberOfSessions" Min="0"/>
+                        </Progress>
                      </DisplayTemplate>
                  </DataGridColumn>
-                 <DataGridColumn Field="@nameof(SubCategory.Name)" Caption="Experience"/>
-                <DataGridColumn TItem="SubCategory" Field="Name" Caption="Remarks" Editable="true">
+                <DataGridColumn Field="@nameof(ManageStudentsData.Title)" Caption="Experience" />
+                <DataGridColumn TItem="ManageStudentsData" Field="@nameof(ManageStudentsData.Remarks)" Caption="Remarks" Editable="true">
                     <DisplayTemplate>
-                       @context.Name
+                       @context.Remarks
                     </DisplayTemplate>
                 <EditTemplate>
                          <TextEdit TValue="string"
                           Text="@((string)context.CellValue)"
-                          TextChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( SubCategory.Name ), v);})" />
+                          TextChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( ManageStudentsData.Remarks ), v);})" />
                 </EditTemplate>
                 </DataGridColumn>
-                <DataGridColumn TItem="SubCategory" Field="Id" Caption="Student No." Editable="true">
+                <DataGridColumn TItem="ManageStudentsData" Field="@nameof(ManageStudentsData.StudentNo)" Caption="Student No." Editable="true">
                     <DisplayTemplate>
-                        @context.Id
+                        @context.StudentNo
                     </DisplayTemplate>
                  <EditTemplate>
-                         <NumericEdit TValue="int"
-                          Value="@((int)context.CellValue)"
-                          ValueChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( SubCategory.Id ), v);})" />
+                         <TextEdit TValue="string"
+                          Text="@((string)context.CellValue)"
+                          TextChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( ManageStudentsData.StudentNo ), v);})" />
                 </EditTemplate>
                 </DataGridColumn>
-                <DataGridCommandColumn TItem="SubCategory" Caption="Student Details">
+                <DataGridColumn Caption="Attendance">
+                    <DisplayTemplate>
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@Update">View Attendance</Button>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridCommandColumn TItem="ManageStudentsData" Caption="Edit Details">
                     <EditCommandTemplate>
                         <Button Color="Color.Primary" Border="Border.Is0" Clicked="@context.Clicked">
                             Edit <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
@@ -80,11 +86,6 @@
                     <DeleteCommandTemplate>
                     </DeleteCommandTemplate>
                 </DataGridCommandColumn>
-                <DataGridColumn Caption="Attendance">
-                      <DisplayTemplate>
-                         <Button Color="Color.Primary" Border="Border.Is0" Clicked="@Update">Update</Button>
-                      </DisplayTemplate>                
-                 </DataGridColumn>
             </DataGridColumns> 
         </DataGrid>
     </div>
@@ -92,13 +93,17 @@
 
 @code {
 
-    private Models.Customer.Profile Model; 
+    private Models.Customer.Profile Model;
 
-    public List<SubCategory> subCategories = new List<SubCategory>();
+    private Dashboard dashboard= new Dashboard();
+
     public List<Activity>    activities    = new List<Activity>();
+
     public List<Students> students = new List<Students>();
 
-    private SubCategory selectedSubCategory;
+    public List<ManageStudentsData> manageStudents = new List<ManageStudentsData>();
+
+    private ManageStudentsData selectedStudents;
 
     private string customFilterValue;
 
@@ -114,23 +119,10 @@
 
     public TextEdit textEdit;
 
-    private DataGrid<SubCategory> dataGrid;
+    private DataGrid<ManageStudentsData> dataGrid;
 
     protected override async Task OnInitializedAsync()
     {
-        var sub = await activityApiHandler.GetSubCategories();
-        if (sub.Succeeded && sub.Result != null && sub.Result.IsSuccess)
-        {
-            subCategories = sub.Result.Result.Select(s =>
-            {
-                return new SubCategory
-                    {
-                        Id = s.Id,
-                        Name = s.Name,
-                        CategoryId = s.CategoryId
-                    };
-            }).ToList();
-        }
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
@@ -173,45 +165,60 @@
                     ProfilePath = customer.ProfileImg,
                 },
             };
-        //Get Enrolled Experience by ActivityId
+        //Get Owned Activities
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs { }, token);
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                    {
+                        ActivityId = a.ActivityId,
+                        IsPublished = a.IsPublished,
+                        Title = a.Title
+                    };
+            }).ToList();
+        }
+        //Get Enrolled Experience
         var student = await ongoingApiHandler.GetAllOngoingActivities();
         if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
         {
             students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
             {
                 return new Students
-                {
-                    ActivityId  = a.ActivityId,
-                    CustomerId  = a.CustomerId,
-                    Id          = a.Id,
-                    Name        = a.Name,
-                    NumberOfSessions = a.NumberOfSessions,
-                    Remarks = a.Remarks,
-                    ScheduleId = a.ScheduleId,
-                    SessionsAttended = a.SessionsAttended,
-                    Status = a.Status,
-                    StudentNo   = a.StudentNo
-                };
+                    {
+                        ActivityId = a.ActivityId,
+                        CustomerId = a.CustomerId,
+                        Id = a.Id,
+                        Name = a.Name,
+                        NumberOfSessions = a.NumberOfSessions,
+                        Remarks = a.Remarks,
+                        ScheduleId = a.ScheduleId,
+                        SessionsAttended = a.SessionsAttended,
+                        Status = a.Status,
+                        StudentNo = a.StudentNo
+                    };
             }).ToList();
         }
-        //Get Owned Activities
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {}, token);
-        if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-        {
-            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a => {
-                // map only required fields
-                return new Activity {
-                    ActivityId = a.ActivityId,
-                    IsPublished = a.IsPublished,
-                    Title = a.Title
-                };
-            }).ToList();
-        }
-        
-
-
+        var query = from item in students
+                    join item1 in activities on item.ActivityId equals item1.ActivityId
+                    orderby item.Id
+                    select new ManageStudentsData
+                         {
+                             Id = item.Id,
+                             ActivityId = item.ActivityId,
+                             Title = item1.Title,
+                             CustomerId = item.CustomerId,
+                             Name = item.Name,
+                             NumberOfSessions = item.NumberOfSessions,
+                             SessionsAttended = item.SessionsAttended,
+                             Remarks = item.Remarks,
+                             StudentNo = item.StudentNo
+                         };
+        //List DataGrid Content
+        manageStudents = query.ToList();
     }
-
     private Task OnCustomFilterValueChanged(string e)
     {
         customFilterValue = e;
@@ -222,28 +229,15 @@
         selectedFilter = e;
         if (string.IsNullOrEmpty(selectedFilter) || selectedFilter == "Select Experience" || selectedFilter == "*")
         {
-            var sub = await activityApiHandler.GetSubCategories();
-            if (sub.Succeeded && sub.Result != null && sub.Result.IsSuccess)
-            {
-                subCategories = sub.Result.Result.Select(s =>
-                {
-                    return new SubCategory
-                        {
-                            Id = s.Id,
-                            Name = s.Name,
-                            CategoryId = s.CategoryId
-                        };
-                }).ToList();
-            }
+            await OnInitializedAsync();
         }
         else
         {
-            subCategories = subCategories.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Name,
+            manageStudents = manageStudents.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
             selectedFilter, CompareOptions.IgnoreCase) >= 0).ToList();
         }
-        await dataGrid.Reload();
     }
-    private bool OnCustomFilter(SubCategory model)
+    private bool OnCustomFilter(ManageStudentsData model)
     {
         if (string.IsNullOrEmpty(customFilterValue))
             return true;
