@@ -35,4 +35,23 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
             return AppResult<GetAllOngoingActivitiesResult>.CreateFailed(ex, "An error occured when getting all ongoing activities api");
         }
     }
+    public async Task<AppResult<GetOngoingActivityByIdResult>>GetOngoingActivityById(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"OnGoingActivities/GetOngoingActivity/{id}")
+                .GetJsonAsync<GetOngoingActivityByIdResult>();
+
+            return AppResult<GetOngoingActivityByIdResult>.CreateSucceeded(result, "Successfully getting student activity by id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetOngoingActivityByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetOngoingActivityByIdResult>.CreateFailed(ex, "An error occured when getting student activity by id api");
+        }
+    }
 }

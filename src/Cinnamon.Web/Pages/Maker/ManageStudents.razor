@@ -243,9 +243,9 @@
             return true;
         return model.Name?.Contains(customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
     }
-    public async Task Update()
+    public void Update()
     {
-        
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/"+selectedStudents.Id);
     }
 }
 

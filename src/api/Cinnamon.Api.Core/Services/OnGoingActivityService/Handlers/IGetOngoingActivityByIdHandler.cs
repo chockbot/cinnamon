@@ -4,6 +4,8 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Framework.Interactor;
 
 namespace Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
-public interface IGetAllOngoingActivitiesHandler : IInteractorHandler<GetAllOngoingActivitiesArgs, AppResult<GetAllOngoingActivitiesResult>>
+
+public interface IGetOngoingActivityByIdHandler: IInteractorHandler<GetOngoingActivityByIdArgs, AppResult<GetOngoingActivityByIdResult>>
 {
+
 }

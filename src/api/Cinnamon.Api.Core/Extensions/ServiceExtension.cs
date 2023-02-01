@@ -80,6 +80,7 @@ public static class ServiceExtenstion
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetOngoingActivityByIdHandler, Services.OnGoingActivityService.GetOngoingActivityByIdHandler>();
         return services;
     }
 }

@@ -5,4 +5,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 public interface IOngoingActivitiesHandler
 {
     Task<AppResult<GetAllOngoingActivitiesResult>> GetAllOngoingActivities(GetAllOngoingActivitiesResult? args = null);
+
+    Task<AppResult<GetOngoingActivityByIdResult>>GetOngoingActivityById(int id);
 }
