@@ -97,7 +97,7 @@
 
     private Dashboard dashboard= new Dashboard();
 
-    public List<Activity>    activities    = new List<Activity>();
+    public List<Activity> activities    = new List<Activity>();
 
     public List<Students> students = new List<Students>();
 
@@ -242,10 +242,6 @@
         if (string.IsNullOrEmpty(customFilterValue))
             return true;
         return model.Name?.Contains(customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
-    }
-    private async Task OnEditRemarksClick()
-    {
-        await textEdit.Focus();
     }
     public async Task Update()
     {
