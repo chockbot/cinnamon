@@ -465,6 +465,21 @@
                                 })
         }, Model.Token);
 
+        // fetch again the updated family members
+        var updatedMembers = await accountApiHandler.GetFamilyMembers(Model.Token);
+        if(updatedMembers.Succeeded && updatedMembers.Result != null && updatedMembers.Result.IsSuccess)
+        {
+            Model.Customer.FamilyMembers = updatedMembers.Result.Result.Select(f => {
+                return new FamilyMember {
+                    BirthMonth = f.BirthMonth,
+                    BirthYear = f.BirthYear,
+                    Gender = f.Gender,
+                    Id = f.Id,
+                    Name = f.Name
+                };
+            }).ToList();
+        }
+
         AddChildrenModal.Close();
     }
 
