@@ -19,6 +19,7 @@ public interface IDataStore
     ISearchTags SearchTags { get; }
     IExternalLoginToken ExternalLoginToken { get; }
     IStudent Student { get; }
+    IStudentAttendance StudentAttendance { get; }
 
     Task EnsureMigrate();
 

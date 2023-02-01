@@ -43,6 +43,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<Student> Students {get; set;}
 
+    public DbSet<StudentAttendance> StudentAttendances {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -128,6 +130,10 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<Student>()
             .HasIndex(s => s.FamilyMemberId);
+
+        // student attendance
+        modelBuilder.Entity<StudentAttendance>()
+            .HasOne<Student>(s => s.Student);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

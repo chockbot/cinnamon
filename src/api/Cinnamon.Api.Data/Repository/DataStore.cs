@@ -47,6 +47,8 @@ public class DataStore : IDataStore
 
     public IStudent Student => new StudentEntity(applicationContext);
 
+    public IStudentAttendance StudentAttendance => new StudentAttendanceEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
