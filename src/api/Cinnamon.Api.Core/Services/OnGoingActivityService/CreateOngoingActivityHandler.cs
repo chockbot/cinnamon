@@ -91,7 +91,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             }
 
             // enroll the students
-            var createStudentRes = await studentData.CreateMantStudent(new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs {
+            var createStudentRes = await studentData.CreateManyStudent(new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs {
                 ActivityId = args.ActivityId,
                 CustomerId = args.CustomerId,
                 NumberOfSessions = schedule.PerUnit2,

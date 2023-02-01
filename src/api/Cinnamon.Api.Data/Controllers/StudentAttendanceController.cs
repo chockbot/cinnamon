@@ -118,10 +118,10 @@ public class StudentAttendanceController : ControllerBase
         }
     }
 
-    [Route("CreateManyStudent")]
+    [Route("CreateManyStudentAttendance")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateManyStudentAttendanceResult), StatusCodes.Status201Created)]
-    public async Task<IActionResult> CreateManyStudent([FromBody] CreateManyStudentAttendanceArgs args)
+    public async Task<IActionResult> CreateManyStudentAttendance([FromBody] CreateManyStudentAttendanceArgs args)
     {
         try
         {
@@ -168,10 +168,10 @@ public class StudentAttendanceController : ControllerBase
         }
     }
 
-    [Route("UpdateManyStudent")]
+    [Route("UpdateManyStudentAttendance")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateManyStudentAttendanceResult), StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> UpdateManyStudent([FromBody] UpdateManyStudentAttendanceArgs args)
+    public async Task<IActionResult> UpdateManyStudentAttendance([FromBody] UpdateManyStudentAttendanceArgs args)
     {
         try
         {

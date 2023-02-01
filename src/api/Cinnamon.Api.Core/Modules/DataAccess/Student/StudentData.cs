@@ -100,7 +100,7 @@ public class StudentData: IStudentData
         }
     }
 
-    public async Task<AppResult<CreateManyStudentResult>> CreateMantStudent(CreateManyStudentArgs args)
+    public async Task<AppResult<CreateManyStudentResult>> CreateManyStudent(CreateManyStudentArgs args)
     {
         try
         {
