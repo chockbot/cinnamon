@@ -1,0 +1,111 @@
+@layout DashboardLayout
+@page "/maker/dashboard/attendance"
+@inject IJSRuntime jsRuntime;
+
+<section class="student-attendance">
+    <h3 class="title">Check Attendance for Todawy</h3>
+    <div class="activities-schedule-section schedule-swiper">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide shadow">
+                <p class="schedule-title">Bass Lesson Section for all</p>
+                <p class="schedule-time">Monday to Thursday 1pm to 5pm</p>
+                <Button class="check-button" Type="ButtonType.Button">
+                    <img src="images/Dashboard/rounded-check.png" alt="check-icon">
+                    Select
+                </Button>
+            </div>
+            <div class="swiper-slide shadow">
+                <p class="schedule-title">Bass Lesson Section for all</p>
+                <p class="schedule-time">Monday to Thursday 1pm to 5pm</p>
+                <Button class="check-button" Type="ButtonType.Button">
+                    <img src="images/Dashboard/rounded-check.png" alt="check-icon">
+                    Select
+                </Button>
+            </div>
+            <div class="swiper-slide shadow">
+                <p class="schedule-title">Bass Lesson Section for all</p>
+                <p class="schedule-time">Monday to Thursday 1pm to 5pm</p>
+                <Button class="check-button" Type="ButtonType.Button">
+                    <img src="images/Dashboard/rounded-uncheck.png" alt="check-icon">
+                    Select
+                </Button>
+            </div>
+            <div class="swiper-slide shadow">
+                <p class="schedule-title">Bass Lesson Section for all</p>
+                <p class="schedule-time">Monday to Thursday 1pm to 5pm</p>
+                <Button class="check-button" Type="ButtonType.Button">
+                    <img src="images/Dashboard/rounded-uncheck.png" alt="check-icon">
+                    Select
+                </Button>
+            </div>
+            <div class="swiper-slide shadow">
+                <p class="schedule-title">Bass Lesson Section for all</p>
+                <p class="schedule-time">Monday to Thursday 1pm to 5pm</p>
+                <Button class="check-button" Type="ButtonType.Button">
+                    <img src="images/Dashboard/rounded-uncheck.png" alt="check-icon">
+                    Select
+                </Button>
+            </div>
+        </div>
+    </div>
+    <div class="student-attendance-section">
+        <div class="tool-action">
+            <label>Check All</label>
+        </div>
+        <div class="table-list">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>Name</TableHeaderCell>
+                        <TableHeaderCell>Experience</TableHeaderCell>
+                        <TableHeaderCell>#</TableHeaderCell>
+                        <TableHeaderCell>Present</TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    <TableRow>
+                        <TableRowCell>Dexter Echalico</TableRowCell>
+                        <TableRowCell>This is only sample Experience</TableRowCell>
+                        <TableRowCell>Percent</TableRowCell>
+                        <TableRowCell>Present</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Dexter Echalico</TableRowCell>
+                        <TableRowCell>This is only sample Experience</TableRowCell>
+                        <TableRowCell>Percent</TableRowCell>
+                        <TableRowCell>Present</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Dexter Echalico</TableRowCell>
+                        <TableRowCell>This is only sample Experience</TableRowCell>
+                        <TableRowCell>Percent</TableRowCell>
+                        <TableRowCell>Present</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Dexter Echalico</TableRowCell>
+                        <TableRowCell>This is only sample Experience</TableRowCell>
+                        <TableRowCell>Percent</TableRowCell>
+                        <TableRowCell>Present</TableRowCell>
+                    </TableRow>
+                    <TableRow>
+                        <TableRowCell>Dexter Echalico</TableRowCell>
+                        <TableRowCell>This is only sample Experience</TableRowCell>
+                        <TableRowCell>Percent</TableRowCell>
+                        <TableRowCell>Present</TableRowCell>
+                    </TableRow>
+                </TableBody>
+            </Table>
+        </div>
+    </div>
+</section>
+
+@code
+{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper");
+        }
+    }
+}
