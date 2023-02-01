@@ -24,7 +24,10 @@ public static class ServiceExtenstion
         services.AddTransient<IPurchaseOrder, PurchaseOrderEntity>();
         services.AddTransient<IResendEmail, ResendEmailEntity>();
         services.AddTransient<IWaitList, WaitListEntity>();
+        services.AddTransient<IStudent, StudentEntity>();
+        services.AddTransient<IStudentAttendance, StudentAttendanceEntity>();
         services.AddTransient<IDataStore, DataStore>();
+
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
         services.AddTransient<Services.Repository.Interfaces.IDescriptionRepository, Services.Repository.ActivityDescription.DescriptionRepository>();
@@ -42,6 +45,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.ISearchTagsRepository, Services.Repository.SearchTag.SearchTagRepository>();
         services.AddTransient<Services.Repository.Interfaces.IExternalLoginTokenRepository, Services.Repository.ExternalLoginToken.ExternalLoginTokenRepository>();
         services.AddTransient<Services.Repository.Interfaces.IStudentRepository, Services.Repository.Student.StudentRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IStudentAttendanceRepository, Services.Repository.StudentAttendance.StudentAttendanceRepository>();
 
         return services;
     }
