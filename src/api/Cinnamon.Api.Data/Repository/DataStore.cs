@@ -45,6 +45,8 @@ public class DataStore : IDataStore
 
     public IExternalLoginToken ExternalLoginToken => new ExternalLoginTokenEntity(applicationContext);
 
+    public IStudent Student => new StudentEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

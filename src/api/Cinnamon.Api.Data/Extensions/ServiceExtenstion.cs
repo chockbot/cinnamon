@@ -41,6 +41,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IScheduleRepository, Services.Repository.Schedule.ScheduleRepository>();
         services.AddTransient<Services.Repository.Interfaces.ISearchTagsRepository, Services.Repository.SearchTag.SearchTagRepository>();
         services.AddTransient<Services.Repository.Interfaces.IExternalLoginTokenRepository, Services.Repository.ExternalLoginToken.ExternalLoginTokenRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IStudentRepository, Services.Repository.Student.StudentRepository>();
 
         return services;
     }
