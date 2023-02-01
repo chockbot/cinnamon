@@ -7,7 +7,7 @@ public interface IStudentAttendanceRepository
 {
     Task<AppResult<StudentAttendanceDTO>> GetByIdAsync(int id, bool? includeStudent = false);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync(int? count, int? skip, 
-        DateOnly? date = null, bool? includeStudent = false);
+        DateOnly? date = null, bool? includeStudent = false, int? activityId = null, int? scheduleId = null);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync();
     Task<AppResult<StudentAttendanceDTO>> Create(int studentId, bool isPresent, DateOnly date);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> Create(IEnumerable<CreateManyAttendanceDTO> students);
