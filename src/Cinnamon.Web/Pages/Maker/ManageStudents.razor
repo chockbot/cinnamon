@@ -9,6 +9,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
 @using Blazorise.DataGrid
 
 <section class="mt-5 maker-dashboard">
@@ -95,6 +96,7 @@
 
     public List<SubCategory> subCategories = new List<SubCategory>();
     public List<Activity>    activities    = new List<Activity>();
+    public List<Students> students = new List<Students>();
 
     private SubCategory selectedSubCategory;
 
@@ -172,7 +174,26 @@
                 },
             };
         //Get Enrolled Experience by ActivityId
-         
+        var student = await ongoingApiHandler.GetAllOngoingActivities();
+        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        {
+            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                return new Students
+                {
+                    ActivityId  = a.ActivityId,
+                    CustomerId  = a.CustomerId,
+                    Id          = a.Id,
+                    Name        = a.Name,
+                    NumberOfSessions = a.NumberOfSessions,
+                    Remarks = a.Remarks,
+                    ScheduleId = a.ScheduleId,
+                    SessionsAttended = a.SessionsAttended,
+                    Status = a.Status,
+                    StudentNo   = a.StudentNo
+                };
+            }).ToList();
+        }
         //Get Owned Activities
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {}, token);
         if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
