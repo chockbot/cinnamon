@@ -7,4 +7,6 @@ public class GetAllStudentAttendanceArgs
     // date format must yyyyMMdd
     public string? Date { get; set; }
     public bool? IsIncludeStudent {get; set;}
+    public int? ActivityId {get; set;}
+    public int? ScheduleId {get; set;}
 }
