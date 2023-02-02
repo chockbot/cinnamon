@@ -1,55 +1,126 @@
 ﻿@layout DashboardLayout
 @page "/maker/dashboard/managestudents"
 @using System.Security.Claims
+@using System.Globalization
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@using Blazorise.DataGrid
 
-@if (Model != null)
-{
-    <section class="mt-5 maker-dashboard">
+<section class="mt-5 maker-dashboard">
         <div class="container">
-            <Row>
-                <Column>
-                    <h3 class="text-capitalize fw-bold">Manage Students</h3>
-                </Column>
-                <Column>
-                </Column>
-            </Row>
-            <Table class="table-manage">
-                <TableHeader ThemeContrast="ThemeContrast.Dark" class="table-header">
-                    <TableRow class="table-cell">
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell>Session Attended</TableHeaderCell>
-                        <TableHeaderCell class="table-header-status">Status</TableHeaderCell>
-                        <TableHeaderCell>Student No.</TableHeaderCell>
-                        <TableHeaderCell>Attendance</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody class="table-body">
-                    <TableRow class="table-row">
-                        <TableRowCell>@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</TableRowCell>
-                        <TableRowCell>
-                            <Progress>
-                                <ProgressBar Color="Color.Success" Value=2 Max=10/>
-                            </Progress>
-                        </TableRowCell>
-                        <TableRowCell><p class="table-active">Active</p></TableRowCell>
-                        <TableRowCell>00<Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" class="icon-edit" /></TableRowCell>
-                        <TableRowCell><Button class="update-button">Update</Button></TableRowCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
-        </div>
-    </section>
-}
+        <Row>
+            <Column>
+                <h3 class="text-capitalize fw-bold" style="color:#FFA942;">Manage Students</h3>
+            </Column>
+            <Column class="justify-content-end">
+                <TextEdit Text="@customFilterValue" Placeholder="Search" TextChanged="@OnCustomFilterValueChanged" class="search-bar"></TextEdit>
+            </Column>
+            <Column class="justify-content-start">
+                <Select TValue="string" class="dropdown-select" SelectedValue="@selectedFilter" SelectedValueChanged="@OnFilterValueChanged">
+                    <SelectItem Value="@("*")">Select Experience</SelectItem>
+                    @foreach(var item in activities)
+                    {
+                        <SelectItem Value="@(item.Title)">@item.Title</SelectItem>
+                    }
+                </Select>
+            </Column>
+        </Row>
+        <DataGrid @ref="dataGrid" 
+            TItem="ManageStudentsData"
+            Data="@manageStudents"
+            @bind-SelectedRow="@selectedStudents"
+            Responsive 
+            CustomFilter="@OnCustomFilter" 
+            ShowPager 
+            Editable="true"
+            class="datagrid-data">
+            <DataGridColumns>
+                 <DataGridColumn Field="@nameof(ManageStudentsData.Name)" Caption="Name" Sortable="false" />
+                <DataGridColumn TItem="ManageStudentsData" Caption="Session Attended">
+                     <DisplayTemplate>
+                        <Progress>
+                            <ProgressBar Color="Color.Success" Value="@context.SessionsAttended" Max="@context.NumberOfSessions" Min="0"/>
+                        </Progress>
+                     </DisplayTemplate>
+                 </DataGridColumn>
+                <DataGridColumn Field="@nameof(ManageStudentsData.Title)" Caption="Experience" />
+                <DataGridColumn TItem="ManageStudentsData" Field="@nameof(ManageStudentsData.Remarks)" Caption="Remarks" Editable="true">
+                    <DisplayTemplate>
+                       @context.Remarks
+                    </DisplayTemplate>
+                <EditTemplate>
+                         <TextEdit TValue="string"
+                          Text="@((string)context.CellValue)"
+                          TextChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( ManageStudentsData.Remarks ), v);})" />
+                </EditTemplate>
+                </DataGridColumn>
+                <DataGridColumn TItem="ManageStudentsData" Field="@nameof(ManageStudentsData.StudentNo)" Caption="Student No." Editable="true">
+                    <DisplayTemplate>
+                        @context.StudentNo
+                    </DisplayTemplate>
+                 <EditTemplate>
+                         <TextEdit TValue="string"
+                          Text="@((string)context.CellValue)"
+                          TextChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( ManageStudentsData.StudentNo ), v);})" />
+                </EditTemplate>
+                </DataGridColumn>
+                <DataGridColumn Caption="Attendance">
+                    <DisplayTemplate>
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@Update">View Attendance</Button>
+                    </DisplayTemplate>
+                </DataGridColumn>
+                <DataGridCommandColumn TItem="ManageStudentsData" Caption="Edit Details">
+                    <EditCommandTemplate>
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@context.Clicked">
+                            Edit <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
+                        </Button>
+                    </EditCommandTemplate>
+                    <NewCommandTemplate>
+                    </NewCommandTemplate>
+                    <DeleteCommandTemplate>
+                    </DeleteCommandTemplate>
+                </DataGridCommandColumn>
+            </DataGridColumns> 
+        </DataGrid>
+    </div>
+</section>
 
 @code {
+
     private Models.Customer.Profile Model;
+
+    private Dashboard dashboard= new Dashboard();
+
+    public List<Activity> activities    = new List<Activity>();
+
+    public List<Students> students = new List<Students>();
+
+    public List<ManageStudentsData> manageStudents = new List<ManageStudentsData>();
+
+    private ManageStudentsData selectedStudents;
+
+    private string customFilterValue;
+
+    private string selectedFilter;
+
+    private string studentRemark = "Enter remarks here...";
+
+    private float studentNo = 0;
+
+    private bool isEditStudentNo = false;
+
+    private bool isEditRemarks = false;
+
+    public TextEdit textEdit;
+
+    private DataGrid<ManageStudentsData> dataGrid;
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -79,20 +150,102 @@
             return;
         }
         Model = new Models.Customer.Profile
-        {
-            Token = token,
-            CustomerProfile = new Models.Entities.CustomerProfile
             {
-                About = customer.About,
-                Birthdate = customer.Birthdate,
-                Email = customer.Email,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Id = customer.Id,
-                IsMaker = customer.IsMaker,
-                IsVerified = customer.IsVerified,
-                ProfilePath = customer.ProfileImg,
-            },
-        };
+                Token = token,
+                CustomerProfile = new Models.Entities.CustomerProfile
+                {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    Email = customer.Email,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerified,
+                    ProfilePath = customer.ProfileImg,
+                },
+            };
+        //Get Owned Activities
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs { }, token);
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                    {
+                        ActivityId = a.ActivityId,
+                        IsPublished = a.IsPublished,
+                        Title = a.Title
+                    };
+            }).ToList();
+        }
+        //Get Enrolled Experience
+        var student = await ongoingApiHandler.GetAllOngoingActivities();
+        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        {
+            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                return new Students
+                    {
+                        ActivityId = a.ActivityId,
+                        CustomerId = a.CustomerId,
+                        Id = a.Id,
+                        Name = a.Name,
+                        NumberOfSessions = a.NumberOfSessions,
+                        Remarks = a.Remarks,
+                        ScheduleId = a.ScheduleId,
+                        SessionsAttended = a.SessionsAttended,
+                        Status = a.Status,
+                        StudentNo = a.StudentNo
+                    };
+            }).ToList();
+        }
+        var query = from item in students
+                    join item1 in activities on item.ActivityId equals item1.ActivityId
+                    orderby item.Id
+                    select new ManageStudentsData
+                         {
+                             Id = item.Id,
+                             ActivityId = item.ActivityId,
+                             Title = item1.Title,
+                             CustomerId = item.CustomerId,
+                             Name = item.Name,
+                             NumberOfSessions = item.NumberOfSessions,
+                             SessionsAttended = item.SessionsAttended,
+                             Remarks = item.Remarks,
+                             StudentNo = item.StudentNo
+                         };
+        //List DataGrid Content
+        manageStudents = query.ToList();
+    }
+    private Task OnCustomFilterValueChanged(string e)
+    {
+        customFilterValue = e;
+        return dataGrid.Reload();
+    }
+    private async Task OnFilterValueChanged(string e)
+    {
+        selectedFilter = e;
+        if (string.IsNullOrEmpty(selectedFilter) || selectedFilter == "Select Experience" || selectedFilter == "*")
+        {
+            await OnInitializedAsync();
+        }
+        else
+        {
+            manageStudents = manageStudents.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
+            selectedFilter, CompareOptions.IgnoreCase) >= 0).ToList();
+        }
+    }
+    private bool OnCustomFilter(ManageStudentsData model)
+    {
+        if (string.IsNullOrEmpty(customFilterValue))
+            return true;
+        return model.Name?.Contains(customFilterValue, StringComparison.OrdinalIgnoreCase) == true;
+    }
+    public void Update()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/"+selectedStudents.Id);
     }
 }
+
