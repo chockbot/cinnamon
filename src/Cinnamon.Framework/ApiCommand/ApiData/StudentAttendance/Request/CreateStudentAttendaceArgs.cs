@@ -9,5 +9,5 @@ public class CreateStudentAttendaceArgs
     [Required]
     public bool IsPresent {get; set;}
     [Required]
-    public DateOnly Date {get; set;}
+    public DateTime Date {get; set;}
 }

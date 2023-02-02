@@ -68,7 +68,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
     }
     
     public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync(int? count, int? skip, 
-        DateOnly? date = null, bool? includeStudent = false, int? activityId = null, int? scheduleId = null)
+        DateTime? date = null, bool? includeStudent = false, int? activityId = null, int? scheduleId = null)
     {
         try
         {
@@ -79,7 +79,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             }
 
             Expression<Func<Entities.StudentAttendance,bool>> filter = 
-                a => (date.HasValue ? a.Date == date : true) &&
+                a => (date.HasValue ? a.Date.Date == date : true) &&
                     (activityId.HasValue ? a.Student.ActivityId == activityId.Value : true) &&
                     (scheduleId.HasValue ? a.Student.ScheduleId == scheduleId.Value : true);
 
@@ -153,12 +153,12 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         }
     }
 
-    public async Task<AppResult<StudentAttendanceDTO>> Create(int studentId, bool isPresent, DateOnly date)
+    public async Task<AppResult<StudentAttendanceDTO>> Create(int studentId, bool isPresent, DateTime date)
     {
         try
         {
             var studentAttendance = new Entities.StudentAttendance {
-                Date = DateOnly.FromDateTime(date.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()),
+                Date = date.Date.SetKindUtc(),
                 IsPresent = isPresent,
                 StudentId = studentId
             };
@@ -189,7 +189,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         {
             var newStudents = students.Select(s => {
                 return new Entities.StudentAttendance {
-                    Date = DateOnly.FromDateTime(s.Date.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()),
+                    Date = s.Date.Date.SetKindUtc(),
                     IsPresent = s.IsPresent,
                     StudentId = s.StudentId
                 };
@@ -217,7 +217,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         }
     }
 
-    public async Task<AppResult<StudentAttendanceDTO>> Update(int id, bool? isPresent, DateOnly? date)
+    public async Task<AppResult<StudentAttendanceDTO>> Update(int id, bool? isPresent, DateTime? date)
     {
         try
         {
@@ -228,10 +228,9 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
                     new ApplicationException("Can't find student attendance need to update"), "Can't find student attendance need to update");
             }
             
-            DateOnly? utcDate = date.HasValue ? DateOnly.FromDateTime(date.Value.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()) : null;
             var studentEntity = new Entities.StudentAttendance {
                 Id = studentAttendance.Result.Id,
-                Date = utcDate ?? studentAttendance.Result.Date,
+                Date = date.HasValue ? date.Value.Date.SetKindUtc() : studentAttendance.Result.Date,
                 IsPresent = isPresent ?? studentAttendance.Result.IsPresent
             };
 
@@ -263,7 +262,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             var studentEntities = students.Select(s => {
                 return new Entities.StudentAttendance {
                     Id = s.Id,
-                    Date = DateOnly.FromDateTime(s.Date.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()),
+                    Date = s.Date.Date.SetKindUtc(),
                     IsPresent = s.IsPresent
                 };
             });

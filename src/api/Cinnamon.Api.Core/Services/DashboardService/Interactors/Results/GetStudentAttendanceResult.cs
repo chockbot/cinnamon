@@ -20,7 +20,7 @@ public class GetStudentAttendanceResult
         public string ScheduleTitle {get; set;}
         public string ScheduleDescription {get; set;}
         public bool IsPresent {get; set;}
-        public DateOnly AttendanceDate {get; set;}
+        public DateTime AttendanceDate {get; set;}
         public string Remarks {get; set;}
     }
 }

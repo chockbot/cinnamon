@@ -95,7 +95,7 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
                 }
 
                 // create student attendance
-                DateOnly date = DateOnly.FromDateTime(DateTime.Now);
+                DateTime date = DateTime.Now.Date;
                 var studentsToCreate = students.Select(s => {
                     return new Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Request.CreateManyStudentAttendanceArgs.StudentAttendaceDetails {
                         Date = date,

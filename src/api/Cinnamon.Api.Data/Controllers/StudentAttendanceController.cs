@@ -46,10 +46,10 @@ public class StudentAttendanceController : ControllerBase
     {
         try
         {
-            DateOnly? date = null;
+            DateTime? date = null;
             if(!string.IsNullOrEmpty(args.Date))
             {
-                date = DateOnly.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
+                date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
             }
 
             var result =
