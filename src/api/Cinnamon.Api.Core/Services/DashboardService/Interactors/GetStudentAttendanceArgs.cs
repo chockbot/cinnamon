@@ -4,7 +4,7 @@ namespace Cinnamon.Api.Core.Services.DashboardService.Interactors;
 
 public class GetStudentAttendanceArgs : IInteractor
 {
-    public DateOnly Date {get; set;}
+    public DateTime Date {get; set;}
     public int ActivityId {get; set;}
     public int ScheduleId {get; set;}
     public bool ForceCreate {get; set;}

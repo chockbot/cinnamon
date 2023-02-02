@@ -79,7 +79,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             }
 
             Expression<Func<Entities.StudentAttendance,bool>> filter = 
-                a => (date.HasValue ? a.Date.Date == date : true) &&
+                a => (date.HasValue ? a.Date == date.Value.Date.SetKindUtc() : true) &&
                     (activityId.HasValue ? a.Student.ActivityId == activityId.Value : true) &&
                     (scheduleId.HasValue ? a.Student.ScheduleId == scheduleId.Value : true);
 

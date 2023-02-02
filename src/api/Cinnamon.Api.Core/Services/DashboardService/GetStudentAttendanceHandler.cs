@@ -153,13 +153,21 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
                 StudentAttendaces = attendances.Select(s => {
                     return new GetStudentAttendanceResult.StudentAttendace {
                         ActivityDescription = activity.Description,
-                        ActivityId = activity.Id,
-                        ActivityTitle = activity.Title,
-                        IsPresent = s.IsPresent,
-                        ScheduleDescription = schedule.Name,
-                        ScheduleId = schedule.Id,
-                        ScheduleTitle = schedule.DateTime,
-                        StudentId = s.StudentId
+                            ActivityId = activity.Id,
+                            ActivityTitle = activity.Title,
+                            IsPresent = s.IsPresent,
+                            ScheduleDescription = schedule.Name,
+                            ScheduleId = schedule.Id,
+                            ScheduleTitle = schedule.DateTime,
+                            StudentId = s.StudentId,
+                            NumberOfSessions = s.Student.NumberOfSessions,
+                            SessionsAttended = s.Student.SessionsAttended,
+                            Status = s.Student.Status,
+                            StudentName = s.Student.Name,
+                            StudentNo = s.Student.StudentNo,
+                            AttendanceDate = s.Date,
+                            Id = s.Id,
+                            Remarks = s.Student.Remarks
                     };
                 })
             }, "Successfullt get student attendance");

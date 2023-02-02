@@ -32,7 +32,7 @@ public class GetCurrentDateAttendanceHandler : IGetCurrentDateAttendanceHandler
         {
             var result = await getStudentAttendanceHandler.ExecuteAsync(new GetStudentAttendanceArgs {
                 ActivityId = args.ActivityId,
-                Date = DateOnly.FromDateTime(DateTime.Now),
+                Date = DateTime.Now.Date,
                 ScheduleId = args.ScheduleId,
                 ForceCreate = true
             });
