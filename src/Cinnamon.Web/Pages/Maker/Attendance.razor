@@ -25,6 +25,7 @@
                 </div>
             }
         </div>
+        <div class="swiper-scrollbar"></div>
     </div>
     <div class="student-attendance-section">
         <div class="tool-action">
@@ -32,19 +33,35 @@
                 <img class="me-1" src='@(Model.IsCheckAllStudent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
                 Select All
             </Button>
+            <TextEdit TextChanged="TextSearchChanged" class="search-text" Size="Size.Small" Placeholder="Search" Role="TextRole.Text" />
         </div>
         <div class="table-list">
             <Table Shadow="Shadow.Default">
                 <TableHeader>
                     <TableRow>
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell>Experience</TableHeaderCell>
-                        <TableHeaderCell>#</TableHeaderCell>
-                        <TableHeaderCell>Present</TableHeaderCell>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByName">
+                                Name
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByActivity">
+                                Experience
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell></TableHeaderCell>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByPresent">
+                                Present
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    @foreach (var item in Model.Attendances)
+                    @foreach (var item in Model.FilteredAttendance)
                     {
                         <TableRow>
                             <TableRowCell>@item.Name</TableRowCell>
@@ -55,7 +72,7 @@
                             <TableRowCell>
                                 <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAttendance(item)">
                                     <img class="me-1" src='@(item.IsPresent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                                    Select
+                                    Present
                                 </Button>
                             </TableRowCell>
                         </TableRow>    
@@ -122,7 +139,7 @@
     {
         if(firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper",".swiper-scrollbar");
         }
     }
 
@@ -153,16 +170,64 @@
         {
             Model.Attendances.RemoveAll(s => s.ActivityId == schedule.ActivityId && s.ScheduleId == schedule.ScheduleId);
         }
+        Model.FilteredAttendance = Model.Attendances;
     }
 
     private void CheckUnCheckAllStudent()
     {
         Model.IsCheckAllStudent = !Model.IsCheckAllStudent;
-        Model.Attendances.ForEach(std => std.IsPresent = Model.IsCheckAllStudent);
+        Model.FilteredAttendance.ForEach(std => std.IsPresent = Model.IsCheckAllStudent);
     }
 
     private void CheckUnCheckAttendance(AttendanceModel.StudentAttendance studentAttendance)
     {
         studentAttendance.IsPresent = !studentAttendance.IsPresent;
+    }
+
+    private void SortByName()
+    {
+        if(!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.Name).ToList();
+            Model.IsSortNameAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.Name).ToList();
+            Model.IsSortNameAsc = true;
+        }
+    }
+
+    private void SortByActivity()
+    {
+        if(!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.ActivityName).ToList();
+            Model.IsSortExperienceAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.ActivityName).ToList();
+            Model.IsSortExperienceAsc = true;
+        }
+    }
+
+    private void SortByPresent()
+    {
+        if(!Model.IsSortPresentAsc.HasValue || Model.IsSortPresentAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.IsPresent).ToList();
+            Model.IsSortPresentAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.IsPresent).ToList();
+            Model.IsSortPresentAsc = true;
+        }
+    }
+
+    private void TextSearchChanged(string search)
+    {
+        Model.FilteredAttendance = Model.Attendances.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
     }
 }
