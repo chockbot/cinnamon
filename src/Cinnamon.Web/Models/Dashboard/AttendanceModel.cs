@@ -7,6 +7,7 @@ public class AttendanceModel
     public bool IsShowErrorMessage {get; set;}
     public string ErrorMessage {get; set;}
     public bool IsCheckAllStudent {get; set;}
+    public string Token {get; set;}
 
     public class Schedule 
     {
@@ -22,6 +23,8 @@ public class AttendanceModel
     public class StudentAttendance 
     {
         public int StudentId {get; set;}
+        public int ActivityId {get; set;}
+        public int ScheduleId {get; set;}
         public string Name {get; set;}
         public bool IsPresent {get; set;}
         public string ActivityName {get; set;}

@@ -89,6 +89,7 @@
                 navigationManager.NavigateTo("explore");
                 return;
             }
+            Model.Token = token;
             
             var schedules = await dashboardApiHandler.GetActivitySchedules(token);
             if(!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
@@ -109,16 +110,6 @@
                     ScheduleTitle = s.ScheduleTitle,
                 };
             }));
-
-            for(int i = 0; i < 10; i++)
-            {
-                Model.Attendances.Add(new AttendanceModel.StudentAttendance {
-                    Name = "Dexter Echalico",
-                    ActivityName = "This is sample Activity Base Guitar",
-                    IsPresent = false,
-                    StudentId = 0,
-                });
-            }
         }
         catch
         {
@@ -135,9 +126,33 @@
         }
     }
 
-    private void CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
+    private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
     {
         schedule.IsSelected = !schedule.IsSelected;
+        if(schedule.IsSelected)
+        {
+            var result = await dashboardApiHandler.GetCurrentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCurrentAttendanceArgs {
+                ActivityId = schedule.ActivityId,
+                ScheduleId = schedule.ScheduleId
+            }, Model.Token);
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                Model.Attendances.AddRange(result.Result.Result.Select(s => {
+                    return new AttendanceModel.StudentAttendance {
+                        ActivityName = schedule.ActivityTitle,
+                        IsPresent = s.IsPresent,
+                        Name = s.Name,
+                        StudentId = s.ScheduleId,
+                        ActivityId = schedule.ActivityId,
+                        ScheduleId = schedule.ScheduleId
+                    };
+                }));
+            }
+        }
+        else 
+        {
+            Model.Attendances.RemoveAll(s => s.ActivityId == schedule.ActivityId && s.ScheduleId == schedule.ScheduleId);
+        }
     }
 
     private void CheckUnCheckAllStudent()
