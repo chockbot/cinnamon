@@ -7,121 +7,88 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAccountApiHandler accountApiHandler;
 
-
-<input type='checkbox' id='toggle' />
-
-
-
-<div class="side-bar" id="side-bar">
-    
-    <div class="text-white min-vh-100">
-        <div class="side-bar-header" >
-            <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
-            <a href="Explore" class="d-flex align-items-center  text-white text-decoration-none">
-                <span class=" d-sm-inline app-name" id="angelo">Cinnamon</span>
-            </a>
-        </div>
-        <hr />
-        <hr />
-        @if (Model.IsAuthenticated)
-        {
-            if (Model.Profile != null && Model.Profile.IsMaker)
-            {
-                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-                    <li class="nav-item">
-                        <a href="Explore" class="nav-link align-middle item-link">
-                            <img class="icon-home" src="images/Dashboard Icon/Home.png"> <span class="ms-1 d-sm-inline nav-text">Home</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToDashboard">
-                            <img class="icon-home" src="images/Dashboard Icon/dashboard icon.png"> <span class="ms-1 d-sm-inline nav-text">Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAttendance">
-                            <img class="icon-home" src="images/Dashboard Icon/attendance icon.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" class="nav-link align-middle item-link" @onclick="NavigateToManage">
-                            <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link item-link">
-                            <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Reports</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAccount">
-                            <img class="icon-home" src="images/Dashboard Icon/account icon.png"> <span class="ms-1 d-sm-inline nav-text">Account</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link">
-                            <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link">
-                            <img class="icon-home" src="images/Dashboard Icon/premium icon.png"> <span class="ms-1 d-sm-inline nav-text">Premium</span>
-                        </a>
-                    </li>
-                </ul>
-            }
-        }
-        <hr />
-        <div class="contact">
-            <a href="mailto:support@cinnamon.ph data-bs-toggle="collapse" class="nav-link align-middle contact-box">
-                <img src="images/Dashboard Icon/phone.png" alt="hugenerd" width="30" class="rounded-circle">
-                <span class=" d-sm-inline mx-1">Contact Us</span>
-            </a>
-        </div>
-    </div>
-</div>
-
-
-
-
-
-<div class="page">
-    <main>
-        <article class="content">
-            <div class="container-fluid">
-                 <div class="row flex-nowrap">
-            <div class="col body-content">
-
-                    <div class="header-mobile">
-                        <label for='toggle' class='hamburger'><img src="images/Dashboard Icon/hamburger.png" class="toggle-icon"></label>
-                        <a href="Explore" class="d-flex align-items-center text-white text-decoration-none">
-                            <span class="d-sm-inline app-name-mobile">Cinnamon</span>
-                        </a>
-                    </div> 
-                 @Body
+<Layout Sider class="dashboard-layout">
+    <input type='checkbox' id='toggle' />
+    <LayoutSider>
+        <LayoutSiderContent>
+            <div class="sidebar-header">
+                <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
+                <a href="Explore" class="d-flex align-items-center  text-white text-decoration-none">
+                    <span class="app-name" id="angelo">Cinnamon</span>
+                </a>
             </div>
-        </div>
-    </div>
-        </article>
-    </main>
-</div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+            @if (Model.IsAuthenticated)
+            {
+                if (Model.Profile != null && Model.Profile.IsMaker)
+                {
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <a href="Explore" class="nav-link align-middle item-link">
+                                <img class="icon-home" src="images/Dashboard Icon/Home.png"> <span class="ms-1 d-sm-inline nav-text">Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToDashboard">
+                                <img class="icon-home" src="images/Dashboard Icon/dashboard icon.png"> <span class="ms-1 d-sm-inline nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAttendance">
+                                <img class="icon-home" src="images/Dashboard Icon/attendance icon.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link align-middle item-link" @onclick="NavigateToManage">
+                                <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link item-link">
+                                <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAccount">
+                                <img class="icon-home" src="images/Dashboard Icon/account icon.png"> <span class="ms-1 d-sm-inline nav-text">Account</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link">
+                                <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link">
+                                <img class="icon-home" src="images/Dashboard Icon/premium icon.png"> <span class="ms-1 d-sm-inline nav-text">Premium</span>
+                            </a>
+                        </li>
+                    </ul>
+                }
+            }
+            <div class="contact">
+                <a href="mailto:support@cinnamon.ph data-bs-toggle="collapse" class="nav-link align-middle contact-box">
+                    <img src="images/Dashboard Icon/phone.png" alt="hugenerd" width="30" class="rounded-circle">
+                    <span class=" d-sm-inline mx-1">Contact Us</span>
+                </a>
+            </div>
+        </LayoutSiderContent>
+    </LayoutSider>
+    <Layout>
+        <LayoutContent>
+            <Container Fluid>
+                <div class="header-mobile">
+                    <label for='toggle' class='hamburger'><img src="images/Dashboard Icon/hamburger.png" class="toggle-icon"></label>
+                    <a href="Explore" class="d-flex align-items-center text-white text-decoration-none">
+                        <span class="d-sm-inline app-name-mobile">Cinnamon</span>
+                    </a>
+                </div> 
+                <div class="render-body">
+                    @Body
+                </div>
+            </Container>
+        </LayoutContent>
+    </Layout>
+</Layout>
 
 @if (Model.IsAuthenticated && mouseEnter)
 {
