@@ -1,6 +1,9 @@
-﻿using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
+﻿using Cinnamon.Api.Core.Services.AccountService;
+using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,10 +17,13 @@ public class OnGoingActivitiesController : ControllerBase
 {
     private readonly IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler;
     private readonly IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler;
-    public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler)
+    private readonly IUpdateOngoingActivityHadler updateOngoingActivityHadler;
+    public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
+        IUpdateOngoingActivityHadler updateOngoingActivityHadler)
     {
         this.getAllOngoingActivitiesHandler = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler  = getOngoingActivityByIdHandler;
+        this.updateOngoingActivityHadler    = updateOngoingActivityHadler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -99,6 +105,48 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetOngoingActivityByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateOngoingActivity")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateOngoingActivityResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateFamilyMembers([FromBody] UpdateOngoingActivityArgs args)
+    {
+        try
+        {
+            var result = await updateOngoingActivityHadler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.UpdateOngoingActivityArgs
+            {
+                Id= args.Id,
+                Name= args.Name,
+                NumberOfSessions= args.NumberOfSessions,
+                Remarks= args.Remarks,
+                SessionsAttended= args.SessionsAttended,
+                Status= args.Status,
+                StudentNo= args.StudentNo
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new UpdateOngoingActivityResult
+            {
+                Result = new StudentDTO
+                {
+                   StudentNo= result.Result.StudentNo,
+                   Status= result.Result.Status,
+                   SessionsAttended = result.Result.SessionsAttended,
+                   Remarks = result.Result.Remarks,
+                   NumberOfSessions= result.Result.NumberOfSessions,
+                   Name= result.Result.Name,
+                   Id= result.Result.Id,
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

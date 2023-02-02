@@ -1,8 +1,10 @@
-﻿using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
+﻿using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using NuGet.Common;
 
 namespace Cinnamon.Web.Modules.ApiAccess.OngoingActivities;
 
@@ -15,13 +17,12 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
         flurlClient = flurlFac.Get(config.ApiUrl);
     }
 
-    public async Task<AppResult<GetAllOngoingActivitiesResult>> GetAllOngoingActivities(GetAllOngoingActivitiesResult? args = null)
+    public async Task<AppResult<GetAllOngoingActivitiesResult>> GetAllOngoingActivities()
     {
         try
         {
             var result = await flurlClient
                 .Request("OnGoingActivities/GetAllOnGoingActivities")
-                .SetQueryParams(args)
                 .GetJsonAsync<GetAllOngoingActivitiesResult>();
 
             return AppResult<GetAllOngoingActivitiesResult>.CreateSucceeded(result, "Successfully getting all ongoing activities api");
@@ -52,6 +53,27 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
         catch (Exception ex)
         {
             return AppResult<GetOngoingActivityByIdResult>.CreateFailed(ex, "An error occured when getting student activity by id api");
+        }
+    }
+    public async Task<AppResult<UpdateOngoingActivityResult>> UpdateActivity(UpdateOngoingActivityArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("OnGoingActivities/UpdateOngoingActivity")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateOngoingActivityResult>();
+
+            return AppResult<UpdateOngoingActivityResult>.CreateSucceeded(result, "Successfully posting update ongoing activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateOngoingActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateOngoingActivityResult>.CreateFailed(ex, "An error occured when posting update ongoing activity api");
         }
     }
 }
