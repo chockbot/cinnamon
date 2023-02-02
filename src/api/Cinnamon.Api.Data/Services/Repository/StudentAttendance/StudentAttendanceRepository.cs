@@ -4,6 +4,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.StudentAttendance;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.StudentAttendance;
 
@@ -157,7 +158,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         try
         {
             var studentAttendance = new Entities.StudentAttendance {
-                Date = date,
+                Date = DateOnly.FromDateTime(date.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()),
                 IsPresent = isPresent,
                 StudentId = studentId
             };
@@ -188,7 +189,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         {
             var newStudents = students.Select(s => {
                 return new Entities.StudentAttendance {
-                    Date = s.Date,
+                    Date = DateOnly.FromDateTime(s.Date.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()),
                     IsPresent = s.IsPresent,
                     StudentId = s.StudentId
                 };
@@ -226,10 +227,11 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
                 return AppResult<StudentAttendanceDTO>.CreateFailed(
                     new ApplicationException("Can't find student attendance need to update"), "Can't find student attendance need to update");
             }
-
+            
+            DateOnly? utcDate = date.HasValue ? DateOnly.FromDateTime(date.Value.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()) : null;
             var studentEntity = new Entities.StudentAttendance {
                 Id = studentAttendance.Result.Id,
-                Date = date ?? studentAttendance.Result.Date,
+                Date = utcDate ?? studentAttendance.Result.Date,
                 IsPresent = isPresent ?? studentAttendance.Result.IsPresent
             };
 
@@ -261,7 +263,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             var studentEntities = students.Select(s => {
                 return new Entities.StudentAttendance {
                     Id = s.Id,
-                    Date = s.Date,
+                    Date = DateOnly.FromDateTime(s.Date.ToDateTime(TimeOnly.FromTimeSpan(new TimeSpan())).SetKindUtc()),
                     IsPresent = s.IsPresent
                 };
             });
