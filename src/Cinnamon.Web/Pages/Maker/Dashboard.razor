@@ -11,40 +11,49 @@
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-@if(Model != null)
+
+
+
+<div class="header">
+    <p class="title">Experiences</p>
+    <button class="create-button">Create</button>
+</div>
+
+
+        @for (int i = 0; i < 3; i++)
 {
-    <section class="mt-5 maker-dashboard">
-        <div class="container">
-            <Row>
-                <Column>
-                    <h3 class="text-capitalize fw-bold">experiences</h3>
-                </Column>
-                <Column>
-                </Column>
-            </Row>
-            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-                <Items>
-                    <Tab Display="Display.Flex" Flex="Flex.AlignItems.Center" Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">
-                        active
-                        <Badge style="background-color: #ffa942;" TextColor="TextColor.White" Border="Border.RoundedCircle" Color="Color.Primary">@Model.ActiveActivityCount</Badge>
-                    </Tab>
-                    <Tab Name="attendance-monitoring" TextTransform="TextTransform.Capitalize">attendance monitoring</Tab>
-                    <Tab Name="chat-room" TextTransform="TextTransform.Capitalize">chat room</Tab>
-                </Items>
-                <Content>
-                    <TabPanel Name="active">
-                        <ExperienceList OnPublishChanged="ActiveCountChanged" Activities="Model.Activities" Token="@Model.Token" />
-                    </TabPanel>
-                    <TabPanel Name="attendance-monitoring">
-                        Content for attendance monitoring
-                    </TabPanel>
-                    <TabPanel Name="chat-room">
-                        Content for chat-room
-                    </TabPanel>
-                </Content>
-            </Tabs>
+   
+
+
+<div class="experience-container">
+    <div class="xp-content">
+        <img class="xp-image" src="images/Activities/Guitar2.jpg">
+    
+
+    <div class="xp-context">
+        <p class="xp-title">Bass Guitar Lesson for all!</p>
+        <p class="xp-description">We can work on technique, reading, rhythm, scales, patterns and various genres, but we will not learn something that does not interest you. If your goal is to play a certain song and you don't want to.</p>
+            <div class="xp-category">
+                <img src="images/activity-summary/location.png">
+                <span>Face to Face</span>
+            </div>
+    </div>
+
+    </div>
+
+    <hr>
+
+    <div class="xp-actions">
+        <div class="active">
+                <span class="active-button"><img src="images/checked-circle.png" /></span>
+            <span>Active</span>
         </div>
-    </section>
+
+        <button class="update-button">Update</button>
+    </div>
+
+</div>
+
 }
 
 @code
