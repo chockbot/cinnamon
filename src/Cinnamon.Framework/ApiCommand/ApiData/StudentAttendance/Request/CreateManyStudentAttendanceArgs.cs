@@ -12,7 +12,7 @@ public class CreateManyStudentAttendanceArgs
         [Required]
         public int StudentId {get; set;}
         [Required]
-        public DateOnly Date {get; set;}
+        public DateTime Date {get; set;}
         [Required]
         public bool IsPresent {get; set;}
     }

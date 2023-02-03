@@ -1,5 +1,6 @@
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,10 +13,12 @@ namespace Cinnamon.Api.Core.Controllers;
 public class DashboardController : ControllerBase 
 {
     private readonly IGetActivitySchedulesHandler getActivitySchedulesHandler;
+    private readonly IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler;
 
-    public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler)
+    public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
+        this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
     }
 
     [Route("GetActivitySchedules")]
@@ -50,6 +53,49 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetActivitySchedulesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetCurrentAttendance")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCurrentAttendanceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCurrentAttendance([FromQuery] GetCurrentAttendanceArgs args)
+    {
+        try
+        {
+            var result = await getCurrentDateAttendanceHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetCurrentDateAttendanceArgs {
+                ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCurrentAttendanceResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetCurrentAttendanceResult 
+                {
+                    IsSuccess = true,
+                    Result = result.Result.StudentAttendaces.Select(s => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceDTO {
+                            ActivityId = s.ActivityId,
+                            Date = s.AttendanceDate,
+                            Id = s.Id,
+                            IsPresent = s.IsPresent,
+                            Name = s.StudentName,
+                            NumberOfSessions = s.NumberOfSessions,
+                            Remarks = s.Remarks,
+                            ScheduleId = s.ScheduleId,
+                            SessionsAttended = s.SessionsAttended,
+                            Status = s.Status,
+                            StudentNo = s.StudentNo
+                        };
+                    })
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCurrentAttendanceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

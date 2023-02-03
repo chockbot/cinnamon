@@ -4,9 +4,18 @@ public class AttendanceModel
 {
     public List<Schedule> Schedules {get; set;} = new();
     public List<StudentAttendance> Attendances {get; set;} = new();
+    public List<StudentAttendance> FilteredAttendance {get; set;} = new();
     public bool IsShowErrorMessage {get; set;}
     public string ErrorMessage {get; set;}
     public bool IsCheckAllStudent {get; set;}
+    public string Token {get; set;}
+
+    // sorting fields
+    public bool? IsSortNameAsc {get; set;}
+    public bool? IsSortExperienceAsc {get; set;}
+    public bool? IsSortPresentAsc {get; set;}
+
+    public string Search {get; set;}
 
     public class Schedule 
     {
@@ -22,6 +31,8 @@ public class AttendanceModel
     public class StudentAttendance 
     {
         public int StudentId {get; set;}
+        public int ActivityId {get; set;}
+        public int ScheduleId {get; set;}
         public string Name {get; set;}
         public bool IsPresent {get; set;}
         public string ActivityName {get; set;}
