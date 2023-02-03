@@ -1,31 +1,86 @@
 ﻿@layout DashboardLayout
-@page "/maker/dashboard/managestudentsattendance"
+@page "/maker/dashboard/managestudents/{Id:int}"
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
 
+<div class="header">
+    <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
+    <p class="title">Manage Students - Attendance</p>
+</div>
 
+<div class="student-details-container">
+    <div class="student-details">
+          <p class="">Name : <span>@student.Name</span></p>
+          <p class="">Parent : <span>@profile.FirstName @profile.LastName</span></p>
+          <p class="">Present Days : <span class="days-present">08</span></p>
+    </div>
+</div>
 
+<div class="instruction">
+    <span class="instruction-image"><img src="images/circle.png"></span>
+    <p class="word">represents attended sessions. Tap the desired date to change.</p>
+</div>
 
+@* CALENDAR *@
+<div class="wrap-content calendar">
+    <div class="calendar-header">
+       
+        <h1 class="calendar-header-details">@monthName @year</h1>
+            <div class="calendar-arrow">
+                <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }"><img src="images/calender icon left.png"></button>
+                <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }"><img src="images/calender icon right.png"></button>
+            </div>
+    </div>
+    <hr />
+    <hr />
+    <hr />
+</div>
+<section>
+    @foreach (var days in CalendarDays)
+    {
+        <div class="calendar-days">
+            <p>@days</p>
+        </div>
+    }
+    @for (int i = 0; i < numDummyColumn; i++)
+    {
+        <div></div>
+    }
+    @for (int i = 1; i <= monthEnd.Day; i++)
+    {
+        @*var calendarItem =
+        items.FirstOrDefault(n => n.Date == new DateTime(year, month, i));*@
 
-@code{
-
-
-
-    string monthName = "";
-    DateTime monthEnd;
-    int monthsAway = 0;
-    int numDummyColumn = 0;
-    int year = 2023;
-    int month = 0;
-
+        <div class="calendar-body">
+            <p class="calendar-dates">@i</p>
+           @* @if (calendarItem != null)
+            {
+                <p>@calendarItem.Name</p>
+            }*@
+        </div>
+    }
+</section>
+@code {
+    private Models.Customer.Profile Model;
+    private Students student = new Students();
+    private CustomerProfile profile = new CustomerProfile();
+    [Parameter]
+    public int Id { get; set; }
+    public string monthName = "";
+    public DateTime monthEnd;
+    public int monthsAway = 0;
+    public int numDummyColumn = 0;
+    public int year = 2023;
+    public int month = 0;
     @functions {
-        string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU","FRI","SAT" };
+        string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
     //List<CalendarItem> items = new List<CalendarItem>();
     //protected override void OnInitialized()
@@ -37,16 +92,36 @@
     //    CreateMonth();
     //}
 
-    protected override void OnInitialized()
-	{
-		//items.Add(new CalendarItem(new DateTime(2020, 11, 11), "Test day 1"));
-		//items.Add(new CalendarItem(new DateTime(2020, 11, 30), "Test day 2"));
-		//items.Add(new CalendarItem(new DateTime(2020, 12, 25), "Christmas"));
-		//items.Add(new CalendarItem(new DateTime(2021, 1, 1), "New Years"));
-		CreateMonth();
-	}
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await ongoingApiHandler.GetOngoingActivityById(Id);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            student = new Students
+            {
+                CustomerId = result.Result.Result.CustomerId,
+                Name = result.Result.Result.Name
+                
+            };
+        }
+        var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
+        if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+        {
+            profile = new CustomerProfile
+            {
+                FirstName = customer.Result.Result.FirstName,
+                LastName  = customer.Result.Result.LastName
+            };
+        }        
+        //var fam= await accountApiHandler.GetFamilyMembers
 
-    void CreateMonth()
+        //items.Add(new CalendarItem(new DateTime(2020, 11, 11), "Test day 1"));
+        //items.Add(new CalendarItem(new DateTime(2020, 11, 30), "Test day 2"));
+        //items.Add(new CalendarItem(new DateTime(2020, 12, 25), "Christmas"));
+        //items.Add(new CalendarItem(new DateTime(2021, 1, 1), "New Years"));
+        await CreateMonth();
+    }
+    public async Task CreateMonth()
     {
         var tempDate = DateTime.Now.AddMonths(monthsAway);
         month = tempDate.Month;
@@ -70,140 +145,10 @@
             12 => "December",
             _ => ""
         };
-
-
         numDummyColumn = (int)monthStart.DayOfWeek;
     }
-
-
-
-
-}
-
-   <div class="header">
-        <button class="back-button"><img src="images/calender icon left.png"></button>
-        <p class="title">Manage Students - Attendance</p>
-    </div>
-
-    <div class="student-details-container">
-        <div class="student-details">
-              <p class="">Name : <span>Steven Kim Lawrence Petransanta</span></p>
-              <p class="">Parent : <span>Juan Dela Cruz</span></p>
-              <p class="">Present Days : <span class="days-present">08</span></p>
-        </div>
-    </div>
-
-    <div class="instruction">
-        <span class="instruction-image"><img src="images/circle.png"></span>
-        <p class="word">represents attended sessions. Tap the desired date to change.</p>
-    </div>
-
-
-
-
-
-
-
-
-
-
-@* CALENDAR *@
-<div class="wrap-content calendar">
-
-
-    <div class="calendar-header">
-       
-        <h1 class="calendar-header-details">@monthName @year</h1>
-            <div class="calendar-arrow">
-                <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }"><img src="images/calender icon left.png"></button>
-                <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }"><img src="images/calender icon right.png"></button>
-            </div>
-    </div>
-
-
-    
-    <hr />
-    <hr />
-    <hr />
-
-    <section>
-
-        @foreach (var days in CalendarDays)
-        {
-            <div class="calendar-days">
-                <p>@days</p>
-            </div>
-        }
-
-
-        @for (int i = 0; i < numDummyColumn; i++)
-        {
-            <div></div>
-        }
-        @for (int i = 1; i <= monthEnd.Day; i++)
-        {
-            @*var calendarItem =
-            items.FirstOrDefault(n => n.Date == new DateTime(year, month, i));*@
-
-            <div class="calendar-body">
-                <p class="calendar-dates">@i</p>
-               @* @if (calendarItem != null)
-                {
-                    <p>@calendarItem.Name</p>
-                }*@
-            </div>
-        }
-    </section>
-
-</div>
-
-
-
-@code {
-    private Models.Customer.Profile Model;
-    protected override async Task OnInitializedAsync()
+    private void NavigateToManageStudent()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var token = user.FindFirstValue("Token");
-        if (token == null)
-        {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-
-        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-        {
-            // an error occured
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        var customer = result.Result.Result;
-
-        // check if customer is maker
-        if (!customer.IsMaker)
-        {
-            // account is not maker redirect to explore page
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        Model = new Models.Customer.Profile
-            {
-                Token = token,
-                CustomerProfile = new Models.Entities.CustomerProfile
-                {
-                    About = customer.About,
-                    Birthdate = customer.Birthdate,
-                    Email = customer.Email,
-                    FirstName = customer.FirstName,
-                    LastName = customer.LastName,
-                    Id = customer.Id,
-                    IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
-                    ProfilePath = customer.ProfileImg,
-                },
-            };
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
 }

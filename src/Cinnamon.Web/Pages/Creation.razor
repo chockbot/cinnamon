@@ -14,7 +14,7 @@
 {
     <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
         <ol class='breadcrumb @(currentIndex == 0 ? "active" : "")'>
-            <li class="step breadcrumb-item">
+            <li class='step breadcrumb-item" @(currentIndex == 0 ? "active" : "") ' aria-current="page">
                 <a class="button" @onclick="() => currentIndex = 0">
                     <span class='icon-step @(currentIndex == 0 ? "active" : "")'>1</span>
                     <span class="step-yellow">Overview</span>

@@ -820,8 +820,8 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("date");
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("IsPresent")
                         .HasColumnType("boolean");

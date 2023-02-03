@@ -12,7 +12,7 @@ public class UpdateManyStudentAttendanceArgs
         [Required]
         public int AttendanceId {get; set;}
         [Required]
-        public DateOnly Date {get; set;}
+        public DateTime Date {get; set;}
         [Required]
         public bool IsPresent {get; set;}
     }

@@ -34,6 +34,7 @@ public class GetOwnedActivitiesResult
 
         public class ActivitySchedule 
         {
+            public int Id {get; set;}
             public string Name {get; set;}
             public string DateTime {get; set;}
             public decimal Price {get; set;}

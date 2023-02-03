@@ -1,0 +1,233 @@
+@layout DashboardLayout
+@page "/maker/dashboard/attendance"
+@using System.Security.Claims
+@using Cinnamon.Web.Models.Dashboard;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IJSRuntime jsRuntime;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager navigationManager;
+@inject IDashboardApiHandler dashboardApiHandler;
+@attribute [Authorize]
+
+<section class="student-attendance mt-5 overflow-hidden">
+    <h3 class="title">Check Attendance for Today</h3>
+    <div class="activities-schedule-section schedule-swiper">
+        <div class="swiper-wrapper">
+            @foreach (var schedule in Model.Schedules)
+            {
+                <div class="swiper-slide shadow">
+                    <p class="schedule-title">@schedule.ScheduleTitle</p>
+                    <p class="schedule-time">@schedule.ScheduleDescription</p>
+                    <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
+                        <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                        Select
+                    </Button>
+                </div>
+            }
+        </div>
+        <div class="swiper-scrollbar"></div>
+    </div>
+    <div class="student-attendance-section">
+        <div class="tool-action">
+            <Button class="check-button" Type="ButtonType.Button" Clicked="CheckUnCheckAllStudent">
+                <img class="me-1" src='@(Model.IsCheckAllStudent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                Select All
+            </Button>
+            <TextEdit TextChanged="TextSearchChanged" class="search-text" Size="Size.Small" Placeholder="Search" Role="TextRole.Text" />
+        </div>
+        <div class="table-list">
+            <Table Shadow="Shadow.Default">
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByName">
+                                Name
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByActivity">
+                                Experience
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell></TableHeaderCell>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByPresent">
+                                Present
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var item in Model.FilteredAttendance)
+                    {
+                        <TableRow>
+                            <TableRowCell>@item.Name</TableRowCell>
+                            <TableRowCell>@item.ActivityName</TableRowCell>
+                            <TableRowCell>
+                                ProgressBar
+                            </TableRowCell>
+                            <TableRowCell>
+                                <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAttendance(item)">
+                                    <img class="me-1" src='@(item.IsPresent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                    Present
+                                </Button>
+                            </TableRowCell>
+                        </TableRow>    
+                    }
+                </TableBody>
+            </Table>
+        </div>
+    </div>
+</section>
+
+<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="Model.IsShowErrorMessage" >
+    <AlertMessage>
+        @Model.ErrorMessage
+    </AlertMessage>
+</Alert>
+
+@code
+{
+    private AttendanceModel Model {get; set;} = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+            var token = user.FindFirstValue("Token");
+            if(token == null)
+            {
+                // don't have current user login
+                navigationManager.NavigateTo("explore");
+                return;
+            }
+            Model.Token = token;
+            
+            var schedules = await dashboardApiHandler.GetActivitySchedules(token);
+            if(!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
+            {
+                Model.IsShowErrorMessage = true;
+                Model.ErrorMessage = "An error occured. Can't find activity schedules. Please try again later.";
+                return;
+            }
+
+            Model.Schedules.AddRange(schedules.Result.Result.Select(s => {
+                return new AttendanceModel.Schedule {
+                    ActivityDescription = s.Description,
+                    ActivityTitle = s.Title,
+                    ActivityId = s.ActivityId,
+                    IsSelected = false,
+                    ScheduleDescription = s.ScheduleDescription,
+                    ScheduleId = s.ScheduleId,
+                    ScheduleTitle = s.ScheduleTitle,
+                };
+            }));
+        }
+        catch
+        {
+            Model.IsShowErrorMessage = true;
+            Model.ErrorMessage = "An error occured. Please try again later.";
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper",".swiper-scrollbar");
+        }
+    }
+
+    private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
+    {
+        schedule.IsSelected = !schedule.IsSelected;
+        if(schedule.IsSelected)
+        {
+            var result = await dashboardApiHandler.GetCurrentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCurrentAttendanceArgs {
+                ActivityId = schedule.ActivityId,
+                ScheduleId = schedule.ScheduleId
+            }, Model.Token);
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                Model.Attendances.AddRange(result.Result.Result.Select(s => {
+                    return new AttendanceModel.StudentAttendance {
+                        ActivityName = schedule.ActivityTitle,
+                        IsPresent = s.IsPresent,
+                        Name = s.Name,
+                        StudentId = s.ScheduleId,
+                        ActivityId = schedule.ActivityId,
+                        ScheduleId = schedule.ScheduleId
+                    };
+                }));
+            }
+        }
+        else 
+        {
+            Model.Attendances.RemoveAll(s => s.ActivityId == schedule.ActivityId && s.ScheduleId == schedule.ScheduleId);
+        }
+        Model.FilteredAttendance = Model.Attendances;
+    }
+
+    private void CheckUnCheckAllStudent()
+    {
+        Model.IsCheckAllStudent = !Model.IsCheckAllStudent;
+        Model.FilteredAttendance.ForEach(std => std.IsPresent = Model.IsCheckAllStudent);
+    }
+
+    private void CheckUnCheckAttendance(AttendanceModel.StudentAttendance studentAttendance)
+    {
+        studentAttendance.IsPresent = !studentAttendance.IsPresent;
+    }
+
+    private void SortByName()
+    {
+        if(!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.Name).ToList();
+            Model.IsSortNameAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.Name).ToList();
+            Model.IsSortNameAsc = true;
+        }
+    }
+
+    private void SortByActivity()
+    {
+        if(!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.ActivityName).ToList();
+            Model.IsSortExperienceAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.ActivityName).ToList();
+            Model.IsSortExperienceAsc = true;
+        }
+    }
+
+    private void SortByPresent()
+    {
+        if(!Model.IsSortPresentAsc.HasValue || Model.IsSortPresentAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.IsPresent).ToList();
+            Model.IsSortPresentAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.IsPresent).ToList();
+            Model.IsSortPresentAsc = true;
+        }
+    }
+
+    private void TextSearchChanged(string search)
+    {
+        Model.FilteredAttendance = Model.Attendances.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+    }
+}

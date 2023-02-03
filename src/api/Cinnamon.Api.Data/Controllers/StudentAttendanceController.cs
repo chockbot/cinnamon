@@ -46,17 +46,17 @@ public class StudentAttendanceController : ControllerBase
     {
         try
         {
-            DateOnly? date = null;
+            DateTime? date = null;
             if(!string.IsNullOrEmpty(args.Date))
             {
-                date = DateOnly.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
+                date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
             }
 
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) || 
-                    args.IsIncludeStudent.HasValue ?
+                    args.IsIncludeStudent.HasValue || args.ActivityId.HasValue || args.ScheduleId.HasValue ?
                 await studentAttendanceRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
-                    date, args.IsIncludeStudent) :
+                    date, args.IsIncludeStudent, args.ActivityId, args.ScheduleId) :
                 await studentAttendanceRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -66,7 +66,7 @@ public class StudentAttendanceController : ControllerBase
 
             // get all without pagination to get all rows
             var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) || 
-                    args.IsIncludeStudent.HasValue ?
+                    args.IsIncludeStudent.HasValue || args.ActivityId.HasValue || args.ScheduleId.HasValue ?
                 await studentAttendanceRepository.GetAllAsync(null,null) :
                 await studentAttendanceRepository.GetAllAsync();
 

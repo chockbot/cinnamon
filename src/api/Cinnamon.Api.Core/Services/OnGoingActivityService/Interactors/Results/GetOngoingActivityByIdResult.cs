@@ -1,0 +1,14 @@
+﻿namespace Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors.Results;
+public class GetOngoingActivityByIdResult
+{
+    public int Id { get; set; }
+    public int CustomerId { get; set; }
+    public int ActivityId { get; set; }
+    public int ScheduleId { get; set; }
+    public string Name { get; set; }
+    public string StudentNo { get; set; }
+    public int NumberOfSessions { get; set; }
+    public int SessionsAttended { get; set; }
+    public string Remarks { get; set; }
+    public string Status { get; set; }
+}

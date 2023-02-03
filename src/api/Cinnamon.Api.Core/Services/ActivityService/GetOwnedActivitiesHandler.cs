@@ -90,6 +90,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         Title = a.Title,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
+                                Id = s.Id,
                                 DateTime = s.DateTime,
                                 Name = s.Name,
                                 PerUnit1 = s.PerUnit1,
