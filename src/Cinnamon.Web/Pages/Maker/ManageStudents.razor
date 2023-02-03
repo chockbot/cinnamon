@@ -37,6 +37,9 @@
             Responsive 
             CustomFilter="@OnCustomFilter" 
             Editable="true"
+            UseInternalEditing="true"
+            EditMode="DataGridEditMode.Inline"
+            RowUpdated="OnRowUpdated"
             class="datagrid-data">
             <DataGridColumns>
                 <DataGridColumn Field="@nameof(ManageStudentsData.Name)" Caption="Name" Sortable="false"/>
@@ -53,7 +56,7 @@
                        @context.Remarks
                     </DisplayTemplate>
                 <EditTemplate>
-                         <TextEdit TValue="string"
+                         <MemoEdit TValue="string"
                           Text="@((string)context.CellValue)"
                           TextChanged="@( v => {context.CellValue = v;context.UpdateCell( nameof( ManageStudentsData.Remarks ), v);})" />
                 </EditTemplate>
@@ -70,15 +73,26 @@
                 </DataGridColumn>
                 <DataGridColumn Caption="Attendance">
                     <DisplayTemplate>
-                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@Update">View Attendance</Button>
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@Update" class="btn-update">View Attendance</Button>
                     </DisplayTemplate>
                 </DataGridColumn>
                 <DataGridCommandColumn TItem="ManageStudentsData" Caption="Edit Details">
                     <EditCommandTemplate>
-                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@context.Clicked">
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@context.Clicked" class="btn-edit">
                             Edit <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
                         </Button>
                     </EditCommandTemplate>
+                    <SaveCommandTemplate>
+                        <Button Color="Color.Success" Border="Border.Is0" Clicked="@context.Clicked" class="btn-save">
+                            Save
+                        </Button>
+                    </SaveCommandTemplate>
+                    <CancelCommandTemplate>
+                        &nbsp;
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="@context.Clicked"class="btn-cancel">
+                            Cancel
+                        </Button>
+                    </CancelCommandTemplate>
                     <NewCommandTemplate>
                     </NewCommandTemplate>
                     <DeleteCommandTemplate>
@@ -87,7 +101,20 @@
             </DataGridColumns> 
         </DataGrid>
 </section>
-
+@if(showErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+      <strong>Error!</strong> @errorMessage
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (showSuccessMessage)
+{
+    <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+        <strong>Success!</strong> Student details updated!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 @code {
 
     private Models.Customer.Profile Model;
@@ -106,15 +133,13 @@
 
     private string selectedFilter;
 
-    private string studentRemark = "Enter remarks here...";
-
-    private float studentNo = 0;
-
-    private bool isEditStudentNo = false;
-
-    private bool isEditRemarks = false;
-
     public TextEdit textEdit;
+
+    private bool showErrorMessage = false;
+
+    public bool showSuccessMessage = false;
+
+    private string errorMessage = string.Empty;
 
     private DataGrid<ManageStudentsData> dataGrid;
 
@@ -211,7 +236,8 @@
                              NumberOfSessions = item.NumberOfSessions,
                              SessionsAttended = item.SessionsAttended,
                              Remarks = item.Remarks,
-                             StudentNo = item.StudentNo
+                             StudentNo = item.StudentNo,
+                             Status = item.Status
                          };
         //List DataGrid Content
         manageStudents = query.ToList();
@@ -243,6 +269,33 @@
     public void Update()
     {
         NavigationManager.NavigateTo("/maker/dashboard/managestudents/"+selectedStudents.Id);
+    }
+    public async Task OnRowUpdated(SavedRowItem<ManageStudentsData, Dictionary<string,object>> e)
+    {
+        var ongoingExperience= e.Item;
+        var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+            {
+                Id               = ongoingExperience.Id,
+                Name             = ongoingExperience.Name,
+                Remarks          = ongoingExperience.Remarks,
+                StudentNo        = ongoingExperience.StudentNo,
+                Status           = ongoingExperience.Status,
+                NumberOfSessions = ongoingExperience.NumberOfSessions,
+                SessionsAttended = ongoingExperience.SessionsAttended
+            });
+        if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
+        {
+            errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
+            showErrorMessage = true;
+            StateHasChanged();
+            return;
+        }
+        else
+        {
+            showSuccessMessage = true;
+            StateHasChanged();
+            return;
+        }
     }
 }
 

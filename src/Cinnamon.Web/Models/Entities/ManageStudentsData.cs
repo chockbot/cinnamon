@@ -11,4 +11,5 @@ public class ManageStudentsData
     public string Remarks { get; set; }
     public int NumberOfSessions { get; set;}
     public int SessionsAttended { get; set; }
+    public string Status { get; set; }
 }

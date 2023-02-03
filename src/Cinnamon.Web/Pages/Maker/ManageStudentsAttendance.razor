@@ -11,8 +11,8 @@
 @inject IOngoingActivitiesHandler ongoingApiHandler
 
 <div class="header">
-        <button class="back-button"><img src="images/calender icon left.png"></button>
-        <p class="title">Manage Students - Attendance</p>
+    <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
+    <p class="title">Manage Students - Attendance</p>
 </div>
 
 <div class="student-details-container">
@@ -146,5 +146,9 @@
             _ => ""
         };
         numDummyColumn = (int)monthStart.DayOfWeek;
+    }
+    private void NavigateToManageStudent()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
 }
