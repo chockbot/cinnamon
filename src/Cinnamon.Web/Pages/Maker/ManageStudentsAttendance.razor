@@ -20,6 +20,28 @@
           <p class="">Name : <span>@student.Name</span></p>
           <p class="">Parent : <span>@profile.FirstName @profile.LastName</span></p>
           <p class="">Present Days : <span class="days-present">08</span></p>
+          <Div Margin="Margin.Is2.FromTop.OnMobile.FromTop.OnDesktop">
+                <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
+                    <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
+                    <p class="" style="color:#FFA942">Remarks</p>
+                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3" @onclick="OnEditRemarksClick">
+                            <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" style="color:white"/>
+                    </Button>
+                    </Div>
+                    @if (isEditRemarks)
+                    {
+                        <Button Border="Border.Is0" TextColor="TextColor.White" Color="Color.Primary" class="btn-save" @onclick="SaveAboutClick">Save</Button>
+                    }
+                </Div>
+                    @if (!isEditRemarks)
+                    {
+                        <p class="text-remarks">@student.Remarks</p>
+                    }
+                    else
+                    {
+                        <MemoEdit Border="Border.Rounded" @bind-Text="remarksLocalState" Rows="5" class="memo-edit"/>
+                    }
+          </Div>
     </div>
 </div>
 
@@ -41,36 +63,38 @@
     <hr />
     <hr />
     <hr />
+    <section>
+        @foreach (var days in CalendarDays)
+        {
+            <div class="calendar-days">
+                <p>@days</p>
+            </div>
+        }
+        @for (int i = 0; i < numDummyColumn; i++)
+        {
+            <div></div>
+        }
+        @for (int i = 1; i <= monthEnd.Day; i++)
+        {
+            @*var calendarItem =
+            items.FirstOrDefault(n => n.Date == new DateTime(year, month, i));*@
+    
+            <div class="calendar-body">
+                <p class="calendar-dates">@i</p>
+               @* @if (calendarItem != null)
+                {
+                    <p>@calendarItem.Name</p>
+                }*@
+            </div>
+        }
+    </section>
 </div>
-<section>
-    @foreach (var days in CalendarDays)
-    {
-        <div class="calendar-days">
-            <p>@days</p>
-        </div>
-    }
-    @for (int i = 0; i < numDummyColumn; i++)
-    {
-        <div></div>
-    }
-    @for (int i = 1; i <= monthEnd.Day; i++)
-    {
-        @*var calendarItem =
-        items.FirstOrDefault(n => n.Date == new DateTime(year, month, i));*@
-
-        <div class="calendar-body">
-            <p class="calendar-dates">@i</p>
-           @* @if (calendarItem != null)
-            {
-                <p>@calendarItem.Name</p>
-            }*@
-        </div>
-    }
-</section>
 @code {
     private Models.Customer.Profile Model;
     private Students student = new Students();
     private CustomerProfile profile = new CustomerProfile();
+    private bool isEditRemarks = false;
+    private string remarksLocalState = string.Empty;
     [Parameter]
     public int Id { get; set; }
     public string monthName = "";
@@ -100,8 +124,8 @@
             student = new Students
             {
                 CustomerId = result.Result.Result.CustomerId,
-                Name = result.Result.Result.Name
-                
+                Name = result.Result.Result.Name,
+                Remarks = result.Result.Result.Remarks
             };
         }
         var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
@@ -150,5 +174,34 @@
     private void NavigateToManageStudent()
     {
         NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+    }
+    private void OnEditRemarksClick()
+    {
+        isEditRemarks = !isEditRemarks;
+        if (isEditRemarks)
+        {
+            remarksLocalState = student.Remarks;
+        }
+        else 
+        {
+            remarksLocalState = string.Empty;
+        }
+    }
+    private async Task SaveAboutClick()
+    {
+        if (isEditRemarks)
+        {
+            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+            {
+                Id = Id,
+                Remarks = remarksLocalState,
+            });
+
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
+            }
+        }
+        isEditRemarks = false;
     }
 }
