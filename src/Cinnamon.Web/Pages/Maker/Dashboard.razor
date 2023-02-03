@@ -16,42 +16,37 @@
 
 <div class="header">
     <p class="title">Experiences</p>
-    <button class="create-button">Create</button>
+    <button class="create-button" @onclick="NavigateToCreation">Create</button>
 </div>
-
-
-        @for (int i = 0; i < 3; i++)
+@foreach (var item in activities)
 {
-   
-
-
 <div class="experience-container">
     <div class="xp-content">
-        <img class="xp-image" src="images/Activities/Guitar2.jpg">
-    
-
+            <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
     <div class="xp-context">
-        <p class="xp-title">Bass Guitar Lesson for all!</p>
-        <p class="xp-description">We can work on technique, reading, rhythm, scales, patterns and various genres, but we will not learn something that does not interest you. If your goal is to play a certain song and you don't want to.</p>
+        <p class="xp-title">@item.Title</p>
+        <p class="xp-description">@item.Description</p>
             <div class="xp-category">
                 <img src="images/activity-summary/location.png">
-                <span>Face to Face</span>
+                    @if (item.ExperienceTypeId==1)
+                    {
+                        <span>Online</span>
+                    }
+                    else
+                    {
+                        <span>Face to Face</span>
+                    }
             </div>
     </div>
-
     </div>
-
     <hr>
-
     <div class="xp-actions">
         <div class="active">
                 <span class="active-button"><img src="images/checked-circle.png" /></span>
             <span>Active</span>
         </div>
-
-        <button class="update-button">Update</button>
+        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
     </div>
-
 </div>
 
 }
@@ -59,6 +54,8 @@
 @code
 {
     private DashboardModel Model;
+
+    public List<Activity> activities = new List<Activity>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -89,8 +86,12 @@
             return;
         }
 
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {}, token);
-        var activities = new List<Activity>();
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+
+        {
+            IncludeActivityImages = true,
+            IsActive = true
+        }, token);
 
         if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
         {
@@ -99,28 +100,29 @@
                 return new Activity {
                     ActivityId = a.ActivityId,
                     IsPublished = a.IsPublished,
-                    Title = a.Title
+                    Title = a.Title,
+                    Description = a.Description,
+                    ExperienceTypeId = a.ExperienceTypeId,
+                    Images = a.Images.Select(i=>
+                    {
+                        return new ActivityImage
+                        {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList(),
                 };
             }).ToList();
         }
-
         Model = new DashboardModel {
             Activities = activities,
             ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
             Token = token
         };
     }
-
-    private void ActiveCountChanged(int count)
+    private void NavigateToCreation()
     {
-        Model.ActiveActivityCount-= count;
-    }
-
-    string selectedTab = "active";
-
-    private Task OnSelectedTabChanged(string name)
-    {
-        selectedTab = name;
-        return Task.CompletedTask;
+        NavigationManager.NavigateTo("creation");
     }
 }
