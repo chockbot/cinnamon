@@ -13,4 +13,5 @@ public interface IStudentAttendanceRepository
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> Create(IEnumerable<CreateManyAttendanceDTO> students);
     Task<AppResult<StudentAttendanceDTO>> Update(int id, bool? isPresent, DateTime? date);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> Update(IEnumerable<UpdateManyStudentDTO> students);
+    Task<AppResult<IEnumerable<StudentAttendanceDTO>>> UpdateAttendance(IEnumerable<UpdateAttendanceDTO> students, DateTime date);
 }

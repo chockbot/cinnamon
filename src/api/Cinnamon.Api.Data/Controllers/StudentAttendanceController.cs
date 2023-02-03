@@ -195,4 +195,31 @@ public class StudentAttendanceController : ControllerBase
             return new JsonResult(new UpdateManyStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("UpdateAttendance")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateAttendanceResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateAttendance([FromBody] UpdateAttendanceArgs args)
+    {
+        try
+        {
+            var result = await studentAttendanceRepository.UpdateAttendance(args.StudentAttendaces.Select(s => {
+                return new Framework.ApiCommand.ApiData.DTO.StudentAttendance.UpdateAttendanceDTO {
+                    StudentId = s.StudentId,
+                    IsPresent = s.IsPresent
+                };
+            }), args.Date);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateAttendanceResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

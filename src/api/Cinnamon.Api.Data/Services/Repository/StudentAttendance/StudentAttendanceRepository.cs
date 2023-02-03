@@ -288,4 +288,54 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when updating many student attendance");
         }
     }
+
+    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> UpdateAttendance(IEnumerable<UpdateAttendanceDTO> students, DateTime date)
+    {
+        try
+        {
+            date = date.Date.SetKindUtc();
+            var studentEntities = students.Select(s => {
+                return new Entities.StudentAttendance {
+                    Date = date,
+                    IsPresent = s.IsPresent,
+                    StudentId = s.StudentId
+                };
+            });
+
+            var result = await dataStore.StudentAttendance.UpdateStudentAttendance(date, studentEntities);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(
+                    new ApplicationException("An error occured when updating student attendance"), "An error occured when updating student attendance");
+            }
+
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(result.Result.Select(s => {
+                Framework.ApiCommand.ApiData.DTO.Student.StudentDTO student = new();
+                if(s.Student != null)
+                {
+                    student.ActivityId = s.Student.ActivityId;
+                    student.CustomerId = s.Student.CustomerId;
+                    student.Id = s.Student.Id;
+                    student.Name = s.Student.Name;
+                    student.NumberOfSessions = s.Student.NumberOfSessions;
+                    student.Remarks = s.Student.Remarks;
+                    student.ScheduleId = s.Student.ScheduleId;
+                    student.SessionsAttended = s.Student.SessionsAttended;
+                    student.Status = s.Student.Status;
+                    student.StudentNo = s.Student.StudentNo;
+                }
+                return new StudentAttendanceDTO {
+                    Date = s.Date,
+                    Id = s.Id,
+                    IsPresent = s.IsPresent,
+                    StudentId = s.StudentId,
+                    Student = student
+                };
+            }), "Successfully update student attendances");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when updating many student attendance");
+        }
+    }
 }
