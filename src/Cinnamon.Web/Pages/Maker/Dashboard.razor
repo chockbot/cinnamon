@@ -11,9 +11,6 @@
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-
-
-
 <div class="header">
     <p class="title">Experiences</p>
     <button class="create-button" @onclick="NavigateToCreation">Create</button>
@@ -42,8 +39,10 @@
     <hr>
     <div class="xp-actions">
         <div class="active">
-                <span class="active-button"><img src="images/checked-circle.png" /></span>
-            <span>Active</span>
+            <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAllStudent(item)">
+                <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                Active
+            </Button>
         </div>
         <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
     </div>
@@ -53,9 +52,11 @@
 
 @code
 {
-    private DashboardModel Model;
+    private DashboardModel Model {get; set;} = new();
 
     public List<Activity> activities = new List<Activity>();
+
+    public Activity activity = new Activity();
 
     protected override async Task OnInitializedAsync()
     {
@@ -87,10 +88,8 @@
         }
 
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-
         {
             IncludeActivityImages = true,
-            IsActive = true
         }, token);
 
         if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
@@ -124,5 +123,14 @@
     private void NavigateToCreation()
     {
         NavigationManager.NavigateTo("creation");
+    }
+    private void CheckUnCheckAllStudent(Activity activity)
+    {
+        activity.IsPublished = !activity.IsPublished;
+        var res =  activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
+            {
+                IsPublished = activity.IsPublished,
+                ActivityId = activity.ActivityId
+            }, Model.Token);
     }
 }
