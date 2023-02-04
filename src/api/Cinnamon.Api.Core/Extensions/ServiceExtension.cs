@@ -83,6 +83,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetStudentAttendanceHandler, Services.DashboardService.GetStudentAttendanceHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetCurrentDateAttendanceHandler, Services.DashboardService.GetCurrentDateAttendanceHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IUpdateStudentAttendanceHandler, Services.DashboardService.UpdateStudentAttendanceHandler>();
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();

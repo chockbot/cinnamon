@@ -68,7 +68,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
     }
     
     public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync(int? count, int? skip, 
-        DateTime? date = null, bool? includeStudent = false, int? activityId = null, int? scheduleId = null)
+        DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null)
     {
         try
         {
@@ -80,8 +80,8 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
 
             Expression<Func<Entities.StudentAttendance,bool>> filter = 
                 a => (date.HasValue ? a.Date == date.Value.Date.SetKindUtc() : true) &&
-                    (activityId.HasValue ? a.Student.ActivityId == activityId.Value : true) &&
-                    (scheduleId.HasValue ? a.Student.ScheduleId == scheduleId.Value : true);
+                    (activityIds != null ? activityIds.Contains(a.Student.ActivityId) : true) &&
+                    (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true);
 
             var result = await dataStore.StudentAttendance.FindAsync(filter, count, skip, includes);
             if(!result.Succeeded || result.Result == null)
