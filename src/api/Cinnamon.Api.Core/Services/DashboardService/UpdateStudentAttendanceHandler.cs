@@ -98,7 +98,7 @@ public class UpdateStudentAttendanceHandler : IUpdateStudentAttendanceHandler
             var ownedAtivitiesResult = await getOwnedActivitiesHandler.ExecuteAsync(new ActivityService.Interactors.GetOwnedActivitiesArgs {
                 IncludeAtivitySchedules = true
             });
-            if(ownedAtivitiesResult.Succeeded || ownedAtivitiesResult.Result == null)
+            if(!ownedAtivitiesResult.Succeeded || ownedAtivitiesResult.Result == null)
             {
                 return AppResult<IDictionary<int,int>>.CreateFailed(ownedAtivitiesResult.Error.Exception, ownedAtivitiesResult.Message);
             }
@@ -121,7 +121,7 @@ public class UpdateStudentAttendanceHandler : IUpdateStudentAttendanceHandler
                 if(activitySchedules.ContainsKey(student.ScheduleId) && activitySchedules[student.ScheduleId] == student.ActivityId)
                 {
                     // check if the ids already in the result
-                    if(!result.ContainsKey(student.StudentId))
+                    if(!result.ContainsKey(student.ScheduleId))
                     {
                         result.Add(student.ScheduleId, student.ActivityId);
                     }
