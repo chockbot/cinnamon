@@ -17,6 +17,8 @@ public class AttendanceModel
 
     public string Search {get; set;}
 
+    public bool IsProcessingCheckAll {get; set;}
+
     public class Schedule 
     {
         public int ActivityId {get; set;}

@@ -90,7 +90,8 @@ public class DashboardController : ControllerBase
                             ScheduleId = s.ScheduleId,
                             SessionsAttended = s.SessionsAttended,
                             Status = s.Status,
-                            StudentNo = s.StudentNo
+                            StudentNo = s.StudentNo,
+                            StudentId = s.StudentId
                         };
                     })
                 }
