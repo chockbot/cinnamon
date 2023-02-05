@@ -14,11 +14,13 @@ public class DashboardController : ControllerBase
 {
     private readonly IGetActivitySchedulesHandler getActivitySchedulesHandler;
     private readonly IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler;
+    private readonly IGetStudentAttendanceHandler getStudentAttendanceHandler;
 
-    public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler)
+    public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler, IGetStudentAttendanceHandler getStudentAttendanceHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
+        this.getStudentAttendanceHandler = getStudentAttendanceHandler; 
     }
 
     [Route("GetActivitySchedules")]
@@ -96,6 +98,52 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetCurrentAttendanceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetStudentAttendance")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStudentAttendanceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStudentAttendance([FromQuery] GetStudentAttendanceArgs args)
+    {
+        try
+        {
+            var result = await getStudentAttendanceHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetStudentAttendanceArgs
+            {
+                ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetStudentAttendanceResult
+            {
+                IsSuccess = true,
+                Result = result.Result.StudentAttendaces.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceDTO
+                    {
+                        ActivityId = s.ActivityId,
+                        Date = s.AttendanceDate,
+                        Id = s.Id,
+                        IsPresent = s.IsPresent,
+                        Name = s.StudentName,
+                        NumberOfSessions = s.NumberOfSessions,
+                        Remarks = s.Remarks,
+                        ScheduleId = s.ScheduleId,
+                        SessionsAttended = s.SessionsAttended,
+                        Status = s.Status,
+                        StudentNo = s.StudentNo,
+                        StudentId =s.StudentId,
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

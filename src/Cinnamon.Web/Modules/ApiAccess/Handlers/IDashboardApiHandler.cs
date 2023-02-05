@@ -8,4 +8,5 @@ public interface IDashboardApiHandler
 {
     Task<AppResult<GetActivitySchedulesResult>> GetActivitySchedules(string token);
     Task<AppResult<GetCurrentAttendanceResult>> GetCurrentAttendance(GetCurrentAttendanceArgs args,string token);
+    Task<AppResult<GetStudentAttendanceResult>> GetStudentAttendance(GetStudentAttendanceArgs args, string token);
 } 
