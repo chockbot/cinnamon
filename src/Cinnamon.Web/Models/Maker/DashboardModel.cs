@@ -9,4 +9,5 @@ public class DashboardModel
     public IEnumerable<Students> Students { get; set;}
     public int ActiveActivityCount {get; set;}
     public string Token {get; set;}
+    public bool IsPublished { get; set; }
 }

@@ -11,45 +11,52 @@
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-@if(Model != null)
+<div class="header">
+    <p class="title">Experiences</p>
+    <button class="create-button" @onclick="NavigateToCreation">Create</button>
+</div>
+@foreach (var item in activities)
 {
-    <section class="mt-5 maker-dashboard">
-        <div class="container">
-            <Row>
-                <Column>
-                    <h3 class="text-capitalize fw-bold">experiences</h3>
-                </Column>
-                <Column>
-                </Column>
-            </Row>
-            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-                <Items>
-                    <Tab Display="Display.Flex" Flex="Flex.AlignItems.Center" Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">
-                        active
-                        <Badge style="background-color: #ffa942;" TextColor="TextColor.White" Border="Border.RoundedCircle" Color="Color.Primary">@Model.ActiveActivityCount</Badge>
-                    </Tab>
-                    <Tab Name="attendance-monitoring" TextTransform="TextTransform.Capitalize">attendance monitoring</Tab>
-                    <Tab Name="chat-room" TextTransform="TextTransform.Capitalize">chat room</Tab>
-                </Items>
-                <Content>
-                    <TabPanel Name="active">
-                        <ExperienceList OnPublishChanged="ActiveCountChanged" Activities="Model.Activities" Token="@Model.Token" />
-                    </TabPanel>
-                    <TabPanel Name="attendance-monitoring">
-                        Content for attendance monitoring
-                    </TabPanel>
-                    <TabPanel Name="chat-room">
-                        Content for chat-room
-                    </TabPanel>
-                </Content>
-            </Tabs>
+<div class="experience-container">
+    <div class="xp-content">
+            <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
+    <div class="xp-context">
+        <p class="xp-title">@item.Title</p>
+        <p class="xp-description">@item.Description</p>
+            <div class="xp-category">
+                <img src="images/activity-summary/location.png">
+                    @if (item.ExperienceTypeId==1)
+                    {
+                        <span>Online</span>
+                    }
+                    else
+                    {
+                        <span>Face to Face</span>
+                    }
+            </div>
+    </div>
+    </div>
+    <hr>
+    <div class="xp-actions">
+        <div class="active">
+            <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAllStudent(item)">
+                <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                Active
+            </Button>
         </div>
-    </section>
+        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+    </div>
+</div>
+
 }
 
 @code
 {
-    private DashboardModel Model;
+    private DashboardModel Model {get; set;} = new();
+
+    public List<Activity> activities = new List<Activity>();
+
+    public Activity activity = new Activity();
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,8 +87,10 @@
             return;
         }
 
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {}, token);
-        var activities = new List<Activity>();
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+        {
+            IncludeActivityImages = true,
+        }, token);
 
         if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
         {
@@ -90,28 +99,38 @@
                 return new Activity {
                     ActivityId = a.ActivityId,
                     IsPublished = a.IsPublished,
-                    Title = a.Title
+                    Title = a.Title,
+                    Description = a.Description,
+                    ExperienceTypeId = a.ExperienceTypeId,
+                    Images = a.Images.Select(i=>
+                    {
+                        return new ActivityImage
+                        {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList(),
                 };
             }).ToList();
         }
-
         Model = new DashboardModel {
             Activities = activities,
             ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
             Token = token
         };
     }
-
-    private void ActiveCountChanged(int count)
+    private void NavigateToCreation()
     {
-        Model.ActiveActivityCount-= count;
+        NavigationManager.NavigateTo("creation");
     }
-
-    string selectedTab = "active";
-
-    private Task OnSelectedTabChanged(string name)
+    private void CheckUnCheckAllStudent(Activity activity)
     {
-        selectedTab = name;
-        return Task.CompletedTask;
+        activity.IsPublished = !activity.IsPublished;
+        var res =  activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
+            {
+                IsPublished = activity.IsPublished,
+                ActivityId = activity.ActivityId
+            }, Model.Token);
     }
 }
