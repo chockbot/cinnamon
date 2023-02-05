@@ -14,12 +14,15 @@ public class DashboardController : ControllerBase
 {
     private readonly IGetActivitySchedulesHandler getActivitySchedulesHandler;
     private readonly IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler;
+    private readonly IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler;
     private readonly IGetStudentAttendanceHandler getStudentAttendanceHandler;
 
-    public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler, IGetStudentAttendanceHandler getStudentAttendanceHandler)
+    public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
+        IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
+        this.updateStudentAttendanceHandler = updateStudentAttendanceHandler;
         this.getStudentAttendanceHandler = getStudentAttendanceHandler; 
     }
 
@@ -89,7 +92,8 @@ public class DashboardController : ControllerBase
                             ScheduleId = s.ScheduleId,
                             SessionsAttended = s.SessionsAttended,
                             Status = s.Status,
-                            StudentNo = s.StudentNo
+                            StudentNo = s.StudentNo,
+                            StudentId = s.StudentId
                         };
                     })
                 }
@@ -98,6 +102,48 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetCurrentAttendanceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("UpdateStudentAttendances")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateStudentAttendanceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateStudentAttendances([FromBody] UpdateStudentAttendnaceArgs args)
+    {
+        try
+        {
+            var result = await updateStudentAttendanceHandler.ExecuteAsync(new Services.DashboardService.Interactors.UpdateStudentAttedanceCurrentDateArgs {
+                Students = args.Students.Select(s => {
+                    return new Services.DashboardService.Interactors.UpdateStudentAttedanceCurrentDateArgs.StudentDetails {
+                        ActivityId = s.ActivityId,
+                        IsPresent = s.IsPresent,
+                        ScheduleId = s.ScheduleId,
+                        StudentId = s.StudentId
+                    };
+                })
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateStudentAttendanceResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new UpdateStudentAttendanceResult 
+                {
+                    IsSuccess = true,
+                    Result = result.Result.StudentAttendaces.Select(s => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceUpdateDTO {
+                            ActivityId = s.ActivityId,
+                            IsPresent = s.IsPresent,
+                            ScheduleId = s.ScheduleId,
+                            StudentId = s.StudentId
+                        };
+                    })
+                }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateStudentAttendanceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 

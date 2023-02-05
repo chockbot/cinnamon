@@ -58,9 +58,9 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
             // check if already have attendance schedule in the date provided
             // if not yet then create and insert to db.
             var attendanceRes = await studentAttendanceData.GetAllStudentAttendance(new Framework.ApiCommand.ApiData.StudentAttendance.Request.GetAllStudentAttendanceArgs {
-                ActivityId = args.ActivityId,
+                ActivityIds = new int[] {args.ActivityId},
                 IsIncludeStudent = true,
-                ScheduleId = args.ScheduleId,
+                ScheduleIds = new int[] {args.ScheduleId},
                 Date = args.Date.ToString("yyyyMMdd")
             });
             if(!attendanceRes.Succeeded || attendanceRes.Result == null || !attendanceRes.Result.IsSuccess)
@@ -115,9 +115,9 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
 
                 // fetch again student attendance
                 var attendanceResReLoad = await studentAttendanceData.GetAllStudentAttendance(new Framework.ApiCommand.ApiData.StudentAttendance.Request.GetAllStudentAttendanceArgs {
-                    ActivityId = args.ActivityId,
+                    ActivityIds = new int[] {args.ActivityId},
                     IsIncludeStudent = true,
-                    ScheduleId = args.ScheduleId,
+                    ScheduleIds = new int[] {args.ScheduleId},
                     Date = args.Date.ToString("yyyyMMdd")
                 });
                 if(!attendanceResReLoad.Succeeded || attendanceResReLoad.Result == null || !attendanceResReLoad.Result.IsSuccess)

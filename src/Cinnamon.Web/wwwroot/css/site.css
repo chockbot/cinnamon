@@ -405,6 +405,10 @@ a,
   padding-bottom: 1rem;
 }
 
+.student-attendance .student-attendance-section .table-list table tbody td {
+  vertical-align: middle;
+}
+
 .student-attendance .search-text {
   width: 200px;
   background-color: #f3f6fc;
@@ -423,6 +427,82 @@ a,
 
 .dashboard-layout #toggle:checked ~ .b-layout-sider {
   left: 0;
+}
+
+/* circular progress bar styling */
+.progress {
+  background: none;
+  position: relative;
+}
+
+.progress::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #eee;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress > span {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+.progress .progress-left {
+  left: 0;
+}
+
+.progress .progress-bar {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border-width: 6px;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+}
+
+.progress .progress-left .progress-bar {
+  left: 100%;
+  border-top-right-radius: 80px;
+  border-bottom-right-radius: 80px;
+  border-left: 0;
+  -webkit-transform-origin: center left;
+  transform-origin: center left;
+}
+
+.progress .progress-right {
+  right: 0;
+}
+
+.progress .progress-right .progress-bar {
+  left: -100%;
+  border-top-left-radius: 80px;
+  border-bottom-left-radius: 80px;
+  border-right: 0;
+  -webkit-transform-origin: center right;
+  transform-origin: center right;
+}
+
+.progress .progress-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress .progress-value {
+  font-size: 10px;
+}
+
+.progress .progress-bar {
+  border: 6px solid #4bb749;
 }
 
 @media screen and (max-width: 767px) and (orientation: portrait) {

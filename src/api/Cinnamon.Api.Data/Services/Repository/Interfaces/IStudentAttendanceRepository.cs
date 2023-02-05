@@ -7,10 +7,11 @@ public interface IStudentAttendanceRepository
 {
     Task<AppResult<StudentAttendanceDTO>> GetByIdAsync(int id, bool? includeStudent = false);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync(int? count, int? skip, 
-        DateTime? date = null, bool? includeStudent = false, int? activityId = null, int? scheduleId = null);
+        DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync();
     Task<AppResult<StudentAttendanceDTO>> Create(int studentId, bool isPresent, DateTime date);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> Create(IEnumerable<CreateManyAttendanceDTO> students);
     Task<AppResult<StudentAttendanceDTO>> Update(int id, bool? isPresent, DateTime? date);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> Update(IEnumerable<UpdateManyStudentDTO> students);
+    Task<AppResult<IEnumerable<StudentAttendanceDTO>>> UpdateAttendance(IEnumerable<UpdateAttendanceDTO> students, DateTime date);
 }
