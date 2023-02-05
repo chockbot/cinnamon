@@ -146,6 +146,7 @@
                     LastName  = customer.Result.Result.LastName
                 };
     }
+    //Get Student Attendance
     var attendance = await dashboardApiHandler.GetStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetStudentAttendanceArgs 
             {
                 ActivityId= student.ActivityId,
@@ -168,6 +169,7 @@
     }
     await CreateMonth();
     }
+
     public async Task CreateMonth()
     {
         var tempDate = DateTime.Now.AddMonths(monthsAway);
