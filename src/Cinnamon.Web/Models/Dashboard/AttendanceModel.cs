@@ -38,6 +38,8 @@ public class AttendanceModel
         public string Name {get; set;}
         public bool IsPresent {get; set;}
         public string ActivityName {get; set;}
+        public int NumberOfSessions {get; set;}
+        public int SessionsAttended {get; set;}
     }
 }
 
