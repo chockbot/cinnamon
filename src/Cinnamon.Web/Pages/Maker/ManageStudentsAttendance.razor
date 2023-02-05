@@ -12,14 +12,18 @@
 
 <div class="header">
     <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
-    <p class="title">Manage Students - Attendance</p>
+    <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students - Attendance </h3>
 </div>
 
 <div class="student-details-container">
     <div class="student-details">
+        <div class="student-details-major">
           <p class="">Name : <span>@student.Name</span></p>
           <p class="">Parent : <span>@profile.FirstName @profile.LastName</span></p>
           <p class="">Present Days : <span class="days-present">08</span></p>
+        </div>
+
+
           <Div Margin="Margin.Is2.FromTop.OnMobile.FromTop.OnDesktop">
                 <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                     <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
@@ -60,7 +64,6 @@
                 <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }"><img src="images/calender icon right.png"></button>
             </div>
     </div>
-    <hr />
     <hr />
     <hr />
     <section>

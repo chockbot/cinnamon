@@ -13,14 +13,13 @@
 @using Blazorise.DataGrid
 
 <section class="mt-5 maker-dashboard">
-        <Row>
-            <Column>
-                <h3 class="text-capitalize fw-bold" style="color:#FFA942;">Manage Students</h3>
-            </Column>
-            <Column class="justify-content-end">
+    <div class="header">
+
+                <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
+
+        <div class="header-filters">
                 <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
-            </Column>
-            <Column class="justify-content-start">
+           
                 <Select TValue="string" class="dropdown-select" SelectedValue="@selectedFilter" SelectedValueChanged="@OnFilterValueChanged">
                     <SelectItem Value="@("*")">Select Experience</SelectItem>
                     @foreach(var item in activities)
@@ -28,14 +27,14 @@
                         <SelectItem Value="@(item.Title)">@item.Title</SelectItem>
                     }
                 </Select>
-            </Column>
-        </Row>
+        </div>
+    </div>
         <div class="student-attendance-section">
             <div class="table-list">
-                <Table Shadow="Shadow.Default">
-                    <TableHeader>
+            <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable >
+                <TableHeader >
                 <TableRow>
-                    <TableHeaderCell>
+                    <TableHeaderCell class="name-header">
                         <label class="sotring-column" @onclick="SortByName">
                             Name
                             <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
@@ -58,9 +57,9 @@
                             <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                         </label>
                     </TableHeaderCell>
-                    <TableHeaderCell>
+                    <TableHeaderCell class="attendance-header">
                         <label class="sotring-column">
-                            View Attendance
+                           Attendance
                         </label>
                     </TableHeaderCell>
                 </TableRow>
@@ -69,20 +68,20 @@
                 @foreach (var item in FilteredStudents)
                 {
                     <TableRow>
-                        <TableRowCell>@item.Name</TableRowCell>
-                        <TableRowCell>
+                        <TableRowCell class="name-body">@item.Name</TableRowCell>
+                        <TableRowCell class="progress-body">
                             ProgressBar
                         </TableRowCell>
-                        <TableRowCell>@item.Title</TableRowCell>
-                        <TableRowCell>
+                            <TableRowCell class="experience-body">@item.Title</TableRowCell>
+                            <TableRowCell class="student-no">
                             @item.StudentNo
                             &nbsp;<Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3" Clicked="() => ShowModal(item)">
                                 <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" style="color:#343D4C99;line-height:20px" class="btn-edit"/>
                             </Button>
                         </TableRowCell>
-                        <TableRowCell>
+                        <TableRowCell class="update">
                             <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewAttendence(item)" class="btn-update">
-                                View Attendance
+                                Update
                             </Button>
                         </TableRowCell>
                     </TableRow>
@@ -95,7 +94,7 @@
 <Modal @ref="modalRef">
     <ModalContent Centered>
         <ModalHeader>
-            <ModalTitle>Employee edit</ModalTitle>
+            <ModalTitle>Student Number</ModalTitle>
             <CloseButton />
         </ModalHeader>
         <ModalBody>
