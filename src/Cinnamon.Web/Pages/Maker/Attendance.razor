@@ -1,12 +1,15 @@
 @layout DashboardLayout
 @page "/maker/dashboard/attendance"
 @using System.Security.Claims
+@using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Models.Dashboard;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Timers;
 @inject IJSRuntime jsRuntime;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager navigationManager;
 @inject IDashboardApiHandler dashboardApiHandler;
+@implements IDisposable;
 @attribute [Authorize]
 
 <section class="student-attendance mt-5 overflow-hidden">
@@ -67,7 +70,10 @@
                             <TableRowCell>@item.Name</TableRowCell>
                             <TableRowCell>@item.ActivityName</TableRowCell>
                             <TableRowCell>
-                                ProgressBar
+                                <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" 
+                                    Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                    @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                </CircularProgress>
                             </TableRowCell>
                             <TableRowCell>
                                 <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAttendance(item)">
@@ -92,6 +98,9 @@
 @code
 {
     private AttendanceModel Model {get; set;} = new();
+
+    // 2 seconds delay
+    private Timer checkUncheckAllTimer = new Timer(2000);
 
     protected async override Task OnInitializedAsync()
     {
@@ -133,6 +142,8 @@
             Model.IsShowErrorMessage = true;
             Model.ErrorMessage = "An error occured. Please try again later.";
         }
+
+        checkUncheckAllTimer.Elapsed += ProcessCheckUncheckAll;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -141,6 +152,27 @@
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper",".swiper-scrollbar");
         }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initProgressBars", Model.FilteredAttendance.Select(s => $"#progress-{s.StudentId}"));
+    }
+
+    private void ProcessCheckUncheckAll(object? sender, ElapsedEventArgs e)
+    {
+        checkUncheckAllTimer.Stop();
+        // call update attendance api without waiting
+        dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
+            Students = Model.FilteredAttendance.Select(s => {
+                return new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate {
+                    ActivityId = s.ActivityId,
+                    IsPresent = s.IsPresent,
+                    ScheduleId = s.ScheduleId,
+                    StudentId = s.StudentId
+                };
+            })
+        }, Model.Token);
     }
 
     private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
@@ -159,9 +191,11 @@
                         ActivityName = schedule.ActivityTitle,
                         IsPresent = s.IsPresent,
                         Name = s.Name,
-                        StudentId = s.ScheduleId,
+                        StudentId = s.StudentId,
                         ActivityId = schedule.ActivityId,
-                        ScheduleId = schedule.ScheduleId
+                        ScheduleId = schedule.ScheduleId,
+                        NumberOfSessions = s.NumberOfSessions,
+                        SessionsAttended = s.SessionsAttended
                     };
                 }));
             }
@@ -176,12 +210,45 @@
     private void CheckUnCheckAllStudent()
     {
         Model.IsCheckAllStudent = !Model.IsCheckAllStudent;
-        Model.FilteredAttendance.ForEach(std => std.IsPresent = Model.IsCheckAllStudent);
+        int addedSession = Model.IsCheckAllStudent ? 1 : -1;
+
+        Model.FilteredAttendance.ForEach(std => {
+            if(Model.IsCheckAllStudent != std.IsPresent)
+            {
+                std.IsPresent = Model.IsCheckAllStudent;
+                std.SessionsAttended += addedSession;
+            }
+        });
+
+        // add delay to process checkUncheckAll to avoid spamming
+        // will cause to heavy processing
+        checkUncheckAllTimer.Stop();
+        checkUncheckAllTimer.Start();
     }
 
     private void CheckUnCheckAttendance(AttendanceModel.StudentAttendance studentAttendance)
     {
         studentAttendance.IsPresent = !studentAttendance.IsPresent;
+        if(studentAttendance.IsPresent)
+        {
+            studentAttendance.SessionsAttended += 1;
+        } 
+        else 
+        {
+            studentAttendance.SessionsAttended -= 1;
+        }
+
+        // call update attendance api without waiting
+        dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
+            Students = new List<Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate> {
+                new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate {
+                    ActivityId = studentAttendance.ActivityId,
+                    IsPresent = studentAttendance.IsPresent,
+                    ScheduleId = studentAttendance.ScheduleId,
+                    StudentId = studentAttendance.StudentId
+                },
+            }
+        }, Model.Token);
     }
 
     private void SortByName()
@@ -229,5 +296,15 @@
     private void TextSearchChanged(string search)
     {
         Model.FilteredAttendance = Model.Attendances.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+    }
+
+    private int GetSessionPercentage(double numberSessions, double sessionsAttended)
+    {
+        return (int)((sessionsAttended / numberSessions) * 100);
+    }
+
+    public void Dispose()
+    {
+        checkUncheckAllTimer?.Dispose();
     }
 }

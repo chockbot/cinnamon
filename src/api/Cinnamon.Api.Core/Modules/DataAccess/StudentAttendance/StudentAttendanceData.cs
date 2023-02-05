@@ -141,4 +141,25 @@ public class StudentAttendanceData : IStudentAttendanceData
             return AppResult<UpdateStudentAttendanceResult>.CreateFailed(ex, "An error occured when posting update student attendance api");
         }
     }
+
+    public async Task<AppResult<UpdateAttendanceResult>> UpdateAttendance(UpdateAttendanceArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("StudentAttendance/UpdateAttendance")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<UpdateAttendanceResult>();
+
+            return AppResult<UpdateAttendanceResult>.CreateSucceeded(result, "Successfully posting update student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateAttendanceResult>.CreateFailed(ex, "An error occured when posting update student attendance api");
+        }
+    }
 }

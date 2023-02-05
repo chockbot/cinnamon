@@ -58,4 +58,26 @@ public class DashboardApiHandler : IDashboardApiHandler
             return AppResult<GetCurrentAttendanceResult>.CreateFailed(ex, "An error occured when getting current attendance api");
         }
     }
+
+    public async Task<AppResult<UpdateStudentAttendanceResult>> UpdateStudentAttendances(UpdateStudentAttendnaceArgs args,string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/UpdateStudentAttendances")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateStudentAttendanceResult>();
+
+            return AppResult<UpdateStudentAttendanceResult>.CreateSucceeded(result, "Successfully getting current attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateStudentAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateStudentAttendanceResult>.CreateFailed(ex, "An error occured when getting current attendance api");
+        }
+    }
 }
