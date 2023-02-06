@@ -364,3 +364,298 @@ a,
   color: red;
   padding: 0;
 }
+
+/* dashboard attendance styles */
+.student-attendance .activities-schedule-section .swiper-slide .check-button,
+.student-attendance .student-attendance-section .table-list .check-button,
+.student-attendance .student-attendance-section .tool-action .check-button {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.25);
+  background-color: #f3f6fc;
+}
+
+.student-attendance .student-attendance-section .table-list .check-button {
+  margin: 0;
+}
+
+.student-attendance .student-attendance-section .tool-action .check-button {
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  background-color: transparent;
+  margin-left: -1rem;
+}
+
+.student-attendance .student-attendance-section .table-list .b-table.table {
+  border: 2px solid #343d4c !important;
+}
+
+.student-attendance .student-attendance-section .table-list table thead {
+  background-color: #343d4c;
+  color: #fff;
+}
+
+.student-attendance .student-attendance-section .table-list table thead th {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.student-attendance .student-attendance-section .table-list table tbody td {
+  vertical-align: middle;
+}
+
+.student-attendance .search-text {
+  width: 200px;
+  background-color: #f3f6fc;
+  border: 0;
+}
+
+.student-attendance
+  .student-attendance-section
+  .table-list
+  table
+  tbody
+  tr
+  td:first-child
+  > div {
+  display: none;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .student-attendance .student-attendance-section .table-list .b-table.table {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .student-attendance .student-attendance-section .table-list table thead {
+    display: none;
+  }
+
+  .student-attendance .student-attendance-section .table-list table tbody tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+    font-size: 14px;
+    border: 1px solid;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    > div {
+    display: block;
+    margin-right: 10px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    .std-name::before {
+    content: "Name: ";
+    font-weight: bold;
+    width: 70%;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)::before {
+    content: "Experience: ";
+    font-weight: bold;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(3) {
+    display: none;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:last-child {
+    border: 0 !important;
+  }
+
+  .student-attendance .activities-schedule-section .swiper-slide .check-button,
+  .student-attendance .student-attendance-section .table-list .check-button,
+  .student-attendance .student-attendance-section .tool-action .check-button {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .student-attendance
+    .activities-schedule-section
+    .swiper-slide
+    .check-button
+    img,
+  .student-attendance .student-attendance-section .table-list .check-button img,
+  .student-attendance
+    .student-attendance-section
+    .tool-action
+    .check-button
+    img {
+    width: 20px;
+    height: auto;
+  }
+
+  .student-attendance .student-attendance-section .tool-action .check-button {
+    margin-left: 0;
+  }
+
+  .student-attendance .search-text {
+    width: 170px;
+  }
+}
+
+/* end dashboard attendance styles */
+
+/* dashboard styling */
+.dashboard-layout .b-layout-sider {
+  background-color: #f3f6fc;
+  transition: left 0.5s ease-in-out;
+  min-width: 300px;
+}
+
+.dashboard-layout .b-layout-sider-content {
+  width: 100%;
+}
+
+.dashboard-layout #toggle:checked ~ .b-layout-sider {
+  left: 0;
+}
+
+/* circular progress bar styling */
+.progress {
+  background: none;
+  position: relative;
+}
+
+.progress::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #eee;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress > span {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+.progress .progress-left {
+  left: 0;
+}
+
+.progress .progress-bar {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border-width: 6px;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+}
+
+.progress .progress-left .progress-bar {
+  left: 100%;
+  border-top-right-radius: 80px;
+  border-bottom-right-radius: 80px;
+  border-left: 0;
+  -webkit-transform-origin: center left;
+  transform-origin: center left;
+}
+
+.progress .progress-right {
+  right: 0;
+}
+
+.progress .progress-right .progress-bar {
+  left: -100%;
+  border-top-left-radius: 80px;
+  border-bottom-left-radius: 80px;
+  border-right: 0;
+  -webkit-transform-origin: center right;
+  transform-origin: center right;
+}
+
+.progress .progress-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress .progress-value {
+  font-size: 10px;
+}
+
+.progress .progress-bar {
+  border: 6px solid #4bb749;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .dashboard-layout .b-layout-sider {
+    position: absolute;
+    z-index: 9999999;
+    height: 100vh;
+    left: -300px;
+  }
+}

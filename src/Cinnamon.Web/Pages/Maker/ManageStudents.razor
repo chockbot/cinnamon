@@ -1,55 +1,169 @@
 ﻿@layout DashboardLayout
 @page "/maker/dashboard/managestudents"
 @using System.Security.Claims
+@using System.Globalization
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@using Blazorise.DataGrid
 
-@if (Model != null)
-{
-    <section class="mt-5 maker-dashboard">
-        <div class="container">
-            <Row>
-                <Column>
-                    <h3 class="text-capitalize fw-bold">Manage Students</h3>
-                </Column>
-                <Column>
-                </Column>
-            </Row>
-            <Table class="table-manage">
-                <TableHeader ThemeContrast="ThemeContrast.Dark" class="table-header">
-                    <TableRow class="table-cell">
-                        <TableHeaderCell>Name</TableHeaderCell>
-                        <TableHeaderCell>Session Attended</TableHeaderCell>
-                        <TableHeaderCell class="table-header-status">Status</TableHeaderCell>
-                        <TableHeaderCell>Student No.</TableHeaderCell>
-                        <TableHeaderCell>Attendance</TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody class="table-body">
-                    <TableRow class="table-row">
-                        <TableRowCell>@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</TableRowCell>
-                        <TableRowCell>
-                            <Progress>
-                                <ProgressBar Color="Color.Success" Value=2 Max=10/>
-                            </Progress>
-                        </TableRowCell>
-                        <TableRowCell><p class="table-active">Active</p></TableRowCell>
-                        <TableRowCell>00<Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" class="icon-edit" /></TableRowCell>
-                        <TableRowCell><Button class="update-button">Update</Button></TableRowCell>
-                    </TableRow>
-                </TableBody>
-            </Table>
+<section class="mt-5 maker-dashboard">
+    <div class="header">
+
+                <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
+
+        <div class="header-filters">
+                <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+           
+                <Select TValue="string" class="dropdown-select" SelectedValue="@selectedFilter" SelectedValueChanged="@OnFilterValueChanged">
+                    <SelectItem Value="@("*")">Select Experience</SelectItem>
+                    @foreach(var item in activities)
+                    {
+                        <SelectItem Value="@(item.Title)">@item.Title</SelectItem>
+                    }
+                </Select>
         </div>
-    </section>
-}
+    </div>
+        <div class="student-attendance-section">
+            <div class="table-list">
+            <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable >
+                <TableHeader >
+                <TableRow>
+                    <TableHeaderCell class="name-header">
+                        <label class="sotring-column" @onclick="SortByName">
+                            Name
+                            <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                        </label>
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        <label class="sotring-column">
+                            Session Attended
+                        </label>
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        <label class="sotring-column" @onclick="SortByActivity">
+                            Experience
+                            <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                        </label>
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        <label class="sotring-column">
+                            Student No.
+                            <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                        </label>
+                    </TableHeaderCell>
+                    <TableHeaderCell class="attendance-header">
+                        <label class="sotring-column">
+                            Attendance
+                        </label>
+                    </TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+                <TableBody>
+                @foreach (var item in FilteredStudents)
+                {
+                    <TableRow>
+                        <TableRowCell class="name-body">@item.Name</TableRowCell>
+                        <TableRowCell class="progress-body">
+                           <CircularProgress Id='@($"progress-{item.Id}")' Size="50" 
+                                Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                           </CircularProgress>
+                        </TableRowCell>
+                            <TableRowCell class="experience-body">@item.Title</TableRowCell>
+                            <TableRowCell class="student-no">
+                            @item.StudentNo
+                            &nbsp;<Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3" Clicked="() => ShowModal(item)">
+                                <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" style="color:#343D4C99;line-height:20px" class="btn-edit"/>
+                            </Button>
+                        </TableRowCell>
+                        <TableRowCell class="update">
+                            <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewAttendence(item)" class="btn-update">
+                                Update
+                            </Button>
+                        </TableRowCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+    </div>
+</div>    
+</section>
+<Modal @ref="modalRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <h6 class="col-11 modal-title text-center" style="font-weight:bold">Update Student Number</h6>
+            <button type="button" class="btn-close" @onclick="() => HideModal()" />
+        </ModalHeader>
+        <ModalBody>
+            <Label Visibility="Visibility.Invisible">@Id</Label> 
+                <h5 style="color:#ffa942;font-family:'Nunito';font-weight:bold">Student Number</h5>
+            <input type="number" class="form-control" placeholder="Enter Number" required @bind="@jerseyNumber" />
+        <ModalFooter>
+            <Button Color="Color.Secondary" Border="Border.Is0" Clicked="@HideModal"class="btn-update">Cancel</Button>
+            <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>SaveChanges(Id, jerseyNumber)" class="btn-update">Save Changes</Button>
+        </ModalFooter>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 
+@if (showErrorMessage)
+{
+    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+        <strong>Error!</strong> @errorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (showSuccessMessage)
+{
+    <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+        <strong>Success!</strong> Student number updated!
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
 @code {
+
     private Models.Customer.Profile Model;
+
+    private Dashboard dashboard= new Dashboard();
+
+    public List<Activity> activities    = new List<Activity>();
+
+    public List<Students> students = new List<Students>();
+
+    public List<ManageStudentsData> manageStudents = new List<ManageStudentsData>();
+
+    public List<ManageStudentsData> FilteredStudents { get; set; } = new();
+
+    public bool? IsSortNameAsc { get; set; }
+
+    public bool? IsSortExperienceAsc { get; set; }
+
+    private string customFilterValue;
+
+    private string selectedFilter;
+
+    public TextEdit textEdit;
+
+    private Modal modalRef;
+
+    private bool showErrorMessage = false;
+
+    public bool showSuccessMessage = false;
+
+    private string errorMessage = string.Empty;
+
+    public int jerseyNumber;
+
+    public int Id;
+
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -79,20 +193,161 @@
             return;
         }
         Model = new Models.Customer.Profile
-        {
-            Token = token,
-            CustomerProfile = new Models.Entities.CustomerProfile
             {
-                About = customer.About,
-                Birthdate = customer.Birthdate,
-                Email = customer.Email,
-                FirstName = customer.FirstName,
-                LastName = customer.LastName,
-                Id = customer.Id,
-                IsMaker = customer.IsMaker,
-                IsVerified = customer.IsVerified,
-                ProfilePath = customer.ProfileImg,
-            },
-        };
+                Token = token,
+                CustomerProfile = new Models.Entities.CustomerProfile
+                {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    Email = customer.Email,
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerified,
+                    ProfilePath = customer.ProfileImg,
+                },
+            };
+        //Get Owned Activities
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs { }, token);
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                    {
+                        ActivityId = a.ActivityId,
+                        IsPublished = a.IsPublished,
+                        Title = a.Title
+                    };
+            }).ToList();
+        }
+        //Get Enrolled Experience
+        var student = await ongoingApiHandler.GetAllOngoingActivities();
+        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        {
+            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                return new Students
+                    {
+                        ActivityId = a.ActivityId,
+                        CustomerId = a.CustomerId,
+                        Id = a.Id,
+                        Name = a.Name,
+                        NumberOfSessions = a.NumberOfSessions,
+                        Remarks = a.Remarks,
+                        ScheduleId = a.ScheduleId,
+                        SessionsAttended = a.SessionsAttended,
+                        Status = a.Status,
+                        StudentNo = a.StudentNo
+                    };
+            }).ToList();
+        }
+        var query = from item in students
+                    join item1 in activities on item.ActivityId equals item1.ActivityId
+                    orderby item.Id
+                    select new ManageStudentsData
+                         {
+                             Id = item.Id,
+                             ActivityId = item.ActivityId,
+                             Title = item1.Title,
+                             CustomerId = item.CustomerId,
+                             Name = item.Name,
+                             NumberOfSessions = item.NumberOfSessions,
+                             SessionsAttended = item.SessionsAttended,
+                             Remarks = item.Remarks,
+                             StudentNo = item.StudentNo,
+                             Status = item.Status
+                         };
+        //List DataGrid Content
+        manageStudents = query.ToList();
+        FilteredStudents = manageStudents;
+    }
+    public void ViewAttendence(ManageStudentsData data)
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/"+data.Id);
+    }
+    private void ShowModal(ManageStudentsData data)
+    {
+        modalRef.Show();
+        Int32.TryParse(data.StudentNo,out jerseyNumber);
+        Id = data.Id;
+    }
+    private Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+    private async Task OnFilterValueChanged(string e)
+    {
+        selectedFilter = e;
+        if (string.IsNullOrEmpty(selectedFilter) || selectedFilter == "Select Experience" || selectedFilter == "*")
+        {
+            await OnInitializedAsync();
+        }
+        else
+        {
+            FilteredStudents = manageStudents.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
+            selectedFilter, CompareOptions.IgnoreCase) >= 0).ToList();
+        }
+    }
+    private void TextSearchChanged(string search)
+    {
+        FilteredStudents = manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+    }
+    private async void SaveChanges(int Id, int StudentNo)
+    {
+        var result = string.Format("{0:00}",StudentNo);
+        var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+        {
+            Id = Id,
+            StudentNo = result
+        });
+        if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
+        {
+            errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
+            showErrorMessage = true;
+            StateHasChanged();
+            return;
+        }
+        else
+        {
+            showSuccessMessage = true;
+            await HideModal();
+            NavigationManager.NavigateTo("/maker/dashboard/managestudents",true);
+            StateHasChanged();
+            return;
+        }
+    }
+    private void SortByName()
+    {
+        if (!IsSortNameAsc.HasValue || IsSortNameAsc.Value)
+        {
+            FilteredStudents = manageStudents.OrderBy(s => s.Name).ToList();
+            IsSortNameAsc = false;
+        }
+        else
+        {
+            FilteredStudents = manageStudents.OrderByDescending(s => s.Name).ToList();
+            IsSortNameAsc = true;
+        }
+    }
+    private void SortByActivity()
+    {
+        if (!IsSortExperienceAsc.HasValue || IsSortExperienceAsc.Value)
+        {
+            FilteredStudents = manageStudents.OrderBy(s => s.Title).ToList();
+            IsSortExperienceAsc = false;
+        }
+        else
+        {
+            FilteredStudents = manageStudents.OrderByDescending(s => s.Title).ToList();
+            IsSortExperienceAsc = true;
+        }
+    }
+    private int GetSessionPercentage(double numberSessions, double sessionsAttended)
+    {
+        return (int)((sessionsAttended / numberSessions) * 100);
     }
 }
+

@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.OngoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.OngoingActivityService.Interactors;
 using Cinnamon.Api.Core.Services.OngoingActivityService.Interactors.Results;
@@ -10,11 +11,16 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
 {
     private readonly IActivityData activityData;
     private readonly IOngoingActivitiesData ongoingActivitiesData;
+    private readonly IStudentData studentData;
+    private readonly IGetFamilyMembersHandler getFamilyMembersHandler;
 
-    public CreateOngoingActivityHandler(IActivityData activityData,IOngoingActivitiesData ongoingActivitiesData)
+    public CreateOngoingActivityHandler(IActivityData activityData,IOngoingActivitiesData ongoingActivitiesData,
+        IStudentData studentData, IGetFamilyMembersHandler getFamilyMembersHandler)
     {
         this.activityData = activityData;
         this.ongoingActivitiesData = ongoingActivitiesData;
+        this.studentData = studentData;
+        this.getFamilyMembersHandler = getFamilyMembersHandler;
     }
 
     public AppResult<CreateOngoingActivityResult> Execute(CreateOngoingActivityArgs args)
@@ -55,6 +61,13 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 return AppResult<CreateOngoingActivityResult>.CreateFailed(
                     new ApplicationException("Invalid activity and schedule selected"), "Invalid activity and schedule selected");
             }
+            var schedule = activityRes.Result.Result.Schedules.First(s => s.Id == args.ScheduleId);
+
+            var validateStudents = await IsFamilyMembersValid(args.Students);
+            if(!validateStudents.Succeeded)
+            {
+                return AppResult<CreateOngoingActivityResult>.CreateFailed(validateStudents.Error.Exception, validateStudents.Message);
+            }
 
             var createOngoingActivityRes = await ongoingActivitiesData.CreateOngoingActivity(
                 new Framework.ApiCommand.ApiData.OngoingActivity.Request.CreateOngoingActivityArgs 
@@ -77,6 +90,28 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                     new ApplicationException(createOngoingActivityRes.Result.ErrorInfo?.Message), "An error occured in CreateOngoingActivityHandler");
             }
 
+            // enroll the students
+            var createStudentRes = await studentData.CreateManyStudent(new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs {
+                ActivityId = args.ActivityId,
+                CustomerId = args.CustomerId,
+                NumberOfSessions = schedule.PerUnit2,
+                ScheduleId = schedule.Id,
+                SessionsAttended = 0,
+                Students = args.Students.Select(s => {
+                    return new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs.StudentDetails {
+                        FamilyMemberId = s.FamilyMemberId,
+                        Name = s.Name,
+                        StudentNo = "00"
+                    };
+                })
+            });
+
+            if(!createStudentRes.Succeeded || createStudentRes.Result == null || !createStudentRes.Result.IsSuccess)
+            {
+                return AppResult<CreateOngoingActivityResult>.CreateFailed(
+                    new ApplicationException(createStudentRes.Result?.ErrorInfo?.Message), createStudentRes.Message);
+            }
+
             return AppResult<CreateOngoingActivityResult>.CreateSucceeded(new CreateOngoingActivityResult {
                 CreatedId = createOngoingActivityRes.Result.Result.Id,
             }, "Successfully created ongoing activity");
@@ -85,6 +120,35 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
         catch (Exception ex)
         {
             return AppResult<CreateOngoingActivityResult>.CreateFailed(ex, "An error occured in CreateOngoingActivityHandler");
+        }
+    }
+
+    private async Task<AppResult<bool>> IsFamilyMembersValid(IEnumerable<CreateOngoingActivityArgs.Student> students)
+    {
+        try
+        {
+            var result = await getFamilyMembersHandler.ExecuteAsync(new AccountService.Interactors.GetFamilyMembersArgs {});
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var familyMembers = result.Result.FamilyMembers;
+
+            var familyMembersToDictionary = familyMembers.ToDictionary(f => f.Id);
+            foreach(var item in students)
+            {
+                if(!familyMembersToDictionary.ContainsKey(item.FamilyMemberId))
+                {
+                    return AppResult<bool>.CreateFailed(new ApplicationException("Unable to determine family member"),"Unable to determine family member");
+                }
+                item.Name = familyMembersToDictionary[item.FamilyMemberId].Name;
+            }
+            
+            return AppResult<bool>.CreateSucceeded(true, "All students validated.");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when validating students");
         }
     }
 }

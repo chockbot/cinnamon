@@ -27,6 +27,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IPurchaseOrderData, Modules.DataAccess.PurchaseOrder.PurchaseOrderData>();
         services.AddTransient<Modules.DataAccess.Handlers.IExternalLoginTokenData, Modules.DataAccess.ExternalLoginToken.ExternalLoginTokenData>();
         services.AddTransient<Modules.DataAccess.Handlers.IOngoingActivitiesData, Modules.DataAccess.OngoingActivities.OngoingActivitiesData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IStudentData, Modules.DataAccess.Student.StudentData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IStudentAttendanceData, Modules.DataAccess.StudentAttendance.StudentAttendanceData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -77,6 +79,19 @@ public static class ServiceExtenstion
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();
 
+        // dashboard services
+        services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetStudentAttendanceHandler, Services.DashboardService.GetStudentAttendanceHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetCurrentDateAttendanceHandler, Services.DashboardService.GetCurrentDateAttendanceHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IUpdateStudentAttendanceHandler, Services.DashboardService.UpdateStudentAttendanceHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IUpdateStudentAttendanceCurrentDateHandler, Services.DashboardService.UpdateStudentAttendanceCurrentDateHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetAllStudentAttendanceByIdHandler,Services.DashboardService.GetAllStudentAttendanceByIdHandler>();     
+
+        //OnGoingActivities
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetOngoingActivityByIdHandler, Services.OnGoingActivityService.GetOngoingActivityByIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IUpdateOngoingActivityHadler, Services.OnGoingActivityService.UpdateOngoingActivityHandler>();
+        
         return services;
     }
 }

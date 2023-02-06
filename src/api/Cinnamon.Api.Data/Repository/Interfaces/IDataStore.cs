@@ -18,6 +18,8 @@ public interface IDataStore
     ISubCategory SubCategory { get; } 
     ISearchTags SearchTags { get; }
     IExternalLoginToken ExternalLoginToken { get; }
+    IStudent Student { get; }
+    IStudentAttendance StudentAttendance { get; }
 
     Task EnsureMigrate();
 

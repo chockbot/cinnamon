@@ -41,6 +41,10 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<ExternalLoginToken> ExternalLoginTokens {get; set;}
 
+    public DbSet<Student> Students {get; set;}
+
+    public DbSet<StudentAttendance> StudentAttendances {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -113,6 +117,23 @@ public class ApplicationContext : IdentityDbContext
         // exter login tokens
         modelBuilder.Entity<ExternalLoginToken>().HasIndex(e => e.Token);
         modelBuilder.Entity<ExternalLoginToken>().HasIndex(new string[] {"Token", "Guid"});
+
+        // student
+        modelBuilder.Entity<Student>()
+            .HasOne<Customer>(s => s.Customer);
+        
+        modelBuilder.Entity<Student>()
+            .HasOne<Activity>(s => s.Activity);
+        
+        modelBuilder.Entity<Student>()
+            .HasOne<ActivitySchedule>(s => s.Schedule);
+
+        modelBuilder.Entity<Student>()
+            .HasIndex(s => s.FamilyMemberId);
+
+        // student attendance
+        modelBuilder.Entity<StudentAttendance>()
+            .HasOne<Student>(s => s.Student);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
