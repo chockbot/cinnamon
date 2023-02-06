@@ -81,36 +81,36 @@
         @for (int i = 1; i <= monthEnd.Day; i++)
         {
             var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
-    
             <div class="calendar-body">
                 <p class="calendar-dates">@i</p>
                 @if (calendarItem != null)
                 {
-                    <p>Present</p>
+                    <button class="btn-date">@i</button>
                 }
             </div>
         }
     </section>
 </div>
 @code {
-    private Models.Customer.Profile Model;
-    private Students student = new Students();
-    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    private StudentAttendance studentAttendance = new StudentAttendance();
-    private CustomerProfile profile = new CustomerProfile();
-    private bool isEditRemarks = false;
-    private string remarksLocalState = string.Empty;
     [Parameter]
     public int Id { get; set; }
-    public string monthName = "";
-    public DateTime monthEnd;
-    public int monthsAway = 0;
-    public int numDummyColumn = 0;
-    public int year = 2023;
-    public int month = 0;
+    private Students                student             = new Students();
+    private List<StudentAttendance> studentAttendances  = new List<StudentAttendance>();
+    private StudentAttendance       studentAttendance   = new StudentAttendance();
+    private CustomerProfile         profile             = new CustomerProfile();
+    private bool                    isEditRemarks       = false;
+    private string                  remarksLocalState   = string.Empty;
+    public string                   monthName           = "";
+    public DateTime                 monthEnd;
+    public int                      monthsAway          = 0;
+    public int                      numDummyColumn      = 0;
+    public int                      year                = 2023;
+    public int                      month               = 0;
+
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
+
     protected override async Task OnInitializedAsync()
     {
     var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -127,106 +127,103 @@
     if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
     {
         student = new Students
-                {
-                    Id = result.Result.Result.Id,
-                    CustomerId = result.Result.Result.CustomerId,
-                    Name = result.Result.Result.Name,
-                    Remarks = result.Result.Result.Remarks,
-                    ActivityId = result.Result.Result.ActivityId,
-                    ScheduleId = result.Result.Result.ScheduleId
-                };
+                        {
+                            Id = result.Result.Result.Id,
+                            CustomerId = result.Result.Result.CustomerId,
+                            Name = result.Result.Result.Name,
+                            Remarks = result.Result.Result.Remarks,
+                            ActivityId = result.Result.Result.ActivityId,
+                            ScheduleId = result.Result.Result.ScheduleId
+                        };
     }
     //Get Parent Name
     var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
     if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
     {
         profile = new CustomerProfile
-                {
-                    FirstName = customer.Result.Result.FirstName,
-                    LastName  = customer.Result.Result.LastName
-                };
+                        {
+                            FirstName = customer.Result.Result.FirstName,
+                            LastName  = customer.Result.Result.LastName
+                        };
     }
     //Get Student Attendance
-    var attendance = await dashboardApiHandler.GetStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetStudentAttendanceArgs 
-            {
-                ActivityId= student.ActivityId,
-                ScheduleId = student.ScheduleId
-            },token);
+    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+        {
+            StudentId = student.Id,
+        }, token);
     if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
     {
-        studentAttendances = attendance.Result.Result.OrderBy(a => a.Id).Select(a =>
+        studentAttendances = attendance.Result.Result.Select(a =>
         {
             return new StudentAttendance
             {
-                Id          = a.Id,
-                Date        = a.Date,
-                IsPresent   = a.IsPresent,
-                StudentId   = a.StudentId,
+                Id = a.Id,
+                Date = a.Date,
+                IsPresent = a.IsPresent,
             };
         }).ToList();
-        //Get Student Attendance
-        studentAttendances = studentAttendances.Where(i => i.StudentId == student.Id && i.IsPresent == true).ToList();
+        studentAttendances = studentAttendances.Where(a => a.IsPresent == true).ToList();
     }
     await CreateMonth();
     }
 
     public async Task CreateMonth()
     {
-        var tempDate = DateTime.Now.AddMonths(monthsAway);
-        month = tempDate.Month;
-        year = tempDate.Year;
+    var tempDate = DateTime.Now.AddMonths(monthsAway);
+    month = tempDate.Month;
+    year = tempDate.Year;
 
-        DateTime monthStart = new DateTime(year, month, 1);
-        monthEnd = monthStart.AddMonths(1).AddDays(-1);
-        monthName = monthStart.Month switch
-        {
-            1 => "January",
-            2 => "February",
-            3 => "March",
-            4 => "April",
-            5 => "May",
-            6 => "June",
-            7 => "July",
-            8 => "August",
-            9 => "September",
-            10 => "October",
-            11 => "November",
-            12 => "December",
-            _ => ""
-        };
-        numDummyColumn = (int)monthStart.DayOfWeek;
+    DateTime monthStart = new DateTime(year, month, 1);
+    monthEnd = monthStart.AddMonths(1).AddDays(-1);
+    monthName = monthStart.Month switch
+    {
+        1 => "January",
+        2 => "February",
+        3 => "March",
+        4 => "April",
+        5 => "May",
+        6 => "June",
+        7 => "July",
+        8 => "August",
+        9 => "September",
+        10 => "October",
+        11 => "November",
+        12 => "December",
+        _ => ""
+    };
+    numDummyColumn = (int)monthStart.DayOfWeek;
     }
     private void NavigateToManageStudent()
     {
-        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+    NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
     private void OnEditRemarksClick()
     {
-        isEditRemarks = !isEditRemarks;
-        if (isEditRemarks)
-        {
-            remarksLocalState = student.Remarks;
-        }
-        else 
-        {
-            remarksLocalState = string.Empty;
-        }
+    isEditRemarks = !isEditRemarks;
+    if (isEditRemarks)
+    {
+        remarksLocalState = student.Remarks;
+    }
+    else 
+    {
+        remarksLocalState = string.Empty;
+    }
     }
     private async Task SaveAboutClick()
     {
-        if (isEditRemarks)
-        {
-            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+    if (isEditRemarks)
+    {
+        var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
             {
                 Id = Id,
                 Remarks = remarksLocalState,
             });
 
-            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
-            }
+        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
         }
-        isEditRemarks = false;
+    }
+    isEditRemarks = false;
     }
 }

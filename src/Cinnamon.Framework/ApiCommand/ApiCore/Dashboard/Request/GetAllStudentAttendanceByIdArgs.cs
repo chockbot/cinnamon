@@ -1,11 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
-public class GetStudentAttendanceArgs
+
+public class GetAllStudentAttendanceByIdArgs
 {
     [Required]
+    public int StudentId { get; set; }
     public int ActivityId { get; set; }
-    [Required]
     public int ScheduleId { get; set; }
-    public DateTime Date { get; set; }
-    public bool ForceCreate { get; set; }
 }

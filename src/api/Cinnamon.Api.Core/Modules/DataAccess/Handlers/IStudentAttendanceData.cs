@@ -13,4 +13,5 @@ public interface IStudentAttendanceData
     Task<AppResult<UpdateStudentAttendanceResult>> UpdateStudentAttendance(UpdateStudentAttendanceArgs args);
     Task<AppResult<UpdateManyStudentAttendanceResult>> UpdateManyStudentAttendance(UpdateManyStudentAttendanceArgs args);
     Task<AppResult<UpdateAttendanceResult>> UpdateAttendance(UpdateAttendanceArgs args);
+    Task<AppResult<GetAllStudentAttendanceByIdResult>> GetAllStudentAttendanceById(GetAllStudentAttendanceByIdArgs args);
 }
