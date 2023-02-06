@@ -412,7 +412,153 @@ a,
 .student-attendance .search-text {
   width: 200px;
   background-color: #f3f6fc;
+  border: 0;
 }
+
+.student-attendance
+  .student-attendance-section
+  .table-list
+  table
+  tbody
+  tr
+  td:first-child
+  > div {
+  display: none;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .student-attendance .student-attendance-section .table-list .b-table.table {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .student-attendance .student-attendance-section .table-list table thead {
+    display: none;
+  }
+
+  .student-attendance .student-attendance-section .table-list table tbody tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+    font-size: 14px;
+    border: 1px solid;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    > div {
+    display: block;
+    margin-right: 10px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    .std-name::before {
+    content: "Name: ";
+    font-weight: bold;
+    width: 70%;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)::before {
+    content: "Experience: ";
+    font-weight: bold;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(3) {
+    display: none;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:last-child {
+    border: 0 !important;
+  }
+
+  .student-attendance .activities-schedule-section .swiper-slide .check-button,
+  .student-attendance .student-attendance-section .table-list .check-button,
+  .student-attendance .student-attendance-section .tool-action .check-button {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .student-attendance
+    .activities-schedule-section
+    .swiper-slide
+    .check-button
+    img,
+  .student-attendance .student-attendance-section .table-list .check-button img,
+  .student-attendance
+    .student-attendance-section
+    .tool-action
+    .check-button
+    img {
+    width: 20px;
+    height: auto;
+  }
+
+  .student-attendance .student-attendance-section .tool-action .check-button {
+    margin-left: 0;
+  }
+
+  .student-attendance .search-text {
+    width: 170px;
+  }
+}
+
+/* end dashboard attendance styles */
 
 /* dashboard styling */
 .dashboard-layout .b-layout-sider {

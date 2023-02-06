@@ -67,7 +67,13 @@
                     @foreach (var item in Model.FilteredAttendance)
                     {
                         <TableRow>
-                            <TableRowCell>@item.Name</TableRowCell>
+                            <TableRowCell>
+                                <span class="std-name">@item.Name</span>
+                                <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" 
+                                    Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                    @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                </CircularProgress>
+                            </TableRowCell>
                             <TableRowCell>@item.ActivityName</TableRowCell>
                             <TableRowCell>
                                 <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" 
