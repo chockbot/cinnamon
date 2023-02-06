@@ -5,15 +5,16 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.StudentAttendance;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.StudentAttendance;
 
-public class StudentAttendanceRepository: IStudentAttendanceRepository
+public class StudentAttendanceRepository : IStudentAttendanceRepository
 {
     private readonly IDataStore dataStore;
 
-	public StudentAttendanceRepository (IDataStore dataStore)
-	{
+    public StudentAttendanceRepository(IDataStore dataStore)
+    {
         this.dataStore = dataStore;
     }
 
@@ -22,13 +23,13 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         try
         {
             var includes = new List<Expression<Func<Entities.StudentAttendance, object>>>();
-            if(includeStudent.HasValue && includeStudent.Value)
+            if (includeStudent.HasValue && includeStudent.Value)
             {
                 includes.Add(s => s.Student);
             }
 
             var result = await dataStore.StudentAttendance.FindFirstAsync(s => s.Id == id, includes);
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<StudentAttendanceDTO>.CreateFailed(result.Error.Exception, result.Message);
             }
@@ -41,10 +42,10 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
                 StudentId = studentAttendance.StudentId
             };
 
-            if(includeStudent.HasValue && includeStudent.Value)
+            if (includeStudent.HasValue && includeStudent.Value)
             {
                 var student = studentAttendance.Student;
-                studendDTO.Student = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO 
+                studendDTO.Student = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO
                 {
                     ActivityId = student.ActivityId,
                     CustomerId = student.CustomerId,
@@ -66,33 +67,33 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             return AppResult<StudentAttendanceDTO>.CreateFailed(ex, "An error occured when getting the student attendance");
         }
     }
-    
-    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync(int? count, int? skip, 
+
+    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAllAsync(int? count, int? skip,
         DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null)
     {
         try
         {
             var includes = new List<Expression<Func<Entities.StudentAttendance, object>>>();
-            if(includeStudent.HasValue && includeStudent.Value)
+            if (includeStudent.HasValue && includeStudent.Value)
             {
                 includes.Add(s => s.Student);
             }
 
-            Expression<Func<Entities.StudentAttendance,bool>> filter = 
+            Expression<Func<Entities.StudentAttendance, bool>> filter =
                 a => (date.HasValue ? a.Date == date.Value.Date.SetKindUtc() : true) &&
                     (activityIds != null ? activityIds.Contains(a.Student.ActivityId) : true) &&
                     (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true);
 
             var result = await dataStore.StudentAttendance.FindAsync(filter, count, skip, includes);
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(result.Error.Exception, result.Message);
             }
             var studentAttendances = result.Result;
-            
-            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s => 
+
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s =>
             {
-                var studentAttendance = new StudentAttendanceDTO 
+                var studentAttendance = new StudentAttendanceDTO
                 {
                     Date = s.Date,
                     Id = s.Id,
@@ -100,7 +101,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
                     StudentId = s.StudentId
                 };
 
-                if(includeStudent.HasValue && includeStudent.Value)
+                if (includeStudent.HasValue && includeStudent.Value)
                 {
                     var student = s.Student;
                     studentAttendance.Student = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO {
@@ -131,13 +132,13 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         try
         {
             var result = await dataStore.StudentAttendance.GetAllAsync();
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(result.Error.Exception, result.Message);
             }
             var studentAttendances = result.Result;
-            
-            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s => 
+
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s =>
             {
                 return new StudentAttendanceDTO {
                     Date = s.Date,
@@ -164,7 +165,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             };
 
             var result = await dataStore.StudentAttendance.Add(studentAttendance);
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<StudentAttendanceDTO>.CreateFailed(
                     new ApplicationException("An error occured when creating student"), "An error occured when creating student");
@@ -179,7 +180,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         }
         catch (Exception ex)
         {
-            return  AppResult<StudentAttendanceDTO>.CreateFailed(ex, "An error occured when creating student");
+            return AppResult<StudentAttendanceDTO>.CreateFailed(ex, "An error occured when creating student");
         }
     }
 
@@ -196,7 +197,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             });
 
             var result = await dataStore.StudentAttendance.AddRange(newStudents);
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(
                     new ApplicationException("An error occured when creating students"), "An error occured when creating students");
@@ -222,12 +223,12 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         try
         {
             var studentAttendance = await dataStore.StudentAttendance.GetByIdAsync(id);
-            if(!studentAttendance.Succeeded || studentAttendance.Result == null)
+            if (!studentAttendance.Succeeded || studentAttendance.Result == null)
             {
                 return AppResult<StudentAttendanceDTO>.CreateFailed(
                     new ApplicationException("Can't find student attendance need to update"), "Can't find student attendance need to update");
             }
-            
+
             var studentEntity = new Entities.StudentAttendance {
                 Id = studentAttendance.Result.Id,
                 Date = date.HasValue ? date.Value.Date.SetKindUtc() : studentAttendance.Result.Date,
@@ -235,10 +236,10 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             };
 
             var result = await dataStore.StudentAttendance.Update(studentEntity);
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<StudentAttendanceDTO>.CreateFailed(
-                    new ApplicationException("An error occured when updating student attendance"),"An error occured when updating student attendance");
+                    new ApplicationException("An error occured when updating student attendance"), "An error occured when updating student attendance");
             }
             var updated = result.Result;
 
@@ -254,7 +255,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             return AppResult<StudentAttendanceDTO>.CreateFailed(ex, "An error occured when updating student attendance");
         }
     }
-    
+
     public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> Update(IEnumerable<UpdateManyStudentDTO> students)
     {
         try
@@ -268,7 +269,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             });
 
             var result = await dataStore.StudentAttendance.UpdateRange(studentEntities);
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(
                     new ApplicationException("An error occured when updating student attendance"), "An error occured when updating student attendance");
@@ -303,7 +304,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
             });
 
             var result = await dataStore.StudentAttendance.UpdateStudentAttendance(date, studentEntities);
-            if(!result.Succeeded || result.Result == null)
+            if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(
                     new ApplicationException("An error occured when updating student attendance"), "An error occured when updating student attendance");
@@ -311,7 +312,7 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
 
             return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(result.Result.Select(s => {
                 Framework.ApiCommand.ApiData.DTO.Student.StudentDTO student = new();
-                if(s.Student != null)
+                if (s.Student != null)
                 {
                     student.ActivityId = s.Student.ActivityId;
                     student.CustomerId = s.Student.CustomerId;
@@ -336,6 +337,66 @@ public class StudentAttendanceRepository: IStudentAttendanceRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when updating many student attendance");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAttendanceByIdAsync(int id, int? count, int? skip, DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.StudentAttendance, object>>>();
+            if (includeStudent.HasValue && includeStudent.Value)
+            {
+                includes.Add(s => s.Student);
+            }
+
+            Expression<Func<Entities.StudentAttendance, bool>> filter =
+                a =>(a.StudentId == id ) &&
+                    (date.HasValue ? a.Date == date.Value.Date.SetKindUtc() : true) &&
+                    (activityIds != null ? activityIds.Contains(a.Student.ActivityId) : true) &&
+                    (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true);
+
+            var result = await dataStore.StudentAttendance.FindAsync(filter, count, skip, includes);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var studentAttendances = result.Result;
+
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s =>
+            {
+                var studentAttendance = new StudentAttendanceDTO
+                {
+                    Date = s.Date,
+                    Id = s.Id,
+                    IsPresent = s.IsPresent,
+                    StudentId = s.StudentId
+                };
+
+                if (includeStudent.HasValue && includeStudent.Value)
+                {
+                    var student = s.Student;
+                    studentAttendance.Student = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO
+                    {
+                        ActivityId = student.ActivityId,
+                        CustomerId = student.CustomerId,
+                        Id = student.Id,
+                        Name = student.Name,
+                        NumberOfSessions = student.NumberOfSessions,
+                        Remarks = student.Remarks,
+                        ScheduleId = student.ScheduleId,
+                        SessionsAttended = student.SessionsAttended,
+                        Status = student.Status,
+                        StudentNo = student.StudentNo
+                    };
+                }
+
+                return studentAttendance;
+            }), "Successfully get student attendances");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when getting all student attendance");
         }
     }
 }

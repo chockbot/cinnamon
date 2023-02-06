@@ -98,22 +98,21 @@
 <Modal @ref="modalRef">
     <ModalContent Centered>
         <ModalHeader>
-            <ModalTitle>Student Number</ModalTitle>
-            <CloseButton />
+            <h6 class="col-11 modal-title text-center" style="font-weight:bold">Update Student Number</h6>
+            <button type="button" class="btn-close" @onclick="() => HideModal()" />
         </ModalHeader>
         <ModalBody>
-            <Field>
-                <FieldLabel>Student Number</FieldLabel>
-            </Field>
-            <Label Visibility="Visibility.Invisible">@Id</Label>
+            <Label Visibility="Visibility.Invisible">@Id</Label> 
+                <h5 style="color:#ffa942;font-family:'Nunito';font-weight:bold">Student Number</h5>
             <input type="number" class="form-control" placeholder="Enter Number" required @bind="@jerseyNumber" />
         <ModalFooter>
-            <Button Color="Color.Secondary" Clicked="@HideModal">Cancel</Button>
-                <Button Color="Color.Primary" Clicked="() =>SaveChanges(Id, jerseyNumber)">Save Changes</Button>
+            <Button Color="Color.Secondary" Border="Border.Is0" Clicked="@HideModal"class="btn-update">Cancel</Button>
+            <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>SaveChanges(Id, jerseyNumber)" class="btn-update">Save Changes</Button>
         </ModalFooter>
         </ModalBody>
     </ModalContent>
 </Modal>
+
 @if (showErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
@@ -124,7 +123,7 @@
 @if (showSuccessMessage)
 {
     <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-        <strong>Success!</strong> Student details updated!
+        <strong>Success!</strong> Student number updated!
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }

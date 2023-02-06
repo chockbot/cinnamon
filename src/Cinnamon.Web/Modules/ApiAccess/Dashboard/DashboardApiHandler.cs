@@ -37,6 +37,28 @@ public class DashboardApiHandler : IDashboardApiHandler
         }
     }
 
+    public async Task<AppResult<GetAllStudentAttendanceByIdResult>> GetAllStudentAttendanceById(GetAllStudentAttendanceByIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetAllStudentAttendanceById")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllStudentAttendanceByIdResult>();
+
+            return AppResult<GetAllStudentAttendanceByIdResult>.CreateSucceeded(result, "Successfully getting experience types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllStudentAttendanceByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllStudentAttendanceByIdResult>.CreateFailed(ex, "An error occured when getting experience types api");
+        }
+    }
+
     public async Task<AppResult<GetCurrentAttendanceResult>> GetCurrentAttendance(GetCurrentAttendanceArgs args,string token)
     {
         try
