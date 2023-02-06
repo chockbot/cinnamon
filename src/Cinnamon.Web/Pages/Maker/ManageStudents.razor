@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -59,7 +60,7 @@
                     </TableHeaderCell>
                     <TableHeaderCell class="attendance-header">
                         <label class="sotring-column">
-                           Attendance
+                            Attendance
                         </label>
                     </TableHeaderCell>
                 </TableRow>
@@ -70,7 +71,10 @@
                     <TableRow>
                         <TableRowCell class="name-body">@item.Name</TableRowCell>
                         <TableRowCell class="progress-body">
-                            ProgressBar
+                           <CircularProgress Id='@($"progress-{item.Id}")' Size="50" 
+                                Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                           </CircularProgress>
                         </TableRowCell>
                             <TableRowCell class="experience-body">@item.Title</TableRowCell>
                             <TableRowCell class="student-no">
@@ -341,6 +345,10 @@
             FilteredStudents = manageStudents.OrderByDescending(s => s.Title).ToList();
             IsSortExperienceAsc = true;
         }
+    }
+    private int GetSessionPercentage(double numberSessions, double sessionsAttended)
+    {
+        return (int)((sessionsAttended / numberSessions) * 100);
     }
 }
 

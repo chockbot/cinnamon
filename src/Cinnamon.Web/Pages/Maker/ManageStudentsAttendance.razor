@@ -9,6 +9,7 @@
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IDashboardApiHandler dashboardApiHandler;
 
 <div class="header">
     <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
@@ -79,15 +80,14 @@
         }
         @for (int i = 1; i <= monthEnd.Day; i++)
         {
-            @*var calendarItem =
-            items.FirstOrDefault(n => n.Date == new DateTime(year, month, i));*@
+            var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
     
             <div class="calendar-body">
                 <p class="calendar-dates">@i</p>
-               @* @if (calendarItem != null)
+                @if (calendarItem != null)
                 {
-                    <p>@calendarItem.Name</p>
-                }*@
+                    <p>Present</p>
+                }
             </div>
         }
     </section>
@@ -95,6 +95,8 @@
 @code {
     private Models.Customer.Profile Model;
     private Students student = new Students();
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    private StudentAttendance studentAttendance = new StudentAttendance();
     private CustomerProfile profile = new CustomerProfile();
     private bool isEditRemarks = false;
     private string remarksLocalState = string.Empty;
@@ -109,45 +111,65 @@
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
-    //List<CalendarItem> items = new List<CalendarItem>();
-    //protected override void OnInitialized()
-    //{
-    //    items.Add(new CalendarItem(new DateTime(2020, 11, 11), "Test day 1"));
-    //    items.Add(new CalendarItem(new DateTime(2020, 11, 30), "Test day 2"));
-    //    items.Add(new CalendarItem(new DateTime(2020, 12, 25), "Christmas"));
-    //    items.Add(new CalendarItem(new DateTime(2021, 1, 1), "New Years"));
-    //    CreateMonth();
-    //}
-
     protected override async Task OnInitializedAsync()
     {
-        var result = await ongoingApiHandler.GetOngoingActivityById(Id);
-        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-        {
-            student = new Students
-            {
-                CustomerId = result.Result.Result.CustomerId,
-                Name = result.Result.Result.Name,
-                Remarks = result.Result.Result.Remarks
-            };
-        }
-        var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
-        if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
-        {
-            profile = new CustomerProfile
-            {
-                FirstName = customer.Result.Result.FirstName,
-                LastName  = customer.Result.Result.LastName
-            };
-        }        
-        //var fam= await accountApiHandler.GetFamilyMembers
+    var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        //items.Add(new CalendarItem(new DateTime(2020, 11, 11), "Test day 1"));
-        //items.Add(new CalendarItem(new DateTime(2020, 11, 30), "Test day 2"));
-        //items.Add(new CalendarItem(new DateTime(2020, 12, 25), "Christmas"));
-        //items.Add(new CalendarItem(new DateTime(2021, 1, 1), "New Years"));
-        await CreateMonth();
+    var token = user.FindFirstValue("Token");
+    if (token == null)
+    {
+        // don't have current user login
+        NavigationManager.NavigateTo("explore");
+        return;
     }
+    //Get Student Attendance Details
+    var result = await ongoingApiHandler.GetOngoingActivityById(Id);
+    if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+    {
+        student = new Students
+                {
+                    Id = result.Result.Result.Id,
+                    CustomerId = result.Result.Result.CustomerId,
+                    Name = result.Result.Result.Name,
+                    Remarks = result.Result.Result.Remarks,
+                    ActivityId = result.Result.Result.ActivityId,
+                    ScheduleId = result.Result.Result.ScheduleId
+                };
+    }
+    //Get Parent Name
+    var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
+    if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+    {
+        profile = new CustomerProfile
+                {
+                    FirstName = customer.Result.Result.FirstName,
+                    LastName  = customer.Result.Result.LastName
+                };
+    }
+    //Get Student Attendance
+    var attendance = await dashboardApiHandler.GetStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetStudentAttendanceArgs 
+            {
+                ActivityId= student.ActivityId,
+                ScheduleId = student.ScheduleId
+            },token);
+    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+    {
+        studentAttendances = attendance.Result.Result.OrderBy(a => a.Id).Select(a =>
+        {
+            return new StudentAttendance
+            {
+                Id          = a.Id,
+                Date        = a.Date,
+                IsPresent   = a.IsPresent,
+                StudentId   = a.StudentId,
+            };
+        }).ToList();
+        //Get Student Attendance
+        studentAttendances = studentAttendances.Where(i => i.StudentId == student.Id && i.IsPresent == true).ToList();
+    }
+    await CreateMonth();
+    }
+
     public async Task CreateMonth()
     {
         var tempDate = DateTime.Now.AddMonths(monthsAway);
