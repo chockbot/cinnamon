@@ -9,11 +9,12 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager navigationManager;
 @inject IDashboardApiHandler dashboardApiHandler;
+@inject ISystemApiHandler systemApiHandler;
 @implements IDisposable;
 @attribute [Authorize]
 
 <section class="student-attendance mt-5 overflow-hidden">
-    <h3 class="title">Check Attendance for Today</h3>
+    <h3 class="title">Check Attendance for Today - @Model.ServerDate.ToString("MMMM dd, yyyy")</h3>
     <div class="activities-schedule-section schedule-swiper">
         <div class="swiper-wrapper">
             @foreach (var schedule in Model.Schedules)
@@ -142,14 +143,21 @@
                     ScheduleTitle = s.ScheduleTitle,
                 };
             }));
+
+            checkUncheckAllTimer.Elapsed += ProcessCheckUncheckAll;
+
+            // get server date
+            var dateResult = await systemApiHandler.GetServerDate();
+            if(dateResult.Succeeded && dateResult.Result != null && dateResult.Result.IsSuccess)
+            {
+                Model.ServerDate = dateResult.Result.Result;
+            }
         }
         catch
         {
             Model.IsShowErrorMessage = true;
             Model.ErrorMessage = "An error occured. Please try again later.";
         }
-
-        checkUncheckAllTimer.Elapsed += ProcessCheckUncheckAll;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
