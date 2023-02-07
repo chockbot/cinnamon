@@ -12,6 +12,7 @@
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @using Blazorise.DataGrid
+@attribute [Authorize]
 
 <section class="mt-5 maker-dashboard">
     <div class="header">
@@ -163,106 +164,80 @@
 
     public int Id;
 
-
     protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var token = user.FindFirstValue("Token");
-        if (token == null)
+        try
         {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-
-        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-        {
-            // an error occured
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        var customer = result.Result.Result;
-
-        // check if customer is maker
-        if (!customer.IsMaker)
-        {
-            // account is not maker redirect to explore page
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        Model = new Models.Customer.Profile
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            var token = user.FindFirstValue("Token");
+            if (token == null)
             {
-                Token = token,
-                CustomerProfile = new Models.Entities.CustomerProfile
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            //Get Owned Activities
+            var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs { }, token);
+            if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+            {
+                activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
                 {
-                    About = customer.About,
-                    Birthdate = customer.Birthdate,
-                    Email = customer.Email,
-                    FirstName = customer.FirstName,
-                    LastName = customer.LastName,
-                    Id = customer.Id,
-                    IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
-                    ProfilePath = customer.ProfileImg,
-                },
-            };
-        //Get Owned Activities
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs { }, token);
-        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-        {
-            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                    // map only required fields
+                    return new Activity
+                        {
+                            ActivityId = a.ActivityId,
+                            IsPublished = a.IsPublished,
+                            Title = a.Title
+                        };
+                }).ToList();
+            }
+            //Get Enrolled Experience
+            var student = await ongoingApiHandler.GetAllOngoingActivities();
+            if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
             {
-                // map only required fields
-                return new Activity
-                    {
-                        ActivityId = a.ActivityId,
-                        IsPublished = a.IsPublished,
-                        Title = a.Title
-                    };
-            }).ToList();
+                students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                {
+                    return new Students
+                        {
+                            ActivityId = a.ActivityId,
+                            CustomerId = a.CustomerId,
+                            Id = a.Id,
+                            Name = a.Name,
+                            NumberOfSessions = a.NumberOfSessions,
+                            Remarks = a.Remarks,
+                            ScheduleId = a.ScheduleId,
+                            SessionsAttended = a.SessionsAttended,
+                            Status = a.Status,
+                            StudentNo = a.StudentNo
+                        };
+                }).ToList();
+            }
+            var query = from item in students
+                        join item1 in activities on item.ActivityId equals item1.ActivityId
+                        orderby item.Id
+                        select new ManageStudentsData
+                            {
+                                Id = item.Id,
+                                ActivityId = item.ActivityId,
+                                Title = item1.Title,
+                                CustomerId = item.CustomerId,
+                                Name = item.Name,
+                                NumberOfSessions = item.NumberOfSessions,
+                                SessionsAttended = item.SessionsAttended,
+                                Remarks = item.Remarks,
+                                StudentNo = item.StudentNo,
+                                Status = item.Status
+                            };
+            //List DataGrid Content
+            manageStudents = query.ToList();
+            FilteredStudents = manageStudents;
         }
-        //Get Enrolled Experience
-        var student = await ongoingApiHandler.GetAllOngoingActivities();
-        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        catch (Exception)
         {
-            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
-            {
-                return new Students
-                    {
-                        ActivityId = a.ActivityId,
-                        CustomerId = a.CustomerId,
-                        Id = a.Id,
-                        Name = a.Name,
-                        NumberOfSessions = a.NumberOfSessions,
-                        Remarks = a.Remarks,
-                        ScheduleId = a.ScheduleId,
-                        SessionsAttended = a.SessionsAttended,
-                        Status = a.Status,
-                        StudentNo = a.StudentNo
-                    };
-            }).ToList();
+            showErrorMessage = true;
+            errorMessage = "An error occured. Please try again later.";
         }
-        var query = from item in students
-                    join item1 in activities on item.ActivityId equals item1.ActivityId
-                    orderby item.Id
-                    select new ManageStudentsData
-                         {
-                             Id = item.Id,
-                             ActivityId = item.ActivityId,
-                             Title = item1.Title,
-                             CustomerId = item.CustomerId,
-                             Name = item.Name,
-                             NumberOfSessions = item.NumberOfSessions,
-                             SessionsAttended = item.SessionsAttended,
-                             Remarks = item.Remarks,
-                             StudentNo = item.StudentNo,
-                             Status = item.Status
-                         };
-        //List DataGrid Content
-        manageStudents = query.ToList();
-        FilteredStudents = manageStudents;
+        
     }
     public void ViewAttendence(ManageStudentsData data)
     {
