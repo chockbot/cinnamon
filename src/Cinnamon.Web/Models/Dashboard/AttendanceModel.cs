@@ -19,6 +19,8 @@ public class AttendanceModel
 
     public bool IsProcessingCheckAll {get; set;}
 
+    public DateTime ServerDate {get; set;}
+
     public class Schedule 
     {
         public int ActivityId {get; set;}
