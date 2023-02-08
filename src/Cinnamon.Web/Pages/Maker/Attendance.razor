@@ -55,8 +55,12 @@
                                 <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                             </label>
                         </TableHeaderCell>
-                        <TableHeaderCell></TableHeaderCell>
-                        <TableHeaderCell>
+                        <TableHeaderCell class="sessions-attended-header col-lg-2">
+                            <label class="sotring-column">
+                                Sessions Attended
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell class="present-header col-lg-2">
                             <label class="sotring-column" @onclick="SortByPresent">
                                 Present
                                 <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
@@ -76,17 +80,21 @@
                                 </CircularProgress>
                             </TableRowCell>
                             <TableRowCell>@item.ActivityName</TableRowCell>
-                            <TableRowCell>
+                            <TableRowCell class="sessions-attended-body">
+                                 <center>
                                 <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" 
                                     Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                     @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                                 </CircularProgress>
+                                </center>
                             </TableRowCell>
-                            <TableRowCell>
+                            <TableRowCell class="present-body">
+                                <center>
                                 <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAttendance(item)">
                                     <img class="me-1" src='@(item.IsPresent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
                                     Present
                                 </Button>
+                                </center>
                             </TableRowCell>
                         </TableRow>    
                     }

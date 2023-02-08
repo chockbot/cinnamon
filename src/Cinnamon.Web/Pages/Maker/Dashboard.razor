@@ -13,7 +13,7 @@
 
 <div class="header">
     <p class="title">Experiences</p>
-    <button class="create-button" @onclick="NavigateToCreation">Create</button>
+    <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
 </div>
 @foreach (var item in activities)
 {
@@ -40,10 +40,10 @@
     <hr>
     <div class="xp-actions">
         <div class="active">
-            <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAllStudent(item)">
+            <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
                 <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                Active
-            </Button>
+            </button>
+            <span>Active</span>                
         </div>
         <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
     </div>

@@ -42,9 +42,9 @@
                             <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                         </label>
                     </TableHeaderCell>
-                    <TableHeaderCell>
+                    <TableHeaderCell class="sessions-attended-header col-lg-2 col-md2">
                         <label class="sotring-column">
-                            Session Attended
+                            Sessions Attended
                         </label>
                     </TableHeaderCell>
                     <TableHeaderCell>
@@ -53,13 +53,13 @@
                             <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                         </label>
                     </TableHeaderCell>
-                    <TableHeaderCell>
+                        <TableHeaderCell Class="student-no-header col-lg-2 col-md2">
                         <label class="sotring-column">
                             Student No.
                             <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                         </label>
                     </TableHeaderCell>
-                    <TableHeaderCell class="attendance-header">
+                        <TableHeaderCell class="attendance-header col-lg-2 col-md2">
                         <label class="sotring-column">
                             Attendance
                         </label>
@@ -72,10 +72,12 @@
                     <TableRow>
                         <TableRowCell class="name-body">@item.Name</TableRowCell>
                         <TableRowCell class="progress-body">
+                            <center>
                            <CircularProgress Id='@($"progress-{item.Id}")' Size="50" 
                                 Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                 @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                            </CircularProgress>
+                            </center>
                         </TableRowCell>
                             <TableRowCell class="experience-body">@item.Title</TableRowCell>
                             <TableRowCell class="student-no">
@@ -99,7 +101,7 @@
 <Modal @ref="modalRef">
     <ModalContent Centered>
         <ModalHeader>
-            <h6 class="col-11 modal-title text-center" style="font-weight:bold">Update Student Number</h6>
+            <h6 class="col-11 modal-title text-center" style="font-weight:bold">Student Number</h6>
             <button type="button" class="btn-close" @onclick="() => HideModal()" />
         </ModalHeader>
         <ModalBody>
