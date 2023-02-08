@@ -273,18 +273,24 @@
             @if (!string.IsNullOrEmpty(activity.Description))
             {
                 <hr />
-                <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                    <label class="fw-bold mb-3 detail-label">What's included</label>
-                    <p>
-                        @((MarkupString)activity.SpecificsYouWillProvide)
-                    </p>
-                </div>
-                <hr />
-                <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                    <label class="fw-bold mb-3 detail-label">What you should bring</label>
-                    <p>@((MarkupString)activity.CustomerBringWithThem)</p>
-                </div>
-                <hr />
+                @if(!string.IsNullOrEmpty(activity.SpecificsYouWillProvide))
+                {
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                        <label class="fw-bold mb-3 detail-label">What's included</label>
+                        <p>
+                            @((MarkupString)activity.SpecificsYouWillProvide)
+                        </p>
+                    </div>
+                    <hr />
+                }
+                @if(!string.IsNullOrEmpty(activity.CustomerBringWithThem))
+                {
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                        <label class="fw-bold mb-3 detail-label">What you should bring</label>
+                        <p>@((MarkupString)activity.CustomerBringWithThem)</p>
+                    </div>
+                    <hr />
+                }
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
                     <label class="fw-bold mb-3 detail-label">Requirements</label>
                     <p>
