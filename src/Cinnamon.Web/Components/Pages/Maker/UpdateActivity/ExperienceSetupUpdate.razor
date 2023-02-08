@@ -281,7 +281,7 @@
                             <Button Clicked='() => MoveNext(context)' Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
                         </div>
                         <img id="@context.Id" name="@context.Id" class='experience-image img-banner'
-                            src="@context.Src" data-order="@context.Order" />
+                            src="@context.Src" data-order="@context.Order" data-name="@context.DataName" />
                     </div>
                 </ItemTemplate>
             </DropContainer>
@@ -366,24 +366,27 @@
         Model.Activity.Images.OrderBy(i => i.Order);
         imageItems.Add(new ImageItem {Name = "Image1", Id = "imgSrc1", Group = "Image", 
             Order = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0,
-            Src = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).ImageSrc : emptyImageSrc, 
-            NewOrder = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0});
+            NewOrder = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0,
+            Src = Model.Activity.Images.Count > 0 ? Model.Activity.Images.ElementAt(0).ImageSrc : emptyImageSrc,
+            DataName = ""});
         imageItems.Add(new ImageItem {Name = "Image2", Id = "imgSrc2", Group = "Image",
             Order = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0,
-            Src = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).ImageSrc : emptyImageSrc,
-            NewOrder = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0});
+            NewOrder = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0,
+            Src = Model.Activity.Images.Count > 1 ? Model.Activity.Images.ElementAt(1).ImageSrc : emptyImageSrc,
+            DataName = ""});
         imageItems.Add(new ImageItem {Name = "Image3", Id = "imgSrc3", Group = "Image",
             Order = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0,
-            Src = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).ImageSrc : emptyImageSrc,
-            NewOrder = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0});
+            NewOrder = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0,
+            Src = Model.Activity.Images.Count > 2 ? Model.Activity.Images.ElementAt(2).ImageSrc : emptyImageSrc,
+            DataName = ""});
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
-           await Task.Delay(2000);
-           await jsRuntime
+            await Task.Delay(2000);
+            await jsRuntime
                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide-update .ql-container","#label-specific-editor-update",maxEditorWordLimit);
 
             await jsRuntime
@@ -603,8 +606,18 @@
             imagesErrorMessage = "All images file size must only 10mb";
         }
 
-        await jsRuntime
-                .InvokeVoidAsync("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
+        var images = await jsRuntime
+                        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
+        
+        // update image src state
+        for(int i = 0; i < imageItems.Count; i++)
+        {
+            if(images.Count > i)
+            {
+                imageItems[i].Src = images[i].Url;
+                imageItems[i].DataName = images[i].FileName;
+            }
+        }
         
         isImageUpdated = true;
         
@@ -710,5 +723,12 @@
         public int NewOrder {get; set;}
         public string Group {get; set;}
         public string Src {get; set;}
+        public string DataName {get; set;}
+    }
+
+    private class ImageUrl
+    {
+        public string Url {get; set;}
+        public string FileName {get; set;}
     }
 }
