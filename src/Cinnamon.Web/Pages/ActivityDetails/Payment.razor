@@ -208,7 +208,8 @@
 
     @if (isLoaded)
     {
-        <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember" Model="Model.Customer.FamilyMembers" />
+        <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember" 
+            Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
         <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" />
     }
 
@@ -439,7 +440,7 @@
     {
         // add members
         var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs {
-            FamilyMembers = Model.Customer.FamilyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+            FamilyMembers = familyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name.Trim()))
                                 .Select(m => {
                                     return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
                                         BirthMonth = m.BirthMonth,
@@ -453,7 +454,7 @@
 
         // update members
         var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs {
-            FamilyMembers = Model.Customer.FamilyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+            FamilyMembers = familyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name.Trim()))
                                 .Select(m => {
                                     return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
                                         BirthMonth = m.BirthMonth,
@@ -464,6 +465,13 @@
                                     };
                                 })
         }, Model.Token);
+
+        var deletedMembers = Model.Customer.FamilyMembers.Where(f => !familyMembers.Any(s => s.Id == f.Id));
+
+        var deletedResult = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs {
+            Ids = deletedMembers.Select(f => f.Id),
+        }, Model.Token);
+
 
         // fetch again the updated family members
         var updatedMembers = await accountApiHandler.GetFamilyMembers(Model.Token);
