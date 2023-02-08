@@ -9,17 +9,18 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager navigationManager;
 @inject IDashboardApiHandler dashboardApiHandler;
+@inject ISystemApiHandler systemApiHandler;
 @implements IDisposable;
 @attribute [Authorize]
 
 <section class="student-attendance mt-5 overflow-hidden">
-    <h3 class="title">Check Attendance for Today</h3>
+    <h3 class="title">Check Attendance for Today - @Model.ServerDate.ToString("MMMM dd, yyyy")</h3>
     <div class="activities-schedule-section schedule-swiper">
         <div class="swiper-wrapper">
             @foreach (var schedule in Model.Schedules)
             {
                 <div class="swiper-slide shadow">
-                    <p class="schedule-title">@schedule.ScheduleTitle</p>
+                    <p class="schedule-title">@schedule.ActivityTitle</p>
                     <p class="schedule-time">@schedule.ScheduleDescription</p>
                     <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
                         <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
@@ -142,14 +143,21 @@
                     ScheduleTitle = s.ScheduleTitle,
                 };
             }));
+
+            checkUncheckAllTimer.Elapsed += ProcessCheckUncheckAll;
+
+            // get server date
+            var dateResult = await systemApiHandler.GetServerDate();
+            if(dateResult.Succeeded && dateResult.Result != null && dateResult.Result.IsSuccess)
+            {
+                Model.ServerDate = dateResult.Result.Result;
+            }
         }
         catch
         {
             Model.IsShowErrorMessage = true;
             Model.ErrorMessage = "An error occured. Please try again later.";
         }
-
-        checkUncheckAllTimer.Elapsed += ProcessCheckUncheckAll;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

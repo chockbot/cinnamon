@@ -69,34 +69,28 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
             }
             var attendances = attendanceRes.Result.Result;
 
-            // don't have entries yet, then need to create attendance
-            if(attendances.Count() == 0 && args.ForceCreate)
+            // get enrolled students ativity schedule
+            var studentRes = await studentData.GetAllStudents(new Framework.ApiCommand.ApiData.Student.Request.GetAllStudentArgs {
+                ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId,
+                Status = "ACTIVE"
+            });
+            if(!studentRes.Succeeded || studentRes.Result == null || !studentRes.Result.IsSuccess)
             {
-                // get enrolled students ativity schedule
-                var studentRes = await studentData.GetAllStudents(new Framework.ApiCommand.ApiData.Student.Request.GetAllStudentArgs {
-                    ActivityId = args.ActivityId,
-                    ScheduleId = args.ScheduleId,
-                    Status = "ACTIVE"
-                });
-                if(!studentRes.Succeeded || studentRes.Result == null || !studentRes.Result.IsSuccess)
-                {
-                    return AppResult<GetStudentAttendanceResult>.CreateFailed(
-                        new ApplicationException(studentRes.Result?.ErrorInfo?.Message), studentRes.Message);
-                }
-                var students = studentRes.Result.Result;
+                return AppResult<GetStudentAttendanceResult>.CreateFailed(
+                    new ApplicationException(studentRes.Result?.ErrorInfo?.Message), studentRes.Message);
+            }
+            var students = studentRes.Result.Result;
 
-                // don't have enrolled students in the associated activity schedule
-                // return success with empty students
-                if(students.Count() == 0)
-                {
-                    return AppResult<GetStudentAttendanceResult>.CreateSucceeded(new GetStudentAttendanceResult {
-                        StudentAttendaces = Enumerable.Empty<GetStudentAttendanceResult.StudentAttendace>()
-                    }, "Don't heve yet students enrolled in the specified activity schedule");
-                }
+            // get student enrolled that don't have yet attendance
+            var studentsDontHaveAttendance = students.Where(s => !attendances.Any(at => at.StudentId == s.Id));
 
+            // don't have entries yet, then need to create attendance
+            if(studentsDontHaveAttendance.Count() > 0 && args.ForceCreate)
+            {
                 // create student attendance
                 DateTime date = DateTime.Now.Date;
-                var studentsToCreate = students.Select(s => {
+                var studentsToCreate = studentsDontHaveAttendance.Select(s => {
                     return new Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Request.CreateManyStudentAttendanceArgs.StudentAttendaceDetails {
                         Date = date,
                         IsPresent = false,

@@ -274,7 +274,7 @@
                             <Button Clicked='() => MoveNext(context)' Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
                         </div>
                         <img id="@context.Id" name="@context.Id" class='experience-image img-banner invalid'
-                            src="https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg" />
+                            src="@context.Src" data-name="@context.DataName" />
                     </div>
                 </ItemTemplate>
             </DropContainer>
@@ -332,6 +332,8 @@
 
     private IList<ImageItem> imageItems = new List<ImageItem>();
 
+    private string emptyImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
@@ -347,9 +349,9 @@
 
     protected override void OnInitialized()
     {
-        imageItems.Add(new ImageItem {Name = "Image1", Id = "imgSrc1", Group = "Image"});
-        imageItems.Add(new ImageItem {Name = "Image2", Id = "imgSrc2", Group = "Image"});
-        imageItems.Add(new ImageItem {Name = "Image3", Id = "imgSrc3", Group = "Image"});
+        imageItems.Add(new ImageItem {Name = "Image1", Id = "imgSrc1", Group = "Image", DataName = "", Src = emptyImageSrc});
+        imageItems.Add(new ImageItem {Name = "Image2", Id = "imgSrc2", Group = "Image", DataName = "", Src = emptyImageSrc});
+        imageItems.Add(new ImageItem {Name = "Image3", Id = "imgSrc3", Group = "Image", DataName = "", Src = emptyImageSrc});
         AddSchedule();
     }
 
@@ -564,9 +566,19 @@
             imagesErrorMessage = "All images file size must only 10mb";
         }
 
-        await jsRuntime
-                .InvokeVoidAsync("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
-        
+        var images = await jsRuntime
+                        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
+
+        // update image src state
+        for(int i = 0; i < imageItems.Count; i++)
+        {
+            if(images.Count > i)
+            {
+                imageItems[i].Src = images[i].Url;
+                imageItems[i].DataName = images[i].FileName;
+            }
+        }
+
         StateHasChanged();
     }
 
@@ -598,5 +610,13 @@
         public string Name {get; set;}
         public string Id {get; set;}
         public string Group {get; set;}
+        public string DataName {get; set;}
+        public string Src {get; set;}
+    }
+
+    private class ImageUrl
+    {
+        public string Url {get; set;}
+        public string FileName {get; set;}
     }
 }
