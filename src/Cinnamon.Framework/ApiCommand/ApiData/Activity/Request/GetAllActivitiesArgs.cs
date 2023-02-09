@@ -12,4 +12,5 @@ public class GetAllActivities
     public bool? IncludeSchedules {get; set;}
     public bool? IncludeImages {get; set;}
     public string? Ids {get; set;}
+    public string? LikeHandler {get; set;}
 }

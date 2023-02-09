@@ -65,6 +65,39 @@ public class CreateActivityHandler : ICreateActivityHandler
             }
             int id = Convert.ToInt32(customerId);
 
+            // create activity unique handler
+            // remove special characters for creating handler name
+            char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
+                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>'};
+            var removedCharacters = args.Title.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            var handlerName = string.Join("-",string.Join("",removedCharacters.Where(s => !string.IsNullOrEmpty(s))).Split(" ").Where(s => !string.IsNullOrEmpty(s))).ToLower();
+
+            var queryActivitiesLikeHandlerName = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {
+                LikeHandler = handlerName
+            });
+            if(!queryActivitiesLikeHandlerName.Succeeded || queryActivitiesLikeHandlerName.Result == null || !queryActivitiesLikeHandlerName.Result.IsSuccess)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(
+                    new ApplicationException(queryActivitiesLikeHandlerName.Result?.ErrorInfo?.Message), queryActivitiesLikeHandlerName.Message);
+            }
+            var activitiesHandlers = queryActivitiesLikeHandlerName.Result.Result.OrderBy(a => a.Handler);
+            if(activitiesHandlers.Count() > 0)
+            {
+                var splittedLastHandler = activitiesHandlers.Last().Handler.Split("-");
+                if(splittedLastHandler.Count() > 0)
+                {
+                    var lastIdentifier = splittedLastHandler.Last();
+                    if(int.TryParse(lastIdentifier, out int intResult))
+                    {
+                        handlerName = $"{handlerName}-{intResult +1}";
+                    }
+                    else 
+                    {
+                        handlerName = $"{handlerName}-1";
+                    }
+                }
+            }
+
             var activityRes = await activityData.CreateActivity(new Framework.ApiCommand.ApiData.Activity.Request.CreateActivityArgs {
                 ActivityLevel = args.ActivityLevel,
                 AdditionalRequirements = args.AdditionalRequirements,
@@ -95,7 +128,8 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SkillLevel = args.SkillLevel,
                 SpecificsYouWillProvide = htmlSanitizer.Sanitize(args.SpecificsYouWillProvide),
                 SubCategoryId = args.SubCategoryId,
-                Title = args.Title
+                Title = args.Title,
+                Handler = handlerName
             });
 
             if(!activityRes.Succeeded || activityRes.Result == null)
