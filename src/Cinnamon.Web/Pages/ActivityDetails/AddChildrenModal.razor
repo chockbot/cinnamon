@@ -17,10 +17,7 @@
                             </p>
                             @for (int i = 0; i < localStateFamilyMembers.Count; i++)
                             {
-                                if (localStateFamilyMembers[i].Id == 0)
-                                {
-                                    <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
-                                }
+                                <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
                             }
                             <Div Display="Display.Flex">
                                 <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop"
