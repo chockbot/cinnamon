@@ -39,6 +39,28 @@ public class ActivityController : ControllerBase
         }
     }
 
+    [Route("GetActivityByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivityResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetActivityById(string handler, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.GetByHandlerAsync(handler, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult( new GetActivityResult { Result = result.Result, IsSuccess = true});
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetAllActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
@@ -120,7 +142,7 @@ public class ActivityController : ControllerBase
                 args.Description, args.Price, args.ScheduleIndicator, args.Remarks, args.IsPublished, args.Address1,
                 args.Address2, args.District, args.City,args.Subdivision,args.Region,args.Barangay,args.PostalCode, args.SpecificsYouWillProvide, args.CustomerBringWithThem, args.AdditionalRequirements,
                 args.ActivityLevel, args.SkillLevel, args.MinimumAge, args.CanAdultsJoin, args.Searchtag1, args.Searhtag2,
-                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId);
+                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId, args.Handler);
 
             if (!result.Succeeded || result.Result == null)
             {

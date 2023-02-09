@@ -83,7 +83,8 @@ public class ApplicationContext : IdentityDbContext
             .HasForeignKey<SearchTags>(s => s.ActivityId);
         
         // add index to handler
-        modelBuilder.Entity<Activity>().HasIndex(a => a.Handler);
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.Handler);
 
         // experience type
         modelBuilder.Entity<ExperienceType>()

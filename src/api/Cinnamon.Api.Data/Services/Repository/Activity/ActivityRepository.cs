@@ -20,7 +20,7 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel, 
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId)
+        int experienceCategoryId, int subCategoryId, string handler)
     {
         try
         {
@@ -64,7 +64,8 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = customerId,
                 ExperienceCategoryId = experienceCategoryId,
                 ExperienceTypeId = experienceTypeId,
-                SubCategoryId = subCategoryId
+                SubCategoryId = subCategoryId,
+                Handler = handler
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -150,6 +151,7 @@ public class ActivityRepository : IActivityRepository
                 SkillLevel = skillLevel,
                 SpecificsYouWillProvide = specificsYouWillProvide,
                 Title = title,
+                Handler = handler
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(createdActivityDTO, "Activity successfully created");
@@ -196,6 +198,7 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
+                Handler = activity.Handler
             };
 
             // address fields
@@ -318,6 +321,7 @@ public class ActivityRepository : IActivityRepository
                     SubCategoryId = a.SubCategoryId ?? 0,
                     CreatedBy = a.CreatedBy,
                     ExperienceTypeId = a.ExperienceTypeId,
+                    Handler = a.Handler
                 };
 
                 // address fields
@@ -429,6 +433,7 @@ public class ActivityRepository : IActivityRepository
                     CreatedBy = a.CreatedBy,
                     ExperienceTypeId = a.ExperienceTypeId,
                     MapDetails = a.MapDetails,
+                    Handler = a.Handler
                 };
             });
 
@@ -478,6 +483,128 @@ public class ActivityRepository : IActivityRepository
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
+                Handler = activity.Handler
+            };
+
+            // address fields
+            if(includeAddres.HasValue && includeAddres.Value && activity.Address != null)
+            {
+                activityDTO.Address1 = activity.Address.Address1;
+                activityDTO.Address2 = activity.Address.Address2;
+                activityDTO.City = activity.Address.City;
+                activityDTO.District = activity.Address.District;
+                activityDTO.Subdivision = activity.Address.Subdivision;
+                activityDTO.Region = activity.Address.Region;
+                activityDTO.Barangay = activity.Address.Barangay;
+                activityDTO.PostalCode = activity.Address.PostalCode;
+            }
+
+            // description fields
+            if(includeDescription.HasValue && includeDescription.Value && activity.ActivityDescription != null)
+            {
+                var description = activity.ActivityDescription;
+                activityDTO.ActivityLevel = description.ActivityLevel;
+                activityDTO.AdditionalRequirements = description.AdditionalRequirements;
+                activityDTO.CanAdultsJoin = description.CanAdultsJoin;
+                activityDTO.CustomerBringWithThem = description.CustomerBringWithThem;
+                activityDTO.Description = description.Description;
+                activityDTO.MinimumAge = description.MinimumAge;
+                activityDTO.SkillLevel = description.SkillLevel;
+                activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+            }
+
+            // schedules
+            if(includeSchedules.HasValue && includeSchedules.Value && activity.Schedules != null)
+            {
+                activityDTO.Schedules = activity.Schedules.Select(s => {
+                    return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        PerUnit2 = s.PerUnit2
+                    };
+                }).ToList();
+            }
+
+            // search tags
+            if(includeSearchTags.HasValue && includeSearchTags.Value && activity.SearchTag != null)
+            {
+                var tags = new List<string>();
+                if(activity.SearchTag.SearchTag1 != null) tags.Add(activity.SearchTag.SearchTag1);
+                if(activity.SearchTag.SearchTag2 != null) tags.Add(activity.SearchTag.SearchTag2);
+                if(activity.SearchTag.SearchTag3 != null) tags.Add(activity.SearchTag.SearchTag3);
+                if(activity.SearchTag.SearchTag4 != null) tags.Add(activity.SearchTag.SearchTag4);
+                if(activity.SearchTag.SearchTag5 != null) tags.Add(activity.SearchTag.SearchTag5);
+
+                activityDTO.SearchTags = tags;
+            }
+
+            // activity images
+            if(includeImages.HasValue && includeImages.Value && activity.Images != null)
+            {
+                activityDTO.Images = activity.Images.Select(s => {
+                    return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                        ActivityId = s.ActivityId,
+                        Id = s.Id,
+                        ImageLocation = s.ImageLocation,
+                        ImageName = s.ImageName,
+                        Order = s.Order
+                    };
+                }).ToList();
+            }
+
+            return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when getting activity by id");
+        }
+    }
+
+    public async Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
+        bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            if(includeAddres.HasValue && includeAddres.Value) includes.Add(a => a.Address);
+            if(includeDescription.HasValue && includeDescription.Value) includes.Add(a => a.ActivityDescription);
+            if(includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
+            if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
+            if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+
+            Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
+                (customerId.HasValue ? a.CreatedBy == customerId : true) &&
+                (isActive.HasValue ? a.IsPublished == isActive : true);
+
+            var result = await dataStore.Activity.FindFirstAsync(filter, includes);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var activity = result.Result;
+
+            var activityDTO = new ActivityDTO
+            {
+                Id = activity.Id,
+                SubTitle = activity.Subtitle,
+                Title = activity.Title,
+                Description = activity.Description,
+                Price = activity.Price,
+                Remarks = activity.Remarks,
+                IsPublished = activity.IsPublished,
+                ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
+                ExperienceTypeId = activity.ExperienceTypeId,
+                SubCategoryId = activity.SubCategoryId ?? 0,
+                CreatedBy = activity.CreatedBy,
+                MapDetails = activity.MapDetails,
+                Handler = activity.Handler
             };
 
             // address fields
@@ -719,7 +846,8 @@ public class ActivityRepository : IActivityRepository
                 Title = activity.Title,
                 SubTitle = activity.Subtitle,
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
-                SubCategoryId = activity.SubCategoryId ?? 0
+                SubCategoryId = activity.SubCategoryId ?? 0,
+                Handler = activity.Handler
             }, "Successfully updated activity details");
 
         }
