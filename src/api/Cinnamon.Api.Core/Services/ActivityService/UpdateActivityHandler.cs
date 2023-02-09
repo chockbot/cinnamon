@@ -150,7 +150,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SkillLevel = args.SkillLevel,
                 SpecificsYouWillProvide = htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
-                Title = args.Title
+                Title = args.Title,
             };
 
             if(args.SearchTags != null)
@@ -288,7 +288,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SkillLevel = updated.SkillLevel,
                 SpecificsYouWillProvide = updated.SpecificsYouWillProvide,
                 SubCategoryId = updated.SubCategoryId,
-                Title = updated.Title
+                Title = updated.Title,
+                Handler = updated.Handler
             }, "Successfully update activity details");
         }
         catch (Exception ex)

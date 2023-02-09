@@ -21,4 +21,6 @@ public interface IActivityApiHandler
     Task<AppResult<UpdateActivityImageOrderResult>> UpdateActivityImageOrder(UpdateActivityImageOrderArgs args, string token);
     Task<AppResult<GetActivitiesByCategoriesResult>> GetActivitiesByCategories(int id, GetActivityArgs? args = null);
     Task<AppResult<GetEnrolledActivitiesResult>> GetEnrolledActivities(GetEnrolledActivitiesArgs args, string token);
+    Task<AppResult<GetActivityResult>> GetOwnedActivityByHandler(string handler, string token, GetActivityArgs? args = null);
+    Task<AppResult<GetActivityResult>> GetActivityByHandler(string handler, GetActivityArgs? args = null);
 } 

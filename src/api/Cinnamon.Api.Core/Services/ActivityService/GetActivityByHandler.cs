@@ -6,32 +6,32 @@ using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
-public class GetActivityHandler : IGetActivityHandler
+public class GetActivityByHandler : IGetActivityByHandler
 {
     private readonly IActivityData activityData;
 
-    public GetActivityHandler(IActivityData activityData)
+    public GetActivityByHandler(IActivityData activityData)
     {
         this.activityData = activityData;
     }
 
-    public AppResult<GetActivityResult> Execute(GetActivityArgs args)
+    public AppResult<GetActivityByHandlerResult> Execute(GetActivityByHandlerArgs args)
     {
         try
         {
-            return ExecuteAsync(args).Result;
+            return ExecuteAsync(args).Result;   
         }
         catch (Exception ex)
         {
-            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured in GetActivityHandler");
+            return AppResult<GetActivityByHandlerResult>.CreateFailed(ex, "An error occured in GetActivityByHandler");
         }
     }
 
-    public async Task<AppResult<GetActivityResult>> ExecuteAsync(GetActivityArgs args)
+    public async Task<AppResult<GetActivityByHandlerResult>> ExecuteAsync(GetActivityByHandlerArgs args)
     {
         try
         {
-            var result = await activityData.GetActivityById(args.ActivityId, 
+            var result = await activityData.GetActivityByHandler(args.Handler, 
                 new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs {
                     IncludeAddress = args.IncludeActivityAddress,
                     IncludeDescription = args.IncludeActivityDescription,
@@ -45,17 +45,17 @@ public class GetActivityHandler : IGetActivityHandler
 
             if(!result.Succeeded || result.Result == null)
             {
-                return AppResult<GetActivityResult>.CreateFailed(new ApplicationException(result.Message), result.Message);
+                return AppResult<GetActivityByHandlerResult>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
 
             if(result.Succeeded && !result.Result.IsSuccess)
             {
-                return AppResult<GetActivityResult>.CreateFailed(
-                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetActivityHandler");
+                return AppResult<GetActivityByHandlerResult>.CreateFailed(
+                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetActivityByHandler");
             }
             var activity = result.Result.Result;
 
-            var activityEntity = new GetActivityResult {
+            var activityEntity = new GetActivityByHandlerResult {
                 ActivityLevel = activity.ActivityLevel,
                 AdditionalRequirements = activity.AdditionalRequirements,
                 Address1 = activity.Address1,
@@ -83,9 +83,8 @@ public class GetActivityHandler : IGetActivityHandler
                 Title = activity.Title,
                 CreatedBy = activity.CreatedBy,
                 MarDetails = activity.MapDetails,
-                Handler = activity.Handler,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
-                    return new GetActivityResult.ActivitySchedule {
+                    return new GetActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,
                         DateTime = s.DateTime,
                         Name = s.Name,
@@ -96,22 +95,22 @@ public class GetActivityHandler : IGetActivityHandler
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice
                     };
-                }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),
+                }) : Enumerable.Empty<GetActivityByHandlerResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
-                    return new GetActivityResult.ActivityImage {
+                    return new GetActivityByHandlerResult.ActivityImage {
                         Id = i.Id,
                         ImageSrc = i.ImageLocation,
                         Name = i.ImageName,
                         Order = i.Order
                     };
-                }) : Enumerable.Empty<GetActivityResult.ActivityImage>()
+                }) : Enumerable.Empty<GetActivityByHandlerResult.ActivityImage>()
             };
 
-            return AppResult<GetActivityResult>.CreateSucceeded(activityEntity, "Successfully get activity");
+            return AppResult<GetActivityByHandlerResult>.CreateSucceeded(activityEntity, "Successfully get activity");
         }
         catch (Exception ex)
         {
-            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured in GetActivityHandler");
+            return AppResult<GetActivityByHandlerResult>.CreateFailed(ex, "An error occured in GetActivityByHandler");
         }
     }
 }

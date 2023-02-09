@@ -29,6 +29,7 @@ public class ActivityDTO
     public bool CanAdultsJoin {get; set;}
     public int CreatedBy { get; set;}   
     public string MapDetails { get; set; }
+    public string Handler {get; set;}
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}

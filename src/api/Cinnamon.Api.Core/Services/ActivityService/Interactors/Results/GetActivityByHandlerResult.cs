@@ -1,6 +1,6 @@
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
-public class GetActivityResult 
+public class GetActivityByHandlerResult 
 {
     public int Id {get; set;}
     public int ExperienceTypeId {get; set;}

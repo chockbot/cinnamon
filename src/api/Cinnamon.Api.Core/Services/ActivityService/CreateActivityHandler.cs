@@ -222,6 +222,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
+                Handler = activity.Handler,
                 ActivitySchedules = createdSchedules.Result.Result.Select(s => {
                     return new CreateActivityResult.ActivitySchedule {
                         DateTime = s.DateTime,
