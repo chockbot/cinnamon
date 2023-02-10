@@ -69,6 +69,39 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                     new ApplicationException("Email not yet verified"),"Email not yet verified");
             }
 
+            // create customer unique handler
+            // remove special characters for creating handler name
+            char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
+                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>'};
+            var removedCharacters = $"{args.FirstName} {args.LastName}".Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            var handlerName = string.Join("-",string.Join("",removedCharacters.Where(s => !string.IsNullOrEmpty(s))).Split(" ").Where(s => !string.IsNullOrEmpty(s))).ToLower();
+
+            var queryCustomerHandler = await customerData.GetAllCustomers(new Framework.ApiCommand.ApiData.Customer.Request.GetAllCustomersArgs {
+                HandlerLike = handlerName
+            });
+            if(!queryCustomerHandler.Succeeded || queryCustomerHandler.Result == null || !queryCustomerHandler.Result.IsSuccess)
+            {
+                return AppResult<SubmitRegisterResult>.CreateFailed(
+                    new ApplicationException(queryCustomerHandler.Result?.ErrorInfo?.Message), queryCustomerHandler.Message);
+            }
+            var customerHandlers = queryCustomerHandler.Result.Result.OrderBy(a => a.Handler);
+            if(customerHandlers.Count() > 0)
+            {
+                var splittedLastHandler = customerHandlers.Last().Handler.Split("-");
+                if(splittedLastHandler.Count() > 0)
+                {
+                    var lastIdentifier = splittedLastHandler.Last();
+                    if(int.TryParse(lastIdentifier, out int intResult))
+                    {
+                        handlerName = $"{handlerName}-{intResult +1}";
+                    }
+                    else 
+                    {
+                        handlerName = $"{handlerName}-1";
+                    }
+                }
+            }
+            
             var createCustomer = await customerData.CreateCustomerWithPassword(new CreateCustomerWithPasswordArgs {
                 Birthdate = args.Birthdate,
                 Email = args.Email,
@@ -76,7 +109,8 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 FirstName = args.FirstName,
                 LastName = args.LastName,
                 ProfilePath = args.ProfilePath,
-                Password = args.Password
+                Password = args.Password,
+                Handler = handlerName
             });
 
             if(!createCustomer.Succeeded)
@@ -98,7 +132,8 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 FirstName = created.FirstName,
                 Id = created.Id,
                 LastName = created.LastName,
-                ProfileImg = created.ProfileImg
+                ProfileImg = created.ProfileImg,
+                Handler = created.Handler
             }, "Successfully registered");
         }
         catch (Exception ex)

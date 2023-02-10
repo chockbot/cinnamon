@@ -1,4 +1,5 @@
-﻿using Cinnamon.Api.Data.Extensions;
+﻿using System.Linq.Expressions;
+using Cinnamon.Api.Data.Extensions;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
@@ -165,11 +166,15 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified, int? count, int? skip)
+    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified, int? count, int? skip, string? handlerLike = null)
     {
         try
         {
-            var result = await dataStore.Customer.FindAsync(i => isVerified.HasValue ? i.IsVerified == isVerified.Value : true,count, skip);
+            Expression<Func<Entities.Customer,bool>> filter = 
+                a => (isVerified.HasValue ? a.IsVerified == isVerified.Value : true) &&
+                    (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower()));
+
+            var result = await dataStore.Customer.FindAsync(filter,count, skip);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(result.Error.Exception, result.Message);

@@ -110,7 +110,8 @@ public class AccountController : ControllerBase
                     FirstName = objResult.FirstName,
                     LastName = objResult.LastName,
                     ProfileImg = objResult.ProfileImg,
-                    Id = objResult.Id
+                    Id = objResult.Id,
+                    Handler = objResult.Handler
                 },
                 IsSuccess = true,
             });
@@ -154,7 +155,8 @@ public class AccountController : ControllerBase
                     FirstName = objResult.FirstName,
                     LastName = objResult.LastName,
                     ProfileImg = objResult.ProfileImg,
-                    Id = objResult.Id
+                    Id = objResult.Id,
+                    Handler = objResult.Handler
                 },
                 IsSuccess = true,
             });
@@ -335,7 +337,8 @@ public class AccountController : ControllerBase
                     About = profile.About,
                     Birthdate = profile.Birthdate,
                     IsVerified = profile.IsVerified,
-                    ProfileImg = profile.ProfileImagePath
+                    ProfileImg = profile.ProfileImagePath,
+                    Handler = profile.Handler
                 },
                 IsSuccess = true
             });
