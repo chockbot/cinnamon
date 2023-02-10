@@ -98,6 +98,7 @@ public class ApplicationContext : IdentityDbContext
         // customer
         modelBuilder.Entity<Customer>().HasIndex(c => c.UserId);
         modelBuilder.Entity<Customer>().HasIndex(c => c.Email);
+        modelBuilder.Entity<Customer>().HasIndex(c => c.Handler);
 
         modelBuilder.Entity<Customer>()
             .HasMany<FamilyMember>(c => c.FamilyMembers)
