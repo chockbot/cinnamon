@@ -1,4 +1,4 @@
-﻿@page "/Explore/{Id:int}"
+﻿@page "/Explore/{Identifier}"
 @inject IJSRuntime jsRuntime
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -333,7 +333,7 @@
 @code {
     IJSObjectReference module;
     [Parameter]
-    public int Id { get; set; }
+    public string Identifier { get; set; }
     public DetailActivityModel           Model              = new DetailActivityModel();
     public Activity                      activity           = new Activity();
     public CustomerProfile               customerDetail     = new CustomerProfile();
@@ -342,14 +342,22 @@
     private SchedulesModal               ModalSched { get; set; }
     protected override async Task OnInitializedAsync()
     {
+        bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
         //Get Activity by Id
-        var ActivityListData = await activityApiHandler.GetActivity(Id, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+        var ActivityListData = isIdentifierInt ? await activityApiHandler.GetActivity(intResult, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
             {
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
                 IncludeAtivitySchedules = true
+            }) :
+            await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true,
+                IncludeAtivitySchedules = true
             });
+
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
             var result = ActivityListData.Result.Result;

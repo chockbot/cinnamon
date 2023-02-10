@@ -1,6 +1,6 @@
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
-public class GetActivityResult 
+public class GetOwnedActivityByHandlerResult 
 {
     public int Id {get; set;}
     public int ExperienceTypeId {get; set;}
@@ -27,8 +27,6 @@ public class GetActivityResult
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
-    public int CreatedBy { get; set; }
-    public string MarDetails { get; set; }
     public string Handler {get; set;}
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}

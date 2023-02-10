@@ -78,6 +78,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         IsPublished = e.IsPublished,
                         CreatedBy = e.CreatedBy,
                         MapDetails = e.MapDetails,
+                        Handler = e.Handler,
                         ActivitySchedules = e.Schedules != null ? e.Schedules.Select(s => {
                             return new GetAllActivitiesResult.Activity.ActivitySchedule
                             {

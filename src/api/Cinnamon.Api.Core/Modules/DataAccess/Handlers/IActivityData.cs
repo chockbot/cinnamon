@@ -6,6 +6,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 public interface IActivityData
 {
     Task<AppResult<GetActivityResult>> GetActivityById(int id, GetActivityArgs? args = null);
+    Task<AppResult<GetActivityResult>> GetActivityByHandler(string handler, GetActivityArgs? args = null);
     Task<AppResult<GetAllActivitiesResult>> GetAllActivities(GetAllActivities args);
     Task<AppResult<CreatedActivityResult>> CreateActivity(CreateActivityArgs args);
     Task<AppResult<UpdatedActivityResult>> UpdateActivity(UpdateActivity args);
