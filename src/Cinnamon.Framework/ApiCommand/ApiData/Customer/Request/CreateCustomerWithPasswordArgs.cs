@@ -20,4 +20,6 @@ public class CreateCustomerWithPasswordArgs
     public string ProfilePath { get; set; }
     public bool IsMaker { get; set; } = false;
     public bool ExternalLogin { get; set; } = false;
+    [Required]
+    public string Handler {get; set;}
 }
