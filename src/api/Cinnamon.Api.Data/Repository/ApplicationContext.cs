@@ -85,6 +85,9 @@ public class ApplicationContext : IdentityDbContext
         // add index to handler
         modelBuilder.Entity<Activity>()
             .HasIndex(a => a.Handler);
+        
+        modelBuilder.Entity<Activity>()
+            .HasOne<Customer>(a => a.Customer);
 
         // experience type
         modelBuilder.Entity<ExperienceType>()
