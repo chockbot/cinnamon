@@ -16,5 +16,8 @@ public class UpdateStudentAttendnaceArgs
         public int ScheduleId {get; set;}
         [Required]
         public bool IsPresent {get; set;}
+
+        [Required]
+        public int SessionAttended { get; set; }
     }
 }

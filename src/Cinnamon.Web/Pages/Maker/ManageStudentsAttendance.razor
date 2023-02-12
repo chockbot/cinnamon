@@ -4,6 +4,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
+@using System.Globalization;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -11,86 +12,115 @@
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IDashboardApiHandler dashboardApiHandler;
 
-<div class="header">
-    <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
-    <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students - Attendance </h3>
-</div>
+@if(studentAttendances.Count!=0){
+    <div class="header">
+        <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
+        <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students - Attendance </h3>
+    </div>
 
-<div class="student-details-container">
-    <div class="student-details">
-        <div class="student-details-major">
-          <p class="">Name : <span>@student.Name</span></p>
-          <p class="">Parent : <span>@profile.FirstName @profile.LastName</span></p>
-          <p class="">Present Days : <span class="days-present">@student.SessionsAttended</span></p>
-        </div>
+    <div class="student-details-container">
+        <div class="student-details">
+            <div class="student-details-major">
+                <p class="">Name : <span>@student.Name</span></p>
+                <p class="">Parent : <span>@profile.FirstName @profile.LastName</span></p>
+                <p class="">Present Days : <span class="days-present">@student.SessionsAttended</span></p>
+            </div>
 
 
-          <Div Margin="Margin.Is2.FromTop.OnMobile.FromTop.OnDesktop">
+            <Div Margin="Margin.Is2.FromTop.OnMobile.FromTop.OnDesktop">
                 <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                     <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
-                    <p class="" style="color:#FFA942">Remarks</p>
-                    <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3" @onclick="OnEditRemarksClick">
-                            <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" style="color:white"/>
-                    </Button>
+                        <p class="" style="color:#FFA942">Remarks</p>
+                        <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3" @onclick="OnEditRemarksClick">
+                            <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" style="color:white" />
+                        </Button>
                     </Div>
                     @if (isEditRemarks)
                     {
                         <Button Border="Border.Is0" TextColor="TextColor.White" Color="Color.Primary" class="btn-save" @onclick="SaveAboutClick">Save</Button>
                     }
                 </Div>
-                    @if (!isEditRemarks)
-                    {
-                        <p class="text-remarks">@student.Remarks</p>
-                    }
-                    else
-                    {
-                        <MemoEdit Border="Border.Rounded" @bind-Text="remarksLocalState" Rows="5" class="memo-edit"/>
-                    }
-          </Div>
+                @if (!isEditRemarks)
+                {
+                    <p class="text-remarks">@student.Remarks</p>
+                }
+                else
+                {
+                    <MemoEdit Border="Border.Rounded" @bind-Text="remarksLocalState" Rows="5" class="memo-edit" />
+                }
+            </Div>
+        </div>
     </div>
-</div>
 
-<div class="instruction">
-    <span class="instruction-image"><img src="images/circle.png"></span>
-    <p class="word">represents attended sessions. Tap the desired date to change.</p>
-</div>
+    <div class="instruction">
+        <span class="instruction-image"><img src="images/circle.png"></span>
+        <p class="word">represents attended sessions. Tap the desired date to change.</p>
+    </div>
 
-@* CALENDAR *@
-<div class="wrap-content calendar">
-    <div class="calendar-header">
-       
-        <h1 class="calendar-header-details">@monthName @year</h1>
+    @* CALENDAR *@
+    <div class="wrap-content calendar">
+        <div class="calendar-header">
+
+            <h1 class="calendar-header-details">@monthName @year</h1>
             <div class="calendar-arrow">
                 <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }"><img src="images/calender icon left.png"></button>
                 <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }"><img src="images/calender icon right.png"></button>
             </div>
+        </div>
+        <hr />
+        <hr />
+        <section>
+            @foreach (var days in CalendarDays)
+            {
+                <div class="calendar-days">
+                    <p>@days</p>
+                </div>
+            }
+            @for (int i = 0; i < numDummyColumn; i++)
+            {
+                <div></div>
+            }
+            @for (int i = 1; i <= monthEnd.Day; i++)
+            {
+                var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                <div class="calendar-body">
+                    @if (calendarItem != null && calendarItem.IsPresent == true)
+                    {
+                        //Display
+                        <button class="btn-date" @onclick="() => UpdateAttendance(calendarItem, Token)">@i</button>
+                    }
+                    else if (calendarItem != null && calendarItem.IsPresent == false)
+                    {
+                        //Update
+                        <button class="btn-date-absent" @onclick="() => UpdateAttendance(calendarItem, Token)">@i</button>
+                    }
+                    else
+                    {
+                        //Create
+                        var student = studentAttendances.FirstOrDefault();
+                        DateTime currentDate = DateTime.Today;
+                        passDates = new DateTime(year, month, i);
+                        
+                        if (passDates <= currentDate)
+                        {
+                            DateTime selectedDate = passDates;
+                            <button class="btn-date-absent" @onclick="() => CreateAttendance(student, Token, selectedDate)">@i</button>
+                        }
+                        else
+                        {
+                             <p class="calendar-dates">@i</p>
+                        }
+                    }
+                </div>
+            }
+        </section>
     </div>
-    <hr />
-    <hr />
-    <section>
-        @foreach (var days in CalendarDays)
-        {
-            <div class="calendar-days">
-                <p>@days</p>
-            </div>
-        }
-        @for (int i = 0; i < numDummyColumn; i++)
-        {
-            <div></div>
-        }
-        @for (int i = 1; i <= monthEnd.Day; i++)
-        {
-            var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
-            <div class="calendar-body">
-                <p class="calendar-dates">@i</p>
-                @if (calendarItem != null)
-                {
-                    <button class="btn-date">@i</button>
-                }
-            </div>
-        }
-    </section>
-</div>
+}
+<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
+    <AlertMessage>
+        @ErrorMessage
+    </AlertMessage>
+</Alert>
 @code {
     [Parameter]
     public int Id { get; set; }
@@ -106,6 +136,10 @@
     public int                      numDummyColumn      = 0;
     public int                      year                = 2023;
     public int                      month               = 0;
+    public string                   Token;
+    public DateTime passDates;
+    public bool IsShowErrorMessage { get; set; }
+    public string ErrorMessage { get; set; }
 
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
@@ -116,6 +150,7 @@
     var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
     var token = user.FindFirstValue("Token");
+    Token = token;
     if (token == null)
     {
         // don't have current user login
@@ -127,48 +162,52 @@
     if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
     {
         student = new Students
-            {
-                Id = result.Result.Result.Id,
-                CustomerId = result.Result.Result.CustomerId,
-                Name = result.Result.Result.Name,
-                Remarks = result.Result.Result.Remarks,
-                ActivityId = result.Result.Result.ActivityId,
-                ScheduleId = result.Result.Result.ScheduleId,
-                NumberOfSessions = result.Result.Result.NumberOfSessions,
-                SessionsAttended = result.Result.Result.SessionsAttended
-            };
+                {
+                    Id = result.Result.Result.Id,
+                    CustomerId = result.Result.Result.CustomerId,
+                    Name = result.Result.Result.Name,
+                    Remarks = result.Result.Result.Remarks,
+                    ActivityId = result.Result.Result.ActivityId,
+                    ScheduleId = result.Result.Result.ScheduleId,
+                    NumberOfSessions = result.Result.Result.NumberOfSessions,
+                    SessionsAttended = result.Result.Result.SessionsAttended
+                };
     }
     //Get Parent Name
     var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
     if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
     {
         profile = new CustomerProfile
-                        {
-                            FirstName = customer.Result.Result.FirstName,
-                            LastName  = customer.Result.Result.LastName
-                        };
+                            {
+                                FirstName = customer.Result.Result.FirstName,
+                                LastName  = customer.Result.Result.LastName
+                            };
     }
     //Get Student Attendance
     var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-        {
-            StudentId = student.Id,
-        }, token);
+            {
+                StudentId = student.Id,
+                ActivityId =student.ActivityId
+            }, token);
     if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
     {
         studentAttendances = attendance.Result.Result.Select(a =>
         {
             return new StudentAttendance
-            {
-                Id = a.Id,
-                Date = a.Date,
-                IsPresent = a.IsPresent,
-            };
+                {
+                    Id = a.Id,
+                    Date = a.Date,
+                    IsPresent = a.IsPresent,
+                    ActivityId = a.ActivityId,
+                    NumberOfSessions = a.NumberOfSessions,
+                    SessionsAttended = a.SessionsAttended,
+                    ScheduleId = a.ScheduleId,
+                    StudentId = a.StudentId
+                };
         }).ToList();
-        studentAttendances = studentAttendances.Where(a => a.IsPresent == true).ToList();
     }
     await CreateMonth();
     }
-
     public async Task CreateMonth()
     {
     var tempDate = DateTime.Now.AddMonths(monthsAway);
@@ -197,7 +236,7 @@
     }
     private void NavigateToManageStudent()
     {
-    NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
     private void OnEditRemarksClick()
     {
@@ -216,10 +255,10 @@
     if (isEditRemarks)
     {
         var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-            {
-                Id = Id,
-                Remarks = remarksLocalState,
-            });
+                {
+                    Id = Id,
+                    Remarks = remarksLocalState,
+                });
 
         if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
@@ -227,5 +266,71 @@
         }
     }
     isEditRemarks = false;
+    }
+    private async void UpdateAttendance(StudentAttendance studentAttendance, string token)
+    {
+        try
+        {
+            studentAttendance.IsPresent = !studentAttendance.IsPresent;
+            if (studentAttendance.IsPresent)
+            {
+                studentAttendance.SessionsAttended += 1;
+            }
+            else
+            {
+                studentAttendance.SessionsAttended -= 1;
+            }
+            //check date if date is student attendance
+            var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
+                {
+                    Id         = studentAttendance.Id,
+                    Date       = studentAttendance.Date,
+                    IsPresent  = studentAttendance.IsPresent
+                }, token);
+
+            if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
+            {
+                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                    {
+                        Id = studentAttendance.StudentId,
+                        SessionsAttended = studentAttendance.SessionsAttended,
+                    });
+            }
+        //Refresh Page
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/"+Id, true);
+        }
+        catch (Exception ex)
+        {
+            IsShowErrorMessage = true;
+            ErrorMessage = "An error occured. Please try again later.";
+        }
+    }
+    private async void CreateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
+    {
+        try
+        {
+            var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
+            {
+                AttendanceDate = presentDate,
+                IsPresent = true,
+                StudentId = studentAttendance.StudentId
+            }, token);
+
+            if (create.Succeeded && create.Result.IsSuccess)
+            {
+            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                    {
+                        Id = studentAttendance.StudentId,
+                        SessionsAttended = studentAttendance.SessionsAttended + 1,
+                    });
+            }
+            //Refresh Page
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + Id, true);
+        }
+        catch (Exception ex)
+        {
+            IsShowErrorMessage = true;
+            ErrorMessage = "An error occured. Please try again later.";
+        }
     }
 }

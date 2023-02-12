@@ -15,7 +15,30 @@ public class DashboardApiHandler : IDashboardApiHandler
     {
         flurlClient = flurlFac.Get(config.ApiUrl);
     }
-    
+
+    public async Task<AppResult<CreateStudentAttendanceResult>> CreateStudentAttendance(CreateStudentAttendanceArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/CreateStudentAttendance")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateStudentAttendanceResult>();
+
+            return AppResult<CreateStudentAttendanceResult>.CreateSucceeded(result, "Successfully posting create activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateStudentAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateStudentAttendanceResult>.CreateFailed(ex, "An error occured when posting create activity api");
+        }
+    }
+
     public async Task<AppResult<GetActivitySchedulesResult>> GetActivitySchedules(string token)
     {
         try
@@ -103,6 +126,28 @@ public class DashboardApiHandler : IDashboardApiHandler
         }
     }
 
+    public async Task<AppResult<UpdateAttendanceResult>> UpdateAttendance(UpdateAttendanceArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Dashboard/UpdateAttendance")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateAttendanceResult>();
+
+            return AppResult<UpdateAttendanceResult>.CreateSucceeded(result, "Successfully posting update attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateAttendanceResult>.CreateFailed(ex, "An error occured when posting update attendance api");
+        }
+    }
+
     public async Task<AppResult<UpdateStudentAttendanceResult>> UpdateStudentAttendances(UpdateStudentAttendnaceArgs args,string token)
     {
         try
@@ -124,4 +169,5 @@ public class DashboardApiHandler : IDashboardApiHandler
             return AppResult<UpdateStudentAttendanceResult>.CreateFailed(ex, "An error occured when getting current attendance api");
         }
     }
+
 }

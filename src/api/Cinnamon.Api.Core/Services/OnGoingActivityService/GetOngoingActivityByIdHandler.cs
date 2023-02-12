@@ -29,7 +29,7 @@ public class GetOngoingActivityByIdHandler: IGetOngoingActivityByIdHandler
     {
         try
         {
-            var result = await studentData.GetStudentById(args.Id);
+            var result = await studentData.GetStudentById(args.Id, args.ActivityId);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<GetOngoingActivityByIdResult>.CreateFailed(new ApplicationException(result.Message), result.Message);

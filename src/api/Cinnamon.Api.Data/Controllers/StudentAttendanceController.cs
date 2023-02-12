@@ -237,10 +237,10 @@ public class StudentAttendanceController : ControllerBase
             }
 
             var result = 
-                args.Id != 0 || args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
-                    args.IsIncludeStudent.HasValue || args.ActivityIds != null || args.ScheduleIds != null ?
-                await studentAttendanceRepository.GetAttendanceByIdAsync(args.Id,args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
-                    date, args.IsIncludeStudent, args.ActivityIds, args.ScheduleIds) :
+                args.Id != 0 || args.ActivityId !=0 || args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
+                    args.IsIncludeStudent.HasValue || args.ScheduleIds != null ?
+                await studentAttendanceRepository.GetAttendanceByIdAsync(args.Id,args.ActivityId,args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
+                    date, args.IsIncludeStudent, args.ScheduleIds) :
                 await studentAttendanceRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -249,9 +249,9 @@ public class StudentAttendanceController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = args.Id != 0 || args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
-                    args.IsIncludeStudent.HasValue || args.ActivityIds != null || args.ScheduleIds != null ?
-                await studentAttendanceRepository.GetAttendanceByIdAsync(0, null, null) :
+            var all = args.Id != 0 || args.ActivityId !=0|| args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
+                    args.IsIncludeStudent.HasValue || args.ScheduleIds != null ?
+                await studentAttendanceRepository.GetAttendanceByIdAsync(0,0, null, null) :
                 await studentAttendanceRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
