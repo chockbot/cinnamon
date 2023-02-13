@@ -56,11 +56,12 @@
     <div class="row mrow editor-specific-will-provide">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Include specifics on what you will provide
+                Include specifics on what things you will provide 
+                during your experience (optional)
             </label>
             <p>
-                You can make your guests feel at home by giving them food and drinks, special 
-                equipment, concert tickets, or anything else unique.
+                This can be training equipment, free notebook, free uniform or anything that 
+                you would want to share to your customers to make their experience unique.
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -89,10 +90,14 @@
     <div class="row mrow editor-customer-requirement-provide">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                What customers must bring with them
+               What should your customers bring 
+               with them? (optional)
             </label>
             <p>
-                Help them get ready by being specific and writing each thing down on its own list.
+                Should your customer have their own tablet or computer for their online 
+                experience? How about their own water bottle for their face to face experience?
+                Describe the things that they need to prepare and bring for the best experience 
+                possible.
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -121,7 +126,7 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Customer Requirements
+                Your requirements to your customers.
             </label>
             <p>
                 Remember that the person who books your experience may also book spots for other people. Put them here if there are strict rules about age, skill level, or certifications.
@@ -231,13 +236,13 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Sub-category missing? Suggest up to five!
+                Sub-category missing? You can suggest!
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
             <input type="text" class="form-control" @onblur="OnSuggestSubCategoryLeave" 
                 placeholder="Sub category name" size="@SearchTagLength" @bind-value="SearchTag">
-            <label>Suggest sub-category for approval</label>
+            <label>Suggested sub-category is subject for approval</label>
         </div>
     </div>
     @*Upload Experience Pictures*@
@@ -484,8 +489,8 @@
     {
         //if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
         if(!IsAllSchedulesValid()) return false;
-        if(string.IsNullOrEmpty(Model.Activity.SpecificsYouWillProvide)) return false;
-        if(string.IsNullOrEmpty(Model.Activity.CustomerBringWithThem)) return false;
+        //if(string.IsNullOrEmpty(Model.Activity.SpecificsYouWillProvide)) return false;
+        //if(string.IsNullOrEmpty(Model.Activity.CustomerBringWithThem)) return false;
         if(string.IsNullOrEmpty(Model.Activity.ActivityLevel)) return false;
         if(string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
         if(Model.Activity.ExperienceCategoryId <= 0) return false;
