@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.OngoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
@@ -16,15 +17,18 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IHttpContextAccessor httpContext;
     private readonly IGetActivityHandler getActivityHandler;
     private readonly ICreateOngoingActivityHandler createOngoingActivityHandler;
+    private readonly ICustomerPayedNotificationHandler customerPayedNotificationHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
-        IGetActivityHandler getActivityHandler, ICustomerData customerData, ICreateOngoingActivityHandler createOngoingActivityHandler)
+        IGetActivityHandler getActivityHandler, ICustomerData customerData, ICreateOngoingActivityHandler createOngoingActivityHandler,
+        ICustomerPayedNotificationHandler customerPayedNotificationHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
         this.getActivityHandler = getActivityHandler;
         this.customerData = customerData;
         this.createOngoingActivityHandler = createOngoingActivityHandler;
+        this.customerPayedNotificationHandler = customerPayedNotificationHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -54,7 +58,11 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             // check activity id
             var activityRes = await getActivityHandler.ExecuteAsync(
-                    new ActivityService.Interactors.GetActivityArgs {ActivityId = args.ActivityId, IncludeAtivitySchedules = true});
+                    new ActivityService.Interactors.GetActivityArgs {
+                        ActivityId = args.ActivityId, 
+                        IncludeAtivitySchedules = true,
+                        IncludeCustomer = true});
+
             if(!activityRes.Succeeded || activityRes.Result == null)
             {
                 return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("Invalid activity id provided"), "Invalid activity id provided");
@@ -126,6 +134,26 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             {
                 return AppResult<PurchaseOrderResult>.CreateFailed(
                     new ApplicationException(createOngoingActivityRes.Message), createOngoingActivityRes.Message);
+            }
+
+            // send email notification
+            var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
+                Amount = overallTotal,
+                CoachName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
+                CustomerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
+                Email = customerRes.Result.Result.Email,
+                ExperienceName = activityRes.Result.Title,
+                PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
+                PurchaseDate = DateTime.Now,
+                Members = args.Students.Select(s => {
+                    return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.IncludedMembers {
+                        Name = s.Name
+                    };
+                })
+            });
+            if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
+            {
+                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(emailNotifyRes.Message), emailNotifyRes.Message);
             }
 
             return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {Id = result.Result.Result.Id}, "Successfully create submit purchase order");
