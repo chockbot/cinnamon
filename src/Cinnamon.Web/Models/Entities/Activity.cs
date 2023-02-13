@@ -30,6 +30,9 @@ public class Activity
     public int CreatedBy { get; set; }
     public string MapDetails { get; set; }
     public string Handler {get; set;}
+    public string ExperienceType { get; set; }
+    public string ExperienceCategory { get; set; }
+    public string SubCategory { get; set; }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
     public IList<ActivityImage> Images {get; set;}
