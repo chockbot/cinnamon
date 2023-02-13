@@ -1,4 +1,4 @@
-@page "/maker/profile/{Id:int}"
+@page "/maker/profile/{Id}"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Modals;
@@ -78,7 +78,7 @@
 @code 
 {
     [Parameter]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
     public List<Activity> activities = new List<Activity>();
 
@@ -101,7 +101,8 @@
     protected override async Task OnInitializedAsync()
     {
         //Get Customer By Id
-        var customer = await accountApiHandler.GetCustomerById(Id);
+        bool isIdUsed = int.TryParse(Id.Trim().ToString(), out int intId);
+        var customer = isIdUsed ? await accountApiHandler.GetCustomerById(intId) : await accountApiHandler.GetMakerDetailByHandler(Id.Trim());
         if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
         {
             var args = customer.Result.Result;
@@ -180,7 +181,7 @@
             }).ToList();
         }
         //Get Maker Activities
-        activities = activities.Where(p => p.CreatedBy == Id).ToList();
+        activities = activities.Where(p => p.CreatedBy == customerDetail.Id).ToList();
         //var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         //var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user});

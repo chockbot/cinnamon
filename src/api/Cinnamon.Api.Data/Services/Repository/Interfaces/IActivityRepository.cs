@@ -7,15 +7,16 @@ public interface IActivityRepository
 {
     Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false);
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false);
     
     Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false);
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false);
 
     Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
-        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null);
+        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
+        bool includeCustomer = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync();
     Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price,
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district,
@@ -29,5 +30,5 @@ public interface IActivityRepository
         string? searchtag3, string? searchtag4, string? searchtag5, int? experienceCategoryId, int? subCategoryId);
     Task<AppResult<ActivityDTO>> GetActivitieByCategoriesAsync(int experienceCategoryId, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false);
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false);
 }

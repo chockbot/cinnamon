@@ -121,7 +121,7 @@
                             <div class="d-flex flex-column m-2">
                                 <span style="font-size:0.7rem;">Owner</span>
                                 <span class="fw-bold text-capitalize" style="font-size:1rem;">@customerDetail.FirstName @customerDetail.LastName</span>
-                                    <a class="text-decoration-none" href="/maker/profile/@activity.CreatedBy">View Profile</a>
+                                    <a class="text-decoration-none" href="/maker/profile/@(activity.Owner != null && !string.IsNullOrEmpty(activity.Owner.Handler) ? activity.Owner.Handler : activity.CreatedBy.ToString() )">View Profile</a>
                             </div>
                             <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
                                 <img class="px-3" src="images/details_profile_badge.png" />
@@ -349,13 +349,15 @@
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
-                IncludeAtivitySchedules = true
+                IncludeAtivitySchedules = true,
+                IncludeCustomer = true
             }) :
             await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
-                IncludeAtivitySchedules = true
+                IncludeAtivitySchedules = true,
+                IncludeCustomer = true
             });
 
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
@@ -414,6 +416,11 @@
                             Name = i.Name
                         };
                     }).ToList(),
+                    Owner = result.Owner != null ? new CustomerProfile {
+                        // map only required fields
+                        Id = result.Owner.Id,
+                        Handler = result.Owner.Handler
+                    } : null
                 };
         }
         // Get experience types

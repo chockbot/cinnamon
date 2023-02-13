@@ -76,6 +76,7 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                 IncludeSchedules = args.IncludeAtivitySchedules,
                 IsActive = args.IsActive,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
+                IncludeCustomer = args.IncludeCustomer
             });
 
             if(!activitiesRes.Succeeded || activitiesRes.Result == null || !activitiesRes.Result.IsSuccess)
@@ -133,7 +134,11 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                                 Name = i.ImageName,
                                 Order = i.Order
                             };
-                        }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivityImage>()
+                        }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivityImage>(),
+                        Owner = e.Owner != null ? new GetEnrolledActivitiesResult.CustomerOwner {
+                            Handler = e.Owner.Handler,
+                            Id = e.Owner.Id
+                        } : null
                     };
                 })
             }, "Successfully get enrolled activities");

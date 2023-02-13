@@ -40,6 +40,7 @@ public class AccountController : ControllerBase
     private readonly IExternalLoginHandler externalLoginHandler;
     private readonly IExternalRegisterHandler externalRegisterHandler;
     private readonly IGetExternalLoginDetailHandler getExternalLoginDetailHandler;
+    private readonly IGetCustomerByHandler getCustomerByHandler;
 
     #endregion
 
@@ -52,7 +53,7 @@ public class AccountController : ControllerBase
         IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
         IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
-        IGetExternalLoginDetailHandler getExternalLoginDetailHandler)
+        IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -76,6 +77,7 @@ public class AccountController : ControllerBase
         this.externalLoginHandler = externalLoginHandler;
         this.externalRegisterHandler = externalRegisterHandler;
         this.getExternalLoginDetailHandler = getExternalLoginDetailHandler;
+        this.getCustomerByHandler = getCustomerByHandler;
     }
 
     [Route("Register")]
@@ -596,6 +598,7 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
+
     [Route("GetProfilePicture")]
     [HttpGet]
     [ProducesResponseType(typeof(GetProfilePictureResult), StatusCodes.Status200OK)]
@@ -622,6 +625,7 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("UploadGovernmentIds")]
     [HttpPost]
     [ProducesResponseType(typeof(UploadGovernmentIdsResult), StatusCodes.Status201Created)]
@@ -711,7 +715,8 @@ public class AccountController : ControllerBase
                     FirstName = objResult.FirstName,
                     IsMaker = objResult.IsMaker,
                     LastName = objResult.LastName,
-                    ProfileImg = objResult.ProfileImg
+                    ProfileImg = objResult.ProfileImg,
+                    About = objResult.About
                 },
                 IsSuccess = true,
             });
@@ -722,49 +727,43 @@ public class AccountController : ControllerBase
         }
     }
 
-    //[Route("GetCustomerById/{id}")]
-    //[HttpGet]
-    //[ProducesResponseType(typeof(GetCustomerByIdResult), StatusCodes.Status200OK)]
-    //public async Task<IActionResult> GetCustomerById(int id)
-    //{
-    //    try
-    //    {
-    //        var result = await getCustomerByIdHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByIdArgs
-    //        {
-    //            Id = id,
-    //        });
+    [Route("GetCustomerByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomerByIdResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetMakerDetailByHandler(string handler)
+    {
+        try
+        {
+            var result = await getCustomerByHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByHandlerArgs {
+                Handler = handler
+            });
 
-    //        if (!result.Succeeded || result.Result == null)
-    //        {
-    //            return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-    //        }
-    //        var objResult = result.Result;
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
 
-    //        return new JsonResult(new GetCustomerByIdResult
-    //        {
-    //            Result = new CustomerDTO
-    //            {
-    //                Id = objResult.Id,
-    //                Email = objResult.Email,
-    //                FirstName = objResult.FirstName,
-    //                About = objResult.About,
-    //                Birthdate = objResult.Birthdate,
-    //                DateJoined = objResult.DateJoined,
-    //                ExternalLogin = objResult.ExternalLogin,
-    //                IsMaker = objResult.IsMaker,
-    //                LastName = objResult.LastName,
-    //                IsVerified = objResult.IsVerified,
-    //                ProfileImg = objResult.ProfileImg
-    //            },
-    //            IsSuccess = true,
-    //        });
-    //    }
-    //    catch (Exception ex)
-    //    {
-    //        return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-    //    }
-    //}
-
+            return new JsonResult(new GetCustomerByIdResult
+            {
+                Result = new CustomerDTO
+                {
+                    Id = objResult.Id,
+                    FirstName = objResult.FirstName,
+                    IsMaker = objResult.IsMaker,
+                    LastName = objResult.LastName,
+                    ProfileImg = objResult.ProfileImg,
+                    About = objResult.About
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 
     [Route("GetCustomerByEmail/{email}")]
     [HttpGet]

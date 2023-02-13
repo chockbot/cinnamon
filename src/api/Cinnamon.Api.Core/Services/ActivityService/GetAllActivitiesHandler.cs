@@ -35,7 +35,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 IncludeSchedules = args.IncludeAtivitySchedules,
                 IncludeImages = args.IncludeActivityImages,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -99,7 +100,11 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                                 Name = i.ImageName,
                                 Order = i.Order
                             };
-                        }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivityImage>()
+                        }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivityImage>(),
+                        Owner = e.Owner != null ? new GetAllActivitiesResult.Activity.CustomerOwner {
+                            Handler = e.Owner.Handler,
+                            Id = e.Owner.Id
+                        } : null
                     };
                 })
             }, "Successfully get all activities");

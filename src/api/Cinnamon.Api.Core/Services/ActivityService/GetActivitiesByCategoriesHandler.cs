@@ -36,7 +36,8 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
                 IncludeImages = args.IncludeActivityImages,
                 IncludeSchedules = args.IncludeAtivitySchedules,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -94,7 +95,11 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
                                 Name = i.ImageName,
                                 Order = i.Order
                             };
-                        }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivityImage>()
+                        }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivityImage>(),
+                        Owner = a.Owner != null ? new GetActivitiesByCategoriesResult.Activity.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id = a.Owner.Id
+                        } : null,
                     };
                 })
             }, "Successfully get activities by categories");

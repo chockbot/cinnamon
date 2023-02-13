@@ -50,7 +50,8 @@ public class GetOwnedActivityByHandler : IGetOwnedActivityByHandler
                 IncludeActivityImages = args.IncludeActivityImages,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -106,7 +107,11 @@ public class GetOwnedActivityByHandler : IGetOwnedActivityByHandler
                         Name = i.Name,
                         Order = i.Order
                     };
-                }) : Enumerable.Empty<GetOwnedActivityByHandlerResult.ActivityImage>()
+                }) : Enumerable.Empty<GetOwnedActivityByHandlerResult.ActivityImage>(),
+                Owner = activity.Owner != null ? new GetOwnedActivityByHandlerResult.CustomerOwner {
+                    Handler = activity.Owner.Handler,
+                    Id = activity.Owner.Id
+                } : null
             };
 
             return AppResult<GetOwnedActivityByHandlerResult>.CreateSucceeded(activityEntity, "Successfully get owned activity");

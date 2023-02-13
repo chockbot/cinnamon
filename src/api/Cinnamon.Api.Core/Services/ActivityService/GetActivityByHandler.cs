@@ -40,6 +40,7 @@ public class GetActivityByHandler : IGetActivityByHandler
                     IncludeSearchTags = args.IncludeActivitySearchTags,
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
+                    IncludeCustomer = args.IncludeCustomer
                 }
             );
 
@@ -103,7 +104,11 @@ public class GetActivityByHandler : IGetActivityByHandler
                         Name = i.ImageName,
                         Order = i.Order
                     };
-                }) : Enumerable.Empty<GetActivityByHandlerResult.ActivityImage>()
+                }) : Enumerable.Empty<GetActivityByHandlerResult.ActivityImage>(),
+                Owner = activity.Owner != null ? new GetActivityByHandlerResult.CustomerOwner {
+                    Handler = activity.Owner.Handler,
+                    Id = activity.Owner.Id
+                } : null,
             };
 
             return AppResult<GetActivityByHandlerResult>.CreateSucceeded(activityEntity, "Successfully get activity");

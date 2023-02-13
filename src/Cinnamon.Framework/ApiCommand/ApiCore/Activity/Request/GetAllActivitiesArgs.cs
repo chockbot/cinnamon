@@ -9,4 +9,5 @@ public class GetAllActivitiesArgs
     public bool? IncludeActivitySearchTags { get; set; }
     public bool? IncludeActivityImages { get; set; }
     public bool? IsActive { get; set; }
+    public bool? IncludeCustomer {get; set;}
 }
