@@ -423,22 +423,24 @@
 @code 
 {
     private ModalLogin signinModal;
-    public ExploreModel                  Model              = new ExploreModel();
-    public Profile                       CustomerModel      = new Profile();
-    public ExperienceType                exptype            = new ExperienceType();
-    public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
-    public List<ExperienceType>          experiencesType    = new List<ExperienceType>();
-    public List<Activity>                activities         = new List<Activity>();
-    public List<Activity>                filteredActivities = new List<Activity>();
-    public string                        searchValue        = string.Empty;
-    public string                        filterId           = string.Empty;
-    public int                           cnt                = 0;
-    private string                       value              { get; set; }
-    public bool                          clickButton        { get; set; }
-    public  ClaimsPrincipal              AuthState          { get; set; }
-    private ModalFinishSignUp            modalFinishSignUp  { get; set; }
-    private ModalPassword                modalPassword      { get; set; }
-    private ModalLogin                   modalLogin         { get; set; }
+    public ExploreModel Model                   = new ExploreModel();
+    public Profile CustomerModel                = new Profile();
+    public ExperienceType exptype               = new ExperienceType();
+    public List<ExperienceCategory> categories  = new List<ExperienceCategory>();
+    public List<ExperienceType> experiencesType = new List<ExperienceType>();
+    public List<Activity> activities            = new List<Activity>();
+    public List<Activity> filteredActivities    = new List<Activity>();
+    public string searchValue                   = string.Empty;
+    public string filterId                      = string.Empty;
+    public int cnt                              = 0;
+    public int experienceCategoryId             = 0;
+
+    private string value { get; set; }
+    public bool clickButton { get; set; }
+    public  ClaimsPrincipal AuthState { get; set; }
+    private ModalFinishSignUp modalFinishSignUp { get; set; }
+    private ModalPassword modalPassword { get; set; }
+    private ModalLogin modalLogin { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -635,12 +637,20 @@
                 Activities = activities
             };
             activities = activities.Where(i => i.IsPublished).ToList();
+
+            await FilterActivities();
+
+
         }
     }
 
     public async Task Search()
     {
-        await FetchActivities();
+        await FetchActivities();        
+    }
+
+    public async Task FilterActivities()
+    {
         bool isInitialSearch = false;
         List<string> splitted = new List<string>();
 
@@ -694,17 +704,25 @@
         {
             activities = activities.Where(i => i.IsPublished).ToList();
         }
+
+        if (experienceCategoryId != 0)
+        {
+            activities = activities.Where(i => i.ExperienceCategoryId == experienceCategoryId).ToList();
+        }
     }
 
     public async Task Filter(int id, string type)
     {
+        experienceCategoryId = id;
         searchValue = type;
-        activities = activities.Where(e => e.ExperienceCategoryId == id && e.IsPublished).ToList();
+
+        await FetchActivities();
     }
 
     public async Task Clear()
     {
         searchValue = string.Empty;
+        experienceCategoryId = 0;
         await FetchActivities();
     }
 
