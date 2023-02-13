@@ -108,7 +108,9 @@ public class GetActivityHandler : IGetActivityHandler
                 }) : Enumerable.Empty<GetActivityResult.ActivityImage>(),
                 Owner = activity.Owner != null ? new GetActivityResult.CustomerOwner {
                     Handler = activity.Owner.Handler,
-                    Id = activity.Owner.Id
+                    Id = activity.Owner.Id,
+                    FirstName = activity.Owner.FirstName,
+                    LastName = activity.Owner.LastName
                 } : null
             };
 

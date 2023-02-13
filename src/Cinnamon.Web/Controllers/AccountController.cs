@@ -320,7 +320,7 @@ public class AccountController : Controller
 
             string redirect = "/explore";
 
-            if(Request.Query.Keys.Any(a => a == "redirect"))
+            if(Request.Query.Keys.Any(a => a == "redirect") && !string.IsNullOrEmpty(Request.Query["redirect"]))
             {
                 redirect = Request.Query["redirect"];
             }
