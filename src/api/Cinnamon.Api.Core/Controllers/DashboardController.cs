@@ -268,7 +268,7 @@ public class DashboardController : ControllerBase
             }
             return new JsonResult(new CreateStudentAttendanceResult
             {
-                Result = new StudentAttendanceDTO
+                Result = new StudentAttendanceDTOs
                 {
                   Date = result.Result.AttendanceDate,
                   IsPresent= result.Result.IsPresent,   
@@ -301,7 +301,7 @@ public class DashboardController : ControllerBase
             }
             return new JsonResult(new UpdateAttendanceResult
             {
-                Result = new StudentAttendanceDTO
+                Result = new StudentAttendanceDTOs
                 {
                     Id        = result.Result.Id,
                     Date      = result.Result.Date,

@@ -2,6 +2,6 @@
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
 
-public class CreateStudentAttendanceResult : AbstractModel<StudentAttendanceDTO>
+public class CreateStudentAttendanceResult : AbstractModel<StudentAttendanceDTOs>
 {
 }

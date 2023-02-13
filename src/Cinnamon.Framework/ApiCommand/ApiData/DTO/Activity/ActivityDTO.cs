@@ -36,6 +36,8 @@ public class ActivityDTO
     public int CreatedBy { get; set; }
     public string MapDetails { get; set; }
     public string Handler {get; set;}
+    public string ExperienceCategory { get; set; }
+    public string SubCategory { get; set; }
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }

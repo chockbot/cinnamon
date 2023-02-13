@@ -423,21 +423,24 @@
 @code 
 {
     private ModalLogin signinModal;
-    public ExploreModel                  Model              = new ExploreModel();
-    public Profile                       CustomerModel      = new Profile();
-    public ExperienceType                exptype            = new ExperienceType();
-    public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
-    public List<ExperienceType>          experiencesType    = new List<ExperienceType>();
-    public List<Activity>                activities         = new List<Activity>();
-    public string                        searchValue        = string.Empty;
-    public string                        filterId           = string.Empty;
-    public int                           cnt                = 0;
-    private string                       value              { get; set; }
-    public bool                          clickButton        { get; set; }
-    public  ClaimsPrincipal              AuthState          { get; set; }
-    private ModalFinishSignUp            modalFinishSignUp  { get; set; }
-    private ModalPassword                modalPassword      { get; set; }
-    private ModalLogin                   modalLogin         { get; set; }
+    public ExploreModel Model                   = new ExploreModel();
+    public Profile CustomerModel                = new Profile();
+    public ExperienceType exptype               = new ExperienceType();
+    public List<ExperienceCategory> categories  = new List<ExperienceCategory>();
+    public List<ExperienceType> experiencesType = new List<ExperienceType>();
+    public List<Activity> activities            = new List<Activity>();
+    public List<Activity> filteredActivities    = new List<Activity>();
+    public string searchValue                   = string.Empty;
+    public string filterId                      = string.Empty;
+    public int cnt                              = 0;
+    public int experienceCategoryId             = 0;
+
+    private string value { get; set; }
+    public bool clickButton { get; set; }
+    public  ClaimsPrincipal AuthState { get; set; }
+    private ModalFinishSignUp modalFinishSignUp { get; set; }
+    private ModalPassword modalPassword { get; set; }
+    private ModalLogin modalLogin { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -563,6 +566,9 @@
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
                 IncludeAtivitySchedules = true,
+                IncludeExperienceTypes = true,
+                IncludeExperienceCategories = true,
+                IncludeSubCategories = true,
                 IsActive = true
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
@@ -573,8 +579,11 @@
                     {
                         ActivityId = r.ActivityId,
                         ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceType = r.ExperienceType,
                         ExperienceCategoryId = r.ExperienceCategoryId,
                         SubCategoryId = r.SubCategoryId,
+                        ExperienceCategory = r.ExperienceCategory,
+                        SubCategory = r.SubCategory,
                         Title = r.Title,
                         Description = r.Description,
                         Price = r.Price,
@@ -628,34 +637,92 @@
                 Activities = activities
             };
             activities = activities.Where(i => i.IsPublished).ToList();
+
+            await FilterActivities();
+
+
         }
     }
 
     public async Task Search()
     {
-        await FetchActivities();
-        if(searchValue!= string.Empty)
+        await FetchActivities();        
+    }
+
+    public async Task FilterActivities()
+    {
+        bool isInitialSearch = false;
+        List<string> splitted = new List<string>();
+
+        if(searchValue != string.Empty)
         {
-            activities = activities.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1,
-            searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
-            searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2,
-            searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
+            splitted = searchValue.Split(' ').Select(s => s.Trim()).Distinct().ToList();
+
+            foreach (var keyword in splitted)
+            {
+                if (!isInitialSearch)
+                {
+                    isInitialSearch = true;
+
+                    filteredActivities = activities.Where(p =>
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.District, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.City, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Subdivision, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Region, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Barangay, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.PostalCode, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceType, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceCategory, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.SubCategory, keyword, CompareOptions.IgnoreCase) >= 0
+                                        ).ToList();
+                }
+                else
+                {
+                    filteredActivities = filteredActivities.Where(p =>
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.District, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.City, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Subdivision, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Region, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Barangay, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.PostalCode, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceType, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceCategory, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.SubCategory, keyword, CompareOptions.IgnoreCase) >= 0
+                                        ).ToList();
+                }
+            }
+
+            activities = filteredActivities;
         }
         else
         {
             activities = activities.Where(i => i.IsPublished).ToList();
         }
+
+        if (experienceCategoryId != 0)
+        {
+            activities = activities.Where(i => i.ExperienceCategoryId == experienceCategoryId).ToList();
+        }
     }
 
     public async Task Filter(int id, string type)
     {
+        experienceCategoryId = id;
         searchValue = type;
-        activities = activities.Where(e => e.ExperienceCategoryId == id && e.IsPublished).ToList();
+
+        await FetchActivities();
     }
 
     public async Task Clear()
     {
         searchValue = string.Empty;
+        experienceCategoryId = 0;
         await FetchActivities();
     }
 
