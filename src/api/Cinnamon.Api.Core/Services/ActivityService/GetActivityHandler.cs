@@ -40,6 +40,7 @@ public class GetActivityHandler : IGetActivityHandler
                     IncludeSearchTags = args.IncludeActivitySearchTags,
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
+                    IncludeCustomer = args.IncludeCustomer
                 }
             );
 
@@ -83,6 +84,7 @@ public class GetActivityHandler : IGetActivityHandler
                 Title = activity.Title,
                 CreatedBy = activity.CreatedBy,
                 MarDetails = activity.MapDetails,
+                Handler = activity.Handler,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,
@@ -103,7 +105,11 @@ public class GetActivityHandler : IGetActivityHandler
                         Name = i.ImageName,
                         Order = i.Order
                     };
-                }) : Enumerable.Empty<GetActivityResult.ActivityImage>()
+                }) : Enumerable.Empty<GetActivityResult.ActivityImage>(),
+                Owner = activity.Owner != null ? new GetActivityResult.CustomerOwner {
+                    Handler = activity.Owner.Handler,
+                    Id = activity.Owner.Id
+                } : null
             };
 
             return AppResult<GetActivityResult>.CreateSucceeded(activityEntity, "Successfully get activity");

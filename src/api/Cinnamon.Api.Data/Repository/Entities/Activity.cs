@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Cinnamon.Api.Data.Repository.Entities;
 
 public class Activity : BaseEntity
@@ -14,6 +16,7 @@ public class Activity : BaseEntity
     public bool IsPublished { get; set;}
     public int? ExperienceCategoryId {get; set;}
     public int? SubCategoryId {get; set;}
+    public string Handler {get; set;}
 
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
@@ -23,4 +26,6 @@ public class Activity : BaseEntity
     public virtual ExperienceType ExperienceType {get; set;}
     public virtual ExperienceCategory ExperienceCategory {get; set;}
     public virtual SubCategory SubCategory {get; set;}
+    [ForeignKey("CreatedBy")]
+    public virtual Customer Customer {get; set;}
 }

@@ -25,7 +25,29 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetByIdAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult( new GetActivityResult { Result = result.Result, IsSuccess = true});
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetActivityByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivityResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetActivityById(string handler, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.GetByHandlerAsync(handler, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -61,7 +83,8 @@ public class ActivityController : ControllerBase
 
             var isUsedFilters = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.IsActive.HasValue ||
                 args.IncludeAddress.HasValue || args.IncludeDescription.HasValue || args.IncludeImages.HasValue ||
-                args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue || ids.Count > 0;
+                args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue || ids.Count > 0 ||
+                !string.IsNullOrEmpty(args.LikeHandler) || args.IncludeCustomer.HasValue;
             
             var includeAddress = args.IncludeAddress ?? false;
                 
@@ -70,7 +93,8 @@ public class ActivityController : ControllerBase
                     await activityRepository
                         .GetAllAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
-                            args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null) :
+                            args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
+                            args.IncludeCustomer ?? false) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -120,7 +144,7 @@ public class ActivityController : ControllerBase
                 args.Description, args.Price, args.ScheduleIndicator, args.Remarks, args.IsPublished, args.Address1,
                 args.Address2, args.District, args.City,args.Subdivision,args.Region,args.Barangay,args.PostalCode, args.SpecificsYouWillProvide, args.CustomerBringWithThem, args.AdditionalRequirements,
                 args.ActivityLevel, args.SkillLevel, args.MinimumAge, args.CanAdultsJoin, args.Searchtag1, args.Searhtag2,
-                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId);
+                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId, args.Handler);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -169,7 +193,7 @@ public class ActivityController : ControllerBase
         try
         {
             var result = await activityRepository.GetActivitieByCategoriesAsync(id, args.CustomerId, args.IncludeAddress, args.IncludeDescription,
-                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive);
+                args.IncludeSearchTags, args.IncludeSchedules, args.IncludeImages, args.IsActive, args.IncludeCustomer);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

@@ -45,4 +45,6 @@ public class CreateActivityArgs
     public int ExperienceCategoryId {get; set;}
     [Required]
     public int SubCategoryId {get; set;}
+    [Required]
+    public string Handler {get; set;}
 }

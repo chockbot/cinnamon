@@ -11,6 +11,7 @@
         public string ProfilePath { get; set; }
         public bool IsVerified { get; set; }
         public string About { get; set; }
+        public string Handler {get; set;}
 
         public IList<FamilyMember> FamilyMembers {get; set;}
     }

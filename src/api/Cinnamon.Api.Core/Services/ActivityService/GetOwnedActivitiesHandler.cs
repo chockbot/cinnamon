@@ -50,7 +50,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                 IncludeSchedules = args.IncludeAtivitySchedules,
                 IncludeImages = args.IncludeActivityImages,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -88,6 +89,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
+                        Handler = a.Handler,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
                                 Id = s.Id,
@@ -107,7 +109,11 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                                 Name = i.ImageName,
                                 Order = i.Order
                             };
-                        }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivityImage>()
+                        }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivityImage>(),
+                        Owner = a.Owner != null ? new GetOwnedActivitiesResult.Activity.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id = a.Owner.Id
+                        } : null
                     };
                 })
             }, "Successfully get owned activities");

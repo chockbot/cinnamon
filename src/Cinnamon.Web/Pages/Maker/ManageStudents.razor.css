@@ -81,6 +81,23 @@
     padding:10px 20px 10px 20px;
 }
 
+
+
+::deep th.sessions-attended-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep th.student-no-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep th.attendance-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
 ::deep tr {
     font-family: 'Nunito';
     font-style: normal;
@@ -281,7 +298,10 @@
 
 
     ::deep td.progress-body {
-        font-size: 16px;
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+
     }
 
     ::deep td.progress-body::before {
@@ -314,7 +334,7 @@
     }
 
     ::deep td.student-no::before {
-        content: "Experience:";
+        content: "Student No:";
         font-family: 'Nunito';
         font-style: normal;
         font-weight: 700;

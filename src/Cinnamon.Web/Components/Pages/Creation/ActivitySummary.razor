@@ -44,7 +44,7 @@
             font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Schedule
         </h3>
-        <Row Gutter="(20,20)" TextAlignment="TextAlignment.Center">
+        <Row Gutter="(20,20)" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
             @foreach (var schedule in Activity.ActivitySchedules)
             {
                 <Column class="background-black-100" ColumnSize="ColumnSize.Is6.OnMobile.Is4.OnTablet.Is3.OnDesktop">
@@ -63,8 +63,10 @@
         <div class="experience-location margin-botton-3rem m-margin-bottom-10">
             <h3 class="text-capitalize text-orange-100 text-center font-family-nunito
                 font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">Location</h3>
-            <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Place: 536 San Juan Sto. Tomas Batangas</p>
-            <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Remarks: Near Uno Gas Station, left side going north</p>
+            <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
+                Place: @Activity.Address1, @Activity.Subdivision, @Activity.Barangay, @Activity.City, @Activity.Region
+            </p>
+            @* <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Remarks: Near Uno Gas Station, left side going north</p> *@
         </div>
     }
     <Divider />

@@ -27,6 +27,7 @@ public class UpdateActivityResult
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
+    public string Handler {get; set;}
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     

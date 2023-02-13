@@ -56,6 +56,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IExternalLoginHandler, Services.AccountService.SubmitExternalLoginHandler>();
         services.AddTransient<Services.AccountService.Handlers.IExternalRegisterHandler, Services.AccountService.SubmitExternalRegisterHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetExternalLoginDetailHandler, Services.AccountService.GetExternalLoginDetailHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetCustomerByHandler, Services.AccountService.GetCustomerByHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -74,6 +75,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetActivitiesBySubCategoriesHandler, Services.ActivityService.GetActivitiesBySubCategoriesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetEnrolledActivitiesHandler, Services.ActivityService.GetEnrolledActivitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityImageOrderHandler, Services.ActivityService.UpdateActivityImageOrderHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetActivityByHandler, Services.ActivityService.GetActivityByHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivityByHandler, Services.ActivityService.GetOwnedActivityByHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

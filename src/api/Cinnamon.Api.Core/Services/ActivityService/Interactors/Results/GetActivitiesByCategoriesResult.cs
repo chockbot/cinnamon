@@ -29,6 +29,7 @@ public class GetActivitiesByCategoriesResult
         public IEnumerable<string> SearchTags { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
+        public CustomerOwner? Owner {get; set;}
 
 
         public class ActivitySchedule
@@ -50,6 +51,12 @@ public class GetActivitiesByCategoriesResult
             public int Order {get; set;}
             public string ImageSrc { get; set; }
             public string Name { get; set; }
+        }
+
+        public class CustomerOwner 
+        {
+            public int Id {get; set;}
+            public string Handler {get; set;}
         }
     }
 }

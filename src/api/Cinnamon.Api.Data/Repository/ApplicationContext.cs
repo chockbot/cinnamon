@@ -81,6 +81,13 @@ public class ApplicationContext : IdentityDbContext
             .HasOne<SearchTags>(a => a.SearchTag)
             .WithOne(s => s.Activity)
             .HasForeignKey<SearchTags>(s => s.ActivityId);
+        
+        // add index to handler
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.Handler);
+        
+        modelBuilder.Entity<Activity>()
+            .HasOne<Customer>(a => a.Customer);
 
         // experience type
         modelBuilder.Entity<ExperienceType>()
@@ -94,6 +101,7 @@ public class ApplicationContext : IdentityDbContext
         // customer
         modelBuilder.Entity<Customer>().HasIndex(c => c.UserId);
         modelBuilder.Entity<Customer>().HasIndex(c => c.Email);
+        modelBuilder.Entity<Customer>().HasIndex(c => c.Handler);
 
         modelBuilder.Entity<Customer>()
             .HasMany<FamilyMember>(c => c.FamilyMembers)

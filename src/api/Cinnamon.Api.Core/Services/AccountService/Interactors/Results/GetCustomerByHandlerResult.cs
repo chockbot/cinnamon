@@ -1,0 +1,11 @@
+namespace Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
+
+public class GetCustomerByHandlerResult 
+{
+    public int Id {get; set;}
+    public string FirstName {get; set;}
+    public string LastName {get; set;}
+    public bool IsMaker {get; set;}
+    public string ProfileImg {get; set;}
+    public string About {get; set;}
+}

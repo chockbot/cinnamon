@@ -28,6 +28,8 @@ public class ActivityController : ControllerBase
     private readonly IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler;
     private readonly IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler;
     private readonly IUpdateActivityImageOrderHandler updateActivityImageOrderHandler;
+    private readonly IGetOwnedActivityByHandler getOwnedActivityByHandler;
+    private readonly IGetActivityByHandler getActivityByHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -36,7 +38,8 @@ public class ActivityController : ControllerBase
         IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler, 
         IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,
         IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
-        IUpdateActivityImageOrderHandler updateActivityImageOrderHandler)
+        IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler,
+        IGetActivityByHandler getActivityByHandler)
     {
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
@@ -54,6 +57,8 @@ public class ActivityController : ControllerBase
         this.getActivitiesBySubCategoriesHandler = getActivitiesBySubCategoriesHandler;
         this.getEnrolledActivitiesHandler = getEnrolledActivitiesHandler;
         this.updateActivityImageOrderHandler = updateActivityImageOrderHandler;
+        this.getOwnedActivityByHandler = getOwnedActivityByHandler;
+        this.getActivityByHandler = getActivityByHandler;
     }
 
     [Route("CreateActivity")]
@@ -100,7 +105,7 @@ public class ActivityController : ControllerBase
                 SkillLevel = args.SkillLevel,
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide,
                 SubCategoryId = args.SubCategoryId,
-                Title = args.Title
+                Title = args.Title,
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -147,7 +152,8 @@ public class ActivityController : ControllerBase
                 SkillLevel = activity.SkillLevel,
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
-                Title = activity.Title
+                Title = activity.Title,
+                Handler = activity.Handler
             }});
         }
         catch (Exception ex)
@@ -238,7 +244,8 @@ public class ActivityController : ControllerBase
                 SkillLevel = activity.SkillLevel,
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
-                Title = activity.Title
+                Title = activity.Title,
+                Handler = activity.Handler
             }});
         }
         catch (Exception ex)
@@ -418,7 +425,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -470,7 +478,11 @@ public class ActivityController : ControllerBase
                         SkillLevel = a.SkillLevel,
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
-                        Title = a.Title
+                        Title = a.Title,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });
@@ -494,7 +506,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -546,7 +559,12 @@ public class ActivityController : ControllerBase
                         SkillLevel = a.SkillLevel,
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
-                        Title = a.Title
+                        Title = a.Title,
+                        Handler = a.Handler,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });
@@ -572,7 +590,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -632,7 +651,12 @@ public class ActivityController : ControllerBase
                         SkillLevel = a.SkillLevel,
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
-                        Title = a.Title
+                        Title = a.Title,
+                        Handler = a.Handler,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });
@@ -657,7 +681,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -715,7 +740,100 @@ public class ActivityController : ControllerBase
                     SkillLevel = activity.SkillLevel,
                     SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                     SubCategoryId = activity.SubCategoryId,
-                    Title = activity.Title
+                    Title = activity.Title,
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetOwnedActivityByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivityResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetOwnedActivityByHandler(string handler, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            var result = await getOwnedActivityByHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetOwnedActivityByHandlerArgs {
+                Handler = handler,
+                IncludeActivityAddress = args.IncludeActivityAddress ?? false,
+                IncludeActivityDescription = args.IncludeActivityDescription ?? false,
+                IncludeActivityImages = args.IncludeActivityImages ?? false,
+                IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
+                IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
+            });
+            
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetActivityResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var activity = result.Result;
+
+            return new JsonResult(new GetActivityResult {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                    ActivityId = activity.Id,
+                    ActivityLevel = activity.ActivityLevel,
+                    ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule {
+                            Id = s.Id,
+                            DateTime = s.DateTime,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            PerUnit2 = s.PerUnit2,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice
+                        };
+                    }),
+                    AdditionalRequirements = activity.AdditionalRequirements,
+                    Address1 = activity.Address1,
+                    Address2 = activity.Address2,
+                    CanAdultsJoin = activity.CanAdultsJoin,
+                    City = activity.City,
+                    Subdivision = activity.Subdivision,
+                    Region = activity.Region,
+                    Barangay = activity.Barangay,
+                    PostalCode = activity.PostalCode,
+                    CustomerBringWithThem = activity.CustomerBringWithThem,
+                    Description = activity.Description,
+                    District = activity.District,
+                    ExperienceCategoryId = activity.ExperienceCategoryId,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    Images = activity.Images.Select(i => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name,
+                            Order = i.Order
+                        };
+                    }),
+                    IsPublished = activity.IsPublished,
+                    MinimumAge = activity.MinimumAge,
+                    Price = activity.Price,
+                    Remarks = activity.Remarks,
+                    ScheduleIndicator = activity.ScheduleIndicator,
+                    SearchTags = activity.SearchTags,
+                    SkillLevel = activity.SkillLevel,
+                    SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
+                    SubCategoryId = activity.SubCategoryId,
+                    Title = activity.Title,
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
                 }
             });
         }
@@ -740,7 +858,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -799,7 +918,102 @@ public class ActivityController : ControllerBase
                     SkillLevel = activity.SkillLevel,
                     SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                     SubCategoryId = activity.SubCategoryId,
-                    Title = activity.Title
+                    Title = activity.Title,
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetActivityResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetActivityByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetActivityResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetActivityByHandler(string handler, [FromQuery] GetActivityArgs args)
+    {
+        try
+        {
+            var result = await getActivityByHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetActivityByHandlerArgs {
+                Handler = handler,
+                IncludeActivityAddress = args.IncludeActivityAddress ?? false,
+                IncludeActivityDescription = args.IncludeActivityDescription ?? false,
+                IncludeActivityImages = args.IncludeActivityImages ?? false,
+                IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
+                IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
+            });
+            
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetActivityResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var activity = result.Result;
+
+            return new JsonResult(new GetActivityResult {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO {
+                    ActivityId = activity.Id,
+                    ActivityLevel = activity.ActivityLevel,
+                    ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule {
+                            Id = s.Id,
+                            DateTime = s.DateTime,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            PerUnit2 = s.PerUnit2,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice
+                        };
+                    }),
+                    AdditionalRequirements = activity.AdditionalRequirements,
+                    Address1 = activity.Address1,
+                    Address2 = activity.Address2,
+                    CanAdultsJoin = activity.CanAdultsJoin,
+                    City = activity.City,
+                    Subdivision = activity.Subdivision,
+                    Region = activity.Region,
+                    Barangay = activity.Barangay,
+                    PostalCode = activity.PostalCode,
+                    CustomerBringWithThem = activity.CustomerBringWithThem,
+                    Description = activity.Description,
+                    District = activity.District,
+                    ExperienceCategoryId = activity.ExperienceCategoryId,
+                    ExperienceTypeId = activity.ExperienceTypeId,
+                    CreatedBy = activity.CreatedBy,
+                    Images = activity.Images.Select(i => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name,
+                            Order = i.Order
+                        };
+                    }),
+                    IsPublished = activity.IsPublished,
+                    MinimumAge = activity.MinimumAge,
+                    Price = activity.Price,
+                    Remarks = activity.Remarks,
+                    ScheduleIndicator = activity.ScheduleIndicator,
+                    SearchTags = activity.SearchTags,
+                    SkillLevel = activity.SkillLevel,
+                    SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
+                    SubCategoryId = activity.SubCategoryId,
+                    Title = activity.Title,
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
                 }
             });
         }
@@ -889,7 +1103,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -944,7 +1159,11 @@ public class ActivityController : ControllerBase
                         SkillLevel = a.SkillLevel,
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
-                        Title = a.Title
+                        Title = a.Title,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });

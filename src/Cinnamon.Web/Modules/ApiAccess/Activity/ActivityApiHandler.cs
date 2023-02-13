@@ -186,12 +186,55 @@ public class ActivityApiHandler : IActivityApiHandler
         }   
     }
 
+    public async Task<AppResult<GetActivityResult>> GetOwnedActivityByHandler(string handler, string token, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetOwnedActivityByHandler/{handler}")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting owned activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting owned activity api");
+        }   
+    }
+
     public async Task<AppResult<GetActivityResult>> GetActivity(int id, GetActivityArgs? args = null)
     {
         try
         {
             var result = await flurlClient
                 .Request($"Activity/GetActivity/{id}")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting activity api");
+        }  
+    }
+
+    public async Task<AppResult<GetActivityResult>> GetActivityByHandler(string handler, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/GetActivityByHandler/{handler}")
                 .SetQueryParams(args)
                 .GetJsonAsync<GetActivityResult>();
 

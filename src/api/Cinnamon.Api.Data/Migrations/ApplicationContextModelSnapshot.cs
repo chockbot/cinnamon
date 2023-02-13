@@ -56,6 +56,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("Handler")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsPublished")
                         .HasColumnType("boolean");
 
@@ -88,9 +92,13 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CreatedBy");
+
                     b.HasIndex("ExperienceCategoryId");
 
                     b.HasIndex("ExperienceTypeId");
+
+                    b.HasIndex("Handler");
 
                     b.HasIndex("SubCategoryId");
 
@@ -366,6 +374,10 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<string>("FrontIdImagePath")
                         .HasColumnType("text");
 
+                    b.Property<string>("Handler")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsMaker")
                         .HasColumnType("boolean");
 
@@ -386,6 +398,8 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Email");
+
+                    b.HasIndex("Handler");
 
                     b.HasIndex("UserId");
 
@@ -1108,6 +1122,12 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Activity", b =>
                 {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CreatedBy")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", "ExperienceCategory")
                         .WithMany()
                         .HasForeignKey("ExperienceCategoryId");
@@ -1121,6 +1141,8 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.SubCategory", "SubCategory")
                         .WithMany()
                         .HasForeignKey("SubCategoryId");
+
+                    b.Navigation("Customer");
 
                     b.Navigation("ExperienceCategory");
 

@@ -59,7 +59,8 @@ public class GetProfileHandler : IGetProfileHandler
                 IsMaker = profile.IsMaker,
                 LastName = profile.LastName,
                 ProfileImagePath = profile.ProfileImg,
-                IsVerified = profile.IsVerified
+                IsVerified = profile.IsVerified,
+                Handler = profile.Handler
             }, "Successfully get profile");
         }
         catch (Exception ex)

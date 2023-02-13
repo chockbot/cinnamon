@@ -291,7 +291,7 @@
                         @foreach (var act in activities)
                         {
                          <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center">
-                                    <a class="button carousel-card text-center" href="/explore/@act.ActivityId">
+                                    <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                             <div class="card">
                                 <div id="carousel1-@act.ActivityId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                                     <div class="carousel-indicators">
@@ -354,7 +354,7 @@
                 @foreach (var act in activities.OrderBy(a => a.ActivityId))
                 {
                  <div class="col-md-6 d-flex flex-column align-items-center">
-                 <a class="button carousel-card text-center" href="/explore/DetailActivity">
+                 <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                     <div class="card">
                         <div id="carousel2-@act.ActivityId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
                             <div class="carousel-indicators">
@@ -597,6 +597,7 @@
                         MinimumAge = r.MinimumAge,
                         CanAdultsJoin = r.CanAdultsJoin,
                         CreatedBy = r.CreatedBy,
+                        Handler = r.Handler,
                         ActivitySchedules = r.ActivitySchedules.Select(e =>
                         {
                             return new ActivitySchedule

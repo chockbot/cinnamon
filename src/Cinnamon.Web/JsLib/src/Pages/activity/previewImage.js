@@ -1,6 +1,8 @@
-export default async function previewImage(inputSelector, imgIds) {
+export default function previewImage(inputSelector, imgIds) {
   const inputElem = document.querySelector(inputSelector);
   let totalFileSize = 0;
+  const urls = [];
+
   for (const file of inputElem.files) {
     totalFileSize += file.size / 1024 / 1024;
   }
@@ -14,9 +16,13 @@ export default async function previewImage(inputSelector, imgIds) {
   for (let i = 0; i < 3; i++) {
     if (inputElem.files[i] && imgIds[i]) {
       const url = URL.createObjectURL(inputElem.files[i]);
-      loadImage(imgIds[i], url, i, inputElem.files[i].name);
+      const filename = inputElem.files[i].name;
+      urls.push({ url, filename });
+      loadImage(imgIds[i], url, i, filename);
     }
   }
+
+  return urls;
 }
 
 function loadImage(imgSelector, url, index, filename) {
