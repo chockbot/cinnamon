@@ -1,6 +1,6 @@
 ﻿namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
 
-public class StudentAttendanceDTO
+public class StudentAttendanceDTOs
 {
     public int Id { get; set; }
     public int StudentId { get; set; }
