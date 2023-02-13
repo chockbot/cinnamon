@@ -610,7 +610,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Let&apos;s describe your experience!.
+        ///   Looks up a localized string similar to Describe your experience!.
         /// </summary>
         internal static string letsDescribeExperience {
             get {
@@ -664,7 +664,7 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Let&apos;s name that experience!.
+        ///   Looks up a localized string similar to Name your experience!.
         /// </summary>
         internal static string nameThatExperience {
             get {
@@ -673,8 +673,8 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Make it informative and distinctive so that your customers
-        ///                may understand what you are offering.
+        ///   Looks up a localized string similar to This is the title of your experience that people will see first! Make it informative and 
+        ///distinctive so that your customers may understand what you are offering.
         /// </summary>
         internal static string nameThatExperienceParagraph {
             get {
