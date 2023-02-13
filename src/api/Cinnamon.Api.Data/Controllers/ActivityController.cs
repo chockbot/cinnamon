@@ -61,7 +61,7 @@ public class ActivityController : ControllerBase
 
             var isUsedFilters = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.IsActive.HasValue ||
                 args.IncludeAddress.HasValue || args.IncludeDescription.HasValue || args.IncludeImages.HasValue ||
-                args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue || ids.Count > 0;
+                args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue || args.IncludeExperienceTypes.HasValue || ids.Count > 0;
             
             var includeAddress = args.IncludeAddress ?? false;
                 
@@ -70,7 +70,7 @@ public class ActivityController : ControllerBase
                     await activityRepository
                         .GetAllAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
-                            args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null) :
+                            args.IncludeSchedules ?? false, args.IncludeImages ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, ids.Count > 0 ? ids : null) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)

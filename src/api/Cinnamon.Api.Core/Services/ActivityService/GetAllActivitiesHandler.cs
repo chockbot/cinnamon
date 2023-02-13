@@ -35,6 +35,9 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 IncludeSchedules = args.IncludeAtivitySchedules,
                 IncludeImages = args.IncludeActivityImages,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
+                IncludeExperienceTypes= args.IncludeExperienceTypes,
+                IncludeExperienceCategories= args.IncludeExperienceCategories,
+                IncludeSubCategories = args.IncludeSubCategories,
                 IsActive = args.IsActive
             });
             if (!result.Succeeded || result.Result == null)
@@ -54,7 +57,10 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         Id = e.Id,
                         ExperienceCategoryId = e.ExperienceCategoryId,
                         ExperienceTypeId = e.ExperienceTypeId,
+                        ExperienceType= e.ExperienceType,
                         SubCategoryId = e.SubCategoryId,
+                        ExperienceCategory = e.ExperienceCategory,
+                        SubCategory= e.SubCategory,
                         Title =e.Title,  
                         Description=e.Description,  
                         SpecificsYouWillProvide=e.SpecificsYouWillProvide,

@@ -572,6 +572,9 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
+                IncludeExperienceTypes = args.IncludeExperienceTypes ?? false,
+                IncludeExperienceCategories = args.IncludeExperienceCategories ?? false,
+                IncludeSubCategories = args.IncludeSubCategories ?? false,
                 IsActive = args.IsActive
             });
             if (!result.Succeeded || result.Result == null)
@@ -613,7 +616,10 @@ public class ActivityController : ControllerBase
                         Description = a.Description,
                         District = a.District,
                         ExperienceCategoryId = a.ExperienceCategoryId,
+                        ExperienceCategory = a.ExperienceCategory,
+                        SubCategory = a.SubCategory,
                         ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceType = a.ExperienceType,
                         CreatedBy = a.CreatedBy,
                         Images = a.Images.Select(i => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage

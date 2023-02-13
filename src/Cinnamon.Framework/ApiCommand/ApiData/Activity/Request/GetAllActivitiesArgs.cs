@@ -11,5 +11,8 @@ public class GetAllActivities
     public bool? IncludeSearchTags {get; set;}
     public bool? IncludeSchedules {get; set;}
     public bool? IncludeImages {get; set;}
+    public bool? IncludeExperienceTypes { get; set; }
+    public bool? IncludeExperienceCategories { get; set; }
+    public bool? IncludeSubCategories { get; set; }
     public string? Ids {get; set;}
 }

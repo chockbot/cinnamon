@@ -3,9 +3,12 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 public class ActivityDTO 
 {
     public int ActivityId {get; set;}
+    public string ExperienceType { get; set; }
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
+    public string ExperienceCategory { get; set; }
+    public string SubCategory { get; set; }
     public string Title {get; set;}
     public string Description {get; set;}
     public string Price {get; set;}

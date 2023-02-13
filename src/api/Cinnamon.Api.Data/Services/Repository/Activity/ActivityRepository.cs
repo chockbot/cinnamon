@@ -281,7 +281,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
-        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null)
+        bool includeSchedules = false, bool includeImages = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, IEnumerable<int>? ids = null)
     {
         try
         {
@@ -291,6 +291,9 @@ public class ActivityRepository : IActivityRepository
             if(includeSearchTags) includes.Add(a => a.SearchTag);
             if(includeSchedules) includes.Add(a => a.Schedules);
             if(includeImages) includes.Add(a => a.Images);
+            if (includeExperienceTypes) includes.Add(a => a.ExperienceType);
+            if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
+            if (includeSubCategories) includes.Add(a => a.SubCategory);
 
             Expression<Func<Entities.Activity,bool>> filter = 
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -318,6 +321,9 @@ public class ActivityRepository : IActivityRepository
                     SubCategoryId = a.SubCategoryId ?? 0,
                     CreatedBy = a.CreatedBy,
                     ExperienceTypeId = a.ExperienceTypeId,
+                    ExperienceType = a.ExperienceType.Name,
+                    ExperienceCategory = a.ExperienceCategory.Category,
+                    SubCategory = a.SubCategory.SubCatergory
                 };
 
                 // address fields

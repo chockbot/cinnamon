@@ -31,7 +31,9 @@ public class ActivityDTO
     public bool IsPublished { get; set; }
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
+    public string ExperienceCategory { get; set; }
     public int SubCategoryId {get; set;}
+    public string SubCategory { get; set; }
     public int CreatedBy { get; set; }
     public string MapDetails { get; set; }
 
