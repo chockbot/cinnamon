@@ -80,6 +80,7 @@ public class CustomerController : ControllerBase
             return new JsonResult(new GetGovernmentIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("GetProfilePicture/{id}")]
     [HttpGet]
     [ProducesResponseType(typeof(GetProfilePictureResult), StatusCodes.Status200OK)]
@@ -100,6 +101,28 @@ public class CustomerController : ControllerBase
             return new JsonResult(new GetProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetByHandler(string handler)
+    {
+        try
+        {
+            var result = await customerRepository.GetByHandlerAsync(handler);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetCustomerResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("GetAllCustomers")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllCustomerResult), StatusCodes.Status200OK)]
@@ -109,8 +132,8 @@ public class CustomerController : ControllerBase
         try
         {
             var result =
-                args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await customerRepository.GetAllAsync(args.IsVerified, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
+                await customerRepository.GetAllAsync(args.IsVerified, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike) :
                 await customerRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -119,7 +142,7 @@ public class CustomerController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
                 await customerRepository.GetAllAsync(args.IsVerified, null, null) :
                 await customerRepository.GetAllAsync();
 
@@ -156,7 +179,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.Create(args.UserId, args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin);
+                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Handler);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -179,7 +202,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.CreateWithPassword(args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password);
+                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password, args.Handler);
 
             if (!result.Succeeded || result.Result == null)
             {

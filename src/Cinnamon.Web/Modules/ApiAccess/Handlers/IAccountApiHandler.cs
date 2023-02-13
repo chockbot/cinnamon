@@ -28,4 +28,5 @@ public interface IAccountApiHandler
     Task<AppResult<GetCustomerByEmailResult>> GetCustomerByEmail(string token, string email);
     Task<AppResult<GetWaitListByGuidResult>> GetWaitListByGuid(string token, string guid);
     Task<AppResult<GetCustomerByIdResult>> GetCustomerById(int id);
+    Task<AppResult<GetCustomerByIdResult>> GetMakerDetailByHandler(string handler);
 } 

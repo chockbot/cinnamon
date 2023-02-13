@@ -164,7 +164,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetActivitieByCategoriesAsync(int experienceCategoryId, int? customerId = null, 
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false, 
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
     {
         try
         {
@@ -174,6 +174,7 @@ public class ActivityRepository : IActivityRepository
             if (includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
             if (includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if (includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+            if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.ExperienceCategoryId == experienceCategoryId) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -274,6 +275,26 @@ public class ActivityRepository : IActivityRepository
                 }).ToList();
             }
 
+            // owner
+            if(includeCustomer.HasValue && includeCustomer.Value && activity.Customer != null)
+            {
+                var customer = activity.Customer;
+                activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    DateJoined = customer.DateJoined,
+                    Email = customer.Email,
+                    ExternalLogin = customer.ExternalLogin,
+                    FirstName = customer.FirstName,
+                    Handler = customer.Handler,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerified,
+                    LastName = customer.LastName,
+                    ProfileImg = customer.ProfilePath
+                };
+            }
+
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
         catch (Exception ex)
@@ -284,7 +305,8 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
-        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null)
+        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
+        bool includeCustomer = false)
     {
         try
         {
@@ -294,6 +316,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSearchTags) includes.Add(a => a.SearchTag);
             if(includeSchedules) includes.Add(a => a.Schedules);
             if(includeImages) includes.Add(a => a.Images);
+            if(includeCustomer) includes.Add(a => a.Customer);
 
             Expression<Func<Entities.Activity,bool>> filter = 
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -397,6 +420,26 @@ public class ActivityRepository : IActivityRepository
                     }).ToList();
                 }
 
+                // customer
+                if(includeCustomer && a.Customer != null)
+                {
+                    var customer = a.Customer;
+                    activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                        About = customer.About,
+                        Birthdate = customer.Birthdate,
+                        DateJoined = customer.DateJoined,
+                        Email = customer.Email,
+                        ExternalLogin = customer.ExternalLogin,
+                        FirstName = customer.FirstName,
+                        Handler = customer.Handler,
+                        Id = customer.Id,
+                        IsMaker = customer.IsMaker,
+                        IsVerified = customer.IsVerified,
+                        LastName = customer.LastName,
+                        ProfileImg = customer.ProfilePath
+                    };
+                }
+
                 return activityDTO;
             });
 
@@ -448,7 +491,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
     {
         try
         {
@@ -458,6 +501,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+            if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -559,6 +603,26 @@ public class ActivityRepository : IActivityRepository
                 }).ToList();
             }
 
+            // customer
+            if(includeCustomer.HasValue && includeCustomer.Value && activity.Customer != null)
+            {
+                var customer = activity.Customer;
+                activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    DateJoined = customer.DateJoined,
+                    Email = customer.Email,
+                    ExternalLogin = customer.ExternalLogin,
+                    FirstName = customer.FirstName,
+                    Handler = customer.Handler,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerified,
+                    LastName = customer.LastName,
+                    ProfileImg = customer.ProfilePath
+                };
+            }
+
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
         catch (Exception ex)
@@ -569,7 +633,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
     {
         try
         {
@@ -579,6 +643,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+            if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -678,6 +743,26 @@ public class ActivityRepository : IActivityRepository
                         Order = s.Order
                     };
                 }).ToList();
+            }
+
+            // customer
+            if(includeCustomer.HasValue && includeCustomer.Value && activity.Customer != null)
+            {
+                var customer = activity.Customer;
+                activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    DateJoined = customer.DateJoined,
+                    Email = customer.Email,
+                    ExternalLogin = customer.ExternalLogin,
+                    FirstName = customer.FirstName,
+                    Handler = customer.Handler,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerified,
+                    LastName = customer.LastName,
+                    ProfileImg = customer.ProfilePath
+                };
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");

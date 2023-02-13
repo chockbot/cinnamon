@@ -104,6 +104,26 @@ public class CustomerData : ICustomerData
         }
     }
 
+    public async Task<AppResult<GetCustomerResult>> GetCustomerByHandler(string handler)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Customer/GetByHandler/{handler}")
+                            .GetJsonAsync<GetCustomerResult>();
+            
+            return AppResult<GetCustomerResult>.CreateSucceeded(result, "Successfully getting customer by handler api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, "An error occured when getting customer by handler api");
+        }
+    }
+
     public async Task<AppResult<GetCustomerResult>> GetCustomerByEmail(string email)
     {
         try

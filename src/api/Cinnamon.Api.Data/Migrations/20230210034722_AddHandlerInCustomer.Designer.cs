@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230210034722_AddHandlerInCustomer")]
+    partial class AddHandlerInCustomer
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,8 +93,6 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CreatedBy");
 
                     b.HasIndex("ExperienceCategoryId");
 
@@ -1122,12 +1122,6 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Activity", b =>
                 {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CreatedBy")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", "ExperienceCategory")
                         .WithMany()
                         .HasForeignKey("ExperienceCategoryId");
@@ -1141,8 +1135,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.SubCategory", "SubCategory")
                         .WithMany()
                         .HasForeignKey("SubCategoryId");
-
-                    b.Navigation("Customer");
 
                     b.Navigation("ExperienceCategory");
 

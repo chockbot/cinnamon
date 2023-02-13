@@ -425,7 +425,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -477,7 +478,11 @@ public class ActivityController : ControllerBase
                         SkillLevel = a.SkillLevel,
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
-                        Title = a.Title
+                        Title = a.Title,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });
@@ -501,7 +506,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -554,7 +560,11 @@ public class ActivityController : ControllerBase
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
-                        Handler = a.Handler
+                        Handler = a.Handler,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });
@@ -580,7 +590,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -641,7 +652,11 @@ public class ActivityController : ControllerBase
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
-                        Handler = a.Handler
+                        Handler = a.Handler,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });
@@ -666,7 +681,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -725,7 +741,11 @@ public class ActivityController : ControllerBase
                     SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
-                    Handler = activity.Handler
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
                 }
             });
         }
@@ -749,7 +769,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -808,7 +829,11 @@ public class ActivityController : ControllerBase
                     SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
-                    Handler = activity.Handler
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
                 }
             });
         }
@@ -833,7 +858,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -893,7 +919,11 @@ public class ActivityController : ControllerBase
                     SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
-                    Handler = activity.Handler
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
                 }
             });
         }
@@ -918,7 +948,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -978,7 +1009,11 @@ public class ActivityController : ControllerBase
                     SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
-                    Handler = activity.Handler
+                    Handler = activity.Handler,
+                    Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = activity.Owner.Handler,
+                            Id  = activity.Owner.Id
+                        } : null
                 }
             });
         }
@@ -1068,7 +1103,8 @@ public class ActivityController : ControllerBase
                 IncludeActivityImages = args.IncludeActivityImages ?? false,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1123,7 +1159,11 @@ public class ActivityController : ControllerBase
                         SkillLevel = a.SkillLevel,
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
-                        Title = a.Title
+                        Title = a.Title,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id  = a.Owner.Id
+                        } : null
                     };
                 })
             });

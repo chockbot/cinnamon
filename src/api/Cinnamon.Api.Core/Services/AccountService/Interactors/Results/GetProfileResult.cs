@@ -11,4 +11,5 @@ public class GetProfileResult
     public bool IsMaker {get; set;}
     public bool IsVerified {get; set;}
     public string ProfileImagePath {get; set;}
+    public string Handler {get; set;}
 }

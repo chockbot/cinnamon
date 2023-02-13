@@ -13,4 +13,5 @@ public class CustomerDTO
     public bool IsVerified { get; set; }
     public bool ExternalLogin { get; set; }
     public DateTime DateJoined { get; set; }
+    public string Handler {get; set;}
 }

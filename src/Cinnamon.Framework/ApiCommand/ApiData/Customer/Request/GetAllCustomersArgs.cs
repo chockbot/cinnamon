@@ -5,4 +5,5 @@ public class GetAllCustomersArgs
     public bool? IsVerified { get; set; }
     public int? PageIndex { get; set; }
     public int? CountPerPage { get; set; }
+    public string? HandlerLike {get; set;}
 }

@@ -492,4 +492,24 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetCustomerByIdResult>.CreateFailed(ex, "An error occured when getting cutomer by email api");
         }
     }
+
+    public async Task<AppResult<GetCustomerByIdResult>> GetMakerDetailByHandler(string handler)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Account/GetCustomerByHandler/{handler}")
+                .GetJsonAsync<GetCustomerByIdResult>();
+
+            return AppResult<GetCustomerByIdResult>.CreateSucceeded(result, "Successfully getting cutomer by handler api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerByIdResult>.CreateFailed(ex, "An error occured when getting cutomer by handler api");
+        }
+    }
 }

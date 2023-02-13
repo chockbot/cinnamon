@@ -53,6 +53,7 @@ public class GetCustomerByIdHandler : IGetCustomerByIdHandler
                 IsMaker = result.Result.Result.IsMaker,
                 IsVerified = result.Result.Result.IsVerified,
                 ProfileImg = result.Result.Result.ProfileImg,
+                Id = result.Result.Result.Id
             }, "Successfully getting customer information");
         }
         catch (Exception ex)
