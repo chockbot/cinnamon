@@ -229,11 +229,9 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
                     new ApplicationException("Can't find student attendance need to update"), "Can't find student attendance need to update");
             }
 
-            var studentEntity = new Entities.StudentAttendance {
-                Id = studentAttendance.Result.Id,
-                Date = date.HasValue ? date.Value.Date.SetKindUtc() : studentAttendance.Result.Date,
-                IsPresent = isPresent ?? studentAttendance.Result.IsPresent
-            };
+            var studentEntity = studentAttendance.Result;
+            studentEntity.IsPresent = isPresent ?? studentEntity.IsPresent;
+            studentEntity.Date = date?? studentEntity.Date;
 
             var result = await dataStore.StudentAttendance.Update(studentEntity);
             if (!result.Succeeded || result.Result == null)
@@ -340,7 +338,7 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAttendanceByIdAsync(int id, int? count, int? skip, DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null)
+    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAttendanceByIdAsync(int id,int activityId, int? count, int? skip, DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? scheduleIds = null)
     {
         try
         {
@@ -352,8 +350,8 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
 
             Expression<Func<Entities.StudentAttendance, bool>> filter =
                 a =>(a.StudentId == id ) &&
+                    (activityId == activityId) &&
                     (date.HasValue ? a.Date == date.Value.Date.SetKindUtc() : true) &&
-                    (activityIds != null ? activityIds.Contains(a.Student.ActivityId) : true) &&
                     (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true);
 
             var result = await dataStore.StudentAttendance.FindAsync(filter, count, skip, includes);

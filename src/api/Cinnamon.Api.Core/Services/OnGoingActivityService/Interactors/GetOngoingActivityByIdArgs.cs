@@ -4,4 +4,5 @@ namespace Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors;
 public class GetOngoingActivityByIdArgs : IInteractor
 {
     public int Id { get; set; }
+    public int ActivityId { get; set; }
 }

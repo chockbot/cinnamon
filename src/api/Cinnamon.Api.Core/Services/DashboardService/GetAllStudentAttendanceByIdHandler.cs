@@ -53,7 +53,10 @@ public class GetAllStudentAttendanceByIdHandler: IGetAllStudentAttendanceByIdHan
                         StudentNo = s.Student.StudentNo,
                         AttendanceDate = s.Date,
                         Id = s.Id,
-                        Remarks = s.Student.Remarks
+                        Remarks = s.Student.Remarks,
+                        ActivityId = s.Student.ActivityId,
+                        ScheduleId = s.Student.ScheduleId
+                        
                     };
                 })
             }, "Successfullt get student attendance");

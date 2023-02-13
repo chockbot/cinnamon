@@ -38,12 +38,13 @@ public class StudentData: IStudentData
         }
     }
     
-    public async Task<AppResult<GetStudentResult>> GetStudentById(int id)
+    public async Task<AppResult<GetStudentResult>> GetStudentById(int Id, int activityId)
     {
         try
         {
             var result = await flurlClient
-                            .Request($"Student/GetStudentById/{id}")
+                            .Request($"Student/GetStudentById/{Id}")
+                            .SetQueryParams(activityId)
                             .GetJsonAsync<GetStudentResult>();
 
             return AppResult<GetStudentResult>.CreateSucceeded(result, "Successfully getting student by id api");

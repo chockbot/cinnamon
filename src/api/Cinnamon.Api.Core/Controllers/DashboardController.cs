@@ -1,7 +1,8 @@
-using Cinnamon.Api.Core.Services.DashboardService.Handlers;
+ using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,15 +18,20 @@ public class DashboardController : ControllerBase
     private readonly IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler;
     private readonly IGetStudentAttendanceHandler getStudentAttendanceHandler;
     private readonly IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler;
+    private readonly ICreateStudentAttendanceHandler createStudentAttendanceHandler;
+    private readonly IUpdateAttendanceHandler updateAttendanceHandler;
 
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
-        IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler)
+        IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
+        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
         this.updateStudentAttendanceHandler = updateStudentAttendanceHandler;
         this.getStudentAttendanceHandler = getStudentAttendanceHandler;
         this.getAllStudentAttendanceByIdHandler = getAllStudentAttendanceByIdHandler;
+        this.createStudentAttendanceHandler = createStudentAttendanceHandler;
+        this.updateAttendanceHandler = updateAttendanceHandler;
     }
 
     [Route("GetActivitySchedules")]
@@ -204,7 +210,9 @@ public class DashboardController : ControllerBase
         {
             var result = await getAllStudentAttendanceByIdHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetAllStudentAttendanceByIdArgs
             {
-                StudentId = args.StudentId
+                StudentId = args.StudentId,
+                ActivityId = args.ActivityId
+                
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -240,4 +248,71 @@ public class DashboardController : ControllerBase
         }
     }
 
+    [Route("CreateStudentAttendance")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> CreateStudentAttendance([FromBody] CreateStudentAttendanceArgs args)
+    {
+        try
+        {
+            var result = await createStudentAttendanceHandler.ExecuteAsync(new Services.DashboardService.Interactors.CreateStudentAttendanceArgs
+            {
+                AttendanceDate= args.AttendanceDate,
+                IsPresent= args.IsPresent,
+                StudentId= args.StudentId,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new CreateStudentAttendanceResult
+            {
+                Result = new StudentAttendanceDTO
+                {
+                  Date = result.Result.AttendanceDate,
+                  IsPresent= result.Result.IsPresent,   
+                  StudentId= result.Result.StudentId,
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("UpdateAttendance")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateAttendanceResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateAttendance([FromBody] UpdateAttendanceArgs args)
+    {
+        try
+        {
+            var result = await updateAttendanceHandler.ExecuteAsync(new Services.DashboardService.Interactors.UpdateAttendanceArgs
+            {
+               Id        = args.Id,
+               IsPresent = args.IsPresent,
+               Date      = args.Date,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new UpdateAttendanceResult
+            {
+                Result = new StudentAttendanceDTO
+                {
+                    Id        = result.Result.Id,
+                    Date      = result.Result.Date,
+                    IsPresent = result.Result.IsPresent, 
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
