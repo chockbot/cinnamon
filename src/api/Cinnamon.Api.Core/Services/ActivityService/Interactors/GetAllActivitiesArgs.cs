@@ -11,4 +11,7 @@ public class GetAllActivitiesArgs:IInteractor
     public bool IncludeActivityImages { get; set; }
     public bool? IsActive { get; set; }
     public bool? IncludeCustomer {get; set;}
+    public bool IncludeExperienceTypes { get; set; }
+    public bool? IncludeExperienceCategories { get; set; }
+    public bool? IncludeSubCategories { get; set; }
 }

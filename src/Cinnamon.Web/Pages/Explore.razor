@@ -429,6 +429,7 @@
     public List<ExperienceCategory>      categories         = new List<ExperienceCategory>();
     public List<ExperienceType>          experiencesType    = new List<ExperienceType>();
     public List<Activity>                activities         = new List<Activity>();
+    public List<Activity>                filteredActivities = new List<Activity>();
     public string                        searchValue        = string.Empty;
     public string                        filterId           = string.Empty;
     public int                           cnt                = 0;
@@ -563,6 +564,9 @@
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
                 IncludeAtivitySchedules = true,
+                IncludeExperienceTypes = true,
+                IncludeExperienceCategories = true,
+                IncludeSubCategories = true,
                 IsActive = true
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
@@ -573,8 +577,11 @@
                     {
                         ActivityId = r.ActivityId,
                         ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceType = r.ExperienceType,
                         ExperienceCategoryId = r.ExperienceCategoryId,
                         SubCategoryId = r.SubCategoryId,
+                        ExperienceCategory = r.ExperienceCategory,
+                        SubCategory = r.SubCategory,
                         Title = r.Title,
                         Description = r.Description,
                         Price = r.Price,
@@ -634,12 +641,54 @@
     public async Task Search()
     {
         await FetchActivities();
-        if(searchValue!= string.Empty)
+        bool isInitialSearch = false;
+        List<string> splitted = new List<string>();
+
+        if(searchValue != string.Empty)
         {
-            activities = activities.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1,
-            searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
-            searchValue, CompareOptions.IgnoreCase) >= 0 || CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2,
-            searchValue, CompareOptions.IgnoreCase) >= 0).ToList();
+            splitted = searchValue.Split(' ').Select(s => s.Trim()).Distinct().ToList();
+
+            foreach (var keyword in splitted)
+            {
+                if (!isInitialSearch)
+                {
+                    isInitialSearch = true;
+
+                    filteredActivities = activities.Where(p =>
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.District, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.City, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Subdivision, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Region, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Barangay, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.PostalCode, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceType, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceCategory, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.SubCategory, keyword, CompareOptions.IgnoreCase) >= 0
+                                        ).ToList();
+                }
+                else
+                {
+                    filteredActivities = filteredActivities.Where(p =>
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.District, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.City, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Subdivision, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Region, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Barangay, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.PostalCode, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceType, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceCategory, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                        CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.SubCategory, keyword, CompareOptions.IgnoreCase) >= 0
+                                        ).ToList();
+                }
+            }
+
+            activities = filteredActivities;
         }
         else
         {
