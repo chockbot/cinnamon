@@ -4,7 +4,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
+<div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
     <span class="fw-bold">@ScheduleModel.Name</span>
     <br />
     <div>
@@ -29,16 +29,17 @@
     }
     else
     {
-        <button class="btn-primary rounded border-0 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal" style="width:fit-content;padding: 5px 10px">Choose</button>
+        <button class="btn-primary rounded border-0 shadow-sm" @onclick="() => modalLoginRef?.Show()" style="width:fit-content;padding: 5px 10px">Choose</button>
     }
     
 </div>
 
 
-@if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
+@if (!AuthState.User.Identity.IsAuthenticated)
 {
-    <ModalLogin ReturnUrl="@($"/Payment/{ActivityId}/{ScheduleModel.Id}")"></ModalLogin>
+    <ModalLogin @ref="modalLoginRef" ReturnUrl="@($"/Payment/{ActivityId}/{ScheduleModel.Id}")"></ModalLogin>
 }
+
 @code {
     [Parameter]
     public ActivitySchedule ScheduleModel { get; set; }
@@ -57,7 +58,7 @@
 
     public AuthenticationState AuthState { get; set; }
 
-    private bool mouseEnter { get; set; }
+    private ModalLogin? modalLoginRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -67,10 +68,5 @@
     private void OnClickChoose()
     {
         NavigationManager.NavigateTo($"/Payment/{ActivityId}/{ScheduleModel.Id}", true);
-    }
-
-    private void OnMouseEnter()
-    {
-        mouseEnter = !mouseEnter;
     }
 }
