@@ -303,8 +303,9 @@ public class AccountController : Controller
     [HttpGet("GoogleSignIn")]
     public async Task GoogleSignIn()
     {
+        var querystring = Request.QueryString.ToString();
         await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, 
-            new AuthenticationProperties { RedirectUri = "/api/account/GoogleRedirection" });
+            new AuthenticationProperties { RedirectUri = "/api/account/GoogleRedirection" + querystring });
     }
 
     [HttpGet("GoogleRedirection")]
@@ -316,6 +317,13 @@ public class AccountController : Controller
             var email = HttpContext.User.FindFirstValue(ClaimTypes.Email);
             var firstName = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
             var lastName = HttpContext.User.FindFirstValue(ClaimTypes.Surname);
+
+            string redirect = "/explore";
+
+            if(Request.Query.Keys.Any(a => a == "redirect"))
+            {
+                redirect = Request.Query["redirect"];
+            }
 
             if(string.IsNullOrEmpty(email))
             {
@@ -338,7 +346,7 @@ public class AccountController : Controller
             if(result.Result.Result.IsNew)
             {
                 await HttpContext.SignOutAsync();
-                return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}");
+                return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}&redirect={redirect}");
             }
 
             // sign out and sign again to save the cookie login
@@ -357,7 +365,7 @@ public class AccountController : Controller
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
             
-            return Redirect("/explore");
+            return Redirect(redirect);
         }
         catch
         {

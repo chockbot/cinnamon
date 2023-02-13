@@ -210,7 +210,9 @@
                     return;
                 }
 
-                NavigationManager.NavigateTo("/customer/profile", true);
+                var redirect = string.IsNullOrEmpty(ReturnUrl) ? "/explore" : ReturnUrl;
+
+                NavigationManager.NavigateTo(redirect, true);
             }
         }
         catch
@@ -262,6 +264,6 @@
 
     private void GoogleSignInClick()
     {
-        NavigationManager.NavigateTo("/api/account/GoogleSignIn", true);
+        NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=" + ReturnUrl, true);
     }
 }
