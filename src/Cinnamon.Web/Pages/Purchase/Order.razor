@@ -8,6 +8,7 @@
 @inject NavigationManager NavigationManager
 @inject ITransactionApiHandler transactionApiHandler;
 @inject IActivityApiHandler activityApiHandler;
+@inject IJSRuntime jsRuntime;
 
 @if(Model != null)
 {
@@ -42,6 +43,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await jsRuntime.InvokeVoidAsync("MyLib.Track", "Payment Confirmation Page Loaded");
+
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var purchaseSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("purchaseid", out var purchaseIdString);
 
