@@ -256,6 +256,8 @@
     {
         if(firstRender)
         {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Page Loaded");
+
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
     }

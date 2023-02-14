@@ -173,6 +173,7 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper",".swiper-scrollbar");
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Check Attendance Page Loaded");
         }
     }
 
