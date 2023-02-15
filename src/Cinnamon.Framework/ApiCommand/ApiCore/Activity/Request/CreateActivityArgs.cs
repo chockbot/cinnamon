@@ -65,5 +65,9 @@ public class CreateActivityArgs
         public int PerUnit2 {get; set;}
         [Required]
         public string PriceUnit2 {get; set;}
+        [Required]
+        public bool isSetSession { get; set;}
+        [Required]
+        public string SessionName { get; set;}  
     }
 }

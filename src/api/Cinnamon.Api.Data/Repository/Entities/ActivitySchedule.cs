@@ -11,6 +11,8 @@ public class ActivitySchedule : BaseEntity
     public string PriceUnit1 { get; set; } = "Head";
     public int PerUnit2 { get; set; } = 1;
     public string PriceUnit2 { get; set; } = "Session";
+    public bool IsSetSession { get; set; }
+    public string SessionName { get; set; } 
 
     public virtual Activity Activity {get; set;}
 }

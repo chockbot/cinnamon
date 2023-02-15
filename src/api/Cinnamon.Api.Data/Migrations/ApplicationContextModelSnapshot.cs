@@ -296,6 +296,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsSetSession")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text");
@@ -314,6 +317,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("PriceUnit2")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SessionName")
                         .IsRequired()
                         .HasColumnType("text");
 

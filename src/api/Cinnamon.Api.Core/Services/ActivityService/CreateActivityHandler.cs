@@ -155,7 +155,9 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName,
                     };
                 })
             });
@@ -232,7 +234,9 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName
                     };
                 })
 

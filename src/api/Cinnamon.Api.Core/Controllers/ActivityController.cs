@@ -79,7 +79,9 @@ public class ActivityController : ControllerBase
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName
                     };
                 }),
                 AdditionalRequirements = args.AdditionalRequirements,
@@ -126,7 +128,9 @@ public class ActivityController : ControllerBase
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName
                     };
                 }),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -207,7 +211,9 @@ public class ActivityController : ControllerBase
                             Price = s.Price,
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
-                            UnitPrice = s.UnitPrice
+                            UnitPrice = s.UnitPrice,
+                            isSetSession = s.isSetSession,
+                            SessionName = s.SessionName
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
@@ -619,7 +625,9 @@ public class ActivityController : ControllerBase
                                 Price = s.Price,
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice
+                                UnitPrice = s.UnitPrice,
+                                isSetSession = s.isSetSession,
+                                SessionName = s.SessionName
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -889,7 +897,9 @@ public class ActivityController : ControllerBase
                             Price = s.Price,
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
-                            UnitPrice = s.UnitPrice
+                            UnitPrice = s.UnitPrice,
+                            isSetSession = s.isSetSession,
+                            SessionName = s.SessionName
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -979,7 +989,9 @@ public class ActivityController : ControllerBase
                             Price = s.Price,
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
-                            UnitPrice = s.UnitPrice
+                            UnitPrice = s.UnitPrice,
+                            isSetSession = s.isSetSession,
+                            SessionName = s.SessionName
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1177,23 +1189,6 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetActivitiesByCategoriesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
-    [Route("GetActivitiesBySubCategories/{id}")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetActivitiesBySubCategoriesResult), StatusCodes.Status200OK)]
-    [AllowAnonymous]
-    public async Task<IActionResult> GetActivitiesBySubCategories(int[] id, [FromQuery] GetActivityArgs args)
-    {
-        try
-        {
-            return null;
-        }
-        catch (Exception)
-        {
-
-            throw;
         }
     }
 }

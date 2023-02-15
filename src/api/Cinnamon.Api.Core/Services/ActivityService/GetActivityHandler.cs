@@ -95,7 +95,9 @@ public class GetActivityHandler : IGetActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
