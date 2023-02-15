@@ -26,6 +26,29 @@
         <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" />
         <input class="form-control unit-input @RequiredCheck(scheduleModel.PriceUnit2)" id="unit2-input" placeholder="Unit 2" required @bind="scheduleModel.PriceUnit2" />
     </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-2 toggle-expiration">
+        <label class="label-switch">Session Expiration</label>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault">
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1 dropdown-expiration">
+        <label class="set-exp">Set Expiration</label>
+        <Dropdown class="dropdown-exp">
+            <DropdownToggle Color="Color.Primary">
+                Select Period
+            </DropdownToggle>
+            <DropdownMenu>
+                <DropdownItem>2 Weeks</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem>3 Weeks</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem>1 Month</DropdownItem>
+                <DropdownDivider />
+                <DropdownItem>2 Month</DropdownItem>
+            </DropdownMenu>
+        </Dropdown>
+    </div>
 </div>
 @code {
     [Parameter]

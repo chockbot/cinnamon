@@ -129,7 +129,79 @@ hr.solid {
     margin-top:10px;
     text-align: center;
 }
+.toggle-expiration{
+    margin-top:1rem;
+}
+.form-switch {
+    float: left;
+    margin-left: 1rem;
+    color: var(--primary);
+    margin-top:1rem;
+}
+.label-switch {
+    float: left;
+    font-weight: bold;
+    font-family: 'Nunito';
+    font-size: 18px;
+    margin-top: 1rem;
+}
+.set-exp {
+    float: left;
+    margin-top: 0.5rem;
+    font-weight: bold;
+    font-family: 'Nunito';
+    font-size: 18px;
+    margin-top: 1.5rem;
+    margin-bottom: 2rem;
+}
+::deep .dropdown-exp {
+    float: left;
+    margin-left: 1rem;
+    font-family: 'Nunito';
+    font-size: 18px;
+    margin-top: 1rem;
+}
+.form-check-input:focus ~
+.form-check-label::before {
+    /* when the button is toggled off 
+  it is still in focus and a violet border will appear */
+    border-color: violet !important;
+    /* box shadow is blue by default
+  but we do not want any shadow hence we have set 
+  all the values as 0 */
+    box-shadow: 0 0 0 0rem rgba(0, 0, 0, 0) !important;
+}
 
+/*sets the background color of
+          switch to violet when it is checked*/
+.form-check-input:checked ~
+.form-check-label::before {
+    border-color: violet !important;
+    background-color: violet !important;
+}
+/*sets the background color of
+          switch to violet when it is checked*/
+.custom-control-input:checked ~
+.custom-control-label::before {
+    border-color: violet !important;
+    background-color: violet !important;
+}
+
+/*sets the background color of
+          switch to violet when it is active*/
+.form-check-input:active ~
+.form-check-label::before {
+    background-color: violet !important;
+    border-color: violet !important;
+}
+
+/*sets the border color of switch
+          to violet when it is not checked*/
+.form-check-input:focus:not(:checked) ~
+.form-check-label::before {
+    border-color: violet !important;
+}
+  
 @media screen and (max-width: 767px) {
     .landing-sm {
         display: block;
