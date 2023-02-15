@@ -8,4 +8,12 @@ public class MakerEnrolledNotificationArgs : IInteractor
     public decimal Amount {get; set;}
     public DateTime PurchaseDate {get; set;}
     public string Email {get; set;}
+    public string MakerName {get; set;}
+    public string PayerName {get; set;}
+    public IEnumerable<IncludedStudents> Students {get; set;}
+
+    public class IncludedStudents
+    {
+        public string Name {get; set;}
+    }
 }

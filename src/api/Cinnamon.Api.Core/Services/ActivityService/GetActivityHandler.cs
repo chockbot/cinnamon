@@ -110,7 +110,8 @@ public class GetActivityHandler : IGetActivityHandler
                     Handler = activity.Owner.Handler,
                     Id = activity.Owner.Id,
                     FirstName = activity.Owner.FirstName,
-                    LastName = activity.Owner.LastName
+                    LastName = activity.Owner.LastName,
+                    Email = activity.Owner.Email
                 } : null
             };
 
