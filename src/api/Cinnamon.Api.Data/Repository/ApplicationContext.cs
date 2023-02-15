@@ -45,6 +45,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<StudentAttendance> StudentAttendances {get; set;}
 
+    public DbSet<ResetPassword> ResetPasswords {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -142,6 +144,9 @@ public class ApplicationContext : IdentityDbContext
         // student attendance
         modelBuilder.Entity<StudentAttendance>()
             .HasOne<Student>(s => s.Student);
+        
+        // reset password
+        modelBuilder.Entity<ResetPassword>().HasIndex(new string[] {"Guid","Token"});
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

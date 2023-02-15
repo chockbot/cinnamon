@@ -49,6 +49,8 @@ public class DataStore : IDataStore
 
     public IStudentAttendance StudentAttendance => new StudentAttendanceEntity(applicationContext);
 
+    public IResetPassword ResetPassword => new ResetPasswordEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
