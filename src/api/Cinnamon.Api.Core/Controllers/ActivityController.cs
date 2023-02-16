@@ -536,7 +536,9 @@ public class ActivityController : ControllerBase
                                 Price = s.Price,
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice
+                                UnitPrice = s.UnitPrice,
+                                isSetSession = s.isSetSession,
+                                SessionName = s.SessionName
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -720,7 +722,9 @@ public class ActivityController : ControllerBase
                             Price = s.Price,
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
-                            UnitPrice = s.UnitPrice
+                            UnitPrice = s.UnitPrice,
+                            isSetSession = s.isSetSession,
+                            SessionName = s.SessionName
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -808,7 +812,9 @@ public class ActivityController : ControllerBase
                             Price = s.Price,
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
-                            UnitPrice = s.UnitPrice
+                            UnitPrice = s.UnitPrice,
+                            isSetSession = s.isSetSession,
+                            SessionName = s.SessionName
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
