@@ -38,6 +38,7 @@ public class ActivityDTO
     public string Handler {get; set;}
     public string ExperienceCategory { get; set; }
     public string SubCategory { get; set; }
+    public bool IsNew { get; set; }
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }

@@ -110,7 +110,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         Owner = e.Owner != null ? new GetAllActivitiesResult.Activity.CustomerOwner {
                             Handler = e.Owner.Handler,
                             Id = e.Owner.Id
-                        } : null
+                        } : null,
+                        IsNew = e.IsNew
                     };
                 })
             }, "Successfully get all activities");

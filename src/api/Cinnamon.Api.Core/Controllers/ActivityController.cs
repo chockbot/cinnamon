@@ -662,7 +662,8 @@ public class ActivityController : ControllerBase
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id
-                        } : null
+                        } : null,
+                        IsNew = a.IsNew,
                     };
                 })
             });
