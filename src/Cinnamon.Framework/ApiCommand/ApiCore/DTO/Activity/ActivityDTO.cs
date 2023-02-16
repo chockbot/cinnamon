@@ -52,6 +52,8 @@ public class ActivityDTO
         public string PriceUnit1 {get; set;}
         public int PerUnit2 {get; set;}
         public string PriceUnit2 {get; set;}
+        public bool isSetSession { get; set;}
+        public string SessionName { get; set;}
     }
 
     public class ActivityImage 

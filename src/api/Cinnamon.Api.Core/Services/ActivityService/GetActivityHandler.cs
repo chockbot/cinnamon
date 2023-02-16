@@ -95,7 +95,9 @@ public class GetActivityHandler : IGetActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
@@ -108,7 +110,10 @@ public class GetActivityHandler : IGetActivityHandler
                 }) : Enumerable.Empty<GetActivityResult.ActivityImage>(),
                 Owner = activity.Owner != null ? new GetActivityResult.CustomerOwner {
                     Handler = activity.Owner.Handler,
-                    Id = activity.Owner.Id
+                    Id = activity.Owner.Id,
+                    FirstName = activity.Owner.FirstName,
+                    LastName = activity.Owner.LastName,
+                    Email = activity.Owner.Email
                 } : null
             };
 

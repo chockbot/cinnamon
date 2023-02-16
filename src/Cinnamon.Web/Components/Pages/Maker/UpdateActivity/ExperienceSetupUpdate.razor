@@ -34,7 +34,7 @@
                     @ondragenter="@( () => HandleDragEnter(schedule))"
                     @ondragend="HandleDragEnd"
                 >
-                    <ScheduleItemUpdate @key="schedule.TempId" scheduleModel="schedule" OnScheduleRemoved="RemoveSchedule" />
+                    <ScheduleItemUpdate @key="schedule.TempId" scheduleModel="schedule" @bind-Model="Model" OnScheduleRemoved="RemoveSchedule" />
                     <div class="center" style="width:100%;">
                         <img class="drag-icon" draggable="false" src="/images//reorder-icon.png"/>
                     </div>
@@ -317,7 +317,7 @@
 @code {
     
     [Parameter]
-    public ExperienceUpdateModel Model {get; set;}
+    public Models.ExperienceUpdateModel Model {get; set;}
     
     private int uploadedCount = 0;
 

@@ -11,6 +11,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.ISendVerifyEmailHandler, Modules.NotificationDriver.EmailNotification.SendVerifyEmailHandler>();
         services.AddTransient<Modules.UploadDriver.Handlers.IUploadAzureBlob, Modules.UploadDriver.AzureBlob.UploadAzureBlobHandler>();
         services.AddTransient<Modules.UploadDriver.Handlers.IDeleteAzureBlob, Modules.UploadDriver.AzureBlob.DeleteAzureBlobHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.ICustomerPayedNotificationHandler, Modules.NotificationDriver.EmailNotification.CustomerPayedNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IMakerEnrolledNotificationHandler, Modules.NotificationDriver.EmailNotification.MakerEnrolledNotificationHandler>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();

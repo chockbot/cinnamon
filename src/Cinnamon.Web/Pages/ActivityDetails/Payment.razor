@@ -398,7 +398,9 @@
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName,
                     };
                 }).ToList()
             },
@@ -423,7 +425,10 @@
                 Price = selectedSchedule.Price,
                 PriceUnit1 = selectedSchedule.PriceUnit1,
                 PriceUnit2 = selectedSchedule.PriceUnit2,
-                UnitPrice = selectedSchedule.UnitPrice
+                UnitPrice = selectedSchedule.UnitPrice,
+                isSetSession = selectedSchedule.isSetSession,
+                SessionName = selectedSchedule.SessionName
+                
             },
             Token = token
         };

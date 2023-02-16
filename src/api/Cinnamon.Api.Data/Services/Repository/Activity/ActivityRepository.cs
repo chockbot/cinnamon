@@ -243,7 +243,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }).ToList();
             }
@@ -349,9 +351,9 @@ public class ActivityRepository : IActivityRepository
                     CreatedBy = a.CreatedBy,
                     ExperienceTypeId = a.ExperienceTypeId,
                     Handler = a.Handler,
-                    ExperienceType = a.ExperienceType.Name,
-                    ExperienceCategory = a.ExperienceCategory.Category,
-                    SubCategory = a.SubCategory.SubCatergory
+                    ExperienceType = a.ExperienceType?.Name,
+                    ExperienceCategory = a.ExperienceCategory?.Category,
+                    SubCategory = a.SubCategory?.SubCatergory
                 };
 
                 // address fields
@@ -394,7 +396,9 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            PerUnit2 = s.PerUnit2
+                            PerUnit2 = s.PerUnit2,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName
                         };
                     }).ToList();
                 }
@@ -577,7 +581,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }).ToList();
             }
@@ -719,7 +725,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }).ToList();
             }

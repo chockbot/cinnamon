@@ -1,4 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@using Models
+@using Models.Entities
 
 <div class="row"> <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
         <input class="form-control @RequiredCheck(scheduleModel.Name)" id="name-input" placeholder="Detailed Activity Breakdown" required @bind="scheduleModel.Name" />
@@ -26,11 +28,44 @@
         <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" />
         <input class="form-control unit-input @RequiredCheck(scheduleModel.PriceUnit2)" id="unit2-input" placeholder="Unit 2" required @bind="scheduleModel.PriceUnit2" />
     </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-2 toggle-expiration">
+        <label class="label-switch">Session Expiration</label>
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.isSetSession">
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1 dropdown-expiration">
+        <label class="set-exp">Set Expiration</label>
+        @if (scheduleModel.isSetSession == false)
+        {
+            <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
+                <option disabled selected>Select Period</option>
+                @foreach (var sessionPeriod in Model.SessionPeriods)
+                {
+                    <option value="@sessionPeriod">@sessionPeriod</option>
+                }
+            </select>
+        }
+        else
+        {
+            <select class="form-control session-period" @bind="scheduleModel.SessionName">
+                <option disabled selected>Select Period</option>
+                @foreach (var sessionPeriod in Model.SessionPeriods)
+                {
+                    <option value="@sessionPeriod">@sessionPeriod</option>
+                }
+            </select>
+        }
+
+    </div>
 </div>
 @code {
     [Parameter]
     public Models.Entities.ActivitySchedule scheduleModel { get; set; }
-
+    [Parameter]
+    public ExperienceUpdateModel Model { get; set; }
+    [Parameter]
+    public EventCallback<ExperienceUpdateModel> ModelChanged { get; set; }
     [Parameter]
     public EventCallback<Models.Entities.ActivitySchedule> OnScheduleRemoved {get; set;}
 
