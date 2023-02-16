@@ -15,7 +15,7 @@ public class ResetPasswordRepository : IResetPasswordRepository
         this.dataStore = dataStore;
     }
     
-    public async Task<AppResult<ResetPasswordDTO>> Create(string email, string guid, string token, bool isUsed)
+    public async Task<AppResult<ResetPasswordDTO>> Create(string email, string guid, string token, bool isUsed, string generatedToken)
     {
         try
         {
@@ -36,7 +36,8 @@ public class ResetPasswordRepository : IResetPasswordRepository
             return AppResult<ResetPasswordDTO>.CreateSucceeded(new ResetPasswordDTO {
                 Email = created.Email,
                 Id = created.Id,
-                IsUsed = created.IsUsed
+                IsUsed = created.IsUsed,
+                GeneratedToken = created.GeneratedToken
             }, "Successfully create reset password");
         }
         catch (Exception ex)
@@ -61,7 +62,8 @@ public class ResetPasswordRepository : IResetPasswordRepository
                 {
                     Email = r.Email,
                     Id = r.Id,
-                    IsUsed = r.IsUsed
+                    IsUsed = r.IsUsed,
+                    GeneratedToken = r.GeneratedToken
                 };
             });
 
@@ -89,7 +91,8 @@ public class ResetPasswordRepository : IResetPasswordRepository
                 {
                     Email = r.Email,
                     Id = r.Id,
-                    IsUsed = r.IsUsed
+                    IsUsed = r.IsUsed,
+                    GeneratedToken = r.GeneratedToken
                 };
             });
 
@@ -115,7 +118,8 @@ public class ResetPasswordRepository : IResetPasswordRepository
             return AppResult<ResetPasswordDTO>.CreateSucceeded(new ResetPasswordDTO {
                 Email = resetPassword.Email,
                 Id = resetPassword.Id,
-                IsUsed = resetPassword.IsUsed
+                IsUsed = resetPassword.IsUsed,
+                GeneratedToken = resetPassword.GeneratedToken
             }, "Successfuly get reset pasword");
         }
         catch (Exception ex)
@@ -138,7 +142,8 @@ public class ResetPasswordRepository : IResetPasswordRepository
             return AppResult<ResetPasswordDTO>.CreateSucceeded(new ResetPasswordDTO {
                 Email = resetPassword.Email,
                 Id = resetPassword.Id,
-                IsUsed = resetPassword.IsUsed
+                IsUsed = resetPassword.IsUsed,
+                GeneratedToken = resetPassword.GeneratedToken
             }, "Successfuly get reset pasword");
         }
         catch (Exception ex)
@@ -167,7 +172,8 @@ public class ResetPasswordRepository : IResetPasswordRepository
             return AppResult<ResetPasswordDTO>.CreateSucceeded(new ResetPasswordDTO {
                 Email = updatedRes.Result.Email,
                 Id = updatedRes.Result.Id,
-                IsUsed = updatedRes.Result.IsUsed
+                IsUsed = updatedRes.Result.IsUsed,
+                GeneratedToken = updatedRes.Result.GeneratedToken
             }, "Successfully update reset password");
         }
         catch (Exception ex)

@@ -114,7 +114,7 @@ public class ResetPasswordController : ControllerBase
     {
         try
         {
-            var result = await resetPasswordRepository.Create(args.Email, args.Guid, args.Token, args.IsUsed);
+            var result = await resetPasswordRepository.Create(args.Email, args.Guid, args.Token, args.IsUsed, args.GeneratedToken);
 
             if (!result.Succeeded || result.Result == null)
             {

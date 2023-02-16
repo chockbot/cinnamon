@@ -12,4 +12,6 @@ public class CreateResetPasswordArgs
     [Required]
     public string Token {get; set;}
     public bool IsUsed {get; set;} = false;
+    [Required]
+    public string GeneratedToken {get; set;}
 }
