@@ -1,5 +1,6 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.EmailDriver.Handlers;
+using Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Interactors;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Interactors.Results;
@@ -11,11 +12,13 @@ public class MakerEnrolledNotificationHandler : IMakerEnrolledNotificationHandle
 {
     private readonly ISendMailHandler sendMailHandler;
     private readonly ApplicationConfig config;
+    private readonly MakerEnrolledNotificationHelper helper;
 
     public MakerEnrolledNotificationHandler(ISendMailHandler sendMailHandler, ApplicationConfig config)
     {
         this.sendMailHandler = sendMailHandler;
         this.config = config;
+        this.helper = new MakerEnrolledNotificationHelper();
     }
 
     public AppResult<MakerEnrolledNotificationResult> Execute(MakerEnrolledNotificationArgs args)
@@ -34,7 +37,9 @@ public class MakerEnrolledNotificationHandler : IMakerEnrolledNotificationHandle
     {
         try
         {
-            var emailBody = "template here";
+            var emailBody = helper.GetTemplate(args.MakerName, args.ExperienceName, args.PurchaseDate, 
+                args.PayerName, args.Amount, config.FrontendUrl, args.Students);
+                
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {
                     Body = emailBody,
