@@ -414,7 +414,6 @@ public class DataStore : IDataStore
                 SubCatergory = "Chess"
             });
         }
-
-        await applicationContext.SaveChangesAsync();
+            await applicationContext.SaveChangesAsync();
     }
 }

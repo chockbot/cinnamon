@@ -195,7 +195,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 Price = s.Price ?? 1,
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
-                                UnitPrice = s.UnitPrice ?? string.Empty
+                                UnitPrice = s.UnitPrice ?? string.Empty,
+                                isSetSession = s.isSetSession?? false
                             };
                         })
                     });
@@ -224,7 +225,9 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 Price = s.Price ?? 1,
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
-                                UnitPrice = s.UnitPrice ?? string.Empty
+                                UnitPrice = s.UnitPrice ?? string.Empty,
+                                isSetSession =s.isSetSession?? false
+                                
                             };
                         })
                     });

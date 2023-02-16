@@ -11,5 +11,7 @@ public class ActivitySchedule
     public string PriceUnit1 {get; set;} = "Head";
     public int PerUnit2 {get; set;}
     public string PriceUnit2 {get; set;} = "Session";
+    public bool isSetSession { get; set; }
+    public string SessionName { get; set;}
     public int TempId {get; set;}
 }

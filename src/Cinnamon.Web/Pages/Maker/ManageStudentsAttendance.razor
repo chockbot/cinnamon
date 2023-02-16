@@ -17,7 +17,12 @@
         <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
         <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students - Attendance </h3>
     </div>
-
+    <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
+        <AlertMessage>
+            @ErrorMessage
+        </AlertMessage>
+        <CloseButton Clicked="RefreshPage" Float="Float.End"/>
+    </Alert>
     <div class="student-details-container">
         <div class="student-details">
             <div class="student-details-major">
@@ -25,8 +30,6 @@
                 <p class="">Parent : <span>@profile.FirstName @profile.LastName</span></p>
                 <p class="">Present Days : <span class="days-present">@student.SessionsAttended</span></p>
             </div>
-
-
             <Div Margin="Margin.Is2.FromTop.OnMobile.FromTop.OnDesktop">
                 <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                     <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
@@ -51,7 +54,6 @@
             </Div>
         </div>
     </div>
-
     <div class="instruction">
         <span class="instruction-image"><img src="images/circle.png"></span>
         <p class="word">represents attended sessions. Tap the desired date to change.</p>
@@ -116,11 +118,6 @@
         </section>
     </div>
 }
-<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
-    <AlertMessage>
-        @ErrorMessage
-    </AlertMessage>
-</Alert>
 @code {
     [Parameter]
     public int Id { get; set; }
@@ -147,126 +144,126 @@
 
     protected override async Task OnInitializedAsync()
     {
-    var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-    var token = user.FindFirstValue("Token");
-    Token = token;
-    if (token == null)
-    {
-        // don't have current user login
-        NavigationManager.NavigateTo("explore");
-        return;
-    }
-    //Get Student Attendance Details
-    var result = await ongoingApiHandler.GetOngoingActivityById(Id);
-    if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-    {
-        student = new Students
-                {
-                    Id = result.Result.Result.Id,
-                    CustomerId = result.Result.Result.CustomerId,
-                    Name = result.Result.Result.Name,
-                    Remarks = result.Result.Result.Remarks,
-                    ActivityId = result.Result.Result.ActivityId,
-                    ScheduleId = result.Result.Result.ScheduleId,
-                    NumberOfSessions = result.Result.Result.NumberOfSessions,
-                    SessionsAttended = result.Result.Result.SessionsAttended
-                };
-    }
-    //Get Parent Name
-    var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
-    if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
-    {
-        profile = new CustomerProfile
-                            {
-                                FirstName = customer.Result.Result.FirstName,
-                                LastName  = customer.Result.Result.LastName
-                            };
-    }
-    //Get Student Attendance
-    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-            {
-                StudentId = student.Id,
-                ActivityId =student.ActivityId
-            }, token);
-    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-    {
-        studentAttendances = attendance.Result.Result.Select(a =>
+        var token = user.FindFirstValue("Token");
+        Token = token;
+        if (token == null)
         {
-            return new StudentAttendance
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        //Get Student Attendance Details
+        var result = await ongoingApiHandler.GetOngoingActivityById(Id);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            student = new Students
+                    {
+                        Id               = result.Result.Result.Id,
+                        CustomerId       = result.Result.Result.CustomerId,
+                        Name             = result.Result.Result.Name,
+                        Remarks          = result.Result.Result.Remarks,
+                        ActivityId       = result.Result.Result.ActivityId,
+                        ScheduleId       = result.Result.Result.ScheduleId,
+                        NumberOfSessions = result.Result.Result.NumberOfSessions,
+                        SessionsAttended = result.Result.Result.SessionsAttended
+                    };
+        }
+        //Get Parent Name
+        var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
+        if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+        {
+            profile = new CustomerProfile
+                                {
+                                    FirstName = customer.Result.Result.FirstName,
+                                    LastName  = customer.Result.Result.LastName
+                                };
+        }
+        //Get Student Attendance
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                 {
-                    Id = a.Id,
-                    Date = a.Date,
-                    IsPresent = a.IsPresent,
-                    ActivityId = a.ActivityId,
-                    NumberOfSessions = a.NumberOfSessions,
-                    SessionsAttended = a.SessionsAttended,
-                    ScheduleId = a.ScheduleId,
-                    StudentId = a.StudentId
-                };
-        }).ToList();
-    }
-    await CreateMonth();
+                    StudentId = student.Id,
+                    ActivityId =student.ActivityId
+                }, token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId
+                    };
+            }).ToList();
+        }
+        await CreateMonth();
     }
     public async Task CreateMonth()
     {
-    var tempDate = DateTime.Now.AddMonths(monthsAway);
-    month = tempDate.Month;
-    year = tempDate.Year;
+        var tempDate = DateTime.Now.AddMonths(monthsAway);
+        month = tempDate.Month;
+        year = tempDate.Year;
 
-    DateTime monthStart = new DateTime(year, month, 1);
-    monthEnd = monthStart.AddMonths(1).AddDays(-1);
-    monthName = monthStart.Month switch
-    {
-        1 => "January",
-        2 => "February",
-        3 => "March",
-        4 => "April",
-        5 => "May",
-        6 => "June",
-        7 => "July",
-        8 => "August",
-        9 => "September",
-        10 => "October",
-        11 => "November",
-        12 => "December",
-        _ => ""
-    };
-    numDummyColumn = (int)monthStart.DayOfWeek;
-    }
+        DateTime monthStart = new DateTime(year, month, 1);
+        monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        monthName = monthStart.Month switch
+        {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            _ => ""
+        };
+        numDummyColumn = (int)monthStart.DayOfWeek;
+        }
     private void NavigateToManageStudent()
     {
         NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
     private void OnEditRemarksClick()
     {
-    isEditRemarks = !isEditRemarks;
-    if (isEditRemarks)
-    {
-        remarksLocalState = student.Remarks;
-    }
-    else 
-    {
-        remarksLocalState = string.Empty;
-    }
+        isEditRemarks = !isEditRemarks;
+        if (isEditRemarks)
+        {
+            remarksLocalState = student.Remarks;
+        }
+        else 
+        {
+            remarksLocalState = string.Empty;
+        }
     }
     private async Task SaveAboutClick()
     {
-    if (isEditRemarks)
-    {
-        var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                {
-                    Id = Id,
-                    Remarks = remarksLocalState,
-                });
-
-        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        if (isEditRemarks)
         {
-            student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
+            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                    {
+                        Id = Id,
+                        Remarks = remarksLocalState,
+                    });
+
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
+            }
         }
-    }
-    isEditRemarks = false;
-    }
+        isEditRemarks = false;
+        }
     private async void UpdateAttendance(StudentAttendance studentAttendance, string token)
     {
         try
@@ -280,24 +277,32 @@
             {
                 studentAttendance.SessionsAttended -= 1;
             }
-            //check date if date is student attendance
-            var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
-                {
-                    Id         = studentAttendance.Id,
-                    Date       = studentAttendance.Date,
-                    IsPresent  = studentAttendance.IsPresent
-                }, token);
-
-            if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
+            //Check session attended if greater than number of session
+            if (studentAttendance.SessionsAttended > studentAttendance.NumberOfSessions)
             {
-                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                    {
-                        Id = studentAttendance.StudentId,
-                        SessionsAttended = studentAttendance.SessionsAttended,
-                    });
+                IsShowErrorMessage = true;
+                ErrorMessage = "An error occured. Session attended must not greater than number of session.";
             }
-        //Refresh Page
-        NavigationManager.NavigateTo("/maker/dashboard/managestudents/"+Id, true);
+            else
+            {
+                var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
+                            {
+                                Id = studentAttendance.Id,
+                                Date = studentAttendance.Date,
+                                IsPresent = studentAttendance.IsPresent
+                            }, token);
+
+                if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
+                {
+                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                                {
+                                    Id = studentAttendance.StudentId,
+                                    SessionsAttended = studentAttendance.SessionsAttended,
+                                });
+                }
+                //Refresh Page
+                NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + Id, true);
+            }
         }
         catch (Exception ex)
         {
@@ -309,28 +314,41 @@
     {
         try
         {
-            var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
+            //Check session attended if greater than number of session
+            if (studentAttendance.SessionsAttended >= studentAttendance.NumberOfSessions )
             {
-                AttendanceDate = presentDate,
-                IsPresent = true,
-                StudentId = studentAttendance.StudentId
-            }, token);
-
-            if (create.Succeeded && create.Result.IsSuccess)
-            {
-            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                    {
-                        Id = studentAttendance.StudentId,
-                        SessionsAttended = studentAttendance.SessionsAttended + 1,
-                    });
+                IsShowErrorMessage = true;
+                ErrorMessage = "An error occured. Session attended must not greater than number of session.";
             }
-            //Refresh Page
-        NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + Id, true);
+            else
+            {
+                var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
+                        {
+                            AttendanceDate = presentDate,
+                            IsPresent = true,
+                            StudentId = studentAttendance.StudentId
+                        }, token);
+
+                if (create.Succeeded && create.Result.IsSuccess)
+                {
+                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                            {
+                                Id = studentAttendance.StudentId,
+                                SessionsAttended = studentAttendance.SessionsAttended + 1,
+                            });
+                }
+                //Refresh Page
+                NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + Id, true);
+            }
         }
         catch (Exception ex)
         {
             IsShowErrorMessage = true;
             ErrorMessage = "An error occured. Please try again later.";
         }
+    }
+    private void RefreshPage()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/managestudents/" + Id, true);
     }
 }

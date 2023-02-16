@@ -80,7 +80,7 @@ namespace Cinnamon.Api.Data.Controllers
             {
                 var result = await _scheduleRepository.CreateSchedule(scheduleArgs.ActivityId,scheduleArgs.Name,scheduleArgs.DateTime,
                                                                       scheduleArgs.Price, scheduleArgs.UnitPrice, scheduleArgs.PerUnit1,
-                                                                      scheduleArgs.PriceUnit1, scheduleArgs.PerUnit2, scheduleArgs.PriceUnit2);
+                                                                      scheduleArgs.PriceUnit1, scheduleArgs.PerUnit2, scheduleArgs.PriceUnit2, scheduleArgs.isSetSession, scheduleArgs.SessionName);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new CreateScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -103,7 +103,7 @@ namespace Cinnamon.Api.Data.Controllers
             {
                 var result = await _scheduleRepository.UpdateSchedule(updateScheduleArgs.Id, updateScheduleArgs.Name,updateScheduleArgs.DateTime,
                                                                       updateScheduleArgs.Price, updateScheduleArgs.UnitPrice, updateScheduleArgs.PerUnit1,
-                                                                      updateScheduleArgs.PriceUnit1, updateScheduleArgs.PerUnit2, updateScheduleArgs.PriceUnit2);
+                                                                      updateScheduleArgs.PriceUnit1, updateScheduleArgs.PerUnit2, updateScheduleArgs.PriceUnit2, updateScheduleArgs.isSetSession, updateScheduleArgs.SessionName);
                 if (!result.Succeeded)
                 {
                     return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -133,7 +133,9 @@ namespace Cinnamon.Api.Data.Controllers
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName
                     };
                 });
 
@@ -169,7 +171,9 @@ namespace Cinnamon.Api.Data.Controllers
                         PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                         PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                         UnitPrice = s.UnitPrice ?? string.Empty,
-                        ActivityId = s.ActivityId
+                        ActivityId = s.ActivityId,
+                        isSetSession = s.isSetSession ?? false,
+                        SessionName = s.SessionName ?? string.Empty,
                     };
                 }));
                 if (!result.Succeeded || result.Result == null)
