@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Cinnamon.Api.Data.Repository.Entities;
 
 public class ActivitySchedule : BaseEntity 
