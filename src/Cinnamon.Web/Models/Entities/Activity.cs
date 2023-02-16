@@ -37,4 +37,5 @@ public class Activity
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
     public IList<ActivityImage> Images {get; set;}
     public CustomerProfile? Owner {get; set;}
+    public bool IsNew { get; set; }
 }

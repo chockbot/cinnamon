@@ -40,6 +40,7 @@ public class ActivityDTO
 
     public IEnumerable<ActivityAddress> Addresses { get; set;}
     public CustomerOwner? Owner {get; set;}
+    public bool IsNew { get; set; }
 
     public class ActivitySchedule 
     {
