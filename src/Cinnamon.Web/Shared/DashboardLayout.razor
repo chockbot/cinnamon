@@ -43,7 +43,7 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link item-link">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToReports">
                                 <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Reports</span>
                             </a>
                         </li>
@@ -53,12 +53,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToBadges">
                                 <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="#" data-bs-toggle="collapse" class="nav-link align-middle item-link">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToPremium">
                                 <img class="icon-home" src="images/Dashboard Icon/premium icon.png"> <span class="ms-1 d-sm-inline nav-text">Premium</span>
                             </a>
                         </li>
@@ -141,6 +141,21 @@
     private void NavigateToAttendance()
     {
         navigationManager.NavigateTo("/maker/dashboard/attendance");
+    }
+
+    private void NavigateToPremium()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/coming-soon");
+    }
+
+    private void NavigateToBadges()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/coming-soon");
+    }
+
+    private void NavigateToReports()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/coming-soon");
     }
 
     private void onClickMenu()

@@ -18,10 +18,11 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly ICreateOngoingActivityHandler createOngoingActivityHandler;
     private readonly ICustomerPayedNotificationHandler customerPayedNotificationHandler;
+    private readonly IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData, ICreateOngoingActivityHandler createOngoingActivityHandler,
-        ICustomerPayedNotificationHandler customerPayedNotificationHandler)
+        ICustomerPayedNotificationHandler customerPayedNotificationHandler, IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -29,6 +30,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.customerData = customerData;
         this.createOngoingActivityHandler = createOngoingActivityHandler;
         this.customerPayedNotificationHandler = customerPayedNotificationHandler;
+        this.makerEnrolledNotificationHandler = makerEnrolledNotificationHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -136,7 +138,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     new ApplicationException(createOngoingActivityRes.Message), createOngoingActivityRes.Message);
             }
 
-            // send email notification
+            // send email notification for customer
             var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
                 Amount = overallTotal,
                 CoachName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
@@ -154,6 +156,25 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
                 return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(emailNotifyRes.Message), emailNotifyRes.Message);
+            }
+
+            // send mail notification for maker
+            var makerNotification = await makerEnrolledNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs {
+                Amount = overallTotal,
+                Email = $"{activityRes.Result.Owner?.Email}",
+                ExperienceName = activityRes.Result.Title,
+                MakerName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
+                PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
+                PurchaseDate = DateTime.Now,
+                Students = args.Students.Select(s => {
+                    return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.IncludedStudents {
+                        Name = s.Name
+                    };
+                })
+            });
+            if(!makerNotification.Succeeded || makerNotification.Result == null)
+            {
+                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(makerNotification.Message), makerNotification.Message);
             }
 
             return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {Id = result.Result.Result.Id}, "Successfully create submit purchase order");
