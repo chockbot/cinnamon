@@ -38,6 +38,7 @@
         <label class="set-exp">Set Expiration</label>
         @if (scheduleModel.isSetSession == false)
         {
+            scheduleModel.SessionName = string.Empty;
             <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
                 <option disabled selected>Select Period</option>
                 @foreach (var sessionPeriod in Model.SessionPeriods)
