@@ -96,7 +96,9 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                                 Price = s.Price,
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice
+                                UnitPrice = s.UnitPrice,
+                                isSetSession = s.IsSetSession,
+                                SessionName = s.SessionName
                             };
                         }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivitySchedule>(),
                         Images = e.Images != null ? e.Images.OrderBy(i => i.Order).Select(i => {
@@ -110,7 +112,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         Owner = e.Owner != null ? new GetAllActivitiesResult.Activity.CustomerOwner {
                             Handler = e.Owner.Handler,
                             Id = e.Owner.Id
-                        } : null
+                        } : null,
+                        IsNew = e.IsNew
                     };
                 })
             }, "Successfully get all activities");

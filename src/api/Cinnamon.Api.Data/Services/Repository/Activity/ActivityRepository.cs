@@ -243,7 +243,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }).ToList();
             }
@@ -337,21 +339,22 @@ public class ActivityRepository : IActivityRepository
             {
                 var activityDTO = new ActivityDTO
                 {
-                    Id = a.Id,
-                    SubTitle = a.Subtitle,
-                    Title = a.Title,
-                    Description = a.Description,
-                    Price = a.Price,
-                    Remarks = a.Remarks,
-                    IsPublished = a.IsPublished,
+                    Id                   = a.Id,
+                    SubTitle             = a.Subtitle,
+                    Title                = a.Title,
+                    Description          = a.Description,
+                    Price                = a.Price,
+                    Remarks              = a.Remarks,
+                    IsPublished          = a.IsPublished,
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0,
-                    CreatedBy = a.CreatedBy,
-                    ExperienceTypeId = a.ExperienceTypeId,
-                    Handler = a.Handler,
-                    ExperienceType = a.ExperienceType?.Name,
-                    ExperienceCategory = a.ExperienceCategory?.Category,
-                    SubCategory = a.SubCategory?.SubCatergory
+                    SubCategoryId        = a.SubCategoryId ?? 0,
+                    CreatedBy            = a.CreatedBy,
+                    ExperienceTypeId     = a.ExperienceTypeId,
+                    Handler              = a.Handler,
+                    ExperienceType       = a.ExperienceType?.Name,
+                    ExperienceCategory   = a.ExperienceCategory?.Category,
+                    SubCategory          = a.SubCategory?.SubCatergory,
+                    IsNew                = dataStore.Student.FindAsync(s => (s.ActivityId == a.Id)).GetAwaiter().GetResult()?.Result?.Count() > 0 ? false : true
                 };
 
                 // address fields
@@ -394,7 +397,9 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            PerUnit2 = s.PerUnit2
+                            PerUnit2 = s.PerUnit2,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName
                         };
                     }).ToList();
                 }
@@ -577,7 +582,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }).ToList();
             }
@@ -719,7 +726,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName
                     };
                 }).ToList();
             }

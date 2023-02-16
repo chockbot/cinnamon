@@ -190,7 +190,9 @@
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        TempId = s.Id
+                        TempId = s.Id,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName
                     };
                 }).ToList(),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -256,8 +258,6 @@
     {
         if(firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Page Loaded");
-
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
     }
@@ -301,6 +301,8 @@
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,

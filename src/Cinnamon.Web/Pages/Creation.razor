@@ -194,7 +194,6 @@
     {
         if(firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Page Loaded");
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
         Task.Run(()=>module.InvokeVoidAsync("confirmation"));
@@ -263,6 +262,8 @@
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        isSetSession = s.isSetSession,
+                        SessionName = s.SessionName
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -304,6 +305,8 @@
             isLoading = false;
             
             navigationManager.NavigateTo("/maker/dashboard");
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
             return;
         }
 
