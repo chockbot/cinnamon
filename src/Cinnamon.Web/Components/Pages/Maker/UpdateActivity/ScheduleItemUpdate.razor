@@ -1,4 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@using Models
+@using Models.Entities
 
 <div class="row"> <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
         <input class="form-control @RequiredCheck(scheduleModel.Name)" id="name-input" placeholder="Detailed Activity Breakdown" required @bind="scheduleModel.Name" />
@@ -60,10 +62,10 @@
 @code {
     [Parameter]
     public Models.Entities.ActivitySchedule scheduleModel { get; set; }
-
     [Parameter]
-    public Models.ExperienceCreationModel Model { get; set; }
-
+    public ExperienceUpdateModel Model { get; set; }
+    [Parameter]
+    public EventCallback<ExperienceUpdateModel> ModelChanged { get; set; }
     [Parameter]
     public EventCallback<Models.Entities.ActivitySchedule> OnScheduleRemoved {get; set;}
 
