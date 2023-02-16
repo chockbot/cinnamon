@@ -5,42 +5,58 @@
 @inject IJSRuntime jsRuntime
 
 <div class="modal @viewModel.ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
-    <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center">Finish signing up</p>
+            <div class="modal-header" style="border:none;">
+                <p class="col-12 modal-title text-center">Finish signing up</p>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="@(() => CloseModal())"></button>
             </div>
             <div class="modal-body">
                 <div class="card-filter">
                     <EditForm Model=viewModel id="submitFinishSignup">
                         <DataAnnotationsValidator />
-                        <div class="d-flex flex-column gap-3 align-items-center">
-                            <div class="col-12">
-                                <InputText id="firstname-signup-finish" class="input-group fs-12" placeholder="First name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.FirstName />
+
+
+                        <div class="">
+                            <div class="name">
+
+                                <div class="first-name">
+                                <FieldLabel>First Name</FieldLabel>
+                                <InputText id="firstname-signup-finish" class="input-group" placeholder="First name" @bind-Value=viewModel.FirstName />
                                     <ValidationMessage style="text-align:left" For="() => viewModel.FirstName" />
-                            </div>
-                            <div class="col-12 justify-content-start">
-                                <InputText id="lastname-signup-finish" class="input-group fs-12" placeholder="Last name" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.LastName />
+                                </div>
+
+                                <div class="last-name">
+                                  <FieldLabel>Last Name</FieldLabel>
+                                <InputText id="lastname-signup-finish" class="input-group" placeholder="Last name" @bind-Value=viewModel.LastName />
                                 <ValidationMessage style="text-align:left" For="() => viewModel.LastName" />
-                                <p>Be sure it's the same as what appears on your government ID.</p>
+                                </div>
                             </div>
-                            <div class="col-12 justify-content-start">
-                                <InputText id="birtdate-signup-finish" type="date" class="input-group fs-12" placeholder="Birthdate" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Birthdate />
+                                <p class="sub-info">Be sure it's the same as what appears on your government ID.</p>
+
+                            <div class="">
+                                <label>Birthday</label>
+                                <InputText id="birtdate-signup-finish" type="date" class="input-group birthday-input" placeholder="Birthdate" @bind-Value=viewModel.Birthdate />
                                 <ValidationMessage style="text-align:left" For="() => viewModel.Birthdate" />
-                                <p>The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
+                                <p class="sub-info">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                             </div>
-                            <div class="col-12 justify-content-start">
-                                <InputText id="email-signup-finish" type="email" class="input-group fs-12" placeholder="Email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Email disabled/>
+                            <div class="">
+
+                                <label>Email</label>
+                                <InputText id="email-signup-finish" type="email" class="input-group" placeholder="Email" @bind-Value=viewModel.Email disabled/>
                                 <ValidationMessage style="text-align:left" For="() => viewModel.Email" />
-                                <p>For email confirmations, and receipts.</p>
+                                <p class="sub-info">For email confirmations, and receipts.</p>
                             </div>
-                            <div class="col-12">
-                                <InputText id="password-signup-finish" type="password" class="input-group fs-12" placeholder="Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.Password />
+                            <div class="password">
+                                <label>Password</label>
+                                <InputText id="password-signup-finish" type="password" class="input-group" placeholder="Password" @bind-Value=viewModel.Password />
+                                <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                     <ValidationMessage style="text-align:left" For="() => viewModel.Password" />
                             </div>
-                            <div class="col-12">
-                                <InputText id="confirm-signup-finish" type="password" class="input-group fs-12" placeholder="Confirm Password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" @bind-Value=viewModel.ConfirmPassword />
+                            <div class="confirm-password">
+                                <label>Confirm Password</label>
+                                <InputText id="confirm-signup-finish" type="password" class="input-group" placeholder="Confirm Password" @bind-Value=viewModel.ConfirmPassword />
+                                <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
                                 <ValidationMessage style="text-align:left" For="() => viewModel.ConfirmPassword" />
                             </div>
                             <div id="error-message-container" class="mb-4 error-message-container-finish">
@@ -48,7 +64,11 @@
                                 </ul>
                             </div>
                             <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+                           
+
                             <SignupButton id="signup-waiting-finish" Width="100%" Text="Agree and continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" />
+
+
                             <div class="col-12">
                                 @*<div class="form-check">
                                     <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @bind=viewModel.Customer.AcceptFlag>
@@ -112,4 +132,7 @@
         viewModel.ModalDisplay  = "none;";
         StateHasChanged();
     }
+
+
+    string flexItemStyle = $" width:660px;";
 }

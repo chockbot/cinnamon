@@ -5,31 +5,27 @@
 @inject IJSRuntime JsRuntime;
 @inject NavigationManager NavigationManager;
 
-<Modal @ref="Model.EmailModal">
+<Modal @ref="Model.EmailModal" class="modal-email">
     <ModalContent>
-        <ModalHeader>
-            <p class="col-11 modal-title text-center">Sign Up/Log In</p>
-            <button type="button" class="btn-close" @onclick="() => Model.EmailModal.Hide()" />
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title">Log In / Sign Up</p>
         </ModalHeader>
         <ModalBody>
             <div class="card-filter">
-                <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
-                <br/>
-                <h6>Email</h6>
+                <p class="email-text-header">Email</p>
                 <div class="w-100 text-center">
                     <Validations @ref="Model.EmailModelValidation" Mode="ValidationMode.Manual" Model="Model.EmailModel">
-                        <div class="d-flex flex-column gap-3 align-items-center">
+                        <div class="">
                             <div class="col-12">
                                 <Validation>
-                                    <TextEdit Role="TextRole.Email" Placeholder="enter email address" @bind-Text="Model.EmailModel.Email" class="input-email">
+                                    <TextEdit Role="TextRole.Email" Placeholder="Enter email address" @bind-Text="Model.EmailModel.Email" class="input-email">
                                         <Feedback>
                                             <ValidationError TextAlignment="TextAlignment.Start" />
                                         </Feedback>
                                     </TextEdit>
                                 </Validation>
                             </div>
-                            <Button Clicked="SubmitEmail" Type="ButtonType.Submit" class="btn-primary" Shadow="Shadow.Small" TextAlignment="TextAlignment.Center" 
-                                Border="Border.Is0.RoundedPill" Width="Width.Is100" style="white-space:nowrap;padding-right:50px;" 
+                            <Button Clicked="SubmitEmail" Type="ButtonType.Submit" class="btn-primary"
                                 Loading="Model.EmailModel.IsEmailSubmitting" Disabled="Model.EmailModel.IsEmailSubmitting">
                                 <LoadingTemplate>
                                     <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
@@ -38,20 +34,25 @@
                                     Continue
                                 </ChildContent>
                             </Button>
-                            <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
-                                By signing up you agree to our 
-                                <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and 
-                                <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+
                         </div>
                     </Validations>
                     <div class="divider">
-                        <hr class="left" />or<hr class="right" />
+                        or
                     </div>
                     <div class="col-12">
-                        <a class="btn btn-md btn-google" @onclick="GoogleSignInClick">
-                            <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
-                        </a>
-                    </div>
+                        <button class="btn-google" @onclick="GoogleSignInClick">
+                            <div class="btn-google-content">
+                            <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Google
+                            </div>
+                        </button>
+                    </div>                            
+                    <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
+                        By signing up you agree to our
+                        <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and
+                        <a href="Policy" style="color:#FFA942">Privacy Policy</a>
+                    </p>
+
                     <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
                         <AlertDescription>An error occured. Please try again later</AlertDescription>
                     </Alert>
@@ -61,30 +62,35 @@
     </ModalContent>
 </Modal>
 
+
+
 <Modal @ref="Model.PasswordModal">
     <ModalContent>
-        <ModalHeader>
-            <p class="col-11 modal-title text-center">Log In</p>
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title">Log In</p>
             <button type="button" class="btn-close" @onclick="() => Model.PasswordModal.Hide()" />
         </ModalHeader>
         <ModalBody>
             <div class="card-filter">
-                <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
-                <br />
-                <h6>Password</h6>
+                <p class="password-text-header">Password</p>
                 <Validations @ref="Model.PasswordModelValidation" Model="Model.PasswordModel" Mode="ValidationMode.Manual">
-                    <div class="d-flex flex-column gap-3 align-items-center">
-                        <div class="col-12">
+                    <div class="">
+                        <div class="col-12 password-content">
                             <Validation>
-                                <TextEdit Role="TextRole.Password" Placeholder="enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
+                                <TextEdit Role="TextRole.Password" Placeholder="Enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
                                     <Feedback>
-                                        <ValidationError TextAlignment="TextAlignment.Start" />
+                                        <ValidationError TextAlignment="TextAlignment.Start"/>
                                     </Feedback>
+                                    
                                 </TextEdit>
+                                <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
                             </Validation>
+
+                            <Alert Color="Color.Danger" Margin="Margin.Is2.FromTop" Visible="Model.PasswordModel.IShowErrorMessage" Style="@alertStyle">
+                                <AlertDescription>@Model.PasswordModel.ErrorMessage</AlertDescription>
+                            </Alert>
                         </div>
                         <Button Clicked="SubmitLogin" Type="ButtonType.Submit" class="btn-primary" Shadow="Shadow.Small" TextAlignment="TextAlignment.Center" 
-                            Border="Border.Is0.RoundedPill" Width="Width.Is100" style="white-space:nowrap;padding-right:50px;"
                             Disabled="Model.PasswordModel.IsPasswordSubmitting" Loading="Model.PasswordModel.IsPasswordSubmitting">
                             <LoadingTemplate>
                                 <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
@@ -95,24 +101,39 @@
                         </Button>
                     </div>
                 </Validations>
-                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.PasswordModel.IShowErrorMessage">
-                    <AlertDescription>@Model.PasswordModel.ErrorMessage</AlertDescription>
-                </Alert>
+                <div class="divider">
+                    or
+                </div>
+                <div class="col-12">
+                    <button class="btn-google" @onclick="GoogleSignInClick">
+                        <div class="btn-google-content">
+                            <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Google
+                        </div>
+                    </button>
+                </div>
+                <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
+                    By signing up you agree to our
+                    <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and
+                    <a href="Policy" style="color:#FFA942">Privacy Policy</a>
+                </p>
+
+                <p class="forgot-password" @onclick="() => ForgotPassword()">Forgot Password?</p>
+
             </div>
         </ModalBody>
     </ModalContent>
 </Modal>
 
+
 <Modal @ref="Model.VerificationModal" Closed="VerificationModalClosed">
     <ModalContent>
-        <ModalHeader>
-            <p class="col-11 modal-title text-center">Verification Email</p>
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title text-center">Verification Email</p>
             <button type="button" class="btn-close" @onclick="() => Model.VerificationModal.Hide()" />
         </ModalHeader>
         <ModalBody>
+            <h5 class="col-12 text-center"> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
             <div class="card-filter">
-                <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
-                <br />
                 <div class="col-12 text-center">
                     <p>We've sent an email to your inbox. Please check and click verify.</p>
                     <p>
@@ -135,8 +156,70 @@
     </ModalContent>
 </Modal>
 
+
+
+
+
+
+
+
+
+<Modal @ref="Model.ForgotPasswordModal" class="modal-forgot-password">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title">Forgot Password?</p>
+        </ModalHeader>
+        <ModalBody>
+            <p class="col-12 text-center forgot-password-sub-info">Enter the email address you used when you joined and we’ll send you instructions to reset your password.</p>
+            <div class="card-filter">
+                <p class="email-text-header">Email</p>
+                <div class="w-100 text-center">
+                    <Validations @ref="Model.EmailModelValidation" Mode="ValidationMode.Manual" Model="Model.EmailModel">
+                        <div class="">
+                            <div class="col-12">
+                                <Validation>
+                                    <TextEdit Role="TextRole.Email" Placeholder="Enter email address" @bind-Text="Model.EmailModel.Email" class="input-email">
+                                        <Feedback>
+                                            <ValidationError TextAlignment="TextAlignment.Start" />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Validation>
+                            </div>
+                            <Button  Type="ButtonType.Submit" class="btn-primary"
+                                    Loading="Model.EmailModel.IsEmailSubmitting" Disabled="Model.EmailModel.IsEmailSubmitting">
+                                <LoadingTemplate>
+                                    <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Continue
+                                </ChildContent>
+                            </Button>
+
+                        </div>
+                    </Validations>
+
+                    <p class="go-back" @onclick="() => GoBack()">Go Back</p>
+
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
+                        <AlertDescription>An error occured. Please try again later</AlertDescription>
+                    </Alert>
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+
+
+
+
+
+
+
+
 @code 
 {
+
     private Models.Modals.LoginModal Model = new();
 
     [Parameter]
@@ -266,4 +349,29 @@
     {
         NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=" + ReturnUrl, true);
     }
+
+
+
+    private void ForgotPassword()
+    {
+        Model.ForgotPasswordModal.Show();
+        Model.EmailModal.Hide();
+        Model.PasswordModal.Hide();
+
+    }
+
+    private void GoBack()
+    {
+        Model.ForgotPasswordModal.Hide();
+        Model.EmailModal.Show();
+        Model.PasswordModal.Show();
+        
+    }
+
+
+
+    string modalHeaderStyle = $"border:none;";
+    string alertStyle = $"margin-bottom:0px;";
+
+
 }
