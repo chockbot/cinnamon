@@ -261,4 +261,25 @@ public class CustomerController : ControllerBase
             return new JsonResult(new CheckCustomerLoginResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GenerateResetPasswordToken")]
+    [HttpPost]
+    [ProducesResponseType(typeof(GenerateResetPasswordTokenResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> GenerateResetPasswordToken([FromBody] GenerateResetPasswordTokenArgs args)
+    {
+        try
+        {
+            var result = await customerRepository.GenerateResetPasswordToken(args.Email);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GenerateResetPasswordTokenResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GenerateResetPasswordTokenResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GenerateResetPasswordTokenResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

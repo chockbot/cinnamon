@@ -20,4 +20,5 @@ public interface ICustomerRepository
     Task<AppResult<GovernmentIDsDTO>> GetGovermentId(int customerID);
     Task<AppResult<ProfilePictureDTO>> GetProfilePicture(int customerID);
     Task<AppResult<CustomerDTO>> GetByHandlerAsync(string handler);
+    Task<AppResult<string>> GenerateResetPasswordToken(string email);
 }

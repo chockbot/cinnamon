@@ -16,4 +16,5 @@ public interface ICustomerData
     Task<AppResult<GetGovernmentIdResult>> GetGovernmentIds(int customerId);
     Task<AppResult<GetProfilePictureResult>> GetProfilePicture(int customerId);
     Task<AppResult<GetCustomerResult>> GetCustomerByHandler(string handler);
+    Task<AppResult<GenerateResetPasswordTokenResult>> GenerateResetPasswordToken(GenerateResetPasswordTokenArgs args);
 }
