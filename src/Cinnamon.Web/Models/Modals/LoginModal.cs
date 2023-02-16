@@ -7,6 +7,8 @@ public class LoginModal
 {
     public Modal EmailModal {get; set;}
     public Modal PasswordModal {get; set;}
+
+    public Modal ForgotPasswordModal { get; set; }
     public Modal VerificationModal {get; set;}
     public Validations EmailModelValidation {get; set;}
     public Validations PasswordModelValidation {get; set;}
