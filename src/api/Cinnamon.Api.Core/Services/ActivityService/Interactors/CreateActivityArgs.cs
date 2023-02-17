@@ -21,8 +21,8 @@ public class CreateActivityArgs : IInteractor
     public string Region { get; set; }
     public string Barangay { get; set; }
     public string PostalCode { get; set; }
-    public string SpecificsYouWillProvide {get; set;}
-    public string CustomerBringWithThem {get; set;}
+    public string? SpecificsYouWillProvide {get; set;}
+    public string? CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}
     public string ActivityLevel {get; set;}
     public string SkillLevel {get; set;}
