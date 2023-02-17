@@ -25,6 +25,30 @@ public class CustomerRepository : ICustomerRepository
         this.emailStore = GetEmailStore();
     }
 
+    public async Task<AppResult<string>> GenerateResetPasswordToken(string email)
+    {
+        try
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return AppResult<string>.CreateFailed(new ApplicationException("Invalid email provided"), "Invalid email provided");
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            if(string.IsNullOrEmpty(token))
+            {
+                return AppResult<string>.CreateFailed(new ApplicationException("An error occured when generate token."), "An error occured when generate token.");
+            }
+
+            return AppResult<string>.CreateSucceeded(token, "Successfully generate token for reset password");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<string>.CreateFailed(ex, "An error occured when generating reset password token");
+        }
+    }
+
     public async Task<AppResult<CustomerDTO>> CheckLogin(string email, string password)
     {
         try

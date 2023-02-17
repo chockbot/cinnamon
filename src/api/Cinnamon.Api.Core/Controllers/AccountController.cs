@@ -41,6 +41,7 @@ public class AccountController : ControllerBase
     private readonly IExternalRegisterHandler externalRegisterHandler;
     private readonly IGetExternalLoginDetailHandler getExternalLoginDetailHandler;
     private readonly IGetCustomerByHandler getCustomerByHandler;
+    private readonly IResetPasswordHandler resetPasswordHandler;
 
     #endregion
 
@@ -53,7 +54,8 @@ public class AccountController : ControllerBase
         IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
         IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
-        IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler)
+        IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
+        IResetPasswordHandler resetPasswordHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -78,6 +80,7 @@ public class AccountController : ControllerBase
         this.externalRegisterHandler = externalRegisterHandler;
         this.getExternalLoginDetailHandler = getExternalLoginDetailHandler;
         this.getCustomerByHandler = getCustomerByHandler;
+        this.resetPasswordHandler = resetPasswordHandler;
     }
 
     [Route("Register")]
@@ -920,6 +923,39 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetExternalLoginDetailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ResetPassword")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ResetPasswordResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await resetPasswordHandler.ExecuteAsync(new Services.AccountService.Interactors.ResetPasswordArgs {
+                Email = args.Email,
+                ValidationRoute = args.ValidationRoute
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ResetPasswordResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new ResetPasswordResult {
+                Result = new Framework.ApiCommand.ApiCore.DTO.ResetPassword.ResetVerificationLinkDto {
+                    Email = created.Email,
+                    Id = created.Id,
+                    VerificationLink = created.VerificationLink
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

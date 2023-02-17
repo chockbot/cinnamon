@@ -708,6 +708,52 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("ResendEmails");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ResetPassword", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("GeneratedToken")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Guid")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsUsed")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Guid", "Token");
+
+                    b.ToTable("ResetPasswords");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SearchTags", b =>
                 {
                     b.Property<int>("Id")

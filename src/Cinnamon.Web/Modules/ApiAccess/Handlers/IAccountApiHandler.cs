@@ -29,4 +29,5 @@ public interface IAccountApiHandler
     Task<AppResult<GetWaitListByGuidResult>> GetWaitListByGuid(string token, string guid);
     Task<AppResult<GetCustomerByIdResult>> GetCustomerById(int id);
     Task<AppResult<GetCustomerByIdResult>> GetMakerDetailByHandler(string handler);
+    Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args);
 } 

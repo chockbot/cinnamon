@@ -1,9 +1,11 @@
 ﻿@namespace Cinnamon.Web.Components
+@using Flurl;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IAccountApiHandler accountApiHandler;
 @inject Cinnamon.Web.Config.Config config;
 @inject IJSRuntime JsRuntime;
 @inject NavigationManager NavigationManager;
+@inject Cinnamon.Web.Config.Config config;
 
 <Modal @ref="Model.EmailModal" class="modal-email">
     <ModalContent>
@@ -156,14 +158,6 @@
     </ModalContent>
 </Modal>
 
-
-
-
-
-
-
-
-
 <Modal @ref="Model.ForgotPasswordModal" class="modal-forgot-password">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle">
@@ -174,24 +168,26 @@
             <div class="card-filter">
                 <p class="email-text-header">Email</p>
                 <div class="w-100 text-center">
-                    <Validations @ref="Model.EmailModelValidation" Mode="ValidationMode.Manual" Model="Model.EmailModel">
+                    <Validations @ref="Model.ResetPasswordValidation" Mode="ValidationMode.Manual" Model="Model.ResetPasswordModel">
                         <div class="">
                             <div class="col-12">
                                 <Validation>
-                                    <TextEdit Role="TextRole.Email" Placeholder="Enter email address" @bind-Text="Model.EmailModel.Email" class="input-email">
+                                    <TextEdit Role="TextRole.Email" Placeholder="Enter email address" @bind-Text="Model.ResetPasswordModel.Email" class="input-email">
                                         <Feedback>
                                             <ValidationError TextAlignment="TextAlignment.Start" />
                                         </Feedback>
                                     </TextEdit>
                                 </Validation>
                             </div>
-                            <Button  Type="ButtonType.Submit" class="btn-primary"
-                                    Loading="Model.EmailModel.IsEmailSubmitting" Disabled="Model.EmailModel.IsEmailSubmitting">
+                            <Button Type="ButtonType.Submit" class="btn-primary"
+                                    Clicked="SubmitResetPassword"
+                                    Loading="Model.ResetPasswordModel.IsForgotPasswordSubmitting" 
+                                    Disabled="Model.ResetPasswordModel.IsForgotPasswordSubmitting">
                                 <LoadingTemplate>
                                     <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
                                 </LoadingTemplate>
                                 <ChildContent>
-                                    Continue
+                                    Reset Password
                                 </ChildContent>
                             </Button>
 
@@ -200,8 +196,8 @@
 
                     <p class="go-back" @onclick="() => GoBack()">Go Back</p>
 
-                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
-                        <AlertDescription>An error occured. Please try again later</AlertDescription>
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.ResetPasswordModel.IsShowForgotPassworErrordMessage">
+                        <AlertDescription>@Model.ResetPasswordModel.ForgotPasswordErrorMessage</AlertDescription>
                     </Alert>
                 </div>
             </div>
@@ -209,23 +205,17 @@
     </ModalContent>
 </Modal>
 
-
-
-
-
-
-
-
-
 @code 
 {
-
     private Models.Modals.LoginModal Model = new();
 
     [Parameter]
     public string ReturnUrl { get; set; } = "";
 
     public void Show() => Model.EmailModal.Show();
+
+    string modalHeaderStyle = $"border:none;";
+    string alertStyle = $"margin-bottom:0px;";
 
     private async Task SubmitEmail()
     {
@@ -338,6 +328,8 @@
         }
     }
 
+    
+
     private void VerificationModalClosed()
     {
         Model.ResendVrificationErrorMessage = string.Empty;
@@ -349,8 +341,6 @@
     {
         NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=" + ReturnUrl, true);
     }
-
-
 
     private void ForgotPassword()
     {
@@ -368,10 +358,29 @@
         
     }
 
-
-
-    string modalHeaderStyle = $"border:none;";
-    string alertStyle = $"margin-bottom:0px;";
-
-
+    private async Task SubmitResetPassword()
+    {
+        try
+        {
+            if(await Model.ResetPasswordValidation.ValidateAll())
+            {
+                Model.ResetPasswordModel.IsForgotPasswordSubmitting = true;
+                var resetPasswordRes = await accountApiHandler.ResetPassword(new Framework.ApiCommand.ApiCore.Account.Request.ResetPasswordArgs {
+                    Email = Model.ResetPasswordModel.Email,
+                    ValidationRoute = config.BaseUrl.AppendPathSegment("verify-reset-password")
+                });
+                if(!resetPasswordRes.Succeeded || resetPasswordRes.Result == null || !resetPasswordRes.Result.IsSuccess)
+                {
+                    Model.ResetPasswordModel.ForgotPasswordErrorMessage = resetPasswordRes.Result?.ErrorInfo?.Message ?? resetPasswordRes.Message;
+                    Model.ResetPasswordModel.IsShowForgotPassworErrordMessage = true;
+                }
+                Model.ResetPasswordModel.IsForgotPasswordSubmitting = false;
+            }
+        }
+        catch
+        {
+            Model.ResetPasswordModel.ForgotPasswordErrorMessage = "An error occured. Please try again later";
+            Model.ResetPasswordModel.IsShowForgotPassworErrordMessage = true;
+        }
+    }
 }

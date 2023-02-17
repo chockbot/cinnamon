@@ -42,7 +42,7 @@ public class GetAllActivitiesResult
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
         public CustomerOwner? Owner {get; set;}
-
+        public bool IsNew { get; set; }
 
         public class ActivitySchedule
         {

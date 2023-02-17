@@ -226,4 +226,25 @@ public class CustomerData : ICustomerData
             return AppResult<GetProfilePictureResult>.CreateFailed(ex, "An error occured when getting customer profile picture api");
         }
     }
+
+    public async Task<AppResult<GenerateResetPasswordTokenResult>> GenerateResetPasswordToken(GenerateResetPasswordTokenArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Customer/GenerateResetPasswordToken")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<GenerateResetPasswordTokenResult>();
+
+            return AppResult<GenerateResetPasswordTokenResult>.CreateSucceeded(result, "Successfully generate reset password token");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GenerateResetPasswordTokenResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GenerateResetPasswordTokenResult>.CreateFailed(ex, "An error occured when generate reset password token");
+        }
+    }
 }

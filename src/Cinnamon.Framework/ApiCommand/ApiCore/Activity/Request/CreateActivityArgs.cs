@@ -28,10 +28,8 @@ public class CreateActivityArgs
     public string? Region { get; set; }
     public string? Barangay { get; set; }
     public string? PostalCode { get; set; }
-    [Required]
-    public string SpecificsYouWillProvide {get; set;}
-    [Required]
-    public string CustomerBringWithThem {get; set;}
+    public string? SpecificsYouWillProvide {get; set;}
+    public string? CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}
     [Required]
     public string ActivityLevel {get; set;}
@@ -65,9 +63,7 @@ public class CreateActivityArgs
         public int PerUnit2 {get; set;}
         [Required]
         public string PriceUnit2 {get; set;}
-        [Required]
-        public bool isSetSession { get; set;}
-        [Required]
-        public string SessionName { get; set;}  
+        public bool isSetSession { get; set;} = false;
+        public string SessionName { get; set;} = string.Empty;
     }
 }

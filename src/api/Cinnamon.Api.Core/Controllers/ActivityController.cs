@@ -84,7 +84,7 @@ public class ActivityController : ControllerBase
                         SessionName = s.SessionName
                     };
                 }),
-                AdditionalRequirements = args.AdditionalRequirements,
+                AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
                 Address1 = args.Address1 ?? string.Empty,
                 Address2 = args.Address2 ?? string.Empty,
                 CanAdultsJoin = args.CanAdultsJoin,
@@ -93,7 +93,7 @@ public class ActivityController : ControllerBase
                 Region= args.Region ?? string.Empty,    
                 Barangay=args.Barangay ?? string.Empty,
                 PostalCode= args.PostalCode ?? string.Empty,    
-                CustomerBringWithThem = args.CustomerBringWithThem,
+                CustomerBringWithThem = args.CustomerBringWithThem ?? string.Empty,
                 Description = args.Description,
                 District = args.District ?? string.Empty,
                 ExperienceCategoryId = args.ExperienceCategoryId,
@@ -105,7 +105,7 @@ public class ActivityController : ControllerBase
                 ScheduleIndicator = args.ScheduleIndicator ?? string.Empty,
                 SearchTags = args.SearchTags,
                 SkillLevel = args.SkillLevel,
-                SpecificsYouWillProvide = args.SpecificsYouWillProvide,
+                SpecificsYouWillProvide = args.SpecificsYouWillProvide ?? string.Empty,
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
             });
@@ -672,7 +672,8 @@ public class ActivityController : ControllerBase
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id
-                        } : null
+                        } : null,
+                        IsNew = a.IsNew,
                     };
                 })
             });
