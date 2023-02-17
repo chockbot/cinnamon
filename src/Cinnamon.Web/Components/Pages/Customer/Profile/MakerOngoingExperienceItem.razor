@@ -1,7 +1,7 @@
 @using Cinnamon.Web.Models.Entities;
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
-@*<div class="swiper-slide">
+@*<div class="maker-swiper-slide">
     <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
     <Card class="card-experience-item" Border="Border.Is0">
         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
@@ -35,10 +35,10 @@
         </CardBody>
     </Card>
     </a>
-</div>
-*@
+</div>*@
 
-<div class="swiper-slide">
+
+<div class="maker-swiper-slide">
     <div class="experience-box">
         <div class="experience-header">
             <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
@@ -47,37 +47,40 @@
         </div>
 
         <div class="experience-content">
-            <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                <p class="xp-title">@Activity.Title</p>
-            </a>
 
 
-            <div class="xp-body-item">
-                <p class="label">Name</p>
-                <p class="context">Angelo Maligalig</p>
+            <div class="xp-body">
+                <div class="xp-body-details">
+                    <p class="xp-title">@Activity.Title</p>
+                    @if (Activity.ExperienceTypeId == 1)
+                    {
+                        <p class="price mb-0 text-color-343D">@Activity.District, @Activity.City</p>
+                    }
+                    else
+                    {
+                        <p class="price mb-0 text-color-343D">@(Activity.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                    }
+                </div>
+                <div class="xp-body-price">
+                    <p class="price mb-0 text-color-343D">@Activity.Price</p>
+                </div>
             </div>
 
-            <div class="xp-body-item">
-                <p class="label">Sessions Attended</p>
-                <p class="context">2/10</p>
-                <Progress>
-                    <ProgressBar Value="15" />
-                    <ProgressBar Color="Color.Success" Value="30" />
-                </Progress>
+            <div class="xp-badges">
+                <div class="new-badge">
+                    <img class="new-tag-icon" src="images/star-tag.png" alt="new icon">
+                    <span class="new-tag-label">New</span>
+                </div>
+
+                <div class="active-badge">
+                    <span class="pulse"></span>
+                    <span class="active-tag-label">18</span>
+                </div>
             </div>
 
-            <div class="xp-body-item">
-                <p class="label">Session Expiration</p>
-                <p class="context">
-                    Consume in - 4 weeks<br>
-                    Expiring in - March 23, 2023
-                </p>
-            </div>
 
-            <div class="xp-body-item">
-                <p class="label">Dates Attended</p>
-                <button class="view-dates">View</button>
-            </div>
+
+
         </div>
     </div>
 </div>
