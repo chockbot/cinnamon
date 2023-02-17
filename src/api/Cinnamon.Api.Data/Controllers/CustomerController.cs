@@ -282,4 +282,25 @@ public class CustomerController : ControllerBase
             return new JsonResult(new GenerateResetPasswordTokenResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("ResetPassword")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ResetPasswordResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await customerRepository.ResetPassword(args.Email, args.Token, args.Password);
+            if (!result.Succeeded)
+            {
+                return new JsonResult(new ResetPasswordResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new ResetPasswordResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ResetPasswordResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

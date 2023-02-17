@@ -49,6 +49,30 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
+    public async Task<AppResult<bool>> ResetPassword(string email, string token, string newPassword)
+    {
+        try
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Can't find customer account."), "Can't find customer account.");
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, token, newPassword);
+            if(!result.Succeeded)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("An error occured when updating password"), "An error occured when updating password");
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully reset password");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when resetting password");
+        }
+    }
+
     public async Task<AppResult<CustomerDTO>> CheckLogin(string email, string password)
     {
         try

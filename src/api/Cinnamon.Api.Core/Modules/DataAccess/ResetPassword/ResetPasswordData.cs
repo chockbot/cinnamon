@@ -59,12 +59,13 @@ public class ResetPasswordData : IResetPasswordData
         }
     }
 
-    public async Task<AppResult<GetResetPasswordResult>> GetResetPasswordByGuidToken(string guid, string token)
+    public async Task<AppResult<GetResetPasswordResult>> GetResetPasswordByGuidToken(GetResetPasswordArgs args)
     {
         try
         {
             var result = await flurlClient
-                            .Request($"ResetPassword/GetResetPasswordByGuidToken/{guid}/{token}")
+                            .Request($"ResetPassword/GetResetPasswordByGuidToken")
+                            .SetQueryParams(args)
                             .GetJsonAsync<GetResetPasswordResult>();
             
             return AppResult<GetResetPasswordResult>.CreateSucceeded(result, "Successfully getting reset password by guid and token api");

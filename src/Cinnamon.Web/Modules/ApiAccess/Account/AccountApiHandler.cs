@@ -533,4 +533,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<ResetPasswordResult>.CreateFailed(ex, "An error occured when posting reset password api");
         }
     }
+
+    public async Task<AppResult<VerifyResetPasswordResult>> VerifyResetPassword(VerifyResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/VerifyResetPassword")
+                .PostJsonAsync(args)
+                .ReceiveJson<VerifyResetPasswordResult>();
+
+            return AppResult<VerifyResetPasswordResult>.CreateSucceeded(result, "Successfully verify reset password api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<VerifyResetPasswordResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyResetPasswordResult>.CreateFailed(ex, "An error occured when verify reset password api");
+        }
+    }
 }
