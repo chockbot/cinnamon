@@ -20,6 +20,7 @@ public interface IDataStore
     IExternalLoginToken ExternalLoginToken { get; }
     IStudent Student { get; }
     IStudentAttendance StudentAttendance { get; }
+    IResetPassword ResetPassword { get; }
 
     Task EnsureMigrate();
 

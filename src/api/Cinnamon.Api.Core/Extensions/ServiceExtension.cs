@@ -13,6 +13,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.UploadDriver.Handlers.IDeleteAzureBlob, Modules.UploadDriver.AzureBlob.DeleteAzureBlobHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.ICustomerPayedNotificationHandler, Modules.NotificationDriver.EmailNotification.CustomerPayedNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IMakerEnrolledNotificationHandler, Modules.NotificationDriver.EmailNotification.MakerEnrolledNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IResetPasswordNotificationHandler, Modules.NotificationDriver.EmailNotification.ResetPasswordNotificationHandler>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
@@ -31,6 +32,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IOngoingActivitiesData, Modules.DataAccess.OngoingActivities.OngoingActivitiesData>();
         services.AddTransient<Modules.DataAccess.Handlers.IStudentData, Modules.DataAccess.Student.StudentData>();
         services.AddTransient<Modules.DataAccess.Handlers.IStudentAttendanceData, Modules.DataAccess.StudentAttendance.StudentAttendanceData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IResetPasswordData, Modules.DataAccess.ResetPassword.ResetPasswordData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -59,6 +61,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IExternalRegisterHandler, Services.AccountService.SubmitExternalRegisterHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetExternalLoginDetailHandler, Services.AccountService.GetExternalLoginDetailHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetCustomerByHandler, Services.AccountService.GetCustomerByHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IResetPasswordHandler, Services.AccountService.ResetPasswordHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

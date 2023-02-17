@@ -12,9 +12,11 @@ public class LoginModal
     public Modal VerificationModal {get; set;}
     public Validations EmailModelValidation {get; set;}
     public Validations PasswordModelValidation {get; set;}
+    public Validations ResetPasswordValidation {get; set;}
 
     public LoginEmailModel EmailModel {get; set;} = new();
     public LoginPasswordModel PasswordModel {get; set;} = new();
+    public ForgotPasswordModel ResetPasswordModel {get; set;} = new();
 
     public bool IsResendingVerification {get; set;}
     public bool IsResendVerificationShowError {get; set;}
@@ -41,5 +43,17 @@ public class LoginModal
         public bool IsPasswordSubmitting {get; set;}
         public bool IShowErrorMessage {get; set;}
         public string ErrorMessage {get; set;}
+    }
+
+    public class ForgotPasswordModel 
+    {
+        [Required(ErrorMessage = "Email address is required")]
+        [EmailAddress]
+        [DataType(DataType.EmailAddress)]
+        public string Email {get; set;}
+
+        public bool IsForgotPasswordSubmitting {get; set;}
+        public bool IsShowForgotPassworErrordMessage {get; set;}
+        public string ForgotPasswordErrorMessage {get; set;}
     }
 }
