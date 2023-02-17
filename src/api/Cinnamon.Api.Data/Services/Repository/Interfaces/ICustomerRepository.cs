@@ -21,4 +21,5 @@ public interface ICustomerRepository
     Task<AppResult<ProfilePictureDTO>> GetProfilePicture(int customerID);
     Task<AppResult<CustomerDTO>> GetByHandlerAsync(string handler);
     Task<AppResult<string>> GenerateResetPasswordToken(string email);
+    Task<AppResult<bool>> ResetPassword(string email, string token, string newPassword);
 }

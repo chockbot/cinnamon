@@ -42,6 +42,7 @@ public class AccountController : ControllerBase
     private readonly IGetExternalLoginDetailHandler getExternalLoginDetailHandler;
     private readonly IGetCustomerByHandler getCustomerByHandler;
     private readonly IResetPasswordHandler resetPasswordHandler;
+    private readonly IVerifyResetPasswordHandler verifyResetPasswordHandler;
 
     #endregion
 
@@ -55,7 +56,7 @@ public class AccountController : ControllerBase
         IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
-        IResetPasswordHandler resetPasswordHandler)
+        IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -81,6 +82,7 @@ public class AccountController : ControllerBase
         this.getExternalLoginDetailHandler = getExternalLoginDetailHandler;
         this.getCustomerByHandler = getCustomerByHandler;
         this.resetPasswordHandler = resetPasswordHandler;
+        this.verifyResetPasswordHandler = verifyResetPasswordHandler;
     }
 
     [Route("Register")]
@@ -956,6 +958,38 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("VerifyResetPassword")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifyResetPasswordResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyResetPassword([FromBody] VerifyResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await verifyResetPasswordHandler.ExecuteAsync(new Services.AccountService.Interactors.VerifyResetPasswordArgs {
+                Guid = args.Guid,
+                NewPassword = args.NewPassword,
+                Token = args.Token
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifyResetPasswordResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new VerifyResetPasswordResult {
+                Result = new Framework.ApiCommand.ApiCore.DTO.ResetPassword.VerifyResetPaswordDto {
+                    Success = true
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifyResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

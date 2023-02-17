@@ -247,4 +247,25 @@ public class CustomerData : ICustomerData
             return AppResult<GenerateResetPasswordTokenResult>.CreateFailed(ex, "An error occured when generate reset password token");
         }
     }
+
+    public async Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Customer/ResetPassword")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<ResetPasswordResult>();
+
+            return AppResult<ResetPasswordResult>.CreateSucceeded(result, "Successfully resetted password");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, "An error occured when resetting the password");
+        }
+    }
 }

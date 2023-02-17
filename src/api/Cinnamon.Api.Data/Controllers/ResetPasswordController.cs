@@ -38,14 +38,14 @@ public class ResetPasswordController : ControllerBase
         }
     }
 
-    [Route("GetResetPasswordByGuidToken/{guid}/{token}")]
+    [Route("GetResetPasswordByGuidToken")]
     [HttpGet]
     [ProducesResponseType(typeof(GetResetPasswordResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetResetPasswordByGuidToken(string guid, string token)
+    public async Task<IActionResult> GetResetPasswordByGuidToken([FromQuery] GetResetPasswordArgs args)
     {
         try
         {
-            var result = await resetPasswordRepository.GetByGuidTokenAsync(guid, token);
+            var result = await resetPasswordRepository.GetByGuidTokenAsync(args.Guid ?? string.Empty, args.Token ?? string.Empty);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetResetPasswordResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

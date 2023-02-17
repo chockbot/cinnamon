@@ -30,4 +30,5 @@ public interface IAccountApiHandler
     Task<AppResult<GetCustomerByIdResult>> GetCustomerById(int id);
     Task<AppResult<GetCustomerByIdResult>> GetMakerDetailByHandler(string handler);
     Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args);
+    Task<AppResult<VerifyResetPasswordResult>> VerifyResetPassword(VerifyResetPasswordArgs args);
 } 
