@@ -512,4 +512,25 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetCustomerByIdResult>.CreateFailed(ex, "An error occured when getting cutomer by handler api");
         }
     }
+
+    public async Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/ResetPassword")
+                .PostJsonAsync(args)
+                .ReceiveJson<ResetPasswordResult>();
+
+            return AppResult<ResetPasswordResult>.CreateSucceeded(result, "Successfully posting reset password api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, "An error occured when posting reset password api");
+        }
+    }
 }

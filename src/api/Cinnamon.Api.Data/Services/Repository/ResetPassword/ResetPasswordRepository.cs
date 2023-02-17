@@ -23,7 +23,8 @@ public class ResetPasswordRepository : IResetPasswordRepository
                 Email = email,
                 Guid = guid,
                 IsUsed = isUsed,
-                Token = token
+                Token = token,
+                GeneratedToken = generatedToken
             };
 
             var result = await dataStore.ResetPassword.Add(resetPasswordEntity);
