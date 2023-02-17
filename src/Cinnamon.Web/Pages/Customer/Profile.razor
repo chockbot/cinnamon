@@ -44,13 +44,23 @@
                                 }
                                 <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
                             </CardTitle>
-                        </CardBody>
-                        <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
-                            @if(!Model.CustomerProfile.IsVerified)
+                            @if (!Model.CustomerProfile.IsVerified)
                             {
                                 <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()"
-                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
+                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">
+                                    Get the badge
+                                </Button>
                             }
+                        </CardBody>
+                        <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
+                                <div class="ongoing-students">
+                                <p class="ongoing-students-label">On going no. of students</p>
+                                <p class="ongoing-students-number">50</p>
+                                </div>
+                                <div class="completed-students">
+                                    <p class="completed-students-label">Completed students</p>
+                                    <p class="completed-students-number">50</p>
+                                </div>
                         </CardFooter>
                     </Card>
                 </Column>
@@ -328,3 +338,59 @@
         isEditAbout = false;
     }
 }
+
+
+
+
+<style scoped>
+.ongoing-students{
+    display:flex;
+    justify-content:space-between;
+    padding-left:1rem; 
+    padding-right:1rem;
+    margin-top:2rem;
+}
+
+
+.completed-students{
+    display:flex;
+    justify-content:space-between;
+    padding-left:1rem; 
+    padding-right:1rem;
+}
+
+.ongoing-students-label,.completed-students-label{
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 30px;
+    /* identical to box height */
+    text-align: center;
+    color: #343D4C;
+}
+
+
+.ongoing-students-number{
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    color: #34A853;
+}
+
+
+.completed-students-number {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    color: #343D4C;
+}
+
+
+</style>
