@@ -17,7 +17,7 @@ public class StudentRepository: IStudentRepository
     }
 
     public async Task<AppResult<StudentDTO>> Create(int customerId, int familyMemberId, int activityId, int scheduleId, 
-        string name, string studentNo, int numberOfSessions, int sessionsAttended, string remarks = "", string status = "ACTIVE")
+        string name, string studentNo, int numberOfSessions, int sessionsAttended, DateTime ExpirationStartDate, DateTime ExpirationEndDate, string remarks = "", string status = "ACTIVE")
     {
         try
         {
@@ -31,7 +31,9 @@ public class StudentRepository: IStudentRepository
                 NumberOfSessions = numberOfSessions,
                 SessionsAttended = sessionsAttended,
                 Remarks = remarks,
-                Status = status
+                Status = status,
+                ExpirationDateStart = ExpirationStartDate,
+                ExpirationDateEnd = ExpirationEndDate
             };
 
             var createdStudent = await dataStore.Student.Add(student);
@@ -51,7 +53,9 @@ public class StudentRepository: IStudentRepository
                 ScheduleId = newStudent.ScheduleId,
                 SessionsAttended = newStudent.SessionsAttended,
                 Status = newStudent.Status,
-                StudentNo = newStudent.StudentNo
+                StudentNo = newStudent.StudentNo,
+                ExpirationStartDate = newStudent.ExpirationDateStart,
+                ExpirationEndDate = newStudent.ExpirationDateEnd,
             }, "Successfully creation student");
         }
         catch (Exception ex)
@@ -86,7 +90,9 @@ public class StudentRepository: IStudentRepository
                     ScheduleId = s.ScheduleId,
                     SessionsAttended = s.SessionsAttended,
                     Status = s.Status,
-                    StudentNo = s.StudentNo
+                    StudentNo = s.StudentNo,
+                    ExpirationStartDate = s.ExpirationDateStart,
+                    ExpirationEndDate = s.ExpirationDateEnd,
                 };
 
                 return studentDto;
@@ -121,7 +127,9 @@ public class StudentRepository: IStudentRepository
                     ScheduleId = s.ScheduleId,
                     SessionsAttended = s.SessionsAttended,
                     Status = s.Status,
-                    StudentNo = s.StudentNo
+                    StudentNo = s.StudentNo,
+                    ExpirationStartDate = s.ExpirationDateStart,
+                    ExpirationEndDate = s.ExpirationDateEnd     
                 };
 
                 return studentDto;
@@ -156,7 +164,9 @@ public class StudentRepository: IStudentRepository
                 ScheduleId = student.ScheduleId,
                 SessionsAttended = student.SessionsAttended,
                 Status = student.Status,
-                StudentNo = student.StudentNo
+                StudentNo = student.StudentNo,
+                ExpirationStartDate = student.ExpirationDateStart,
+                ExpirationEndDate = student.ExpirationDateEnd   
             };
 
             return AppResult<StudentDTO>.CreateSucceeded(studentDto, "Successfully get student");
@@ -168,7 +178,7 @@ public class StudentRepository: IStudentRepository
     }
 
     public async Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
-        int? sessionsAttended, string? remarks, string? status)
+        int? sessionsAttended, string? remarks, string? status, DateTime? ExpirationStartDate, DateTime? ExpirationEndDate)
     {
         try
         {
@@ -203,7 +213,9 @@ public class StudentRepository: IStudentRepository
                 ScheduleId = updatedStudent.ScheduleId,
                 SessionsAttended = updatedStudent.SessionsAttended,
                 Status = updatedStudent.Status,
-                StudentNo = updatedStudent.StudentNo
+                StudentNo = updatedStudent.StudentNo,
+                ExpirationStartDate = updatedStudent.ExpirationDateStart,
+                ExpirationEndDate = updatedStudent.ExpirationDateEnd    
             };
 
             return AppResult<StudentDTO>.CreateSucceeded(studentDto, "Successfully updated student information");
@@ -215,7 +227,7 @@ public class StudentRepository: IStudentRepository
     }
 
     public async Task<AppResult<IEnumerable<StudentDTO>>> Create(int customerId, int activityId, int scheduleId,int numberOfSessions, 
-        int sessionsAttended,  IEnumerable<CreateManyStudentDTO> familyMembers, string remarks = "", string status = "ACTIVE")
+        int sessionsAttended, DateTime ExpirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, string remarks = "", string status = "ACTIVE")
     {
         try
         {
@@ -239,6 +251,8 @@ public class StudentRepository: IStudentRepository
                     SessionsAttended = sessionsAttended,
                     StudentNo  = f.StudentNo,
                     Status = status,
+                    ExpirationDateStart = ExpirationStartDate,
+                    ExpirationDateEnd = ExpirationEndDate,
                 };
             });
 
@@ -259,7 +273,10 @@ public class StudentRepository: IStudentRepository
                     ScheduleId = s.ScheduleId,
                     SessionsAttended = s.SessionsAttended,
                     Status = s.Status,
-                    StudentNo = s.StudentNo
+                    StudentNo = s.StudentNo,
+                    ExpirationStartDate = s.ExpirationDateStart,
+                    ExpirationEndDate = s.ExpirationDateEnd
+
                 };
             });
 

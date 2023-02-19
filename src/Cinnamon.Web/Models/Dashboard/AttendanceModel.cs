@@ -30,6 +30,8 @@ public class AttendanceModel
         public string ScheduleTitle {get; set;}
         public string ScheduleDescription {get; set;}
         public bool IsSelected {get; set;}
+        public bool isSetSession { get; set; }
+        public string SessionName { get; set; }
     }
 
     public class StudentAttendance 
@@ -42,6 +44,8 @@ public class AttendanceModel
         public string ActivityName {get; set;}
         public int NumberOfSessions {get; set;}
         public int SessionsAttended {get; set;}
+        public DateTime ExpirationDateStart { get; set; }
+        public DateTime ExpirationDateEnd { get; set; }
     }
 }
 

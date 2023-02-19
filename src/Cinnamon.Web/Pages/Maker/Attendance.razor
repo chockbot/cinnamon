@@ -131,7 +131,7 @@
                 return;
             }
             Model.Token = token;
-            
+
             var schedules = await dashboardApiHandler.GetActivitySchedules(token);
             if(!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
             {
@@ -149,6 +149,8 @@
                     ScheduleDescription = s.ScheduleDescription,
                     ScheduleId = s.ScheduleId,
                     ScheduleTitle = s.ScheduleTitle,
+                    isSetSession = s.isSetSession,
+                    SessionName = s.SessionName
                 };
             }));
 
