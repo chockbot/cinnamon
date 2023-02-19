@@ -43,7 +43,7 @@
             <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
                 <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
             </button>
-            <span>Active</span>                
+                <span>@(item.IsPublished ? "Active" : "Inactive")</span>
         </div>
         <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
     </div>

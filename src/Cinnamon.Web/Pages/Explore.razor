@@ -290,7 +290,8 @@
                     <div class="row d-flex justify-content-start">
                         @foreach (var act in activities)
                         {
-                         <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center">
+                         <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center"
+                         style="margin-bottom:30px">
                                     <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                             <div class="card">
                                 <div id="carousel1-@act.ActivityId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -327,25 +328,50 @@
                                         <span class="visually-hidden"></span>
                                     </button>
                                 </div>  
-                                <div class="card-body1 text-start">
-                                    @if (act.IsNew)
-                                    {
-                                        <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span>
-                                    }
-                                    else
-                                    {
-                                        <span></span>
-                                    }
-                                    <h4 class="card-title1 mb-0" >@act.Title</h4>
-                                    @if(act.ExperienceTypeId == 1)
-                                    {
-                                        <p class="card-title2 mb-0">@act.City, @act.Region</p>
-                                    }
-                                    else{
-                                        <p class="card-title2 mb-0">@exptype.Name</p>
-                                    }
-                                    <p class="card-title3">@act.Price</p>
-                                </div>
+
+
+                                            <div class="card-container">
+                                                <div class="card-body1 text-start">
+                                                    <div>
+                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                        @if (act.ExperienceTypeId == 1)
+                                                        {
+                                                            <p class="card-title2 mb-0">@act.City, @act.Region</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="card-title2 mb-0">@exptype.Name</p>
+                                                        }
+                                                    </div>
+                                                    <p class="card-title3">@act.Price</p>
+                                                </div>
+
+                                                <div class="xp-badges">
+                                                   
+                                                        @if (act.IsNew)
+                                                        {
+                                                        <div class="new-badge" style="background-color:white">
+                                                            <img class="new-tag-icon" src="images/star-tag.png" alt="new icon">
+                                                            <span class="new-tag-label">New</span>
+                                                        </div>
+
+                                                        }
+                                                        else
+                                                        {
+                                                        <div class="new-badge">
+
+                                                        </div>
+                                                        }
+
+                                                   
+
+                                                    <div class="active-badge">
+                                                        <span class="pulse"></span>
+                                                        <span class="active-tag-label">18</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                             </div>
                         </a>
                          </div>
@@ -360,7 +386,7 @@
             <div class="row d-flex justify-content-start">
                 @foreach (var act in activities.OrderBy(a => a.ActivityId))
                 {
-                 <div class="col-md-6 d-flex flex-column align-items-center">
+                        <div class="col-md-6 d-flex flex-column align-items-center" style="margin-bottom:30px">
                  <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                     <div class="card">
                         <div id="carousel2-@act.ActivityId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
@@ -397,7 +423,7 @@
                                 <span class="visually-hidden"></span>
                             </button>
                         </div>  
-                        <div class="card-body1 text-start">
+@*                        <div class="card-body1 text-start">
                             <span class="star-icon"><button type="button" class="btn-star"><i class="fa fa-star">&nbsp;New</i></button></span> 
                             <h4 class="card-title1 mb-0" >@act.Title</h4>
                            @if(act.ExperienceTypeId == 1)
@@ -409,7 +435,47 @@
                                 <p class="card-title2 mb-0">@exptype.Name</p>
                            }
                             <p class="card-title3">@act.Price</p>
-                        </div>
+                        </div>*@
+                                    <div class="card-container">
+                                        <div class="card-body1 text-start">
+                                            <div>
+                                                <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                @if (act.ExperienceTypeId == 1)
+                                                {
+                                                    <p class="card-title2 mb-0">@act.City, @act.Region</p>
+                                                }
+                                                else
+                                                {
+                                                    <p class="card-title2 mb-0">@exptype.Name</p>
+                                                }
+                                            </div>
+                                            <p class="card-title3">@act.Price</p>
+                                        </div>
+
+                                        <div class="xp-badges">
+
+                                            @if (act.IsNew)
+                                            {
+                                                <div class="new-badge" style="background-color:white">
+                                                    <img class="new-tag-icon" src="images/star-tag.png" alt="new icon">
+                                                    <span class="new-tag-label">New</span>
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                <div class="new-badge">
+                                                </div>
+                                            }
+
+
+
+                                            <div class="active-badge">
+                                                <span class="pulse"></span>
+                                                <span class="active-tag-label">18</span>
+                                            </div>
+                                        </div>
+                                    </div>
                     </div>
                 </a>
             </div>
