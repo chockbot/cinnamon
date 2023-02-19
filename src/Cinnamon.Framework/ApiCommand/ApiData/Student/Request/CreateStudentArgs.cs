@@ -22,4 +22,3 @@ public class CreateStudentArgs
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
 }
-}
