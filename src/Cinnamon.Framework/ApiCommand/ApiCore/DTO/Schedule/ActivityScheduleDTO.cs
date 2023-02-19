@@ -8,4 +8,6 @@ public class ActivityScheduleDTO
     public int ScheduleId {get; set;}
     public string ScheduleTitle {get; set;}
     public string ScheduleDescription {get; set;}
+    public bool isSetSession { get; set; }
+    public string SessionName { get; set; }
 }

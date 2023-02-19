@@ -101,7 +101,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                     return new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs.StudentDetails {
                         FamilyMemberId = s.FamilyMemberId,
                         Name = s.Name,
-                        StudentNo = "00"
+                        StudentNo = "00",
                     };
                 })
             });

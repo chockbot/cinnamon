@@ -9,6 +9,9 @@ public class UpdateAttendanceArgs
     [Required]
     public DateTime Date {get; set;}
 
+    public DateTime ExpirationStartDate { get; set;}
+    public DateTime ExpirationEndDate { get; set;}
+
     public class UpdateAttendance 
     {
         [Required]
