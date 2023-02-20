@@ -55,5 +55,8 @@ public class LoginModal
         public bool IsForgotPasswordSubmitting {get; set;}
         public bool IsShowForgotPassworErrordMessage {get; set;}
         public string ForgotPasswordErrorMessage {get; set;}
+
+        public bool IsShowForgorPasswordSuccessMessage {get; set;}
+        public string ForgotPasswordSuccessMessage {get; set;}
     }
 }

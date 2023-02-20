@@ -8,8 +8,9 @@ public class ResetPasswordModel
     public ResetModel Model {get; set;} = new();
 
     public bool IsSubmittingResetPassword {get; set;}
-    public string ErrorMessage {get; set;}
+    public string Message {get; set;}
     public bool IsShowErrorMessage {get; set;}
+    public bool IsShowSuccessMessage {get; set;}
 
     public Validations FormValidation {get; set;}
 
