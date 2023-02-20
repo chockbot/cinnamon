@@ -18,12 +18,14 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler;
     private readonly IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler;
     private readonly IUpdateOngoingActivityHadler updateOngoingActivityHadler;
+    private readonly IAddActivityExpirationHandler addActivityExpirationHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
-        IUpdateOngoingActivityHadler updateOngoingActivityHadler)
+        IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler)
     {
         this.getAllOngoingActivitiesHandler = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler  = getOngoingActivityByIdHandler;
         this.updateOngoingActivityHadler    = updateOngoingActivityHadler;
+        this.addActivityExpirationHandler = addActivityExpirationHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -151,6 +153,43 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateOngoingActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("AddActivityExpiration")]
+    [HttpPost]
+    [ProducesResponseType(typeof(AddActivityExpirationResult), StatusCodes.Status202Accepted)]
+    [AllowAnonymous]
+    public async Task<IActionResult> AddActivityExpiration([FromBody] AddActivityExpirationArgs args)
+    {
+        try
+        {
+            var result = await addActivityExpirationHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.AddActivityExpirationArgs
+            {
+                Id = args.Id,
+                ScheduleId = args.ScheduleId,
+                SessionName = args.SessionName,
+                ExpirationStartDate = args.ExpirationStartDate,
+                ExpirationEndDate = args.ExpirationEndDate
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new AddActivityExpirationResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new AddActivityExpirationResult
+            {
+                Result = new StudentDTO
+                {
+                    Id = result.Result.Id,
+                    ExpirationStartDate = result.Result.ExpirationStartDate,
+                    ExpirationEndDate = result.Result.ExpirationEndDate
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new AddActivityExpirationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
