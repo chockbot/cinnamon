@@ -39,7 +39,9 @@ public class UpdateOngoingActivityHandler: IUpdateOngoingActivityHadler
                 NumberOfSessions = args.NumberOfSessions,
                 Status = args.Status,
                 StudentNo = args.StudentNo,
-                StudentId = args.Id
+                StudentId = args.Id,
+                ExpirationStartDate = args.ExpirationStartDate,
+                ExpirationEndDate = args.ExpirationEndDate
             });
             if (!updated.Succeeded || updated.Result == null || !updated.Result.IsSuccess)
             {
@@ -58,7 +60,11 @@ public class UpdateOngoingActivityHandler: IUpdateOngoingActivityHadler
                 Remarks = updated.Result.Result.Remarks,
                 SessionsAttended = updated.Result.Result.SessionsAttended,
                 Status= updated.Result.Result.Status,
-                StudentNo = updated.Result.Result.StudentNo
+                StudentNo = updated.Result.Result.StudentNo,
+                ExpirationStartDate = updated.Result.Result.ExpirationStartDate,
+                ExpirationEndDate = updated.Result.Result.ExpirationEndDate 
+                
+                
             }, "Successfully update student ongoing activity");
         }
         catch (Exception ex)

@@ -50,7 +50,10 @@ public class GetActivityScheduleHandler : IGetActivitySchedulesHandler
                         Description = activity.Description,
                         ScheduleTitle = schedule.Name,
                         ScheduleDescription = schedule.DateTime,
-                        ScheduleId = schedule.Id
+                        ScheduleId = schedule.Id,
+                        isSetSession = schedule.isSetSession,
+                        SessionName = schedule.SessionName
+
                     });
                 }
             }

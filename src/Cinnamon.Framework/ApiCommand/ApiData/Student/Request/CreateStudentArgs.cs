@@ -19,4 +19,6 @@ public class CreateStudentArgs
     [Required]
     public int NumberOfSessions {get; set;}
     public int SessionsAttended {get; set;} = 0;
+    public DateTime ExpirationStartDate { get; set; }
+    public DateTime ExpirationEndDate { get; set; }
 }

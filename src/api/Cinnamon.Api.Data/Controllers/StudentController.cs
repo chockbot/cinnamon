@@ -98,7 +98,7 @@ public class StudentController : ControllerBase
         {
             var result = await studentRepository.Create(args.CustomerId, args.FamilyMemberId, 
                 args.ActivityId, args.ScheduleId, args.Name, args.StudentNo, 
-                args.NumberOfSessions, args.SessionsAttended);
+                args.NumberOfSessions, args.SessionsAttended, args.ExpirationEndDate, args.ExpirationStartDate);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -120,7 +120,7 @@ public class StudentController : ControllerBase
     {
         try
         {
-            var result = await studentRepository.Create(args.CustomerId, args.ActivityId, args.ScheduleId, args.NumberOfSessions, args.SessionsAttended, args.Students.Select(s => {
+            var result = await studentRepository.Create(args.CustomerId, args.ActivityId, args.ScheduleId, args.NumberOfSessions, args.SessionsAttended, args.ExpirationStartDate, args.ExpirationEndDate, args.Students.Select(s => {
                 return new Framework.ApiCommand.ApiData.DTO.Student.CreateManyStudentDTO {
                     FamilyMemberId = s.FamilyMemberId,
                     Name = s.Name,
@@ -149,7 +149,7 @@ public class StudentController : ControllerBase
         try
         {
             var result = await studentRepository.Update(args.StudentId, args.Name, args.StudentNo, 
-                args.NumberOfSessions, args.SessionsAttended, args.Remarks, args.Status);
+                args.NumberOfSessions, args.SessionsAttended, args.Remarks, args.Status, args.ExpirationStartDate, args.ExpirationEndDate);
 
             if (!result.Succeeded || result.Result == null)
             {

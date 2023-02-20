@@ -12,4 +12,7 @@ public class StudentDTO
     public int SessionsAttended { get; set; }
     public string Remarks { get; set; }
     public string Status { get; set; }
+    public DateTime ExpirationStartDate { get; set; }
+    public DateTime ExpirationEndDate { get; set; }
+
 }

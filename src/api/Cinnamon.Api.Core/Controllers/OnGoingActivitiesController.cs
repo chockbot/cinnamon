@@ -123,7 +123,9 @@ public class OnGoingActivitiesController : ControllerBase
                 Remarks= args.Remarks,
                 SessionsAttended= args.SessionsAttended,
                 Status= args.Status,
-                StudentNo= args.StudentNo
+                StudentNo= args.StudentNo,
+                ExpirationStartDate = args.ExpirationStartDate,
+                ExpirationEndDate = args.ExpirationEndDate
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -140,6 +142,8 @@ public class OnGoingActivitiesController : ControllerBase
                    NumberOfSessions= result.Result.NumberOfSessions,
                    Name= result.Result.Name,
                    Id= result.Result.Id,
+                   ExpirationStartDate= result.Result.ExpirationStartDate,
+                   ExpirationEndDate= result.Result.ExpirationEndDate
                 },
                 IsSuccess = true
             });
