@@ -199,6 +199,9 @@
                     <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.ResetPasswordModel.IsShowForgotPassworErrordMessage">
                         <AlertDescription>@Model.ResetPasswordModel.ForgotPasswordErrorMessage</AlertDescription>
                     </Alert>
+                    <Alert Color="Color.Success" Margin="Margin.Is3.FromTop" Visible="Model.ResetPasswordModel.IsShowForgorPasswordSuccessMessage">
+                        <AlertDescription>@Model.ResetPasswordModel.ForgotPasswordSuccessMessage</AlertDescription>
+                    </Alert>
                 </div>
             </div>
         </ModalBody>
@@ -373,6 +376,11 @@
                 {
                     Model.ResetPasswordModel.ForgotPasswordErrorMessage = resetPasswordRes.Result?.ErrorInfo?.Message ?? resetPasswordRes.Message;
                     Model.ResetPasswordModel.IsShowForgotPassworErrordMessage = true;
+                }
+                else 
+                {
+                    Model.ResetPasswordModel.ForgotPasswordSuccessMessage = "Successfully request reset password. Please see your reset verification link to your email";
+                    Model.ResetPasswordModel.IsShowForgorPasswordSuccessMessage = true;
                 }
                 Model.ResetPasswordModel.IsForgotPasswordSubmitting = false;
             }
