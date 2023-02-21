@@ -79,13 +79,13 @@
                     <div class="">
                         <div class="col-12 password-content">
                             <Validation>
-                                <TextEdit Role="TextRole.Password" Placeholder="Enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
+                                <TextEdit Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" Placeholder="Enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
                                     <Feedback>
                                         <ValidationError TextAlignment="TextAlignment.Start"/>
                                     </Feedback>
                                     
                                 </TextEdit>
-                                <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => Model.IsRevealPassword = !Model.IsRevealPassword"></span>
                             </Validation>
 
                             <Alert Color="Color.Danger" Margin="Margin.Is2.FromTop" Visible="Model.PasswordModel.IShowErrorMessage" Style="@alertStyle">

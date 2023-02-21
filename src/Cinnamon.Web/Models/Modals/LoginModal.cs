@@ -22,6 +22,8 @@ public class LoginModal
     public bool IsResendVerificationShowError {get; set;}
     public string ResendVrificationErrorMessage {get; set;}
 
+    public bool IsRevealPassword {get; set;}
+
     public class LoginEmailModel 
     {
         [Required(ErrorMessage = "Email address is required")]
