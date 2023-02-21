@@ -262,10 +262,13 @@
         }
     }
 
-    private void OnBackClick(int index = 0) 
+    private async Task OnBackClick(int index = 0) 
     {
         if(currentIndex == 0) return;
         currentIndex --;
+
+        await Task.Delay(100);
+        await module.InvokeVoidAsync("onScrollUp");
     }
 
     private async Task OnNextClick(int index = 0)
@@ -394,6 +397,9 @@
                     currentIndex = index;
                     break;
             }
+
+            await Task.Delay(100);
+            await module.InvokeVoidAsync("onScrollUp");
             return;
         }
         if(currentIndex == 0 && (Model.ExperienceHasError = !experienceUpdateComponent.IsAllFieldsValidated()))
@@ -408,6 +414,9 @@
         };
         
         currentIndex++;
+
+        await Task.Delay(100);
+        await module.InvokeVoidAsync("onScrollUp");
     }
 
     [JSInvokable]
