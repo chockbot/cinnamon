@@ -69,9 +69,18 @@
             <div class="xp-body-item">
                 <p class="label">Session Expiration</p>
                 <p class="context">
-                    Consume in - 4 weeks<br>
-                    Expiring in - March 23, 2023
-                </p>
+                    @if(Activity.ActivitySchedules!=null){
+                        var activity = Activity.ActivitySchedules.FirstOrDefault();
+
+                        if (activity.isSetSession == true)
+                        {
+                            <p class="context">
+                                Consume in - @activity.SessionName <br>
+                                Expiring in - March 23, 2023
+                            </p>
+                        }
+                    }
+               </p>
             </div>
 
             <div class="xp-body-item">
