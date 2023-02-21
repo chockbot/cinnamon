@@ -343,7 +343,7 @@
                                                             <p class="card-title2 mb-0">@exptype.Name</p>
                                                         }
                                                     </div>
-                                                    <p class="card-title3">@act.Price</p>
+                                                    <p class="card-title3">@GetPriceLabel(act)</p>
                                                 </div>
 
                                                 <div class="xp-badges">
@@ -449,7 +449,7 @@
                                                     <p class="card-title2 mb-0">@exptype.Name</p>
                                                 }
                                             </div>
-                                            <p class="card-title3">@act.Price</p>
+                                            <p class="card-title3">@GetPriceLabel(act)</p>
                                         </div>
 
                                         <div class="xp-badges">
@@ -849,5 +849,19 @@
     private void Logout()
     {
         NavigationManager.NavigateTo("/api/account/logout", true);
+    }
+
+    private string GetPriceLabel(Activity activity)
+    {
+        var schedules = activity.ActivitySchedules.OrderBy(s => s.Price).ToList();
+        if(schedules.Count > 1)
+        {
+            return $"{schedules[0].UnitPrice} {(long)schedules[0].Price} - {(long)schedules[schedules.Count - 1].Price}";
+        }
+        if(schedules.Count == 1)
+        {
+            return $"{schedules[0].UnitPrice} {(long)schedules[0].Price} / {schedules[0].PerUnit1} {schedules[0].PriceUnit1} / {schedules[0].PerUnit2} {schedules[0].PriceUnit2}";
+        }
+        return string.Empty;
     }
 }
