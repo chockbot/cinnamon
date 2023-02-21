@@ -505,7 +505,7 @@
     private void AddEmptySchedule()
     {
         int maxId = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.TempId) + 1;
-        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId});
+        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1});
     }
 
     private void RemoveSchedule(Models.Entities.ActivitySchedule schedule) 
