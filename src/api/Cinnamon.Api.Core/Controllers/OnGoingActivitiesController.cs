@@ -56,7 +56,9 @@ public class OnGoingActivitiesController : ControllerBase
                         ScheduleId = e.ScheduleId,
                         SessionsAttended = e.SessionsAttended,
                         Status = e.Status,
-                        StudentNo = e.StudentNo
+                        StudentNo = e.StudentNo,
+                        ExpirationStartDate= e.ExpirationStartDate,
+                        ExpirationEndDate= e.ExpirationEndDate,
                     };
                 })
             });
@@ -99,7 +101,9 @@ public class OnGoingActivitiesController : ControllerBase
                     ScheduleId = objResult.ScheduleId,
                     SessionsAttended = objResult.SessionsAttended,
                     Status = objResult.Status,
-                    StudentNo = objResult.StudentNo
+                    StudentNo = objResult.StudentNo,
+                    ExpirationStartDate = objResult.ExpirationStartDate,
+                    ExpirationEndDate = objResult.ExpirationEndDate,
                 },
                 IsSuccess = true,
             });

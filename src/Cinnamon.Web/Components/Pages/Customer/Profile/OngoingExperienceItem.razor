@@ -1,4 +1,6 @@
 @using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IOngoingActivitiesHandler ongoingApiHandler
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 @*<div class="swiper-slide">
@@ -54,35 +56,30 @@
 
             <div class="xp-body-item">
                 <p class="label">Name</p>
-                <p class="context">Angelo Maligalig</p>
+                <p class="context">@Student.Name</p>
             </div>
 
             <div class="xp-body-item">
                 <p class="label">Sessions Attended</p>
-                <p class="context">2/10</p>
-                <Progress>
-                    <ProgressBar Value="15" />
-                    <ProgressBar Color="Color.Success" Value="30" />
-                </Progress>
+                <p class="context">@Student.SessionsAttended/@Student.NumberOfSessions</p>
+                <div class="progress">
+                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow="@Student.SessionsAttended" aria-valuemin="0" aria-valuemax="@Student.NumberOfSessions"></div>
+                </div>
             </div>
-
-            <div class="xp-body-item">
-                <p class="label">Session Expiration</p>
-                <p class="context">
-                    @if(Activity.ActivitySchedules!=null){
-                        var activity = Activity.ActivitySchedules.FirstOrDefault();
-
-                        if (activity.isSetSession == true)
-                        {
-                            <p class="context">
-                                Consume in - @activity.SessionName <br>
-                                Expiring in - March 23, 2023
-                            </p>
-                        }
-                    }
-               </p>
-            </div>
-
+            @if(Activity.ActivitySchedules != null)
+            {
+                var activity = Activity.ActivitySchedules.Where(s => s.Id == Student.ScheduleId).FirstOrDefault();
+                if (activity!=null && activity.isSetSession == true)
+                {
+                    <div class="xp-body-item">
+                    <p class="label">Session Expiration</p>
+                        <p class="context">
+                            Consume in - @activity.SessionName <br>
+                            Expiring in - @Student.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                        </p>
+                    </div>
+                }
+            }
             <div class="xp-body-item">
                 <p class="label">Dates Attended</p>
                 <button class="view-dates">View</button>
@@ -91,21 +88,46 @@
     </div>
 </div>
 
-
-
-
-
-
-
 @code
 {
     [Parameter]
     public Activity Activity { get; set; }
-
+    [Parameter]
+    public CustomerProfile Profile { get; set; }
+    public List<Students> students = new List<Students>();
+    public Students Student = new Students();
+    public ActivitySchedule Schedule = new ActivitySchedule();
     private string GetImage()
     {
         if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
         return string.Empty;
     }
+    protected override async Task OnInitializedAsync()
+    {
+        var student = await ongoingApiHandler.GetAllOngoingActivities();
+        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        {
+            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                return new Students
+                    {
+                        ActivityId = a.ActivityId,
+                        CustomerId = a.CustomerId,
+                        Id = a.Id,
+                        Name = a.Name,
+                        NumberOfSessions = a.NumberOfSessions,
+                        Remarks = a.Remarks,
+                        ScheduleId = a.ScheduleId,
+                        SessionsAttended = a.SessionsAttended,
+                        Status = a.Status,
+                        StudentNo = a.StudentNo,
+                        ExpirationDateStart = a.ExpirationStartDate,
+                        ExpirationDateEnd = a.ExpirationEndDate,
+                    };
+            }).ToList();
+        }
+        Student = students.Where(a => a.ActivityId == Activity.ActivityId && a.CustomerId == Profile.Id).FirstOrDefault();
+    }
+
 }
 
