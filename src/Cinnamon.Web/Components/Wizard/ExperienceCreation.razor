@@ -99,6 +99,11 @@
     [Parameter]
     public ExperienceCreationModel Model {get; set;}
 
+    protected override async Task OnInitializedAsync()
+    {
+        Model.Activity.ExperienceTypeId = 1;
+    }
+
     public string SearchTag { get; set; }
     
     public int SearchTagLength { get; set; } = 0;
