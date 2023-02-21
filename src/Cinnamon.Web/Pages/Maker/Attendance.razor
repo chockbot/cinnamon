@@ -4,12 +4,15 @@
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Models.Dashboard;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Entities
+@inject IActivityApiHandler activityApiHandler
 @using System.Timers;
 @inject IJSRuntime jsRuntime;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager navigationManager;
 @inject IDashboardApiHandler dashboardApiHandler;
 @inject ISystemApiHandler systemApiHandler;
+@inject IOngoingActivitiesHandler ongoingApiHandler
 @implements IDisposable;
 @attribute [Authorize]
 
@@ -113,6 +116,7 @@
 @code
 {
     private AttendanceModel Model {get; set;} = new();
+    public Activity activity = new Activity();
 
     // 2 seconds delay
     private Timer checkUncheckAllTimer = new Timer(2000);
@@ -184,11 +188,11 @@
         jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initProgressBars", Model.FilteredAttendance.Select(s => $"#progress-{s.StudentId}"));
     }
 
-    private void ProcessCheckUncheckAll(object? sender, ElapsedEventArgs e)
+    private async void ProcessCheckUncheckAll(object? sender, ElapsedEventArgs e)
     {
         checkUncheckAllTimer.Stop();
         // call update attendance api without waiting
-        dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
+        await dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
             Students = Model.FilteredAttendance.Select(s => {
                 return new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate {
                     ActivityId = s.ActivityId,
@@ -198,6 +202,55 @@
                 };
             })
         }, Model.Token);
+        foreach (var item in Model.FilteredAttendance)
+        {
+            //Check if Session is not null
+            var activityResult = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+                {
+                    IncludeAtivitySchedules = true,
+                });
+            if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+            {
+                var result = activityResult.Result.Result;
+                activity = new Activity
+                    {
+                        ActivitySchedules = result.ActivitySchedules.Select(e =>
+                         {
+                             return new ActivitySchedule
+                             {
+                                 Id = e.Id,
+                                 Name = e.Name,
+                                 DateTime = e.DateTime,
+                                 PerUnit1 = e.PerUnit1,
+                                 PerUnit2 = e.PerUnit2,
+                                 Price = e.Price,
+                                 PriceUnit1 = e.PriceUnit1,
+                                 PriceUnit2 = e.PriceUnit2,
+                                 UnitPrice = e.UnitPrice,
+                                 isSetSession = e.isSetSession,
+                                 SessionName = e.SessionName
+                             };
+                         }).ToList(),
+                    };
+            }
+            var schedule = activity.ActivitySchedules.FirstOrDefault();
+            //Set Session Expiration
+            if (schedule != null && schedule.isSetSession == true)
+            {
+                //Check if first attendance
+                if (item.SessionsAttended == 1)
+                {
+                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                        {
+                            Id = item.StudentId,
+                            ScheduleId = item.ScheduleId,
+                            SessionName = schedule.SessionName,
+                            ExpirationStartDate = DateTime.UtcNow,
+                            ExpirationEndDate = item.ExpirationDateEnd
+                        });
+                }
+            }
+        }
     }
 
     private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
@@ -251,7 +304,7 @@
         checkUncheckAllTimer.Start();
     }
 
-    private void CheckUnCheckAttendance(AttendanceModel.StudentAttendance studentAttendance)
+    private async void CheckUnCheckAttendance(AttendanceModel.StudentAttendance studentAttendance)
     {
         studentAttendance.IsPresent = !studentAttendance.IsPresent;
         if(studentAttendance.IsPresent)
@@ -264,7 +317,7 @@
         }
 
         // call update attendance api without waiting
-        dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
+        await dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
             Students = new List<Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate> {
                 new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate {
                     ActivityId = studentAttendance.ActivityId,
@@ -274,8 +327,53 @@
                 },
             }
         }, Model.Token);
-    }
 
+        //Check if Session is not null
+        var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+            {
+                IncludeAtivitySchedules = true,
+            });
+        if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+        {
+            var result = activityResult.Result.Result;
+            activity = new Activity
+                {
+                    ActivitySchedules = result.ActivitySchedules.Select(e =>
+                     {
+                         return new ActivitySchedule
+                         {
+                             Id = e.Id,
+                             Name = e.Name,
+                             DateTime = e.DateTime,
+                             PerUnit1 = e.PerUnit1,
+                             PerUnit2 = e.PerUnit2,
+                             Price = e.Price,
+                             PriceUnit1 = e.PriceUnit1,
+                             PriceUnit2 = e.PriceUnit2,
+                             UnitPrice = e.UnitPrice,
+                             isSetSession = e.isSetSession,
+                             SessionName = e.SessionName
+                         };
+                     }).ToList(),
+                };
+        }
+        var schedule = activity.ActivitySchedules.FirstOrDefault();
+        if (schedule != null && schedule.isSetSession == true)
+        {
+            //Check if first attendance
+            if (studentAttendance.SessionsAttended == 1)
+            {
+                await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                    {
+                        Id = studentAttendance.StudentId,
+                        ScheduleId = studentAttendance.ScheduleId,
+                        SessionName = schedule.SessionName,
+                        ExpirationStartDate = DateTime.UtcNow,
+                        ExpirationEndDate = studentAttendance.ExpirationDateEnd
+                    });
+            }
+        }
+    }
     private void SortByName()
     {
         if(!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)

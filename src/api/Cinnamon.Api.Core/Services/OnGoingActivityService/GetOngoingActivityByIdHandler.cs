@@ -52,7 +52,9 @@ public class GetOngoingActivityByIdHandler: IGetOngoingActivityByIdHandler
                 ScheduleId = result.Result.Result.ScheduleId,
                 SessionsAttended = result.Result.Result.SessionsAttended,
                 Status = result.Result.Result.Status,
-                StudentNo = result.Result.Result.StudentNo
+                StudentNo = result.Result.Result.StudentNo,
+                ExpirationStartDate= result.Result.Result.ExpirationStartDate,
+                ExpirationEndDate= result.Result.Result.ExpirationEndDate,  
             }, "Successfully getting student information");
         }
         catch (Exception ex)

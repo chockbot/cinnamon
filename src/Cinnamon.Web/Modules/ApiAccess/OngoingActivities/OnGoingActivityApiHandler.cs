@@ -16,6 +16,27 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
 	{
         flurlClient = flurlFac.Get(config.ApiUrl);
     }
+    public async Task<AppResult<AddActivityExpirationResult>> AddActivityExpiration(AddActivityExpirationArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("OnGoingActivities/AddActivityExpiration")
+                .PostJsonAsync(args)
+                .ReceiveJson<AddActivityExpirationResult>();
+
+            return AppResult<AddActivityExpirationResult>.CreateSucceeded(result, "Successfully posting update ongoing activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<AddActivityExpirationResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<AddActivityExpirationResult>.CreateFailed(ex, "An error occured when posting update ongoing activity api");
+        }
+    }
 
     public async Task<AppResult<GetAllOngoingActivitiesResult>> GetAllOngoingActivities()
     {
