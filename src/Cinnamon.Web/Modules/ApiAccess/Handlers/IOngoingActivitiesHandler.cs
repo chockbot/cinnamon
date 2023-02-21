@@ -10,4 +10,6 @@ public interface IOngoingActivitiesHandler
     Task<AppResult<GetOngoingActivityByIdResult>>GetOngoingActivityById(int id);
 
     Task<AppResult<UpdateOngoingActivityResult>> UpdateActivity(UpdateOngoingActivityArgs args);
+
+    Task<AppResult<AddActivityExpirationResult>> AddActivityExpiration(AddActivityExpirationArgs args);
 }

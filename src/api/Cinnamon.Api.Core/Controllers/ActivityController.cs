@@ -455,7 +455,11 @@ public class ActivityController : ControllerBase
                                 Price = s.Price,
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice
+                                UnitPrice = s.UnitPrice,
+                                isSetSession = s.IsSetSession,
+                                SessionName = s.SessionName,
+                                Id = s.Id
+                                
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,

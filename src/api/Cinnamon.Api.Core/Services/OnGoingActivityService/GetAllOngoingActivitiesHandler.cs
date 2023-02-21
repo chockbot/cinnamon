@@ -56,7 +56,9 @@ public class GetAllOngoingActivitiesHandler: IGetAllOngoingActivitiesHandler
                         ScheduleId = e.ScheduleId,
                         SessionsAttended = e.SessionsAttended,
                         Status = e.Status,
-                        StudentNo = e.StudentNo
+                        StudentNo = e.StudentNo,
+                        ExpirationStartDate= e.ExpirationStartDate,
+                        ExpirationEndDate= e.ExpirationEndDate
                     };
                 })
             }, "Successfully get students");

@@ -12,6 +12,7 @@
 @inject IAccountApiHandler accountApiHandler;
 @inject IActivityApiHandler activityApiHandler;
 
+
 @if(Model != null)
 {
     <section class="py-3 mt-5 profile-content">
@@ -134,7 +135,7 @@
                 </Items>
                 <Content>
                     <TabPanel Name="experiences">
-                        <Experiences Activities="Model.EnrolledActivities"/>
+                        <Experiences Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
                     </TabPanel>
                     <TabPanel Name="personal-info">
                         <PersonalInfo @bind-Model="Model" OnEditIdClick="() => uploadIdModal.ShowModal()" />
@@ -252,7 +253,8 @@
         var enrolledActivities = new List<Activity>();
         var enrolledRes = await activityApiHandler.GetEnrolledActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetEnrolledActivitiesArgs {
             IncludeActivityAddress = true,
-            IncludeActivityImages = true
+            IncludeActivityImages = true,
+            IncludeAtivitySchedules = true
         }, token);
         if(enrolledRes.Succeeded && enrolledRes.Result != null && enrolledRes.Result.IsSuccess)
         {
@@ -275,11 +277,19 @@
                             ImageSrc = i.ImageSrc,
                             Name = i.Name
                         };
+                    }).ToList(),
+                    ActivitySchedules = a.ActivitySchedules.Select(s =>
+                    {
+                        return new ActivitySchedule
+                        {
+                            Id = s.Id,
+                            SessionName = s.SessionName,
+                            isSetSession = s.isSetSession
+                        };
                     }).ToList()
                 };
             }).ToList();
         }
-
         Model = new Models.Customer.Profile {
             Token = token,
             CustomerProfile = new Models.Entities.CustomerProfile
@@ -296,7 +306,7 @@
             },
             FamilyMembers = familyMembers,
             OwnedActivities = ownedActivities,
-            EnrolledActivities = enrolledActivities
+            EnrolledActivities = enrolledActivities,
         };
 
         ImageSource = Model.CustomerProfile.ProfilePath;

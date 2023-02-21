@@ -195,6 +195,8 @@ public class StudentRepository: IStudentRepository
             student.SessionsAttended = sessionsAttended ?? student.SessionsAttended;
             student.Remarks = remarks ?? student.Remarks;
             student.Status = status ?? student.Status;
+            student.ExpirationDateStart = ExpirationStartDate ?? student.ExpirationDateStart;
+            student.ExpirationDateEnd = ExpirationEndDate ?? student.ExpirationDateEnd;
 
             var updatedStudentRes = await dataStore.Student.Update(student);
             if(!updatedStudentRes.Succeeded || updatedStudentRes.Result == null)
