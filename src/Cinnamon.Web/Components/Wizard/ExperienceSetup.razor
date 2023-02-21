@@ -381,7 +381,7 @@
 
     private string RequiredCheck(int? value)
     {
-        if (Model.HasError && value == null)
+        if (Model.HasError && (value == null || value.Value == 0))
         {
             return "invalid";
         }
