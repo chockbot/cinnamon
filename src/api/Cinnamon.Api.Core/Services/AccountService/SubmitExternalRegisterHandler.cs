@@ -74,23 +74,6 @@ public class SubmitExternalRegisterHandler : IExternalRegisterHandler
                     new ApplicationException("Invalid guid and token"), "Invalid guid and token");
             }
 
-            // update external login token
-            var externalLoginRes = await externalLoginTokenData.UpdateToken(new Framework.ApiCommand.ApiData.ExternalLoginToken.Request.UpdateExternalLoginTokenArgs {
-                Id = chkToken.Result.Result.Id,
-                IsUsed = true
-            });
-
-            if(!externalLoginRes.Succeeded || externalLoginRes.Result == null)
-            {
-                return AppResult<ExternalRegisterResult>.CreateFailed(
-                    new ApplicationException(externalLoginRes.Message), externalLoginRes.Message);
-            }
-            if(externalLoginRes.Succeeded && !externalLoginRes.Result.IsSuccess)
-            {
-                return AppResult<ExternalRegisterResult>.CreateFailed(
-                    new ApplicationException(externalLoginRes.Result.ErrorInfo?.Message), "An error occured in SubmitExternalRegisterHandler");
-            }
-
             // create customer unique handler
             // remove special characters for creating handler name
             char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
@@ -124,6 +107,14 @@ public class SubmitExternalRegisterHandler : IExternalRegisterHandler
                 }
             }
 
+            // validate birthdate, age between 18 to 120
+            var age = DateTime.Today.Year - args.Birthdate.Year;
+            if(age < 18 || age > 120)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("Please provide validate birth year. Age between 18 and 120"), "Please provide validate birth year. Age between 18 and 120");
+            }
+
             var createCustomer = await customerData.CreateCustomerWithPassword(new Framework.ApiCommand.ApiData.Customer.Request.CreateCustomerWithPasswordArgs {
                 Birthdate = args.Birthdate,
                 Email = args.Email,
@@ -147,6 +138,23 @@ public class SubmitExternalRegisterHandler : IExternalRegisterHandler
             }
 
             var created = createCustomer.Result.Result;
+
+            // update external login token
+            var externalLoginRes = await externalLoginTokenData.UpdateToken(new Framework.ApiCommand.ApiData.ExternalLoginToken.Request.UpdateExternalLoginTokenArgs {
+                Id = chkToken.Result.Result.Id,
+                IsUsed = true
+            });
+
+            if(!externalLoginRes.Succeeded || externalLoginRes.Result == null)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException(externalLoginRes.Message), externalLoginRes.Message);
+            }
+            if(externalLoginRes.Succeeded && !externalLoginRes.Result.IsSuccess)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException(externalLoginRes.Result.ErrorInfo?.Message), "An error occured in SubmitExternalRegisterHandler");
+            }
 
             return AppResult<ExternalRegisterResult>.CreateSucceeded(new ExternalRegisterResult {
                 Birthdate = created.Birthdate,
