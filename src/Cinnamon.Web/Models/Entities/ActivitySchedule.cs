@@ -14,4 +14,13 @@ public class ActivitySchedule
     public bool isSetSession { get; set; }
     public string SessionName { get; set;}
     public int TempId {get; set;}
+
+    public long LongPrice {
+        get{
+            return (long)Price;
+        }
+        set {
+            Price = value;
+        }
+    }
 }
