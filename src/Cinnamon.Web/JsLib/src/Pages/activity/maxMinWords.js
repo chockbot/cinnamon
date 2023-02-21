@@ -8,7 +8,7 @@ maxMinWords.max = (selector, max) => {
       .split(" ")
       .filter((t) => !!t).length;
 
-    if (wordsLength === max) {
+    if (wordsLength === max && e.which !== 8) {
       e.preventDefault();
       e.stopPropagation();
     }
