@@ -1,138 +1,180 @@
 ﻿@namespace Cinnamon.Web.Components
-@using System.Linq.Expressions
 @using Cinnamon.Web.Models.Customer;
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
-<div class="modal @viewModel.ModalClass" id="finishModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@viewModel.ModalDisplay">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header" style="border:none;">
-                <p class="col-12 modal-title text-center">Finish signing up</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="@(() => CloseModal())"></button>
+<Modal @ref="ModalRef" Closing="ModalClosing">
+    <ModalContent>
+        <ModalHeader>
+            <p class="col-12 modal-title text-center">Finish Signing Up</p>
+            <button type="button" class="btn-close" @onclick="() => ModalRef.Hide()" />
+        </ModalHeader>
+        <ModalBody>
+            <div class="card-filter">
+                <Validations Mode="ValidationMode.Manual" @ref="viewModel.FormValidation" Model="viewModel">
+                    <Validation>
+                        <Field>
+                            <FieldLabel>First Name</FieldLabel>
+                            <TextEdit Placeholder="First name" @bind-Text="viewModel.FirstName">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <p></p>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Last Name</FieldLabel>
+                            <TextEdit  Placeholder="your lastname" @bind-Text="viewModel.LastName">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <p class="sub-info">Be sure it's the same as what appears on your government ID.</p>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>BirthDate</FieldLabel>
+                            <DateEdit Placeholder="your birthdate" TValue="DateTime" @bind-Date="viewModel.Birthdate">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </DateEdit>  
+                        </Field>
+                    </Validation>
+                    <p class="sub-info">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Email Address</FieldLabel>
+                            <TextEdit Disabled Role="TextRole.Email" Placeholder="your email" @bind-Text="viewModel.Email">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>  
+                        </Field>
+                    </Validation>
+                    <p class="sub-info">For email confirmations, and receipts.</p>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Password</FieldLabel>
+                            <div class="password-content">
+                                <TextEdit Role="TextRole.Password" Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </div>
+                        </Field>
+                    </Validation>
+                    <p></p>
+                    <Validation>
+                        <Field>
+                            <FieldLabel>Confirm Password</FieldLabel>
+                            <div class="password-content">
+                                <TextEdit Role="TextRole.Password" Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </div>
+                        </Field>
+                    </Validation>
+                    <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+                    <div>
+                        <Button Clicked="SubmitRegister" Margin="Margin.Is3.FromTop" Shadow="Shadow.Small" class="btn-primary"
+                                Disabled="viewModel.IsSubmitting" Loading="viewModel.IsSubmitting">
+                            <LoadingTemplate>
+                                <i class="fa fa-spinner fa-spin"></i> Please Wait
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Agree and continue
+                            </ChildContent>
+                        </Button>
+                        <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="viewModel.IsShowErrorMessage">
+                            <AlertDescription>@viewModel.Message</AlertDescription>
+                        </Alert>
+                        <Alert Color="Color.Success" Margin="Margin.Is3.FromTop" Visible="viewModel.IsShowSuccessMessage">
+                            <AlertDescription>@viewModel.Message</AlertDescription>
+                        </Alert>
+                    </div>
+                </Validations>
             </div>
-            <div class="modal-body">
-                <div class="card-filter">
-                    <EditForm Model=viewModel id="submitFinishSignup">
-                        <DataAnnotationsValidator />
-
-
-                        <div class="">
-                            <div class="name">
-
-                                <div class="first-name">
-                                <FieldLabel>First Name</FieldLabel>
-                                <InputText id="firstname-signup-finish" class="input-group" placeholder="First name" @bind-Value=viewModel.FirstName />
-                                    <ValidationMessage style="text-align:left" For="() => viewModel.FirstName" />
-                                </div>
-
-                                <div class="last-name">
-                                  <FieldLabel>Last Name</FieldLabel>
-                                <InputText id="lastname-signup-finish" class="input-group" placeholder="Last name" @bind-Value=viewModel.LastName />
-                                <ValidationMessage style="text-align:left" For="() => viewModel.LastName" />
-                                </div>
-                            </div>
-                                <p class="sub-info">Be sure it's the same as what appears on your government ID.</p>
-
-                            <div class="">
-                                <label>Birthday</label>
-                                <InputText id="birtdate-signup-finish" type="date" class="input-group birthday-input" placeholder="Birthdate" @bind-Value=viewModel.Birthdate />
-                                <ValidationMessage style="text-align:left" For="() => viewModel.Birthdate" />
-                                <p class="sub-info">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
-                            </div>
-                            <div class="">
-
-                                <label>Email</label>
-                                <InputText id="email-signup-finish" type="email" class="input-group" placeholder="Email" @bind-Value=viewModel.Email disabled/>
-                                <ValidationMessage style="text-align:left" For="() => viewModel.Email" />
-                                <p class="sub-info">For email confirmations, and receipts.</p>
-                            </div>
-                            <div class="password">
-                                <label>Password</label>
-                                <InputText id="password-signup-finish" type="password" class="input-group" placeholder="Password" @bind-Value=viewModel.Password />
-                                <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                                    <ValidationMessage style="text-align:left" For="() => viewModel.Password" />
-                            </div>
-                            <div class="confirm-password">
-                                <label>Confirm Password</label>
-                                <InputText id="confirm-signup-finish" type="password" class="input-group" placeholder="Confirm Password" @bind-Value=viewModel.ConfirmPassword />
-                                <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                                <ValidationMessage style="text-align:left" For="() => viewModel.ConfirmPassword" />
-                            </div>
-                            <div id="error-message-container" class="mb-4 error-message-container-finish">
-                                <ul id="error-list-finish" class="fw-bold">
-                                </ul>
-                            </div>
-                            <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
-                           
-
-                            <SignupButton id="signup-waiting-finish" Width="100%" Text="Agree and continue" DisableButton="@ButtonIsClicked()" Visibility="@showSpinner()" />
-
-
-                            <div class="col-12">
-                                @*<div class="form-check">
-                                    <input class="form-check-input" type="checkbox" value="" id="defaultCheck1" @bind=viewModel.Customer.AcceptFlag>
-                                    <label class="form-check-label" for="defaultCheck1" style="font-family:'Nunito';font-size:12px;font-weight:400;">
-                                        I do not wish to receive promotional communications from Cinnamon.
-                                  </label>
-                                </div>*@
-                            </div>
-                        </div>  
-                    </EditForm>
-                </div>
-            </div>
-        </div>  
-    </div>
-</div>
-@if (viewModel.ShowBackdrop)
-{
-    <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal()"></div>
-}
+        </ModalBody>
+    </ModalContent>
+</Modal>
 
 @code 
 {
     IJSObjectReference module;
 
-    [Parameter]
-    public Expression<Func<string>>? For { get; set; }
-
     private SignupModel viewModel = new SignupModel();
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Signup.js");
-            await jsRuntime.InvokeVoidAsync("MyLib.Components.modal.finishSignUpModal.init","");
-        }
-    }
+    private Modal ModalRef {get; set;}
 
-    public bool ButtonIsClicked()
+    protected override void OnInitialized()
     {
-        return viewModel.IsClickButton ? true : false;
-    }
-
-    public string showSpinner()
-    {
-        return viewModel.IsClickButton ? "visible" : "hidden";
+        viewModel.Birthdate = DateTime.Today.AddYears(-25);
     }
 
     public void OpenModal(string Email)
     {
-        viewModel.ModalDisplay   = "block;";
-        viewModel.ModalClass     = "show";
-        viewModel.ShowBackdrop   = true;
+        ModalRef.Show();
         viewModel.Email = Email;
         StateHasChanged();
     }
 
     public void CloseModal()
     {
-        viewModel.ModalClass    = "";
-        viewModel.ModalDisplay  = "none;";
+        ModalRef.Hide();
         StateHasChanged();
     }
 
+    private async Task SubmitRegister()
+    {
+        try
+        {
+            if (await viewModel.FormValidation.ValidateAll())
+            {
+                viewModel.IsSubmitting = true;
+
+                var result = await jsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Components.modal.finishSignUpModal.init",
+                        new {
+                            firstname = viewModel.FirstName,
+                            lastname = viewModel.LastName,
+                            email = viewModel.Email,
+                            birthdate = viewModel.Birthdate,
+                            password = viewModel.Password 
+                        });
+
+                viewModel.IsSubmitting = false;
+
+                if (!result.Success)
+                {
+                    viewModel.Message = result.Message;
+                    viewModel.IsShowErrorMessage = true;
+                    return;
+                }
+
+                NavigationManager.NavigateTo("/explore", true);
+            }
+        }
+        catch
+        {
+            viewModel.Message = "An error occured. Please try again later";
+            viewModel.IsShowErrorMessage = true;
+        }
+    }
+
+    private Task ModalClosing(ModalClosingEventArgs e)
+    {
+        if(e.CloseReason == CloseReason.FocusLostClosing)
+        {
+            e.Cancel = true;
+        }
+        return Task.CompletedTask;
+    }
 
     string flexItemStyle = $" width:660px;";
 }

@@ -65,21 +65,19 @@
             
          
             <Validation>
-                    <Field Style="@flexItemStyle">
+                <Field Style="@flexItemStyle">
                     <FieldLabel>Password</FieldLabel>
-
-                       <div class="password-content">
-                        <TextEdit Role="TextRole.Password" Placeholder="your password" @bind-Text="Model.Model.Password" class="input-password">
-                        <Feedback>
-                            <ValidationError />
-                        </Feedback>
-                    </TextEdit>
-                        <span class="fa fa-fw fa-eye field-icon toggle-password"></span>
-                       </div>
+                    <div class="password-content">
+                        <TextEdit Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" Placeholder="your password" 
+                            @bind-Text="Model.Model.Password" class="input-password">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                        <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => Model.IsRevealPassword = !Model.IsRevealPassword"></span>
+                    </div>
                 </Field>
             </Validation>
-
-
             <br />
             <span>By selecting <b>Agree and continue</b>, you agree to our <a style="color:#ffa942" href="Terms" target="_blank">Terms and Conditions</a> and <a href="Policy" target="_blank" style="color:#ffa942">Privacy Policy</a></span>
             <div>
@@ -111,6 +109,11 @@
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Uid { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Model.Model.Birthdate = DateTime.Today.AddYears(-25);
+    }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -179,7 +182,6 @@
             Model.IsShowErrorMessage = true;
         }
     }
-
 
     string flexItemStyle = $" width:100%;";
 }

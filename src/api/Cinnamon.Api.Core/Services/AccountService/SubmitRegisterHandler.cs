@@ -101,6 +101,14 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                     }
                 }
             }
+
+            // validate birthdate, age between 18 to 120
+            var age = DateTime.Today.Year - args.Birthdate.Year;
+            if(age < 18 || age > 120)
+            {
+                return AppResult<SubmitRegisterResult>.CreateFailed(
+                    new ApplicationException("Please provide validate birth year. Age between 18 and 120"), "Please provide validate birth year. Age between 18 and 120");
+            }
             
             var createCustomer = await customerData.CreateCustomerWithPassword(new CreateCustomerWithPasswordArgs {
                 Birthdate = args.Birthdate,

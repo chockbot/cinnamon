@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using Blazorise;
+using Cinnamon.Framework.ValidationAttributes;
 using Cinnamon.Web.Models.Entities;
 
 namespace Cinnamon.Web.Models.Customer;
@@ -8,11 +11,25 @@ public class SignupModel
     public string ModalClass {get; set;}
     public string ModalDisplay {get; set;}
     public bool ShowBackdrop {get; set;}
+    public Validations FormValidation {get; set;}
+    
+    public bool IsSubmitting {get; set;}
+    public bool IsShowErrorMessage {get; set;}
+    public bool IsShowSuccessMessage {get; set;}
+    public string Message {get; set;}
 
+    [Required]
     public string FirstName {get; set;}
+    [Required]
     public string LastName {get; set;}
-    public string Birthdate {get; set;}
+    [Required]
+    [DateAgeRange(MinAge = 18, MaxAge = 120, ErrorMessage = "Please provide valid birthdate. Age must between 18 to 120 yrs old")]
+    public DateTime Birthdate {get; set;}
+    [Required]
     public string Email {get; set;}
+    [Required(ErrorMessage = "Password required")]
     public string Password {get; set;}
+    [Required(ErrorMessage = "Confirm Password required")]
+    [Compare("Password", ErrorMessage = "Password and Confirm Password do not match")]
     public string ConfirmPassword {get; set;}
 }
