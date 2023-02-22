@@ -10,12 +10,11 @@ update.init = async (obj, activityId) => {
 
 update.uploadImages = async (activityId) => {
   const formData = new FormData();
-  const inputEl = document.querySelector("#photo-upload");
   let counter = 1;
   $(".img-banner").each(function (e) {
     const name = $(this).attr("data-name");
     if (name) {
-      const file = getFile(inputEl, name);
+        const file = getFile(name);
       if (file) {
         formData.append(`Image${counter}`, file);
         counter++;
@@ -37,13 +36,23 @@ update.uploadImages = async (activityId) => {
   return data.success;
 };
 
-function getFile(element, name) {
-  for (let i = 0; i < element.files.length; i++) {
-    if (element.files[i].name === name) {
-      return element.files[i];
+function getFile(name) {
+    var controls = ["#photo-upload", "#cover-photo", "#first-support-photo", "#second-support-photo"];
+    var file = null;
+    for (var j = 0; j < controls.length; j++) {
+        const element = document.querySelector(controls[j]);
+        for (let i = 0; i < element.files.length; i++) {
+            if (element.files[i].name === name) {
+                file = element.files[i];
+                break;
+            }
+        }
+        if (file) {
+            break;
+        }
     }
-  }
-  return undefined;
+
+    return file;
 }
 
 export default update;
