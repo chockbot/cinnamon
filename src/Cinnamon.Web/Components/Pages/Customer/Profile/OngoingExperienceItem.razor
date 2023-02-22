@@ -40,53 +40,57 @@
 </div>
 *@
 
-<div class="swiper-slide">
-    <div class="experience-box">
-        <div class="experience-header">
-            <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                <img class="image-header" src="@GetImage()" />
-            </a>
-        </div>
-
-        <div class="experience-content">
-            <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                <p class="xp-title">@Activity.Title</p>
-            </a>
-
-
-            <div class="xp-body-item">
-                <p class="label">Name</p>
-                <p class="context">@Student.Name</p>
+@foreach (var item in students)
+{
+    <div class="swiper-slide">
+        <div class="experience-box">
+            <div class="experience-header">
+                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                    <img class="image-header" src="@GetImage()" />
+                </a>
             </div>
 
-            <div class="xp-body-item">
-                <p class="label">Sessions Attended</p>
-                <p class="context">@Student.SessionsAttended/@Student.NumberOfSessions</p>
-                <div class="progress">
-                    <div class="progress-bar bg-success" role="progressbar" aria-valuenow="@Student.SessionsAttended" aria-valuemin="0" aria-valuemax="@Student.NumberOfSessions"></div>
+            <div class="experience-content">
+                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                    <p class="xp-title">@Activity.Title</p>
+                </a>
+
+
+                <div class="xp-body-item">
+                    <p class="label">Name</p>
+                    <p class="context">@item.Name</p>
                 </div>
-            </div>
-            @if(Activity.ActivitySchedules != null)
-            {
-                var activity = Activity.ActivitySchedules.Where(s => s.Id == Student.ScheduleId).FirstOrDefault();
-                if (activity!=null && activity.isSetSession == true)
-                {
-                    <div class="xp-body-item">
-                    <p class="label">Session Expiration</p>
-                        <p class="context">
-                            Consume in - @activity.SessionName <br>
-                            Expiring in - @Student.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                        </p>
+
+                <div class="xp-body-item">
+                    <p class="label">Sessions Attended</p>
+                    <p class="context">@item.SessionsAttended/@item.NumberOfSessions</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="@item.SessionsAttended" aria-valuemin="0" aria-valuemax="@item.NumberOfSessions"></div>
                     </div>
+                </div>
+                @if (Activity.ActivitySchedules != null)
+                {
+                    var activity = Activity.ActivitySchedules.Where(s => s.Id == item.ScheduleId).FirstOrDefault();
+                    if (activity != null && activity.isSetSession == true)
+                    {
+                        <div class="xp-body-item">
+                            <p class="label">Session Expiration</p>
+                            <p class="context">
+                                Consume in - @activity.SessionName <br>
+                                Expiring in - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                            </p>
+                        </div>
+                    }
                 }
-            }
-            <div class="xp-body-item">
-                <p class="label">Dates Attended</p>
-                <button class="view-dates">View</button>
+                <div class="xp-body-item">
+                    <p class="label">Dates Attended</p>
+                    <button class="view-dates">View</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
+}
+
 
 @code
 {
@@ -126,7 +130,7 @@
                     };
             }).ToList();
         }
-        Student = students.Where(a => a.ActivityId == Activity.ActivityId && a.CustomerId == Profile.Id).FirstOrDefault();
+        students = students.Where(a => a.ActivityId == Activity.ActivityId && a.CustomerId == Profile.Id).ToList();
     }
 
 }
