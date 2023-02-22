@@ -10,16 +10,16 @@
             <p class="text-black-100 font-size-16 font-family-nunito m-font-size-12">Live your passion, share your knowledge and leave a mark in people's lives!</p>
         </Div>
     </div>
-    <Divider class="m-margin-5"  />
+    <Divider class="m-margin-5" />
     <h3 class="font-weight-700 font-size-40 text-orange-100 text-center font-family-nunito margin-top-50 m-font-size-24 m-margin-top-10">Experience Summary</h3>
     <Div class="experience-title" Margin="Margin.Is4.OnY">
         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center" class="location-category" style="display: flex; align-items: center; justify-content: center;">
-            @if(Activity.ExperienceTypeId == 1)
+            @if (Activity.ExperienceTypeId == 1)
             {
                 <span>
                     <img class="m-laptop-icon" src="images/activity-summary/location.png" alt="icon">
                 </span>
-                <span class="background-black-100 font-size-10 text-white-100 
+                <span class="background-black-100 font-size-10 text-white-100
                     font-family-nunito experience-type-button rounded-pill m-font-size-6">
                     Face to Face
                 </span>
@@ -29,7 +29,7 @@
                 <span>
                     <img class="m-laptop-icon" src="images/activity-summary/laptop-icon.png" alt="icon">
                 </span>
-                <span class="background-black-100 font-size-10 text-white-100 
+                <span class="background-black-100 font-size-10 text-white-100
                     font-family-nunito experience-type-button rounded-pill m-font-size-6">
                     Online
                 </span>
@@ -37,11 +37,10 @@
         </Div>
         <h3 class="font-size-32 font-family-nunito font-weight-700 text-orange-100 text-center my-3 m-font-size-18">@Activity.Title</h3>
         <p class="font-size-20 text-center font-family-nunito m-font-size-12">@Activity.Description</p>
-</Div>
+    </Div>
     <Divider />
     <div class="experience-schedules margin-botton-3rem m-margin-bottom-10">
-        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito
-            font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Schedule
         </h3>
         <Row Gutter="(20,20)" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
@@ -57,12 +56,14 @@
             }
         </Row>
     </div>
-    @if(Activity.ExperienceTypeId == 1)
+    @if (Activity.ExperienceTypeId == 1)
     {
         <Divider />
         <div class="experience-location margin-botton-3rem m-margin-bottom-10">
             <h3 class="text-capitalize text-orange-100 text-center font-family-nunito
-                font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">Location</h3>
+                font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+                Location
+            </h3>
             <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
                 Place: @Activity.Address1, @Activity.Subdivision, @Activity.Barangay, @Activity.City, @Activity.Region
             </p>
@@ -72,23 +73,52 @@
     <Divider />
     <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
         <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">What you will provide</h3>
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+            What you will provide
+        </h3>
         <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
-            @((MarkupString)Activity.SpecificsYouWillProvide)
+            @if (string.IsNullOrEmpty(Activity.SpecificsYouWillProvide))
+            {
+                @("N/A");
+            }
+            else if (Activity.SpecificsYouWillProvide?.ToLower()?.Trim() == "<p><br></p>")
+            {
+                @("N/A");
+            }
+            else
+            {
+                @((MarkupString)Activity.SpecificsYouWillProvide);
+            }
+        </p>
+
+    </div>
+    <Divider />
+    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+            Customer Requirements
+        </h3>
+        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
+            @if (string.IsNullOrEmpty(Activity.CustomerBringWithThem))
+            {
+                @("N/A");
+            }
+            else if (Activity.CustomerBringWithThem?.ToLower()?.Trim() == "<p><br></p>")
+            {
+                @("N/A");
+            }
+            else
+            {
+                @((MarkupString)Activity.CustomerBringWithThem);
+            }
         </p>
     </div>
     <Divider />
     <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
         <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">Customer Requirements</h3>
-        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
-            @((MarkupString)@Activity.CustomerBringWithThem)
-        </p>
-    </div>
-    <Divider />
-    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
-        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">Requirements</h3>
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+            Requirements
+        </h3>
         <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Minimum Age: @Activity.MinimumAge</p>
         <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Adults/Guardian: @(Activity.CanAdultsJoin ? "Can join" : "Not applicable")</p>
         <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Levels of Activity: @Activity.ActivityLevel</p>
@@ -97,10 +127,21 @@
     <Divider />
     <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
         <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">Additional Requirements</h3>
+            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+            Additional Requirements
+        </h3>
         <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
-            @Activity.AdditionalRequirements
+            @if (!string.IsNullOrEmpty(Activity.AdditionalRequirements))
+            {
+                @((MarkupString)@Activity.AdditionalRequirements)
+            }
+            else
+            {
+                @("N/A")
+                ;
+            }
         </p>
+
     </div>
     <Divider />
     <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 text-center m-font-size-12">
@@ -111,9 +152,9 @@
 @code
 {
     [Parameter]
-    public Activity Activity {get; set;}
+    public Activity Activity { get; set; }
 
-    private bool isPublished {get; set;} = true;
+    private bool isPublished { get; set; } = true;
 
     private void CheckChange(bool value)
     {
