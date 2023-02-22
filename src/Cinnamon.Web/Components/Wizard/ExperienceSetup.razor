@@ -263,7 +263,7 @@
                 <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
                     Upload 3 photos (10MB)
                 </Button>
-                <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFile" />
+                <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
             </label>
         </div>
         <div class="activity-image-dragable">
@@ -284,10 +284,53 @@
                 </ItemTemplate>
             </DropContainer>
         </div>
-        <div class="activity-image-photos-label">
+        <div class="activity-image-photos-label" style="text-align:center">
             <p>This is your cover photo</p>
             <p>Supporting photo</p>
             <p>Supporting photo</p>
+        </div>
+        <div class="activity-image-photos-label" style="text-align:center">
+            <p>
+                <label for="cover-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="cover-photo" accept=".png,.jpg,.jpeg" name="cover-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 0))" />
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(0))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+
+            </p>
+            <p>
+                <label for="first-support-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="first-support-photo" accept=".png,.jpg,.jpeg" name="first-support-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 1))" />
+                </label>
+             
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(1))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+            </p>
+            <p>
+                <label for="second-support-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="second-support-photo" accept=".png,.jpg,.jpeg" name="second-support-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 2))" />
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(2))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+            </p>
         </div>
         @if(!string.IsNullOrEmpty(imagesErrorMessage))
         {
@@ -312,13 +355,13 @@
     public Models.ExperienceCreationModel Model {get; set;}
 
     private ImageCacheItem Image1 {get; set;}
-    
+
     private ImageCacheItem Image2 {get; set;}
 
     private ImageCacheItem Image3 {get; set;}
 
     public string SearchTag { get; set; }
-    
+
     public int SearchTagLength { get; set; } = 0;
 
     private RichTextEdit EditSpecificProvide;
@@ -331,6 +374,8 @@
 
     private int selectedImageCount = 0;
 
+    private int validImages = 0;
+
     private long totalImageSizeMB = 0;
 
     private string imagesErrorMessage = string.Empty;
@@ -339,13 +384,20 @@
 
     private string emptyImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
 
+    List<FileDetails> fileDetails = new List<FileDetails>()
+        {
+            new FileDetails{ Id = 0, ImageId = "#imgSrc1", FileControlId = "#cover-photo"},
+            new FileDetails{ Id = 1, ImageId = "#imgSrc2", FileControlId = "#first-support-photo"},
+            new FileDetails{ Id = 2, ImageId = "#imgSrc3", FileControlId = "#second-support-photo"}
+        };
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
         {
-           await Task.Delay(2000);
-           await jsRuntime
-                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide .ql-container","#label-specific-editor",maxEditorWordLimit);
+            await Task.Delay(2000);
+            await jsRuntime
+                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide .ql-container","#label-specific-editor",maxEditorWordLimit);
 
             await jsRuntime
                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-customer-requirement-provide .ql-container","#label-customer-requirement-editor",maxEditorWordLimit);
@@ -525,7 +577,7 @@
     private bool IsAllImageSizeAccepted()
     {
         var totalSize = totalImageSizeMB;
-        
+
         bool isReachLimit = totalSize > 10;
 
         isShowImageErrorMessage = isReachLimit;
@@ -548,7 +600,7 @@
         Model.Activity.SearchTags.Add(SearchTag);
     }
 
-    private async Task LoadFile(InputFileChangeEventArgs e)
+    private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         selectedImageCount = e.FileCount;
         totalImageSizeMB = 0;
@@ -581,10 +633,75 @@
             {
                 imageItems[i].Src = images[i].Url;
                 imageItems[i].DataName = images[i].FileName;
+                imageItems[i].IsValid = true;
+            }
+            else
+            {
+                imageItems[i].IsValid = false;
             }
         }
 
+        validImages = imageItems.Count(i => i.IsValid);
+
         StateHasChanged();
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e, int index)
+    {
+        totalImageSizeMB = 0;
+        imagesErrorMessage = string.Empty;
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            totalImageSizeMB += file.Size / 1024 / 1024;
+        }
+
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 10mb";
+        }
+
+        var images = await jsRuntime
+        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
+
+        if (imageItems.Count > 0)
+        {
+            imageItems[index].Src = images.FirstOrDefault()?.Url;
+            imageItems[index].DataName = images.FirstOrDefault()?.FileName;
+            imageItems[index].IsValid = true;
+        }
+
+        validImages = imageItems.Count(i => i.IsValid);
+
+        StateHasChanged();
+    }
+
+    private async Task RemoveFile(int index)
+    {
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var images = await jsRuntime
+        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.imageHelper.loadEmptySrc", imageDetails?.ImageId);
+
+        if (imageItems.Count > 0)
+        {
+            imageItems[index].Src = string.Empty;
+            imageItems[index].IsValid = false;
+        }
+
+
+        validImages = imageItems.Count(i => i.IsValid);
+
+        StateHasChanged();
+    }
+
+    private class FileDetails
+    {
+        public int Id { get; set; }
+        public string ImageId { get; set; }
+        public string FileControlId { get; set; }
     }
 
     private async Task MoveNext(ImageItem item)
@@ -606,7 +723,7 @@
     private bool IsImagesInvalid 
     {
         get{
-            return IsImagesOverLimit || (selectedImageCount != 3);
+            return IsImagesOverLimit || (validImages != 3);
         }
     }
 
@@ -617,6 +734,7 @@
         public string Group {get; set;}
         public string DataName {get; set;}
         public string Src {get; set;}
+        public bool IsValid { get; set; }
     }
 
     private class ImageUrl

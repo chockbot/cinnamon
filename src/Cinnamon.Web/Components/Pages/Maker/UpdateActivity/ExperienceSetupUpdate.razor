@@ -7,18 +7,18 @@
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
         <li>@Resources.App.fillRequiredField</li>
-        @if(isShowImageErrorMessage)
+        @if (isShowImageErrorMessage)
         {
             <li>Can only upload total of 10mb for all images</li>
         }
     </ul>
 </div>
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto activity-update-experience-setup-wrapper">
-   
+
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-              @Resources.App.createExperienceSchedule 
+                @Resources.App.createExperienceSchedule
             </label>
             <p>
                 @Resources.App.createExperienceDescription
@@ -28,24 +28,22 @@
             @foreach (var schedule in Model.Activity.ActivitySchedules)
             {
                 <div draggable="true" @key=@schedule.TempId id="@schedule.TempId"
-                    ondragover="event.preventDefault();" 
-                    @ondragstart="@( (e) => HandleDragStart(e, schedule))"
-                    @ondrop="@(() => HandleOnDrop(schedule))"
-                    @ondragenter="@( () => HandleDragEnter(schedule))"
-                    @ondragend="HandleDragEnd"
-                >
+                 ondragover="event.preventDefault();"
+                 @ondragstart="@( (e) => HandleDragStart(e, schedule))"
+                 @ondrop="@(() => HandleOnDrop(schedule))"
+                 @ondragenter="@( () => HandleDragEnter(schedule))"
+                 @ondragend="HandleDragEnd">
                     <ScheduleItemUpdate @key="schedule.TempId" scheduleModel="schedule" @bind-Model="Model" OnScheduleRemoved="RemoveSchedule" />
                     <div class="center" style="width:100%;">
-                        <img class="drag-icon" draggable="false" src="/images//reorder-icon.png"/>
+                        <img class="drag-icon" draggable="false" src="/images//reorder-icon.png" />
                     </div>
-                    <hr class="solid"/>
+                    <hr class="solid" />
                 </div>
             }
-            <div style="height: 1.5em;" 
-                ondragover="event.preventDefault();" 
-                @ondrop="HandleDropBottom"
-                @ondragenter="HandleDragEnterBottom"
-            />
+            <div style="height: 1.5em;"
+                 ondragover="event.preventDefault();"
+                 @ondrop="HandleDropBottom"
+                 @ondragenter="HandleDragEnterBottom" />
             <div class="button-container" style="overflow:auto; margin-top: 20px;">
                 <div class="button-add">
                     <button class="btn-primary" type="button" id="addScheduleBtn" @onclick="AddEmptySchedule">Add</button>
@@ -57,23 +55,23 @@
     <div class="row mrow editor-specific-will-provide-update">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Include specifics on what things you will 
+                Include specifics on what things you will
                 provide during your experience (optional)
             </label>
             <p>
-                This can be training equipment, free notebook, free uniform or anything that 
+                This can be training equipment, free notebook, free uniform or anything that
                 you would want to share to your customers to make their experience unique.
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <RichTextEdit @ref="EditSpecificProvide"
-                            Theme="RichTextEditTheme.Snow"
-                            ReadOnly="editScpecificReadOnly"
-                            ContentChanged="@EditSpecificChanged"
-                            PlaceHolder="Type your post here..."
-                            SubmitOnEnter="false"
-                            ToolbarPosition="Placement.Start">
+                              Theme="RichTextEditTheme.Snow"
+                              ReadOnly="editScpecificReadOnly"
+                              ContentChanged="@EditSpecificChanged"
+                              PlaceHolder="Type your post here..."
+                              SubmitOnEnter="false"
+                              ToolbarPosition="Placement.Start">
                     <Editor>@((MarkupString)Model.Activity.SpecificsYouWillProvide)</Editor>
                     <Toolbar>
                         <RichTextEditToolbarGroup>
@@ -92,25 +90,25 @@
     <div class="row mrow editor-customer-requirement-provide-update">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                What should your customers bring 
+                What should your customers bring
                 with them? (optional)
             </label>
             <p>
-                Should your customer have their own tablet or computer for their online 
-                experience? How about their own water bottle for their face to face experience? 
-                Describe the things that they need to prepare and bring for the best experience 
+                Should your customer have their own tablet or computer for their online
+                experience? How about their own water bottle for their face to face experience?
+                Describe the things that they need to prepare and bring for the best experience
                 possible.
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <RichTextEdit @ref="EditCustomerBring"
-                            Theme="RichTextEditTheme.Snow"
-                            ReadOnly="editCustomerRequirementReadOnly"
-                            ContentChanged="@EditCustomerRequirement"
-                            PlaceHolder="Type your post here..."
-                            SubmitOnEnter="false"
-                            ToolbarPosition="Placement.Start">
+                              Theme="RichTextEditTheme.Snow"
+                              ReadOnly="editCustomerRequirementReadOnly"
+                              ContentChanged="@EditCustomerRequirement"
+                              PlaceHolder="Type your post here..."
+                              SubmitOnEnter="false"
+                              ToolbarPosition="Placement.Start">
                     <Editor>@((MarkupString)Model.Activity.CustomerBringWithThem)</Editor>
                     <Toolbar>
                         <RichTextEditToolbarGroup>
@@ -132,29 +130,29 @@
                 Your requirements to your customers.
             </label>
             <p>
-                Remember that the person who books your experience may also book spots for other people. 
+                Remember that the person who books your experience may also book spots for other people.
                 Put them here if there are strict rules about age, skill level, or certifications.
             </p>
         </div>
         <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <label class="fw-bold">
                 Minimum Age:
-            </label>   
-            <input type="number" class="form-control @RequiredCheck(Model.Activity.MinimumAge.ToString())" 
-                placeholder="Minimum Age" required @bind="Model.Activity.MinimumAge" />
+            </label>
+            <input type="number" class="form-control @RequiredCheck(Model.Activity.MinimumAge.ToString())"
+                   placeholder="Minimum Age" required @bind="Model.Activity.MinimumAge" />
             <label class="fw-bold">
                 Can adults join?:
             </label>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value="true" 
-                    checked="@Model.Activity.CanAdultsJoin" @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value="true"
+                       checked="@Model.Activity.CanAdultsJoin" @oninput="CheckboxChanged">
                 <label class="form-check-label" for="yes">
                     Yes
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value="false" 
-                checked="@(!Model.Activity.CanAdultsJoin)" @oninput="CheckboxChanged">
+                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value="false"
+                       checked="@(!Model.Activity.CanAdultsJoin)" @oninput="CheckboxChanged">
                 <label class="form-check-label" for="no">
                     No
                 </label>
@@ -169,8 +167,8 @@
                     <option value="@activityLevel">@activityLevel</option>
                 }
             </select>
-             <label class="fw-bold">
-                 Required skill level
+            <label class="fw-bold">
+                Required skill level
             </label>
             <select class="form-control @RequiredCheck(Model.Activity.SkillLevel)" @bind="Model.Activity.SkillLevel">
                 <option disabled selected>Select Skill Level</option>
@@ -247,8 +245,8 @@
             </label>
         </div>
         <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            <input class="form-control" type="text" placeholder="Sub category name" 
-                size="@SearchTagLength" @bind-value="searchTag" @onblur="OnSuggestSubCategoryLeave">
+            <input class="form-control" type="text" placeholder="Sub category name"
+                   size="@SearchTagLength" @bind-value="searchTag" @onblur="OnSuggestSubCategoryLeave">
             <label>Suggested sub-category is subject for approval</label>
         </div>
     </div>
@@ -266,11 +264,11 @@
             </p>
         </div>
         <div class="mb-3 px-0">
-            <label for="photo-upload" style="cursor: pointer;" >
+            <label for="photo-upload" style="cursor: pointer;">
                 <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
                     Upload 3 photos (10MB)
                 </Button>
-                <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFile" />
+                <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
             </label>
         </div>
         <div class="activity-image-dragable">
@@ -286,17 +284,75 @@
                             <Button Clicked='() => MoveNext(context)' Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
                         </div>
                         <img id="@context.Id" name="@context.Id" class='experience-image img-banner'
-                            src="@context.Src" data-order="@context.Order" data-name="@context.DataName" />
+                             src="@context.Src" data-order="@context.Order" data-name="@context.DataName" />
                     </div>
                 </ItemTemplate>
             </DropContainer>
         </div>
-        <div class="activity-image-photos-label">
+       
+        <div class="activity-image-photos-label" style="text-align:center">
             <p>This is your cover photo</p>
             <p>Supporting photo</p>
             <p>Supporting photo</p>
         </div>
-        @if(!string.IsNullOrEmpty(imagesErrorMessage))
+        <div class="activity-image-photos-label" style="text-align:center">
+            <p>
+                <label for="cover-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="cover-photo" accept=".png,.jpg,.jpeg" name="cover-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 0))" />
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-success" @onclick="(() => ResetFile(0))">
+                        <i class="fa fa-refresh"></i>
+                    </Button>
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(0))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+              
+            </p>
+           <p>
+                <label for="first-support-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="first-support-photo" accept=".png,.jpg,.jpeg" name="first-support-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 1))" />
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-success" @onclick="(() => ResetFile(1))">
+                        <i class="fa fa-refresh"></i>
+                    </Button>
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(1))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+           </p>
+           <p>
+                <label for="second-support-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="second-support-photo" accept=".png,.jpg,.jpeg" name="second-support-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 2))" />
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-success" @onclick="(() => ResetFile(2))">
+                        <i class="fa fa-refresh"></i>
+                    </Button>
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(2))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+           </p>
+        </div>
+        @if (!string.IsNullOrEmpty(imagesErrorMessage))
         {
             <p class="activity-image-photos-error-message">@imagesErrorMessage</p>
         }
@@ -315,10 +371,10 @@
 </div>
 
 @code {
-    
+
     [Parameter]
-    public Models.ExperienceUpdateModel Model {get; set;}
-    
+    public Models.ExperienceUpdateModel Model { get; set; }
+
     private int uploadedCount = 0;
 
     private int currentImageIndex = 0;
@@ -351,6 +407,8 @@
 
     private int selectedImageCount = 0;
 
+    private int validImages = 0;
+
     private long totalImageSizeMB = 0;
 
     private string imagesErrorMessage = string.Empty;
@@ -361,6 +419,15 @@
 
     private string emptyImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
 
+    private InputFile coverPhotoFileInput = new InputFile();
+
+    List<FileDetails> fileDetails = new List<FileDetails>()
+        {
+            new FileDetails{ Id = 0, ImageId = "#imgSrc1", FileControlId = "#cover-photo"},
+            new FileDetails{ Id = 1, ImageId = "#imgSrc2", FileControlId = "#first-support-photo"},
+            new FileDetails{ Id = 2, ImageId = "#imgSrc3", FileControlId = "#second-support-photo"}
+        };
+
     protected override void OnParametersSet()
     {
         this.searchTag = Model.Activity.SearchTags.FirstOrDefault() ?? string.Empty;
@@ -369,33 +436,51 @@
     protected override void OnInitialized()
     {
         Model.Activity.Images.OrderBy(i => i.Order);
-        imageItems.Add(new ImageItem {Name = "Image1", Id = "imgSrc1", Group = "Image", 
-            Order = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0,
-            NewOrder = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0,
-            Src = Model.Activity.Images.Count > 0 ? Model.Activity.Images.ElementAt(0).ImageSrc : emptyImageSrc,
-            DataName = ""});
-        imageItems.Add(new ImageItem {Name = "Image2", Id = "imgSrc2", Group = "Image",
-            Order = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0,
-            NewOrder = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0,
-            Src = Model.Activity.Images.Count > 1 ? Model.Activity.Images.ElementAt(1).ImageSrc : emptyImageSrc,
-            DataName = ""});
-        imageItems.Add(new ImageItem {Name = "Image3", Id = "imgSrc3", Group = "Image",
-            Order = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0,
-            NewOrder = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0,
-            Src = Model.Activity.Images.Count > 2 ? Model.Activity.Images.ElementAt(2).ImageSrc : emptyImageSrc,
-            DataName = ""});
+        imageItems.Add(new ImageItem
+            {
+                Name = "Image1",
+                Id = "imgSrc1",
+                Group = "Image",
+                Order = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0,
+                NewOrder = Model.Activity.Images.Count() > 0 ? Model.Activity.Images.ElementAt(0).Order : 0,
+                Src = Model.Activity.Images.Count > 0 ? Model.Activity.Images.ElementAt(0).ImageSrc : emptyImageSrc,
+                DataName = "",
+                IsValid = true
+            });
+        imageItems.Add(new ImageItem
+            {
+                Name = "Image2",
+                Id = "imgSrc2",
+                Group = "Image",
+                Order = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0,
+                NewOrder = Model.Activity.Images.Count() > 1 ? Model.Activity.Images.ElementAt(1).Order : 0,
+                Src = Model.Activity.Images.Count > 1 ? Model.Activity.Images.ElementAt(1).ImageSrc : emptyImageSrc,
+                DataName = "",
+                IsValid = true
+            });
+        imageItems.Add(new ImageItem
+            {
+                Name = "Image3",
+                Id = "imgSrc3",
+                Group = "Image",
+                Order = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0,
+                NewOrder = Model.Activity.Images.Count() > 2 ? Model.Activity.Images.ElementAt(2).Order : 0,
+                Src = Model.Activity.Images.Count > 2 ? Model.Activity.Images.ElementAt(2).ImageSrc : emptyImageSrc,
+                DataName = "",
+                IsValid = true
+            });
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             await Task.Delay(2000);
             await jsRuntime
-                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide-update .ql-container","#label-specific-editor-update",maxEditorWordLimit);
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-specific-will-provide-update .ql-container", "#label-specific-editor-update", maxEditorWordLimit);
 
             await jsRuntime
-                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-customer-requirement-provide-update .ql-container","#label-customer-requirement-editor-update",maxEditorWordLimit);
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-customer-requirement-provide-update .ql-container", "#label-customer-requirement-editor-update", maxEditorWordLimit);
         }
     }
 
@@ -407,7 +492,7 @@
             Model.Activity.CanAdultsJoin = value;
         }
     }
-     private string RequiredCheck(IList<string> searchTags)
+    private string RequiredCheck(IList<string> searchTags)
     {
         if (searchTags.Count <= 0) return "invalid";
         return "";
@@ -431,7 +516,7 @@
         Model.Activity.SearchTags.Remove(tag);
     }
 
-     public void Enter(KeyboardEventArgs e)
+    public void Enter(KeyboardEventArgs e)
     {
         if (e.Code == "Comma")
         {
@@ -499,16 +584,16 @@
     private Models.Entities.ActivitySchedule? DraggedItem;
 
     private int DraggedItemPosition;
-    
+
     private Models.Entities.ActivitySchedule? DragEnter;
 
     private void AddEmptySchedule()
     {
         int maxId = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.TempId) + 1;
-        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1});
+        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1 });
     }
 
-    private void RemoveSchedule(Models.Entities.ActivitySchedule schedule) 
+    private void RemoveSchedule(Models.Entities.ActivitySchedule schedule)
     {
         Model.Activity.ActivitySchedules.Remove(schedule);
         Model.DeletedScheduleIds.Add(schedule.Id);
@@ -517,26 +602,26 @@
     public bool IsAllFieldsValidated()
     {
         //if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
-        if(!IsAllSchedulesValid()) return false;
+        if (!IsAllSchedulesValid()) return false;
         //if(string.IsNullOrEmpty(Model.Activity.SpecificsYouWillProvide)) return false;
         //if(string.IsNullOrEmpty(Model.Activity.CustomerBringWithThem)) return false;
-        if(string.IsNullOrEmpty(Model.Activity.ActivityLevel)) return false;
-        if(string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
-        if(Model.Activity.ExperienceCategoryId <= 0) return false;
+        if (string.IsNullOrEmpty(Model.Activity.ActivityLevel)) return false;
+        if (string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
+        if (Model.Activity.ExperienceCategoryId <= 0) return false;
         //if(Model.Activity.SearchTags.Count == 0) return false;
-        if(isImageUpdated)
+        if (isImageUpdated)
         {
-            if(!IsAllImageSizeAccepted()) return false;
-            if(IsImagesInvalid) return false;
+            if (!IsAllImageSizeAccepted()) return false;
+            if (IsImagesInvalid) return false;
         }
         return true;
     }
 
     private bool IsAllSchedulesValid()
     {
-        foreach(var schedule in Model.Activity.ActivitySchedules)
+        foreach (var schedule in Model.Activity.ActivitySchedules)
         {
-            if(string.IsNullOrEmpty(schedule.Name) ||
+            if (string.IsNullOrEmpty(schedule.Name) ||
                 string.IsNullOrEmpty(schedule.DateTime) ||
                 schedule.Price <= 0 ||
                 string.IsNullOrEmpty(schedule.UnitPrice) ||
@@ -550,20 +635,20 @@
 
     private string GetDefaultImage1()
     {
-        if(Model.Activity.Images.Count >= 1) return Model.Activity.Images.ElementAt(0).ImageSrc;
+        if (Model.Activity.Images.Count >= 1) return Model.Activity.Images.ElementAt(0).ImageSrc;
         return string.Empty;
     }
 
     private string GetDefaultImage2()
     {
-       if(Model.Activity.Images.Count >= 2) return Model.Activity.Images.ElementAt(1).ImageSrc;
-        return string.Empty; 
+        if (Model.Activity.Images.Count >= 2) return Model.Activity.Images.ElementAt(1).ImageSrc;
+        return string.Empty;
     }
 
     private string GetDefaultImage3()
     {
-       if(Model.Activity.Images.Count >= 3) return Model.Activity.Images.ElementAt(2).ImageSrc;
-        return string.Empty; 
+        if (Model.Activity.Images.Count >= 3) return Model.Activity.Images.ElementAt(2).ImageSrc;
+        return string.Empty;
     }
 
     private async Task EditSpecificChanged()
@@ -576,7 +661,7 @@
 
     private async Task EditCustomerRequirement()
     {
-        Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync(); 
+        Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync();
         var htmlText = await EditCustomerBring.GetTextAsync();
 
         editCustomerRequirementWordCnt = htmlText.Trim().Split(" ").Length;
@@ -588,49 +673,155 @@
         Model.Activity.SearchTags.Add(searchTag);
     }
 
-    private async Task LoadFile(InputFileChangeEventArgs e)
+    private async Task LoadFiles(InputFileChangeEventArgs e)
     {
         selectedImageCount = e.FileCount;
         totalImageSizeMB = 0;
         imagesErrorMessage = string.Empty;
 
-        if(selectedImageCount > 3)
+        if (selectedImageCount > 3)
         {
             imagesErrorMessage = "Must only select 3 images only";
             return;
         }
 
         var files = e.GetMultipleFiles();
-        foreach(var file in files)
+        foreach (var file in files)
         {
             totalImageSizeMB += file.Size / 1024 / 1024;
         }
 
-        if(IsImagesOverLimit)
+        if (IsImagesOverLimit)
         {
             imagesErrorMessage = "All images file size must only 10mb";
         }
 
         var images = await jsRuntime
-                        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
-        
+                        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", "#photo-upload", new string[] { "#imgSrc1", "#imgSrc2", "#imgSrc3" });
+
         // update image src state
-        for(int i = 0; i < imageItems.Count; i++)
+        for (int i = 0; i < imageItems.Count; i++)
         {
-            if(images.Count > i)
+            if (images.Count > i)
             {
                 imageItems[i].Src = images[i].Url;
                 imageItems[i].DataName = images[i].FileName;
+                imageItems[i].IsValid = true;
+                imageItems[i].HasChanged = true;
+            }
+            else
+            {
+                imageItems[i].IsValid = false;
             }
         }
-        
-        isImageUpdated = true;
-        
+
+        validImages = imageItems.Count(i => i.IsValid);
+        isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
+
         StateHasChanged();
     }
 
-    private bool IsImagesOverLimit {
-        get{
+    private async Task LoadFile(InputFileChangeEventArgs e, int index)
+    {
+        totalImageSizeMB = 0;
+        imagesErrorMessage = string.Empty;
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            totalImageSizeMB += file.Size / 1024 / 1024;
+        }
+
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 10mb";
+        }
+
+        var images = await jsRuntime
+        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
+
+        if (imageItems.Count > 0)
+        {
+            imageItems[index].Src = images.FirstOrDefault()?.Url;
+            imageItems[index].DataName = images.FirstOrDefault()?.FileName;
+            imageItems[index].IsValid = true;
+            imageItems[index].HasChanged = true;
+        }
+
+        validImages = imageItems.Count(i => i.IsValid);
+        isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
+
+        StateHasChanged();
+    }
+
+    private async Task ResetFile(int index)
+    {
+        var originalImage = Model.Activity.Images.FirstOrDefault(i => i.Order == index + 1);
+        ;
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        if (originalImage != null)
+        {
+            var images = await jsRuntime
+       .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.imageHelper.previewSingleImage", imageDetails?.ImageId, originalImage.ImageSrc, originalImage.Name);
+
+            if (imageItems.Count > 0)
+            {
+                imageItems[index] = new ImageItem
+                    {
+                        Name = originalImage?.Name,
+                        Id = imageDetails?.ImageId,
+                        Group = "Image",
+                        Order = originalImage.Order,
+                        NewOrder = originalImage.Order,
+                        Src = originalImage.ImageSrc,
+                        DataName = "",
+                        IsValid = true,
+                        HasChanged = false
+                    };
+            }
+        }
+
+
+        validImages = imageItems.Count(i => i.IsValid);
+        isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
+
+        StateHasChanged();
+    }
+
+    private async Task RemoveFile(int index)
+    {
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var images = await jsRuntime
+        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.imageHelper.loadEmptySrc", imageDetails?.ImageId);
+
+        if (imageItems.Count > 0)
+        {
+            imageItems[index].Src = string.Empty;
+            imageItems[index].IsValid = false;
+            imageItems[index].HasChanged = true;
+        }
+
+
+        validImages = imageItems.Count(i => i.IsValid);
+        isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
+
+        StateHasChanged();
+    }
+
+    private class FileDetails
+    {
+        public int Id { get; set; }
+        public string ImageId { get; set; }
+        public string FileControlId { get; set; }
+    }
+
+    private bool IsImagesOverLimit
+    {
+        get
+        {
             return totalImageSizeMB > 10;
         }
     }
@@ -638,7 +829,7 @@
     private bool IsAllImageSizeAccepted()
     {
         var totalSize = totalImageSizeMB;
-        
+
         bool isReachLimit = totalSize > 10;
 
         isShowImageErrorMessage = isReachLimit;
@@ -646,21 +837,22 @@
         return !isReachLimit;
     }
 
-    private bool IsImagesInvalid 
+    private bool IsImagesInvalid
     {
-        get{
-            return IsImagesOverLimit || (selectedImageCount != 3);
+        get
+        {
+            return IsImagesOverLimit || (validImages != 3);
         }
     }
 
     private Task ItemDropped(DraggableDroppedEventArgs<ImageItem> dropItem)
     {
-        if(dropItem.IndexInZone + 1 > dropItem.Item.NewOrder)
+        if (dropItem.IndexInZone + 1 > dropItem.Item.NewOrder)
         {
-            for(int i = dropItem.IndexInZone + 1; i > 0; i--)
+            for (int i = dropItem.IndexInZone + 1; i > 0; i--)
             {
                 var item = imageItems.FirstOrDefault(m => m.NewOrder == i);
-                if(item != null)
+                if (item != null)
                 {
                     item.NewOrder -= 1;
                 }
@@ -668,10 +860,10 @@
         }
         else
         {
-            for(int i = dropItem.IndexInZone + 1; i <= imageItems.Count; i++)
+            for (int i = dropItem.IndexInZone + 1; i <= imageItems.Count; i++)
             {
                 var item = imageItems.FirstOrDefault(m => m.NewOrder == i);
-                if(item != null)
+                if (item != null)
                 {
                     item.NewOrder += 1;
                 }
@@ -688,13 +880,13 @@
 
     private async Task MoveNext(ImageItem item)
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.moveNext",$".{item.Id}");
-        if(item.NewOrder < 3)
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.moveNext", $".{item.Id}");
+        if (item.NewOrder < 3)
         {
-            for(int i = item.NewOrder + 1; i > item.NewOrder; i--)
+            for (int i = item.NewOrder + 1; i > item.NewOrder; i--)
             {
                 var imageItem = imageItems.FirstOrDefault(m => m.NewOrder == i);
-                if(imageItem != null)
+                if (imageItem != null)
                 {
                     imageItem.NewOrder -= 1;
                 }
@@ -705,13 +897,13 @@
 
     private async Task MovePrevious(ImageItem item)
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.movePrevious",$".{item.Id}");
-        if(item.NewOrder > 1)
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.movePrevious", $".{item.Id}");
+        if (item.NewOrder > 1)
         {
-            for(int i = item.NewOrder -1; i <= imageItems.Count; i++)
+            for (int i = item.NewOrder - 1; i <= imageItems.Count; i++)
             {
                 var imageItem = imageItems.FirstOrDefault(m => m.NewOrder == i);
-                if(imageItem != null)
+                if (imageItem != null)
                 {
                     imageItem.NewOrder += 1;
                 }
@@ -720,20 +912,22 @@
         }
     }
 
-    public class ImageItem 
+    public class ImageItem
     {
-        public string Name {get; set;}
-        public string Id {get; set;}
-        public int Order {get; set;}
-        public int NewOrder {get; set;}
-        public string Group {get; set;}
-        public string Src {get; set;}
-        public string DataName {get; set;}
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public int Order { get; set; }
+        public int NewOrder { get; set; }
+        public string Group { get; set; }
+        public string Src { get; set; }
+        public string DataName { get; set; }
+        public bool IsValid { get; set; }
+        public bool HasChanged { get; set; }
     }
 
     private class ImageUrl
     {
-        public string Url {get; set;}
-        public string FileName {get; set;}
+        public string Url { get; set; }
+        public string FileName { get; set; }
     }
 }
