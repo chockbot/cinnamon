@@ -45,17 +45,6 @@ public class CreateActivityHandler : ICreateActivityHandler
     {
         try
         {
-            const int maxWords = 80;
-            var customerBringLength = WordsLenght(args.CustomerBringWithThem);
-            var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide);
-
-            if(customerBringLength > maxWords || specificProvideLength > maxWords)
-            {
-                return AppResult<CreateActivityResult>.CreateFailed(
-                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
-                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
-            }
-
             // get customer id saved in claims
             var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
             if(customerId == null)
@@ -64,6 +53,17 @@ public class CreateActivityHandler : ICreateActivityHandler
                     new ApplicationException("Unable to determine current account login"), "Unable to determine current account login");
             }
             int id = Convert.ToInt32(customerId);
+
+            const int maxWords = 80;
+            var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
+            var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
+
+            if(customerBringLength > maxWords || specificProvideLength > maxWords)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
+            }
 
             // create activity unique handler
             // remove special characters for creating handler name
@@ -109,7 +109,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Region = args.Region,
                 Barangay = args.Barangay,
                 PostalCode= args.PostalCode,
-                CustomerBringWithThem = htmlSanitizer.Sanitize(args.CustomerBringWithThem),
+                CustomerBringWithThem = customerBringLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
                 CustomerId = id,
                 Description = args.Description,
                 District = args.District,
@@ -126,7 +126,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Searchtag4 = args.SearchTags.Count() >= 4 ? args.SearchTags.ElementAt(3) : null,
                 Searchtag5 = args.SearchTags.Count() >= 5 ? args.SearchTags.ElementAt(4) : null,
                 SkillLevel = args.SkillLevel,
-                SpecificsYouWillProvide = htmlSanitizer.Sanitize(args.SpecificsYouWillProvide),
+                SpecificsYouWillProvide = specificProvideLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 Handler = handlerName
