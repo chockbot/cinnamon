@@ -21,6 +21,7 @@ public interface IDataStore
     IStudent Student { get; }
     IStudentAttendance StudentAttendance { get; }
     IResetPassword ResetPassword { get; }
+    IFailedLogin FailedLogin { get; }
 
     Task EnsureMigrate();
 

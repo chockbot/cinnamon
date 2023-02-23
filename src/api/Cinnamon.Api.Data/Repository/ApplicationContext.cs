@@ -47,6 +47,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<ResetPassword> ResetPasswords {get; set;}
 
+    public DbSet<FailedLogin> FailedLogins {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -147,6 +149,9 @@ public class ApplicationContext : IdentityDbContext
         
         // reset password
         modelBuilder.Entity<ResetPassword>().HasIndex(new string[] {"Guid","Token"});
+
+        // failed login
+        modelBuilder.Entity<FailedLogin>().HasIndex(new string[] {"Email","LoginDate"});
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

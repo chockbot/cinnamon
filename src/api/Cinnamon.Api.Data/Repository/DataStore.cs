@@ -51,6 +51,8 @@ public class DataStore : IDataStore
 
     public IResetPassword ResetPassword => new ResetPasswordEntity(applicationContext);
 
+    public IFailedLogin FailedLogin => new FailedLoginEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
