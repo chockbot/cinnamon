@@ -50,6 +50,15 @@ public class UpdateActivityHandler : IUpdateActivityHandler
     {
         try
         {
+            // get customer id saved in claims
+            var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
+            if(customerId == null)
+            {
+                return AppResult<UpdateActivityResult>.CreateFailed(
+                    new ApplicationException("Unable to determine current account login"), "Unable to determine current account login");
+            }
+            int id = Convert.ToInt32(customerId);
+
             const int maxWords = 80;
             var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
             var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
@@ -60,15 +69,6 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                     new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
                         $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
             }
-
-            // get customer id saved in claims
-            var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
-            if(customerId == null)
-            {
-                return AppResult<UpdateActivityResult>.CreateFailed(
-                    new ApplicationException("Unable to determine current account login"), "Unable to determine current account login");
-            }
-            int id = Convert.ToInt32(customerId);
 
             // check activity if existed
             var activity = await activityData.GetActivityById(args.ActivityId, 
@@ -137,7 +137,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Region = args.Region,
                 Barangay = args.Barangay,
                 PostalCode = args.PostalCode,
-                CustomerBringWithThem = htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
+                CustomerBringWithThem = customerBringLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
                 Description = args.Description,
                 District = args.District,
                 ExperienceCategoryId = args.ExperienceCategoryId,
@@ -148,7 +148,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Remarks = args.Remarks,
                 ScheduleIndicator = args.ScheduleIndicator,
                 SkillLevel = args.SkillLevel,
-                SpecificsYouWillProvide = htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
+                SpecificsYouWillProvide = specificProvideLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
             };
