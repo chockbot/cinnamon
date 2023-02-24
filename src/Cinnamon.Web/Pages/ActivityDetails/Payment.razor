@@ -114,7 +114,18 @@
                         <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                         <br />
                         <br />
-                        <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" style="width:100% !important" @onclick="OnPayConfirmedClicked">Pay and confirm</button>
+                        <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
+                            @if (isLoading)
+                            {
+                                <i class="fa fa-spinner fa-spin"></i>
+                                <span>Please wait</span>
+                            }
+                            else
+                            {
+                                <span>Pay and confirm</span>
+
+                            }
+                        </button>
                         @if(isShowPayErrorMessage)
                         {
                             <p class="text-danger">@payErrorMessage</p>
@@ -302,7 +313,7 @@
     private CouponAction couponAction = CouponAction.EnteringCoupon;
 
     private decimal couponAmount = 50;
-    
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -428,7 +439,7 @@
                 UnitPrice = selectedSchedule.UnitPrice,
                 isSetSession = selectedSchedule.isSetSession,
                 SessionName = selectedSchedule.SessionName
-                
+
             },
             Token = token
         };
@@ -511,11 +522,15 @@
 
     private string payErrorMessage = string.Empty;
     private bool isShowPayErrorMessage = false;
-
+    private bool isLoading = false;
+    private string payButtonStyle = "width:100% !important;font-weight:700;";
     private async Task OnPayConfirmedClicked()
     {
         if(Model.SelectedAttendees.Count > 0)
         {
+            isLoading = true;
+            payButtonStyle = "width:100% !important;font-weight:700;background-color: #6c757d !important;";
+
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs {
                 ActivityId = Model.Activity.ActivityId,
                 CouponCode = "temporary coupon code",
@@ -533,9 +548,13 @@
             {
                 payErrorMessage = "An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
+                isLoading = false;
+                payButtonStyle = "width:100% !important;font-weight:700;";
             }
             else 
             {
+                isLoading = false;
+                payButtonStyle = "width:100% !important;font-weight:700;";
                 NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
             }
         }
