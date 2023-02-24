@@ -15,4 +15,5 @@ public class ExperienceUpdateModel
     public string Token {get; set;} = string.Empty;
     public bool ExperienceHasError {get; set;}
     public bool ExperienceSetupHasError {get; set;}
+    public IEnumerable<Region> Regions { get; set; }
 }

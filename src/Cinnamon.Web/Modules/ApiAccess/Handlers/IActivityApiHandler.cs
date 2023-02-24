@@ -23,4 +23,7 @@ public interface IActivityApiHandler
     Task<AppResult<GetEnrolledActivitiesResult>> GetEnrolledActivities(GetEnrolledActivitiesArgs args, string token);
     Task<AppResult<GetActivityResult>> GetOwnedActivityByHandler(string handler, string token, GetActivityArgs? args = null);
     Task<AppResult<GetActivityResult>> GetActivityByHandler(string handler, GetActivityArgs? args = null);
+    Task<AppResult<GetAllRegionsResult>> GetAllRegions(GetAllRegionsArgs? args = null);
+    Task<AppResult<GetAllCitiesResult>> GetAllCitiesByRegionCode(GetAllCitiesArgs? args = null);
+    Task<AppResult<GetAllBarangaysResult>> GetAllBarangaysByCityCode(GetAllBarangaysArgs? args = null);
 } 

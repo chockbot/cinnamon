@@ -43,6 +43,9 @@ public class GetAllActivitiesResult
         public IEnumerable<ActivityImage> Images { get; set; }
         public CustomerOwner? Owner {get; set;}
         public bool IsNew { get; set; }
+        public string CityName { get; set; } = string.Empty;
+        public string RegionName { get; set; } = string.Empty;
+        public string BarangayName { get; set; } = string.Empty;
 
         public class ActivitySchedule
         {

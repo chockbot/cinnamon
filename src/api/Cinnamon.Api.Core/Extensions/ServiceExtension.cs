@@ -34,6 +34,9 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IStudentData, Modules.DataAccess.Student.StudentData>();
         services.AddTransient<Modules.DataAccess.Handlers.IStudentAttendanceData, Modules.DataAccess.StudentAttendance.StudentAttendanceData>();
         services.AddTransient<Modules.DataAccess.Handlers.IResetPasswordData, Modules.DataAccess.ResetPassword.ResetPasswordData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IRegionData, Modules.DataAccess.Location.RegionData>();
+        services.AddTransient<Modules.DataAccess.Handlers.ICityData, Modules.DataAccess.Location.CityData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IBarangayData, Modules.DataAccess.Location.BarangayData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -84,6 +87,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityImageOrderHandler, Services.ActivityService.UpdateActivityImageOrderHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetActivityByHandler, Services.ActivityService.GetActivityByHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetOwnedActivityByHandler, Services.ActivityService.GetOwnedActivityByHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetAllRegionsHandler, Services.ActivityService.GetAllRegionsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetAllCitiesHandler, Services.ActivityService.GetAllCitiesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetAllBarangaysHandler, Services.ActivityService.GetAllBarangaysHandler>();
 
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
+using Cinnamon.Api.Core.Services.DashboardService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
@@ -30,16 +31,19 @@ public class ActivityController : ControllerBase
     private readonly IUpdateActivityImageOrderHandler updateActivityImageOrderHandler;
     private readonly IGetOwnedActivityByHandler getOwnedActivityByHandler;
     private readonly IGetActivityByHandler getActivityByHandler;
+    private readonly IGetAllRegionsHandler getAllRegionsHandler;
+    private readonly IGetAllCitiesHandler getAllCitiesHandler;
+    private readonly IGetAllBarangaysHandler getAllBarangaysHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
         IGetOwnedActivitiesHandler getOwnedActivitiesHandler, IUpdateActivityHandler updateActivityHandler,
-        IGetOwnedActivityHandler getOwnedActivityHandler, IUploadActivityImageHandler uploadActivityImageHandler, 
-        IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler, 
+        IGetOwnedActivityHandler getOwnedActivityHandler, IUploadActivityImageHandler uploadActivityImageHandler,
+        IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler,
         IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,
         IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler,
-        IGetActivityByHandler getActivityByHandler)
+        IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler, IGetAllBarangaysHandler getAllBarangaysHandler)
     {
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
@@ -59,6 +63,9 @@ public class ActivityController : ControllerBase
         this.updateActivityImageOrderHandler = updateActivityImageOrderHandler;
         this.getOwnedActivityByHandler = getOwnedActivityByHandler;
         this.getActivityByHandler = getActivityByHandler;
+        this.getAllRegionsHandler = getAllRegionsHandler;
+        this.getAllCitiesHandler = getAllCitiesHandler;
+        this.getAllBarangaysHandler = getAllBarangaysHandler;
     }
 
     [Route("CreateActivity")]
@@ -644,6 +651,9 @@ public class ActivityController : ControllerBase
                         Subdivision = a.Subdivision,
                         Region = a.Region,  
                         Barangay = a.Barangay,
+                        CityName = a.CityName,
+                        BarangayName = a.BarangayName,
+                        RegionName = a.RegionName,
                         PostalCode = a.PostalCode,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
@@ -1200,6 +1210,119 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetActivitiesByCategoriesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Regions")]
+    [HttpGet]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(GetAllRegionsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllRegions([FromQuery] GetAllRegionsArgs args)
+    {
+        try
+        {
+            var result = await getAllRegionsHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllRegionsArgs
+            {
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllRegionsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllRegionsResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Regions.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.Location.RegionDTO
+                    {
+                        Code = s.Code,
+                        Name = s.Name,
+                        RegionName = s.RegionName,
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllRegionsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Cities")]
+    [HttpGet]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(GetAllCitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllCitiesByRegionCode([FromQuery] GetAllCitiesArgs args)
+    {
+        try
+        {
+            var result = await getAllCitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllCitiesArgs
+            {
+                RegionCode = args.RegionCode
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllCitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllCitiesResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Cities.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.Location.CityDTO
+                    {
+                        Code = s.Code,
+                        Name = s.Name,
+                        RegionCode = s.RegionCode
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllCitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Barangays")]
+    [HttpGet]
+    [AllowAnonymous]
+    [ProducesResponseType(typeof(GetAllBarangaysResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllBarangaysByCityCode([FromQuery] GetAllBarangaysArgs args)
+    {
+        try
+        {
+            var result = await getAllBarangaysHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllBarangaysArgs
+            {
+                CityCode = args.CityCode
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllBarangaysResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllBarangaysResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Barangays.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.DTO.Location.BarangayDTO
+                    {
+                        Code = s.Code,
+                        Name = s.Name,
+                        CityCode = s.CityCode,
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllBarangaysResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
