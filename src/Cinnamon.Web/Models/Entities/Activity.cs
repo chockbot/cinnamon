@@ -16,9 +16,29 @@ public class Activity
     public string Address2 {get; set;} = string.Empty;
     public string District {get; set;} = string.Empty;
     public string City {get; set;} = string.Empty;
+    private string _cityName;
+
+    public string CityName
+    {
+        get { return string.IsNullOrEmpty(_cityName) ? "" : _cityName; }
+        set { _cityName = value; }
+    }
+
     public string Subdivision { get; set; } = string.Empty;
     public string Region { get; set; } = string.Empty;
+    private string _regionName;
+    public string RegionName
+    {
+        get { return string.IsNullOrEmpty(_regionName) ? "" : _regionName; }
+        set { _regionName = value; }
+    }
     public string Barangay { get; set; } = string.Empty;
+    private string _barangayName;
+    public string BarangayName
+    {
+        get { return string.IsNullOrEmpty(_barangayName) ? "" : _barangayName; }
+        set { _barangayName = value; }
+    }
     public string PostalCode { get; set; } = string.Empty;
     public string SpecificsYouWillProvide {get; set;}
     public string CustomerBringWithThem {get; set;}

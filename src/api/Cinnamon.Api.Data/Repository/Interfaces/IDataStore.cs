@@ -21,6 +21,9 @@ public interface IDataStore
     IStudent Student { get; }
     IStudentAttendance StudentAttendance { get; }
     IResetPassword ResetPassword { get; }
+    IRegion Region { get; }
+    ICity City { get; }
+    IBarangay Barangay{ get; }
 
     Task EnsureMigrate();
 

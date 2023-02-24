@@ -368,6 +368,9 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.Region = a.Address.Region;
                     activityDTO.Barangay = a.Address.Barangay;
                     activityDTO.PostalCode = a.Address.PostalCode;
+                    activityDTO.CityName = dataStore.City.FindFirstAsync(c => c.Code == a.Address.City)?.GetAwaiter().GetResult()?.Result?.Name;
+                    activityDTO.RegionName = dataStore.Region.FindFirstAsync(c => c.Code == a.Address.Region)?.GetAwaiter().GetResult()?.Result?.Name;
+                    activityDTO.BarangayName = dataStore.Barangay.FindFirstAsync(c => c.Code == a.Address.Barangay)?.GetAwaiter().GetResult()?.Result?.Name;
                 }
 
                 // description fields
