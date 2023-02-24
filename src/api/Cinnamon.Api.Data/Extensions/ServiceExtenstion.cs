@@ -26,6 +26,7 @@ public static class ServiceExtenstion
         services.AddTransient<IWaitList, WaitListEntity>();
         services.AddTransient<IStudent, StudentEntity>();
         services.AddTransient<IStudentAttendance, StudentAttendanceEntity>();
+        services.AddTransient<IFailedLogin, FailedLoginEntity>();
         services.AddTransient<IDataStore, DataStore>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
@@ -47,6 +48,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IStudentRepository, Services.Repository.Student.StudentRepository>();
         services.AddTransient<Services.Repository.Interfaces.IStudentAttendanceRepository, Services.Repository.StudentAttendance.StudentAttendanceRepository>();
         services.AddTransient<Services.Repository.Interfaces.IResetPasswordRepository, Services.Repository.ResetPassword.ResetPasswordRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IFailedLoginRepository, Services.Repository.FailedLogin.FailedLoginRepository>();
 
         return services;
     }

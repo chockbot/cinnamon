@@ -34,6 +34,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IStudentData, Modules.DataAccess.Student.StudentData>();
         services.AddTransient<Modules.DataAccess.Handlers.IStudentAttendanceData, Modules.DataAccess.StudentAttendance.StudentAttendanceData>();
         services.AddTransient<Modules.DataAccess.Handlers.IResetPasswordData, Modules.DataAccess.ResetPassword.ResetPasswordData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IFailedLoginData, Modules.DataAccess.FailedLogin.FailedLoginData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
