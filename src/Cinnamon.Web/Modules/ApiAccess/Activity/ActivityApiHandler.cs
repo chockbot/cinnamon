@@ -390,4 +390,67 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetEnrolledActivitiesResult>.CreateFailed(ex, "An error occured when getting enrolled activities api");
         }
     }
+
+    public async Task<AppResult<GetAllRegionsResult>> GetAllRegions(GetAllRegionsArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Regions")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllRegionsResult>();
+
+            return AppResult<GetAllRegionsResult>.CreateSucceeded(result, "Successfully getting all regions api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllRegionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllRegionsResult>.CreateFailed(ex, "An error occured when getting all regions api");
+        }
+    }
+
+    public async Task<AppResult<GetAllCitiesResult>> GetAllCitiesByRegionCode(GetAllCitiesArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Cities")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllCitiesResult>();
+
+            return AppResult<GetAllCitiesResult>.CreateSucceeded(result, "Successfully getting all cities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllCitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllCitiesResult>.CreateFailed(ex, "An error occured when getting all cities api");
+        }
+    }
+
+    public async Task<AppResult<GetAllBarangaysResult>> GetAllBarangaysByCityCode(GetAllBarangaysArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Barangays")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllBarangaysResult>();
+
+            return AppResult<GetAllBarangaysResult>.CreateSucceeded(result, "Successfully getting all barangays api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllBarangaysResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllBarangaysResult>.CreateFailed(ex, "An error occured when getting all barangays api");
+        }
+    }
 }

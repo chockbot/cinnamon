@@ -1,6 +1,8 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
 @using Cinnamon.Web.Models;
 @inject IJSRuntime jsRuntime;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -54,23 +56,23 @@
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if(GetExperience("in-person") != null)
+            @if (GetExperience("in-person") != null)
             {
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" data-id="" name="experience-type" id="in-person" 
-                        checked='SelectedExperience(GetExperience("in-person").Id)'
-                        @onchange='@(()=>CheckboxChanged(GetExperience("in-person").Id))'>
+                    <input class="form-check-input" type="radio" data-id="" name="experience-type" id="in-person"
+                       checked='SelectedExperience(GetExperience("in-person").Id)'
+                       @onchange='@(()=>CheckboxChanged(GetExperience("in-person").Id))'>
                     <label class="form-check-label" for="in-person">
                         In-person - join in the real world to participate actively
                     </label>
                 </div>
             }
-            @if(GetExperience("online") != null)
+            @if (GetExperience("online") != null)
             {
                 <div class="form-check">
                     <input class="form-check-input" type="radio" name="experience-type" id="online"
-                        checked='SelectedExperience(GetExperience("online").Id)'
-                        @onchange='@(()=>CheckboxChanged(GetExperience("online").Id))'>
+                       checked='SelectedExperience(GetExperience("online").Id)'
+                       @onchange='@(()=>CheckboxChanged(GetExperience("online").Id))'>
                     <label class="form-check-label" for="online">
                         Online - join via video conferencing software (provided by Cinnamon Maker)
                     </label>
@@ -86,44 +88,185 @@
             </label>
         </div>
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if(Model.Activity.ExperienceTypeId == 2)
+            @if (Model.Activity.ExperienceTypeId == 2)
             {
-                <input class="form-control" placeholder="Address" disabled/>
+                <input class="form-control" placeholder="Address" disabled />
                 <input class="form-control my-3" placeholder="Subdivision/Building" disabled />
                 <input class="form-control my-3" placeholder="Region/State" disabled />
                 <input class="form-control my-3" placeholder="City" disabled />
                 <input class="form-control my-3" placeholder="Barangay" disabled />
                 <input class="form-control my-3" placeholder="Postal Code" disabled />
             }
-            else{
+            else
+            {
                 <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Unit No./ House No.*" required @bind="Model.Activity.Address1" />
                 <input class="form-control my-3 (Model.Activity.Subdivision)" placeholder="Subdivision/Building" required @bind="Model.Activity.Subdivision" />
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Region)" placeholder="Region/State" required @bind="Model.Activity.Region" />
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.City)" placeholder="City" required @bind="Model.Activity.City" />
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Barangay)" placeholder="Barangay" required @bind="Model.Activity.Barangay" />
+                <Autocomplete TItem="Models.Entities.Region"
+                          SelectedValue="@(Model.Activity.Region)"
+                          SelectedText="@(Model.Activity.RegionName)"
+                          TValue="string"
+                          Class="@RequiredCheck(Model.Activity.Region)"
+                          Data="@regionList"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Code)"
+                          Placeholder="Region/State"
+                          Filter="AutocompleteFilter.StartsWith"
+                          FreeTyping
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          SelectedValueChanged="@((value) => GetCitiesByRegion(value, false))"
+                          SelectedTextChanged="@((text) => SetRegionName(text))">
+                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
+                </Autocomplete>
+                <div class="divider"></div>
+                <Autocomplete TItem="Models.Entities.City"
+                          SelectedValue="@(Model.Activity.City)"
+                          SelectedText="@(GetCityName())"
+                          Disabled="@(cityList?.Count() == 0)"
+                          Class="@RequiredCheck(Model.Activity.City)"
+                          TValue="string"
+                          Data="@cityList"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Code)"
+                          Placeholder="City"
+                          Filter="AutocompleteFilter.StartsWith"
+                          FreeTyping
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          SelectedValueChanged="@((value) => GetBarangaysByCity(value))"
+                          SelectedTextChanged="@((text) => SetCityName(text))">
+                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
+                </Autocomplete>
+                <div class="divider"></div>
+                <Autocomplete TItem="Models.Entities.Barangay"
+                          SelectedValue="@(Model.Activity.Barangay)"
+                          SelectedText="@(GetBarangayName())"
+                          Disabled="@(barangayList?.Count() == 0)"
+                          Class="@RequiredCheck(Model.Activity.Barangay)"
+                          TValue="string"
+                          Data="@barangayList"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Code)"
+                          Placeholder="Barangay"
+                          Filter="AutocompleteFilter.StartsWith"
+                          FreeTyping
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          SelectedValueChanged="@((value) => SetBarangay(value))"
+                          SelectedTextChanged="@((text) => SetBarangayName(text))">
+                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
+                </Autocomplete>
                 <input class="form-control my-3 (Model.Activity.PostalCode)" placeholder="Postal Code" required @bind="Model.Activity.PostalCode" />
             }
         </div>
     </div>
 </div>
 
-@code 
+@code
 {
     [Parameter]
-    public ExperienceUpdateModel Model {get; set;}
-    
+    public ExperienceUpdateModel Model { get; set; }
+
     private string searchTag;
 
     public int SearchTagLength { get; set; } = 0;
 
+    IEnumerable<Models.Entities.Region> regionList;
+    IEnumerable<Models.Entities.City> cityList;
+    IEnumerable<Models.Entities.Barangay> barangayList;
+
+    protected override async Task OnInitializedAsync()
+    {
+        regionList = Model.Regions;
+        await GetCitiesByRegion(Model.Activity.Region, true);
+        await GetBarangaysByCity(Model.Activity.City);
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max","#update-activity-title",15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#update-activity-title", 15);
         }
     }
-    
+
+    private void SetRegionName(string regionName)
+    {
+        Model.Activity.RegionName = regionName;
+    }
+
+
+     private string GetCityName()
+    {
+        return (string.IsNullOrEmpty(Model.Activity.CityName)) ? (cityList?.FirstOrDefault(c => c.Code == Model.Activity.City)?.Name) : Model.Activity.CityName;
+    }
+
+    private void SetCityName(string cityName)
+    {
+        Model.Activity.CityName = cityName;
+    }
+
+    private string GetBarangayName()
+    {
+        return (string.IsNullOrEmpty(Model.Activity.BarangayName)) ? (barangayList?.FirstOrDefault(c => c.Code == Model.Activity.Barangay)?.Name) : Model.Activity.BarangayName;
+    }
+
+    private void SetBarangayName(string barangayName)
+    {
+        Model.Activity.BarangayName = barangayName;
+    }
+
+    private async Task GetCitiesByRegion(string regionCode, bool isFirstLoad)
+    {
+        Model.Activity.Region = regionCode;
+
+        if (!isFirstLoad)
+        {
+            Model.Activity.City = string.Empty;
+            Model.Activity.CityName = string.Empty;
+            Model.Activity.Barangay = string.Empty;
+            Model.Activity.BarangayName = string.Empty;
+        }
+
+        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode });
+
+        if (result.Succeeded || result == null)
+        {
+            cityList = result.Result.Result.Select(r => new Models.Entities.City
+                {
+                    Code = r.Code,
+                    Name = r.Name,
+                    RegionCode = r.RegionCode
+                });
+        }
+    }
+
+    private async Task GetBarangaysByCity(string cityCode)
+    {
+        if (!string.IsNullOrEmpty(cityCode))
+        {
+            Model.Activity.City = cityCode;
+
+            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode });
+
+            if (result.Succeeded || result == null)
+            {
+                barangayList = result.Result.Result.Select(r => new Models.Entities.Barangay
+                    {
+                        Code = r.Code,
+                        Name = r.Name,
+                        CityCode = r.CityCode
+                    });
+            }
+        }
+       
+    }
+
+    private void SetBarangay(string barangayCode)
+    {
+        if (!string.IsNullOrEmpty(barangayCode))
+        {
+            Model.Activity.Barangay = barangayCode;
+        }
+    }
+
     private void CheckboxChanged(int val)
     {
         Model.Activity.ExperienceTypeId = val;
@@ -133,7 +276,7 @@
     {
         if (e.Code == "Comma")
         {
-            if (Model.Activity.SearchTags.Count < 5 && (Model.Activity.SearchTags.Where(x=> x == searchTag).FirstOrDefault()) == null)
+            if (Model.Activity.SearchTags.Count < 5 && (Model.Activity.SearchTags.Where(x => x == searchTag).FirstOrDefault()) == null)
             {
                 Model.Activity.SearchTags.Add(searchTag);
             }
@@ -152,7 +295,8 @@
         Model.Activity.SearchTags.Remove(tag);
     }
 
-    private string RequiredCheck(string? value) {
+    private string RequiredCheck(string? value)
+    {
         if (String.IsNullOrEmpty(value)) return "invalid";
         return "";
     }
@@ -160,7 +304,7 @@
     private string RequiredMin(string text, int min)
     {
         var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
-        if(length < min) return "invalid";
+        if (length < min) return "invalid";
         return string.Empty;
     }
 
@@ -176,29 +320,30 @@
         return "";
     }
 
-    private string ShowErrorMessage() {
+    private string ShowErrorMessage()
+    {
         return Model.ExperienceHasError ? "block" : "none";
     }
 
     private Models.Entities.ExperienceType? GetExperience(string name)
         => Model.ExperienceTypes.FirstOrDefault(i => i.Name.ToLower() == name);
-    
+
     private bool SelectedExperience(int id)
         => Model.Activity.ExperienceTypeId == id;
-    
+
     public bool IsAllFieldsValidated()
     {
-        if(string.IsNullOrEmpty(Model.Activity.Title.Trim())) return false;
-        if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
-        if(IsWordsLengthMin(Model.Activity.Description, 20)) return false;
-        if(Model.Activity.ExperienceTypeId == 1)
+        if (string.IsNullOrEmpty(Model.Activity.Title.Trim())) return false;
+        if (string.IsNullOrEmpty(Model.Activity.Description)) return false;
+        if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
+        if (Model.Activity.ExperienceTypeId == 1)
         {
             if (string.IsNullOrEmpty(Model.Activity.Address1) ||
                 string.IsNullOrEmpty(Model.Activity.Region) ||
                 string.IsNullOrEmpty(Model.Activity.Barangay) ||
                 string.IsNullOrEmpty(Model.Activity.City)) return false;
         }
-        if(Model.Activity.ExperienceCategoryId <= 0) return false;
+        if (Model.Activity.ExperienceCategoryId <= 0) return false;
         //if(Model.Activity.SearchTags.Count == 0) return false;
 
         return true;
