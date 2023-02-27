@@ -175,6 +175,14 @@
             return;
         }
 
+        var regions = await activityApiHandler.GetAllRegions();
+        if ((!regions.Succeeded || regions.Result == null) || (regions.Succeeded && !regions.Result.IsSuccess))
+        {
+            // an error occured when getting sub categories to api
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
         Model = new ExperienceUpdateModel {
             Activity = new Models.Entities.Activity {
                 ActivityId = activity.ActivityId,
@@ -246,6 +254,15 @@
                     CategoryId = s.CategoryId,
                     Id = s.Id,
                     Name = s.Name
+                };
+            }),
+            Regions = regions.Result.Result.Select(r =>
+            {
+                return new Models.Entities.Region
+                {
+                    Code = r.Code,
+                    Name = r.Name,
+                    RegionName = r.RegionName
                 };
             }),
             Token = token

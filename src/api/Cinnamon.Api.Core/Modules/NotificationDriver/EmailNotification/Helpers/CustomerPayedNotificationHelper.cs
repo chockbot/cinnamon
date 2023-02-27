@@ -61,7 +61,7 @@ public class CustomerPayedNotificationHelper
                         <b>Payment Reference Number: CIN12345</b>
                         </p>
                         <p style='margin-top: 0; margin-bottom: 0'>
-                        <b>Date: {purchaseDate.ToString("MMMM DD, yyyy HH:mm:ss tt")}</b>
+                        <b>Date: {purchaseDate.ToString("MMMM dd, yyyy hh:mm:ss tt")}</b>
                         </p>
                     </div>
                     <div
@@ -84,7 +84,7 @@ public class CustomerPayedNotificationHelper
                     >
                         <p style='margin-top: 0; margin-bottom: 0.3rem'>To: {coachName}</p>
                         <p style='margin-top: 0; margin-bottom: 0.3rem'>Experience: {experienceName}</p>
-                        <p style='margin-top: 0; margin-bottom: 0.3rem'>Date: {purchaseDate.ToString("MMMM DD, yyyy HH:mm:ss tt")}</p>
+                        <p style='margin-top: 0; margin-bottom: 0.3rem'>Date: {purchaseDate.ToString("MMMM dd, yyyy hh:mm:ss tt")}</p>
                     </div>
                     <div
                         id='amount'

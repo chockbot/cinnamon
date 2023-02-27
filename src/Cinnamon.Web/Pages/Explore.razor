@@ -30,6 +30,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 </head>
 <body>
+<input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
 @if(Model != null)
 {
      <!--Search-->
@@ -46,7 +47,7 @@
                 </a>
             </div>
             <div class="input-group border rounded-pill p-1">
-                <input type="text" placeholder="Location | Experience" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
+                <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
                 <div class="input-group-append border-0">
                     <button id="button-addon3" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
                     <button id="button-addon3" type="button" @onclick="Search" class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
@@ -336,7 +337,7 @@
                                                         <h4 class="card-title1 mb-0">@act.Title</h4>
                                                         @if (act.ExperienceTypeId == 1)
                                                         {
-                                                            <p class="card-title2 mb-0">@act.City, @act.Region</p>
+                                                            <p class="card-title2 mb-0">@act.CityName, @act.RegionName</p>
                                                         }
                                                         else
                                                         {
@@ -428,7 +429,7 @@
                             <h4 class="card-title1 mb-0" >@act.Title</h4>
                            @if(act.ExperienceTypeId == 1)
                            { 
-                                <p class="card-title2 mb-0">@act.City, @act.Region</p>
+                                <p class="card-title2 mb-0">@act.CityName, @act.RegionName</p>
                            }
                            else
                            {
@@ -442,7 +443,7 @@
                                                 <h4 class="card-title1 mb-0">@act.Title</h4>
                                                 @if (act.ExperienceTypeId == 1)
                                                 {
-                                                    <p class="card-title2 mb-0">@act.City, @act.Region</p>
+                                                    <p class="card-title2 mb-0">@act.CityName, @act.RegionName</p>
                                                 }
                                                 else
                                                 {
@@ -667,9 +668,12 @@
                         Address2 = r.Address2,
                         District = r.District,
                         City = r.City,
+                        CityName = r.CityName,
                         Subdivision = r.Subdivision,
                         Region = r.Region,
+                        RegionName = r.RegionName,
                         Barangay = r.Barangay,
+                        BarangayName = r.BarangayName,
                         PostalCode = r.PostalCode,
                         SpecificsYouWillProvide = r.SpecificsYouWillProvide,
                         CustomerBringWithThem = r.CustomerBringWithThem,
@@ -750,9 +754,9 @@
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.District, keyword, CompareOptions.IgnoreCase) >= 0 ||
-                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.City, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.CityName, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Subdivision, keyword, CompareOptions.IgnoreCase) >= 0 ||
-                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Region, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.RegionName, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Barangay, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.PostalCode, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceType, keyword, CompareOptions.IgnoreCase) >= 0 ||
@@ -767,9 +771,9 @@
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address1, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Address2, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.District, keyword, CompareOptions.IgnoreCase) >= 0 ||
-                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.City, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.CityName, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Subdivision, keyword, CompareOptions.IgnoreCase) >= 0 ||
-                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Region, keyword, CompareOptions.IgnoreCase) >= 0 ||
+                                            CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.RegionName, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Barangay, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.PostalCode, keyword, CompareOptions.IgnoreCase) >= 0 ||
                                             CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.ExperienceType, keyword, CompareOptions.IgnoreCase) >= 0 ||

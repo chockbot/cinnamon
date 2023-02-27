@@ -112,7 +112,7 @@
     public bool ShowSuccessMessage { get; set; }
 
     private int currentIndex = 0;
-    
+
     private ExperienceCreation experienceCreationComponent {get; set;}
 
     private ExperienceSetup experienceSetupComponent {get; set;}
@@ -163,29 +163,47 @@
             return;
         }
 
+        // get regions
+        var regions = await activityApiHandler.GetAllRegions();
+        if ((!regions.Succeeded || regions.Result == null) || (regions.Succeeded && !regions.Result.IsSuccess))
+        {
+            // an error occured when getting sub categories to api
+            navigationManager.NavigateTo("explore");
+            return;
+        }
+
         Model = new Models.ExperienceCreationModel {
-            Token = token,
-            ExperienceTypes = experienceTypes.Result.Result.Select(e => {
-                return new Models.Entities.ExperienceType {
-                    Id = e.Id,
-                    Name = e.Name
-                };
-            }),
-            ExperienceCategories = categories.Result.Result.Select(c => {
-                return new Models.Entities.ExperienceCategory {
-                    Category = c.Name,
-                    IconPath = c.IconPath,
-                    Id = c.Id
-                };
-            }),
-            SubCategories = subCategories.Result.Result.Select(s => {
-                return new Models.Entities.SubCategory {
-                    CategoryId = s.CategoryId,
-                    Id = s.Id,
-                    Name = s.Name
-                };
-            })
-        };
+                Token = token,
+                ExperienceTypes = experienceTypes.Result.Result.Select(e => {
+                    return new Models.Entities.ExperienceType {
+                        Id = e.Id,
+                        Name = e.Name
+                    };
+                }),
+                ExperienceCategories = categories.Result.Result.Select(c => {
+                    return new Models.Entities.ExperienceCategory {
+                        Category = c.Name,
+                        IconPath = c.IconPath,
+                        Id = c.Id
+                    };
+                }),
+                SubCategories = subCategories.Result.Result.Select(s => {
+                    return new Models.Entities.SubCategory {
+                        CategoryId = s.CategoryId,
+                        Id = s.Id,
+                        Name = s.Name
+                    };
+                }),
+                Regions = regions.Result.Result.Select(r =>
+                {
+                    return new Models.Entities.Region
+                    {
+                        Code = r.Code,
+                        Name = r.Name,
+                        RegionName = r.RegionName
+                    };
+                })
+            };
 
         obj = DotNetObjectReference.Create(this);
     }

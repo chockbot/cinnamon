@@ -1,6 +1,9 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Web.Models;
 @inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -85,9 +88,59 @@
             {
                 <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Unit No./ House No.*" required @bind="Model.Activity.Address1"/>
                 <input class="form-control my-3 (Model.Activity.Subdivision)" placeholder="Subdivision/Building" required @bind="Model.Activity.Subdivision" />
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Region)" placeholder="Region/State" required @bind="Model.Activity.Region" />
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.City)" placeholder="City" required @bind="Model.Activity.City" />
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Barangay)" placeholder="Barangay" required @bind="Model.Activity.Barangay" />
+
+                <Autocomplete TItem="Models.Entities.Region"
+                          SelectedValue="@(Model.Activity.Region)"
+                          SelectedText="@(Model.Activity.RegionName)"
+                          TValue="string"
+                          Class="@RequiredCheck(Model.Activity.Region)"
+                          Data="@regionList"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Code)"
+                          Placeholder="Region/State"
+                          Filter="AutocompleteFilter.StartsWith"
+                          FreeTyping
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          SelectedValueChanged="@((value) => GetCitiesByRegion(value))"
+                          SelectedTextChanged="@((text) => SetRegionName(text))">
+                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
+                </Autocomplete>
+                <div class="divider"></div>
+                <Autocomplete TItem="Models.Entities.City"
+                          SelectedValue="@(Model.Activity.City)"
+                          SelectedText="@(Model.Activity.CityName)"
+                          Disabled="@(cityList?.Count() == 0)"
+                          Class="@RequiredCheck(Model.Activity.City)"
+                          TValue="string"
+                          Data="@cityList"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Code)"
+                          Placeholder="City"
+                          Filter="AutocompleteFilter.StartsWith"
+                          FreeTyping
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          SelectedValueChanged="@((value) => GetBarangaysByCity(value))"
+                          SelectedTextChanged="@((text) => SetCityName(text))">
+                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
+                </Autocomplete>
+                <div class="divider"></div>
+                <Autocomplete TItem="Models.Entities.Barangay"
+                          SelectedValue="@(Model.Activity.Barangay)"
+                          SelectedText="@(Model.Activity.BarangayName)"
+                          Disabled="@(barangayList?.Count() == 0)"
+                          Class="@RequiredCheck(Model.Activity.Barangay)"
+                          TValue="string"
+                          Data="@barangayList"
+                          TextField="@(( item ) => item.Name)"
+                          ValueField="@(( item ) => item.Code)"
+                          Placeholder="Barangay"
+                          Filter="AutocompleteFilter.StartsWith"
+                          FreeTyping
+                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
+                          SelectedValueChanged="@((value) => SetBarangay(value))"
+                          SelectedTextChanged="@((text) => SetBarangayName(text))">
+                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
+                </Autocomplete>
                 <input class="form-control my-3 (Model.Activity.PostalCode)" placeholder="Postal Code" required @bind="Model.Activity.PostalCode" /> 
             }
         </div>
@@ -102,11 +155,74 @@
     protected override async Task OnInitializedAsync()
     {
         Model.Activity.ExperienceTypeId = 1;
+        regionList = Model.Regions;
     }
 
     public string SearchTag { get; set; }
-    
+
     public int SearchTagLength { get; set; } = 0;
+
+    IEnumerable<Models.Entities.Region> regionList;
+    IEnumerable<Models.Entities.City> cityList;
+    IEnumerable<Models.Entities.Barangay> barangayList;
+
+    private void SetRegionName(string regionName)
+    {
+        Model.Activity.RegionName = regionName;
+    }
+
+    private void SetCityName(string cityName)
+    {
+        Model.Activity.CityName = cityName;
+    }
+
+    private void SetBarangayName(string barangayName)
+    {
+        Model.Activity.BarangayName = barangayName;
+    }
+
+    private async Task GetCitiesByRegion(string regionCode)
+    {
+        Model.Activity.Region = regionCode;
+        Model.Activity.City = string.Empty;
+        Model.Activity.CityName = string.Empty;
+        Model.Activity.Barangay = string.Empty;
+        Model.Activity.BarangayName = string.Empty;
+
+        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode });
+
+        if (result.Succeeded || result == null)
+        {
+            cityList = result.Result.Result.Select(r => new Models.Entities.City
+            {
+                Code = r.Code,
+                Name = r.Name,
+                RegionCode = r.RegionCode
+            });
+        }
+    }
+
+    private async Task GetBarangaysByCity(string cityCode)
+    {
+        Model.Activity.City = cityCode;
+
+        var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode });
+
+        if (result.Succeeded || result == null)
+        {
+            barangayList = result.Result.Result.Select(r => new Models.Entities.Barangay
+                {
+                    Code = r.Code,
+                    Name = r.Name,
+                    CityCode = r.CityCode
+                });
+        }
+    }
+
+    private async Task SetBarangay(string barangayCode)
+    {
+        Model.Activity.Barangay = barangayCode;
+    }
 
     private void CheckboxChanged(int val)
     {

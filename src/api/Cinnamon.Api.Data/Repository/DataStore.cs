@@ -51,6 +51,12 @@ public class DataStore : IDataStore
 
     public IResetPassword ResetPassword => new ResetPasswordEntity(applicationContext);
 
+    public IRegion Region => new RegionEntity(applicationContext);
+
+    public ICity City => new CityEntity(applicationContext);
+
+    public IBarangay Barangay => new BarangayEntity(applicationContext);
+
     public IFailedLogin FailedLogin => new FailedLoginEntity(applicationContext);
 
     public async Task EnsureMigrate()

@@ -26,6 +26,9 @@ public class ActivityDTO
     public string Subdivision { get; set; }
     public string Region { get; set; }
     public string Barangay { get; set; }
+    public string CityName { get; set; } = string.Empty;
+    public string RegionName { get; set; } = string.Empty;
+    public string BarangayName { get; set; } = string.Empty;
     public string PostalCode { get; set; }
     public IEnumerable<string> SearchTags { get; set; }
     public string ExperienceType { get; set; }
