@@ -1,0 +1,173 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Entities
+@using System.Security.Claims
+@inject NavigationManager NavigationManager
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@if(studentAttendances.Count!=0){
+<Modal @ref="modalRef" ShowBackdrop=false> 
+    <ModalContent Centered Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible">
+        <ModalHeader>
+            <ModalTitle>Student Attendance</ModalTitle>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody MaxHeight="1500">
+            @* CALENDAR *@
+            <div class="wrap-content calendar">
+                <div class="calendar-header">
+
+                    <h1 class="calendar-header-details">@monthName @year</h1>
+                    <div class="calendar-arrow">
+                        <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }"><img src="images/calender icon left.png"></button>
+                        <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }"><img src="images/calender icon right.png"></button>
+                    </div>
+                </div>
+                <hr />
+                <hr />
+                <section>
+                    @foreach (var days in CalendarDays)
+                    {
+                        <div class="calendar-days">
+                            <p>@days</p>
+                        </div>
+                    }
+                    @for (int i = 0; i < numDummyColumn; i++)
+                    {
+                        <div></div>
+                    }
+                    @for (int i = 1; i <= monthEnd.Day; i++)
+                    {
+                        var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                        <div class="calendar-body">
+                            @if (calendarItem != null && calendarItem.IsPresent == true)
+                            {
+                                //Display
+                                <button class="btn-date">@i</button>
+                            }
+                            else if (calendarItem != null && calendarItem.IsPresent == false)
+                            {
+                                //Update
+                                <button class="btn-date-absent">@i</button>
+                            }
+                            else
+                            {
+                                //Create
+                                var student = studentAttendances.FirstOrDefault();
+                                DateTime currentDate = DateTime.Today;
+                                passDates = new DateTime(year, month, i);
+
+                                if (passDates <= currentDate)
+                                {
+                                    DateTime selectedDate = passDates;
+                                    <button class="btn-date-absent">@i</button>
+                                }
+                                else
+                                {
+                                    <p class="calendar-dates">@i</p>
+                                }
+                            }
+                        </div>
+                    }
+                </section>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+}
+
+@code{
+    public int StudentId { get; set; }
+    public int ActivityId { get; set; }
+    private Modal modalRef;
+    public string monthName = "";
+    public DateTime monthEnd;
+    public int monthsAway = 0;
+    public int numDummyColumn = 0;
+    public int year = 2023;
+    public int month = 0;
+    public DateTime passDates;
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    public string Token;
+
+    @functions {
+        string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        Token = token;
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        //Get Student Attendance
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            {
+                StudentId = StudentId,
+                ActivityId = ActivityId
+            }, token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId
+                    };
+            }).ToList();
+        }
+        await CreateMonth();
+    }
+    public Task Show(int Id, int ActId)
+    {
+        StudentId  = Id;
+        ActivityId = ActId;
+        return modalRef.Show();
+    }
+    
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+    public async Task CreateMonth()
+    {
+        var tempDate = DateTime.Now.AddMonths(monthsAway);
+        month = tempDate.Month;
+        year  = tempDate.Year;
+
+        DateTime monthStart = new DateTime(year, month, 1);
+        monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        monthName = monthStart.Month switch
+        {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            _ => ""
+        };
+        numDummyColumn = (int)monthStart.DayOfWeek;
+    }
+
+}

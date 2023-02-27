@@ -1,44 +1,16 @@
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Components
+@using System.Security.Claims
+@using Blazorise.DataGrid
+@inject NavigationManager NavigationManager
 @inject IOngoingActivitiesHandler ongoingApiHandler
-@namespace Cinnamon.Web.Components.Pages.Customer.Profile
-
-@*<div class="swiper-slide">
-    <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-    <Card class="card-experience-item" Border="Border.Is0">
-        <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
-            <Figure class="figure-container" Overflow="Overflow.Hidden" Width="Width.Max100" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
-                <FigureImage Margin="Margin.Is0" Source="@GetImage()" AlternateText="banner" Width="Width.Is100" />
-            </Figure>
-        </CardHeader>
-        <CardBody Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is2.FromTop">
-            <CardTitle>
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is8">
-                        <p class="name mb-0 text-color-343D">@Activity.Title</p>
-                        @if (Activity.ExperienceTypeId == 1)
-                        {
-                            <p class="price mb-0 text-color-343D">@Activity.District, @Activity.City</p>
-                        }
-                        else
-                        {
-                            <p class="price mb-0 text-color-343D">@(Activity.ExperienceTypeId == 1 ? "In-Person" : "Online")angelo maligalig</p>
-                        }
-                        <p class="price mb-0 text-color-343D">@Activity.Price</p>
-                    </Column>
-                    <Column ColumnSize="ColumnSize.Is4">
-                        <Div class="new-badge" Display="Display.Flex" Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                            <img class="new-tag-icon" src="images/star-tag.png" alt="new icon">
-                            <span class="new-tag-label">New</span>
-                        </Div>
-                    </Column>
-                </Row>
-            </CardTitle>
-        </CardBody>
-    </Card>
-    </a>
-</div>
-*@
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 
 @foreach (var item in students)
 {
@@ -64,10 +36,11 @@
                 <div class="xp-body-item">
                     <p class="label">Sessions Attended</p>
                     <p class="context">@item.SessionsAttended/@item.NumberOfSessions</p>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="@item.SessionsAttended" aria-valuemin="0" aria-valuemax="@item.NumberOfSessions"></div>
-                    </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:20px"></div>
+                        </div>
                 </div>
+                
                 @if (Activity.ActivitySchedules != null)
                 {
                     var activity = Activity.ActivitySchedules.Where(s => s.Id == item.ScheduleId).FirstOrDefault();
@@ -84,7 +57,9 @@
                 }
                 <div class="xp-body-item">
                     <p class="label">Dates Attended</p>
-                    <button class="view-dates">View</button>
+                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ShowModal(item)" class="btn-update">
+                        View
+                    </Button>
                 </div>
             </div>
         </div>
@@ -92,15 +67,82 @@
 }
 
 
+<Modal ShowBackdrop=false @ref="modal" ScrollToTop=false>
+    <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible">
+    <ModalHeader>
+        <h6 class="col-11 modal-title text-center" style="font-weight:bold">View Attendance</h6>
+        <button type="button" class="btn-close" @onclick="() => HideModal()" />
+    </ModalHeader>
+    <ModalBody MaxHeight="1500">
+        @* CALENDAR *@
+        <div class="wrap-content calendar">
+            <div class="calendar-header">
+
+                <h1 class="calendar-header-details">@monthName @year</h1>
+                <div class="calendar-arrow">
+                    <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }"><img src="images/calender icon left.png"></button>
+                    <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }"><img src="images/calender icon right.png"></button>
+                </div>
+            </div>
+            <hr />
+            <hr />
+            <section>
+                @foreach (var days in CalendarDays)
+                    {
+                        <div class="calendar-days">
+                            <p>@days</p>
+                        </div>
+                    }
+                    @for (int i = 0; i < numDummyColumn; i++)
+                    {
+                        <div></div>
+                    }
+                    @for (int i = 1; i <= monthEnd.Day; i++)
+                    {
+                        var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                        <div class="calendar-body">
+                            @if (calendarItem != null && calendarItem.IsPresent == true)
+                            {
+                                //Display
+                                <button class="btn-date">@i</button>
+                            }
+                            else if (calendarItem != null && calendarItem.IsPresent == false)
+                            {
+                                //Update
+                                <button class="btn-date-absent">@i</button>
+                            }
+                            else
+                            {
+                                <p class="calendar-dates">@i</p>
+                            }
+                        </div>
+                    }
+                </section>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 @code
 {
     [Parameter]
-    public Activity Activity { get; set; }
+    public Activity                 Activity           { get; set; }
     [Parameter]
-    public CustomerProfile Profile { get; set; }
-    public List<Students> students = new List<Students>();
-    public Students Student = new Students();
-    public ActivitySchedule Schedule = new ActivitySchedule();
+    public CustomerProfile          Profile            { get; set; }
+    public List<Students>           students           = new List<Students>();
+    public ActivitySchedule         Schedule           = new ActivitySchedule();
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    private Modal modal;
+    public string monthName = "";
+    public DateTime monthEnd;
+    public int monthsAway = 0;
+    public int numDummyColumn = 0;
+    public int year = 2023;
+    public int month = 0;
+    public DateTime passDates;
+    public string Token;
+    @functions {
+        string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
+    }
     private string GetImage()
     {
         if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
@@ -108,6 +150,17 @@
     }
     protected override async Task OnInitializedAsync()
     {
+        
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        Token = token;
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
         var student = await ongoingApiHandler.GetAllOngoingActivities();
         if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
         {
@@ -131,6 +184,71 @@
             }).ToList();
         }
         students = students.Where(a => a.ActivityId == Activity.ActivityId && a.CustomerId == Profile.Id).ToList();
+    }
+    private void ShowModal(Students student)
+    {
+        modal.Show();
+        CreateCalendar(student);
+    }
+    private Task HideModal()
+    {
+        return modal.Hide();
+    }
+    public async Task CreateMonth()
+    {
+        var tempDate = DateTime.Now.AddMonths(monthsAway);
+        month = tempDate.Month;
+        year  = tempDate.Year;
+
+        DateTime monthStart = new DateTime(year, month, 1);
+        monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        monthName = monthStart.Month switch
+        {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            _ => ""
+        };
+        numDummyColumn = (int)monthStart.DayOfWeek;
+    }
+    public async void CreateCalendar(Students student)
+    {
+        var attendance =  await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            {
+                StudentId = student.Id,
+                ActivityId = student.ActivityId
+            }, Token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId
+                    };
+            }).ToList();
+        }
+        await CreateMonth();
+    }
+    public double GetPercentage(double session, double total)
+    {
+        return Math.Round(session/total*100);
     }
 
 }
