@@ -110,6 +110,9 @@
                                     @Resources.App.Sign
                             </Button>
                         </li>
+                        <li class="dropdown-item">
+                            <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                        </li>
                     }
                 </ul>  
             </div>
@@ -127,13 +130,17 @@
                         {
                             @if (AuthState.Identity.IsAuthenticated)
                             {
-                                <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
-                                </li>
+                                
                                 if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
                                 {
                                     <li class="dropdown-item">
                                         <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                    </li>
+                                }
+                                else if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsMaker)
+                                {
+                                    <li class="dropdown-item">
+                                        <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
                                     </li>
                                 }
                                 <li class="dropdown-item">
@@ -151,6 +158,9 @@
                                     <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
                                         @Resources.App.Sign
                                     </Button>
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
                                 </li>
                             }
                         }
