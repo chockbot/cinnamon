@@ -57,6 +57,8 @@ public class DataStore : IDataStore
 
     public IBarangay Barangay => new BarangayEntity(applicationContext);
 
+    public IFailedLogin FailedLogin => new FailedLoginEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

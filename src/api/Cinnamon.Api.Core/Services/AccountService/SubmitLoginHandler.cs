@@ -15,11 +15,16 @@ public class SubmitLoginHandler : ISubmitLoginHandler
 {
     private readonly ICustomerData customerData;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IFailedLoginData failedLoginData;
+    private readonly IBannedAccountHandler bannedAccountHandler;
 
-    public SubmitLoginHandler(ICustomerData customerData, ApplicationConfig applicationConfig)
+    public SubmitLoginHandler(ICustomerData customerData, ApplicationConfig applicationConfig, 
+        IBannedAccountHandler bannedAccountHandler, IFailedLoginData failedLoginData)
     {
         this.customerData = customerData;
         this.applicationConfig = applicationConfig;
+        this.bannedAccountHandler = bannedAccountHandler;
+        this.failedLoginData = failedLoginData;
     }
 
     public AppResult<SubmitLoginResult> Execute(SubmitLoginArgs args)
@@ -49,10 +54,32 @@ public class SubmitLoginHandler : ISubmitLoginHandler
                     new ApplicationException("An error occured when trying to access api"), "An error occured when trying to access api");
             }
 
-            if(result.Succeeded && !result.Result.IsSuccess && result.Result.ErrorInfo != null)
+            // check banned account
+            var bannnedResult = await bannedAccountHandler.ExecuteAsync(new BannedAccountArgs { Email = args.Email });
+            if(!bannnedResult.Succeeded || bannnedResult.Result == null)
             {
-                return AppResult<SubmitLoginResult>.CreateFailed(new ApplicationException(result.Result.ErrorInfo.Message), result.Result.ErrorInfo.Message);
+                return AppResult<SubmitLoginResult>.CreateFailed(new ApplicationException(bannnedResult.Message), bannnedResult.Message);
             }
+            if(bannnedResult.Result.IsBanned)
+            {
+                return AppResult<SubmitLoginResult>.CreateFailed(new ApplicationException("Account temporary banned."), "Account temporary banned.");
+            }
+
+            // insert failed logins
+            if(result.Succeeded && !result.Result.IsSuccess)
+            {
+                var insertFailedLogin = await failedLoginData.CreateFailedLogin(new Framework.ApiCommand.ApiData.FailedLogin.Request.CreateFailedLoginArgs {
+                    Email = args.Email,
+                    LoginDate = DateTime.Now
+                });
+                if(!insertFailedLogin.Succeeded || insertFailedLogin.Result == null || !insertFailedLogin.Result.IsSuccess)
+                {
+                    return AppResult<SubmitLoginResult>.CreateFailed(new ApplicationException(insertFailedLogin.Result?.ErrorInfo?.Message), insertFailedLogin.Message);
+                }
+
+                return AppResult<SubmitLoginResult>.CreateFailed(new ApplicationException("Invalid username or password"), "Invalid username or password");
+            }
+
             var loginResult = result.Result.Result;
 
             var claims = new [] {
