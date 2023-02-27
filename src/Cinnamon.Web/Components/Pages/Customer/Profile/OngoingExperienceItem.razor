@@ -65,8 +65,6 @@
         </div>
     </div>
 }
-
-
 <Modal ShowBackdrop=false @ref="modal" ScrollToTop=false>
     <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible">
     <ModalHeader>
@@ -74,6 +72,18 @@
         <button type="button" class="btn-close" @onclick="() => HideModal()" />
     </ModalHeader>
     <ModalBody MaxHeight="1500">
+            <div class="student-details-container">
+                <div class="student-details">
+                    @if (studentAttendances.Count != 0)
+                    {
+                        var item = studentAttendances.FirstOrDefault();
+                        <div class="student-details-major">
+                            <p class="">Name : <span>@item.Name</span></p>
+                            <p class="">Present Days : <span class="days-present">@item.SessionsAttended</span></p>
+                        </div>
+                    }
+                </div>
+            </div>
         @* CALENDAR *@
         <div class="wrap-content calendar">
             <div class="calendar-header">
@@ -240,7 +250,8 @@
                         NumberOfSessions = a.NumberOfSessions,
                         SessionsAttended = a.SessionsAttended,
                         ScheduleId = a.ScheduleId,
-                        StudentId = a.StudentId
+                        StudentId = a.StudentId,
+                        Name = a.Name
                     };
             }).ToList();
         }
