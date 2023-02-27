@@ -446,7 +446,6 @@
                                     <p>You're all caught up!</p>
                                 }
                             </div>
-                            <div class="col-lg-3 col-sm-12 col-12 d-flex flex-column align-items-center" id="observerTarget" style="margin-top:500px"></div>
                         </div>
                     </InfiniteScroll>
                 }
@@ -554,6 +553,8 @@
             </div>
         </div>
     }
+    <div id="observerTarget"></div>
+
 </body>
 
 <ModalLogin @ref="signinModal" />
@@ -814,16 +815,16 @@
                         Activities = activities
                     };
 
-                if (isFromScroll)
-                {
-                    pageIndex = ActivityListData.Result.Pagination.PageIndex.GetValueOrDefault() + 1;
-                }
+                pageIndex = ActivityListData.Result.Pagination.PageIndex.GetValueOrDefault() + 1;
 
                 hasNoMoreRecords = false;
             }
             else
             {
                 hasNoMoreRecords = true;
+
+                if(!isFromScroll)
+                    activities = new List<Activity>();
             }
 
             isLoading = false;

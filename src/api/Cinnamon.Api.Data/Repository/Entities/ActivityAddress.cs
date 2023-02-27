@@ -7,9 +7,12 @@ public class ActivityAddress : BaseEntity
     public string Address2 {get; set;}
     public string District {get; set;}
     public string City {get; set;}
+    public string CityName {get; set; }
     public string Subdivision { get; set; }
     public string Region { get; set; }
+    public string RegionName { get; set; }
     public string Barangay { get; set; }
+    public string BarangayName { get; set; }
     public string PostalCode { get; set; }
     public virtual Activity Activity {get; set;}
 }
