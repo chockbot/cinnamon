@@ -445,7 +445,7 @@
     {
         // add members
         var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs {
-            FamilyMembers = familyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                FamilyMembers = familyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
                                 .Select(m => {
                                     return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
                                         BirthMonth = m.BirthMonth,
@@ -459,7 +459,7 @@
 
         // update members
         var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs {
-            FamilyMembers = familyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name.Trim()))
+                FamilyMembers = familyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
                                 .Select(m => {
                                     return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
                                         BirthMonth = m.BirthMonth,
