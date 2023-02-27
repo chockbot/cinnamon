@@ -95,6 +95,24 @@ public class ActivityRepository : IActivityRepository
                 return AppResult<ActivityDTO>.CreateFailed(createdActivityDescription.Error.Exception, createdActivityDescription.Message);
             }
 
+            var regionResult = await dataStore.Region.FindFirstAsync(r => r.Code == region);
+            if (!regionResult.Succeeded || regionResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find region"), "Can't find region");
+            }
+
+            var cityResult = await dataStore.City.FindFirstAsync(r => r.Code == city);
+            if (!cityResult.Succeeded || cityResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find city"), "Can't find city");
+            }
+
+            var barangayResult = await dataStore.Barangay.FindFirstAsync(r => r.Code == barangay);
+            if (!barangayResult.Succeeded || barangayResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find barangay"), "Can't find barangay");
+            }
+
             // save activity address
             var activityAddress = new Entities.ActivityAddress
             {
@@ -102,10 +120,13 @@ public class ActivityRepository : IActivityRepository
                 Address1 = address1,
                 Address2 = address2,
                 City = city,
+                CityName = cityResult.Result.Name,
                 District = district,
                 Subdivision = subdivision,
                 Region = region,
+                RegionName = regionResult.Result.Name,
                 Barangay = barangay,
+                BarangayName = barangayResult.Result.Name,
                 PostalCode = postalcode,
             };
             var createdActivityAddress = await dataStore.ActivityAddress.Add(activityAddress);
@@ -337,10 +358,10 @@ public class ActivityRepository : IActivityRepository
                                              a.Address.Address1.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
                                              a.Address.Address2.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
                                              a.Address.District.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.City.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.CityName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
                                              a.Address.Subdivision.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.Region.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.Barangay.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.RegionName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.BarangayName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
                                              a.Address.PostalCode.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
                                              a.ExperienceType.Name.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
                                              a.ExperienceCategory.Category.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
@@ -387,9 +408,9 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.Region = a.Address.Region;
                     activityDTO.Barangay = a.Address.Barangay;
                     activityDTO.PostalCode = a.Address.PostalCode;
-                    activityDTO.CityName = dataStore.City.FindFirstAsync(c => c.Code == a.Address.City)?.GetAwaiter().GetResult()?.Result?.Name;
-                    activityDTO.RegionName = dataStore.Region.FindFirstAsync(c => c.Code == a.Address.Region)?.GetAwaiter().GetResult()?.Result?.Name;
-                    activityDTO.BarangayName = dataStore.Barangay.FindFirstAsync(c => c.Code == a.Address.Barangay)?.GetAwaiter().GetResult()?.Result?.Name;
+                    activityDTO.CityName = a.Address.CityName;
+                    activityDTO.RegionName = a.Address.RegionName;
+                    activityDTO.BarangayName = a.Address.BarangayName;
                 }
 
                 // description fields
@@ -891,14 +912,35 @@ public class ActivityRepository : IActivityRepository
             }
             var activityAddress = activityAddressRes.Result;
 
-            activityAddress.Address1 = address1 ?? activityAddress.Address1;
-            activityAddress.Address2 = address2 ?? activityAddress.Address2;
-            activityAddress.District = district ?? activityAddress.District;
-            activityAddress.City = city ?? activityAddress.City;
-            activityAddress.Subdivision = subdivision?? activityAddress.Subdivision;    
-            activityAddress.Region = region?? activityAddress.Region;
-            activityAddress.Barangay = barangay?? activityAddress.Barangay; 
-            activityAddress.PostalCode = postalcode?? activityAddress.PostalCode;
+            var regionResult = await dataStore.Region.FindFirstAsync(r => r.Code == (region ?? activityAddress.Region));
+            if (!regionResult.Succeeded || regionResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find region"), "Can't find region");
+            }
+
+            var cityResult = await dataStore.City.FindFirstAsync(r => r.Code == (city ?? activityAddress.City));
+            if (!cityResult.Succeeded || cityResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find city"), "Can't find city");
+            }
+
+            var barangayResult = await dataStore.Barangay.FindFirstAsync(r => r.Code == (barangay ?? activityAddress.Barangay));
+            if (!barangayResult.Succeeded || barangayResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find barangay"), "Can't find barangay");
+            }
+
+            activityAddress.Address1     = address1 ?? activityAddress.Address1;
+            activityAddress.Address2     = address2 ?? activityAddress.Address2;
+            activityAddress.District     = district ?? activityAddress.District;
+            activityAddress.City         = city ?? activityAddress.City;
+            activityAddress.CityName     = cityResult.Result.Name;
+            activityAddress.Subdivision  = subdivision?? activityAddress.Subdivision;    
+            activityAddress.Region       = region?? activityAddress.Region;
+            activityAddress.RegionName   = regionResult.Result.Name;
+            activityAddress.Barangay     = barangay?? activityAddress.Barangay; 
+            activityAddress.BarangayName = barangayResult.Result.Name;
+            activityAddress.PostalCode   = postalcode?? activityAddress.PostalCode;
 
             var updatedActivityAddress = await dataStore.ActivityAddress.Update(activityAddress);
             if (!updatedActivityAddress.Succeeded)
