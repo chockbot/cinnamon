@@ -13,4 +13,8 @@ public class GetAllActivitiesArgs
     public bool? IncludeSubCategories { get; set; }
     public bool? IsActive { get; set; }
     public bool? IncludeCustomer {get; set;}
+    public int? PageIndex { get; set; }
+    public int? CountPerPage { get; set; }
+    public int? ExperienceCategoryId { get; set; }
+    public string? SearchValue { get; set; }
 }

@@ -13,7 +13,8 @@ public interface IActivityRepository
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
         bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false);
 
-    Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
+    Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip,
+        int experienceCategoryId, string searchValue,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false);
