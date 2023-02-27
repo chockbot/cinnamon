@@ -22,11 +22,11 @@ public class FailedLoginData : IFailedLoginData
         try
         {
             var result = await flurlClient
-                .Request($"FailedLogin/GetFailedLogins")
-                .SetQueryParams(args)
-                .GetJsonAsync<CreateFailedLoginResult>();
+                .Request($"FailedLogin/CreateFailedLogin")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateFailedLoginResult>();
 
-            return AppResult<CreateFailedLoginResult>.CreateSucceeded(result, "Successfully get failed logins api");
+            return AppResult<CreateFailedLoginResult>.CreateSucceeded(result, "Successfully create failed logins api");
         }
         catch (FlurlHttpException ex)
         {
@@ -34,7 +34,7 @@ public class FailedLoginData : IFailedLoginData
         }
         catch (Exception ex)
         {
-            return AppResult<CreateFailedLoginResult>.CreateFailed(ex, "An error occured when get failed logins api");
+            return AppResult<CreateFailedLoginResult>.CreateFailed(ex, "An error occured when create failed logins api");
         }
     }
 
@@ -43,9 +43,9 @@ public class FailedLoginData : IFailedLoginData
         try
         {
             var result = await flurlClient
-                .Request($"FailedLogin/CreateFailedLogin")
-                .PostJsonAsync(args)
-                .ReceiveJson<GetFailedLoginsResult>();
+                .Request($"FailedLogin/GetFailedLogins")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetFailedLoginsResult>();
 
             return AppResult<GetFailedLoginsResult>.CreateSucceeded(result, "Successfully create failed login api");
         }
@@ -56,6 +56,27 @@ public class FailedLoginData : IFailedLoginData
         catch (Exception ex)
         {
             return AppResult<GetFailedLoginsResult>.CreateFailed(ex, "An error occured when creating failed login api");
+        }
+    }
+
+    public async Task<AppResult<RemoveFailedLoginsResult>> RemoveFailedLogins(RemoveFailedLoginsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"FailedLogin/RemoveFailedLogins")
+                .PostJsonAsync(args)
+                .ReceiveJson<RemoveFailedLoginsResult>();
+
+            return AppResult<RemoveFailedLoginsResult>.CreateSucceeded(result, "Successfully removed failed logins api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<RemoveFailedLoginsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<RemoveFailedLoginsResult>.CreateFailed(ex, "An error occured when remove failed logins api");
         }
     }
 }

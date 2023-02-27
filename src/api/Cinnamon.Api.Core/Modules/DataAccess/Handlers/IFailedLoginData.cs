@@ -7,4 +7,5 @@ public interface IFailedLoginData
 {
     Task<AppResult<CreateFailedLoginResult>> CreateFailedLogin(CreateFailedLoginArgs args);
     Task<AppResult<GetFailedLoginsResult>> GetFailedLogins(GetFailedLoginsArgs args);
+    Task<AppResult<RemoveFailedLoginsResult>> RemoveFailedLogins(RemoveFailedLoginsArgs args);
 }

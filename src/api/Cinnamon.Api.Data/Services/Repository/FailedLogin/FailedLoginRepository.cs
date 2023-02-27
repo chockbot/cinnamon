@@ -72,4 +72,28 @@ public class FailedLoginRepository : IFailedLoginRepository
             return AppResult<IEnumerable<FailedLoginDTO>>.CreateFailed(ex, "An error occured when getting failed logins");
         }
     }
+
+    public async Task<AppResult<IEnumerable<FailedLoginDTO>>> RemoveLogins(IEnumerable<FailedLoginDTO> logins)
+    {
+        try
+        {
+            var entries = logins.Select(l => {
+                return new Entity.FailedLogin {
+                    Id = l.Id
+                };
+            });
+
+            var result = await dataStore.FailedLogin.RemoveRange(entries);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<FailedLoginDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<FailedLoginDTO>>.CreateSucceeded(logins, "Successfully remove failed logins entries");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<FailedLoginDTO>>.CreateFailed(ex, "An error occured when removing failed logins");
+        }
+    }
 }

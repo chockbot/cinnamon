@@ -7,4 +7,5 @@ public interface IFailedLoginRepository
 {
     Task<AppResult<FailedLoginDTO>> CreateAsync(string email, string metadata, DateTime loginDate);
     Task<AppResult<IEnumerable<FailedLoginDTO>>> GetFailedLogins(string email, DateTime from, DateTime to);
+    Task<AppResult<IEnumerable<FailedLoginDTO>>> RemoveLogins(IEnumerable<FailedLoginDTO> logins);
 }
