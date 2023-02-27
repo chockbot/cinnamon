@@ -64,6 +64,9 @@
                                     @Resources.App.Sign
                                 </Button>
                             </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                            </li>
                         }
                     </ul>
                 </div>
@@ -78,13 +81,16 @@
                     <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
                         @if (Model.IsAuthenticated)
                         {
-                            <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
-                            </li>
                             if (Model.Profile != null && Model.Profile.IsMaker)
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                </li>
+                            }
+                            else if (Model.Profile != null && !Model.Profile.IsMaker)
+                            {
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
                                 </li>
                             }
                             <li class="dropdown-item">
@@ -102,6 +108,9 @@
                                 <Button Border="Border.Is0" Clicked="() => signinModal.Show()">
                                     @Resources.App.Sign
                                 </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
                             </li>
                         }
                     </ul>
