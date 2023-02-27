@@ -17,4 +17,7 @@ public class GetAllActivities
     public string? Ids {get; set;}
     public string? LikeHandler {get; set;}
     public bool? IncludeCustomer {get; set;}
+    public int? ExperienceCategoryId { get; set; }
+    public string? SearchValue { get; set; }
+
 }

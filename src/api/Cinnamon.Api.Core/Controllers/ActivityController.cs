@@ -614,6 +614,10 @@ public class ActivityController : ControllerBase
                 IncludeExperienceTypes = args.IncludeExperienceTypes ?? false,
                 IncludeExperienceCategories = args.IncludeExperienceCategories ?? false,
                 IncludeSubCategories = args.IncludeSubCategories ?? false,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage,
+                SearchValue= string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
+                ExperienceCategoryId = args.ExperienceCategoryId.GetValueOrDefault()
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -623,6 +627,8 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetAllActivitiesResult
             {
                 IsSuccess = true,
+                Pagination = result.Result.Pagination,
+                ErrorInfo = result.Result.ErrorInfo,
                 Result = result.Result.Activities.Select(a => {
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
                     {
@@ -689,7 +695,7 @@ public class ActivityController : ControllerBase
                         } : null,
                         IsNew = a.IsNew,
                     };
-                })
+                }).AsQueryable()
             });
         }
         catch (Exception ex )

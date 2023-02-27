@@ -91,7 +91,7 @@ public class ActivityController : ControllerBase
             var result =
                 isUsedFilters ?
                     await activityRepository
-                        .GetAllAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
+                        .GetAllAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue,
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
                             args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false) :
@@ -104,7 +104,7 @@ public class ActivityController : ControllerBase
 
             // get all without pagination to get all rows
             var all = isUsedFilters ?
-                        await activityRepository.GetAllAsync(args.CustomerId,args.IsActive, null, null) :
+                        await activityRepository.GetAllAsync(args.CustomerId,args.IsActive, null, null, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue) :
                         await activityRepository.GetAllAsync();
 
             if(!all.Succeeded || all.Result == null)

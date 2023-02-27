@@ -14,4 +14,8 @@ public class GetAllActivitiesArgs:IInteractor
     public bool IncludeExperienceTypes { get; set; }
     public bool? IncludeExperienceCategories { get; set; }
     public bool? IncludeSubCategories { get; set; }
+    public int? PageIndex { get; set; }
+    public int? CountPerPage { get; set; }
+    public int ExperienceCategoryId { get; set; }
+    public string SearchValue { get; set; }
 }

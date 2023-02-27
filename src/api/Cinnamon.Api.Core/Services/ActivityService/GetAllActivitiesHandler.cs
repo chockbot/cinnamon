@@ -39,7 +39,11 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 IncludeCustomer = args.IncludeCustomer,
                 IncludeExperienceTypes = args.IncludeExperienceTypes,
                 IncludeExperienceCategories = args.IncludeExperienceCategories,
-                IncludeSubCategories = args.IncludeSubCategories
+                IncludeSubCategories = args.IncludeSubCategories,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage,
+                ExperienceCategoryId  = args.ExperienceCategoryId,
+                SearchValue = args.SearchValue
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -52,6 +56,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
             }
             return AppResult<GetAllActivitiesResult>.CreateSucceeded(new GetAllActivitiesResult
             {
+                
                 Activities = result.Result.Result.Select(e => {
                     return new GetAllActivitiesResult.Activity
                     {
@@ -118,7 +123,20 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         } : null,
                         IsNew = e.IsNew
                     };
-                })
+                }),
+                ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
+                {
+                    Code = result?.Result?.ErrorInfo?.Code,
+                    Description= result?.Result?.ErrorInfo?.Description,
+                    Message = result?.Result?.ErrorInfo?.Message
+                },
+                Pagination = new Framework.ApiCommand.ApiCore.Pagination
+                {
+                    PageIndex = result.Result.Pagination.PageIndex,
+                    PerPage = result.Result.Pagination.PerPage,
+                    TotalPages = result.Result.Pagination.TotalPages,
+                    TotalRecords = result.Result.Pagination.TotalRecords 
+                }
             }, "Successfully get all activities");
         }
         catch (Exception ex)
