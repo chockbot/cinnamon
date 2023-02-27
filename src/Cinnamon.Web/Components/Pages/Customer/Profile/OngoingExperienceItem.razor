@@ -36,10 +36,11 @@
                 <div class="xp-body-item">
                     <p class="label">Sessions Attended</p>
                     <p class="context">@item.SessionsAttended/@item.NumberOfSessions</p>
-                    <div class="progress">
-                        <div class="progress-bar bg-success" role="progressbar" aria-valuenow="@item.SessionsAttended" aria-valuemin="0" aria-valuemax="@item.NumberOfSessions"></div>
-                    </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:20px"></div>
+                        </div>
                 </div>
+                
                 @if (Activity.ActivitySchedules != null)
                 {
                     var activity = Activity.ActivitySchedules.Where(s => s.Id == item.ScheduleId).FirstOrDefault();
@@ -244,6 +245,10 @@
             }).ToList();
         }
         await CreateMonth();
+    }
+    public double GetPercentage(double session, double total)
+    {
+        return Math.Round(session/total*100);
     }
 
 }
