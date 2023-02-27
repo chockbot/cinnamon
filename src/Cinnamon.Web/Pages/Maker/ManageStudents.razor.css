@@ -18,15 +18,23 @@
 }
 .modal-title {
     font-family: "Nunito";
-    font-size: 20px;
-    font-weight: 700;
-    margin-left: 1.4rem;
+    font-size: 18px;
+    font-weight: 600;
+    margin-left: 1rem;
+}
+::deep modal-content{
+    width: 80%;
+}
+.btn-close{
+    margin-right: 1rem;
 }
 .form-control{
-    width: 100%;
+    width: 70%;
     height: 50px;
     font-size: 20px;
     border: 0.5px solid gray;
+    margin-bottom: 20px;
+    margin-left: 60px;
 }
 .header-title{
     margin:0px;
@@ -36,8 +44,6 @@
     display:flex;
 
 }
-
-
 ::deep .search-bar {
     width: 250px;
     height: 40px;
@@ -62,22 +68,15 @@
     padding-right: 5px;
 }
 
-
-
-
-
-
 /*TABLE COMPONENTS CSS*/
 ::deep th {
     font-family: 'Nunito';
     font-style: normal;
     font-weight: 700;
     font-size: 20px;
-
     background-color: #343D4C;
     color: #FFFFFF;
     height: 60px;
-
     padding:10px 20px 10px 20px;
 }
 
@@ -124,7 +123,6 @@
         vertical-align: middle;
     }
 
-
 ::deep .btn-update {
     font-family: 'Nunito';
     font-style: normal;
@@ -138,12 +136,6 @@
 ::deep .btn-update:hover {
     transform: scale(1.1);
 }
-
-
-
-
-
-
 
 /*TABLE BORDER CSS*/
 ::deep table {
@@ -174,16 +166,19 @@
 ::deep tr:last-child td:last-child {
     border-bottom-right-radius: 0px;
 }
-
-
-
-
-
-
-
-
-
-
+.btn-save {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    padding: 10px 25px 10px 25px;
+    background-color: var(--primary);
+    border: none;
+    color: white;
+    margin-left: 7rem;
+}
 
 /* For Mobile Portrait View */
 @media screen and (max-width: 767px) and (orientation: portrait) {
