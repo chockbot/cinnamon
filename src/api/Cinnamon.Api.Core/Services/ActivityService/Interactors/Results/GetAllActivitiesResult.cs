@@ -1,10 +1,14 @@
-﻿using System.Diagnostics;
+﻿using Cinnamon.Framework.ApiCommand.ApiCore;
+using System.Diagnostics;
 
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 public class GetAllActivitiesResult
 {
+    public ErrorInfo? ErrorInfo { get; set; }
+    public Pagination? Pagination { get; set; }
     public IEnumerable<Activity> Activities { get; set; }
+   
     public class Activity
     {
         public int Id { get; set; }
@@ -75,5 +79,7 @@ public class GetAllActivitiesResult
             public int Id {get; set;}
             public string Handler {get; set;}
         }
+
+       
     }
 }
