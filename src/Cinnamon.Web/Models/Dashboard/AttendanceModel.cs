@@ -9,7 +9,6 @@ public class AttendanceModel
     public string ErrorMessage {get; set;}
     public bool IsCheckAllStudent {get; set;}
     public string Token {get; set;}
-
     // sorting fields
     public bool? IsSortNameAsc {get; set;}
     public bool? IsSortExperienceAsc {get; set;}
@@ -20,7 +19,6 @@ public class AttendanceModel
     public bool IsProcessingCheckAll {get; set;}
 
     public DateTime ServerDate {get; set;}
-
     public class Schedule 
     {
         public int ActivityId {get; set;}

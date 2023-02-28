@@ -4,7 +4,11 @@
 
 <div class="row"> <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
         <input class="form-control @RequiredCheck(scheduleModel.Name)" id="name-input" placeholder="Detailed Activity Breakdown" required @bind="scheduleModel.Name" />
-       <i class="fa fa-trash" id="delete-icon" @onclick=DeleteSchedule></i>
+        
+        <a class="button" @onclick=DeleteSchedule>
+            <img src="images/icon-delete.png" class="img-icon">
+        </a>
+        @*<i class="fa fa-trash" id="delete-icon" @onclick=DeleteSchedule></i>*@
    
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
