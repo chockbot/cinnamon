@@ -1,5 +1,6 @@
 ﻿@layout DashboardLayout
 @page "/maker/dashboard/managestudents"
+@using Cinnamon.Web.Models.Dashboard;
 @using System.Security.Claims
 @using System.Globalization
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
@@ -21,10 +22,10 @@
 
         <div class="header-filters">
                 <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
-           
-                <Select TValue="string" class="dropdown-select" SelectedValue="@selectedFilter" SelectedValueChanged="@OnFilterValueChanged">
+
+                <Select TValue="string" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@OnFilterValueChanged">
                     <SelectItem Value="@("*")">Select Experience</SelectItem>
-                    @foreach(var item in activities)
+                @foreach (var item in Model.activities)
                     {
                         <SelectItem Value="@(item.Title)">@item.Title</SelectItem>
                     }
@@ -67,13 +68,13 @@
                 </TableRow>
             </TableHeader>
                 <TableBody>
-                @foreach (var item in FilteredStudents)
+                @foreach (var item in Model.FilteredStudents)
                 {
                     <TableRow>
                         <TableRowCell class="name-body">@item.Name</TableRowCell>
                         <TableRowCell class="progress-body">
                             <center>
-                           <CircularProgress Id='@($"progress-{item.Id}")' Size="50" 
+                           <CircularProgress Id='@($"progress-{item.Id}")' Size="50"
                                 Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                 @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                            </CircularProgress>
@@ -105,9 +106,9 @@
             <button type="button" class="btn-close" @onclick="() => HideModal()" />
         </ModalHeader>
         <ModalBody>
-            <Label Visibility="Visibility.Invisible">@Id</Label> 
-            <input type="number" class="form-control" placeholder="Enter Number" required max="999" min="0" maxlength="3" @bind="@jerseyNumber" onkeypress="if(this.value.length > 2) return false;" />
-            <button class="btn-save" @onclick="() => SaveChanges(Id, jerseyNumber)"> 
+            <Label Visibility="Visibility.Invisible">@Model.Id</Label>
+            <input type="number" class="form-control" placeholder="Enter Number" required max="999" min="0" maxlength="3" @bind="@Model.jerseyNumber" onkeypress="if(this.value.length > 2) return false;" />
+            <button class="btn-save" @onclick="() => SaveChanges(Model.Id, Model.jerseyNumber)">
                 Save Changes
             </button>
             @*<Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>SaveChanges(Id, jerseyNumber)" class="btn-save">Save Changes</Button>*@
@@ -115,14 +116,14 @@
     </ModalContent>
 </Modal>
 
-@if (showErrorMessage)
+    @if (Model.showErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-        <strong>Error!</strong> @errorMessage
+        <strong>Error!</strong> @Model.errorMessage
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
-@if (showSuccessMessage)
+@if (Model.showSuccessMessage)
 {
     <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
         <strong>Success!</strong> Student number updated!
@@ -131,39 +132,8 @@
 }
 @code {
 
-    private Models.Customer.Profile Model;
-
-    private Dashboard dashboard= new Dashboard();
-
-    public List<Activity> activities    = new List<Activity>();
-
-    public List<Students> students = new List<Students>();
-
-    public List<ManageStudentsData> manageStudents = new List<ManageStudentsData>();
-
-    public List<ManageStudentsData> FilteredStudents { get; set; } = new();
-
-    public bool? IsSortNameAsc { get; set; }
-
-    public bool? IsSortExperienceAsc { get; set; }
-
-    private string customFilterValue;
-
-    private string selectedFilter;
-
-    public TextEdit textEdit;
-
-    private Modal modalRef;
-
-    private bool showErrorMessage = false;
-
-    public bool showSuccessMessage = false;
-
-    private string errorMessage = string.Empty;
-
-    public int jerseyNumber;
-
-    public int Id;
+    private ManageStudentsModel Model { get; set; } = new();
+    public Modal modalRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -181,7 +151,7 @@
             var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs { }, token);
             if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
             {
-                activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                Model.activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
                 {
                     // map only required fields
                     return new Activity
@@ -196,7 +166,7 @@
             var student = await ongoingApiHandler.GetAllOngoingActivities();
             if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
             {
-                students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                Model.students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
                 {
                     return new Students
                         {
@@ -213,8 +183,8 @@
                         };
                 }).ToList();
             }
-            var query = from item in students
-                        join item1 in activities on item.ActivityId equals item1.ActivityId
+            var query = from item in Model.students
+                        join item1 in Model.activities on item.ActivityId equals item1.ActivityId
                         orderby item.Id
                         select new ManageStudentsData
                             {
@@ -230,13 +200,13 @@
                                 Status = item.Status
                             };
             //List DataGrid Content
-            manageStudents = query.ToList();
-            FilteredStudents = manageStudents;
+            Model.manageStudents = query.ToList();
+            Model.FilteredStudents = Model.manageStudents;
         }
         catch (Exception)
         {
-            showErrorMessage = true;
-            errorMessage = "An error occured. Please try again later.";
+            Model.showErrorMessage = true;
+            Model.errorMessage = "An error occured. Please try again later.";
         }
 
     }
@@ -247,8 +217,8 @@
     private void ShowModal(ManageStudentsData data)
     {
         modalRef.Show();
-        Int32.TryParse(data.StudentNo,out jerseyNumber);
-        Id = data.Id;
+        Int32.TryParse(data.StudentNo, out Model.jerseyNumber);
+        Model.Id = data.Id;
     }
     private Task HideModal()
     {
@@ -256,20 +226,20 @@
     }
     private async Task OnFilterValueChanged(string e)
     {
-        selectedFilter = e;
-        if (string.IsNullOrEmpty(selectedFilter) || selectedFilter == "Select Experience" || selectedFilter == "*")
+        Model.selectedFilter = e;
+        if (string.IsNullOrEmpty(Model.selectedFilter) || Model.selectedFilter == "Select Experience" || Model.selectedFilter == "*")
         {
             await OnInitializedAsync();
         }
         else
         {
-            FilteredStudents = manageStudents.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
-            selectedFilter, CompareOptions.IgnoreCase) >= 0).ToList();
+            Model.FilteredStudents = Model.manageStudents.Where(p => CultureInfo.CurrentCulture.CompareInfo.IndexOf(p.Title,
+            Model.selectedFilter, CompareOptions.IgnoreCase) >= 0).ToList();
         }
     }
     private void TextSearchChanged(string search)
     {
-        FilteredStudents = manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
     }
     private async void SaveChanges(int Id, int StudentNo)
     {
@@ -281,8 +251,8 @@
         });
         if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
         {
-            errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
-            showErrorMessage = true;
+            Model.errorMessage = update.Result?.ErrorInfo?.Message ?? update.Message;
+            Model.showErrorMessage = true;
             StateHasChanged();
             return;
         }
@@ -296,28 +266,28 @@
     }
     private void SortByName()
     {
-        if (!IsSortNameAsc.HasValue || IsSortNameAsc.Value)
+        if (!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
         {
-            FilteredStudents = manageStudents.OrderBy(s => s.Name).ToList();
-            IsSortNameAsc = false;
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Name).ToList();
+            Model.IsSortNameAsc = false;
         }
         else
         {
-            FilteredStudents = manageStudents.OrderByDescending(s => s.Name).ToList();
-            IsSortNameAsc = true;
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Name).ToList();
+            Model.IsSortNameAsc = true;
         }
     }
     private void SortByActivity()
     {
-        if (!IsSortExperienceAsc.HasValue || IsSortExperienceAsc.Value)
+        if (!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
         {
-            FilteredStudents = manageStudents.OrderBy(s => s.Title).ToList();
-            IsSortExperienceAsc = false;
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Title).ToList();
+            Model.IsSortExperienceAsc = false;
         }
         else
         {
-            FilteredStudents = manageStudents.OrderByDescending(s => s.Title).ToList();
-            IsSortExperienceAsc = true;
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Title).ToList();
+            Model.IsSortExperienceAsc = true;
         }
     }
     private int GetSessionPercentage(double numberSessions, double sessionsAttended)

@@ -76,30 +76,55 @@
                     {
                         <TableRow>
                             <TableRowCell>
-                                <span class="std-name">@item.Name</span>
-                                <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" 
-                                    Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                            <span class="std-name">@item.Name</span>
+                                @if(item.SessionsAttended > item.NumberOfSessions)
+                                {
+                                    var pieColor = "#ffa942";
+                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="@pieColor"
+                                              Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                        @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                }
+                                else
+                                {
+                                    var pieColor1 = "#4bb749";
+                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="@pieColor1"
+                                              Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                     @($"{item.SessionsAttended}/{item.NumberOfSessions}")
-                                </CircularProgress>
+                                    </CircularProgress>
+                                }
+                                
                             </TableRowCell>
                             <TableRowCell>@item.ActivityName</TableRowCell>
                             <TableRowCell class="sessions-attended-body">
-                                 <center>
-                                <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" 
-                                    Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                <center>
+                                @if (item.SessionsAttended > item.NumberOfSessions)
+                                {
+                                    var pieColor = "#ffa942";
+                                    <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="@pieColor"
+                                          Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                     @($"{item.SessionsAttended}/{item.NumberOfSessions}")
-                                </CircularProgress>
+                                    </CircularProgress>
+                                }
+                                else
+                                {
+                                        var pieColor1 = "#4bb749";
+                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="@pieColor1"
+                                              Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                        @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                } 
                                 </center>
                             </TableRowCell>
                             <TableRowCell class="present-body">
                                 <center>
-                                <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAttendance(item)">
-                                    <img class="me-1" src='@(item.IsPresent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                                    Present
-                                </Button>
+                                    <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAttendance(item)">
+                                        <img class="me-1" src='@(item.IsPresent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                        Present
+                                    </Button>
                                 </center>
                             </TableRowCell>
-                        </TableRow>    
+                        </TableRow>
                     }
                 </TableBody>
             </Table>
@@ -327,7 +352,6 @@
                 },
             }
         }, Model.Token);
-
         //Check if Session is not null
         var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
             {

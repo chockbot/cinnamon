@@ -277,32 +277,24 @@
             {
                 studentAttendance.SessionsAttended -= 1;
             }
-            //Check session attended if greater than number of session
-            if (studentAttendance.SessionsAttended > studentAttendance.NumberOfSessions)
-            {
-                IsShowErrorMessage = true;
-                ErrorMessage = "An error occured. Session attended must not greater than number of session.";
-            }
-            else
-            {
-                var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
-                            {
-                                Id = studentAttendance.Id,
-                                Date = studentAttendance.Date,
-                                IsPresent = studentAttendance.IsPresent
-                            }, token);
+            var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
+                        {
+                            Id = studentAttendance.Id,
+                            Date = studentAttendance.Date,
+                            IsPresent = studentAttendance.IsPresent
+                        }, token);
 
-                if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
-                {
-                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                                {
-                                    Id = studentAttendance.StudentId,
-                                    SessionsAttended = studentAttendance.SessionsAttended,
-                                });
-                 await OnInitializedAsync();
-                 StateHasChanged();
-                }
+            if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
+            {
+                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                            {
+                                Id = studentAttendance.StudentId,
+                                SessionsAttended = studentAttendance.SessionsAttended,
+                            });
+                await OnInitializedAsync();
+                StateHasChanged();
             }
+            
         }
         catch (Exception ex)
         {
@@ -314,31 +306,22 @@
     {
         try
         {
-            //Check session attended if greater than number of session
-            if (studentAttendance.SessionsAttended >= studentAttendance.NumberOfSessions )
-            {
-                IsShowErrorMessage = true;
-                ErrorMessage = "An error occured. Session attended must not greater than number of session.";
-            }
-            else
-            {
-                var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
-                        {
-                            AttendanceDate = presentDate,
-                            IsPresent = true,
-                            StudentId = studentAttendance.StudentId
-                        }, token);
+            var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
+                    {
+                        AttendanceDate = presentDate,
+                        IsPresent = true,
+                        StudentId = studentAttendance.StudentId
+                    }, token);
 
-                if (create.Succeeded && create.Result.IsSuccess)
-                {
-                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                            {
-                                Id = studentAttendance.StudentId,
-                                SessionsAttended = studentAttendance.SessionsAttended + 1,
-                            });
-                    await OnInitializedAsync();
-                    StateHasChanged();
-                }
+            if (create.Succeeded && create.Result.IsSuccess)
+            {
+                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            SessionsAttended = studentAttendance.SessionsAttended + 1,
+                        });
+                await OnInitializedAsync();
+                StateHasChanged();
             }
         }
         catch (Exception ex)
