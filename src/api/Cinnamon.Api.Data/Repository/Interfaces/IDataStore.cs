@@ -24,6 +24,7 @@ public interface IDataStore
     IRegion Region { get; }
     ICity City { get; }
     IBarangay Barangay{ get; }
+    IFailedLogin FailedLogin { get; }
 
     Task EnsureMigrate();
 

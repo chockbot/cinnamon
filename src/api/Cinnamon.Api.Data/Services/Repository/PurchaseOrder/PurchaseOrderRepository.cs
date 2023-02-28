@@ -67,6 +67,16 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     new ApplicationException("An error occured when saving purchase order"), "An error occured when saving purchase order");
             }
 
+            var activity = activityRes.Result;
+            activity.IsNew = false;
+
+            var updateActivityResult = await dataStore.Activity.Update(activity);
+            if (!updateActivityResult.Succeeded || updateActivityResult.Result == null)
+            {
+                return AppResult<PurchaseOrderDTO>.CreateFailed(
+                    new ApplicationException("An error occured when updating activity IsNew field"), "An error occured when updating activity IsNew field");
+            }
+
             return AppResult<PurchaseOrderDTO>.CreateSucceeded(new PurchaseOrderDTO {
                 Id = createdPurchaseOrder.Result.Id,
                 ActivityId = activityId,

@@ -17,7 +17,7 @@ public class Activity : BaseEntity
     public int? ExperienceCategoryId {get; set;}
     public int? SubCategoryId {get; set;}
     public string Handler {get; set;}
-
+    public bool IsNew { get; set; }
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
     public virtual SearchTags SearchTag {get; set;}

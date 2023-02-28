@@ -4,6 +4,8 @@ using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.Linq.Expressions;
+using System.Globalization;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -65,7 +67,8 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = experienceCategoryId,
                 ExperienceTypeId = experienceTypeId,
                 SubCategoryId = subCategoryId,
-                Handler = handler
+                Handler = handler,
+                IsNew = true
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -92,6 +95,24 @@ public class ActivityRepository : IActivityRepository
                 return AppResult<ActivityDTO>.CreateFailed(createdActivityDescription.Error.Exception, createdActivityDescription.Message);
             }
 
+            var regionResult = await dataStore.Region.FindFirstAsync(r => r.Code == region);
+            if (!regionResult.Succeeded || regionResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find region"), "Can't find region");
+            }
+
+            var cityResult = await dataStore.City.FindFirstAsync(r => r.Code == city);
+            if (!cityResult.Succeeded || cityResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find city"), "Can't find city");
+            }
+
+            var barangayResult = await dataStore.Barangay.FindFirstAsync(r => r.Code == barangay);
+            if (!barangayResult.Succeeded || barangayResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find barangay"), "Can't find barangay");
+            }
+
             // save activity address
             var activityAddress = new Entities.ActivityAddress
             {
@@ -99,10 +120,13 @@ public class ActivityRepository : IActivityRepository
                 Address1 = address1,
                 Address2 = address2,
                 City = city,
+                CityName = cityResult.Result.Name,
                 District = district,
                 Subdivision = subdivision,
                 Region = region,
+                RegionName = regionResult.Result.Name,
                 Barangay = barangay,
+                BarangayName = barangayResult.Result.Name,
                 PostalCode = postalcode,
             };
             var createdActivityAddress = await dataStore.ActivityAddress.Add(activityAddress);
@@ -305,7 +329,8 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip,
+        int experienceCategoryId, string searchValue,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false)
@@ -313,23 +338,38 @@ public class ActivityRepository : IActivityRepository
         try
         {
             var includes = new List<Expression<Func<Entities.Activity, object>>>();
-            if(includeAddres) includes.Add(a => a.Address);
-            if(includeDescription) includes.Add(a => a.ActivityDescription);
-            if(includeSearchTags) includes.Add(a => a.SearchTag);
-            if(includeSchedules) includes.Add(a => a.Schedules);
-            if(includeImages) includes.Add(a => a.Images);
-            if(includeCustomer) includes.Add(a => a.Customer);
+            if (includeAddres) includes.Add(a => a.Address);
+            if (includeDescription) includes.Add(a => a.ActivityDescription);
+            if (includeSearchTags) includes.Add(a => a.SearchTag);
+            if (includeSchedules) includes.Add(a => a.Schedules);
+            if (includeImages) includes.Add(a => a.Images);
+            if (includeCustomer) includes.Add(a => a.Customer);
             if (includeExperienceTypes) includes.Add(a => a.ExperienceType);
             if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
             if (includeSubCategories) includes.Add(a => a.SubCategory);
-
-            Expression<Func<Entities.Activity,bool>> filter = 
+            
+            Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
-                        (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower()));
+                        (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
+                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? a.IsNew : a.ExperienceCategoryId == experienceCategoryId : true) &&
+                        (string.IsNullOrEmpty(searchValue) ? true : a.Title.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.Address1.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.Address2.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.District.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.CityName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.Subdivision.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.RegionName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.BarangayName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.Address.PostalCode.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.ExperienceType.Name.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.ExperienceCategory.Category.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
+                                             a.SubCategory.SubCatergory.ToLower().Trim().Contains(searchValue.ToLower().Trim())
+                                             );
 
-            var result = await dataStore.Activity.FindAsync(filter, count, skip, includes);
+
+            var result = await dataStore.Activity.FindAsyncV2(filter, count, skip, includes);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -354,27 +394,27 @@ public class ActivityRepository : IActivityRepository
                     ExperienceType       = a.ExperienceType?.Name,
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
-                    IsNew                = dataStore.Student.FindAsync(s => (s.ActivityId == a.Id)).GetAwaiter().GetResult()?.Result?.Count() > 0 ? false : true
+                    IsNew                = a.IsNew,
                 };
 
                 // address fields
-                if(includeAddres && a.Address != null)
+                if (includeAddres && a.Address != null)
                 {
                     activityDTO.Address1 = a.Address.Address1;
                     activityDTO.Address2 = a.Address.Address2;
                     activityDTO.City = a.Address.City;
                     activityDTO.District = a.Address.District;
-                    activityDTO.Subdivision = a.Address.Subdivision;    
+                    activityDTO.Subdivision = a.Address.Subdivision;
                     activityDTO.Region = a.Address.Region;
                     activityDTO.Barangay = a.Address.Barangay;
                     activityDTO.PostalCode = a.Address.PostalCode;
-                    activityDTO.CityName = dataStore.City.FindFirstAsync(c => c.Code == a.Address.City)?.GetAwaiter().GetResult()?.Result?.Name;
-                    activityDTO.RegionName = dataStore.Region.FindFirstAsync(c => c.Code == a.Address.Region)?.GetAwaiter().GetResult()?.Result?.Name;
-                    activityDTO.BarangayName = dataStore.Barangay.FindFirstAsync(c => c.Code == a.Address.Barangay)?.GetAwaiter().GetResult()?.Result?.Name;
+                    activityDTO.CityName = a.Address.CityName;
+                    activityDTO.RegionName = a.Address.RegionName;
+                    activityDTO.BarangayName = a.Address.BarangayName;
                 }
 
                 // description fields
-                if(includeDescription && a.ActivityDescription != null)
+                if (includeDescription && a.ActivityDescription != null)
                 {
                     var description = a.ActivityDescription;
                     activityDTO.ActivityLevel = description.ActivityLevel;
@@ -388,10 +428,12 @@ public class ActivityRepository : IActivityRepository
                 }
 
                 // schedules
-                if(includeSchedules && a.Schedules != null)
+                if (includeSchedules && a.Schedules != null)
                 {
-                    activityDTO.Schedules = a.Schedules.Select(s => {
-                        return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
+                    activityDTO.Schedules = a.Schedules.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
+                        {
                             DateTime = s.DateTime,
                             Id = s.Id,
                             Name = s.Name,
@@ -408,23 +450,25 @@ public class ActivityRepository : IActivityRepository
                 }
 
                 // search tags
-                if(includeSearchTags && a.SearchTag != null)
+                if (includeSearchTags && a.SearchTag != null)
                 {
                     var tags = new List<string>();
-                    if(a.SearchTag.SearchTag1 != null) tags.Add(a.SearchTag.SearchTag1);
-                    if(a.SearchTag.SearchTag2 != null) tags.Add(a.SearchTag.SearchTag2);
-                    if(a.SearchTag.SearchTag3 != null) tags.Add(a.SearchTag.SearchTag3);
-                    if(a.SearchTag.SearchTag4 != null) tags.Add(a.SearchTag.SearchTag4);
-                    if(a.SearchTag.SearchTag5 != null) tags.Add(a.SearchTag.SearchTag5);
+                    if (a.SearchTag.SearchTag1 != null) tags.Add(a.SearchTag.SearchTag1);
+                    if (a.SearchTag.SearchTag2 != null) tags.Add(a.SearchTag.SearchTag2);
+                    if (a.SearchTag.SearchTag3 != null) tags.Add(a.SearchTag.SearchTag3);
+                    if (a.SearchTag.SearchTag4 != null) tags.Add(a.SearchTag.SearchTag4);
+                    if (a.SearchTag.SearchTag5 != null) tags.Add(a.SearchTag.SearchTag5);
 
                     activityDTO.SearchTags = tags;
                 }
 
                 // activity images
-                if(includeImages && a.Images != null)
+                if (includeImages && a.Images != null)
                 {
-                    activityDTO.Images = a.Images.Select(s => {
-                        return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                    activityDTO.Images = a.Images.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
+                        {
                             ActivityId = s.ActivityId,
                             Id = s.Id,
                             ImageLocation = s.ImageLocation,
@@ -435,10 +479,11 @@ public class ActivityRepository : IActivityRepository
                 }
 
                 // customer
-                if(includeCustomer && a.Customer != null)
+                if (includeCustomer && a.Customer != null)
                 {
                     var customer = a.Customer;
-                    activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                    activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO
+                    {
                         About = customer.About,
                         Birthdate = customer.Birthdate,
                         DateJoined = customer.DateJoined,
@@ -867,14 +912,35 @@ public class ActivityRepository : IActivityRepository
             }
             var activityAddress = activityAddressRes.Result;
 
-            activityAddress.Address1 = address1 ?? activityAddress.Address1;
-            activityAddress.Address2 = address2 ?? activityAddress.Address2;
-            activityAddress.District = district ?? activityAddress.District;
-            activityAddress.City = city ?? activityAddress.City;
-            activityAddress.Subdivision = subdivision?? activityAddress.Subdivision;    
-            activityAddress.Region = region?? activityAddress.Region;
-            activityAddress.Barangay = barangay?? activityAddress.Barangay; 
-            activityAddress.PostalCode = postalcode?? activityAddress.PostalCode;
+            var regionResult = await dataStore.Region.FindFirstAsync(r => r.Code == (region ?? activityAddress.Region));
+            if (!regionResult.Succeeded || regionResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find region"), "Can't find region");
+            }
+
+            var cityResult = await dataStore.City.FindFirstAsync(r => r.Code == (city ?? activityAddress.City));
+            if (!cityResult.Succeeded || cityResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find city"), "Can't find city");
+            }
+
+            var barangayResult = await dataStore.Barangay.FindFirstAsync(r => r.Code == (barangay ?? activityAddress.Barangay));
+            if (!barangayResult.Succeeded || barangayResult == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find barangay"), "Can't find barangay");
+            }
+
+            activityAddress.Address1     = address1 ?? activityAddress.Address1;
+            activityAddress.Address2     = address2 ?? activityAddress.Address2;
+            activityAddress.District     = district ?? activityAddress.District;
+            activityAddress.City         = city ?? activityAddress.City;
+            activityAddress.CityName     = cityResult.Result.Name;
+            activityAddress.Subdivision  = subdivision?? activityAddress.Subdivision;    
+            activityAddress.Region       = region?? activityAddress.Region;
+            activityAddress.RegionName   = regionResult.Result.Name;
+            activityAddress.Barangay     = barangay?? activityAddress.Barangay; 
+            activityAddress.BarangayName = barangayResult.Result.Name;
+            activityAddress.PostalCode   = postalcode?? activityAddress.PostalCode;
 
             var updatedActivityAddress = await dataStore.ActivityAddress.Update(activityAddress);
             if (!updatedActivityAddress.Succeeded)

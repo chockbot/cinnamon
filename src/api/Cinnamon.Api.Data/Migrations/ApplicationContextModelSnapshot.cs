@@ -60,6 +60,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("IsNew")
+                        .HasColumnType("boolean");
+
                     b.Property<bool>("IsPublished")
                         .HasColumnType("boolean");
 
@@ -128,6 +131,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("BarangayName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("ChangedBy")
                         .HasColumnType("integer");
 
@@ -135,6 +142,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CityName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -153,6 +164,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Region")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("RegionName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -602,6 +617,44 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("Token", "Guid");
 
                     b.ToTable("ExternalLoginTokens");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.FailedLogin", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LoginDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Metadata")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email", "LoginDate");
+
+                    b.ToTable("FailedLogins");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.FamilyMember", b =>

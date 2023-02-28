@@ -37,6 +37,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IRegionData, Modules.DataAccess.Location.RegionData>();
         services.AddTransient<Modules.DataAccess.Handlers.ICityData, Modules.DataAccess.Location.CityData>();
         services.AddTransient<Modules.DataAccess.Handlers.IBarangayData, Modules.DataAccess.Location.BarangayData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IFailedLoginData, Modules.DataAccess.FailedLogin.FailedLoginData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -67,6 +68,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IGetCustomerByHandler, Services.AccountService.GetCustomerByHandler>();
         services.AddTransient<Services.AccountService.Handlers.IResetPasswordHandler, Services.AccountService.ResetPasswordHandler>();
         services.AddTransient<Services.AccountService.Handlers.IVerifyResetPasswordHandler, Services.AccountService.VerifyResetPasswordHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IBannedAccountHandler, Services.AccountService.BannedAccountHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

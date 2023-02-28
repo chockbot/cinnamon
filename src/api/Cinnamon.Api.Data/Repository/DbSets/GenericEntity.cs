@@ -74,6 +74,33 @@ public class GenericEntity<TTarget> : IGenericEntity<TTarget> where TTarget : Ba
         }
     }
 
+    public async Task<AppResult<IEnumerable<TTarget>>> FindAsyncV2(Expression<Func<TTarget, bool>> expression,
+        int? take = 100, int? skip = 0, IEnumerable<Expression<Func<TTarget, object>>>? includes = null)
+    {
+        try
+        {
+            int limitCount = take.HasValue ? take.Value : int.MaxValue;
+            int skipCount = skip.HasValue ? skip.Value : 0;
+
+            var query = applicationContext.Set<TTarget>().Where(expression).Skip(skipCount).Take(limitCount);
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            var results = query.AsQueryable();
+            return AppResult<IEnumerable<TTarget>>.CreateSucceeded(results, "Successfully find entities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<TTarget>>.CreateFailed(ex, "An error occured when finding entities");
+        }
+    }
+
     public async Task<AppResult<TTarget>> FindFirstAsync(Expression<Func<TTarget, bool>> expression, 
         IEnumerable<Expression<Func<TTarget, object>>>? includes = null)
     {
