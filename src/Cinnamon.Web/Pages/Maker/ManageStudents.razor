@@ -74,10 +74,20 @@
                         <TableRowCell class="name-body">@item.Name</TableRowCell>
                         <TableRowCell class="progress-body">
                             <center>
-                           <CircularProgress Id='@($"progress-{item.Id}")' Size="50"
-                                Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
-                                @($"{item.SessionsAttended}/{item.NumberOfSessions}")
-                           </CircularProgress>
+                                @if (item.SessionsAttended > item.NumberOfSessions)
+                                {
+                                    <CircularProgress Id='@($"progress-{item.Id}")' Size="50" PieColor="#ffa942"
+                                          Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                    @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                }
+                                else
+                                {
+                                    <CircularProgress Id='@($"progress-{item.Id}")' Size="50" PieColor="#4bb749"
+                                              Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                        @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                }
                             </center>
                         </TableRowCell>
                             <TableRowCell class="experience-body">@item.Title</TableRowCell>

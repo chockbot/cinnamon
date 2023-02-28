@@ -79,16 +79,14 @@
                             <span class="std-name">@item.Name</span>
                                 @if(item.SessionsAttended > item.NumberOfSessions)
                                 {
-                                    var pieColor = "#ffa942";
-                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="@pieColor"
+                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="#ffa942"
                                               Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                         @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                                     </CircularProgress>
                                 }
                                 else
                                 {
-                                    var pieColor1 = "#4bb749";
-                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="@pieColor1"
+                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="#4bb749"
                                               Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                     @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                                     </CircularProgress>
@@ -100,16 +98,14 @@
                                 <center>
                                 @if (item.SessionsAttended > item.NumberOfSessions)
                                 {
-                                    var pieColor = "#ffa942";
-                                    <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="@pieColor"
+                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="#ffa942"
                                           Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                     @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                                     </CircularProgress>
                                 }
                                 else
                                 {
-                                        var pieColor1 = "#4bb749";
-                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="@pieColor1"
+                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="#4bb749"
                                               Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                         @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                                     </CircularProgress>
