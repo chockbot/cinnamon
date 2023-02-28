@@ -369,7 +369,7 @@ public class ActivityRepository : IActivityRepository
                                              );
 
 
-            var result = await dataStore.Activity.FindAsyncV2(filter, count, skip, includes);
+            var result = await dataStore.Activity.FindActivitiesAsync(filter, count, skip, includes);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);

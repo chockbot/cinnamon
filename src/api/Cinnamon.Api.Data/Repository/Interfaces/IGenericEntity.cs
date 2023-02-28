@@ -11,8 +11,6 @@ public interface IGenericEntity<TTarget> where TTarget : BaseEntity
     // take and skip for pagination
     Task<AppResult<IEnumerable<TTarget>>> FindAsync(Expression<Func<TTarget, bool>> expression, 
         int? take = 100, int? skip = 0, IEnumerable<Expression<Func<TTarget, object>>>? includes = null);
-    Task<AppResult<IEnumerable<TTarget>>> FindAsyncV2(Expression<Func<TTarget, bool>> expression,
-        int? take = 100, int? skip = 0, IEnumerable<Expression<Func<TTarget, object>>>? includes = null);
     Task<AppResult<TTarget>> FindFirstAsync(Expression<Func<TTarget, bool>> expression, 
         IEnumerable<Expression<Func<TTarget, object>>>? includes = null);
     Task<AppResult<TTarget>> Add(TTarget entity);
