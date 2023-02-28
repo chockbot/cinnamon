@@ -16,6 +16,9 @@ public class GetActivityResult
     public string Address2 {get; set;}
     public string District {get; set;}
     public string City {get; set;}
+    public string CityName { get; set; } = string.Empty;
+    public string RegionName { get; set; } = string.Empty;
+    public string BarangayName { get; set; } = string.Empty;
     public string Subdivision { get; set; }
     public string Region { get; set; }
     public string Barangay { get; set; }
