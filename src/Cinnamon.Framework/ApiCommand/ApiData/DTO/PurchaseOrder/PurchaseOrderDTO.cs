@@ -12,4 +12,5 @@ public class PurchaseOrderDTO
     public decimal? CouponAmount {get; set;}
     public decimal OverallTotal {get; set;}
     public int Status {get; set;}
+    public string Payload {get; set;}
 }
