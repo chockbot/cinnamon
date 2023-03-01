@@ -7,4 +7,5 @@ public class ApplicationConfig
     public JwtSetting Jwt {get; set;}
     public EmailService EmailService {get; set;}
     public FailedLogin FailedLogin {get; set;}
+    public Payment Payment {get; set;}
 }

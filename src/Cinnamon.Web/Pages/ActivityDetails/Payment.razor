@@ -66,8 +66,12 @@
                     <div class="col-lg-12 col-md-12 col-12 d-md-block d-lg-block d-none d-sm-none">
                         <div class="form-outline mb-4 pb-1"> 
                             <label>Credit or debit card</label>
-                            <select Class="form-control">
-                                <option value="1">Credit or debit card</option>
+                            <select Class="form-control" @bind="SelectedPaymentCode">
+                                <option value="" selected disabled>Select Payment Method</option>
+                                @foreach (var item in Payments)
+                                {
+                                    <option value="@item.Code">@item.DisplayName</option>
+                                }
                             </select>
                             </div>
 
@@ -304,6 +308,10 @@
 
     public bool isLoaded { get; set; } = false;
 
+    private IEnumerable<PaymentOption> Payments {get; set;} = new List<PaymentOption>();
+    
+    private string SelectedPaymentCode = string.Empty;
+
     private enum CouponAction {
         NoCoupon = 0,
         EnteringCoupon = 1,
@@ -445,6 +453,14 @@
         };
 
         isLoaded= true;
+
+        // payment options
+        Payments = new List<PaymentOption> {
+            { new PaymentOption {DisplayName = "SHOPEEPAY", PaymentChannel = "SHOPEEPAY", PaymentMethod = "EWALLET", Code = "SHOPEEPAY"} },
+            { new PaymentOption {DisplayName = "GRABPAY", PaymentChannel = "GRABPAY", PaymentMethod = "EWALLET", Code = "GRABPAY"}},
+            { new PaymentOption {DisplayName = "PAYMAYA", PaymentChannel = "PAYMAYA", PaymentMethod = "EWALLET", Code = "PAYMAYA"}},
+            { new PaymentOption {DisplayName = "GCASH", PaymentChannel = "GCASH", PaymentMethod = "EWALLET", Code = "GCASH"}}
+        };
     }
 
     private void OnClickChange()
@@ -526,6 +542,15 @@
     private string payButtonStyle = "width:100% !important;font-weight:700;";
     private async Task OnPayConfirmedClicked()
     {
+        if(string.IsNullOrEmpty(SelectedPaymentCode))
+        {
+            payErrorMessage = "Please select payment method";
+            isShowPayErrorMessage = true;
+            return;
+        }
+
+        var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
+
         if(Model.SelectedAttendees.Count > 0)
         {
             isLoading = true;
@@ -541,7 +566,9 @@
                         FamilyMemberId = s.Id,
                         Name = s.Name
                     };
-                })
+                }),
+                PaymentChannel = selectedPaymentMethod.Code,
+                PaymentMethod = selectedPaymentMethod.PaymentMethod
             }, Model.Token);
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -555,7 +582,14 @@
             {
                 isLoading = false;
                 payButtonStyle = "width:100% !important;font-weight:700;";
-                NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
+                if(submit.Result.Result.Action == 1)
+                {
+                    NavigationManager.NavigateTo(submit.Result.Result.Url);
+                }
+                else 
+                {
+                    NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
+                }
             }
         }
         else 
@@ -563,5 +597,13 @@
             payErrorMessage = "Please include family to register";
             isShowPayErrorMessage = true;
         }
+    }
+
+    class PaymentOption 
+    {
+        public string PaymentMethod {get; set;}
+        public string PaymentChannel {get; set;}
+        public string DisplayName {get; set;}
+        public string Code {get; set;}
     }
 }

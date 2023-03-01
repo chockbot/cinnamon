@@ -8,6 +8,8 @@ public class PurchaseOrderArgs : IInteractor
     public int ScheduleId {get; set;}
     public int NumberOfHeads {get; set;}
     public string? CouponCode {get; set;}
+    public string PaymentMethod {get; set;}
+    public string? PaymentChannel {get; set;}
     public IEnumerable<Enrollee> Students {get; set;}
 
     public class Enrollee

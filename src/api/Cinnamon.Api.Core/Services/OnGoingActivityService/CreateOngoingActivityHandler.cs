@@ -12,15 +12,15 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
     private readonly IActivityData activityData;
     private readonly IOngoingActivitiesData ongoingActivitiesData;
     private readonly IStudentData studentData;
-    private readonly IGetFamilyMembersHandler getFamilyMembersHandler;
+    private readonly IFamilyMemberData familyMemberData;
 
     public CreateOngoingActivityHandler(IActivityData activityData,IOngoingActivitiesData ongoingActivitiesData,
-        IStudentData studentData, IGetFamilyMembersHandler getFamilyMembersHandler)
+        IStudentData studentData, IFamilyMemberData familyMemberData)
     {
         this.activityData = activityData;
         this.ongoingActivitiesData = ongoingActivitiesData;
         this.studentData = studentData;
-        this.getFamilyMembersHandler = getFamilyMembersHandler;
+        this.familyMemberData = familyMemberData;
     }
 
     public AppResult<CreateOngoingActivityResult> Execute(CreateOngoingActivityArgs args)
@@ -63,7 +63,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             }
             var schedule = activityRes.Result.Result.Schedules.First(s => s.Id == args.ScheduleId);
 
-            var validateStudents = await IsFamilyMembersValid(args.Students);
+            var validateStudents = await IsFamilyMembersValid(args.Students, args.CustomerId);
             if(!validateStudents.Succeeded)
             {
                 return AppResult<CreateOngoingActivityResult>.CreateFailed(validateStudents.Error.Exception, validateStudents.Message);
@@ -123,16 +123,16 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
         }
     }
 
-    private async Task<AppResult<bool>> IsFamilyMembersValid(IEnumerable<CreateOngoingActivityArgs.Student> students)
+    private async Task<AppResult<bool>> IsFamilyMembersValid(IEnumerable<CreateOngoingActivityArgs.Student> students, int customerId)
     {
         try
         {
-            var result = await getFamilyMembersHandler.ExecuteAsync(new AccountService.Interactors.GetFamilyMembersArgs {});
-            if(!result.Succeeded || result.Result == null)
+            var result = await familyMemberData.GetFamilyMemberByCustomerId(customerId);
+            if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
             {
                 return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
             }
-            var familyMembers = result.Result.FamilyMembers;
+            var familyMembers = result.Result.Result;
 
             var familyMembersToDictionary = familyMembers.ToDictionary(f => f.Id);
             foreach(var item in students)

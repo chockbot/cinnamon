@@ -6,6 +6,9 @@ public static class ServiceExtenstion
 {
     public static IServiceCollection ExtendServices(this IServiceCollection services)
     {
+        services.AddTransient<Providers.IContainerProvider, Providers.ContainerProvider>();
+        services.AddTransient<Providers.IJsonSerializationProvider, Providers.DefaultJsonSerialization>();
+
         // low level modules
         services.AddTransient<Modules.EmailDriver.Handlers.ISendMailHandler, Modules.EmailDriver.MicrosoftGraph.SendMailByMicrosoftGraph>();
         services.AddTransient<Modules.NotificationDriver.Handler.ISendVerifyEmailHandler, Modules.NotificationDriver.EmailNotification.SendVerifyEmailHandler>();
@@ -96,6 +99,8 @@ public static class ServiceExtenstion
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IRequestPaymentHandler, Services.TransactionService.RequestPaymentHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IFinishTransactionHandler, Services.TransactionService.FinishTransactionHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
@@ -115,6 +120,10 @@ public static class ServiceExtenstion
 
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
+
+        // payment gateways
+        services.AddTransient<Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();
+        services.AddTransient<Services.PaymentGatewayService.Handlers.IVerifyCallbackHandler, Services.PaymentGatewayService.Zendit.VerifyCallbackHandler>();
         
         return services;
     }

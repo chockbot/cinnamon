@@ -9,7 +9,7 @@ public interface IPurchaseOrderRepository
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync(int? count, int? skip);
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync();
     Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, decimal total, decimal convinienceFee,
-        string? coupon, decimal? couponAmount, decimal overallTotal, int status);
+        string? coupon, decimal? couponAmount, decimal overallTotal, int status, string payload);
     Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, decimal? convinienceFee,
         string? coupon, decimal? couponAmount, decimal? overallTotal, int? status);
 }

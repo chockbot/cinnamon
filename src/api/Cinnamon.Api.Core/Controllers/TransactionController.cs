@@ -39,7 +39,9 @@ public class TransactionController : ControllerBase
                         FamilyMemberId = s.FamilyMemberId,
                         Name = s.Name
                     };
-                })
+                }),
+                PaymentChannel = args.PaymentChannel,
+                PaymentMethod = args.PaymentMethod
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -50,7 +52,13 @@ public class TransactionController : ControllerBase
             return new JsonResult(new SubmitPurchaseOrderResult 
                 {
                     IsSuccess = true, 
-                    Result = new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.PurchaseOrderDTO {Id = result.Result.Id}} );
+                    Result = new PaymentOrderDTO {
+                        Action = result.Result.Action,
+                        Id = result.Result.Id,
+                        Url = result.Result.Url
+                    }
+                }
+            );
         }
         catch (Exception ex)
         {
