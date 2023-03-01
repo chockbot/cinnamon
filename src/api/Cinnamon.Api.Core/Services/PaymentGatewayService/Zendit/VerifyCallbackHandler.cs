@@ -3,6 +3,7 @@ using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
+using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Api.Core.Services.PaymentGatewayService.Zendit;
@@ -11,16 +12,26 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
 {
     private readonly ApplicationConfig applicationConfig;
     private readonly IPurchaseOrderData purchaseOrderData;
+    private readonly IFinishTransactionHandler finishTransactionHandler;
 
-    public VerifyCallbackHandler(ApplicationConfig applicationConfig, IPurchaseOrderData purchaseOrderData)
+    public VerifyCallbackHandler(ApplicationConfig applicationConfig, IPurchaseOrderData purchaseOrderData,
+        IFinishTransactionHandler finishTransactionHandler)
     {
         this.applicationConfig = applicationConfig;
         this.purchaseOrderData = purchaseOrderData;
+        this.finishTransactionHandler = finishTransactionHandler;
     }
 
     public AppResult<VerifyCallbackResult> Execute(VerifyCallbackArgs args)
     {
-        throw new NotImplementedException();
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyCallbackResult>.CreateFailed(ex, "An error occured in VerifyCallbackHandler"); 
+        }
     }
 
     public async Task<AppResult<VerifyCallbackResult>> ExecuteAsync(VerifyCallbackArgs args)
@@ -71,7 +82,15 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                 return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("An error occured"), "An error occured");
             }
 
-            return AppResult<VerifyCallbackResult>.CreateFailed(new Exception(), "An error occured in VerifyCallbackHandler");
+            var finishResult = await finishTransactionHandler.ExecuteAsync(new TransactionService.Interactors.FinishTransactionArgs {
+                TransactionId = transactionId,
+            });
+            if(!finishResult.Succeeded || finishResult.Result == null)
+            {
+                return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(finishResult.Message), finishResult.Message);
+            }
+
+            return AppResult<VerifyCallbackResult>.CreateSucceeded(new VerifyCallbackResult {}, "An error occured in VerifyCallbackHandler");
         }
         catch (Exception ex)
         {

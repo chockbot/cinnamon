@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.OngoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
@@ -16,24 +17,19 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly ICustomerData customerData;
     private readonly IHttpContextAccessor httpContext;
     private readonly IGetActivityHandler getActivityHandler;
-    private readonly ICreateOngoingActivityHandler createOngoingActivityHandler;
-    private readonly ICustomerPayedNotificationHandler customerPayedNotificationHandler;
-    private readonly IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler;
     private readonly IRequestPaymentHandler requestPaymentHandler;
+    private readonly IJsonSerializationProvider jsonSerializationProvider;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
-        IGetActivityHandler getActivityHandler, ICustomerData customerData, ICreateOngoingActivityHandler createOngoingActivityHandler,
-        ICustomerPayedNotificationHandler customerPayedNotificationHandler, IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler,
-        IRequestPaymentHandler requestPaymentHandler)
+        IGetActivityHandler getActivityHandler, ICustomerData customerData,
+        IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
         this.getActivityHandler = getActivityHandler;
         this.customerData = customerData;
-        this.createOngoingActivityHandler = createOngoingActivityHandler;
-        this.customerPayedNotificationHandler = customerPayedNotificationHandler;
-        this.makerEnrolledNotificationHandler = makerEnrolledNotificationHandler;
         this.requestPaymentHandler = requestPaymentHandler;
+        this.jsonSerializationProvider = jsonSerializationProvider;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -98,6 +94,17 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             decimal discount = string.IsNullOrEmpty(args.CouponCode) ? 0 : 50;
             decimal overallTotal = (subTotal + fee) - discount;
 
+            // serialize students data to use later
+            var payloadData = new {
+                Students = args.Students.Select(s => {
+                    return new {
+                        Id = s.FamilyMemberId,
+                        Name = s.Name
+                    };
+                })
+            };
+            var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
+
             var result = await purchaseOrderData.CreatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.CreatePurchaseOrderArgs {
                 ActivityId = args.ActivityId,
                 ConvinienceFee = fee,
@@ -107,7 +114,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 OverallTotal = overallTotal,
                 ScheduleId = args.ScheduleId,
                 Total = subTotal + fee,
-                Status = (int)TransactionStatus.Pending
+                Status = (int)TransactionStatus.Pending,
+                Payload = serializedPayload
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -140,65 +148,6 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Id = result.Result.Result.Id,
                 Url = requestPayment.Result.Url
             }, "Successfully request purchase order details");
-
-            // var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs 
-            // {
-            //     ActivityId = args.ActivityId,
-            //     CustomerId = id,
-            //     PurchaseOrderId = result.Result.Result.Id,
-            //     ScheduleId = args.ScheduleId,
-            //     Students = args.Students.Select(s => {
-            //         return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student {
-            //             FamilyMemberId = s.FamilyMemberId,
-            //             Name = s.Name
-            //         };
-            //     })
-            // });
-
-            // if(!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
-            // {
-            //     return AppResult<PurchaseOrderResult>.CreateFailed(
-            //         new ApplicationException(createOngoingActivityRes.Message), createOngoingActivityRes.Message);
-            // }
-
-            // send email notification for customer
-            // var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
-            //     Amount = overallTotal,
-            //     CoachName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
-            //     CustomerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
-            //     Email = customerRes.Result.Result.Email,
-            //     ExperienceName = activityRes.Result.Title,
-            //     PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
-            //     PurchaseDate = DateTime.Now,
-            //     Members = args.Students.Select(s => {
-            //         return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.IncludedMembers {
-            //             Name = s.Name
-            //         };
-            //     })
-            // });
-            // if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
-            // {
-            //     return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(emailNotifyRes.Message), emailNotifyRes.Message);
-            // }
-
-            // send mail notification for maker
-            // var makerNotification = await makerEnrolledNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs {
-            //     Amount = overallTotal,
-            //     Email = $"{activityRes.Result.Owner?.Email}",
-            //     ExperienceName = activityRes.Result.Title,
-            //     MakerName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
-            //     PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
-            //     PurchaseDate = DateTime.Now,
-            //     Students = args.Students.Select(s => {
-            //         return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.IncludedStudents {
-            //             Name = s.Name
-            //         };
-            //     })
-            // });
-            // if(!makerNotification.Succeeded || makerNotification.Result == null)
-            // {
-            //     return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(makerNotification.Message), makerNotification.Message);
-            // }
         }
         catch (Exception ex)
         {
