@@ -19,10 +19,12 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly ICreateOngoingActivityHandler createOngoingActivityHandler;
     private readonly ICustomerPayedNotificationHandler customerPayedNotificationHandler;
     private readonly IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler;
+    private readonly IRequestPaymentHandler requestPaymentHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData, ICreateOngoingActivityHandler createOngoingActivityHandler,
-        ICustomerPayedNotificationHandler customerPayedNotificationHandler, IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler)
+        ICustomerPayedNotificationHandler customerPayedNotificationHandler, IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler,
+        IRequestPaymentHandler requestPaymentHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -31,6 +33,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.createOngoingActivityHandler = createOngoingActivityHandler;
         this.customerPayedNotificationHandler = customerPayedNotificationHandler;
         this.makerEnrolledNotificationHandler = makerEnrolledNotificationHandler;
+        this.requestPaymentHandler = requestPaymentHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -104,7 +107,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 OverallTotal = overallTotal,
                 ScheduleId = args.ScheduleId,
                 Total = subTotal + fee,
-                Status = 0
+                Status = (int)TransactionStatus.Pending
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -118,66 +121,84 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in PurchaseOrderHandler");
             }
 
-            var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs 
-            {
-                ActivityId = args.ActivityId,
+            var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
+                Amount = subTotal + fee,
+                AmountCurrency = "PHP",
                 CustomerId = id,
-                PurchaseOrderId = result.Result.Result.Id,
-                ScheduleId = args.ScheduleId,
-                Students = args.Students.Select(s => {
-                    return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student {
-                        FamilyMemberId = s.FamilyMemberId,
-                        Name = s.Name
-                    };
-                })
+                PaymentChannel = args.PaymentChannel ?? string.Empty,
+                PaymentMethod = args.PaymentMethod,
+                TransactionId = result.Result.Result.Id
             });
 
-            if(!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
+            if(!requestPayment.Succeeded || requestPayment.Result == null)
             {
-                return AppResult<PurchaseOrderResult>.CreateFailed(
-                    new ApplicationException(createOngoingActivityRes.Message), createOngoingActivityRes.Message);
+                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(requestPayment.Message), requestPayment.Message);
             }
+
+            return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {
+                Action = requestPayment.Result.Action,
+                Id = result.Result.Result.Id,
+                Url = requestPayment.Result.Url
+            }, "Successfully request purchase order details");
+
+            // var createOngoingActivityRes = await createOngoingActivityHandler.ExecuteAsync(new OngoingActivityService.Interactors.CreateOngoingActivityArgs 
+            // {
+            //     ActivityId = args.ActivityId,
+            //     CustomerId = id,
+            //     PurchaseOrderId = result.Result.Result.Id,
+            //     ScheduleId = args.ScheduleId,
+            //     Students = args.Students.Select(s => {
+            //         return new OngoingActivityService.Interactors.CreateOngoingActivityArgs.Student {
+            //             FamilyMemberId = s.FamilyMemberId,
+            //             Name = s.Name
+            //         };
+            //     })
+            // });
+
+            // if(!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
+            // {
+            //     return AppResult<PurchaseOrderResult>.CreateFailed(
+            //         new ApplicationException(createOngoingActivityRes.Message), createOngoingActivityRes.Message);
+            // }
 
             // send email notification for customer
-            var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
-                Amount = overallTotal,
-                CoachName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
-                CustomerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
-                Email = customerRes.Result.Result.Email,
-                ExperienceName = activityRes.Result.Title,
-                PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
-                PurchaseDate = DateTime.Now,
-                Members = args.Students.Select(s => {
-                    return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.IncludedMembers {
-                        Name = s.Name
-                    };
-                })
-            });
-            if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
-            {
-                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(emailNotifyRes.Message), emailNotifyRes.Message);
-            }
+            // var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
+            //     Amount = overallTotal,
+            //     CoachName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
+            //     CustomerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
+            //     Email = customerRes.Result.Result.Email,
+            //     ExperienceName = activityRes.Result.Title,
+            //     PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
+            //     PurchaseDate = DateTime.Now,
+            //     Members = args.Students.Select(s => {
+            //         return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.IncludedMembers {
+            //             Name = s.Name
+            //         };
+            //     })
+            // });
+            // if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
+            // {
+            //     return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(emailNotifyRes.Message), emailNotifyRes.Message);
+            // }
 
             // send mail notification for maker
-            var makerNotification = await makerEnrolledNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs {
-                Amount = overallTotal,
-                Email = $"{activityRes.Result.Owner?.Email}",
-                ExperienceName = activityRes.Result.Title,
-                MakerName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
-                PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
-                PurchaseDate = DateTime.Now,
-                Students = args.Students.Select(s => {
-                    return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.IncludedStudents {
-                        Name = s.Name
-                    };
-                })
-            });
-            if(!makerNotification.Succeeded || makerNotification.Result == null)
-            {
-                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(makerNotification.Message), makerNotification.Message);
-            }
-
-            return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {Id = result.Result.Result.Id}, "Successfully create submit purchase order");
+            // var makerNotification = await makerEnrolledNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs {
+            //     Amount = overallTotal,
+            //     Email = $"{activityRes.Result.Owner?.Email}",
+            //     ExperienceName = activityRes.Result.Title,
+            //     MakerName = $"{activityRes.Result.Owner?.FirstName} {activityRes.Result.Owner?.LastName}",
+            //     PayerName = $"{customerRes.Result.Result.FirstName} {customerRes.Result.Result.LastName}",
+            //     PurchaseDate = DateTime.Now,
+            //     Students = args.Students.Select(s => {
+            //         return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.IncludedStudents {
+            //             Name = s.Name
+            //         };
+            //     })
+            // });
+            // if(!makerNotification.Succeeded || makerNotification.Result == null)
+            // {
+            //     return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(makerNotification.Message), makerNotification.Message);
+            // }
         }
         catch (Exception ex)
         {

@@ -96,6 +96,7 @@ public static class ServiceExtenstion
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();
+        services.AddTransient<Services.TransactionService.Handlers.IRequestPaymentHandler, Services.TransactionService.RequestPaymentHandler>();
 
         // dashboard services
         services.AddTransient<Services.DashboardService.Handlers.IGetActivitySchedulesHandler, Services.DashboardService.GetActivityScheduleHandler>();
@@ -115,6 +116,9 @@ public static class ServiceExtenstion
 
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
+
+        // payment gateways
+        services.AddTransient<Services.PaymentGatewayService.Handlers.IGenerateResponseHandler, Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();
         
         return services;
     }
