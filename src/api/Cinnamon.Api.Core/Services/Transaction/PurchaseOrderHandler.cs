@@ -91,8 +91,10 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
             decimal fee = subTotal * .15m;
             // temporart discount amount
-            decimal discount = string.IsNullOrEmpty(args.CouponCode) ? 0 : 50;
-            decimal overallTotal = (subTotal + fee) - discount;
+            //decimal discount = string.IsNullOrEmpty(args.CouponCode) ? 0 : 50;
+            var discount = 0;
+            // decimal overallTotal = (subTotal + fee) - discount;
+            decimal overallTotal = subTotal + fee;
 
             // serialize students data to use later
             var payloadData = new {
