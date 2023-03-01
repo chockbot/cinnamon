@@ -6,6 +6,8 @@ public static class ServiceExtenstion
 {
     public static IServiceCollection ExtendServices(this IServiceCollection services)
     {
+        services.AddTransient<Providers.IContainerProvider, Providers.ContainerProvider>();
+
         // low level modules
         services.AddTransient<Modules.EmailDriver.Handlers.ISendMailHandler, Modules.EmailDriver.MicrosoftGraph.SendMailByMicrosoftGraph>();
         services.AddTransient<Modules.NotificationDriver.Handler.ISendVerifyEmailHandler, Modules.NotificationDriver.EmailNotification.SendVerifyEmailHandler>();
@@ -118,7 +120,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
 
         // payment gateways
-        services.AddTransient<Services.PaymentGatewayService.Handlers.IGenerateResponseHandler, Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();
+        services.AddTransient<Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();
         
         return services;
     }

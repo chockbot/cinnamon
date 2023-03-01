@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Resolver;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
@@ -12,11 +13,13 @@ public class RequestPaymentHandler : IRequestPaymentHandler
 {
     private readonly PGDriverResolver pGDriverResolver;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IContainerProvider containerProvider;
 
-    public RequestPaymentHandler(ApplicationConfig applicationConfig)
+    public RequestPaymentHandler(ApplicationConfig applicationConfig, IContainerProvider containerProvider)
     {
         this.pGDriverResolver = new PGDriverResolver();
         this.applicationConfig = applicationConfig;
+        this.containerProvider = containerProvider;
     }
     
     public AppResult<RequestPaymentResult> Execute(RequestPaymentArgs args)
@@ -47,12 +50,13 @@ public class RequestPaymentHandler : IRequestPaymentHandler
                 paymentChannel = args.PaymentChannel;
             }
 
-            var pgHandler = (IGenerateResponseHandler)pGDriverResolver.ResolvePgDriver("IGenerateResponseHandler", paymentMethod.Driver);
+            var handler = pGDriverResolver.ResolvePgDriver("IGenerateResponseHandler", paymentMethod.Driver);
+            var objType = containerProvider.Resolve(handler);
+            IGenerateResponseHandler pgHandler = (IGenerateResponseHandler)objType;
 
             var result = await pgHandler.ExecuteAsync(new PaymentGatewayService.Interactors.GenerateResponseArgs {
                 Amount = args.Amount,
                 AmountCurrency = args.AmountCurrency,
-                CustomerId = args.CustomerId,
                 MetaDatas = args.MetaDatas,
                 PaymentChannel = paymentChannel,
                 TransactionId = args.TransactionId

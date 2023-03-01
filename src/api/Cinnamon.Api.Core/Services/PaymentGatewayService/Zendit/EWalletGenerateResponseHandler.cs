@@ -61,24 +61,22 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
 
             // generate ids with 15 characters
             var referenceId = "000000000000000".Substring(args.TransactionId.ToString().Length) + args.TransactionId;
-            var customerId = "000000000000000".Substring(args.CustomerId.ToString().Length) + args.CustomerId;
 
             var requestArgs = new RequestPaymentArgs {
-                Amount = args.Amount,
-                Country = "PH",
-                Currency = currency,
-                Reference_Id = referenceId,
-                Customer_Id = customerId,
-                Payment_Method = new RequestPaymentArgs.PaymentMethod {
-                    Type = "EWALLET",
-                    Reusability = "ONE_TIME_USE",
-                    Country = "PH",
-                    EWallet = new RequestPaymentArgs.EWallet {
-                        Channel_Code = paymentChannel,
-                        Channel_Properties = new RequestPaymentArgs.Channel_Properties {
-                            Success_Return_Url = applicationConfig.FrontendUrl.AppendPathSegment("purchase/order").SetQueryParam("purchaseid", args.TransactionId),
-                            Cancel_Return_Url = applicationConfig.FrontendUrl,
-                            Failure_Return_Url = applicationConfig.FrontendUrl
+                amount = args.Amount,
+                country = "PH",
+                currency = currency,
+                reference_id = referenceId,
+                payment_method = new RequestPaymentArgs.PaymentMethod {
+                    type = "EWALLET",
+                    reusability = "ONE_TIME_USE",
+                    country = "PH",
+                    ewallet = new RequestPaymentArgs.EWallet {
+                        channel_code = paymentChannel,
+                        channel_properties = new RequestPaymentArgs.Channel_Properties {
+                            success_return_url = applicationConfig.FrontendUrl.AppendPathSegment("purchase/order").SetQueryParam("purchaseid", args.TransactionId),
+                            cancel_return_url = applicationConfig.FrontendUrl,
+                            failure_return_url = applicationConfig.FrontendUrl
                         }
                     }
                 }
@@ -100,6 +98,11 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
                 Action = result.Status == "REQUIRES_ACTION" ? 1 : 0,
                 Url = result.Actions.First().Url
             }, "Successfully request payment");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = ex.GetResponseJsonAsync();
+            return AppResult<GenerateResponseResult>.CreateFailed(ex, "An error occured in GenerateResponseHandler");
         }
         catch (Exception ex)
         {
