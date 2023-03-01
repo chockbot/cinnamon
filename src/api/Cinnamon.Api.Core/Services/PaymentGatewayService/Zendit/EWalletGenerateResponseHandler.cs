@@ -31,7 +31,7 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
         }
         catch (Exception ex)
         {
-            return AppResult<GenerateResponseResult>.CreateFailed(ex, "An error occured in GenerateResponseHandler");
+            return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler-{ex.Message}");
         }
     }
 
@@ -101,12 +101,12 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
         }
         catch (FlurlHttpException ex)
         {
-            var error = ex.GetResponseJsonAsync();
-            return AppResult<GenerateResponseResult>.CreateFailed(ex, "An error occured in GenerateResponseHandler");
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler-{ex.Message}-{error}");
         }
         catch (Exception ex)
         {
-            return AppResult<GenerateResponseResult>.CreateFailed(ex, "An error occured in GenerateResponseHandler");
+            return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler-{ex.Message}");
         }
     }
 }
