@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
@@ -15,11 +16,15 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
 {
     private readonly ApplicationConfig applicationConfig;
     private readonly IFlurlClient flurlClient;
+    private readonly IJsonSerializationProvider jsonSerializationProvider;
 
-    public EWalletGenerateResponseHandler(ApplicationConfig applicationConfig, IFlurlClientFactory flurlFac)
+    public EWalletGenerateResponseHandler(ApplicationConfig applicationConfig, IFlurlClientFactory flurlFac,
+        IJsonSerializationProvider jsonSerializationProvider)
     {
         this.applicationConfig = applicationConfig;
         var paymentUrl = applicationConfig.Payment.Accounts.First().Settings.First(s => s.Name == "PaymentUrl").Value;
+        flurlClient = flurlFac.Get(paymentUrl);
+        this.jsonSerializationProvider = jsonSerializationProvider;
     }
 
     public AppResult<GenerateResponseResult> Execute(GenerateResponseArgs args)
@@ -100,11 +105,19 @@ public class EWalletGenerateResponseHandler : IGenerateResponseHandler, IEWallet
         }
         catch (FlurlHttpException ex)
         {
-            return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler");
+            var result = await ex.GetResponseJsonAsync<ErrorInfo>();
+            var error = jsonSerializationProvider.Serialize(result);
+            return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler-{ex.Message}-{error}");
         }
         catch (Exception ex)
         {
-            return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler");
+            return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler-{ex.Message}");
         }
+    }
+
+    class ErrorInfo 
+    {
+        public string error_code {get; set;}
+        public string message {get; set;}
     }
 }
