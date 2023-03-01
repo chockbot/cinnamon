@@ -22,7 +22,7 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel, 
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler)
+        int experienceCategoryId, int subCategoryId, string handler, bool IsSetSession, string SessionName)
     {
         try
         {
@@ -68,7 +68,9 @@ public class ActivityRepository : IActivityRepository
                 ExperienceTypeId = experienceTypeId,
                 SubCategoryId = subCategoryId,
                 Handler = handler,
-                IsNew = true
+                IsNew = true,
+                IsSetSession = IsSetSession,
+                SessionName = SessionName
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -175,7 +177,9 @@ public class ActivityRepository : IActivityRepository
                 SkillLevel = skillLevel,
                 SpecificsYouWillProvide = specificsYouWillProvide,
                 Title = title,
-                Handler = handler
+                Handler = handler,
+                IsSetSession = IsSetSession,
+                SessionName = SessionName
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(createdActivityDTO, "Activity successfully created");
@@ -223,7 +227,9 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
-                Handler = activity.Handler
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             };
 
             // address fields
@@ -268,8 +274,6 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName
                     };
                 }).ToList();
             }
@@ -395,6 +399,8 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
                     IsNew                = a.IsNew,
+                    IsSetSession         = a.IsSetSession,
+                    SessionName          = a.SessionName
                 };
 
                 // address fields
@@ -443,8 +449,6 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             PerUnit2 = s.PerUnit2,
-                            IsSetSession = s.IsSetSession,
-                            SessionName = s.SessionName
                         };
                     }).ToList();
                 }
@@ -536,7 +540,9 @@ public class ActivityRepository : IActivityRepository
                     CreatedBy = a.CreatedBy,
                     ExperienceTypeId = a.ExperienceTypeId,
                     MapDetails = a.MapDetails,
-                    Handler = a.Handler
+                    Handler = a.Handler,
+                    IsSetSession = a.IsSetSession,
+                    SessionName = a.SessionName
                 };
             });
 
@@ -587,7 +593,9 @@ public class ActivityRepository : IActivityRepository
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
-                Handler = activity.Handler
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             };
 
             // address fields
@@ -631,8 +639,6 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName
                     };
                 }).ToList();
             }
@@ -731,7 +737,9 @@ public class ActivityRepository : IActivityRepository
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
-                Handler = activity.Handler
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             };
 
             // address fields
@@ -775,8 +783,6 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName
                     };
                 }).ToList();
             }
@@ -840,7 +846,7 @@ public class ActivityRepository : IActivityRepository
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, string? subdivision, string? region,
         string? barangay, string? postalcode,string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4, 
-        string? searchtag5, int? experienceCategoryId, int? subCategoryId)
+        string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName)
     {
         try
         {
@@ -1017,7 +1023,9 @@ public class ActivityRepository : IActivityRepository
                 SubTitle = activity.Subtitle,
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 SubCategoryId = activity.SubCategoryId ?? 0,
-                Handler = activity.Handler
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             }, "Successfully updated activity details");
 
         }

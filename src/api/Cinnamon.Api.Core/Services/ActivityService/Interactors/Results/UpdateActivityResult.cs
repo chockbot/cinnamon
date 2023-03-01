@@ -28,6 +28,8 @@ public class UpdateActivityResult
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
     public string Handler {get; set;}
+    public bool IsSetSession { get; set; }
+    public string SessionName { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     

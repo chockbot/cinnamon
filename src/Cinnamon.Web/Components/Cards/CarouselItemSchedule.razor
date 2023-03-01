@@ -14,11 +14,11 @@
     <div style="font-size:0.7rem">
      @ScheduleModel.UnitPrice @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
     </div>
-    @if(ScheduleModel.isSetSession == true)
+    @if(ActivityModel.IsSetSession == true)
     {
         <br />
         <div style="font-size:0.7rem">
-            Consume in - @ScheduleModel.SessionName
+            Consume in - @ActivityModel.SessionName
         </div>
     }
     <br />
@@ -50,7 +50,8 @@
 @code {
     [Parameter]
     public ActivitySchedule ScheduleModel { get; set; }
-
+    [Parameter]
+    public Activity ActivityModel { get; set; }
     [Parameter]
     public int ActivityId { get; set; }
 

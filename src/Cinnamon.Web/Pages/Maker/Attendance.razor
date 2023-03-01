@@ -248,29 +248,27 @@
                                  PriceUnit1 = e.PriceUnit1,
                                  PriceUnit2 = e.PriceUnit2,
                                  UnitPrice = e.UnitPrice,
-                                 isSetSession = e.isSetSession,
-                                 SessionName = e.SessionName
                              };
                          }).ToList(),
                     };
             }
-            var schedule = activity.ActivitySchedules.FirstOrDefault();
-            //Set Session Expiration
-            if (schedule != null && schedule.isSetSession == true)
-            {
-                //Check if first attendance
-                if (item.SessionsAttended == 1)
-                {
-                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                        {
-                            Id = item.StudentId,
-                            ScheduleId = item.ScheduleId,
-                            SessionName = schedule.SessionName,
-                            ExpirationStartDate = DateTime.UtcNow,
-                            ExpirationEndDate = item.ExpirationDateEnd
-                        });
-                }
-            }
+            //var schedule = activity.ActivitySchedules.FirstOrDefault();
+            ////Set Session Expiration
+            //if (schedule != null && schedule.isSetSession == true)
+            //{
+            //    //Check if first attendance
+            //    if (item.SessionsAttended == 1)
+            //    {
+            //        await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+            //            {
+            //                Id = item.StudentId,
+            //                ScheduleId = item.ScheduleId,
+            //                SessionName = schedule.SessionName,
+            //                ExpirationStartDate = DateTime.UtcNow,
+            //                ExpirationEndDate = item.ExpirationDateEnd
+            //            });
+            //    }
+            //}
         }
     }
 
@@ -370,29 +368,27 @@
                              Price = e.Price,
                              PriceUnit1 = e.PriceUnit1,
                              PriceUnit2 = e.PriceUnit2,
-                             UnitPrice = e.UnitPrice,
-                             isSetSession = e.isSetSession,
-                             SessionName = e.SessionName
+                             UnitPrice = e.UnitPrice
                          };
                      }).ToList(),
                 };
         }
-        var schedule = activity.ActivitySchedules.FirstOrDefault();
-        if (schedule != null && schedule.isSetSession == true)
-        {
-            //Check if first attendance
-            if (studentAttendance.SessionsAttended == 1)
-            {
-                await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                    {
-                        Id = studentAttendance.StudentId,
-                        ScheduleId = studentAttendance.ScheduleId,
-                        SessionName = schedule.SessionName,
-                        ExpirationStartDate = DateTime.UtcNow,
-                        ExpirationEndDate = studentAttendance.ExpirationDateEnd
-                    });
-            }
-        }
+        //var schedule = activity.ActivitySchedules.FirstOrDefault();
+        //if (schedule != null && schedule.isSetSession == true)
+        //{
+        //    //Check if first attendance
+        //    if (studentAttendance.SessionsAttended == 1)
+        //    {
+        //        await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+        //            {
+        //                Id = studentAttendance.StudentId,
+        //                ScheduleId = studentAttendance.ScheduleId,
+        //                SessionName = schedule.SessionName,
+        //                ExpirationStartDate = DateTime.UtcNow,
+        //                ExpirationEndDate = studentAttendance.ExpirationDateEnd
+        //            });
+        //    }
+        //}
     }
     private void SortByName()
     {

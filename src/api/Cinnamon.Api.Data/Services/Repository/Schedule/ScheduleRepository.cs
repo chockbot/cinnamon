@@ -17,7 +17,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> CreateSchedule(int ActivityId, string Name, string datetime, 
                             decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                            int PerUnit2, string PriceUnit2, bool isSetSession, string SessionName)
+                            int PerUnit2, string PriceUnit2)
         {
             try
             {
@@ -38,8 +38,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = PriceUnit1,
                     PerUnit2 = PerUnit2,
                     PriceUnit2 = PriceUnit2,
-                    IsSetSession = isSetSession, 
-                    SessionName = SessionName
                 });
 
                 if(!result.Succeeded)
@@ -59,8 +57,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
-                    isSetSession = result.Result.IsSetSession,
-                    SessionName = result.Result.SessionName,
                 },
                 result.Message);
             }
@@ -93,8 +89,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        IsSetSession = s.isSetSession,
-                        SessionName = s.SessionName,
                     };
                 });
 
@@ -116,8 +110,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        isSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
                     };
                 });
 
@@ -186,8 +178,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = x.PriceUnit1,
                         PerUnit2 = x.PerUnit2,
                         PriceUnit2 = x.PriceUnit2,
-                        isSetSession = x.IsSetSession,
-                        SessionName = x.SessionName,
                     };
                 });
 
@@ -224,8 +214,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
-                    isSetSession = result.Result.IsSetSession,
-                    SessionName = result.Result.SessionName
                 },
                 result.Message); 
             }
@@ -256,8 +244,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         ActivityId = s.ActivityId,
-                        IsSetSession = s.isSetSession, 
-                        SessionName = s.SessionName
                     };
                 });
 
@@ -280,8 +266,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            isSetSession = s.IsSetSession,
-                            SessionName = s.SessionName
                         };
                     }), "Successfully update many schedules"
                 );
@@ -294,7 +278,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> UpdateSchedule(int ScheduleId, string Name, string datetime, 
                                     decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                                    int PerUnit2, string PriceUnit2, bool isSetSession, string SessionName)
+                                    int PerUnit2, string PriceUnit2)
         {
             try
             {
@@ -316,8 +300,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = PriceUnit1,
                     PerUnit2 = PerUnit2,
                     PriceUnit2 = PriceUnit2,
-                    IsSetSession = isSetSession,
-                    SessionName = SessionName
                 });
 
                 if (!result.Succeeded)
@@ -337,8 +319,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
-                    isSetSession = result.Result.IsSetSession,
-                    SessionName = result.Result.SessionName
                 },
                 result.Message);
             }

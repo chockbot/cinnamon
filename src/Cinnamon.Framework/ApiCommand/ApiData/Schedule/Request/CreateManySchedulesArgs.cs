@@ -22,7 +22,5 @@ public class CreateManySchedulesArgs
         public string PriceUnit1 { get; set; } = "Head";
         public int PerUnit2 { get; set; } = 1;
         public string PriceUnit2 { get; set; } = "Session";
-        public bool isSetSession { get; set; } = false;
-        public string SessionName { get; set; } 
     }    
 }

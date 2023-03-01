@@ -57,10 +57,7 @@ public class DashboardController : ControllerBase
                             ScheduleDescription = s.ScheduleDescription,
                             ScheduleId = s.ScheduleId,
                             ScheduleTitle = s.ScheduleTitle,
-                            Title = s.Title,
-                            isSetSession = s.isSetSession,
-                            SessionName = s.SessionName
-                            
+                            Title = s.Title
                         };
                     }) 
                 }

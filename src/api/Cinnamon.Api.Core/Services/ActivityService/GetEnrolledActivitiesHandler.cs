@@ -114,6 +114,8 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                         SearchTags = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
                         IsPublished = e.IsPublished,
                         CreatedBy = e.CreatedBy,
+                        IsSetSession = e.IsSetSession,
+                        SessionName = e.SessionName,
                         ActivitySchedules = e.Schedules != null ? e.Schedules.Select(s => {
                             return new GetEnrolledActivitiesResult.ActivitySchedule
                             {
@@ -126,9 +128,6 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
                                 Id = s.Id,
-                                IsSetSession = s.IsSetSession,
-                                SessionName = s.SessionName
-                                
                             };
                         }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivitySchedule>(),
                         Images = e.Images != null ? e.Images.OrderBy(i => i.Order).Select(i => {

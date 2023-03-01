@@ -28,6 +28,8 @@ public class CreateActivityArgs : IInteractor
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
+    public bool IsSetSession { get; set; } = false;
+    public string SessionName { get; set; } = string.Empty;
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     
@@ -42,7 +44,5 @@ public class CreateActivityArgs : IInteractor
         public string PriceUnit1 {get; set;}
         public int PerUnit2 {get; set;}
         public string PriceUnit2 {get; set;}
-        public bool isSetSession { get; set; }
-        public string SessionName { get; set;}
     }
 }

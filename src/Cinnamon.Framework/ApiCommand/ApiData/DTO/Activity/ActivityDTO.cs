@@ -42,6 +42,8 @@ public class ActivityDTO
     public string ExperienceCategory { get; set; }
     public string SubCategory { get; set; }
     public bool IsNew { get; set; }
+    public bool IsSetSession { get; set; }
+    public string SessionName { get; set; }
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }

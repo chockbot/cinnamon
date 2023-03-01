@@ -42,6 +42,8 @@ public class GetAllActivitiesResult
         public int CreatedBy { get; set; }
         public string MapDetails { get; set; }
         public string Handler {get; set;}
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
         public IEnumerable<string> SearchTags { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
@@ -62,8 +64,6 @@ public class GetAllActivitiesResult
             public string PriceUnit1 { get; set; }
             public int PerUnit2 { get; set; }
             public string PriceUnit2 { get; set; }
-            public bool isSetSession { get; set; }
-            public string SessionName { get; set; } 
         }
 
         public class ActivityImage

@@ -41,7 +41,7 @@
                         </div>
                 </div>
                 
-                @if (Activity.ActivitySchedules != null)
+                @*@if (Activity.ActivitySchedules != null)
                 {
                     var activity = Activity.ActivitySchedules.Where(s => s.Id == item.ScheduleId).FirstOrDefault();
                     if (activity != null && activity.isSetSession == true)
@@ -54,7 +54,7 @@
                             </p>
                         </div>
                     }
-                }
+                }*@
                 <div class="xp-body-item">
                     <p class="label">Dates Attended</p>
                     <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ShowModal(item)" class="btn-update">
