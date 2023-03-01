@@ -7,6 +7,7 @@ public static class ServiceExtenstion
     public static IServiceCollection ExtendServices(this IServiceCollection services)
     {
         services.AddTransient<Providers.IContainerProvider, Providers.ContainerProvider>();
+        services.AddTransient<Providers.IJsonSerializationProvider, Providers.DefaultJsonSerialization>();
 
         // low level modules
         services.AddTransient<Modules.EmailDriver.Handlers.ISendMailHandler, Modules.EmailDriver.MicrosoftGraph.SendMailByMicrosoftGraph>();
