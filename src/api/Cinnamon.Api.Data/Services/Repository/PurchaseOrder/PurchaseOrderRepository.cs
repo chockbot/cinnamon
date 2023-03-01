@@ -86,7 +86,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CustomerId = customerId,
                 OverallTotal = overallTotal,
                 ScheduleId = scheduleId,
-                Total = total
+                Total = total,
+                Status = status
             }, "Successfully created purchase order");
         }
         catch (Exception ex)
@@ -115,7 +116,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Id = p.Id,
                     OverallTotal = p.OverallTotal,
                     ScheduleId = p.ScheduleId,
-                    Total = p.Total
+                    Total = p.Total,
+                    Status = p.Status
                 };
             });
 
@@ -147,7 +149,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Id = p.Id,
                     OverallTotal = p.OverallTotal,
                     ScheduleId = p.ScheduleId,
-                    Total = p.Total
+                    Total = p.Total,
+                    Status = p.Status
                 };
             });
 
@@ -178,7 +181,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Id = result.Result.Id,
                 OverallTotal = result.Result.OverallTotal,
                 ScheduleId = result.Result.ScheduleId,
-                Total = result.Result.Total
+                Total = result.Result.Total,
+                Status = result.Result.Status
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -244,7 +248,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CustomerId = updated.CustomerId,
                 OverallTotal = updated.OverallTotal,
                 ScheduleId = updated.ScheduleId,
-                Total = updated.Total
+                Total = updated.Total,
+                Status = updated.Status
             }, "Successfully updated purchase order");
         }
         catch (Exception ex)
