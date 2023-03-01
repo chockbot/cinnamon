@@ -245,10 +245,10 @@
             {
             @if (activity.ExperienceTypeId == 1)
             {
-                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.Address1 + "+" + activity.Address2 + "+" + activity.District + "+" + activity.City;
+                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.Address1 + "+" + activity.Address2 + "+" + activity.District + "+" + activity.CityName;
                 <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
             <span class="mt-3">
-                 @(activity.Address1 + ", " + activity.Barangay + ", " + activity.City + ", " + activity.Region)
+                 @(activity.Address1 + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName)
             </span>
             }
             else
@@ -379,9 +379,12 @@
                     Address2 = result.Address2,
                     District = result.District,
                     City = result.City,
+                    CityName = result.CityName,
                     Subdivision = result.Subdivision,
                     Barangay = result.Barangay,
+                    BarangayName = result.BarangayName,
                     Region = result.Region,
+                    RegionName = result.RegionName,
                     PostalCode = result.PostalCode,
                     SpecificsYouWillProvide = result.SpecificsYouWillProvide,
                     CustomerBringWithThem = result.CustomerBringWithThem,
