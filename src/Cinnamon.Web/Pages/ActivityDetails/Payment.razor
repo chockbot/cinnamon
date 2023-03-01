@@ -573,7 +573,7 @@
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
-                payErrorMessage = "An error occured. Please try again later.";
+                payErrorMessage = $"{submit.Message}-{submit.Result?.ErrorInfo?.Message}";
                 isShowPayErrorMessage = true;
                 isLoading = false;
                 payButtonStyle = "width:100% !important;font-weight:700;";
