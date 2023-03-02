@@ -5,6 +5,7 @@ const imageHelper = {
 
         el.classList.remove("invalid");
         $(el).attr("data-name", filename);
+        $(el).attr("data-changed", true);
         el.addEventListener("load", () => URL.revokeObjectURL(url), { once: true });
         el.src = url;
     },
