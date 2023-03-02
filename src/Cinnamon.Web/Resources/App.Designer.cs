@@ -673,8 +673,9 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is the title of your experience that people will see first! Make it informative and 
-        ///distinctive so that your customers may understand what you are offering.
+        ///   Looks up a localized string similar to This is the title of your experience that people will see first! Make it 
+        ///informative and distinctive so that your customers may understand 
+        ///what you are offering.
         /// </summary>
         internal static string nameThatExperienceParagraph {
             get {
@@ -1097,7 +1098,9 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Give detailed plans from beginning to end, not a bunch of ideas or options..
+        ///   Looks up a localized string similar to - Give detailed plans from beginning to end, not a bunch of ideas or 
+        ///options.
+        ///.
         /// </summary>
         internal static string whatClientsGoingToDoItem1 {
             get {
@@ -1106,7 +1109,8 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to - Describe what makes your experience unique—something that guests wouldn&apos;t do on their own..
+        ///   Looks up a localized string similar to - Describe what makes your experience unique—something that 
+        ///guests wouldn&apos;t do on their own..
         /// </summary>
         internal static string whatClientsGoingToDoItem2 {
             get {

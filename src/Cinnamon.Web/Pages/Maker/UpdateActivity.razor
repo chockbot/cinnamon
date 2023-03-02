@@ -57,13 +57,12 @@
                 <div style="float:right;">
                     @if(currentIndex > 0) 
                     {
-                        <Button Class="m-width-100" Type="ButtonType.Button" id="prevBtn" @onclick="() => OnBackClick()" 
-                            style="border:none;background-color:transparent">Back</Button>
+                        <Button class="btn-back" Type="ButtonType.Button" id="prevBtn" @onclick="() => OnBackClick()">Back</Button>
                     }
                     <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" 
                         id="nextBtn" Loading="isLoading" Disabled="isLoading">
                         <LoadingTemplate>
-                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Please Wait
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
                         </LoadingTemplate>
                         <ChildContent>
                             @(currentIndex == 2 ? "Publish" : "Continue")

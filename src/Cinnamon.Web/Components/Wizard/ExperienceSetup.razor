@@ -13,15 +13,19 @@
         }
     </ul>
 </div>
+
 <div class="content-creation activity-creation-experience-setup-wrapper col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
               @Resources.App.createExperienceSchedule 
             </label>
-            <p>
-                @Resources.App.createExperienceDescription
-            </p>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="label-paragraph">
+                Breakdown your experience by type, age group and time, this will be reflected in your experience details for customers to   and book.
+            </label>
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             @foreach (var schedule in Model.Activity.ActivitySchedules)
@@ -59,12 +63,16 @@
                 Include specifics on what things you will provide 
                 during your experience (optional)
             </label>
-            <p>
-                This can be training equipment, free notebook, free uniform or anything that 
-                you would want to share to your customers to make their experience unique.
-            </p>
+            <br/>
+            <label class="label-paragraph">
+                This can be training equipment, free notebook, free uniform or 
+                anything that you would want to share to your customers to make 
+                their experience unique.
+            </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <RichTextEdit @ref="EditSpecificProvide"
                             Theme="RichTextEditTheme.Snow"
@@ -93,14 +101,17 @@
                What should your customers bring 
                with them? (optional)
             </label>
-            <p>
-                Should your customer have their own tablet or computer for their online 
-                experience? How about their own water bottle for their face to face experience?
-                Describe the things that they need to prepare and bring for the best experience 
-                possible.
-            </p>
+            <br />
+            <label class="label-paragraph">
+                Should your customer have their own tablet or computer for their
+                online experience? How about their own water bottle for their face to
+                face experience? Describe the things that they need to prepare and 
+                bring for the best experience possible.
+            </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <RichTextEdit @ref="EditCustomerBring"
                             Theme="RichTextEditTheme.Snow"
@@ -128,11 +139,16 @@
             <label class="fw-bold title-description">
                 Your requirements to your customers.
             </label>
-            <p>
-                Remember that the person who books your experience may also book spots for other people. Put them here if there are strict rules about age, skill level, or certifications.
-            </p>
+            <br />
+            <label class="label-paragraph">
+                Remember that the person who books your experience may also 
+                book spots for other people. Put them here if there are strict rules
+                about age, skill level, or certification
+            </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <label class="fw-bold">
                 Minimum Age:
             </label>   
@@ -181,7 +197,9 @@
                 Additional requirements (optional):
             </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <textarea maxlength="200" @bind="Model.Activity.AdditionalRequirements"></textarea>
                 <label>200 Max</label>
@@ -197,7 +215,9 @@
                 @Resources.App.experienceCategory
             </label>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <select @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
                 <option disabled selected>Select Category</option>
                 @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
@@ -214,7 +234,9 @@
                 Sub-category
             </label>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             @if (Model.Activity.ExperienceCategoryId != 0)
             {
                 <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
@@ -233,13 +255,16 @@
             }
         </div>
     </div>
+
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 Sub-category missing? You can suggest!
             </label>
         </div>
-        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="tagsinputcontainer col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
             <input type="text" class="form-control" @onblur="OnSuggestSubCategoryLeave" 
                 placeholder="Sub category name" size="@SearchTagLength" @bind-value="SearchTag">
             <label>Suggested sub-category is subject for approval</label>
@@ -251,12 +276,15 @@
             <label class="fw-bold title-description">
                 Post pictures!
             </label>
-            <p>
-                Pictures must have:<br/>
-                -Different angles and details, including photos of people at work<br/>
-                -Innocent, yet illuminating, snippets from the experience<br/>
-                -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br/>
-            </p>
+            <br />
+            <label class="label-paragraph">
+                Pictures must have:
+            </label>
+                <ul>
+                    <li class="label-paragraph">Different angles and details, including photos of people at work</li>
+                    <li class="label-paragraph">Innocent, yet illuminating, snippets from the experience</li>
+                    <li class="label-paragraph">Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks</li>
+                </ul>
         </div>
         <div class="mb-3 px-0">
             <label for="photo-upload" style="cursor: pointer;" >
@@ -388,6 +416,7 @@
             <p class="activity-image-photos-error-message">@imagesErrorMessage</p>
         }
     </div>
+
     <div class="row mrow">
         <div class="col-lg-4 col-md-4 col-sm-8 col-8 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
