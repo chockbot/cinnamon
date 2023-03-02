@@ -29,7 +29,6 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
         }
         catch (FlurlHttpException ex)
         {
-            var error = await ex.GetResponseJsonAsync();
             return AppResult<AddActivityExpirationResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)

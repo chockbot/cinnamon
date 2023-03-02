@@ -12,6 +12,9 @@ public class SubmitPurchaseOrderArgs
     public int NumberOfHeads {get; set;}
     public string? CouponCode {get; set;}
     [Required]
+    public string PaymentMethod {get; set;}
+    public string? PaymentChannel {get; set;}
+    [Required]
     public IEnumerable<Enrollee> Students {get; set;}
 
     public class Enrollee 

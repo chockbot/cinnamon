@@ -785,6 +785,10 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<decimal>("OverallTotal")
                         .HasColumnType("numeric");
 
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("ScheduleId")
                         .HasColumnType("integer");
 

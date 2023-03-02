@@ -43,8 +43,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await jsRuntime.InvokeVoidAsync("MyLib.Track", "Payment Confirmation Page Loaded");
-
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var purchaseSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("purchaseid", out var purchaseIdString);
 
@@ -123,5 +121,13 @@
             },
             Token = token
         };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Payment Confirmation Page Loaded");
+        }
     }
 }

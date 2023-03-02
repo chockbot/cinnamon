@@ -94,7 +94,7 @@ public class PurchaseOrderController : ControllerBase
         try
         {
             var result = await purchaseOrderRepository.Create(args.ActivityId, args.ScheduleId, args.CustomerId,
-                args.Total, args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, args.Status);
+                args.Total, args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, args.Status, args.Payload ?? string.Empty);
 
             if (!result.Succeeded || result.Result == null)
             {
