@@ -31,7 +31,7 @@
             <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
                 <div class="col-lg-5 col-md-5 col-sm-12 col-12">
                     <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
-                    <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange"></CarouselItemSchedule>
+                    <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange" ActivityModel="activity"></CarouselItemSchedule>
                 </div>
                 <hr />
                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
@@ -296,6 +296,8 @@
     [Parameter]
     public int ScheduleId { get; set; }
 
+    public Activity activity { get; set; }
+
     private PurchaseModel Model {get; set;}
 
     private SchedulesModal ModalSched { get; set; }
@@ -366,7 +368,72 @@
             return;
         }
 
-        var activity = activityRes.Result.Result;
+        var result = activityRes.Result.Result;
+        activity = new Activity
+            {
+                ActivityId = result.ActivityId,
+                ExperienceTypeId = result.ExperienceTypeId,
+                ExperienceCategoryId = result.ExperienceCategoryId,
+                SubCategoryId = result.SubCategoryId,
+                Title = result.Title,
+                Description = result.Description,
+                Price = result.Price,
+                ScheduleIndicator = result.ScheduleIndicator,
+                Remarks = result.Remarks,
+                IsPublished = result.IsPublished,
+                Address1 = result.Address1,
+                Address2 = result.Address2,
+                District = result.District,
+                City = result.City,
+                CityName = result.CityName,
+                Subdivision = result.Subdivision,
+                Barangay = result.Barangay,
+                BarangayName = result.BarangayName,
+                Region = result.Region,
+                RegionName = result.RegionName,
+                PostalCode = result.PostalCode,
+                SpecificsYouWillProvide = result.SpecificsYouWillProvide,
+                CustomerBringWithThem = result.CustomerBringWithThem,
+                AdditionalRequirements = result.AdditionalRequirements,
+                ActivityLevel = result.ActivityLevel,
+                SkillLevel = result.SkillLevel,
+                MinimumAge = result.MinimumAge,
+                CanAdultsJoin = result.CanAdultsJoin,
+                CreatedBy = result.CreatedBy,
+                MapDetails = result.MapDetails,
+                IsSetSession = result.IsSetSession,
+                SessionName = result.SessionName,
+                ActivitySchedules = result.ActivitySchedules.Select(e =>
+                {
+                    return new ActivitySchedule
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        DateTime = e.DateTime,
+                        PerUnit1 = e.PerUnit1,
+                        PerUnit2 = e.PerUnit2,
+                        Price = e.Price,
+                        PriceUnit1 = e.PriceUnit1,
+                        PriceUnit2 = e.PriceUnit2,
+                        UnitPrice = e.UnitPrice
+                    };
+                }).ToList(),
+                Images = result.Images.Select(i =>
+                {
+                    return new ActivityImage
+                    {
+                        Id = i.Id,
+                        ImageSrc = i.ImageSrc,
+                        Name = i.Name
+                    };
+                }).ToList(),
+                Owner = result.Owner != null ? new CustomerProfile
+                {
+                    // map only required fields
+                    Id = result.Owner.Id,
+                    Handler = result.Owner.Handler
+                } : null
+            };
         var selectedSchedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
         if(selectedSchedule == null)
         {

@@ -4,44 +4,45 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
-    <span class="fw-bold">@ScheduleModel.Name</span>
-    <br />
-    <div>
-        @ScheduleModel.DateTime
-    </div>
-    <br />
-    <div style="font-size:0.7rem">
-     @ScheduleModel.UnitPrice @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
-    </div>
-    @if(ActivityModel.IsSetSession == true)
-    {
+@if(ActivityModel != null){
+    <div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
+        <span class="fw-bold">@ScheduleModel.Name</span>
+        <br />
+        <div>
+            @ScheduleModel.DateTime
+        </div>
         <br />
         <div style="font-size:0.7rem">
-            Consume in - @ActivityModel.SessionName
+            @ScheduleModel.UnitPrice @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
         </div>
-    }
-    <br />
-    @if (AuthState.User.Identity.IsAuthenticated)
-    {
-        if (ButtonType == ScheduleButtonType.Choose)
+        @if (ActivityModel.IsSetSession == true)
         {
-            <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" style="width:fit-content;padding: 5px 10px">Choose</button>
+            <br />
+            <div style="font-size:0.7rem">
+                Consume in - @ActivityModel.SessionName
+            </div>
         }
-        else{
-            <button class="btn-primary shadow-sm border-0 rounded" style="width:fit-content;padding: 5px 10px" @onclick="OnClickChange">
-                Change
-            </button>
+        <br />
+        @if (AuthState.User.Identity.IsAuthenticated)
+        {
+            if (ButtonType == ScheduleButtonType.Choose)
+            {
+                <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" style="width:fit-content;padding: 5px 10px">Choose</button>
+            }
+            else
+            {
+                <button class="btn-primary shadow-sm border-0 rounded" style="width:fit-content;padding: 5px 10px" @onclick="OnClickChange">
+                    Change
+                </button>
+            }
         }
-    }
-    else
-    {
-        <button class="btn-primary rounded border-0 shadow-sm" @onclick="() => modalLoginRef?.Show()" style="width:fit-content;padding: 5px 10px">Choose</button>
-    }
-    
-</div>
+        else
+        {
+            <button class="btn-primary rounded border-0 shadow-sm" @onclick="() => modalLoginRef?.Show()" style="width:fit-content;padding: 5px 10px">Choose</button>
+        }
 
-
+    </div>
+}
 @if (!AuthState.User.Identity.IsAuthenticated)
 {
     <ModalLogin @ref="modalLoginRef" ReturnUrl="@($"/Payment/{ActivityId}/{ScheduleModel.Id}")"></ModalLogin>

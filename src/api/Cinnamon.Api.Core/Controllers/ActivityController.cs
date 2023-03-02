@@ -114,7 +114,7 @@ public class ActivityController : ControllerBase
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName,
+                SessionName = args.SessionName ?? string.Empty,
             });
 
             if(!result.Succeeded || result.Result == null)

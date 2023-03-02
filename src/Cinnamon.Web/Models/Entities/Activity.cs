@@ -53,8 +53,8 @@ public class Activity
     public string ExperienceType { get; set; }
     public string ExperienceCategory { get; set; }
     public string SubCategory { get; set; }
-    public bool IsSetSession { get; set; } = false;
-    public string SessionName { get; set; } = string.Empty;
+    public bool IsSetSession { get; set; }
+    public string SessionName { get; set; }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
     public IList<ActivityImage> Images {get; set;}
