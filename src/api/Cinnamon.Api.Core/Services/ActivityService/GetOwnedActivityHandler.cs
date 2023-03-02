@@ -88,6 +88,8 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName,
                 ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityResult.ActivitySchedule {
                         Id = s.Id,
@@ -99,9 +101,6 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        isSetSession = s.isSetSession,
-                        SessionName = s.SessionName
-                        
                     };
                 }) : Enumerable.Empty<GetOwnedActivityResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {

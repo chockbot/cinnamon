@@ -30,6 +30,8 @@ public class UpdateActivityArgs
     public string? SkillLevel {get; set;}
     public int? MinimumAge {get; set;}
     public bool? CanAdultsJoin {get; set;}
+    public bool? IsSetSession { get; set; }
+    public string? SessionName { get; set; }
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<UpdatedSchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int>? DeletedScheduleIds {get; set;}
@@ -47,7 +49,5 @@ public class UpdateActivityArgs
         public string? PriceUnit1 {get; set;}
         public int? PerUnit2 {get; set;}
         public string? PriceUnit2 {get; set;}
-        public bool? isSetSession { get; set;}
-        public string? SessionName { get; set;}
     }
 }

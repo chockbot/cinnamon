@@ -159,7 +159,7 @@
                         @if (x <= 3)
                         {
                             <div class="col-md-3 col-lg-3 col-sm-6 col-6">
-                                <CarouselItemSchedule ScheduleModel="@activity.ActivitySchedules.ElementAt(x)" ActivityId="@activity.ActivityId"></CarouselItemSchedule> 
+                                <CarouselItemSchedule ScheduleModel="@activity.ActivitySchedules.ElementAt(x)" ActivityId="@activity.ActivityId" ActivityModel="activity"></CarouselItemSchedule> 
                             </div>
                         }
                 else
@@ -325,7 +325,7 @@
     </div>
 </div>
 @* commented first for migration *@
- <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.ToList()"></SchedulesModal> 
+ <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.ToList()" ActivityModel="activity"></SchedulesModal> 
 
 <!--Beta Alert-->
 @*<BetaAlert></BetaAlert>*@
@@ -395,6 +395,8 @@
                     CanAdultsJoin = result.CanAdultsJoin,
                     CreatedBy = result.CreatedBy,
                     MapDetails = result.MapDetails,
+                    IsSetSession = result.IsSetSession,
+                    SessionName = result.SessionName,
                     ActivitySchedules = result.ActivitySchedules.Select(e =>
                     {
                         return new ActivitySchedule
@@ -407,10 +409,7 @@
                             Price = e.Price,
                             PriceUnit1 = e.PriceUnit1,
                             PriceUnit2 = e.PriceUnit2,
-                            UnitPrice = e.UnitPrice,
-                            isSetSession = e.isSetSession,
-                            SessionName = e.SessionName
-                            
+                            UnitPrice = e.UnitPrice
                         };
                     }).ToList(),
                     Images = result.Images.Select(i =>

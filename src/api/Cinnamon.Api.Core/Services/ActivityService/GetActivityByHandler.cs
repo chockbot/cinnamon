@@ -87,6 +87,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                 Title = activity.Title,
                 CreatedBy = activity.CreatedBy,
                 MarDetails = activity.MapDetails,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,
@@ -97,9 +99,7 @@ public class GetActivityByHandler : IGetActivityByHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        isSetSession = s.IsSetSession, 
-                        SessionName = s.SessionName 
+                        UnitPrice = s.UnitPrice
                     };
                 }) : Enumerable.Empty<GetActivityByHandlerResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {

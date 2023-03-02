@@ -174,8 +174,6 @@
                     ScheduleDescription = s.ScheduleDescription,
                     ScheduleId = s.ScheduleId,
                     ScheduleTitle = s.ScheduleTitle,
-                    isSetSession = s.isSetSession,
-                    SessionName = s.SessionName
                 };
             }));
 
@@ -225,38 +223,20 @@
         }, Model.Token);
         foreach (var item in Model.FilteredAttendance)
         {
-            //Check if Session is not null
-            var activityResult = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
-                {
-                    IncludeAtivitySchedules = true,
-                });
+            //Get Activity Details
+            var activityResult = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
             if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
             {
                 var result = activityResult.Result.Result;
                 activity = new Activity
                     {
-                        ActivitySchedules = result.ActivitySchedules.Select(e =>
-                         {
-                             return new ActivitySchedule
-                             {
-                                 Id = e.Id,
-                                 Name = e.Name,
-                                 DateTime = e.DateTime,
-                                 PerUnit1 = e.PerUnit1,
-                                 PerUnit2 = e.PerUnit2,
-                                 Price = e.Price,
-                                 PriceUnit1 = e.PriceUnit1,
-                                 PriceUnit2 = e.PriceUnit2,
-                                 UnitPrice = e.UnitPrice,
-                                 isSetSession = e.isSetSession,
-                                 SessionName = e.SessionName
-                             };
-                         }).ToList(),
+                        IsSetSession = result.IsSetSession,
+                        SessionName = result.SessionName,
+                        ActivityId = result.ActivityId
                     };
             }
-            var schedule = activity.ActivitySchedules.FirstOrDefault();
             //Set Session Expiration
-            if (schedule != null && schedule.isSetSession == true)
+            if (activity != null && activity.IsSetSession == true)
             {
                 //Check if first attendance
                 if (item.SessionsAttended == 1)
@@ -265,7 +245,7 @@
                         {
                             Id = item.StudentId,
                             ScheduleId = item.ScheduleId,
-                            SessionName = schedule.SessionName,
+                            SessionName = activity.SessionName,
                             ExpirationStartDate = DateTime.UtcNow,
                             ExpirationEndDate = item.ExpirationDateEnd
                         });
@@ -358,27 +338,12 @@
             var result = activityResult.Result.Result;
             activity = new Activity
                 {
-                    ActivitySchedules = result.ActivitySchedules.Select(e =>
-                     {
-                         return new ActivitySchedule
-                         {
-                             Id = e.Id,
-                             Name = e.Name,
-                             DateTime = e.DateTime,
-                             PerUnit1 = e.PerUnit1,
-                             PerUnit2 = e.PerUnit2,
-                             Price = e.Price,
-                             PriceUnit1 = e.PriceUnit1,
-                             PriceUnit2 = e.PriceUnit2,
-                             UnitPrice = e.UnitPrice,
-                             isSetSession = e.isSetSession,
-                             SessionName = e.SessionName
-                         };
-                     }).ToList(),
+                    IsSetSession = result.IsSetSession,
+                    SessionName = result.SessionName,
+                    ActivityId = result.ActivityId
                 };
         }
-        var schedule = activity.ActivitySchedules.FirstOrDefault();
-        if (schedule != null && schedule.isSetSession == true)
+        if (activity != null && activity.IsSetSession == true)
         {
             //Check if first attendance
             if (studentAttendance.SessionsAttended == 1)
@@ -387,7 +352,7 @@
                     {
                         Id = studentAttendance.StudentId,
                         ScheduleId = studentAttendance.ScheduleId,
-                        SessionName = schedule.SessionName,
+                        SessionName = activity.SessionName,
                         ExpirationStartDate = DateTime.UtcNow,
                         ExpirationEndDate = studentAttendance.ExpirationDateEnd
                     });

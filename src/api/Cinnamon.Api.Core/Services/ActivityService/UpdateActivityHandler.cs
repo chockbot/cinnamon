@@ -151,6 +151,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SpecificsYouWillProvide = specificProvideLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
+                IsSetSession = args.IsSetSession,
+                SessionName = args.SessionName
             };
 
             if(args.SearchTags != null)
@@ -196,8 +198,6 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
-                                isSetSession = s.isSetSession?? false,
-                                SessionName = s.SessionName?? string.Empty,
                             };
                         })
                     });
@@ -227,9 +227,6 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
-                                isSetSession =s.isSetSession?? false,
-                                SessionName = s.SessionName?? string.Empty,
-                                
                             };
                         })
                     });
@@ -294,7 +291,9 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SpecificsYouWillProvide = updated.SpecificsYouWillProvide,
                 SubCategoryId = updated.SubCategoryId,
                 Title = updated.Title,
-                Handler = updated.Handler
+                Handler = updated.Handler,
+                IsSetSession = updated.IsSetSession,
+                SessionName = updated.SessionName
             }, "Successfully update activity details");
         }
         catch (Exception ex)

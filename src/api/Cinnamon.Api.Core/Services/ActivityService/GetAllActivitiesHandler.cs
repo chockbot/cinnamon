@@ -94,6 +94,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         CreatedBy               = e.CreatedBy,
                         MapDetails              = e.MapDetails,
                         Handler                 = e.Handler,
+                        IsSetSession            = e.IsSetSession,
+                        SessionName             = e.SessionName,
                         ActivitySchedules       = e.Schedules != null ? e.Schedules.Select(s => {
                             return new GetAllActivitiesResult.Activity.ActivitySchedule
                             {
@@ -105,8 +107,6 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
-                                isSetSession = s.IsSetSession,
-                                SessionName = s.SessionName
                             };
                         }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivitySchedule>(),
                         Images = e.Images != null ? e.Images.OrderBy(i => i.Order).Select(i => {

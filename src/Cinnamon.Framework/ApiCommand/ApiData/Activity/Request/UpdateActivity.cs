@@ -35,4 +35,6 @@ public class UpdateActivity
     public string? Searchtag5 { get; set; }
     public int? ExperienceCategoryId {get; set;}
     public int? SubCategoryId {get; set;}
+    public bool? IsSetSession { get; set; }
+    public string? SessionName { get; set; }
 }

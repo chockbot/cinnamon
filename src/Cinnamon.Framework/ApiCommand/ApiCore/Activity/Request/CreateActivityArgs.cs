@@ -40,6 +40,10 @@ public class CreateActivityArgs
     [Required]
     public bool CanAdultsJoin {get; set;}
     [Required]
+    public bool IsSetSession { get; set; }
+    [Required]
+    public string SessionName { get; set; }
+    [Required]
     public IEnumerable<string> SearchTags {get; set;}
     [Required]
     public IEnumerable<Schedule> ActivitySchedules {get; set;}
@@ -63,7 +67,5 @@ public class CreateActivityArgs
         public int PerUnit2 {get; set;}
         [Required]
         public string PriceUnit2 {get; set;}
-        public bool isSetSession { get; set;} = false;
-        public string SessionName { get; set;} = string.Empty;
     }
 }

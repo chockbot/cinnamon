@@ -89,12 +89,12 @@
                     @if (calendarItem != null && calendarItem.IsPresent == true)
                     {
                         //Display
-                        <button class="btn-date" @onclick="() => UpdateAttendance(calendarItem, Token)">@i</button>
+                        <button class="btn-date" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
                     }
                     else if (calendarItem != null && calendarItem.IsPresent == false)
                     {
                         //Update
-                        <button class="btn-date-absent" @onclick="() => UpdateAttendance(calendarItem, Token)">@i</button>
+                        <button class="btn-date-absent" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
                     }
                     else
                     {
@@ -125,6 +125,7 @@
     private List<StudentAttendance> studentAttendances  = new List<StudentAttendance>();
     private StudentAttendance       studentAttendance   = new StudentAttendance();
     private CustomerProfile         profile             = new CustomerProfile();
+    public  Activity                activity            = new Activity();
     private bool                    isEditRemarks       = false;
     private string                  remarksLocalState   = string.Empty;
     public string                   monthName           = "";
@@ -167,7 +168,7 @@
                         ActivityId       = result.Result.Result.ActivityId,
                         ScheduleId       = result.Result.Result.ScheduleId,
                         NumberOfSessions = result.Result.Result.NumberOfSessions,
-                        SessionsAttended = result.Result.Result.SessionsAttended
+                        SessionsAttended = result.Result.Result.SessionsAttended,
                     };
         }
         //Get Parent Name
@@ -264,7 +265,7 @@
         }
         isEditRemarks = false;
         }
-    private async void UpdateAttendance(StudentAttendance studentAttendance, string token)
+    private async void UpdateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
         try
         {
@@ -294,7 +295,34 @@
                 await OnInitializedAsync();
                 StateHasChanged();
             }
-            
+            @*//Get Activity Details
+            var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
+            if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+            {
+                var result = activityResult.Result.Result;
+                activity = new Activity
+                    {
+                        IsSetSession = result.IsSetSession,
+                        SessionName = result.SessionName,
+                        ActivityId = result.ActivityId
+                    };
+            }
+            //Set Session Expiration
+            if (activity != null && activity.IsSetSession == true)
+            {
+                //Check if first attendance
+                if (studentAttendance.SessionsAttended == 1)
+                {
+                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            ScheduleId = studentAttendance.ScheduleId,
+                            SessionName = activity.SessionName,
+                            ExpirationStartDate = presentDate,
+                            ExpirationEndDate = DateTime.UtcNow
+                        });
+                }
+            }*@
         }
         catch (Exception ex)
         {
@@ -302,6 +330,7 @@
             ErrorMessage = "An error occured. Please try again later.";
         }
     }
+
     private async void CreateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
         try
@@ -323,6 +352,35 @@
                 await OnInitializedAsync();
                 StateHasChanged();
             }
+             @*//Get Activity Details
+            var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
+            if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+            {
+                var result = activityResult.Result.Result;
+                activity = new Activity
+                    {
+                        IsSetSession = result.IsSetSession,
+                        SessionName = result.SessionName,
+                        ActivityId = result.ActivityId
+                    };
+            }
+            //Set Session Expiration
+            if (activity != null && activity.IsSetSession == true)
+            {
+                //Check if first attendance
+                if (studentAttendance.SessionsAttended == 0)
+                {
+                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            ScheduleId = studentAttendance.ScheduleId,
+                            SessionName = activity.SessionName,
+                            ExpirationStartDate = presentDate,
+                            ExpirationEndDate = DateTime.UtcNow
+                        });
+                }
+            }*@
+
         }
         catch (Exception ex)
         {

@@ -280,8 +280,6 @@
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        isSetSession = s.isSetSession,
-                        SessionName = s.SessionName
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -307,7 +305,9 @@
                 SkillLevel = Model.Activity.SkillLevel,
                 SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
                 SubCategoryId = Model.Activity.SubCategoryId,
-                Title = Model.Activity.Title
+                Title = Model.Activity.Title,
+                IsSetSession = Model.Activity.IsSetSession,
+                SessionName = Model.Activity.SessionName
             }, Model.Token);
             
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))

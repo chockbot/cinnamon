@@ -129,7 +129,9 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SpecificsYouWillProvide = specificProvideLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
-                Handler = handlerName
+                Handler = handlerName,
+                IsSetSession = args.IsSetSession,
+                SessionName = args.SessionName
             });
 
             if(!activityRes.Succeeded || activityRes.Result == null)
@@ -155,9 +157,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        isSetSession = s.isSetSession,
-                        SessionName = s.SessionName,
+                        UnitPrice = s.UnitPrice
                     };
                 })
             });
@@ -225,6 +225,8 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName,
                 ActivitySchedules = createdSchedules.Result.Result.Select(s => {
                     return new CreateActivityResult.ActivitySchedule {
                         DateTime = s.DateTime,
@@ -234,9 +236,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        isSetSession = s.isSetSession,
-                        SessionName = s.SessionName
+                        UnitPrice = s.UnitPrice
                     };
                 })
 

@@ -199,8 +199,6 @@
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         TempId = s.Id,
-                        isSetSession = s.isSetSession,
-                        SessionName = s.SessionName
                     };
                 }).ToList(),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -235,6 +233,8 @@
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -320,9 +320,7 @@
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        isSetSession = s.isSetSession,
-                        SessionName = s.SessionName
+                        UnitPrice = s.UnitPrice
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -350,7 +348,9 @@
                 SubCategoryId = Model.Activity.SubCategoryId,
                 Title = Model.Activity.Title,
                 ActivityId = Model.Activity.ActivityId,
-                DeletedScheduleIds = Model.DeletedScheduleIds
+                DeletedScheduleIds = Model.DeletedScheduleIds,
+                IsSetSession = Model.Activity.IsSetSession,
+                SessionName = Model.Activity.SessionName
             }, Model.Token);
             
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))

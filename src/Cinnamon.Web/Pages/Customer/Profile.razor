@@ -221,6 +221,8 @@
                     IsPublished = a.IsPublished,
                     Price = a.Price,
                     Title = a.Title,
+                    IsSetSession = a.IsSetSession,
+                    SessionName = a.SessionName,
                     Images = a.Images.Select(i => {
                         return new ActivityImage {
                             Id = i.Id,
@@ -271,6 +273,8 @@
                     IsPublished = a.IsPublished,
                     Price = a.Price,
                     Title = a.Title,
+                    IsSetSession = a.IsSetSession,
+                    SessionName = a.SessionName,
                     Images = a.Images.Select(i => {
                         return new ActivityImage {
                             Id = i.Id,
@@ -283,8 +287,6 @@
                         return new ActivitySchedule
                         {
                             Id = s.Id,
-                            SessionName = s.SessionName,
-                            isSetSession = s.isSetSession
                         };
                     }).ToList()
                 };
