@@ -271,6 +271,57 @@
                 <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
             </label>
         </div>
+        <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperCoverPhotoModal" style="z-index:99999;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" style="width:600px">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center">Edit Cover Photo</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align:center">
+                        <div class="col-12-lg d-flex justify-content-center">
+                            <img id="imgCoverPhotoPreview" src="">
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveCropCoverPhoto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="coverPhotoData" />
+        <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperFirstSupportPhotoModal" style="z-index:99999;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" style="width:600px">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center">Edit First Supporting Photo</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align:center">
+                        <div class="col-12-lg d-flex justify-content-center">
+                            <img id="imgFirstSupportPhotoPreview" src="">
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveCropFirstPhoto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="firstPhotoData" />
+        <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperSecondSupportPhotoModal" style="z-index:99999;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content" style="width:600px">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center">Edit Second Supporting Photo</p>
+                        <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align:center">
+                        <div class="col-12-lg d-flex justify-content-center">
+                            <img id="imgSecondSupportPhotoPreview" src="">
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveCropSecondPhoto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="secondPhotoData" />
         <div class="activity-image-dragable">
             <DropContainer ItemDropped="ItemDropped" TItem="ImageItem" Items="imageItems" ItemsFilter="@((item,dropZone) => item.Group == dropZone)" Display="Display.Flex">
                 <ChildContent>
@@ -284,7 +335,7 @@
                             <Button Clicked='() => MoveNext(context)' Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
                         </div>
                         <img id="@context.Id" name="@context.Id" class='experience-image img-banner'
-                             src="@context.Src" data-order="@context.Order" data-name="@context.DataName" />
+                             src="@context.Src" data-order="@context.Order" data-name="@context.DataName" data-changed="false" />
                     </div>
                 </ItemTemplate>
             </DropContainer>
@@ -428,6 +479,8 @@
             new FileDetails{ Id = 2, ImageId = "#imgSrc3", FileControlId = "#second-support-photo"}
         };
 
+    IJSObjectReference module;
+
     protected override void OnParametersSet()
     {
         this.searchTag = Model.Activity.SearchTags.FirstOrDefault() ?? string.Empty;
@@ -481,6 +534,9 @@
 
             await jsRuntime
                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-customer-requirement-provide-update .ql-container", "#label-customer-requirement-editor-update", maxEditorWordLimit);
+        
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+
         }
     }
 
