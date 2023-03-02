@@ -917,6 +917,8 @@ public class ActivityRepository : IActivityRepository
             activity.ScheduleIndicator = scheduleIndicator ?? activity.ScheduleIndicator;
             activity.Remarks = remarks ?? activity.Remarks;
             activity.IsPublished = isPublished ?? activity.IsPublished;
+            activity.SessionName = SessionName ?? activity.SessionName;
+            activity.IsSetSession = IsSetSession ?? activity.IsSetSession;
 
             var updatedActivity = await dataStore.Activity.Update(activity);
             if (!updatedActivity.Succeeded)
