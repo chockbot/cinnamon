@@ -453,4 +453,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetAllBarangaysResult>.CreateFailed(ex, "An error occured when getting all barangays api");
         }
     }
+
+    public async Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivitiesArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Popular")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllActivitiesResult>();
+
+            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting all activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
+        }
+    }
 }

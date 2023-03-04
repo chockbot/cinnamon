@@ -60,4 +60,5 @@ public class Activity
     public IList<ActivityImage> Images {get; set;}
     public CustomerProfile? Owner {get; set;}
     public bool IsNew { get; set; }
+    public int Id { get; set; }
 }

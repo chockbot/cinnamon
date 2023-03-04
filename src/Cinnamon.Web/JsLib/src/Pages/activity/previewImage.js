@@ -6,7 +6,7 @@ export default function previewImage(inputSelector, imgIds) {
   for (const file of inputElem.files) {
     totalFileSize += file.size / 1024 / 1024;
   }
-  imgIds.forEach((s) => loadEmptySrc(s));
+  //imgIds.forEach((s) => loadEmptySrc(s));
 
   if (totalFileSize > 10) {
     inputElem.value = "";
@@ -18,7 +18,7 @@ export default function previewImage(inputSelector, imgIds) {
       const url = URL.createObjectURL(inputElem.files[i]);
       const filename = inputElem.files[i].name;
       urls.push({ url, filename });
-      loadImage(imgIds[i], url, i, filename);
+      //loadImage(imgIds[i], url, i, filename);
     }
   }
 

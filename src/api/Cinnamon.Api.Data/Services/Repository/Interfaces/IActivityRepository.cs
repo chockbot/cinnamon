@@ -18,6 +18,10 @@ public interface IActivityRepository
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false);
+
+    Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip,
+        bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
+        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync();
     Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price,
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district,
