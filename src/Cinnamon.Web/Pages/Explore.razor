@@ -1130,6 +1130,7 @@
                        {
                            return new Activity
                                {
+                                   Guid = Guid.NewGuid(),
                                    ActivityId = r.ActivityId,
                                    ExperienceTypeId = r.ExperienceTypeId,
                                    ExperienceType = r.ExperienceType,
@@ -1188,7 +1189,7 @@
                                         };
                                     }).ToList(),
                                };
-                       }).ToList();
+                       }).OrderBy(a => a.Guid).ToList();
 
                 if (isFromScroll)
                 {
