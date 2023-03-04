@@ -20,6 +20,7 @@ public class Activity : BaseEntity
     public bool IsNew { get; set; }
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
+    public int PurchaseOrderCount { get; set; }
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
     public virtual SearchTags SearchTag {get; set;}

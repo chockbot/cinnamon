@@ -70,12 +70,13 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
 
             var activity = activityRes.Result;
             activity.IsNew = false;
+            activity.PurchaseOrderCount = activity.PurchaseOrderCount + 1;
 
             var updateActivityResult = await dataStore.Activity.Update(activity);
             if (!updateActivityResult.Succeeded || updateActivityResult.Result == null)
             {
                 return AppResult<PurchaseOrderDTO>.CreateFailed(
-                    new ApplicationException("An error occured when updating activity IsNew field"), "An error occured when updating activity IsNew field");
+                    new ApplicationException("An error occured when updating activity IsNew/PurchaseOrderCount field"), "An error occured when updating activity IsNew/PurchaseOrderCount field");
             }
 
             return AppResult<PurchaseOrderDTO>.CreateSucceeded(new PurchaseOrderDTO {

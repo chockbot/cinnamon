@@ -1058,4 +1058,166 @@ public class ActivityRepository : IActivityRepository
             return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when updating activity");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            if (includeAddres) includes.Add(a => a.Address);
+            if (includeDescription) includes.Add(a => a.ActivityDescription);
+            if (includeSearchTags) includes.Add(a => a.SearchTag);
+            if (includeSchedules) includes.Add(a => a.Schedules);
+            if (includeImages) includes.Add(a => a.Images);
+            if (includeCustomer) includes.Add(a => a.Customer);
+            if (includeExperienceTypes) includes.Add(a => a.ExperienceType);
+            if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
+            if (includeSubCategories) includes.Add(a => a.SubCategory);
+
+            Expression<Func<Entities.Activity, bool>> filter =
+                a => (ids != null ? ids.Contains(a.Id) : true) &&
+                        (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                        (customerId.HasValue ? a.CreatedBy == customerId.Value : true) && a.PurchaseOrderCount > 0 && !a.IsNew;
+
+
+            var result = await dataStore.Activity.GetPopularActivities(filter, count, skip, includes);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var activities = result.Result.Select(a =>
+            {
+                var activityDTO = new ActivityDTO
+                {
+                    Id = a.Id,
+                    SubTitle = a.Subtitle,
+                    Title = a.Title,
+                    Description = a.Description,
+                    Price = a.Price,
+                    Remarks = a.Remarks,
+                    IsPublished = a.IsPublished,
+                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId = a.SubCategoryId ?? 0,
+                    CreatedBy = a.CreatedBy,
+                    ExperienceTypeId = a.ExperienceTypeId,
+                    Handler = a.Handler,
+                    ExperienceType = a.ExperienceType?.Name,
+                    ExperienceCategory = a.ExperienceCategory?.Category,
+                    SubCategory = a.SubCategory?.SubCatergory,
+                    IsNew = a.IsNew,
+                    IsSetSession = a.IsSetSession,
+                    SessionName = a.SessionName
+                };
+
+                // address fields
+                if (includeAddres && a.Address != null)
+                {
+                    activityDTO.Address1 = a.Address.Address1;
+                    activityDTO.Address2 = a.Address.Address2;
+                    activityDTO.City = a.Address.City;
+                    activityDTO.District = a.Address.District;
+                    activityDTO.Subdivision = a.Address.Subdivision;
+                    activityDTO.Region = a.Address.Region;
+                    activityDTO.Barangay = a.Address.Barangay;
+                    activityDTO.PostalCode = a.Address.PostalCode;
+                    activityDTO.CityName = a.Address.CityName;
+                    activityDTO.RegionName = a.Address.RegionName;
+                    activityDTO.BarangayName = a.Address.BarangayName;
+                }
+
+                // description fields
+                if (includeDescription && a.ActivityDescription != null)
+                {
+                    var description = a.ActivityDescription;
+                    activityDTO.ActivityLevel = description.ActivityLevel;
+                    activityDTO.AdditionalRequirements = description.AdditionalRequirements;
+                    activityDTO.CanAdultsJoin = description.CanAdultsJoin;
+                    activityDTO.CustomerBringWithThem = description.CustomerBringWithThem;
+                    activityDTO.Description = description.Description;
+                    activityDTO.MinimumAge = description.MinimumAge;
+                    activityDTO.SkillLevel = description.SkillLevel;
+                    activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+                }
+
+                // schedules
+                if (includeSchedules && a.Schedules != null)
+                {
+                    activityDTO.Schedules = a.Schedules.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
+                        {
+                            DateTime = s.DateTime,
+                            Id = s.Id,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice,
+                            PerUnit2 = s.PerUnit2,
+                        };
+                    }).ToList();
+                }
+
+                // search tags
+                if (includeSearchTags && a.SearchTag != null)
+                {
+                    var tags = new List<string>();
+                    if (a.SearchTag.SearchTag1 != null) tags.Add(a.SearchTag.SearchTag1);
+                    if (a.SearchTag.SearchTag2 != null) tags.Add(a.SearchTag.SearchTag2);
+                    if (a.SearchTag.SearchTag3 != null) tags.Add(a.SearchTag.SearchTag3);
+                    if (a.SearchTag.SearchTag4 != null) tags.Add(a.SearchTag.SearchTag4);
+                    if (a.SearchTag.SearchTag5 != null) tags.Add(a.SearchTag.SearchTag5);
+
+                    activityDTO.SearchTags = tags;
+                }
+
+                // activity images
+                if (includeImages && a.Images != null)
+                {
+                    activityDTO.Images = a.Images.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
+                        {
+                            ActivityId = s.ActivityId,
+                            Id = s.Id,
+                            ImageLocation = s.ImageLocation,
+                            ImageName = s.ImageName,
+                            Order = s.Order
+                        };
+                    }).ToList();
+                }
+
+                // customer
+                if (includeCustomer && a.Customer != null)
+                {
+                    var customer = a.Customer;
+                    activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO
+                    {
+                        About = customer.About,
+                        Birthdate = customer.Birthdate,
+                        DateJoined = customer.DateJoined,
+                        Email = customer.Email,
+                        ExternalLogin = customer.ExternalLogin,
+                        FirstName = customer.FirstName,
+                        Handler = customer.Handler,
+                        Id = customer.Id,
+                        IsMaker = customer.IsMaker,
+                        IsVerified = customer.IsVerified,
+                        LastName = customer.LastName,
+                        ProfileImg = customer.ProfilePath
+                    };
+                }
+
+                return activityDTO;
+            });
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(activities, "Successfully get activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured in getting activities");
+        }
+    }
 }

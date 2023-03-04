@@ -9,6 +9,8 @@ let imageCoverPhoto = "#imgCoverPhotoPreview";
 let btnSaveCropCoverPhoto = "#btnSaveCropCoverPhoto";
 let imgSrc1 = "#imgSrc1";
 let coverPhotoData = "#coverPhotoData";
+let btnCloseCropperCoverPhotoModal = "#btnCloseCropperCoverPhotoModal";
+let coverPhotoFileName = "";
 
 let cropperFirstSupportPhotoModal = "#cropperFirstSupportPhotoModal";
 let firstSupportPhotoInput = "#first-support-photo";
@@ -16,6 +18,8 @@ let imageFirstSupportPhoto = "#imgFirstSupportPhotoPreview";
 let btnSaveCropFirstPhoto = "#btnSaveCropFirstPhoto";
 let imgSrc2 = "#imgSrc2";
 let firstPhotoData = "#firstPhotoData";
+let btnCloseCropperFirstSupportPhotoModal = "#btnCloseCropperFirstSupportPhotoModal";
+let firstPhotoFileName = "";
 
 let cropperSecondSupportPhotoModal = "#cropperSecondSupportPhotoModal";
 let secondSupportPhotoInput = "#second-support-photo";
@@ -23,6 +27,8 @@ let imageSecondSupportPhoto = "#imgSecondSupportPhotoPreview";
 let btnSaveCropSecondPhoto = "#btnSaveCropSecondPhoto";
 let imgSrc3 = "#imgSrc3";
 let secondPhotoData = "#secondPhotoData";
+let btnCloseCropperSecondSupportPhotoModal = "#btnCloseCropperSecondSupportPhotoModal";
+let secondPhotoFileName = "";
 
 let coverPhotos = [imageCoverPhoto, imageFirstSupportPhoto, imageSecondSupportPhoto];
 let photoModals = [cropperCoverPhotoModal, cropperFirstSupportPhotoModal, cropperSecondSupportPhotoModal];
@@ -54,24 +60,34 @@ $(document).on('change', secondSupportPhotoInput, function () {
 });
 
 $(document).on('click', btnSaveCropCoverPhoto, function () {
-    saveCroppedCoverPhoto(event, imgSrc1, cropperCoverPhotoModal, imageCoverPhoto, coverPhotoData, cropperCoverPhoto);
-
+    saveCroppedCoverPhoto(event, imgSrc1, cropperCoverPhotoModal, imageCoverPhoto, coverPhotoData, cropperCoverPhoto,0, coverPhotoFileName);
 });
 
 $(document).on('click', btnSaveCropFirstPhoto, function () {
-    saveCroppedCoverPhoto(event, imgSrc2, cropperFirstSupportPhotoModal, imageFirstSupportPhoto, firstPhotoData, cropperFirstPhoto);
+    saveCroppedCoverPhoto(event, imgSrc2, cropperFirstSupportPhotoModal, imageFirstSupportPhoto, firstPhotoData, cropperFirstPhoto,1, firstPhotoFileName);
 });
 
 $(document).on('click', btnSaveCropSecondPhoto, function () {
-    saveCroppedCoverPhoto(event, imgSrc3, cropperSecondSupportPhotoModal, imageSecondSupportPhoto, secondPhotoData, cropperSecondPhoto);
+    saveCroppedCoverPhoto(event, imgSrc3, cropperSecondSupportPhotoModal, imageSecondSupportPhoto, secondPhotoData, cropperSecondPhoto,2, secondPhotoFileName);
+});
 
+$(document).on('click', btnCloseCropperCoverPhotoModal, function () {
+    closeModal(cropperCoverPhotoModal, cropperCoverPhoto);
+});
+
+$(document).on('click', btnCloseCropperFirstSupportPhotoModal, function () {
+    closeModal(cropperFirstSupportPhotoModal, cropperFirstPhoto);
+});
+
+$(document).on('click', btnCloseCropperSecondSupportPhotoModal, function () {
+    closeModal(cropperSecondSupportPhotoModal, cropperSecondPhoto);
 });
 
 function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
     var files = multipleFileObject ? multipleFileObject : that.files;
     if (files.length > 0) {
         var photo = files[0];
-
+        var fileName = photo.name;
         if (photo.size > 10000000) {
 
             alert("Please upload image less than 10MB.");
@@ -83,12 +99,20 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
                 $(photoModal).find(imgPreview).attr('src', event.target.result);
                 //imgPreview.src = event.target.result;
 
-                if (photoModal == cropperCoverPhotoModal)
+                if (photoModal == cropperCoverPhotoModal) {
                     cropperCoverPhoto = initializeCropper($(imgPreview)[0]);
-                else if (photoModal == cropperFirstSupportPhotoModal)
+                    coverPhotoFileName = fileName;
+                }
+                else if (photoModal == cropperFirstSupportPhotoModal) {
                     cropperFirstPhoto = initializeCropper($(imgPreview)[0]);
-                else if (photoModal == cropperSecondSupportPhotoModal)
+                    firstPhotoFileName = fileName;
+                }
+
+                else if (photoModal == cropperSecondSupportPhotoModal) {
                     cropperSecondPhoto = initializeCropper($(imgPreview)[0]);
+                    secondPhotoFileName = fileName;
+                }
+                    
 
                 $(photoModal).modal({ backdrop: "static", keyboard: false });
                 $(photoModal).modal('show');
@@ -112,7 +136,7 @@ function initializeCropper(imgPreview) {
     });
 }
 
-function saveCroppedCoverPhoto(event, imgSrc, photoModal, imgPreview, imageData, cropper) {
+function saveCroppedCoverPhoto(event, imgSrc, photoModal, imgPreview, imageData, cropper, index, fileName) {
     event.preventDefault();
 
     var $button = $(this);
@@ -129,9 +153,9 @@ function saveCroppedCoverPhoto(event, imgSrc, photoModal, imgPreview, imageData,
     //Show
     const base64encodedImage = roundedcanvas.toDataURL();
 
-    $(imageData).val(base64encodedImage);;
+    $(imageData).val(base64encodedImage);
 
-    $(imgSrc).attr("src", base64encodedImage);
+    loadImage(imgSrc, base64encodedImage, index, fileName)
     $(photoModal).modal("hide");
 
     $button.prop("disabled", false);
@@ -141,6 +165,19 @@ function saveCroppedCoverPhoto(event, imgSrc, photoModal, imgPreview, imageData,
     cropper = null;
 
     $(imgPreview).src = null;
+}
+
+function loadImage(imgSelector, url, index, filename) {
+    const el = document.querySelector(imgSelector);
+    if (!el) return;
+
+    el.classList.remove("invalid");
+    $(el).attr("data-index", index);
+    $(el).attr("data-name", filename);
+    $(el).attr("data-changed", true);
+    el.addEventListener("load", () => URL.revokeObjectURL(url), { once: true });
+    el.src = url;
+    //$(imgSrc).attr("src", base64encodedImage);
 }
 
 function getRoundedCanvas(sourceCanvas) {
@@ -157,3 +194,10 @@ function getRoundedCanvas(sourceCanvas) {
     context.fill();
     return canvas;
 }
+
+function closeModal(cropperModalId, cropper) {
+    $(cropperModalId).modal("hide");
+    cropper.destroy();
+    cropper = null;
+}
+

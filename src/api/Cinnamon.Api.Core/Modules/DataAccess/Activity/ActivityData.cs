@@ -162,4 +162,25 @@ public class ActivityData: IActivityData
             return AppResult<UpdatedActivityResult>.CreateFailed(ex, "An error occured when posting update activity api");
         }
     }
+
+    public async Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivities args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Activity/Popular")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetAllActivitiesResult>();
+
+            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting get all activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
+        }
+    }
 }

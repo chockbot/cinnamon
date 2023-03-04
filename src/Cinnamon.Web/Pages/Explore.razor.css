@@ -174,19 +174,14 @@ img.img-icon {
 
 .card-title1 {
   font-size: 16px;
-  font-family: "Nunito-Bold";
+  font-family: "Nunito";
 }
 
 .card-title2 {
   font-size: 14px;
   font-family: "Nunito";
-  color: gray;
 }
 
-.card-title3 {
-  font-size: 14px;
-  font-family: "Nunito";
-}
 
 
 
@@ -206,7 +201,7 @@ img.img-icon {
 
 .card-container {
     display: flex;
-    background: #F3F6FC;
+    background: #FFFFFF;
     border-radius: 0px 0px 10px 10px;
     padding-top: 0.7em;
     padding-left: 0.5em;
@@ -225,12 +220,26 @@ img.img-icon {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    position: absolute;
+    bottom: 0;
+    left: 210px;
+    z-index: 99;
+}
+
+.xp-badges-carousel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: absolute;
+    bottom: 0;
+    left: 210px;
+    z-index: 99;
 }
 
 
 .new-tag-icon {
-    height: 16px !important;
-    width: 16px !important;
+    height: 12px !important;
+    width: 12px !important;
     margin-left: 5px;
 }
 
@@ -239,17 +248,13 @@ img.img-icon {
 }
 
 .new-badge {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-   
-    padding: 5px;
+    position: absolute;
+    width: 58.5px;
+    height: 23.09px;
+    background: #FFFFFF;
     border-radius: 15px;
-    font-family: 'Nunito';
-    font-style: italic;
-    font-weight: 700;
-    font-size: 12px;
-    color: #343D4C;
+    left: 18px;
+    top: 18px;
 }
 
 .active-badge {
@@ -261,12 +266,13 @@ img.img-icon {
 }
 
 .new-tag-icon {
-    height: 16px;
-    width: 16px;
+    height: 12px;
+    width: 12px;
     margin-left: 5px;
 }
 
 .new-tag-label {
+    margin-top:2px;
     padding-right: 8px;
 }
 
@@ -357,13 +363,13 @@ img.img-icon {
   display: flex;
 }
 .section-2-lg .wish-icon {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-  z-index: 99;
-  cursor: pointer;
-  font-size: 16px;
-  color: #abb0b8;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    z-index: 99;
+    cursor: pointer;
+    font-size: 16px;
+    color: #717171;
 }
 .wish-icon .fa-heart-o {
   color: white;
@@ -376,7 +382,7 @@ img.img-icon {
   text-align: left;
   font-size: 12px;
   margin-left: 80%;
-  background-color: #f3f6fc;
+  background-color: #FFFFFF;
   border: none;
   font-family: "Nunito";
 }
@@ -408,9 +414,19 @@ img.img-icon {
   margin-left: 15rem;
 }
 
+.active-tag-label {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 22px;
+    color: #717171;
+}
 
-
-
+.card-title3 {
+    font-size: 16px;
+    font-family: "Nunito-Bold";
+}
 
 
 
@@ -530,15 +546,15 @@ img.img-icon {
   .section-2-lg .carousel-control-prev-icon {
     width: 1.2vh;
   }
-  .section-2-lg .wish-icon {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 99;
-    cursor: pointer;
-    font-size: 16px;
-    color: #abb0b8;
-  }
+    .section-2-lg .wish-icon {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        z-index: 99;
+        cursor: pointer;
+        font-size: 16px;
+        color: #717171;
+    }
 
   .btn-star {
     position: absolute;
@@ -548,7 +564,7 @@ img.img-icon {
     text-align: left;
     font-size: 12px;
     margin-left: 80%;
-    background-color: #f3f6fc;
+    background-color: #FFFFFF;
     border: none;
     font-family: "Nunito";
   }
@@ -565,7 +581,7 @@ img.img-icon {
 
     .card-container {
         display: flex;
-        background: #F3F6FC;
+        background: #FFFFFF;
         border-radius: 0px 0px 10px 10px;
         padding-top: 0.7em;
         padding-left: 0.5em;
@@ -585,11 +601,25 @@ img.img-icon {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        position: absolute;
+        bottom: 0;
+        left: 210px;
+        z-index: 99;
+    }
+
+    .xp-badges-carousel {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: absolute;
+        bottom: 0;
+        left: 210px;
+        z-index: 99;
     }
 
     .new-tag-icon {
-        height: 16px !important;
-        width: 16px !important;
+        height: 12px !important;
+        width: 12px !important;
         margin-left: 5px;
     }
 
@@ -609,14 +639,21 @@ img.img-icon {
     .new-badge {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 5px;
         padding: 5px;
         border-radius: 15px;
         font-family: 'Nunito';
         font-style: italic;
         font-weight: 700;
-        font-size: 12px;
+        font-size: 10px;
         color: #343D4C;
+        position: absolute;
+        width: 58.5px;
+        height: 23.09px;
+        background: #FFFFFF;
+        left: 18px;
+        top: 18px;
+        z-index:99;
     }
 
     .active-badge {
@@ -629,23 +666,48 @@ img.img-icon {
 
 
     .new-tag-icon {
-        height: 16px;
-        width: 16px;
+        height: 12px;
+        width: 12px;
         margin-left: 5px;
     }
 
     .new-tag-label {
+        margin-top: 2px;
         padding-right: 8px;
     }
 
+    .heading {
+        font-family: 'Nunito-Bold';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 32px;
+        line-height: 44px;
+        color: #343D4C;
+    }
 
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #717171;
+    }
 
+    .card-title3-carousel {
+        font-size: 16px;
+        font-family: "Nunito-Bold";
+    }
 
-
-
-
-
-
+    #btnExploreMore {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 27px;
+        color: #FFFFFF;
+        width: 220px;
+    }
 }
 
 
@@ -791,7 +853,7 @@ img.img-icon {
         z-index: 99;
         cursor: pointer;
         font-size: 16px;
-        color: #abb0b8;
+        color: #717171;
     }
 
     .btn-star {
@@ -802,7 +864,7 @@ img.img-icon {
         text-align: left;
         font-size: 12px;
         margin-left: 80%;
-        background-color: #f3f6fc;
+        background-color: #FFFFFF;
         border: none;
         font-family: "Nunito";
     }
@@ -819,7 +881,7 @@ img.img-icon {
 
     .card-container {
         display: flex;
-        background: #F3F6FC;
+        background: #FFFFFF;
         border-radius: 0px 0px 10px 10px;
         padding-top: 0.7em;
         padding-left: 0.5em;
@@ -839,11 +901,29 @@ img.img-icon {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        position: absolute;
+        bottom: 0;
+        left: 210px;
+        z-index: 99;
     }
 
+    .xp-badges-carousel {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: absolute;
+        bottom: -2px;
+        left: 245px;
+        z-index: 99;
+    }
+
+        .xp-badges-carousel.fa.fa-star {
+            font-size: 12px;
+        }
+
     .new-tag-icon {
-        height: 16px !important;
-        width: 16px !important;
+        height: 12px !important;
+        width: 12px !important;
         margin-left: 5px;
     }
 
@@ -863,14 +943,21 @@ img.img-icon {
     .new-badge {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 5px;
         padding: 5px;
         border-radius: 15px;
         font-family: 'Nunito';
         font-style: italic;
         font-weight: 700;
-        font-size: 12px;
+        font-size: 10px;
         color: #343D4C;
+        position: absolute;
+        width: 58.5px;
+        height: 23.09px;
+        background: #FFFFFF;
+        left: 18px;
+        top: 18px;
+        z-index: 99;
     }
 
     .active-badge {
@@ -883,13 +970,47 @@ img.img-icon {
 
 
     .new-tag-icon {
-        height: 16px;
-        width: 16px;
+        height: 12px;
+        width: 12px;
         margin-left: 5px;
     }
 
     .new-tag-label {
+        margin-top: 2px;
         padding-right: 8px;
+    }
+
+    .heading {
+        font-family: 'Nunito-Bold';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 32px;
+        line-height: 44px;
+        color: #343D4C;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 22px;
+        color: #717171;
+    }
+
+    .card-title3-carousel {
+        font-size: 12px;
+        font-family: "Nunito-Bold";
+    }
+
+    #btnExploreMore {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 27px;
+        color: #FFFFFF;
+        width: 220px;
     }
 }
 
@@ -949,9 +1070,9 @@ img.img-icon {
     margin-left: 0;
   }
 
-  .activity-lg {
-    display: none;
-  }
+    div.activity-lg.border-bottom {
+        display: none;
+    }
 
   .activity-md {
     display: none;
@@ -1029,15 +1150,15 @@ img.img-icon {
         border-radius: 10px 10px 0px 0px;
     }
 
-  .section-2-lg .wish-icon {
-    position: absolute;
-    right: 0px;
-    top: 8px;
-    z-index: 99;
-    cursor: pointer;
-    font-size: 16px;
-    color: #abb0b8;
-  }
+    .section-2-lg .wish-icon {
+        position: absolute;
+        right: 0px;
+        top: 8px;
+        z-index: 99;
+        cursor: pointer;
+        font-size: 16px;
+        color: #717171;
+    }
 
   .btn-star {
     position: absolute;
@@ -1047,7 +1168,7 @@ img.img-icon {
     text-align: left;
     font-size: 12px;
     margin-left: 80%;
-    background-color: #f3f6fc;
+    background-color: #FFFFFF;
     border: none;
     font-family: "Nunito";
   }
@@ -1057,6 +1178,91 @@ img.img-icon {
     .dropdown-mobile {
         font-family: "Nunito";
         font-size: 0.5vw;
+    }
+
+    .heading {
+        font-family: 'Nunito-Bold';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 22px;
+        line-height: 30px;
+        color: #343D4C;
+    }
+
+    .xp-badges {
+        flex-direction: column;
+        justify-content: space-between;
+        position: absolute;
+        bottom: 0;
+        left: 270px;
+        z-index: 99;
+    }
+
+    .xp-badges-carousel {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: absolute;
+        bottom: -2px;
+        left: 90px;
+        z-index: 99;
+    }
+
+        .xp-badges-carousel.fa.fa-star {
+            font-size: 12px;
+        }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 22px;
+        color: #717171;
+    }
+
+    .new-badge {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 5px;
+        border-radius: 15px;
+        font-family: 'Nunito';
+        font-style: italic;
+        font-weight: 700;
+        font-size: 10px;
+        color: #343D4C;
+        position: absolute;
+        width: 58.5px;
+        height: 23.09px;
+        background: #FFFFFF;
+        left: 18px;
+        top: 18px;
+        z-index: 99;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 22px;
+        color: #717171;
+    }
+
+    .card-title3-carousel {
+        font-size: 12px;
+        font-family: "Nunito-Bold";
+    }
+
+    #btnExploreMore {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 27px;
+        color: #FFFFFF;
+        width: 160px;
     }
 }
 
@@ -1179,15 +1385,15 @@ img.img-icon {
         width: 20rem;
         border-radius: 10px 10px 0px 0px;
     }
-  .section-3-md .wish-icon {
-    position: absolute;
-    right: 0px;
-    top: 10px;
-    z-index: 99;
-    cursor: pointer;
-    font-size: 16px;
-    color: #abb0b8;
-  }
+    .section-3-md .wish-icon {
+        position: absolute;
+        right: 0px;
+        top: 10px;
+        z-index: 99;
+        cursor: pointer;
+        font-size: 16px;
+        color: #717171;
+    }
   .btn-star {
     margin-left: 85%;
   }
@@ -1201,7 +1407,7 @@ img.img-icon {
 
     .card-container {
         display: flex;
-        background: #F3F6FC;
+        background: #FFFFFF;
         border-radius: 0px 0px 10px 10px;
         padding-top: 0.7em;
         padding-left: 0.5em;
@@ -1221,11 +1427,29 @@ img.img-icon {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
+        position: absolute;
+        bottom: 0;
+        left: 210px;
+        z-index: 99;
     }
 
+    .xp-badges-carousel {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        position: absolute;
+        bottom: -2px;
+        left: 245px;
+        z-index: 99;
+    }
+
+        .xp-badges-carousel.fa.fa-star {
+            font-size: 12px;
+        }
+
     .new-tag-icon {
-        height: 16px !important;
-        width: 16px !important;
+        height: 12px !important;
+        width: 12px !important;
         margin-left: 5px;
     }
 
@@ -1245,14 +1469,21 @@ img.img-icon {
     .new-badge {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 5px;
         padding: 5px;
         border-radius: 15px;
         font-family: 'Nunito';
         font-style: italic;
         font-weight: 700;
-        font-size: 12px;
+        font-size: 10px;
         color: #343D4C;
+        position: absolute;
+        width: 58.5px;
+        height: 23.09px;
+        background: #FFFFFF;
+        left: 18px;
+        top: 18px;
+        z-index: 99;
     }
 
     .active-badge {
@@ -1265,18 +1496,48 @@ img.img-icon {
 
 
     .new-tag-icon {
-        height: 16px;
-        width: 16px;
+        height: 12px;
+        width: 12px;
         margin-left: 5px;
     }
 
     .new-tag-label {
+        margin-top: 2px;
         padding-right: 8px;
     }
 
+    .heading {
+        font-family: 'Nunito-Bold';
+        font-style: normal;
+        font-weight: 800;
+        font-size: 32px;
+        line-height: 44px;
+        color: #343D4C;
+    }
 
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 22px;
+        color: #717171;
+    }
 
+    .card-title3-carousel {
+        font-size: 12px;
+        font-family: "Nunito-Bold";
+    }
 
+    #btnExploreMore {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 27px;
+        color: #FFFFFF;
+        width: 220px;
+    }
 }
 
 #observerTarget {
@@ -1286,3 +1547,24 @@ img.img-icon {
     margin-bottom:200px;
     visibility:hidden;
 }
+
+div.activity-lg.border-bottom, div.activity-sm.border-bottom, div.activity-md.border-bottom
+{
+    padding-bottom:20px;
+    margin-bottom:20px;
+}
+
+.wish-icon i {
+    color: #717171;
+}
+
+.in-person {
+    color: #AA6843;
+}
+
+.online {
+    color: #43AA8B;
+}
+
+
+

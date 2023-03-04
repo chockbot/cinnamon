@@ -42,4 +42,30 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<IEnumerable<Activity>>.CreateFailed(ex, "An error occured when finding entities");
         }
     }
+
+    public async Task<AppResult<IEnumerable<Activity>>> GetPopularActivities(Expression<Func<Activity, bool>> expression, int? take = 100, int? skip = 0, IEnumerable<Expression<Func<Activity, object>>>? includes = null)
+    {
+        try
+        {
+            int limitCount = take.HasValue ? take.Value : int.MaxValue;
+            int skipCount = skip.HasValue ? skip.Value : 0;
+
+            var query = applicationContext.Set<Activity>().Where(expression).OrderByDescending(a => a.PurchaseOrderCount).Skip(skipCount).Take(limitCount);
+
+            if (includes != null)
+            {
+                foreach (var include in includes)
+                {
+                    query = query.Include(include);
+                }
+            }
+
+            var results = await query.ToListAsync();
+            return AppResult<IEnumerable<Activity>>.CreateSucceeded(results, "Successfully find entities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<Activity>>.CreateFailed(ex, "An error occured when finding entities");
+        }
+    }
 }

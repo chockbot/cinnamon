@@ -12,5 +12,5 @@ public interface IActivityData
     Task<AppResult<UpdatedActivityResult>> UpdateActivity(UpdateActivity args);
     Task<AppResult<GetActivitiesByCategoriesResult>> GetActivitiesByCategories(int id, GetActivityArgs? args = null);
     Task<AppResult<GetActivitiesBySubCategoriesResult>> GetActivitiesBySubCategories(int id, GetActivityArgs? args = null);
-
+    Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivities args);
 }
