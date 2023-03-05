@@ -8,8 +8,8 @@
 @inject IAccountApiHandler accountApiHandler;
 
 <Layout Sider class="dashboard-layout">
-    <input type='checkbox' id='toggle' />
-    <LayoutSider>
+    <input type='checkbox' id='toggle' @bind="IsShowSidebar" />
+    <LayoutSider @onclick="() => IsShowSidebar = !IsShowSidebar">
         <LayoutSiderContent>
             <div class="sidebar-header">
                 <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
@@ -103,6 +103,8 @@
     private bool mouseEnter { get; set; }
 
     private HeaderModel Model { get; set; } = new();
+
+    private bool IsShowSidebar {get; set;} = false;
 
     protected override async Task OnInitializedAsync()
     {
