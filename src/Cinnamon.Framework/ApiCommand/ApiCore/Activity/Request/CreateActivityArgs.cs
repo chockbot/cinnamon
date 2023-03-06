@@ -41,8 +41,7 @@ public class CreateActivityArgs
     public bool CanAdultsJoin {get; set;}
     [Required]
     public bool IsSetSession { get; set; }
-    [Required]
-    public string SessionName { get; set; }
+    public string? SessionName { get; set; }
     [Required]
     public IEnumerable<string> SearchTags {get; set;}
     [Required]
