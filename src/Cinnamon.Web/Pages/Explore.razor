@@ -103,6 +103,11 @@
                                         @Resources.App.Sign
                                     </Button>
                                 </li>
+                                <li class="dropdown-item">
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
+                                </li>
                             }
                         }
                         else
@@ -110,6 +115,11 @@
                             <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
                                     @Resources.App.Sign
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                    Help
                                 </Button>
                             </li>
                         }
@@ -159,6 +169,11 @@
                                     </Button>
                                 </li>
                                 <li class="dropdown-item">
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
+                                </li>
+                                <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
                                 </li>
                             }
@@ -168,6 +183,11 @@
                             <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
                                     @Resources.App.Sign
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                    Help
                                 </Button>
                             </li>
                         }
@@ -181,7 +201,9 @@
 
         <div class="container">
             <div class="section-1 row">
-
+                <Div ElementId="#b-animate">
+                    <Animate Anchor="#b-animate" Auto Animation="selectedAnimation" DelayMilliseconds="500">
+                   
                 <div class="activity-sm border-bottom">
                     <div class="row d-flex justify-content-start">
                         <div class="col-sm-12 col-12">
@@ -665,7 +687,8 @@
                         </div>
                     </div>
                 </div>
-
+                    </Animate>
+                </Div>
             </div>
             <!--Section 2-->
             <div class="section-2-lg row">
@@ -1366,6 +1389,10 @@
     private void NavigateToCreation()
     {
         NavigationManager.NavigateTo("/Onboarding", true);
+    }
+    private void NavigateToHelp()
+    {
+        NavigationManager.NavigateTo("/Help", true);
     }
 
     private void onClickMenu()
