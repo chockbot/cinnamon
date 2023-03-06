@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
+using Microsoft.Extensions.Logging;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -11,10 +12,11 @@ namespace Cinnamon.Api.Data.Controllers;
 public class ActivityController : ControllerBase
 {
     private readonly IActivityRepository activityRepository;
-
-    public ActivityController(IActivityRepository activityRepository)
+    private readonly ILogger _logger;
+    public ActivityController(IActivityRepository activityRepository, ILogger<ActivityController> logger)
     {
         this.activityRepository = activityRepository;
+        _logger = logger;
     }
 
     [Route("GetActivityById/{id}")]
@@ -212,6 +214,8 @@ public class ActivityController : ControllerBase
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetPopularActivities([FromQuery] GetAllActivities args)
     {
+        _logger.LogInformation("Cinnamon.Api.Data > GetPopularActivities was called");
+
         try
         {
             IList<int> ids = new List<int>();

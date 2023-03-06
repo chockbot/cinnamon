@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.File;
 using Cinnamon.Api.Data.Repository;
 using Cinnamon.Api.Data.Extensions;
 using Newtonsoft.Json.Serialization;
@@ -17,6 +19,17 @@ builder.Services.AddDbContext<ApplicationContext>(opts => opts.UseNpgsql(dbConne
 // indentity framework
 builder.Services.AddDefaultIdentity<IdentityUser>(opts => opts.SignIn.RequireConfirmedEmail = false)
     .AddEntityFrameworkStores<ApplicationContext>();
+
+// logger
+var logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(builder.Configuration)
+                        .MinimumLevel.Debug()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                        .Enrich.WithProperty("ApplicationContext", "Cinnamon.API.Data")
+                        .Enrich.FromLogContext()
+                        .WriteTo.File(@"Logs\log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+                        .CreateLogger();
+builder.Host.UseSerilog(logger);
 
 // register application services
 builder.Services.ExtendServices();
@@ -47,6 +60,7 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
 // seed database data and ensure table are created
 using (var scope = app.Services.CreateScope())

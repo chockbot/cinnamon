@@ -35,6 +35,7 @@ public class ActivityController : ControllerBase
     private readonly IGetAllCitiesHandler getAllCitiesHandler;
     private readonly IGetAllBarangaysHandler getAllBarangaysHandler;
     private readonly IGetPopularActivitiesHandler getPopularActivitiesHandler;
+    private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -45,8 +46,10 @@ public class ActivityController : ControllerBase
         IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler, 
-        IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler)
+        IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger)
     {
+        _logger = logger;
+
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
         this.getExperienceCategoriesHandler = getExperienceCategoriesHandler;
@@ -1348,6 +1351,8 @@ public class ActivityController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> GetPopularActivities([FromQuery] GetAllActivitiesArgs args)
     {
+        _logger.LogInformation("Cinnamon.Api.Core > GetPopularActivities was called");
+
         try
         {
             var result = await getPopularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllActivitiesArgs
