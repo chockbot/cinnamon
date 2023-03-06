@@ -27,7 +27,7 @@ var logger = new LoggerConfiguration()
                         .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                         .Enrich.WithProperty("ApplicationContext", "Cinnamon.API.Data")
                         .Enrich.FromLogContext()
-                        .WriteTo.File(@"Logs\log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+                        .WriteTo.File(@"Logs/log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
 
