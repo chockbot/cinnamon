@@ -9,6 +9,9 @@ using Flurl.Http;
 using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.File;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,9 +58,21 @@ Cinnamon.Web.Config.Config  config = new Cinnamon.Web.Config.Config();
 builder.Configuration.GetSection("AppConfig").Bind(config);
 builder.Services.AddSingleton(config);
 
+// logger
+var logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(builder.Configuration)
+                        .MinimumLevel.Debug()
+                        .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                        .Enrich.WithProperty("ApplicationContext", "Cinnamon.Web")
+                        .Enrich.FromLogContext()
+                        .WriteTo.File(@"Logs\log.txt", rollingInterval: RollingInterval.Day, rollOnFileSizeLimit: true)
+                        .CreateLogger();
+builder.Host.UseSerilog(logger);
+
 builder.Services.AppExtendServices();
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
