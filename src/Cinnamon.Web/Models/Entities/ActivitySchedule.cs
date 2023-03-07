@@ -12,6 +12,7 @@ public class ActivitySchedule
     public int PerUnit2 {get; set;}
     public string PriceUnit2 {get; set;} = "Session";
     public int TempId {get; set;}
+    public int Order {get; set;}
 
     public long LongPrice {
         get{
