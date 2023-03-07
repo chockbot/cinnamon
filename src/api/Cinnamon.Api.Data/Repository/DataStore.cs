@@ -59,6 +59,8 @@ public class DataStore : IDataStore
 
     public IFailedLogin FailedLogin => new FailedLoginEntity(applicationContext);
 
+    public IRequestRefund RequestRefund => new RequestRefundEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
