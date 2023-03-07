@@ -980,7 +980,10 @@ public class ActivityController : ControllerBase
                     SessionName = activity.SessionName,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
-                            Id  = activity.Owner.Id
+                            Id  = activity.Owner.Id,
+                            ImageSrc = activity.Owner.ImageSrc,
+                            FirstName = activity.Owner.FirstName,
+                            LastName = activity.Owner.LastName
                         } : null
                 }
             });

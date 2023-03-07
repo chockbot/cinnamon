@@ -117,7 +117,8 @@ public class GetActivityHandler : IGetActivityHandler
                     Id = activity.Owner.Id,
                     FirstName = activity.Owner.FirstName,
                     LastName = activity.Owner.LastName,
-                    Email = activity.Owner.Email
+                    Email = activity.Owner.Email,
+                    ImageSrc = activity.Owner.ProfileImg ?? string.Empty
                 } : null
             };
 
