@@ -12,4 +12,7 @@ public class PurchaseOrder : BaseEntity
     public decimal OverallTotal {get; set;}
     public int Status {get; set;}
     public string Payload {get; set;}
+
+    public Activity Activity {get; set;}
+    public ActivitySchedule Schedule {get; set;}
 }
