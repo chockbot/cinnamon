@@ -31,7 +31,9 @@
             }
             else
             {
-                <PrimaryButton ModalTarget="#loginModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Try Cinnamon Making" />
+                <PrimaryButton OnClick="() =>signinModal.Show()" Text="Try Cinnamon Making" />
+              @*  <Button Border="Border.Is0" Clicked="() => signinModal.Show()">Try Cinnamon Making </Button>*@
+               @* <PrimaryButton ModalTarget="#loginModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Try Cinnamon Making" />*@
             }
         </div>
     </div>
@@ -142,8 +144,12 @@
 </div>
 <Footer></Footer>
 
+<ModalLogin @ref="signinModal" />
+
 @code{
     public AuthenticationState AuthState { get; set; }
+
+    private ModalLogin signinModal { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
