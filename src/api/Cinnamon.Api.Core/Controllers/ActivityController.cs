@@ -92,7 +92,8 @@ public class ActivityController : ControllerBase
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order
                     };
                 }),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
@@ -227,6 +228,7 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
+                            Order = s.Order
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
@@ -471,8 +473,8 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
-                                Id = s.Id
-                                
+                                Id = s.Id,
+                                Order = s.Order
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -556,6 +558,7 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
+                                Order = s.Order
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -653,6 +656,7 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
+                                Order = s.Order
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -752,6 +756,7 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
+                            Order = s.Order
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -841,7 +846,8 @@ public class ActivityController : ControllerBase
                             Price = s.Price,
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
-                            UnitPrice = s.UnitPrice
+                            UnitPrice = s.UnitPrice,
+                            Order = s.Order
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -933,6 +939,7 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
+                            Order = s.Order
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1025,6 +1032,7 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
+                            Order = s.Order
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1185,7 +1193,8 @@ public class ActivityController : ControllerBase
                                 Price = s.Price,
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice
+                                UnitPrice = s.UnitPrice,
+                                Order = s.Order
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -1396,6 +1405,7 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
+                                Order = s.Order
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,

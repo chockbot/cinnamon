@@ -17,7 +17,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> CreateSchedule(int ActivityId, string Name, string datetime, 
                             decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                            int PerUnit2, string PriceUnit2)
+                            int PerUnit2, string PriceUnit2, int order)
         {
             try
             {
@@ -38,9 +38,10 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = PriceUnit1,
                     PerUnit2 = PerUnit2,
                     PriceUnit2 = PriceUnit2,
+                    Order = order
                 });
 
-                if(!result.Succeeded)
+                if(!result.Succeeded || result.Result == null)
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(result.Error.Exception, result.Message);
                 }
@@ -57,6 +58,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
+                    Order = result.Result.Order
                 },
                 result.Message);
             }
@@ -89,6 +91,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        Order = s.Order
                     };
                 });
 
@@ -110,6 +113,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        Order = s.Order
                     };
                 });
 
@@ -159,7 +163,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             try
             {
                 var result = await _dataStore.ActivitySchedule.GetAllAsync();
-                if (!result.Succeeded)
+                if (!result.Succeeded || result.Result == null)
                 {
                     return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(result.Error.Exception, result.Message);
                 }
@@ -214,6 +218,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
+                    Order = result.Result.Order
                 },
                 result.Message); 
             }
@@ -244,6 +249,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         ActivityId = s.ActivityId,
+                        Order = s.Order
                     };
                 });
 
@@ -266,6 +272,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
+                            Order = s.Order
                         };
                     }), "Successfully update many schedules"
                 );
@@ -278,12 +285,12 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> UpdateSchedule(int ScheduleId, string Name, string datetime, 
                                     decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                                    int PerUnit2, string PriceUnit2)
+                                    int PerUnit2, string PriceUnit2, int order)
         {
             try
             {
                 var checkSchedule = await _dataStore.ActivitySchedule.GetByIdAsync(ScheduleId);
-                if(!checkSchedule.Succeeded)
+                if(!checkSchedule.Succeeded || checkSchedule.Result == null)
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(checkSchedule.Error.Exception, checkSchedule.Message);
                 }
@@ -300,9 +307,10 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = PriceUnit1,
                     PerUnit2 = PerUnit2,
                     PriceUnit2 = PriceUnit2,
+                    Order = order
                 });
 
-                if (!result.Succeeded)
+                if (!result.Succeeded || result.Result == null)
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(result.Error.Exception, result.Message);
                 }
@@ -319,6 +327,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
+                    Order = result.Result.Order
                 },
                 result.Message);
             }

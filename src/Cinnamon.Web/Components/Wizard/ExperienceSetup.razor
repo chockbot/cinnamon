@@ -28,18 +28,14 @@
             </label>
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @foreach (var schedule in Model.Activity.ActivitySchedules)
+            @foreach (var schedule in Model.Activity.ActivitySchedules.OrderBy(s => s.Order))
             {
-                <div draggable="true" @key=@schedule.Id id="@schedule.Id"
-                    ondragover="event.preventDefault();" 
-                    @ondragstart="@( (e) => HandleDragStart(e, schedule))"
-                    @ondrop="@(() => HandleOnDrop(schedule))"
-                    @ondragenter="@( () => HandleDragEnter(schedule))"
-                    @ondragend="HandleDragEnd"
-                >
+                <div @key=@schedule.Id id='@($"schedule-{schedule.TempId}")' data-order="@schedule.Order">
                     <ScheduleItem @key="schedule" scheduleModel="schedule" @bind-Model="Model" />
-                    <div class="center" style="width:100%;">
-                        <img class="drag-icon" draggable="false" src="/images//reorder-icon.png"/>
+                    <div class="center w-100 p-3">
+                        @* <img class="drag-icon" draggable="false" src="/images//reorder-icon.png" /> *@
+                        <Button Border="Border.Is0" Clicked='() => MoveScheduleUp(schedule)' class="btn-primary me-2">Move Up</Button>
+                        <Button Border="Border.Is0" Clicked='() => MoveScheduleDown(schedule)' class="btn-primary">Move Down</Button>
                     </div>
                     <hr class="solid"/>
                 </div>
@@ -610,11 +606,17 @@
     {
         // Get Next Number
         var maxIdItem = Model.Activity.ActivitySchedules.MaxBy(x => x.Id);
+        var MaxOrder = Model.Activity.ActivitySchedules.MaxBy(s => s.Order);
         var maxId = 0;
+        int order = 0;
         if (maxIdItem != null) {
-            maxId = (int)maxIdItem.Id; 
+            maxId = maxIdItem.Id;
         }
-        Model.Activity.ActivitySchedules.Add(new ActivitySchedule {Id = maxId + 1, PerUnit1 = 1, PerUnit2 = 1});
+        if(MaxOrder != null)
+        {
+            order = maxIdItem.Order;
+        }
+        Model.Activity.ActivitySchedules.Add(new ActivitySchedule {Id = maxId + 1, PerUnit1 = 1, PerUnit2 = 1, Order = order + 1});
     }
 
     private ActivitySchedule? DraggedItem;
@@ -808,6 +810,40 @@
     {
         get{
             return IsImagesOverLimit || (validImages != 3);
+        }
+    }
+    
+    private void MoveScheduleUp(ActivitySchedule selected)
+    {
+        var orderedSchedules = Model.Activity.ActivitySchedules.OrderBy(s => s.Order).ToList();
+        for(int i =0; i < orderedSchedules.Count; i++)
+        {
+            var schedule = orderedSchedules[i];
+            if(selected == schedule)
+            {
+                if(i > 0)
+                {
+                    orderedSchedules[i-1].Order += 1;
+                    schedule.Order -=1;
+                }
+            }
+        }
+    }
+
+    private void MoveScheduleDown(ActivitySchedule selected)
+    {
+        var orderedSchedules = Model.Activity.ActivitySchedules.OrderBy(s => s.Order).ToList();
+        for(int i =0; i < orderedSchedules.Count; i++)
+        {
+            var schedule = orderedSchedules[i];
+            if(selected == schedule)
+            {
+                if(i != orderedSchedules.Count -1)
+                {
+                    orderedSchedules[i+1].Order -= 1;
+                    schedule.Order +=1;
+                }
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
 @using Cinnamon.Web.Models;
+@using Cinnamon.Web.Models.Entities;
 @using Blazorise.RichTextEdit;
 @inject IJSRuntime jsRuntime;
 
@@ -27,17 +28,14 @@
             </label>
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @foreach (var schedule in Model.Activity.ActivitySchedules)
+            @foreach (var schedule in Model.Activity.ActivitySchedules.OrderBy(s => s.Order))
             {
-                <div draggable="true" @key=@schedule.TempId id="@schedule.TempId"
-                 ondragover="event.preventDefault();"
-                 @ondragstart="@( (e) => HandleDragStart(e, schedule))"
-                 @ondrop="@(() => HandleOnDrop(schedule))"
-                 @ondragenter="@( () => HandleDragEnter(schedule))"
-                 @ondragend="HandleDragEnd">
+                <div @key=@schedule.TempId id='@($"schedule-{schedule.TempId}")' data-order="@schedule.Order">
                     <ScheduleItemUpdate @key="schedule.TempId" scheduleModel="schedule" @bind-Model="Model" OnScheduleRemoved="RemoveSchedule" />
-                    <div class="center" style="width:100%;">
-                        <img class="drag-icon" draggable="false" src="/images//reorder-icon.png" />
+                    <div class="center w-100 p-3">
+                        @* <img class="drag-icon" draggable="false" src="/images//reorder-icon.png" /> *@
+                        <Button Border="Border.Is0" Clicked='() => MoveScheduleUp(schedule)' class="btn-primary me-2">Move Up</Button>
+                        <Button Border="Border.Is0" Clicked='() => MoveScheduleDown(schedule)' class="btn-primary">Move Down</Button>
                     </div>
                     <hr class="solid" />
                 </div>
@@ -670,7 +668,8 @@
     private void AddEmptySchedule()
     {
         int maxId = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.TempId) + 1;
-        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1 });
+        int order = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.Order) + 1;
+        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1, Order = order });
     }
 
     private void RemoveSchedule(Models.Entities.ActivitySchedule schedule)
@@ -1009,5 +1008,39 @@
     {
         public string Url { get; set; }
         public string FileName { get; set; }
+    }
+
+    private void MoveScheduleUp(ActivitySchedule selected)
+    {
+        var orderedSchedules = Model.Activity.ActivitySchedules.OrderBy(s => s.Order).ToList();
+        for(int i =0; i < orderedSchedules.Count; i++)
+        {
+            var schedule = orderedSchedules[i];
+            if(selected == schedule)
+            {
+                if(i > 0)
+                {
+                    orderedSchedules[i-1].Order += 1;
+                    schedule.Order -=1;
+                }
+            }
+        }
+    }
+
+    private void MoveScheduleDown(ActivitySchedule selected)
+    {
+        var orderedSchedules = Model.Activity.ActivitySchedules.OrderBy(s => s.Order).ToList();
+        for(int i =0; i < orderedSchedules.Count; i++)
+        {
+            var schedule = orderedSchedules[i];
+            if(selected == schedule)
+            {
+                if(i != orderedSchedules.Count -1)
+                {
+                    orderedSchedules[i+1].Order -= 1;
+                    schedule.Order +=1;
+                }
+            }
+        }
     }
 }

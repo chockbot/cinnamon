@@ -105,6 +105,7 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
+                                Order = s.Order
                             };
                         }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivitySchedule>(),
                         Images = e.Images != null ? e.Images.OrderBy(i => i.Order).Select(i => {

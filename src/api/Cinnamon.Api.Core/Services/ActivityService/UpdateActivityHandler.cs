@@ -179,9 +179,15 @@ public class UpdateActivityHandler : IUpdateActivityHandler
             // update activity schedules
             if(args.ActivitySchedules != null)
             {
+                int order = 0;
+                var orderedSchedules = args.ActivitySchedules.OrderBy(s => s.Order).Select(s => {
+                    order += 1;
+                    s.Order = order;
+                    return s;
+                }).ToList();
                 var associatedIds = activity.Result.Result.Schedules.Select(s => s.Id);
-                var newSchedules = args.ActivitySchedules.Where(s => s.Id == 0);
-                var updatedSchedules = args.ActivitySchedules.Where(s => associatedIds.Contains(s.Id));
+                var newSchedules = orderedSchedules.Where(s => s.Id == 0);
+                var updatedSchedules = orderedSchedules.Where(s => associatedIds.Contains(s.Id));
 
                 if(newSchedules.Count() > 0)
                 {
@@ -198,6 +204,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
+                                Order = s.Order
                             };
                         })
                     });
@@ -227,6 +234,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
+                                Order = s.Order
                             };
                         })
                     });
