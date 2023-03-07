@@ -47,5 +47,6 @@ public class UpdateActivityArgs : IInteractor
         public string? PriceUnit1 {get; set;}
         public int? PerUnit2 {get; set;}
         public string? PriceUnit2 {get; set;}
+        public int Order {get; set;}
     }
 }
