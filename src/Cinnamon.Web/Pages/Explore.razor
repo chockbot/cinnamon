@@ -753,7 +753,7 @@
                            </div>
                             @foreach (var act in activities)
                             {
-                                <div class="col-xl-3 col-lg-4 col-sm-12 col-12 d-flex flex-column align-items-center"
+                                <div class="col-xl-3 col-lg-4 col-sm-6 col-6 d-flex flex-column align-items-center"
                          style="margin-bottom:30px">
                                     <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                                         <Div ElementId="#b-animate">
@@ -1433,7 +1433,7 @@
         }
         if (schedules.Count == 1)
         {
-            return $"₱ {(long)schedules[0].Price} / {schedules[0].PerUnit1} {schedules[0].PriceUnit1} / {schedules[0].PerUnit2} {schedules[0].PriceUnit2}";
+            return $"₱ {(long)schedules[0].Price}";
         }
         return string.Empty;
     }
