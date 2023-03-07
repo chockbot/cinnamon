@@ -2,22 +2,20 @@
 @using Cinnamon.Web.Models.Customer;
 @inject IJSRuntime JsRuntime
 
-<Div class="image-wrapper">
-    <label for="@Model.ImageName" class="upload-image">
-        <Figure Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0">
-            <FigureImage id="@Model.ImageId" Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0" Source="@GetFrontImageSrc()" />
+<div class="image-wrapper justify-content-center" style="border:1px dashed #000000; border-radius:5px;width:430px;height:270px;">
+    <label for="@Model.ImageName" class="upload-image justify-content-center" style="display:flex">
+        <Figure TextAlignment="TextAlignment.Center">
+            <FigureImage id="@Model.ImageId" style="width:430px;height:270px;" Margin="Margin.Is0" Source="@GetFrontImageSrc()" />
         </Figure>
     </label>
     <InputFile @ref="inputFile" style="display: none;" id="@Model.ImageName" name="@Model.ImageName" accept=".png,.jpg,.jpeg" OnChange="ShowPreview" />
-    <p class="m-0">@Model.Label</p>
     <p class="m-0 error-message" id="@Model.ErrorId" style="font-size: 12px; color: red; display: none;">Please provide image</p>
-</Div>
+</div>
 
 @code 
 {
     [Parameter]
-    public UploadGovernmenId Model {get; set;}
-
+    public UploadGovernmenId Model { get; set; }
     private InputFile? inputFile;
 
     private string GetFrontImageSrc()

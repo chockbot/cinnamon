@@ -47,7 +47,7 @@
                             </CardTitle>
                             @if (!Model.CustomerProfile.IsVerified)
                             {
-                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()"
+                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => NavigateToGetVerified()"
                                 Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">
                                     Get the badge
                                 </Button>
@@ -348,6 +348,10 @@
         }
 
         isEditAbout = false;
+    }
+    private void NavigateToGetVerified()
+    {
+        NavigationManager.NavigateTo("/getverified/" + Model.Token);
     }
 }
 
