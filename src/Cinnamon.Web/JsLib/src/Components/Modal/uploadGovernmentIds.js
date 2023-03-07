@@ -37,7 +37,7 @@ uploadGovernmentIds._initForm = (dotnetObj) => {
     dotnetObj.invokeMethodAsync("HideLoading");
 
     if (data.success) {
-      dotnetObj.invokeMethodAsync("HideModal");
+        location.href = "/verificationprocess";
     } else {
       dotnetObj.invokeMethodAsync("ShowError", data.message);
     }

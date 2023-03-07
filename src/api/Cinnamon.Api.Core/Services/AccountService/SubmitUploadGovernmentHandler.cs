@@ -125,8 +125,9 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
             var updateIds = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
                 FrontIdImagePath = paths[0].FileSrc,
                 BackIdImagePath = paths[1].FileSrc,
-                CustomerId = id
-            });
+                CustomerId = id,
+                IsVerified = 1
+            });;
 
             if(!updateIds.Succeeded || updateIds.Result == null)
             {

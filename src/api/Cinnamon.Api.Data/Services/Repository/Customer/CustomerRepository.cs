@@ -106,7 +106,7 @@ public class CustomerRepository : ICustomerRepository
                 FirstName = validCustomer.FirstName,
                 Id = validCustomer.Id,
                 IsMaker = validCustomer.IsMaker,
-                IsVerified = validCustomer.IsVerified,
+                IsVerified = validCustomer.IsVerifiedBadge,
                 LastName = validCustomer.LastName,
                 ProfileImg = validCustomer.ProfilePath,
                 DateJoined = validCustomer.DateJoined,
@@ -146,7 +146,7 @@ public class CustomerRepository : ICustomerRepository
                 IsMaker = ismaker,
                 FirstName = firstname,
                 LastName = lastname,
-                IsVerified = false,
+                IsVerifiedBadge = 0,
                 UserId = userId,
                 Handler = handler
             };
@@ -166,7 +166,7 @@ public class CustomerRepository : ICustomerRepository
                 Email = createdCustomer.Email,
                 FirstName = createdCustomer.FirstName,
                 LastName = createdCustomer.LastName,
-                IsVerified = createdCustomer.IsVerified,
+                IsVerified = createdCustomer.IsVerifiedBadge,
                 ExternalLogin = createdCustomer.ExternalLogin,
                 IsMaker = createdCustomer.IsMaker,
                 Id = createdCustomer.Id,
@@ -219,7 +219,7 @@ public class CustomerRepository : ICustomerRepository
         try
         {
             Expression<Func<Entities.Customer,bool>> filter = 
-                a => (isVerified.HasValue ? a.IsVerified == isVerified.Value : true) &&
+                a => /*(isVerified.HasValue ? a.IsVerified == isVerified.Value : true) &&*/
                     (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower()));
 
             var result = await dataStore.Customer.FindAsync(filter,count, skip);
@@ -241,7 +241,7 @@ public class CustomerRepository : ICustomerRepository
                     LastName = c.LastName,
                     Id = c.Id,
                     IsMaker = c.IsMaker,
-                    IsVerified = c.IsVerified,
+                    IsVerified = c.IsVerifiedBadge,
                     ProfileImg = c.ProfilePath,
                     Handler = c.Handler
                 };
@@ -278,7 +278,7 @@ public class CustomerRepository : ICustomerRepository
                     LastName = c.LastName,
                     Id = c.Id,
                     IsMaker = c.IsMaker,
-                    IsVerified = c.IsVerified,
+                    IsVerified = c.IsVerifiedBadge,
                     ProfileImg = c.ProfilePath,
                     Handler =c.Handler
                 };
@@ -312,7 +312,7 @@ public class CustomerRepository : ICustomerRepository
                 LastName = result.Result.LastName,
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
-                IsVerified = result.Result.IsVerified,
+                IsVerified = result.Result.IsVerifiedBadge,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler
             };
@@ -346,7 +346,7 @@ public class CustomerRepository : ICustomerRepository
                 LastName = result.Result.LastName,
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
-                IsVerified = result.Result.IsVerified,
+                IsVerified = result.Result.IsVerifiedBadge,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler
             };
@@ -380,7 +380,7 @@ public class CustomerRepository : ICustomerRepository
                 LastName = result.Result.LastName,
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
-                IsVerified = result.Result.IsVerified,
+                IsVerified = result.Result.IsVerifiedBadge,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler
             };
@@ -435,7 +435,7 @@ public class CustomerRepository : ICustomerRepository
         }
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, 
-        string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh)
+        string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, string? frontIdImagePath, string? backIdImageParh)
     {
         try
         {
@@ -455,7 +455,7 @@ public class CustomerRepository : ICustomerRepository
             customer.ProfilePath = profilePath ?? customer.ProfilePath;
             customer.IsMaker = ismaker ?? customer.IsMaker;
             customer.ExternalLogin = externalLogin ?? customer.ExternalLogin;
-            customer.IsVerified = isVerified ?? customer.IsVerified;
+            customer.IsVerifiedBadge = isVerified ?? customer.IsVerifiedBadge;
             customer.FrontIdImagePath = frontIdImagePath ?? customer.FrontIdImagePath;
             customer.BackIdImagePath = backIdImageParh ?? customer.BackIdImagePath;
 
@@ -476,7 +476,7 @@ public class CustomerRepository : ICustomerRepository
                 ExternalLogin = customer.ExternalLogin,
                 Id = customer.Id,
                 IsMaker = customer.IsMaker,
-                IsVerified = customer.IsVerified,
+                IsVerified = customer.IsVerifiedBadge,
                 ProfileImg = customer.ProfilePath,
                 Handler = customer.Handler
             }, "Successfully updated customer data");

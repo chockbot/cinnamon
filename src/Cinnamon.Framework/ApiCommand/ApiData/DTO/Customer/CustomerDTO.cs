@@ -10,7 +10,7 @@ public class CustomerDTO
     public string? About { get; set; }
     public string? ProfileImg { get; set; }
     public bool IsMaker { get; set; }
-    public bool IsVerified { get; set; }
+    public int IsVerified { get; set; }
     public bool ExternalLogin { get; set; }
     public DateTime DateJoined { get; set; }
     public string Handler {get; set;}

@@ -25,32 +25,49 @@
                                 <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                             </Figure>
                             <div class="edit-icon">
-                                @if (!Model.CustomerProfile.IsVerified)
-                                {
-                                    <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" @onclick="() => upload.ShowModal()">
-                                        <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
-                                    </Button>
-                                }
+                                <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" @onclick="() => upload.ShowModal()">
+                                    <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
+                                </Button>
                             </div>
                         </CardHeader>
                         <CardBody Border="Border.Is0" Padding="Padding.Is1.OnY">
-                            <CardTitle TextAlignment="TextAlignment.Center">
-                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
-                                @if(Model.CustomerProfile.IsVerified)
-                                {
-                                    <p class="text-color-8080 my-1 font-24">
-                                        <Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />
-                                        <span class="text-capitalize">verified user</span>
-                                    </p>
-                                }
-                                <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
-                            </CardTitle>
-                            @if (!Model.CustomerProfile.IsVerified)
+                            @switch (Model.CustomerProfile.IsVerified)
                             {
-                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => NavigateToGetVerified()"
-                                Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">
-                                    Get the badge
-                                </Button>
+                                case 0:
+                                    <CardTitle TextAlignment="TextAlignment.Center">
+                                       <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                       <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
+                                       <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => NavigateToGetVerified()"
+                                           Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">
+                                            Get the badge
+                                       </Button>
+                                    </CardTitle>
+                                    break;
+                                case 1:
+                                    <CardTitle TextAlignment="TextAlignment.Center">
+                                        <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                        <p class="text-color-8080 font-16 mb-1">Your account is being verified, we’ll keep you notified.</p>
+
+                                        <p class="text-color-8080 my-1 font-24">
+                                            <img class="img-pending" src="images/pendingicon.png"/>
+                                            @*<Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />*@
+                                            <span class="span-pending">Pending Verification</span>
+                                        </p>
+                                        
+                                    </CardTitle>
+                                    break;
+                                case 2:
+                                    <CardTitle TextAlignment="TextAlignment.Center">
+                                        <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                        <p class="text-color-8080 my-1 font-24">
+                                            <img class="img-verified" src="images/VerifiedIcon.png" />
+                                            @*<Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />*@
+                                            <span class="span-verified">Verified</span>
+                                        </p>
+                                    </CardTitle>
+                                    break;
+                                default:
+                                    break;
                             }
                         </CardBody>
                         <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
@@ -138,7 +155,7 @@
                         <Experiences Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
                     </TabPanel>
                     <TabPanel Name="personal-info">
-                        <PersonalInfo @bind-Model="Model" OnEditIdClick="() => uploadIdModal.ShowModal()" />
+                        <PersonalInfo @bind-Model="Model" OnEditIdClick="() => NavigateToUploadId()" />
                     </TabPanel>
                     @if(Model.CustomerProfile.IsMaker)
                     {
@@ -151,13 +168,10 @@
         </Container>
     </section>
     <ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
-    <ModalUploadGovernmentId @ref="uploadIdModal" Token="@Model.Token"/>
 }
 
 @code 
 {
-    private ModalUploadGovernmentId uploadIdModal;
-
     private MakerExperiences makerExperiences;
 
     private string selectedTab = "experiences";
@@ -352,6 +366,10 @@
     private void NavigateToGetVerified()
     {
         NavigationManager.NavigateTo("/getverified/" + Model.Token);
+    }
+    private void NavigateToUploadId()
+    {
+        NavigationManager.NavigateTo("/uploadGovermentId/" + Model.Token);
     }
 }
 
