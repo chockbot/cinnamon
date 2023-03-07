@@ -9,7 +9,7 @@ public class GetProfileResult
     public string Email {get; set;}
     public string About {get; set;}
     public bool IsMaker {get; set;}
-    public bool IsVerified {get; set;}
+    public int IsVerified {get; set;}
     public string ProfileImagePath {get; set;}
     public string Handler {get; set;}
 }

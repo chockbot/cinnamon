@@ -15,7 +15,7 @@ public class Customer : BaseEntity
     public DateTime DateJoined {get; set;}
     public bool IsMaker {get; set;}
     public bool ExternalLogin {get; set;}
-    public bool IsVerified {get; set;}
+    public int IsVerifiedBadge { get; set; }
     public string? FrontIdImagePath {get; set;}
     public string? BackIdImagePath {get; set;}
     public string Handler {get; set;}

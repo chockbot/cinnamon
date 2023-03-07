@@ -328,7 +328,7 @@ public class ActivityRepository : IActivityRepository
                     Handler = customer.Handler,
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
+                    IsVerified = customer.IsVerifiedBadge,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -507,7 +507,7 @@ public class ActivityRepository : IActivityRepository
                         Handler = customer.Handler,
                         Id = customer.Id,
                         IsMaker = customer.IsMaker,
-                        IsVerified = customer.IsVerified,
+                        IsVerified = customer.IsVerifiedBadge,
                         LastName = customer.LastName,
                         ProfileImg = customer.ProfilePath
                     };
@@ -698,7 +698,7 @@ public class ActivityRepository : IActivityRepository
                     Handler = customer.Handler,
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
+                    IsVerified = customer.IsVerifiedBadge,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -846,7 +846,7 @@ public class ActivityRepository : IActivityRepository
                     Handler = customer.Handler,
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
+                    IsVerified = customer.IsVerifiedBadge,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -1209,7 +1209,7 @@ public class ActivityRepository : IActivityRepository
                         Handler = customer.Handler,
                         Id = customer.Id,
                         IsMaker = customer.IsMaker,
-                        IsVerified = customer.IsVerified,
+                        IsVerified = customer.IsVerifiedBadge,
                         LastName = customer.LastName,
                         ProfileImg = customer.ProfilePath
                     };

@@ -720,6 +720,7 @@ public class AccountController : ControllerBase
                     FirstName = objResult.FirstName,
                     IsMaker = objResult.IsMaker,
                     LastName = objResult.LastName,
+                    IsVerified = objResult.IsVerified,
                     ProfileImg = objResult.ProfileImg,
                     About = objResult.About
                 },
@@ -757,6 +758,7 @@ public class AccountController : ControllerBase
                     Id = objResult.Id,
                     FirstName = objResult.FirstName,
                     IsMaker = objResult.IsMaker,
+                    IsVerified = objResult.IsVerified,
                     LastName = objResult.LastName,
                     ProfileImg = objResult.ProfileImg,
                     About = objResult.About

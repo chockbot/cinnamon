@@ -49,6 +49,7 @@ public class GetCustomerByHandler : IGetCustomerByHandler
                 LastName = result.Result.Result.LastName,
                 Id = result.Result.Result.Id,
                 IsMaker = result.Result.Result.IsMaker,
+                IsVerified = result.Result.Result.IsVerified,
                 ProfileImg = result.Result.Result.ProfileImg,
                 About = result.Result.Result.About
 
