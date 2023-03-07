@@ -97,5 +97,8 @@ public class ActivityDTO
     {
         public int Id {get; set;}
         public string Handler {get; set;}
+        public string ImageSrc {get; set;}
+        public string FirstName {get; set;}
+        public string LastName {get; set;}
     }
 }
