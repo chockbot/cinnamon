@@ -146,9 +146,11 @@ public class CreateActivityHandler : ICreateActivityHandler
             var activity = activityRes.Result.Result;
 
             // create activity schedules
+            int order = 0;
             var createdSchedules = await scheduleData.CreateManySchedules(new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs {
                 ActivityId = activity.Id,
-                Schedules = args.ActivitySchedules.Select(s => {
+                Schedules = args.ActivitySchedules.OrderBy(s => s.Order).Select(s => {
+                    order += 1;
                     return new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.Schedule {
                         DateTime = s.DateTime,
                         Name = s.Name,
@@ -157,7 +159,8 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        Order = order
                     };
                 })
             });
@@ -236,7 +239,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
                     };
                 })
 

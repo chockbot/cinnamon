@@ -25,6 +25,8 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request
         [Required]
         public bool isSetSession { get; set; } = false;
         [Required]
-        public string SessionName { get; set; } 
+        public string SessionName { get; set; }
+        [Required]
+        public int Order {get; set;}
     }
 }

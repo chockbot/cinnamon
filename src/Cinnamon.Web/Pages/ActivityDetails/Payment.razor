@@ -27,7 +27,7 @@
     </div>
 
     <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
-        <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
+        <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3 m-purchase-container">
             <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
                 <div class="col-lg-5 col-md-5 col-sm-12 col-12">
                     <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
@@ -138,84 +138,93 @@
                 </div>
             </div>
             <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
-                <div class="card shadow p-lg-3 p-3 mr-5 d-flex flex-column sticky-top mb-3" style="top:80px;">
-                    <div style="font-size:1.125rem">
-                        <span class="fw-bold">@Model.Activity.Title</span>
-                        <div style="font-size:0.6rem">
-                            @Model.SelectedSchedule.Name
-                        </div>
-                        <div style="font-size:0.6rem">
-                            @Model.SelectedSchedule.DateTime
-                        </div>
-                    </div>
-                    <hr />
-                    <div class="d-flex align-items-center" style="font-size:0.8rem">
-                        Your booking is protected by <div class="app-name">
-                            @Resources.App.appName
-                        </div>
-                    </div>
-                    <hr />
-                    <div>
-                        <span class="fw-bold" style="font-size:1.125rem">Price details</span>
-                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                        <div>
-                            @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.Price x @Model.SelectedAttendees.Count head
-                        </div>
-                            <div>
-                            Php@((@Model.SelectedSchedule.Price * Model.SelectedAttendees.Count).ToString("#,###.00"))
-                        </div>
-                        </div>
-                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                        <div>
-                                Convinience fee - 15%
-                        </div>
-                            <div>
-                                Php@((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m)
-                        </div>
-                        </div>
-                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                            @if(couponAction == CouponAction.NoCoupon)
-                            {
-                                <div>
-                                    <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">enter coupon</span>
+                <div class="sticky-top mb-3" style="top:80px;">
+                    <Card>
+                        <CardBody>
+                            <div class="d-flex" style="font-size:1.125rem">
+                                <div class="activity-img">
+                                    <img src="@GetActivityFirstImage" alt="Activity Image">
                                 </div>
-                            }
-                            else if(couponAction == CouponAction.EnteringCoupon)
-                            {
-                                <div class="d-flex align-items-center">
-                                    <span class="enter-coupon" @onclick="() => couponAction = CouponAction.AppliedCoupon">add coupon</span>
+                                <div class="activity-details">
+                                    <span class="fw-bold activity-title">@Model.Activity.Title</span>
+                                    <div class="activity-schedule">
+                                        @Model.SelectedSchedule.Name
+                                    </div>
+                                    <div class="activity-schedule">
+                                        @Model.SelectedSchedule.DateTime
+                                    </div>
                                 </div>
-                                <div>
-                                    <TextEdit class="text-end" required Placeholder="enter coupon code" Size="Size.ExtraSmall" />
-                                </div>
-                            }
-                            else if(couponAction == CouponAction.AppliedCoupon)
-                            {
-                                <div class="d-flex align-items-center">
-                                    <span class="enter-coupon" @onclick="() => couponAction = CouponAction.EnteringCoupon">remove coupon</span>
-                                </div>
-                                <div>
-                                - <span>Php</span>@couponAmount.ToString("#,###.00")
-                                </div>
-                            }
-                        </div>
-                        <br>
-                        <div class="d-flex justify-content-between py-1" style="font-size:0.8rem">
-                            <div>
-                                Total (PHP)
                             </div>
-                            <div>
-                                @if(Model.SelectedAttendees.Count > 0)
-                                {
-                                    <span>Php</span>@((((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00"))
-                                }
-                                else 
-                                {
-                                    <span>Php0.00</span>
-                                }
+                            <hr />
+                            <div class="price-details">
+                                <span class="fw-bold price-title">Price Details</span>
+                                <div class="d-flex justify-content-between py-1 price-per-head">
+                                    <div>
+                                        @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.Price x @Model.SelectedAttendees.Count head
+                                    </div>
+                                    <div>
+                                        @GetTotalPerHeadPrice
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between py-1 price-per-head">
+                                    <div>
+                                        Convinience fee - 15%
+                                    </div>
+                                    <div>
+                                        @GetConvinienceFee
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between py-1 price-per-head">
+                                    <div>
+                                        <TextEdit style="background-color: #F3F6FC;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
+                                    </div>
+                                    <div>
+                                        PHP 0.00
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between py-1 price-per-head">
+                                    <div class="apply-credits">
+                                        Apply credits
+                                    </div>
+                                    <div>
+                                        PHP 0.00
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="d-flex justify-content-between py-1 total-payments">
+                                    <div>
+                                        Total Payments
+                                    </div>
+                                    <div>
+                                        @GetTotalPrice
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                            <hr />
+                            <div class="d-flex align-items-center justify-content-center protected-footer">
+                                Your booking is protected by 
+                                <div class="app-name">
+                                    @Resources.App.appName
+                                </div>
+                            </div>
+                        </CardBody>
+                    </Card>
+                    <Card class="mt-3">
+                        <CardBody class="activity-owner">
+                            <div class="d-flex align-items-center">
+                                <div class="image-src">
+                                    <img src="@GetActivityOwnerProfileSrc" alt="owner-profile">
+                                </div>
+                                <div class="ms-2">
+                                    <p class="experience-by">Experience by</p>
+                                    <p class="owner">@($"{activity.Owner.FirstName} {activity.Owner.LastName}")</p>
+                                </div>
+                                <div class="ms-5 verified-logo">
+                                    <img src="images/VerifiedIcon.png" alt="verified-logo">
+                                </div>
+                            </div>
+                        </CardBody>
+                    </Card>
                 </div>
             </div>
         </div>
@@ -242,8 +251,12 @@
                     </div>
                     <div class="form-outline mb-2 pb-1">
                         <label>Credit or debit card</label>
-                        <select Class="form-control">
-                            <option value="1">Credit or debit card</option>
+                        <select Class="form-control" @bind="SelectedPaymentCode">
+                            <option value="" selected disabled>Select Payment Method</option>
+                            @foreach (var item in Payments)
+                            {
+                                <option value="@item.Code">@item.DisplayName</option>
+                            }
                         </select>
                     </div>
 
@@ -367,7 +380,9 @@
             IncludeActivityAddress = true,
             IncludeActivityDescription = true,
             IncludeAtivitySchedules = true,
-            IsActive = true
+            IsActive = true,
+            IncludeCustomer = true,
+            IncludeActivityImages = true
         });
         if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
@@ -423,7 +438,8 @@
                         Price = e.Price,
                         PriceUnit1 = e.PriceUnit1,
                         PriceUnit2 = e.PriceUnit2,
-                        UnitPrice = e.UnitPrice
+                        UnitPrice = e.UnitPrice,
+                        Order = e.Order
                     };
                 }).ToList(),
                 Images = result.Images.Select(i =>
@@ -432,14 +448,18 @@
                     {
                         Id = i.Id,
                         ImageSrc = i.ImageSrc,
-                        Name = i.Name
+                        Name = i.Name,
+                        Order = i.Order
                     };
                 }).ToList(),
                 Owner = result.Owner != null ? new CustomerProfile
                 {
                     // map only required fields
                     Id = result.Owner.Id,
-                    Handler = result.Owner.Handler
+                    Handler = result.Owner.Handler,
+                    ProfilePath = result.Owner.ImageSrc,
+                    FirstName = result.Owner.FirstName,
+                    LastName = result.Owner.LastName
                 } : null
             };
         var selectedSchedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
@@ -659,6 +679,61 @@
         {
             payErrorMessage = "Please include family to register";
             isShowPayErrorMessage = true;
+        }
+    }
+
+    private string GetActivityFirstImage {
+        get {
+            if(activity.Images.Count > 0 )
+            {
+                return activity.Images.OrderBy(i => i.Order).First().ImageSrc;
+            }
+            return "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+        }
+    }
+
+    private string GetTotalPerHeadPrice 
+    {
+        get 
+        {
+            if(Model.SelectedAttendees.Count == 0)
+            {
+                return "PHP 0.00";
+            }
+            return "PHP " + (@Model.SelectedSchedule.Price * Model.SelectedAttendees.Count).ToString("#,###.00");
+        }
+    }
+
+    private string GetConvinienceFee 
+    {
+        get {
+            if(Model.SelectedAttendees.Count == 0)
+            {
+                return "PHP 0.00";
+            }
+            return "PHP " + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m).ToString("#,###.00");
+        }
+    }
+
+    private string GetTotalPrice 
+    {
+        get {
+            if(Model.SelectedAttendees.Count == 0)
+            {
+                return "PHP 0.00";
+            }
+            return "PHP " + (((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00");
+        }
+    }
+
+    private string GetActivityOwnerProfileSrc
+    {
+        get {
+            if(activity.Owner == null || string.IsNullOrEmpty(activity.Owner.ProfilePath))
+            {
+                return "images/profile/user.png";
+            }
+            return activity.Owner.ProfilePath;
         }
     }
 

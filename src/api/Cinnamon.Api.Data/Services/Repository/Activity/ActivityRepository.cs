@@ -282,6 +282,7 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
+                        Order = s.Order
                     };
                 }).ToList();
             }
@@ -327,7 +328,7 @@ public class ActivityRepository : IActivityRepository
                     Handler = customer.Handler,
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
+                    IsVerified = customer.IsVerifiedBadge,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -457,6 +458,7 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             PerUnit2 = s.PerUnit2,
+                            Order = s.Order
                         };
                     }).ToList();
                 }
@@ -505,7 +507,7 @@ public class ActivityRepository : IActivityRepository
                         Handler = customer.Handler,
                         Id = customer.Id,
                         IsMaker = customer.IsMaker,
-                        IsVerified = customer.IsVerified,
+                        IsVerified = customer.IsVerifiedBadge,
                         LastName = customer.LastName,
                         ProfileImg = customer.ProfilePath
                     };
@@ -650,6 +652,7 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
+                        Order = s.Order
                     };
                 }).ToList();
             }
@@ -695,7 +698,7 @@ public class ActivityRepository : IActivityRepository
                     Handler = customer.Handler,
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
+                    IsVerified = customer.IsVerifiedBadge,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -797,6 +800,7 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
+                        Order = s.Order
                     };
                 }).ToList();
             }
@@ -842,7 +846,7 @@ public class ActivityRepository : IActivityRepository
                     Handler = customer.Handler,
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
-                    IsVerified = customer.IsVerified,
+                    IsVerified = customer.IsVerifiedBadge,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -1156,6 +1160,7 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             PerUnit2 = s.PerUnit2,
+                            Order = s.Order
                         };
                     }).ToList();
                 }
@@ -1204,7 +1209,7 @@ public class ActivityRepository : IActivityRepository
                         Handler = customer.Handler,
                         Id = customer.Id,
                         IsMaker = customer.IsMaker,
-                        IsVerified = customer.IsVerified,
+                        IsVerified = customer.IsVerifiedBadge,
                         LastName = customer.LastName,
                         ProfileImg = customer.ProfilePath
                     };

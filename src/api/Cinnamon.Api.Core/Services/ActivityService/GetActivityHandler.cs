@@ -101,6 +101,7 @@ public class GetActivityHandler : IGetActivityHandler
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        Order = s.Order
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
@@ -116,7 +117,8 @@ public class GetActivityHandler : IGetActivityHandler
                     Id = activity.Owner.Id,
                     FirstName = activity.Owner.FirstName,
                     LastName = activity.Owner.LastName,
-                    Email = activity.Owner.Email
+                    Email = activity.Owner.Email,
+                    ImageSrc = activity.Owner.ProfileImg ?? string.Empty
                 } : null
             };
 

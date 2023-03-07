@@ -103,6 +103,11 @@
                                         @Resources.App.Sign
                                     </Button>
                                 </li>
+                                <li class="dropdown-item">
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
+                                </li>
                             }
                         }
                         else
@@ -110,6 +115,11 @@
                             <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
                                     @Resources.App.Sign
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                    Help
                                 </Button>
                             </li>
                         }
@@ -159,6 +169,11 @@
                                     </Button>
                                 </li>
                                 <li class="dropdown-item">
+                                    <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                        Help
+                                    </Button>
+                                </li>
+                                <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
                                 </li>
                             }
@@ -168,6 +183,11 @@
                             <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="() => signinModal.Show()">
                                     @Resources.App.Sign
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
+                                    Help
                                 </Button>
                             </li>
                         }
@@ -181,7 +201,9 @@
 
         <div class="container">
             <div class="section-1 row">
-
+                <Div ElementId="#b-animate">
+                    <Animate Anchor="#b-animate" Auto Animation="selectedAnimation" DelayMilliseconds="500">
+                   
                 <div class="activity-sm border-bottom">
                     <div class="row d-flex justify-content-start">
                         <div class="col-sm-12 col-12">
@@ -229,10 +251,10 @@
                     </div>
                 </div>
 
-                <div class="activity-sm border-bottom section-2-lg">
-                    <label class="heading">Most Popular</label>
+                <div class="activity-popular-sm border-bottom">
                     <div class="row d-flex justify-content-start">
                         <div class="col-sm-12 col-12">
+                            <label class="heading">Most Popular</label>
                             <div id="carouselPopularActivities" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
@@ -374,7 +396,7 @@
                     </div>
                 </div>
 
-                <div class="activity-lg border-bottom section-2-lg">
+                <div class="activity-popular-lg border-bottom">
                     <div class="row d-flex justify-content-start">
                         <div class="col-md-12 col-12">
                             <label class="heading">Most Popular</label>
@@ -538,11 +560,10 @@
                 </div>*@
                 </div>
 
-                <div class="activity-md border-bottom section-3-md">
+                <div class="activity-popular-md border-bottom">
                     <div class="row d-flex justify-content-start">
                         <div class="col-md-12 col-12">
                             <label class="heading">Most Popular</label>
-
                             <div id="carouselPopularActivitiesMd" class="carousel slide" data-bs-ride="carousel" data-bs-interval="false">
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
@@ -665,7 +686,8 @@
                         </div>
                     </div>
                 </div>
-
+                    </Animate>
+                </Div>
             </div>
             <!--Section 2-->
             <div class="section-2-lg row">
@@ -721,16 +743,16 @@
                 {
                     <div class="row d-flex justify-content-start">
                            <div style="margin-bottom:20px;">
-                                <div class="d-none d-sm-block">
+                                <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
                                     <label class="heading">Keep exploring for more options</label>
                                 </div>
-                                <div class="d-block d-sm-none">
+                                <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
                                     <label class="heading">Explore More</label>
                                 </div>
                            </div>
                             @foreach (var act in activities)
                             {
-                                <div class="col-xl-3 col-lg-4 col-sm-12 col-12 d-flex flex-column align-items-center"
+                                <div class="col-xl-3 col-lg-4 col-sm-6 col-6 d-flex flex-column align-items-center"
                          style="margin-bottom:30px">
                                     <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                                         <Div ElementId="#b-animate">
@@ -833,7 +855,15 @@
             <!--Section 3-->
             <div class="section-3-md">
                 <div class="row d-flex justify-content-start">
-                    @foreach (var act in activities.OrderBy(a => a.ActivityId))
+                    <div style="margin-bottom:20px;">
+                        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                            <label class="heading">Keep exploring for more options</label>
+                        </div>
+                        <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                            <label class="heading">Explore More</label>
+                        </div>
+                    </div>
+                    @foreach (var act in activities)
                     {
                         <div class="col-md-6 d-flex flex-column align-items-center" style="margin-bottom:30px">
                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
@@ -1367,6 +1397,10 @@
     {
         NavigationManager.NavigateTo("/Onboarding", true);
     }
+    private void NavigateToHelp()
+    {
+        NavigationManager.NavigateTo("/Help", true);
+    }
 
     private void onClickMenu()
     {
@@ -1406,7 +1440,7 @@
         }
         if (schedules.Count == 1)
         {
-            return $"₱ {(long)schedules[0].Price} / {schedules[0].PerUnit1} {schedules[0].PriceUnit1} / {schedules[0].PerUnit2} {schedules[0].PriceUnit2}";
+            return $"₱ {(long)schedules[0].Price}";
         }
         return string.Empty;
     }

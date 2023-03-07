@@ -325,6 +325,9 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Order")
+                        .HasColumnType("integer");
+
                     b.Property<int>("PerUnit1")
                         .HasColumnType("integer");
 
@@ -480,8 +483,8 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<bool>("IsMaker")
                         .HasColumnType("boolean");
 
-                    b.Property<bool>("IsVerified")
-                        .HasColumnType("boolean");
+                    b.Property<int>("IsVerifiedBadge")
+                        .HasColumnType("integer");
 
                     b.Property<string>("LastName")
                         .IsRequired()

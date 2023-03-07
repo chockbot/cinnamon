@@ -102,7 +102,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                                 Price = s.Price,
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice
+                                UnitPrice = s.UnitPrice,
+                                Order = s.Order
                             };
                         }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivitySchedule>(),
                         Images = a.Images != null ? a.Images.OrderBy(i => i.Order).Select(i => {

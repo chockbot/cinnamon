@@ -6,6 +6,7 @@ public class GetCustomerByHandlerResult
     public string FirstName {get; set;}
     public string LastName {get; set;}
     public bool IsMaker {get; set;}
+    public int IsVerified { get; set; }
     public string ProfileImg {get; set;}
     public string About {get; set;}
 }

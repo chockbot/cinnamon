@@ -52,6 +52,7 @@ public class GetActivityResult
         public string PriceUnit1 {get; set;}
         public int PerUnit2 {get; set;}
         public string PriceUnit2 {get; set;}
+        public int Order {get; set;}
     }
 
     public class ActivityImage 
@@ -69,5 +70,6 @@ public class GetActivityResult
         public string FirstName {get; set;}
         public string LastName {get; set;}
         public string Email {get; set;}
+        public string ImageSrc {get; set;}
     }
 }

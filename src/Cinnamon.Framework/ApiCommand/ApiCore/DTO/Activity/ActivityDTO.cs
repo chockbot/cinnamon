@@ -58,6 +58,7 @@ public class ActivityDTO
         public string PriceUnit1 {get; set;}
         public int PerUnit2 {get; set;}
         public string PriceUnit2 {get; set;}
+        public int Order {get; set;}
     }
 
     public class ActivityImage 
@@ -96,5 +97,8 @@ public class ActivityDTO
     {
         public int Id {get; set;}
         public string Handler {get; set;}
+        public string ImageSrc {get; set;}
+        public string FirstName {get; set;}
+        public string LastName {get; set;}
     }
 }

@@ -1,16 +1,23 @@
 ﻿@namespace Cinnamon.Web.Components
-    <div class="footer px-4">
-        <div class="footer-content">
-            <span class="footer-appname color-primary">@Resources.App.appName</span>
-            <br /><br />
-            <span class="footer-text">
-                2022 Cinnamon.Inc &nbsp;&nbsp; <a href="mailto:support@cinnamon.ph">Contact Us</a>
-                &nbsp;&nbsp;<a href="FAQ">FAQ</a>
-                &nbsp;&nbsp;<a href="Terms">Terms of use</a>
-                &nbsp;&nbsp;<a href="Policy">Privacy Policy</a>
-            </span>
+<div class="footer px-4">
+    <div class="footer-content text-center d-lg-block d-md-none d-sm-none d-none">
+        <span class="footer-appname color-primary">@Resources.App.appName</span>
+        <div class="social-section">
+            <a href="#">
+                <img src="/images/facebook.png" />
+            </a>
+            <a href="#">
+                <img src="/images/instagram.png" />
+            </a>
+            <a href="#">
+                <img src="/images/linkedin.png" />
+            </a>
         </div>
+        <span class="footer-text">
+            Copyright © @year. All rights reserved.
+        </span>
     </div>
+</div>
 @code {
-
+    int year = DateTime.Now.Year;
 }
