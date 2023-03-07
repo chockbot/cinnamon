@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.File;
 using Newtonsoft.Json.Serialization;
 using Cinnamon.Api.Core.Extensions;
 using Cinnamon.Api.Core.Config;
@@ -26,8 +28,11 @@ builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>(
 builder.Services.AddHttpContextAccessor();
 
 // logger
-builder.Services.AddLogging(logBuilder =>
-    logBuilder.AddSerilog(dispose: true));
+var logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(builder.Configuration)
+                        .Enrich.WithProperty("ApplicationContext", "Cinnamon.API.Core")
+                        .CreateLogger();
+builder.Host.UseSerilog(logger);
 
 // register application services
 builder.Services.ExtendServices();
@@ -62,6 +67,7 @@ builder.Services.Configure<FormOptions>(opts => {
 });
 
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

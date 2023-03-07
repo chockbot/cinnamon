@@ -34,6 +34,8 @@ public class ActivityController : ControllerBase
     private readonly IGetAllRegionsHandler getAllRegionsHandler;
     private readonly IGetAllCitiesHandler getAllCitiesHandler;
     private readonly IGetAllBarangaysHandler getAllBarangaysHandler;
+    private readonly IGetPopularActivitiesHandler getPopularActivitiesHandler;
+    private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -43,8 +45,11 @@ public class ActivityController : ControllerBase
         IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,
         IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler,
-        IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler, IGetAllBarangaysHandler getAllBarangaysHandler)
+        IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler, 
+        IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger)
     {
+        _logger = logger;
+
         this.createActivityHandler = createActivityHandler;
         this.getExperienceTypesHandler = getExperienceTypesHandler;
         this.getExperienceCategoriesHandler = getExperienceCategoriesHandler;
@@ -66,6 +71,7 @@ public class ActivityController : ControllerBase
         this.getAllRegionsHandler = getAllRegionsHandler;
         this.getAllCitiesHandler = getAllCitiesHandler;
         this.getAllBarangaysHandler = getAllBarangaysHandler;
+        this.getPopularActivitiesHandler = getPopularActivitiesHandler;
     }
 
     [Route("CreateActivity")]
@@ -1336,6 +1342,117 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetAllBarangaysResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Popular")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetPopularActivities([FromQuery] GetAllActivitiesArgs args)
+    {
+        _logger.LogInformation("Cinnamon.Api.Core > GetPopularActivities was called");
+
+        try
+        {
+            var result = await getPopularActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllActivitiesArgs
+            {
+                IncludeActivityAddress = args.IncludeActivityAddress ?? false,
+                IncludeActivityDescription = args.IncludeActivityDescription ?? false,
+                IncludeActivityImages = args.IncludeActivityImages ?? false,
+                IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
+                IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeExperienceTypes = args.IncludeExperienceTypes ?? false,
+                IncludeExperienceCategories = args.IncludeExperienceCategories ?? false,
+                IncludeSubCategories = args.IncludeSubCategories ?? false,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllActivitiesResult
+            {
+                IsSuccess = true,
+                Pagination = result.Result.Pagination,
+                ErrorInfo = result.Result.ErrorInfo,
+                Result = result.Result.Activities.Select(a => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                    {
+                        ActivityId = a.Id,
+                        ActivityLevel = a.ActivityLevel,
+                        ActivitySchedules = a.ActivitySchedules.Select(s => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                            {
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice,
+                            };
+                        }),
+                        AdditionalRequirements = a.AdditionalRequirements,
+                        Address1 = a.Address1,
+                        Address2 = a.Address2,
+                        CanAdultsJoin = a.CanAdultsJoin,
+                        City = a.City,
+                        Subdivision = a.Subdivision,
+                        Region = a.Region,
+                        Barangay = a.Barangay,
+                        CityName = a.CityName,
+                        BarangayName = a.BarangayName,
+                        RegionName = a.RegionName,
+                        PostalCode = a.PostalCode,
+                        CustomerBringWithThem = a.CustomerBringWithThem,
+                        Description = a.Description,
+                        District = a.District,
+                        ExperienceCategoryId = a.ExperienceCategoryId,
+                        ExperienceCategory = a.ExperienceCategory,
+                        SubCategory = a.SubCategory,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        ExperienceType = a.ExperienceType,
+                        CreatedBy = a.CreatedBy,
+                        Images = a.Images.Select(i => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
+                            {
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name,
+                                Order = i.Order
+                            };
+                        }),
+                        IsPublished = a.IsPublished,
+                        MinimumAge = a.MinimumAge,
+                        Price = a.Price,
+                        Remarks = a.Remarks,
+                        ScheduleIndicator = a.ScheduleIndicator,
+                        SearchTags = a.SearchTags,
+                        SkillLevel = a.SkillLevel,
+                        SpecificsYouWillProvide = a.SpecificsYouWillProvide,
+                        SubCategoryId = a.SubCategoryId,
+                        Title = a.Title,
+                        Handler = a.Handler,
+                        IsSetSession = a.IsSetSession,
+                        SessionName = a.SessionName,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
+                        {
+                            Handler = a.Owner.Handler,
+                            Id = a.Owner.Id
+                        } : null,
+                        IsNew = a.IsNew,
+                    };
+                }).AsQueryable()
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

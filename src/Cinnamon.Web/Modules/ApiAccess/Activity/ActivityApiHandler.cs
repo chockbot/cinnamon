@@ -10,10 +10,12 @@ namespace Cinnamon.Web.Modules.ApiAccess.Activity;
 public class ActivityApiHandler : IActivityApiHandler
 {
     private readonly IFlurlClient flurlClient;
+    private readonly ILogger _logger;
 
-    public ActivityApiHandler(IFlurlClientFactory flurlFac, Config.Config config)
+    public ActivityApiHandler(IFlurlClientFactory flurlFac, Config.Config config, ILogger<ActivityApiHandler> logger)
     {
         flurlClient = flurlFac.Get(config.ApiUrl);
+        _logger = logger;
     }
 
     public async Task<AppResult<CreateActivityResult>> CreateActivity(CreateActivityArgs args, string token)
@@ -451,6 +453,29 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<GetAllBarangaysResult>.CreateFailed(ex, "An error occured when getting all barangays api");
+        }
+    }
+
+    public async Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivitiesArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Popular")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllActivitiesResult>();
+
+            _logger.LogInformation("Cinnamon.Web > GetPopularActivities was called");
+
+            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting all activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
         }
     }
 }

@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Modules;
+using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 
 namespace Cinnamon.Api.Core.Extensions;
 
@@ -95,7 +96,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetAllRegionsHandler, Services.ActivityService.GetAllRegionsHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetAllCitiesHandler, Services.ActivityService.GetAllCitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetAllBarangaysHandler, Services.ActivityService.GetAllBarangaysHandler>();
-
+        services.AddTransient<Services.ActivityService.Handlers.IGetPopularActivitiesHandler, Services.ActivityService.GetPopularActivitiesHandler>();
+        
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
         services.AddTransient<Services.TransactionService.Handlers.IGetPurchaseOrderHandler, Services.TransactionService.GetPurchaseOrderHandler>();

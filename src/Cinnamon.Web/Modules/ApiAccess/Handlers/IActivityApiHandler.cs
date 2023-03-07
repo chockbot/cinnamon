@@ -9,6 +9,7 @@ public interface IActivityApiHandler
     Task<AppResult<CreateActivityResult>> CreateActivity(CreateActivityArgs args, string token);
     Task<AppResult<UpdateActivityResult>> UpdateActivity(UpdateActivityArgs args, string token);
     Task<AppResult<GetAllActivitiesResult>> GetAllActivities(GetAllActivitiesArgs? args = null);
+    Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivitiesArgs? args = null);
     Task<AppResult<GetExperienceTypesResult>> GetExperienceTypes();
     Task<AppResult<GetExperienceCategoriesResult>> GetExperienceCategories();
     Task<AppResult<GetSubCategoriesResult>> GetSubCategories();
