@@ -10,9 +10,12 @@ public class RequestRefundModel
     public Modal ModalRef {get; set;}
 
     public IEnumerable<EnrolledExperience> EnrolledExperiences {get; set;}
-
     public int SelectedExperienceId {get; set;}
+
     public bool IsShowErrorSelectedExperience {get; set;}
+    public bool IsShowErrorMessage {get; set;}
+
+    public bool IsSubmitting {get; set;}
 
     public Validations ValidationsRef {get; set;}
 

@@ -45,11 +45,11 @@ public class RequestRefundController : ControllerBase
     {
         try
         {
-            bool isHaveFilter = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.CustomerId.HasValue;
+            bool isHaveFilter = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.CustomerId.HasValue || args.Status.HasValue;
 
             var result = isHaveFilter?
                 await requestRefundRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
-                    args.IncludePurchaseOrder, args.IncludeCustomer, args.CustomerId) :
+                    args.IncludePurchaseOrder, args.IncludeCustomer, args.CustomerId, args.Status) :
                 await requestRefundRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -59,7 +59,7 @@ public class RequestRefundController : ControllerBase
 
             // get all without pagination to get all rows
             var all = isHaveFilter ?
-                await requestRefundRepository.GetAllAsync(null, null, null, null, null) :
+                await requestRefundRepository.GetAllAsync(null, null, null, null, null, null) :
                 await requestRefundRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)

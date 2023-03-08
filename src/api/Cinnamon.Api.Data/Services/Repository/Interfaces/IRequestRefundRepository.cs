@@ -7,7 +7,7 @@ public interface IRequestRefundRepository
 {
     Task<AppResult<RequestRefundDTO>> GetByIdAsync(int id);
     Task<AppResult<IEnumerable<RequestRefundDTO>>> GetAllAsync(int? count, int? skip, 
-        bool? includePurchaseOrder, bool? includeCustomer, int? customerId);
+        bool? includePurchaseOrder, bool? includeCustomer, int? customerId, int? status);
     Task<AppResult<IEnumerable<RequestRefundDTO>>> GetAllAsync();
     Task<AppResult<RequestRefundDTO>> Create(int customerId, int purhcaseOrderId, 
         string experienceTitle, int status, string reason);

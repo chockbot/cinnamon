@@ -2,6 +2,7 @@
 @using Cinnamon.Web.Models.Customer;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler;
 
 <article class="request-refund-wrapper p-3">
     <Table Borderless>
@@ -73,9 +74,20 @@
                             </FieldBody>
                         </Field>
                     </Validation>
-                    <div class="text-center mt-3">
-                        <Button Clicked="SubmitRequest" Padding="Padding.Is4.OnX" Size="Size.Small" Type="ButtonType.Submit" Border="Border.Is0" class="btn-primary">Submit</Button>
+                    <div class="text-center my-3">
+                        <Button Clicked="SubmitRequest" Padding="Padding.Is4.OnX" Size="Size.Small" 
+                            Border="Border.Is0" class="btn-primary" Loading="Model.IsSubmitting" Disabled="Model.IsSubmitting">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Submitting
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Submit
+                            </ChildContent>
+                        </Button>
                     </div>
+                    <Alert Color="Color.Danger" Margin="Margin.Is2.FromTop" Visible="Model.IsShowErrorMessage">
+                        <AlertDescription>@Model.Message</AlertDescription>
+                    </Alert>
                 </Validations>
             </ModalBody>
         </ModalContent>
@@ -124,11 +136,26 @@
 
             if(await Model.ValidationsRef.ValidateAll() && selectedExperience != null)
             {
+                Model.IsSubmitting = true;
+                var result = await accountApiHandler.RequestRefund(new Framework.ApiCommand.ApiCore.Account.Request.RequestRefundArgs {
+                    PurchaseOrderId = selectedExperience.Id,
+                    Reason = Model.ModelForm.Reason
+                }, Token);
+                Model.IsSubmitting = false;
+                if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
+                {
+                    Model.Message = result.Result?.ErrorInfo?.Message ?? result.Message;
+                    Model.IsShowErrorMessage = true;
+                    return;
+                }
+                
+                Model.ModalRef.Close(CloseReason.UserClosing);
             }
         }
         catch
         {
             Model.Message = "An error occured. Please try again later";
+            Model.IsShowErrorMessage = true;
         }
     }
 

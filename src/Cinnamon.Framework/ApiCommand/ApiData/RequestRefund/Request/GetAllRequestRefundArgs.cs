@@ -7,4 +7,5 @@ public class GetAllRequestRefundArgs
     public int? CustomerId {get; set;}
     public bool? IncludeCustomer {get; set;}
     public bool? IncludePurchaseOrder {get; set;}
+    public int? Status {get; set;}
 }

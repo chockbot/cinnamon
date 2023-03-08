@@ -43,6 +43,7 @@ public class AccountController : ControllerBase
     private readonly IGetCustomerByHandler getCustomerByHandler;
     private readonly IResetPasswordHandler resetPasswordHandler;
     private readonly IVerifyResetPasswordHandler verifyResetPasswordHandler;
+    private readonly IRequestRefundHandler requestRefundHandler;
 
     #endregion
 
@@ -56,7 +57,8 @@ public class AccountController : ControllerBase
         IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
-        IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler)
+        IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
+        IRequestRefundHandler requestRefundHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -83,6 +85,7 @@ public class AccountController : ControllerBase
         this.getCustomerByHandler = getCustomerByHandler;
         this.resetPasswordHandler = resetPasswordHandler;
         this.verifyResetPasswordHandler = verifyResetPasswordHandler;
+        this.requestRefundHandler = requestRefundHandler;
     }
 
     [Route("Register")]
@@ -992,6 +995,34 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifyResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("RequestRefund")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RequestRefundResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> RequestRefund([FromBody] RequestRefundArgs args)
+    {
+        try
+        {
+            var result = await requestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.RequestRefundArgs {
+                PurchaseOrderId = args.PurchaseOrderId,
+                Reason = args.Reason
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RequestRefundResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new RequestRefundResult {
+                Result = true,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RequestRefundResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

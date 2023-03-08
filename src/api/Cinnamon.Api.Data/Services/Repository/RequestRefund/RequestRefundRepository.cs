@@ -65,7 +65,7 @@ public class RequestRefundRepository : IRequestRefundRepository
     }
 
     public async Task<AppResult<IEnumerable<RequestRefundDTO>>> GetAllAsync(int? count, int? skip, bool? includePurchaseOrder, 
-        bool? includeCustomer, int? customerId)
+        bool? includeCustomer, int? customerId, int? status)
     {
         try
         {
@@ -74,7 +74,8 @@ public class RequestRefundRepository : IRequestRefundRepository
             if(includePurchaseOrder.HasValue && includePurchaseOrder.Value) includes.Add(r => r.PurchaseOrder);
 
             Expression<Func<Entities.RequestRefund, bool>> filter = 
-                r => (customerId.HasValue ? r.CustomerId == customerId.Value : true);
+                r => (customerId.HasValue ? r.CustomerId == customerId.Value : true) &&
+                    (status.HasValue ? r.Status == status.Value : true);
 
             var result = await dataStore.RequestRefund.FindAsync(filter, count, skip, includes);
             if(!result.Succeeded || result.Result == null)
