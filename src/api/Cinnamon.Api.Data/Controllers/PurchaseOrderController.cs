@@ -45,11 +45,11 @@ public class PurchaseOrderController : ControllerBase
     {
         try
         {
-            bool isHaveFilter = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.CustomerId.HasValue;
+            bool isHaveFilter = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.CustomerId.HasValue || args.Status.HasValue;
 
             var result = isHaveFilter?
                 await purchaseOrderRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
-                    args.IncludeActivity, args.IncludeSchedule, args.CustomerId) :
+                    args.IncludeActivity, args.IncludeSchedule, args.CustomerId, args.Status) :
                 await purchaseOrderRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -59,7 +59,7 @@ public class PurchaseOrderController : ControllerBase
 
             // get all without pagination to get all rows
             var all = isHaveFilter ?
-                await purchaseOrderRepository.GetAllAsync(null, null, null, null, null) :
+                await purchaseOrderRepository.GetAllAsync(null, null, null, null, null, null) :
                 await purchaseOrderRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)

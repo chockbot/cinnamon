@@ -7,4 +7,5 @@ public class GetAllPurchaseOrderArgs
     public int? CustomerId {get; set;}
     public bool? IncludeActivity {get; set;}
     public bool? IncludeSchedule {get; set;}
+    public int? Status {get; set;}
 }

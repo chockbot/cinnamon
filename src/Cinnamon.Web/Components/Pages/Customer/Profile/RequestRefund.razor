@@ -1,0 +1,146 @@
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Models.Customer;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+
+<article class="request-refund-wrapper p-3">
+    <Table Borderless>
+        <TableHeader>
+            <TableRow>
+                <TableHeaderCell>Refund No</TableHeaderCell>
+                <TableHeaderCell>Experience Title</TableHeaderCell>
+                <TableHeaderCell>Status</TableHeaderCell>
+            </TableRow>
+        </TableHeader>
+        <TableBody>
+            <TableRow>
+                <TableRowCell>RF00001</TableRowCell>
+                <TableRowCell>Golf adults and kids</TableRowCell>
+                <TableRowCell>Submitted</TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>RF00001</TableRowCell>
+                <TableRowCell>Golf adults and kids</TableRowCell>
+                <TableRowCell>Submitted</TableRowCell>
+            </TableRow>
+            <TableRow>
+                <TableRowCell>RF00001</TableRowCell>
+                <TableRowCell>Golf adults and kids</TableRowCell>
+                <TableRowCell>Submitted</TableRowCell>
+            </TableRow>
+        </TableBody>
+    </Table>
+    <Divider />
+    <Button Clicked="() => Model.ModalRef.Show()" class="btn-primary" Border="Border.Is0">Request Refund</Button>
+
+    <Modal @ref="Model.ModalRef">
+        <ModalContent Centered Padding="Padding.Is3">
+            <ModalHeader>
+                <ModalTitle class="text-center col">Request for Refund</ModalTitle>
+                <Button Type="ButtonType.Button" class="btn-close" Clicked="() => Model.ModalRef.Close(CloseReason.UserClosing)"></Button>
+            </ModalHeader>
+            <ModalBody Padding="Padding.Is0.FromTop">
+                <Divider Margin="Margin.Is0.FromTop" />
+                <div class="d-flex align-items-center div-warning">
+                    <img src="images/small-mdi-warning-circle.png" class="me-2" alt="waning">
+                    <p class="m-0 warning">IMPORTANT: Refund process will take at least 2 weeks. Once approved, your refund request will be added to your Cinnamon credits.  </p>
+                </div>
+                <br>
+                <Validations @ref="Model.ValidationsRef" Mode="ValidationMode.Manual" Model="Model.ModelForm">
+                    <Field Horizontal>
+                        <FieldLabel Padding="Padding.Is1.FromBottom">Experience</FieldLabel>
+                        <FieldBody>
+                            <Select class="@GetSelectClass"
+                                TValue="int" @bind-SelectedValue="Model.SelectedExperienceId">
+                                <SelectItem Disabled selected>Please Select Enrolled Experience</SelectItem>
+                                @foreach (var item in Model.EnrolledExperiences)
+                                {
+                                    <SelectItem Value="item.Id">@item.Title</SelectItem>
+                                }
+                            </Select>
+                            <div class="invalid-feedback">Please select enrolled experience</div>
+                        </FieldBody>
+                    </Field>
+                    <Validation>
+                        <Field Horizontal Margin="Margin.Is2.FromTop">
+                            <FieldLabel Padding="Padding.Is1.FromBottom">Reason</FieldLabel>
+                            <FieldBody>
+                                <MemoEdit Rows="3" @bind-Text="Model.ModelForm.Reason">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </MemoEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <div class="text-center mt-3">
+                        <Button Clicked="SubmitRequest" Padding="Padding.Is4.OnX" Size="Size.Small" Type="ButtonType.Submit" Border="Border.Is0" class="btn-primary">Submit</Button>
+                    </div>
+                </Validations>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+</article>
+
+@code
+{
+    [Parameter]
+    public Models.Entities.CustomerProfile Profile { get; set; }
+
+    [Parameter]
+    public string Token {get; set;}
+
+    private RequestRefundModel Model {get; set;} = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Model.EnrolledExperiences = new List<RequestRefundModel.EnrolledExperience>();
+
+            var refundableResult = await activityApiHandler.GetRefundableExperience(Token);
+            if(refundableResult.Succeeded && refundableResult.Result != null && refundableResult.Result.IsSuccess)
+            {
+                Model.EnrolledExperiences = refundableResult.Result.Result.Select(r => {
+                    return new RequestRefundModel.EnrolledExperience {
+                        Id = r.PurchaseOrderId,
+                        Title = r.Name
+                    };
+                });
+            }
+        }
+        catch (Exception ex)
+        {
+            Model.Message = "An error occured. Please try again later";
+        }
+    }
+
+    private async Task SubmitRequest()
+    {
+        try
+        {
+            var selectedExperience = Model.EnrolledExperiences.FirstOrDefault(s => s.Id == Model.SelectedExperienceId);
+            if(selectedExperience == null) Model.IsShowErrorSelectedExperience = true;
+
+            if(await Model.ValidationsRef.ValidateAll() && selectedExperience != null)
+            {
+            }
+        }
+        catch
+        {
+            Model.Message = "An error occured. Please try again later";
+        }
+    }
+
+    private string GetSelectClass
+    {
+        get {
+            if(Model.IsShowErrorSelectedExperience) 
+            {
+                return "form-control is-invalid";
+            }
+            return "form-control";
+        }
+    }
+
+}

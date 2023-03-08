@@ -98,6 +98,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetAllCitiesHandler, Services.ActivityService.GetAllCitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetAllBarangaysHandler, Services.ActivityService.GetAllBarangaysHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetPopularActivitiesHandler, Services.ActivityService.GetPopularActivitiesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetRefundableExperienceHandler, Services.ActivityService.GetRefundableExperienceHandler>();
         
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

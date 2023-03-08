@@ -478,4 +478,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
         }
     }
+
+    public async Task<AppResult<GetRefundableExperienceResult>> GetRefundableExperience(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GetRefundableExperience")
+                .GetJsonAsync<GetRefundableExperienceResult>();
+
+            return AppResult<GetRefundableExperienceResult>.CreateSucceeded(result, "Successfully getting all refundable experience api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetRefundableExperienceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetRefundableExperienceResult>.CreateFailed(ex, "An error occured when getting all refundable experience api");
+        }
+    }
 }

@@ -101,7 +101,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
     }
 
     public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync(int? count, int? skip, 
-        bool? includeActivity, bool? includeSchedule, int? customerId)
+        bool? includeActivity, bool? includeSchedule, int? customerId, int? status)
     {
         try
         {
@@ -110,7 +110,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             if(includeSchedule.HasValue && includeSchedule.Value) includes.Add(p => p.Schedule);
 
             Expression<Func<Entities.PurchaseOrder, bool>> filter = 
-                p => (customerId.HasValue ? p.CustomerId == customerId.Value : true);
+                p => (customerId.HasValue ? p.CustomerId == customerId.Value : true) &&
+                    (status.HasValue ? p.Status == status.Value : true);
             
             var result = await dataStore.PurchaseOrder.FindAsync(filter, count, skip, includes);
             if(!result.Succeeded || result.Result == null)
