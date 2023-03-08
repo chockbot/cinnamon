@@ -7,6 +7,7 @@ public class RequestRefund : BaseEntity
     public string ExperienceTitle {get; set;}
     // 0 = pending, 1 = approved, 2 = disapproved
     public int Status {get; set;}
+    public string Reason {get; set;}
 
     public PurchaseOrder PurchaseOrder {get; set;}
     public Customer Customer {get; set;}

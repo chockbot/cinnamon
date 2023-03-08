@@ -6,6 +6,7 @@ public class RequestRefundDTO
     public int PurchaseOrderId {get; set;}
     public string ExperienceTitle {get; set;}
     public int Status {get; set;}
+    public string Reason {get; set;}
     public AssociatedCustomer Customer {get; set;}
     public AssociatedPurchase PurchaseOrder {get; set;}
 

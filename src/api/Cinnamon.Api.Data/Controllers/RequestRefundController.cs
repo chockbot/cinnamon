@@ -95,7 +95,8 @@ public class RequestRefundController : ControllerBase
     {
         try
         {
-            var result = await requestRefundRepository.Create(args.CustomerId, args.PurchaseOrderId, args.ExperienceTitle, args.Status);
+            var result = await requestRefundRepository.Create(args.CustomerId, args.PurchaseOrderId, 
+                args.ExperienceTitle, args.Status, args.Reason);
 
             if (!result.Succeeded || result.Result == null)
             {

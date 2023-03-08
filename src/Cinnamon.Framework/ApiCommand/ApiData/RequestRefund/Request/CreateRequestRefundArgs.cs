@@ -12,4 +12,6 @@ public class CreateRequestRefundArgs
     public string ExperienceTitle {get; set;}
     [Required]
     public int Status {get; set;}
+    [Required]
+    public string Reason {get; set;}
 }

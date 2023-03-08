@@ -16,7 +16,7 @@ public class RequestRefundRepository : IRequestRefundRepository
         this.dataStore = dataStore;   
     }
     
-    public async Task<AppResult<RequestRefundDTO>> Create(int customerId, int purhcaseOrderId, string experienceTitle, int status)
+    public async Task<AppResult<RequestRefundDTO>> Create(int customerId, int purhcaseOrderId, string experienceTitle, int status, string reason)
     {
         try
         {
@@ -40,6 +40,7 @@ public class RequestRefundRepository : IRequestRefundRepository
                 ExperienceTitle = experienceTitle,
                 PurchaseOrderId = purhcaseOrderId,
                 Status = status,
+                Reason = reason
             };
 
             var result = await dataStore.RequestRefund.Add(entity);
@@ -53,7 +54,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                 CustomerId = created.CustomerId,
                 ExperienceTitle = created.ExperienceTitle,
                 PurchaseOrderId = created.PurchaseOrderId,
-                Status = created.Status
+                Status = created.Status,
+                Reason = created.Reason
             }, "Successfully create request refund");
         }
         catch (Exception ex)
@@ -86,7 +88,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                     CustomerId = r.CustomerId,
                     ExperienceTitle = r.ExperienceTitle,
                     PurchaseOrderId = r.PurchaseOrderId,
-                    Status = r.Status
+                    Status = r.Status,
+                    Reason = r.Reason
                 };
 
                 // add customer details
@@ -137,7 +140,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                     CustomerId = r.CustomerId,
                     ExperienceTitle = r.ExperienceTitle,
                     PurchaseOrderId = r.PurchaseOrderId,
-                    Status = r.Status
+                    Status = r.Status,
+                    Reason = r.Reason
                 };
 
                 return dto;
@@ -165,7 +169,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                 CustomerId = result.Result.CustomerId,
                 ExperienceTitle = result.Result.ExperienceTitle,
                 PurchaseOrderId = result.Result.PurchaseOrderId,
-                Status = result.Result.Status
+                Status = result.Result.Status,
+                Reason = result.Result.Reason
             }, "Successfully get request refund by id");
 
         }
@@ -197,7 +202,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                 CustomerId = updated.CustomerId,
                 ExperienceTitle = updated.ExperienceTitle,
                 PurchaseOrderId = updated.PurchaseOrderId,
-                Status = updated.Status
+                Status = updated.Status,
+                Reason = updated.Reason
             }, "Successfully updated requst refund");
         }
         catch (Exception ex)
