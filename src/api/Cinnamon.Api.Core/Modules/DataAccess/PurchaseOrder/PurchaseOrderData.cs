@@ -44,12 +44,8 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
             {
                 var result = await _flurlClient
                                 .Request("PurchaseOrder/GetAllPurchaseOrder")
-                                .SetQueryParams(
-                                    new
-                                    {
-                                        countPerPage = args.CountPerPage,
-                                        pageIndex = args.PageIndex
-                                    }).GetJsonAsync<GetAllPurchaseOrderResult>();
+                                .SetQueryParams(args)
+                                .GetJsonAsync<GetAllPurchaseOrderResult>();
 
                 return AppResult<GetAllPurchaseOrderResult>.CreateSucceeded(result, "Successfully getting get all PurchaseOrder api");
             }

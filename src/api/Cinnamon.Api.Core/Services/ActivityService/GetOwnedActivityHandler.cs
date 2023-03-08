@@ -68,9 +68,12 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 Address2 = activity.Address2,
                 CanAdultsJoin = activity.CanAdultsJoin,
                 City = activity.City,
+                CityName = activity.CityName,
                 Subdivision = activity.Subdivision,
-                Region = activity.Region,   
+                Region = activity.Region,
+                RegionName = activity.RegionName,   
                 Barangay = activity.Barangay,
+                BarangayName = activity.BarangayName,
                 PostalCode = activity.PostalCode,
                 CustomerBringWithThem = activity.CustomerBringWithThem,
                 Description = activity.Description,
@@ -90,6 +93,7 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 Handler = activity.Handler,
                 IsSetSession = activity.IsSetSession,
                 SessionName = activity.SessionName,
+                PinnedLocation = activity.PinnedLocation,
                 ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityResult.ActivitySchedule {
                         Id = s.Id,

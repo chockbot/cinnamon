@@ -35,6 +35,7 @@ public class ActivityDTO
     public string Handler {get; set;}
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
+    public string PinnedLocation { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}

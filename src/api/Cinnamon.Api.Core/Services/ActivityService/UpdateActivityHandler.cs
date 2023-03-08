@@ -152,7 +152,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName
+                SessionName = args.SessionName,
+                PinnedLocation = args.PinnedLocation
             };
 
             if(args.SearchTags != null)

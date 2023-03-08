@@ -31,4 +31,6 @@ public interface IAccountApiHandler
     Task<AppResult<GetCustomerByIdResult>> GetMakerDetailByHandler(string handler);
     Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args);
     Task<AppResult<VerifyResetPasswordResult>> VerifyResetPassword(VerifyResetPasswordArgs args);
+    Task<AppResult<RequestRefundResult>> RequestRefund(RequestRefundArgs args, string token);
+    Task<AppResult<GetRequestedRefundsResult>> GetRequestedRefunds(GetRequestedRefundsArgs args, string token);
 } 

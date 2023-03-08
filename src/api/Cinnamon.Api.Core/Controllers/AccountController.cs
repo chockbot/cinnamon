@@ -43,6 +43,8 @@ public class AccountController : ControllerBase
     private readonly IGetCustomerByHandler getCustomerByHandler;
     private readonly IResetPasswordHandler resetPasswordHandler;
     private readonly IVerifyResetPasswordHandler verifyResetPasswordHandler;
+    private readonly IRequestRefundHandler requestRefundHandler;
+    private readonly IGetRequestRefundHandler getRequestRefundHandler;
 
     #endregion
 
@@ -56,7 +58,8 @@ public class AccountController : ControllerBase
         IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
-        IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler)
+        IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
+        IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -83,6 +86,8 @@ public class AccountController : ControllerBase
         this.getCustomerByHandler = getCustomerByHandler;
         this.resetPasswordHandler = resetPasswordHandler;
         this.verifyResetPasswordHandler = verifyResetPasswordHandler;
+        this.requestRefundHandler = requestRefundHandler;
+        this.getRequestRefundHandler = getRequestRefundHandler;
     }
 
     [Route("Register")]
@@ -992,6 +997,66 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifyResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("RequestRefund")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RequestRefundResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> RequestRefund([FromBody] RequestRefundArgs args)
+    {
+        try
+        {
+            var result = await requestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.RequestRefundArgs {
+                PurchaseOrderId = args.PurchaseOrderId,
+                Reason = args.Reason
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RequestRefundResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new RequestRefundResult {
+                Result = true,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RequestRefundResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetRequestedRefunds")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetRequestedRefundsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRequestedRefunds([FromQuery] GetRequestedRefundsArgs args)
+    {
+        try
+        {
+            var result = await getRequestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.GetRequestRefundArgs {
+                Status = args.Status
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetRequestedRefundsResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+
+            return new JsonResult(new GetRequestedRefundsResult {
+                Result = result.Result.RequestedRefunds.Select(r => {
+                    return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.RequestedRefundDTO {
+                        ActivityTitle = r.ExperienceTitle,
+                        ReferenceNo = r.ReferenceNumber,
+                        Status = r.Status
+                    };
+                }),
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetRequestedRefundsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

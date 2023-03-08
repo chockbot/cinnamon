@@ -44,6 +44,7 @@ public class ActivityDTO
     public bool IsNew { get; set; }
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
+    public string PinnedLocation { get; set; }
 
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }

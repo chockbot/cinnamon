@@ -16,9 +16,12 @@ public class GetOwnedActivityResult
     public string Address2 {get; set;}
     public string District {get; set;}
     public string City {get; set;}
+    public string CityName {get; set; }
     public string Subdivision { get; set; }
     public string Region { get; set; }
+    public string RegionName { get; set; }
     public string Barangay { get; set; }
+    public string BarangayName { get; set; }
     public string PostalCode { get; set; }
     public string SpecificsYouWillProvide {get; set;}
     public string CustomerBringWithThem {get; set;}
@@ -30,6 +33,7 @@ public class GetOwnedActivityResult
     public string Handler {get; set;}
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
+    public string PinnedLocation { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}

@@ -29,6 +29,15 @@ jobs:
         env:
           ConnectionStrings.CinnamonDB: ${{ secrets.DEV_DB_CONNECTION }}
 
+      # substitute api core environment variables
+      - name: App Settings Variable Substitution for Api Core
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/api/Cinnamon.Api.Core/appsettings.json"
+        env:
+          Applicationconfig.Payment.Accounts.0.Settings.0.Value: ${{ secrets.ZENDIT_TOKEN }}
+          Applicationconfig.Payment.Accounts.0.Settings.1.Value: ${{ secrets.ZENDIT_CALLBACK_TOKEN }}
+
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
 

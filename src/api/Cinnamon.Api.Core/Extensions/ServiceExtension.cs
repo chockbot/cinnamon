@@ -42,6 +42,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.ICityData, Modules.DataAccess.Location.CityData>();
         services.AddTransient<Modules.DataAccess.Handlers.IBarangayData, Modules.DataAccess.Location.BarangayData>();
         services.AddTransient<Modules.DataAccess.Handlers.IFailedLoginData, Modules.DataAccess.FailedLogin.FailedLoginData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IRequestRefundData, Modules.DataAccess.RequestRefund.RequestRefundData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -73,6 +74,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IResetPasswordHandler, Services.AccountService.ResetPasswordHandler>();
         services.AddTransient<Services.AccountService.Handlers.IVerifyResetPasswordHandler, Services.AccountService.VerifyResetPasswordHandler>();
         services.AddTransient<Services.AccountService.Handlers.IBannedAccountHandler, Services.AccountService.BannedAccountHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IRequestRefundHandler, Services.AccountService.RequestRefundHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetRequestRefundHandler, Services.AccountService.GetRequestRefundHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -97,6 +100,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetAllCitiesHandler, Services.ActivityService.GetAllCitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetAllBarangaysHandler, Services.ActivityService.GetAllBarangaysHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetPopularActivitiesHandler, Services.ActivityService.GetPopularActivitiesHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetRefundableExperienceHandler, Services.ActivityService.GetRefundableExperienceHandler>();
         
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

@@ -37,4 +37,5 @@ public class UpdateActivity
     public int? SubCategoryId {get; set;}
     public bool? IsSetSession { get; set; }
     public string? SessionName { get; set; }
+    public string? PinnedLocation { get; set; }
 }

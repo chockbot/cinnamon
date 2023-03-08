@@ -89,6 +89,7 @@ public class GetActivityByHandler : IGetActivityByHandler
                 MarDetails = activity.MapDetails,
                 IsSetSession = activity.IsSetSession,
                 SessionName = activity.SessionName,
+                PinnedLocation = activity.PinnedLocation,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,
