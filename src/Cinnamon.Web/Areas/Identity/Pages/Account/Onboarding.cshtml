@@ -232,34 +232,44 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <p class="col-11 modal-title text-center">Sign Up/Log In</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <p class="col-12 modal-title">Log In / Sign Up</p>
             </div>
             <div class="modal-body">
                 <div class="card-filter">
-                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
-                    <br/>
-                    <h6>Email</h6>
+                    <p class="email-text-header">Email</p>
                     <div class="w-100 text-center">
                         <form id="email-submit" method="post">
-                            <div class="d-flex flex-column gap-3 align-items-center">
+                            <div class="d-flex flex-column align-items-center">
                                 <div class="col-12">
-                                    <input id="email-signup" required placeholder="Email" class="input-group fs-12" type="email" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
+                                    <input id="email-signup" required placeholder="Email" class="input-group input-email" type="email" />
                                 </div>
-                                <button class="btn-primary rounded-pill shadow-sm text-center" id="signup-waiting" type="submit" style="width:100%;white-space:nowrap;padding-right:50px;">
+                                <button class="btn-primary " id="signup-waiting" type="submit">
                                     <i id="email-spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Continue
                                 </button>
-                                <p style="font-family:'Nunito';font-size:12px;font-weight:400;">By signing up you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
                             </div>
                         </form> 
                          <div class="divider">
-                            <hr class="left" />or<hr class="right" />
+                            or
                         </div>
+
+
                         <div class="col-12">
-                            <a class="btn btn-md btn-google" href="/api/account/GoogleSignIn">
-                                <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
+                            <a  href="/api/account/GoogleSignIn">
+                            <button class="btn-google">
+                                <div class="btn-google-content">
+                                    <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Google
+                                </div>
+                            </button>
                             </a>
                         </div>
+                        <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
+                            By signing up you agree to our
+                            <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and
+                            <a href="Policy" style="color:#FFA942">Privacy Policy</a>
+                        </p>
+
+
+
                     </div>
                 </div>
             </div>
@@ -272,28 +282,47 @@
         <div class="modal-content">
             <div class="modal-header">
                 <p class="col-11 modal-title text-center">Log In</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" data-modal-id="login-password-modal"></button>
+                <button type="button" class="btn-close" id="btn-close-password-login"></button>
             </div>
             <div class="modal-body">
                 <div class="card-filter">
-                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
-                    <br/>
-                    <h6>Password</h6>
+                    <p class="password-text-header">Password</p>
                     <form id="form-signin" method="post">
-                        <div class="d-flex flex-column gap-3 align-items-center">
-                            <div class="col-12">
-                                <input id="text-password" asp-for="Input.Password" required placeholder="Password" class="input-group fs-12" type="password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
+                        <div class="d-flex flex-column align-items-center">
+                            <div class="col-12 password-content">
+                                <input id="text-password" asp-for="Input.Password" required placeholder="Password" class="input-group input-password" type="password"/>
                                 <span asp-validation-for="Input.Password" class="text-danger"></span>
                                 <input type="hidden" id="hidden-email" asp-for="Input.Email" />
+                                <span class="fa fa-fw fa-eye field-icon toggle-password" ></span>
                             </div>
                             @* <div id="error-message-container" class="mb-4">
                                 <ul id="error-list" class="fw-bold">
                                     <li style="font-family:'Nunito';font-size:12px;">Invalid password! Please insert correct password.</li>
                                 </ul>
                             </div> *@
-                            <button class="btn-primary rounded-pill shadow-sm text-center" id="login-password" type="submit" style="width:100%;white-space:nowrap;padding-right:50px;">
+                            <button class="btn-primary" id="login-password" type="submit">
                                 <i id="spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Log In
                             </button>
+
+
+
+                            <div class="divider">
+                                or
+                            </div>
+                            <div class="col-12">
+                                <button class="btn-google">
+                                    <div class="btn-google-content">
+                                        <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Google
+                                    </div>
+                                </button>
+                            </div>
+                            <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
+                                By signing up you agree to our
+                                <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and
+                                <a href="Policy" style="color:#FFA942">Privacy Policy</a>
+                            </p>
+
+                            <p class="forgot-password" id="forgot-password">Forgot Password?</p>
                         </div>
                     </form>
                 </div>
@@ -302,20 +331,56 @@
     </div>
 </div>
 
+
+
+
+
+<div class="modal fade" id="forgot-password-modal" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-12 modal-title">Forgot Password?</p>
+            </div>
+            <div class="modal-body">
+                <p class="col-12 text-center forgot-password-sub-info">Enter the email address you used when you joined and we’ll send you instructions to reset your password.</p>
+                <div class="card-filter">
+                    <p class="email-text-header">Email</p>
+                    <div class="w-100 text-center">
+                        <form id="email-submit" method="post">
+                            <div class="d-flex flex-column align-items-center">
+                                <div class="col-12">
+                                    <input id="email-signup" required placeholder="Email" class="input-group input-email" type="email" />
+                                </div>
+                                <button class="btn-primary " id="signup-waiting" type="submit">
+                                    <i id="email-spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Reset Password
+                                </button>
+                            </div>
+                        </form>
+                        <p class="go-back" id="go-back">Go Back</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 <div class="modal fade" id="verificationModal" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <p class="col-11 modal-title text-center">Verification Email</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-modal-id="verificationModal"></button>
             </div>
             <div class="modal-body">
                 <div class="card-filter">
-                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+                    <h5 class="col-12 text-center"> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
                     <br />
                     <div class="col-12 text-center">
                         <p>We've sent an email to your inbox. Please check and click verify.</p>
-                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942"> Resend</a></p>
+                        <p>Haven't received a verification email?<a href="#" style="color:#FFA942; text-decoration: underline;"> Resend</a></p>
                     </div>
                 </div>
             </div>
@@ -328,7 +393,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <p class="col-11 modal-title text-center">Finish signing up</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" data-modal-id="finishModal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="card-filter">
@@ -383,5 +448,36 @@
 @section Scripts {
     <script>
         MyLib.Pages.customer.onboarding.init();
+
+
+
+
+        $('#forgot-password').click(function() {
+            $('#loginModal').modal('hide');
+            $('#login-password-modal').modal('hide');
+            $('#forgot-password-modal').modal('show');
+    });
+
+        $('#go-back').click(function () {
+            $('#forgot-password-modal').modal('hide');
+            $('#loginModal').modal('show');
+            $('#login-password-modal').modal('show');
+        });
+
+        $('#btn-close-password-login').click(function () {
+            $('#login-password-modal').modal('hide');
+            $('#loginModal').modal('show');
+        });
+
+
+  
+
+
+
+
+
+
+
+
     </script>
 }
