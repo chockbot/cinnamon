@@ -23,7 +23,7 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel, 
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler, bool IsSetSession, string SessionName)
+        int experienceCategoryId, int subCategoryId, string handler, bool IsSetSession, string SessionName, string pinnedLocation)
     {
         try
         {
@@ -138,6 +138,7 @@ public class ActivityRepository : IActivityRepository
                 Barangay = barangay,
                 BarangayName = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty,
                 PostalCode = postalcode,
+                PinnedLocation = pinnedLocation
             };
             var createdActivityAddress = await dataStore.ActivityAddress.Add(activityAddress);
             if (!createdActivityAddress.Succeeded)
@@ -622,6 +623,7 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.Barangay = activity.Address.Barangay;
                 activityDTO.BarangayName = activity.Address.BarangayName;
                 activityDTO.PostalCode = activity.Address.PostalCode;
+                activityDTO.PinnedLocation = activity.Address.PinnedLocation;
             }
 
             // description fields
@@ -770,6 +772,7 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.Barangay = activity.Address.Barangay;
                 activityDTO.BarangayName = activity.Address.BarangayName;
                 activityDTO.PostalCode = activity.Address.PostalCode;
+                activityDTO.PinnedLocation = activity.Address.PinnedLocation;
             }
 
             // description fields
@@ -864,7 +867,7 @@ public class ActivityRepository : IActivityRepository
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, string? subdivision, string? region,
         string? barangay, string? postalcode,string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4, 
-        string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName)
+        string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName, string pinnedLocation)
     {
         try
         {
@@ -964,17 +967,18 @@ public class ActivityRepository : IActivityRepository
             }
            
 
-            activityAddress.Address1     = address1 ?? activityAddress.Address1;
-            activityAddress.Address2     = address2 ?? activityAddress.Address2;
-            activityAddress.District     = district ?? activityAddress.District;
-            activityAddress.City         = city ?? activityAddress.City;
-            activityAddress.CityName     = cityResult.Result != null ? cityResult.Result.Name : string.Empty;
-            activityAddress.Subdivision  = subdivision?? activityAddress.Subdivision;    
-            activityAddress.Region       = region?? activityAddress.Region;
-            activityAddress.RegionName   = regionResult.Result != null ? regionResult.Result.Name : string.Empty;
-            activityAddress.Barangay     = barangay?? activityAddress.Barangay; 
-            activityAddress.BarangayName = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty;
-            activityAddress.PostalCode   = postalcode?? activityAddress.PostalCode;
+            activityAddress.Address1       = address1 ?? activityAddress.Address1;
+            activityAddress.Address2       = address2 ?? activityAddress.Address2;
+            activityAddress.District       = district ?? activityAddress.District;
+            activityAddress.City           = city ?? activityAddress.City;
+            activityAddress.CityName       = cityResult.Result != null ? cityResult.Result.Name : string.Empty;
+            activityAddress.Subdivision    = subdivision?? activityAddress.Subdivision;    
+            activityAddress.Region         = region?? activityAddress.Region;
+            activityAddress.RegionName     = regionResult.Result != null ? regionResult.Result.Name : string.Empty;
+            activityAddress.Barangay       = barangay?? activityAddress.Barangay; 
+            activityAddress.BarangayName   = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty;
+            activityAddress.PostalCode     = postalcode?? activityAddress.PostalCode;
+            activityAddress.PinnedLocation = pinnedLocation?? activityAddress.PinnedLocation;
 
             var updatedActivityAddress = await dataStore.ActivityAddress.Update(activityAddress);
             if (!updatedActivityAddress.Succeeded)

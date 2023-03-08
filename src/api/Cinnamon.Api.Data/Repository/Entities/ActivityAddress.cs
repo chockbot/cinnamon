@@ -14,5 +14,6 @@ public class ActivityAddress : BaseEntity
     public string Barangay { get; set; }
     public string BarangayName { get; set; }
     public string PostalCode { get; set; }
+    public string PinnedLocation { get; set; }
     public virtual Activity Activity {get; set;}
 }
