@@ -28,6 +28,7 @@ public class CreateActivityArgs
     public string? Region { get; set; }
     public string? Barangay { get; set; }
     public string? PostalCode { get; set; }
+    public string? PinnedLocation { get; set; }
     public string? SpecificsYouWillProvide {get; set;}
     public string? CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}

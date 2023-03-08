@@ -65,8 +65,8 @@
 
             <h1 class="calendar-header-details">@monthName @year</h1>
             <div class="calendar-arrow">
-                <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }"><img src="images/calender icon left.png"></button>
-                <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }"><img src="images/calender icon right.png"></button>
+                <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth();}" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
+                <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
             </div>
         </div>
         <hr />
@@ -138,7 +138,8 @@
     public DateTime passDates;
     public bool IsShowErrorMessage { get; set; }
     public string ErrorMessage { get; set; }
-
+    public bool disableButtonRight { get; set; } = false;
+    public bool disableButtonLeft { get; set; } = false;
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
@@ -208,30 +209,43 @@
     }
     public async Task CreateMonth()
     {
-        var tempDate = DateTime.Now.AddMonths(monthsAway);
-        month = tempDate.Month;
-        year = tempDate.Year;
-
-        DateTime monthStart = new DateTime(year, month, 1);
-        monthEnd = monthStart.AddMonths(1).AddDays(-1);
-        monthName = monthStart.Month switch
+        if(monthsAway <= 2 && monthsAway >= -2)
         {
-            1 => "January",
-            2 => "February",
-            3 => "March",
-            4 => "April",
-            5 => "May",
-            6 => "June",
-            7 => "July",
-            8 => "August",
-            9 => "September",
-            10 => "October",
-            11 => "November",
-            12 => "December",
-            _ => ""
-        };
-        numDummyColumn = (int)monthStart.DayOfWeek;
-        }
+            if(monthsAway == 2)
+            {
+                disableButtonRight = true;
+            }else if(monthsAway == -2){
+                disableButtonLeft = true;
+            }
+            else{
+                disableButtonRight = false;
+                disableButtonLeft = false;
+            }
+            var tempDate = DateTime.Now.AddMonths(monthsAway);
+            month = tempDate.Month;
+            year = tempDate.Year;
+
+            DateTime monthStart = new DateTime(year, month, 1);
+            monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            monthName = monthStart.Month switch
+            {
+                1 => "January",
+                2 => "February",
+                3 => "March",
+                4 => "April",
+                5 => "May",
+                6 => "June",
+                7 => "July",
+                8 => "August",
+                9 => "September",
+                10 => "October",
+                11 => "November",
+                12 => "December",
+                _ => ""
+            };
+            numDummyColumn = (int)monthStart.DayOfWeek;
+        } 
+    }
     private void NavigateToManageStudent()
     {
         NavigationManager.NavigateTo("/maker/dashboard/managestudents");

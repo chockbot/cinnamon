@@ -5,6 +5,15 @@ const creation = {};
 let dotnetObj = undefined;
 const controls = ["#photo-upload", "#cover-photo", "#first-support-photo", "#second-support-photo"];
 const imageData = ["#coverPhotoData", "#firstPhotoData", "#secondPhotoData"];
+const locationModal = "#setLocationModal";
+
+creation.showLocationModal = () => {
+    $(locationModal).modal('show');
+};
+
+creation.hideLocationModal = () => {
+    $(locationModal).modal('hide');
+};
 
 creation.init = async (obj, activityId) => {
     dotnetObj = obj;

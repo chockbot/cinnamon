@@ -31,6 +31,7 @@ public class UpdateActivityArgs : IInteractor
     public bool? CanAdultsJoin {get; set;}
     public bool? IsSetSession { get; set; }
     public string? SessionName { get; set; }
+    public string? PinnedLocation { get; set; }
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<ActivitySchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int> DeletedScheduleIds {get; set;}
