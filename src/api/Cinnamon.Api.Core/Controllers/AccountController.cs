@@ -44,6 +44,7 @@ public class AccountController : ControllerBase
     private readonly IResetPasswordHandler resetPasswordHandler;
     private readonly IVerifyResetPasswordHandler verifyResetPasswordHandler;
     private readonly IRequestRefundHandler requestRefundHandler;
+    private readonly IGetRequestRefundHandler getRequestRefundHandler;
 
     #endregion
 
@@ -58,7 +59,7 @@ public class AccountController : ControllerBase
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
-        IRequestRefundHandler requestRefundHandler)
+        IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -86,6 +87,7 @@ public class AccountController : ControllerBase
         this.resetPasswordHandler = resetPasswordHandler;
         this.verifyResetPasswordHandler = verifyResetPasswordHandler;
         this.requestRefundHandler = requestRefundHandler;
+        this.getRequestRefundHandler = getRequestRefundHandler;
     }
 
     [Route("Register")]
@@ -1023,6 +1025,38 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new RequestRefundResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetRequestedRefunds")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetRequestedRefundsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRequestedRefunds([FromQuery] GetRequestedRefundsArgs args)
+    {
+        try
+        {
+            var result = await getRequestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.GetRequestRefundArgs {
+                Status = args.Status
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetRequestedRefundsResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+
+            return new JsonResult(new GetRequestedRefundsResult {
+                Result = result.Result.RequestedRefunds.Select(r => {
+                    return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.RequestedRefundDTO {
+                        ActivityTitle = r.ExperienceTitle,
+                        ReferenceNo = r.ReferenceNumber,
+                        Status = r.Status
+                    };
+                }),
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetRequestedRefundsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

@@ -2,6 +2,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.RequestRefund;
 
 public class RequestRefundDTO 
 {
+    public int Id {get; set;}
     public int CustomerId {get; set;}
     public int PurchaseOrderId {get; set;}
     public string ExperienceTitle {get; set;}

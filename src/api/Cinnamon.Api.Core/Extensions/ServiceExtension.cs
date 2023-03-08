@@ -75,6 +75,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IVerifyResetPasswordHandler, Services.AccountService.VerifyResetPasswordHandler>();
         services.AddTransient<Services.AccountService.Handlers.IBannedAccountHandler, Services.AccountService.BannedAccountHandler>();
         services.AddTransient<Services.AccountService.Handlers.IRequestRefundHandler, Services.AccountService.RequestRefundHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetRequestRefundHandler, Services.AccountService.GetRequestRefundHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

@@ -55,7 +55,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                 ExperienceTitle = created.ExperienceTitle,
                 PurchaseOrderId = created.PurchaseOrderId,
                 Status = created.Status,
-                Reason = created.Reason
+                Reason = created.Reason,
+                Id = created.Id
             }, "Successfully create request refund");
         }
         catch (Exception ex)
@@ -90,7 +91,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                     ExperienceTitle = r.ExperienceTitle,
                     PurchaseOrderId = r.PurchaseOrderId,
                     Status = r.Status,
-                    Reason = r.Reason
+                    Reason = r.Reason,
+                    Id = r.Id
                 };
 
                 // add customer details
@@ -142,7 +144,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                     ExperienceTitle = r.ExperienceTitle,
                     PurchaseOrderId = r.PurchaseOrderId,
                     Status = r.Status,
-                    Reason = r.Reason
+                    Reason = r.Reason,
+                    Id = r.Id
                 };
 
                 return dto;
@@ -171,7 +174,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                 ExperienceTitle = result.Result.ExperienceTitle,
                 PurchaseOrderId = result.Result.PurchaseOrderId,
                 Status = result.Result.Status,
-                Reason = result.Result.Reason
+                Reason = result.Result.Reason,
+                Id = result.Result.Id
             }, "Successfully get request refund by id");
 
         }
@@ -204,7 +208,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                 ExperienceTitle = updated.ExperienceTitle,
                 PurchaseOrderId = updated.PurchaseOrderId,
                 Status = updated.Status,
-                Reason = updated.Reason
+                Reason = updated.Reason,
+                Id = updated.Id
             }, "Successfully updated requst refund");
         }
         catch (Exception ex)

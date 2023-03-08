@@ -17,6 +17,8 @@ public class RequestRefundModel
 
     public bool IsSubmitting {get; set;}
 
+    public IList<Requested> RequestedRefunds {get; set;} = new List<Requested>();
+
     public Validations ValidationsRef {get; set;}
 
     public class FormModel 
@@ -29,5 +31,12 @@ public class RequestRefundModel
     {
         public int Id {get; set;}
         public string Title {get; set;}
+    }
+
+    public class Requested 
+    {
+        public string ReferenceNo {get; set;}
+        public string ExperienceTitle {get; set;}
+        public int Status {get; set;}
     }
 }

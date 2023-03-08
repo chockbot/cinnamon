@@ -576,4 +576,26 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<RequestRefundResult>.CreateFailed(ex, "An error occured when request refund  api");
         }
     }
+
+    public async Task<AppResult<GetRequestedRefundsResult>> GetRequestedRefunds(GetRequestedRefundsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/GetRequestedRefunds")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetRequestedRefundsResult>();
+
+            return AppResult<GetRequestedRefundsResult>.CreateSucceeded(result, "Successfully get requested refunds api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetRequestedRefundsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetRequestedRefundsResult>.CreateFailed(ex, "An error occured when get requested refunds  api");
+        }
+    }
 }
