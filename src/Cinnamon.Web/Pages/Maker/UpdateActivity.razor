@@ -234,7 +234,8 @@
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
+                SessionName = activity.SessionName,
+                PinnedLocation = activity.PinnedLocation
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -351,7 +352,8 @@
                 ActivityId = Model.Activity.ActivityId,
                 DeletedScheduleIds = Model.DeletedScheduleIds,
                 IsSetSession = Model.Activity.IsSetSession,
-                SessionName = Model.Activity.SessionName
+                SessionName = Model.Activity.SessionName,
+                PinnedLocation = Model.Activity.PinnedLocation
             }, Model.Token);
             
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))

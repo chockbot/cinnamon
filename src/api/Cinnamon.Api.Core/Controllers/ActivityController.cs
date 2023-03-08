@@ -122,6 +122,7 @@ public class ActivityController : ControllerBase
                 Title = args.Title,
                 IsSetSession = args.IsSetSession,
                 SessionName = args.SessionName ?? string.Empty,
+                PinnedLocation = args.PinnedLocation ?? string.Empty,
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -216,6 +217,7 @@ public class ActivityController : ControllerBase
                 Title = args.Title,
                 IsSetSession = args.IsSetSession,
                 SessionName = args.SessionName,
+                PinnedLocation = args.PinnedLocation,
                 ActivitySchedules = args.ActivitySchedules != null ? 
                     args.ActivitySchedules.Select(s => {
                         return new Services.ActivityService.Interactors.UpdateActivityArgs.ActivitySchedule {
@@ -764,9 +766,12 @@ public class ActivityController : ControllerBase
                     Address2 = activity.Address2,
                     CanAdultsJoin = activity.CanAdultsJoin,
                     City = activity.City,
+                    CityName = activity.CityName,
                     Subdivision = activity.Subdivision,
                     Region = activity.Region,
+                    RegionName = activity.RegionName,
                     Barangay = activity.Barangay,
+                    BarangayName = activity.BarangayName,
                     PostalCode = activity.PostalCode,
                     CustomerBringWithThem = activity.CustomerBringWithThem,
                     Description = activity.Description,
@@ -794,6 +799,7 @@ public class ActivityController : ControllerBase
                     Handler = activity.Handler,
                     IsSetSession = activity.IsSetSession,
                     SessionName = activity.SessionName,
+                    PinnedLocation= activity.PinnedLocation,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
@@ -947,9 +953,12 @@ public class ActivityController : ControllerBase
                     Address2 = activity.Address2,
                     CanAdultsJoin = activity.CanAdultsJoin,
                     City = activity.City,
+                    CityName = activity.CityName,
                     Subdivision = activity.Subdivision,
                     Region = activity.Region,
+                    RegionName = activity.RegionName,
                     Barangay = activity.Barangay,
+                    BarangayName = activity.BarangayName,
                     PostalCode = activity.PostalCode,
                     CustomerBringWithThem = activity.CustomerBringWithThem,
                     Description = activity.Description,
@@ -978,6 +987,7 @@ public class ActivityController : ControllerBase
                     Handler = activity.Handler,
                     IsSetSession = activity.IsSetSession,
                     SessionName = activity.SessionName,
+                    PinnedLocation = activity.PinnedLocation,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id,
@@ -1077,6 +1087,7 @@ public class ActivityController : ControllerBase
                     Handler = activity.Handler,
                     IsSetSession = activity.IsSetSession,
                     SessionName = activity.SessionName,
+                    PinnedLocation = activity.PinnedLocation,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id

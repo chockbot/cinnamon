@@ -26,6 +26,7 @@ public class CreateActivityArgs
     public string Region { get; set; } = string.Empty;
     public string Barangay { get; set; } = string.Empty;
     public string PostalCode { get; set; } = string.Empty;
+    public string PinnedLocation { get; set; } = string.Empty;
 
     public string? SpecificsYouWillProvide { get; set; }
     public string? CustomerBringWithThem { get; set; }

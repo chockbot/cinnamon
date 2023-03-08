@@ -55,6 +55,7 @@ public class Activity
     public string SubCategory { get; set; }
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
+    public string PinnedLocation { get; set; }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
     public IList<ActivityImage> Images {get; set;}
@@ -62,4 +63,5 @@ public class Activity
     public bool IsNew { get; set; }
     public int Id { get; set; }
     public Guid Guid { get; set; }
+
 }

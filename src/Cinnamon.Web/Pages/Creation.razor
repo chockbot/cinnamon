@@ -308,7 +308,8 @@
                 SubCategoryId = Model.Activity.SubCategoryId,
                 Title = Model.Activity.Title,
                 IsSetSession = Model.Activity.IsSetSession,
-                SessionName = Model.Activity.SessionName
+                SessionName = Model.Activity.SessionName,
+                PinnedLocation = Model.Activity.PinnedLocation
             }, Model.Token);
             
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))

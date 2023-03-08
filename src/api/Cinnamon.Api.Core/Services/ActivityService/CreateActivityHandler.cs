@@ -131,7 +131,8 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Title = args.Title,
                 Handler = handlerName,
                 IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName
+                SessionName = args.SessionName,
+                PinnedLocation = args.PinnedLocation
             });
 
             if(!activityRes.Succeeded || activityRes.Result == null)

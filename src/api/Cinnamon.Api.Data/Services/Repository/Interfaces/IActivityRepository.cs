@@ -27,12 +27,12 @@ public interface IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district,
         string city,string subdivision, string region, string barangay,string postalcode, string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements,
         string activityLevel, string skillLevel, int minimumAge, bool canAdultsJoin, string? searchtag1, string? searhtag2,
-        string? searchtag3, string? searchtag4, string? searchtag5, int experienceCategoryId, int subCategoryId, string handler, bool IsSetSession, string SessionName);
+        string? searchtag3, string? searchtag4, string? searchtag5, int experienceCategoryId, int subCategoryId, string handler, bool IsSetSession, string SessionName, string pinnedLocation);
     Task<AppResult<ActivityDTO>> UpdateActivityAsync(int activityId, int? experienceTypeId,string? title, string? description, string? price,
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district,
         string? city, string? subdivision, string? region, string? barangay, string? postalcode, string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements,
         string? activityLevel, string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2,
-        string? searchtag3, string? searchtag4, string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName);
+        string? searchtag3, string? searchtag4, string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName, string? pinnedLocation);
     Task<AppResult<ActivityDTO>> GetActivitieByCategoriesAsync(int experienceCategoryId, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
         bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false);
