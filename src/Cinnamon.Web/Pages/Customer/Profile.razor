@@ -139,6 +139,18 @@
                             </div>
                         </div>
                     }
+                    <div class='swiper-slide @(selectedTab == "request-for-refund" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "request-for-refund" ? "active" : "")'
+                            @onclick='() => selectedTab = "request-for-refund"'>
+                            request refund
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "cinnamon-credit" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "cinnamon-credit" ? "active" : "")'
+                            @onclick='() => selectedTab = "cinnamon-credit"'>
+                            cinnamon credits
+                        </div>
+                    </div>
                 </div>
             </Div>
             <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
@@ -150,6 +162,7 @@
                         <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
                     }
                     <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">request refund</Tab>
+                    <Tab Name="cinnamon-credit" TextTransform="TextTransform.Capitalize">cinnamon credits</Tab>
                 </Items>
                 <Content>
                     <TabPanel Name="experiences">
@@ -166,6 +179,9 @@
                     }
                     <TabPanel Name="request-for-refund">
                         <RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token"/>
+                    </TabPanel>
+                    <TabPanel Name="cinnamon-credit">
+                        <CinnamonCredits />
                     </TabPanel>
                 </Content>
             </Tabs>
