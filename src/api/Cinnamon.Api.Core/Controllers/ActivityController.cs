@@ -35,6 +35,7 @@ public class ActivityController : ControllerBase
     private readonly IGetAllCitiesHandler getAllCitiesHandler;
     private readonly IGetAllBarangaysHandler getAllBarangaysHandler;
     private readonly IGetPopularActivitiesHandler getPopularActivitiesHandler;
+    private readonly IGetRefundableExperienceHandler getRefundableExperienceHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -46,7 +47,8 @@ public class ActivityController : ControllerBase
         IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler, 
-        IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger)
+        IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
+        IGetRefundableExperienceHandler getRefundableExperienceHandler)
     {
         _logger = logger;
 
@@ -72,6 +74,7 @@ public class ActivityController : ControllerBase
         this.getAllCitiesHandler = getAllCitiesHandler;
         this.getAllBarangaysHandler = getAllBarangaysHandler;
         this.getPopularActivitiesHandler = getPopularActivitiesHandler;
+        this.getRefundableExperienceHandler = getRefundableExperienceHandler;
     }
 
     [Route("CreateActivity")]
@@ -1477,6 +1480,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetRefundableExperience")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetRefundableExperienceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRefundableExperience()
+    {
+        try
+        {
+            var result = await getRefundableExperienceHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetRefundableExperienceArgs {});
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetRefundableExperienceResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetRefundableExperienceResult 
+            {
+                IsSuccess = true,
+                Result = result.Result.RefundableExperiences.Select(r => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.RefundableExperienceDTO {
+                        Name = r.Name,
+                        PurchaseOrderId = r.PurchaseOrderId
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetRefundableExperienceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

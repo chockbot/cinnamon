@@ -3,6 +3,7 @@ using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
+using System.Linq.Expressions;
 
 namespace Cinnamon.Api.Data.Services.Repository.PurchaseOrder;
 
@@ -99,18 +100,27 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync(int? count, int? skip)
+    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync(int? count, int? skip, 
+        bool? includeActivity, bool? includeSchedule, int? customerId, int? status)
     {
         try
         {
-            var result = await dataStore.PurchaseOrder.FindAsync(p => true, count, skip);
+            var includes = new List<Expression<Func<Entities.PurchaseOrder, object>>>();
+            if(includeActivity.HasValue && includeActivity.Value) includes.Add(p => p.Activity);
+            if(includeSchedule.HasValue && includeSchedule.Value) includes.Add(p => p.Schedule);
+
+            Expression<Func<Entities.PurchaseOrder, bool>> filter = 
+                p => (customerId.HasValue ? p.CustomerId == customerId.Value : true) &&
+                    (status.HasValue ? p.Status == status.Value : true);
+            
+            var result = await dataStore.PurchaseOrder.FindAsync(filter, count, skip, includes);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(result.Error.Exception, result.Message);
             }
 
             var purchaseOrders = result.Result.Select(p => {
-                return new PurchaseOrderDTO {
+                var dto = new PurchaseOrderDTO {
                     ActivityId = p.ActivityId,
                     ConvinienceFee = p.ConvinienceFee,
                     Coupon = p.Coupon,
@@ -123,6 +133,28 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Status = p.Status,
                     Payload = p.Payload
                 };
+
+                // include activity details
+                if(includeActivity.HasValue && includeActivity.Value)
+                {
+                    dto.Activity = new PurchaseOrderDTO.AssociatedActivity {
+                        Description = p.Activity.Description,
+                        Id = p.Activity.Id,
+                        Title = p.Activity.Title
+                    };
+                }
+
+                // include schedule details
+                if(includeSchedule.HasValue && includeSchedule.Value)
+                {
+                    dto.Schedule = new PurchaseOrderDTO.AssociatedSchedule {
+                        DateTime = p.Schedule.DateTime,
+                        Id = p.Schedule.Id,
+                        Name = p.Schedule.Name
+                    };
+                }
+
+                return dto;
             });
 
             return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateSucceeded(purchaseOrders, "Successfully getting purchase orders");

@@ -46,7 +46,7 @@
                                 case 1:
                                     <CardTitle TextAlignment="TextAlignment.Center">
                                         <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
-                                        <p class="text-color-8080 font-16 mb-1">Your account is being verified, we'll keep you notified.</p>
+                                        <p class="text-color-8080 font-16 mb-1">Your account is being verified, we�ll keep you notified.</p>
 
                                         <p class="text-color-8080 my-1 font-24">
                                             <img class="img-pending" src="images/PendingIcon.png" />
@@ -139,6 +139,18 @@
                             </div>
                         </div>
                     }
+                    <div class='swiper-slide @(selectedTab == "request-for-refund" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "request-for-refund" ? "active" : "")'
+                            @onclick='() => selectedTab = "request-for-refund"'>
+                            request refund
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "cinnamon-credit" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "cinnamon-credit" ? "active" : "")'
+                            @onclick='() => selectedTab = "cinnamon-credit"'>
+                            cinnamon credits
+                        </div>
+                    </div>
                 </div>
             </Div>
             <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
@@ -149,6 +161,8 @@
                     {
                         <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
                     }
+                    <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">request refund</Tab>
+                    <Tab Name="cinnamon-credit" TextTransform="TextTransform.Capitalize">cinnamon credits</Tab>
                 </Items>
                 <Content>
                     <TabPanel Name="experiences">
@@ -163,6 +177,12 @@
                             <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" />
                         </TabPanel>
                     }
+                    <TabPanel Name="request-for-refund">
+                        <RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token"/>
+                    </TabPanel>
+                    <TabPanel Name="cinnamon-credit">
+                        <CinnamonCredits />
+                    </TabPanel>
                 </Content>
             </Tabs>
         </Container>

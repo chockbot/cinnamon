@@ -27,4 +27,5 @@ public interface IActivityApiHandler
     Task<AppResult<GetAllRegionsResult>> GetAllRegions(GetAllRegionsArgs? args = null);
     Task<AppResult<GetAllCitiesResult>> GetAllCitiesByRegionCode(GetAllCitiesArgs? args = null);
     Task<AppResult<GetAllBarangaysResult>> GetAllBarangaysByCityCode(GetAllBarangaysArgs? args = null);
+    Task<AppResult<GetRefundableExperienceResult>> GetRefundableExperience(string token);
 } 

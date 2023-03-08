@@ -52,6 +52,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<FailedLogin> FailedLogins {get; set;}
 
+    public DbSet<RequestRefund> RequestRefunds {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
