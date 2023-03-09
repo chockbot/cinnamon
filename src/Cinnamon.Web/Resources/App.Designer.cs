@@ -792,6 +792,15 @@ namespace Cinnamon.Web.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Your account is being verified, we&apos;ll keep you notified..
+        /// </summary>
+        internal static string pendingVerification {
+            get {
+                return ResourceManager.GetString("pendingVerification", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Phone number.
         /// </summary>
         internal static string phoneNumber {
