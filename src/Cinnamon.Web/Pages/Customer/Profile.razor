@@ -238,7 +238,8 @@
         var ownedActivitiesRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {
             IncludeActivityAddress = true,
             IncludeActivityDescription = true,
-            IncludeActivityImages = true
+            IncludeActivityImages = true,
+            IsActive = true
         }, token);
         if(ownedActivitiesRes.Succeeded && ownedActivitiesRes.Result != null && ownedActivitiesRes.Result.IsSuccess)
         {
