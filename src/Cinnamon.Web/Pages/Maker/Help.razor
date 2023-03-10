@@ -4,6 +4,8 @@
 @inject NavigationManager NavigationManager
 @using Cinnamon.Web.Pages
 @using Cinnamon.Web.Components
+@inject IJSRuntime jsRuntime;
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -65,66 +67,53 @@
                     </div>
                 </div>
                 <div class="btn-carousel-section border-bottom d-xl-none d-lg-none d-md-block d-sm-none d-none">
-                    <div id="carouselExampleControlsSm" class="carousel slide" data-ride="carousel" data-interval="0">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
+                    <div class="schedule-swiper">
+                        <div class="swiper-wrapper text-center">
+                            <div class="swiper-slide">
                                 <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
                                     <img src="/images/Dashboard Icon/faq.png" />
                                     <span class="btn-caption">Frequently Asked Questions</span>
                                 </button>
-                               
                             </div>
-                            <div class="carousel-item">
+                            <div class="swiper-slide text-center">
                                 <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
                                     <img src="/images/Dashboard Icon/terms.png" />
                                     <span class="btn-caption">Terms & Conditions</span>
                                 </button>
+                            </div>
+                            <div class="swiper-slide text-center">
                                 <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
                                     <img src="/images/Dashboard Icon/privacy.png" />
                                     <span class="btn-caption">Privacy Policy</span>
                                 </button>
                             </div>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControlsSm" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControlsSm" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden"></span>
-                        </button>
+                        <div class="swiper-scrollbar"></div>
                     </div>
                 </div>
                 <div class="btn-carousel-section border-bottom d-xl-none d-lg-none d-md-none d-sm-block d-block">
-                    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel" data-interval="0">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
+                    <div class="schedule-swiper">
+                        <div class="swiper-wrapper text-center">
+                            <div class="swiper-slide">
                                 <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
                                     <img src="/images/Dashboard Icon/faq.png" />
                                     <span class="btn-caption">Frequently Asked Questions</span>
                                 </button>
                             </div>
-                            <div class="carousel-item">
+                            <div class="swiper-slide text-center">
                                 <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
                                     <img src="/images/Dashboard Icon/terms.png" />
                                     <span class="btn-caption">Terms & Conditions</span>
                                 </button>
                             </div>
-                             <div class="carousel-item">
+                            <div class="swiper-slide text-center">
                                 <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
                                     <img src="/images/Dashboard Icon/privacy.png" />
                                     <span class="btn-caption">Privacy Policy</span>
                                 </button>
                             </div>
                         </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden"></span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden"></span>
-                        </button>
+                        <div class="swiper-scrollbar"></div>
                     </div>
                 </div>
               
@@ -158,6 +147,14 @@
     protected override async Task OnInitializedAsync()
     {
         isFaqDisplayed = true;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        }
     }
 
     private void NavigateToFaq()
