@@ -1,7 +1,6 @@
 const quillLimitWords = {};
 
 quillLimitWords.init = (selector, label, wordsLimit) => {
-  wordsLimit = 10;
   const container = document.querySelector(selector);
   const editorInstance = Quill.find(container);
 
@@ -15,6 +14,7 @@ quillLimitWords.init = (selector, label, wordsLimit) => {
   $(label).text(`Max of ${wordsLimit} words (${wordsLength()}/80)`);
 
   editorInstance.on("text-change", function (delta, oldDelta, source) {
+    debugger;
     const lengthOfWords = wordsLength();
     $(label).text(
       `Max of ${wordsLimit} words (${lengthOfWords}/${wordsLimit})`
