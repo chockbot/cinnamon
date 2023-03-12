@@ -1,6 +1,7 @@
 const quillLimitWords = {};
 
 quillLimitWords.init = (selector, label, wordsLimit) => {
+  wordsLimit = 10;
   const container = document.querySelector(selector);
   const editorInstance = Quill.find(container);
 
@@ -22,6 +23,10 @@ quillLimitWords.init = (selector, label, wordsLimit) => {
     if (lengthOfWords > wordsLimit) {
       editorInstance.setContents(oldDelta);
     }
+
+    // fix cursor jumping
+    const updatedLength = editorInstance.getLength();
+    editorInstance.setSelection(updatedLength, 1);
   });
 };
 
