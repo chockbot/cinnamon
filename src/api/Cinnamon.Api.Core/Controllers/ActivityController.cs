@@ -571,6 +571,11 @@ public class ActivityController : ControllerBase
                         Address2 = a.Address2,
                         CanAdultsJoin = a.CanAdultsJoin,
                         City = a.City,
+                        CityName = a.CityName,
+                        Region= a.Region,
+                        RegionName= a.RegionName,
+                        Barangay= a.Barangay,
+                        BarangayName = a.BarangayName,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
                         District = a.District,
@@ -596,6 +601,7 @@ public class ActivityController : ControllerBase
                         Handler = a.Handler,
                         IsSetSession = a.IsSetSession,
                         SessionName = a.SessionName,
+                        IsNew = a.IsNew,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id
