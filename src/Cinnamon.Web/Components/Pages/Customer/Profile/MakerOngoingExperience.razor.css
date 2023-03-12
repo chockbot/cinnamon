@@ -8,7 +8,6 @@
 
 .ongoing-experience-wrapper {
     font-family: "Nunito";
-    overflow: hidden;
 }
 
     .ongoing-experience-wrapper .title {
@@ -53,29 +52,21 @@
 
 
 /* For Tablet View */
-@media screen and (min-width: 768px) and (max-width: 1023px) {
-
+@media screen and (min-width: 768px) and (max-width: 1023px) 
+{
     .maker-wrapper {
         display: grid;
-        grid-template-columns: repeat(1, 1fr);
+        grid-template-columns: repeat(3, 1fr);
         gap: 30PX;
     }
-
 }
 
-
-
-
-    /* For Mobile Portrait View */
-    @media screen and (max-width: 767px) {
-
-
-        .maker-wrapper {
-            display: grid;
-            grid-template-columns: repeat(1, 1fr);
-            gap: 30PX;
-        }
+/* For Mobile Portrait View */
+@media screen and (max-width: 767px) 
+{
+    .maker-wrapper {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10PX;
     }
-
-
-
+}
