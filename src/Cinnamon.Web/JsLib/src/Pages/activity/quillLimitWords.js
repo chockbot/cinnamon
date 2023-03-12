@@ -26,7 +26,7 @@ quillLimitWords.init = (selector, label, wordsLimit) => {
 
     // fix cursor jumping
     const updatedLength = editorInstance.getLength();
-    editorInstance.setSelection(updatedLength, 0);
+    editorInstance.setSelection(updatedLength + 1, 0);
   });
 };
 
