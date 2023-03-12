@@ -222,37 +222,38 @@
                 };
             })
         }, Model.Token);
-        foreach (var item in Model.FilteredAttendance)
-        {
-            //Get Activity Details
-            var activityResult = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
-            if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
-            {
-                var result = activityResult.Result.Result;
-                activity = new Activity
-                    {
-                        IsSetSession = result.IsSetSession,
-                        SessionName = result.SessionName,
-                        ActivityId = result.ActivityId
-                    };
-            }
-            //Set Session Expiration
-            if (activity != null && activity.IsSetSession == true)
-            {
-                //Check if first attendance
-                if (item.SessionsAttended == 1)
-                {
-                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                        {
-                            Id = item.StudentId,
-                            ScheduleId = item.ScheduleId,
-                            SessionName = activity.SessionName,
-                            ExpirationStartDate = DateTime.UtcNow,
-                            ExpirationEndDate = item.ExpirationDateEnd
-                        });
-                }
-            }
-        }
+        //Un-comment to activate Session Expiration
+        //foreach (var item in Model.FilteredAttendance)
+        //{
+        //    //Get Activity Details
+        //    var activityResult = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
+        //    if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+        //    {
+        //        var result = activityResult.Result.Result;
+        //        activity = new Activity
+        //            {
+        //                IsSetSession = result.IsSetSession,
+        //                SessionName = result.SessionName,
+        //                ActivityId = result.ActivityId
+        //            };
+        //    }
+        //    //Set Session Expiration
+        //    if (activity != null && activity.IsSetSession == true)
+        //    {
+        //        //Check if first attendance
+        //        if (item.SessionsAttended == 1)
+        //        {
+        //            await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+        //                {
+        //                    Id = item.StudentId,
+        //                    ScheduleId = item.ScheduleId,
+        //                    SessionName = activity.SessionName,
+        //                    ExpirationStartDate = DateTime.UtcNow,
+        //                    ExpirationEndDate = item.ExpirationDateEnd
+        //                });
+        //        }
+        //    }
+        //}
     }
 
     private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
@@ -329,36 +330,37 @@
                 },
             }
         }, Model.Token);
-        //Check if Session is not null
-        var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
-            {
-                IncludeAtivitySchedules = true,
-            });
-        if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
-        {
-            var result = activityResult.Result.Result;
-            activity = new Activity
-                {
-                    IsSetSession = result.IsSetSession,
-                    SessionName = result.SessionName,
-                    ActivityId = result.ActivityId
-                };
-        }
-        if (activity != null && activity.IsSetSession == true)
-        {
-            //Check if first attendance
-            if (studentAttendance.SessionsAttended == 1)
-            {
-                await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                    {
-                        Id = studentAttendance.StudentId,
-                        ScheduleId = studentAttendance.ScheduleId,
-                        SessionName = activity.SessionName,
-                        ExpirationStartDate = DateTime.UtcNow,
-                        ExpirationEndDate = studentAttendance.ExpirationDateEnd
-                    });
-            }
-        }
+        //Un-comment to activate Session Expiration
+        ////Check if Session is not null
+        //var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+        //    {
+        //        IncludeAtivitySchedules = true,
+        //    });
+        //if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+        //{
+        //    var result = activityResult.Result.Result;
+        //    activity = new Activity
+        //        {
+        //            IsSetSession = result.IsSetSession,
+        //            SessionName = result.SessionName,
+        //            ActivityId = result.ActivityId
+        //        };
+        //}
+        //if (activity != null && activity.IsSetSession == true)
+        //{
+        //    //Check if first attendance
+        //    if (studentAttendance.SessionsAttended == 1)
+        //    {
+        //        await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+        //            {
+        //                Id = studentAttendance.StudentId,
+        //                ScheduleId = studentAttendance.ScheduleId,
+        //                SessionName = activity.SessionName,
+        //                ExpirationStartDate = DateTime.UtcNow,
+        //                ExpirationEndDate = studentAttendance.ExpirationDateEnd
+        //            });
+        //    }
+        //}
     }
     private void SortByName()
     {
