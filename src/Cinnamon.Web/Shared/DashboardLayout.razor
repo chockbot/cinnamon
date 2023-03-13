@@ -11,17 +11,20 @@
     <input type='checkbox' id='toggle' @bind="IsShowSidebar" />
     <LayoutSider @onclick="() => IsShowSidebar = !IsShowSidebar">
         <LayoutSiderContent>
-            <div class="sidebar-header">
-                <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
-                <a href="Explore" class="d-flex align-items-center  text-white text-decoration-none">
-                    <span class="app-name" id="angelo">Cinnamon</span>
-                </a>
-            </div>
+            
             @if (Model.IsAuthenticated)
             {
                 if (Model.Profile != null && Model.Profile.IsMaker)
                 {
                     <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <div class="nav-link item-link sidebar-header">
+                                <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
+                                <a href="Explore" class="d-flex align-items-center  text-white text-decoration-none">
+                                    <span class="app-name" id="angelo">Cinnamon</span>
+                                </a>
+                            </div>
+                        </li>
                         <li class="nav-item">
                             <a href="Explore" class="nav-link align-middle item-link">
                                 <img class="icon-home" src="images/Dashboard Icon/Home.png"> <span class="ms-1 d-sm-inline nav-text">Home</span>
@@ -82,10 +85,16 @@
         <LayoutContent>
             <Container Fluid>
                 <div class="header-mobile">
-                    <label for='toggle' class='hamburger me-3'><img src="images/Dashboard Icon/hamburger.png" class="toggle-icon"></label>
-                    <a href="Explore" class="d-flex align-items-center text-white text-decoration-none">
-                        <span class="d-sm-inline app-name-mobile">Cinnamon</span>
-                    </a>
+                    <div>
+                        <a href="Explore" class="text-white text-decoration-none">
+                            <span class="d-sm-inline app-name-mobile">Cinnamon</span>
+                        </a>
+                    </div>
+                    <div class="mt-3">
+                        <label for='toggle' class='hamburger me-3'>
+                            <img src="images/Dashboard Icon/hamburger.png" class="toggle-icon">
+                        </label>
+                    </div>
                 </div> 
                 <div class="render-body">
                     @Body

@@ -181,6 +181,13 @@
                                     FirstName = customer.Result.Result.FirstName,
                                     LastName  = customer.Result.Result.LastName
                                 };
+            
+            if(!customer.Result.Result.IsMaker) 
+            {
+                // should not able to access
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
         }
         //Get Student Attendance
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs

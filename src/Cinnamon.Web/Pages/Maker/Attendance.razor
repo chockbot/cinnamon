@@ -13,6 +13,7 @@
 @inject IDashboardApiHandler dashboardApiHandler;
 @inject ISystemApiHandler systemApiHandler;
 @inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler;
 @implements IDisposable;
 @attribute [Authorize]
 
@@ -157,6 +158,20 @@
                 return;
             }
             Model.Token = token;
+
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+            {
+                // an error occured
+                navigationManager.NavigateTo("explore");
+                return;
+            }
+            if(!result.Result.Result.IsMaker)
+            {
+                // should not able to access the page
+                navigationManager.NavigateTo("explore");
+                return;
+            }
 
             var schedules = await dashboardApiHandler.GetActivitySchedules(token);
             if(!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
