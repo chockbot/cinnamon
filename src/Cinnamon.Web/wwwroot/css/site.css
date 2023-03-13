@@ -840,3 +840,79 @@ input::-ms-clear {
   font-weight: 700;
   color: #343d4c;
 }
+
+.request-refund-wrapper table tbody tr,
+.cinnamon-credit-wrapper table tbody tr {
+  color: #717171;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .request-refund-wrapper table tbody tr,
+  .cinnamon-credit-wrapper table tbody tr {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .request-refund-wrapper table tbody tr td:first-child::before {
+    content: "Refund No.: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .request-refund-wrapper table tbody tr td:nth-child(2)::before {
+    content: "Experience Title: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .request-refund-wrapper table tbody tr td:nth-child(3)::before {
+    content: "Status: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:first-child::before {
+    content: "Refund No.: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:nth-child(2):before {
+    content: "Experience Title: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:nth-child(3):before {
+    content: "Status: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:nth-child(4):before {
+    content: "Credits: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .request-refund-wrapper table tbody tr,
+  .cinnamon-credit-wrapper table tbody tr {
+    border-bottom: 1px solid #d9d9d9;
+  }
+
+  .request-refund-wrapper table tbody tr td {
+    padding: 5px;
+  }
+}
+
+/* general css */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .m-d-none {
+    display: none;
+  }
+
+  .m-padding-x-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
