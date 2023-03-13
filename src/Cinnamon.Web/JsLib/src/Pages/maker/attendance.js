@@ -1,5 +1,4 @@
 export function initSwiper(selector, scrollbarSelector) {
-  console.log("init", selector);
   const swiper = new Swiper(selector, {
     slidesPerView: "auto",
     spaceBetween: 30,
@@ -23,6 +22,12 @@ export function initCircularProgress(selector, percentage) {
         "transform",
         "rotate(" + percentageToDegrees(percentage) + "deg)"
       );
+      if (percentage === 0) {
+        left.css(
+          "transform",
+          "rotate(" + percentageToDegrees(percentage) + "deg)"
+        );
+      }
     } else {
       right.css("transform", "rotate(180deg)");
       left.css(
