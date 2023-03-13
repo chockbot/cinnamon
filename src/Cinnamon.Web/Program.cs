@@ -19,9 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
 
 builder.Services.AddControllers();
-builder.Services.AddRazorPages(opts => {
-    opts.Conventions.AddAreaPageRoute("Identity", "/Account/Onboarding", "/Onboarding");
-});
+builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {
     opts.DetailedErrors = true;
 });
