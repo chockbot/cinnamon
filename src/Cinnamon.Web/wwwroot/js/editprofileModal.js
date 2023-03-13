@@ -1,6 +1,6 @@
 ﻿let cropper;
 let cropperModalId = "#cropperModal";
-let $jsPhotoUploadInput = $(".js-photo-upload");
+let $jsPhotoUploadInput = $("input[data-input-id='js-photo-upload']");
 let imageData;
 
 $jsPhotoUploadInput.on("change", function (e) {
@@ -69,6 +69,14 @@ $(".js-save-cropped-avatar").on("click", function (event) {
 
     cropper.destroy();
     cropper = null;
+});
+
+$(".btn-delete").on("click", function (event) {
+    event.preventDefault();
+
+    imageData = null;
+
+    $("#avatar-crop").attr("src", $('#originalImage').val());
 });
 
 function getRoundedCanvas(sourceCanvas) {

@@ -33,4 +33,5 @@ public interface IAccountApiHandler
     Task<AppResult<VerifyResetPasswordResult>> VerifyResetPassword(VerifyResetPasswordArgs args);
     Task<AppResult<RequestRefundResult>> RequestRefund(RequestRefundArgs args, string token);
     Task<AppResult<GetRequestedRefundsResult>> GetRequestedRefunds(GetRequestedRefundsArgs args, string token);
+    Task<AppResult<DeleteProfilePictureResult>> DeleteProfilePicture(DeleteProfilePictureArgs args, string token);
 } 

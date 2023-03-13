@@ -45,6 +45,7 @@ public class AccountController : ControllerBase
     private readonly IVerifyResetPasswordHandler verifyResetPasswordHandler;
     private readonly IRequestRefundHandler requestRefundHandler;
     private readonly IGetRequestRefundHandler getRequestRefundHandler;
+    private readonly IDeleteProfilePictureHandler deleteProfilePictureHandler;
 
     #endregion
 
@@ -54,12 +55,12 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
-        IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler, IGetProfilePictureHandler getProfilePictureHandler,
+        IGetWaitListHandler getWaitListHandler, IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
-        IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler)
+        IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -75,11 +76,11 @@ public class AccountController : ControllerBase
         this.getGovernmentIdsHandler = getGovernmentIdsHandler;
         this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
         this.uploadProfilePictureHandler = uploadProfilePictureHandler;
-        this.getProfilePictureHandler = getProfilePictureHandler;   
+        this.getProfilePictureHandler = getProfilePictureHandler;
         this.getWaitListHandler = getWaitListHandler;
-        this.getCustomerByEmailHandler = getCustomerByEmailHandler; 
-        this.getWaitListByGuidHandler= getWaitListByGuidHandler;
-        this.getCustomerByIdHandler= getCustomerByIdHandler;
+        this.getCustomerByEmailHandler = getCustomerByEmailHandler;
+        this.getWaitListByGuidHandler = getWaitListByGuidHandler;
+        this.getCustomerByIdHandler = getCustomerByIdHandler;
         this.externalLoginHandler = externalLoginHandler;
         this.externalRegisterHandler = externalRegisterHandler;
         this.getExternalLoginDetailHandler = getExternalLoginDetailHandler;
@@ -88,6 +89,7 @@ public class AccountController : ControllerBase
         this.verifyResetPasswordHandler = verifyResetPasswordHandler;
         this.requestRefundHandler = requestRefundHandler;
         this.getRequestRefundHandler = getRequestRefundHandler;
+        this.deleteProfilePictureHandler = deleteProfilePictureHandler;
     }
 
     [Route("Register")]
@@ -1057,6 +1059,32 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetRequestedRefundsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("DeleteProfilePicture")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteProfilePictureResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteProfilePicture([FromBody] DeleteProfilePictureArgs args)
+    {
+        try
+        {
+            var result = await deleteProfilePictureHandler.ExecuteAsync(new Services.AccountService.Interactors.DeleteProfilePictureArgs
+            {
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new DeleteProfilePictureResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new DeleteProfilePictureResult
+            {
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -598,4 +598,26 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetRequestedRefundsResult>.CreateFailed(ex, "An error occured when get requested refunds  api");
         }
     }
+
+    public async Task<AppResult<DeleteProfilePictureResult>> DeleteProfilePicture(DeleteProfilePictureArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/DeleteProfilePicture")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteProfilePictureResult>();
+
+            return AppResult<DeleteProfilePictureResult>.CreateSucceeded(result, "Successfully requested delete profile picture api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<DeleteProfilePictureResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteProfilePictureResult>.CreateFailed(ex, "An error occured when requesting delete profile picture api");
+        }
+    }
 }
