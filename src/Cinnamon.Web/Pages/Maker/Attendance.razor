@@ -80,7 +80,7 @@
                             <span class="std-name">@item.Name</span>
                                 @if(item.SessionsAttended > item.NumberOfSessions)
                                 {
-                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="#ffa942"
+                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="red"
                                               Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                         @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                                     </CircularProgress>
@@ -99,7 +99,7 @@
                                 <center>
                                 @if (item.SessionsAttended > item.NumberOfSessions)
                                 {
-                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="#ffa942"
+                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="red"
                                           Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
                                     @($"{item.SessionsAttended}/{item.NumberOfSessions}")
                                     </CircularProgress>
