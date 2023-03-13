@@ -14,7 +14,6 @@ quillLimitWords.init = (selector, label, wordsLimit) => {
   $(label).text(`Max of ${wordsLimit} words (${wordsLength()}/80)`);
 
   editorInstance.on("text-change", function (delta, oldDelta, source) {
-    debugger;
     const lengthOfWords = wordsLength();
     $(label).text(
       `Max of ${wordsLimit} words (${lengthOfWords}/${wordsLimit})`
