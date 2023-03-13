@@ -156,6 +156,20 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+        var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if((!profileResult.Succeeded || profileResult.Result == null) || (profileResult.Succeeded && !profileResult.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        if(!profileResult.Result.Result.IsMaker)
+        {
+            // should not able to access the page
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
         //Get Student Attendance Details
         var result = await ongoingApiHandler.GetOngoingActivityById(Id);
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
@@ -181,13 +195,6 @@
                                     FirstName = customer.Result.Result.FirstName,
                                     LastName  = customer.Result.Result.LastName
                                 };
-            
-            if(!customer.Result.Result.IsMaker) 
-            {
-                // should not able to access
-                NavigationManager.NavigateTo("explore");
-                return;
-            }
         }
         //Get Student Attendance
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
