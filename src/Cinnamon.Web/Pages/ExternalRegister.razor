@@ -33,8 +33,6 @@
                         </TextEdit>
                     </Field>
                 </Validation>
-
-
             </div>
             <span class="font-11">Be sure it's the same as what appears on your government ID.</span>
             <br />
@@ -62,13 +60,11 @@
             </Validation>
             <span class="font-11">For email confirmations and receipts.</span>
             <br />
-            
-         
             <Validation>
                 <Field Style="@flexItemStyle">
                     <FieldLabel>Password</FieldLabel>
                     <div class="password-content">
-                        <TextEdit Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" Placeholder="your password" 
+                        <TextEdit KeyDown="OnPasswordTextSubmit" Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" Placeholder="your password" 
                             @bind-Text="Model.Model.Password" class="input-password">
                             <Feedback>
                                 <ValidationError />
@@ -181,6 +177,16 @@
             Model.ErrorMessage = "An error occured. Please try again later";
             Model.IsShowErrorMessage = true;
         }
+    }
+
+    private Task OnPasswordTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            return SubmitRegiter();
+        }
+
+        return Task.CompletedTask;
     }
 
     string flexItemStyle = $" width:100%;";

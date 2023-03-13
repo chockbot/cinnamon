@@ -18,6 +18,9 @@ public class ResetPasswordModel
 
     public TextEdit TextConfirmPassword {get; set;}
 
+    public bool IsRevealNewPassword {get; set;}
+    public bool IsRevealConfirmPassword {get; set;}
+
     public class ResetModel 
     {
         [Required]
