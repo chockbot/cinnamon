@@ -19,7 +19,7 @@
                     <div class="col-12-lg d-flex justify-content-center">
                         <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
                             <div class="btn-delete">
-                                 <button type="button" class="btn border-0">
+                                 <button type="button" @onclick="DeleteProfilePicture" class="btn border-0">
                                 <i class="fa fa-trash" style="color:black;"></i>
                                 </button> 
                             </div>
@@ -29,9 +29,9 @@
                                     <CardImage Source="@profilePicture.ImageFileName" id="@profilePicture.ImageId" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                                     </Figure>
                                 </label>
-                                <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" style="display:none;" />
+                            <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" data-input-id="js-photo-upload" class="js-photo-upload" style="display:none;" />
                                 <div class="round">
-                                    <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" class="js-photo-upload" OnChange="IsEnabled"/>
+                                <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" data-input-id="js-photo-upload" class="js-photo-upload" OnChange="IsEnabled" />
                                     <i class="fa fa-camera" style="color: black;"></i>
                                 </div>
                             </div>
@@ -77,6 +77,7 @@
             </div> 
         </div>
     </div>
+    <input type="hidden" id="originalImage" @bind-value="originalImage" />
 @code {
     IJSObjectReference module;
 
@@ -101,7 +102,10 @@
 
     private bool isShowErrorMessage = false;
 
+    private bool hasChanged = false;
+
     private string errorMessage = string.Empty;
+    private string originalImage = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,6 +117,7 @@
 
         objRef = DotNetObjectReference.Create(this);
         profilePicture.ImageFileName = result.Result.Result.ProfileImagePath;
+        originalImage = result.Result.Result.ProfileImagePath;
         profilePicture.ImageName     = "ProfilePicture";
         profilePicture.ImageId       = "avatar-crop";
         profilePicture.ErrorId       = "id-profile-image";
@@ -190,6 +195,7 @@
     private Task IsEnabled()
     {
         isDisabled = false;
+        hasChanged = true;
         return Task.CompletedTask;
     }
     public Task ShowModal()
@@ -226,6 +232,32 @@
     protected override void OnInitialized()
     {
         objRef = DotNetObjectReference.Create(this);
+    }
+
+    private async Task DeleteProfilePicture()
+    {
+        if (hasChanged)
+        {
+            //delete cropped picture in editprofileModal.js
+            hasChanged = false;
+            isDisabled = true;
+        }
+        else
+        {
+            var result = await accountApiHandler.DeleteProfilePicture(new Framework.ApiCommand.ApiCore.Account.Request.DeleteProfilePictureArgs
+            {
+            }, Token);
+
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                //Hide Loading
+                await HideLoading();
+                //Hide Modal
+                await HideModal();
+                //Load Customer Profile Page
+                NavigationManager.NavigateTo("/customer/profile", true);
+            }
+        }
     }
 }
 
