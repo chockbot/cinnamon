@@ -14,64 +14,69 @@
 @foreach (var item in students)
 {
     <div class="swiper-slide">
-        <div class="experience-box">
-            <div class="experience-header">
-                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                    <img class="image-header" src="@GetImage()" />
-                </a>
-            </div>
-
-            <div class="experience-content">
-                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                    <p class="xp-title">@Activity.Title</p>
-                </a>
-
-
-                <div class="xp-body-item">
-                    <p class="label">Name</p>
-                    <p class="context">@item.Name</p>
-                </div>
-
-                <div class="xp-body-item">
-                    <p class="label">Sessions Attended</p>
-                    <p class="context">@item.SessionsAttended:@item.NumberOfSessions</p>
-                        <div class="progress">
-                            <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
+        <Div ElementId="#b-animate">
+            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                <div class="experience-box">
+                    <div class="row">
+                        <div class="experience-header col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
+                            <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                                <img class="image-header" src="@GetImage()" />
+                            </a>
                         </div>
-                </div>
-                    @if (Activity.IsSetSession == true)
-                    {
-                        <div class="xp-body-item">
-                            <p class="label">Session Expiration</p>
-                            <p class="context">
-                                Consume in : @Activity.SessionName <br>
-                                Expiring in : @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                            </p>
+                        <div class="experience-content col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8">
+                            <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                                <p class="xp-title">@Activity.Title</p>
+                            </a>
+
+                            <div class="xp-body-item">
+                                <p class="student-name">@item.Name</p>
+                            </div>
+
+                            <div class="xp-body-item">
+                                <p class="context">@item.SessionsAttended:@item.NumberOfSessions</p>
+                                <div class="progress">
+                                    <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
+                                </div>
+                            </div>
+                            @if (Activity.IsSetSession == true)
+                            {
+                                <div class="xp-body-item">
+                                    <p class="context">
+                                        Consume in : @Activity.SessionName <br>
+                                        Expiring in : @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    </p>
+                                </div>
+                            }
+
                         </div>
-                    }
-                <div class="xp-body-item">
-                    <p class="label">Dates Attended</p>
-                    <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>modalRef.ShowModal(item)" class="btn-update">
-                        View
-                    </Button>
+                    </div>
+                    <div class="xp-body-item">
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>modalRef.ShowModal(item)" class="btn-update" Style="
+                                                                                                                                        width: 352px;
+                                                                                                                                        height: 40px;
+                                                                                                                                        background: #FFA942;
+                                                                                                                                        border-radius: 10px;">
+                            View
+                        </Button>
+                    </div>
                 </div>
-            </div>
-        </div>
+            </Animate>
+        </Div>
     </div>
 }
 <ModalAttendance @ref="modalRef"></ModalAttendance>
 @code
 {
     [Parameter]
-    public Activity                 Activity           { get; set; }
+    public Activity Activity { get; set; }
     [Parameter]
-    public CustomerProfile          Profile            { get; set; }
-    public List<Students>           students           = new List<Students>();
-    public ActivitySchedule         Schedule           = new ActivitySchedule();
+    public CustomerProfile Profile { get; set; }
+    public List<Students> students = new List<Students>();
+    public ActivitySchedule Schedule = new ActivitySchedule();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     protected ModalAttendance modalRef { get; set; }
     public string Token;
-   
+
     private string GetImage()
     {
         if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
@@ -79,7 +84,7 @@
     }
     protected override async Task OnInitializedAsync()
     {
-        
+
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
