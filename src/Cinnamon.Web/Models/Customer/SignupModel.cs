@@ -18,6 +18,9 @@ public class SignupModel
     public bool IsShowSuccessMessage {get; set;}
     public string Message {get; set;}
 
+    public bool IsRevealPassword {get; set;}
+    public bool IsRevealConfirmPassword {get; set;}
+
     [Required]
     public string FirstName {get; set;}
     [Required]

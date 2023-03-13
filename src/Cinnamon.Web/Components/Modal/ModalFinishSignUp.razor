@@ -60,11 +60,14 @@
                         <Field>
                             <FieldLabel>Password</FieldLabel>
                             <div class="password-content">
-                                <TextEdit Role="TextRole.Password" Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
+                                <TextEdit Role="viewModel.IsRevealPassword ? TextRole.Text : TextRole.Password" 
+                                    Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
                                 </TextEdit>
+                                <span class="fa fa-fw fa-eye field-icon toggle-password" 
+                                    @onclick="() => viewModel.IsRevealPassword = !viewModel.IsRevealPassword"></span>
                             </div>
                         </Field>
                     </Validation>
@@ -73,11 +76,14 @@
                         <Field>
                             <FieldLabel>Confirm Password</FieldLabel>
                             <div class="password-content">
-                                <TextEdit Role="TextRole.Password" Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
+                                <TextEdit KeyDown="OnConfirmPasswordTextSubmit" Role="viewModel.IsRevealConfirmPassword ? TextRole.Text : TextRole.Password" 
+                                    Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
                                 </TextEdit>
+                                <span class="fa fa-fw fa-eye field-icon toggle-password" 
+                                    @onclick="() => viewModel.IsRevealConfirmPassword = !viewModel.IsRevealConfirmPassword"></span>
                             </div>
                         </Field>
                     </Validation>
@@ -173,6 +179,16 @@
         {
             e.Cancel = true;
         }
+        return Task.CompletedTask;
+    }
+
+    private Task OnConfirmPasswordTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            return SubmitRegister();
+        }
+
         return Task.CompletedTask;
     }
 
