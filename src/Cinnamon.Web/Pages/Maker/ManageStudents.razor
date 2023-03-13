@@ -157,6 +157,21 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
+
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+            {
+                // an error occured
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            if(!result.Result.Result.IsMaker)
+            {
+                // should not able to access the page
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+
             //Get Owned Activities
             var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs { }, token);
             if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
