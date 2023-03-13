@@ -74,6 +74,11 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         Address2 = a.Address2,
                         CanAdultsJoin = a.CanAdultsJoin,
                         City = a.City,
+                        CityName = a.CityName,
+                        Region= a.Region,
+                        RegionName= a.RegionName,
+                        Barangay = a.Barangay,
+                        BarangayName= a.BarangayName,
                         CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
                         District = a.District,
@@ -92,6 +97,7 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         Handler = a.Handler,
                         IsSetSession = a.IsSetSession,
                         SessionName = a.SessionName,
+                        IsNew = a.IsNew,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
                                 Id = s.Id,

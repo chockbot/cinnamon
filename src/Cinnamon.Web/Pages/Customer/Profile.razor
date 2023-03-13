@@ -239,6 +239,7 @@
             IncludeActivityAddress = true,
             IncludeActivityDescription = true,
             IncludeActivityImages = true,
+            IncludeAtivitySchedules = true,
             IsActive = true
         }, token);
         if(ownedActivitiesRes.Succeeded && ownedActivitiesRes.Result != null && ownedActivitiesRes.Result.IsSuccess)
@@ -249,6 +250,11 @@
                     ActivityId = a.ActivityId,
                     District = a.District,
                     City = a.City,
+                    CityName = a.CityName,
+                    Region = a.Region,
+                    RegionName = a.RegionName,
+                    Barangay = a.Barangay,
+                    BarangayName = a.BarangayName,
                     Address1 = a.Address1,
                     Address2 = a.Address2,
                     ExperienceTypeId = a.ExperienceTypeId,
@@ -258,13 +264,28 @@
                     Title = a.Title,
                     IsSetSession = a.IsSetSession,
                     SessionName = a.SessionName,
+                    IsNew = a.IsNew,
                     Images = a.Images.Select(i => {
                         return new ActivityImage {
                             Id = i.Id,
                             ImageSrc = i.ImageSrc,
                             Name = i.Name
                         };
-                    }).ToList()
+                    }).ToList(),
+                    ActivitySchedules = a.ActivitySchedules.Select(e =>
+                    {
+                        return new ActivitySchedule
+                        {
+                            Id = e.Id,
+                            Name = e.Name,
+                            PerUnit1 = e.PerUnit1,
+                            PerUnit2 = e.PerUnit2,
+                            Price = e.Price,
+                            PriceUnit1 = e.PriceUnit1,
+                            PriceUnit2 = e.PriceUnit2,
+                            UnitPrice = e.UnitPrice
+                        };
+                    }).ToList(),
                 };
             }).ToList();
         }

@@ -4,9 +4,9 @@
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler;
 
-<article class="request-refund-wrapper p-3">
+<article class="request-refund-wrapper p-3 m-padding-x-0">
     <Table Borderless>
-        <TableHeader>
+        <TableHeader class="m-d-none">
             <TableRow>
                 <TableHeaderCell>Refund No</TableHeaderCell>
                 <TableHeaderCell>Experience Title</TableHeaderCell>
@@ -24,7 +24,7 @@
             }
         </TableBody>
     </Table>
-    <Divider />
+    <Divider class="m-d-none" />
     <Button Clicked="() => Model.ModalRef.Show()" class="btn-primary" Border="Border.Is0">Request Refund</Button>
 
     <Modal @ref="Model.ModalRef">
