@@ -1,5 +1,6 @@
-﻿@layout LandingMainLayout
-@page "/onboarding-temp"
+﻿@layout EmptyLayout
+@page "/onboarding"
+@using System.Security.Claims
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @using Cinnamon.Web.Components
@@ -16,84 +17,135 @@
         <div class="onboarding-md">
             <img id="onboarding-page-image" src="images/onboarding_image1.png" />
         </div>
-        <div class="onboarding-sm">
-            <img id="onboarding-page-image" src="images/onboarding_image1-mobile.png" />
-        </div>
     </div>
 
     <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12 col-12 order-lg-last order-md-last order-first order-sm-first">
-        <span class="onboarding-header">@Resources.App.onboardingHeader</span>
-        <span class="onboarding-subheader">@Resources.App.onboardingSubHeader</span>
+        <span class="onboarding-header">Grow your business and lead people on activities you love</span>
+        <span class="onboarding-subheader">Live your passion, share your knowledge and leave a mark in people's lives!</span>
         <div class="btn-cinnamon btn-cinnamon-section1">
-            @if (AuthState.User.Identity.IsAuthenticated)
+            @if (IsAuthenticated)
             {
-                <PrimaryButton OnClick="NavigateToCreation" Text="Try Cinnamon Making" />
+                <a class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker" 
+                    style="width: fit-content;display:flex;align-items:center;" @onclick="NavigateToCreation">
+                    Try Cinnamon Making
+                </a>
             }
             else
             {
-                <PrimaryButton OnClick="() =>signinModal.Show()" Text="Try Cinnamon Making" />
-              @*  <Button Border="Border.Is0" Clicked="() => signinModal.Show()">Try Cinnamon Making </Button>*@
-               @* <PrimaryButton ModalTarget="#loginModal" Id="cinnamon-maker" ModalBsToggle="modal" Width="fit-content" Text="Try Cinnamon Making" />*@
+                <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker" 
+                    style="width: fit-content;" @onclick="() => signinModal.Show()">
+                    Try Cinnamon Making
+                </button>
             }
         </div>
     </div>
 </div>
 <!--Section 2-->
 <div class="section-2 row">
-    <span class="onboarding-header">@Resources.App.stepsToBecome</span>
+    <div class="col-12 d-flex justify-content-center">
+         <span class="onboarding-header">Steps to become a Cinnamon Maker</span>
+    </div>
     <div class="onboarding-text onboarding-lg">
-        <div class="col-12 onboarding-cards row mx-auto">
+        <div class="col-12 onboarding-cards row">
             <div class="col-lg-3 col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-1.png"
-                            Title1="Step 1"
-                            Subtitle1="Onboarding"
-                            Description1="Follow our step by step guide on how you can maximize Cinnamon." />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-1.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 1</h4>
+                        <h6 class="category text-muted">Onboarding</h6>
+                        <p class="card-description">Follow our step by step guide on how you can maximize Cinnamon.</p>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-3 col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-2.png"
-                            Title1="Step 2"
-                            Subtitle1="Create"
-                            Description1="Create the activity, learning, or event that you want to share." />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-2.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 2</h4>
+                        <h6 class="category text-muted">Create</h6>
+                        <p class="card-description">Create the activity, learning, or event that you want to share.</p>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-3 col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-3.png"
-                            Title1="Step 3"
-                            Subtitle1="Setup "
-                            Description1="Setup your personal experience page by uploading photos or short videos." />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-3.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 3</h4>
+                        <h6 class="category text-muted">Setup</h6>
+                        <p class="card-description">Setup your personal experience page by uploading photos or short videos.</p>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-3 col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-4.png"
-                            Title1="Step 4"
-                            Subtitle1="Go all out"
-                            Description1="Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!" />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-4.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 4</h4>
+                        <h6 class="category text-muted">Go all out</h6>
+                        <p class="card-description">Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!</p>
+                    </div>
+                </div>
              </div>
         </div>
     </div>
     <div class="onboarding-text onboarding-md">
         <div class="col-12 onboarding-cards row">
             <div class="col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-1.png"
-                            Title1="Step 1"
-                            Subtitle1="Onboarding"
-                            Description1="Follow our step by step guide on how you can maximize Cinnamon" />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-1.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 1</h4>
+                        <h6 class="category text-muted">Onboarding</h6>
+                        <p class="card-description">Follow our step by step guide on how you can maximize Cinnamon.</p>
+                    </div>
+                </div>
             </div>
             <div class="col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-2.png"
-                            Title1="Step 2"
-                            Subtitle1="Create"
-                            Description1="Create the activity, learning, or event that you want to share." />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-2.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 2</h4>
+                        <h6 class="category text-muted">Create</h6>
+                        <p class="card-description">Create the activity, learning, or event that you want to share.</p>
+                    </div>
+                </div>
             </div>
             <div class="col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-3.png"
-                            Title1="Step 3"
-                            Subtitle1="Setup "
-                            Description1="Setup your personal experience page by uploading photos or short videos. " />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-3.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 3</h4>
+                        <h6 class="category text-muted">Setup</h6>
+                        <p class="card-description">Setup your personal experience page by uploading photos or short videos.</p>
+                    </div>
+                </div>
             </div>
             <div class="col-md-3 onboarding-card">
-                <OnboardingCard ImageSource1="images/onboarding-icon-4.png"
-                            Title1="Step 4"
-                            Subtitle1="Go all out"
-                            Description1="Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!" />
+                <div class="card card-profile">
+                    <div class="card-avatar">
+                        <img class="img" src="images/onboarding-icon-4.png">
+                    </div>
+                    <div class="table">
+                        <h4 class="card-caption">Step 4</h4>
+                        <h6 class="category text-muted">Go all out</h6>
+                        <p class="card-description">Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!</p>
+                    </div>
+                </div>
              </div>
         </div>
     </div>
@@ -108,53 +160,97 @@
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <div class="col-sm-12">
-                            <OnboardingCard ImageSource1="images/onboarding-icon-1.png"
-                            Title1="Step 1"
-                            Subtitle1="Onboarding"
-                            Description1="Follow our step by step guide on how you can maximize Cinnamon." />
+                            <div class="card card-profile">
+                                <div class="card-avatar">
+                                    <img class="img" src="images/onboarding-icon-1.png">
+                                </div>
+                                <div class="table">
+                                    <h4 class="card-caption">Step 1</h4>
+                                    <h6 class="category text-muted">Onboarding</h6>
+                                    <p class="card-description">Follow our step by step guide on how you can maximize Cinnamon.</p>
+                                </div>
+                            </div>
                      </div>
                 </div>
                 <div class="carousel-item">
                     <div class="col-sm-12">
-                            <OnboardingCard ImageSource1="images/onboarding-icon-2.png"
-                            Title1="Step 2"
-                            Subtitle1="Create"
-                            Description1="Create the activity, learning, or event that you want to share." />
+                            <div class="card card-profile">
+                                <div class="card-avatar">
+                                    <img class="img" src="images/onboarding-icon-2.png">
+                                </div>
+                                <div class="table">
+                                    <h4 class="card-caption">Step 2</h4>
+                                    <h6 class="category text-muted">Create</h6>
+                                <p class="card-description">Create the activity, learning, or event that you want to share.</p>
+                                </div>
+                            </div>
                      </div>
                 </div>
                 <div class="carousel-item">
                     <div class="col-sm-12">
-                            <OnboardingCard ImageSource1="images/onboarding-icon-3.png"
-                            Title1="Step 3"
-                            Subtitle1="Setup "
-                            Description1="Setup your personal experience page by uploading photos or short videos. " />
+                            <div class="card card-profile">
+                                <div class="card-avatar">
+                                    <img class="img" src="images/onboarding-icon-3.png">
+                                </div>
+                                <div class="table">
+                                    <h4 class="card-caption">Step 3</h4>
+                                    <h6 class="category text-muted">Setup</h6>
+                                    <p class="card-description">Setup your personal experience page by uploading photos or short videos.</p>
+                                </div>
+                            </div>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <div class="col-sm-12">
-                            <OnboardingCard ImageSource1="images/onboarding-icon-4.png"
-                            Title1="Step 4"
-                            Subtitle1="Go all out"
-                            Description1="Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!" />
+                            <div class="card card-profile">
+                                <div class="card-avatar">
+                                    <img class="img" src="images/onboarding-icon-4.png">
+                                </div>
+                                <div class="table">
+                                    <h4 class="card-caption">Step 4</h4>
+                                    <h6 class="category text-muted">Go all out</h6>
+                                    <p class="card-description">Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!</p>
+                                </div>
+                            </div>
                      </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-<Footer></Footer>
+
+<div class="footer px-4">
+    <div class="footer-content">
+        <span class="footer-appname color-primary">Cinnamon</span>
+        <br /><br />
+        <span class="footer-text">
+            2022 Cinnamon.Inc &nbsp;&nbsp; <a href="mailto:support@cinnamon.ph">Contact Us</a>
+            &nbsp;&nbsp;<a href="FAQ">FAQ</a>
+            &nbsp;&nbsp;<a href="Terms">Terms of use</a>
+            &nbsp;&nbsp;<a href="Policy">Privacy Policy</a>
+        </span>
+    </div>
+</div>
 
 <ModalLogin @ref="signinModal" />
 
-@code{
-    public AuthenticationState AuthState { get; set; }
-
+@code
+{
     private ModalLogin signinModal { get; set; }
+
+    private bool IsAuthenticated {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
-        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        if(user != null)
+        {
+            var token = user.FindFirstValue("Token");
+            if(user.Identity.IsAuthenticated && !string.IsNullOrEmpty(token))
+            {
+                IsAuthenticated = true;
+            }
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -162,13 +258,13 @@
        if(firstRender)
        {
            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Onboarding Page Loaded");
+           await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
        }
     }
 
-    private void NavigateToCreation()
+    private Task NavigateToCreation()
     {
         NavigationManager.NavigateTo("Creation");
+        return Task.CompletedTask;
     }
 }
-
-
