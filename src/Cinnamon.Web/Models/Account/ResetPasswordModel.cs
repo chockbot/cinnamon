@@ -14,6 +14,10 @@ public class ResetPasswordModel
 
     public Validations FormValidation {get; set;}
 
+    public TextEdit TextNewPassword {get; set;}
+
+    public TextEdit TextConfirmPassword {get; set;}
+
     public class ResetModel 
     {
         [Required]

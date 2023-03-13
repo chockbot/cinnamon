@@ -20,7 +20,8 @@
                         <div class="">
                             <div class="col-12">
                                 <Validation>
-                                    <TextEdit Role="TextRole.Email" Placeholder="Enter email address" @bind-Text="Model.EmailModel.Email" class="input-email">
+                                    <TextEdit @ref="Model.TextEmail" KeyDown="OnEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
+                                        @bind-Text="Model.EmailModel.Email" class="input-email">
                                         <Feedback>
                                             <ValidationError TextAlignment="TextAlignment.Start" />
                                         </Feedback>
@@ -64,8 +65,6 @@
     </ModalContent>
 </Modal>
 
-
-
 <Modal @ref="Model.PasswordModal">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle">
@@ -79,7 +78,8 @@
                     <div class="">
                         <div class="col-12 password-content">
                             <Validation>
-                                <TextEdit Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" Placeholder="Enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
+                                <TextEdit @ref="Model.TextPassword" KeyDown="OnPasswordTextSubmit" Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" 
+                                    Placeholder="Enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
                                     <Feedback>
                                         <ValidationError TextAlignment="TextAlignment.Start"/>
                                     </Feedback>
@@ -126,7 +126,6 @@
     </ModalContent>
 </Modal>
 
-
 <Modal @ref="Model.VerificationModal" Closed="VerificationModalClosed">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle">
@@ -172,7 +171,8 @@
                         <div class="">
                             <div class="col-12">
                                 <Validation>
-                                    <TextEdit Role="TextRole.Email" Placeholder="Enter email address" @bind-Text="Model.ResetPasswordModel.Email" class="input-email">
+                                    <TextEdit @ref="Model.TextForgetPassword" KeyDown="OnForgotPasswordTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
+                                        @bind-Text="Model.ResetPasswordModel.Email" class="input-email">
                                         <Feedback>
                                             <ValidationError TextAlignment="TextAlignment.Start" />
                                         </Feedback>
@@ -215,7 +215,11 @@
     [Parameter]
     public string ReturnUrl { get; set; } = "";
 
-    public void Show() => Model.EmailModal.Show();
+    public async Task Show()
+    {
+        await Model.EmailModal.Show();
+        await Model.TextEmail.Focus();
+    }
 
     string modalHeaderStyle = $"border:none;";
     string alertStyle = $"margin-bottom:0px;";
@@ -247,6 +251,7 @@
                     {
                         case "EMAIL-ALREADY-REGISTERED":
                             await Model.PasswordModal.Show();
+                            await Model.TextPassword.Focus();
                             return;
                         case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
                         case "EMAIL-ALREADY-REGISTERED-VERIFIED":
@@ -345,12 +350,13 @@
         NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=" + ReturnUrl, true);
     }
 
-    private void ForgotPassword()
+    private async Task ForgotPassword()
     {
-        Model.ForgotPasswordModal.Show();
-        Model.EmailModal.Hide();
-        Model.PasswordModal.Hide();
+        await Model.ForgotPasswordModal.Show();
+        await Model.EmailModal.Hide();
+        await Model.PasswordModal.Hide();
         Model.ResetPasswordModel.Email = Model.EmailModel.Email;
+        await Model.TextForgetPassword.Focus();
     }
 
     private void GoBack()
@@ -390,5 +396,35 @@
             Model.ResetPasswordModel.ForgotPasswordErrorMessage = "An error occured. Please try again later";
             Model.ResetPasswordModel.IsShowForgotPassworErrordMessage = true;
         }
+    }
+
+    private Task OnEmailTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            return SubmitEmail();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnPasswordTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            return SubmitLogin();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnForgotPasswordTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            return SubmitResetPassword();
+        }
+
+        return Task.CompletedTask;
     }
 }

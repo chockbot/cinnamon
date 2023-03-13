@@ -24,6 +24,10 @@ public class LoginModal
 
     public bool IsRevealPassword {get; set;}
 
+    public TextEdit TextEmail {get; set;}
+    public TextEdit TextPassword {get; set;}
+    public TextEdit TextForgetPassword {get; set;}
+
     public class LoginEmailModel 
     {
         [Required(ErrorMessage = "Email address is required")]
