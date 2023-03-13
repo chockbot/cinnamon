@@ -8,8 +8,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 <PageTitle>@Resources.App.appName</PageTitle>
 
-<!--Section 1-->
-<div class="section-1 row">
+<div class="row section-1">
     <div class="onboarding-image-container col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12 order-lg-last order-md-last order-first order-sm-first">
         <div class="onboarding-lg">
             <img id="onboarding-page-image" src="images/onboarding_image1.png" />
@@ -25,25 +24,24 @@
         <div class="btn-cinnamon btn-cinnamon-section1">
             @if (IsAuthenticated)
             {
-                <a class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker" 
-                    style="width: fit-content;display:flex;align-items:center;" @onclick="NavigateToCreation">
+                <a class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker"
+                   style="width: fit-content;display:flex;align-items:center;" @onclick="NavigateToCreation">
                     Try Cinnamon Making
                 </a>
             }
             else
             {
-                <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker" 
-                    style="width: fit-content;" @onclick="() => signinModal.Show()">
+                <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker"
+                        style="width: fit-content;" @onclick="() => signinModal.Show()">
                     Try Cinnamon Making
                 </button>
             }
         </div>
     </div>
 </div>
-<!--Section 2-->
-<div class="section-2 row">
+<div class="row section-2">
     <div class="col-12 d-flex justify-content-center">
-         <span class="onboarding-header">Steps to become a Cinnamon Maker</span>
+        <span class="onboarding-header">Steps to become a Cinnamon Maker</span>
     </div>
     <div class="onboarding-text onboarding-lg">
         <div class="col-12 onboarding-cards row">
@@ -94,7 +92,7 @@
                         <p class="card-description">Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!</p>
                     </div>
                 </div>
-             </div>
+            </div>
         </div>
     </div>
     <div class="onboarding-text onboarding-md">
@@ -146,7 +144,7 @@
                         <p class="card-description">Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!</p>
                     </div>
                 </div>
-             </div>
+            </div>
         </div>
     </div>
     <div class="onboarding-text onboarding-sm">
@@ -160,59 +158,59 @@
             <div class="carousel-inner">
                 <div class="carousel-item active">
                     <div class="col-sm-12">
-                            <div class="card card-profile">
-                                <div class="card-avatar">
-                                    <img class="img" src="images/onboarding-icon-1.png">
-                                </div>
-                                <div class="table">
-                                    <h4 class="card-caption">Step 1</h4>
-                                    <h6 class="category text-muted">Onboarding</h6>
-                                    <p class="card-description">Follow our step by step guide on how you can maximize Cinnamon.</p>
-                                </div>
+                        <div class="card card-profile">
+                            <div class="card-avatar">
+                                <img class="img" src="images/onboarding-icon-1.png">
                             </div>
-                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="col-sm-12">
-                            <div class="card card-profile">
-                                <div class="card-avatar">
-                                    <img class="img" src="images/onboarding-icon-2.png">
-                                </div>
-                                <div class="table">
-                                    <h4 class="card-caption">Step 2</h4>
-                                    <h6 class="category text-muted">Create</h6>
-                                <p class="card-description">Create the activity, learning, or event that you want to share.</p>
-                                </div>
+                            <div class="table">
+                                <h4 class="card-caption">Step 1</h4>
+                                <h6 class="category text-muted">Onboarding</h6>
+                                <p class="card-description">Follow our step by step guide on how you can maximize Cinnamon.</p>
                             </div>
-                     </div>
-                </div>
-                <div class="carousel-item">
-                    <div class="col-sm-12">
-                            <div class="card card-profile">
-                                <div class="card-avatar">
-                                    <img class="img" src="images/onboarding-icon-3.png">
-                                </div>
-                                <div class="table">
-                                    <h4 class="card-caption">Step 3</h4>
-                                    <h6 class="category text-muted">Setup</h6>
-                                    <p class="card-description">Setup your personal experience page by uploading photos or short videos.</p>
-                                </div>
-                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="carousel-item">
                     <div class="col-sm-12">
-                            <div class="card card-profile">
-                                <div class="card-avatar">
-                                    <img class="img" src="images/onboarding-icon-4.png">
-                                </div>
-                                <div class="table">
-                                    <h4 class="card-caption">Step 4</h4>
-                                    <h6 class="category text-muted">Go all out</h6>
-                                    <p class="card-description">Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!</p>
-                                </div>
+                        <div class="card card-profile">
+                            <div class="card-avatar">
+                                <img class="img" src="images/onboarding-icon-2.png">
                             </div>
-                     </div>
+                            <div class="table">
+                                <h4 class="card-caption">Step 2</h4>
+                                <h6 class="category text-muted">Create</h6>
+                                <p class="card-description">Create the activity, learning, or event that you want to share.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="col-sm-12">
+                        <div class="card card-profile">
+                            <div class="card-avatar">
+                                <img class="img" src="images/onboarding-icon-3.png">
+                            </div>
+                            <div class="table">
+                                <h4 class="card-caption">Step 3</h4>
+                                <h6 class="category text-muted">Setup</h6>
+                                <p class="card-description">Setup your personal experience page by uploading photos or short videos.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <div class="col-sm-12">
+                        <div class="card card-profile">
+                            <div class="card-avatar">
+                                <img class="img" src="images/onboarding-icon-4.png">
+                            </div>
+                            <div class="table">
+                                <h4 class="card-caption">Step 4</h4>
+                                <h6 class="category text-muted">Go all out</h6>
+                                <p class="card-description">Share the best experience to your market! Be a Legendary Cinnamon Maker and earn a special badge!</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
