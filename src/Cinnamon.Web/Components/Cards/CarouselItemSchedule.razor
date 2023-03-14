@@ -5,40 +5,40 @@
 @inject NavigationManager NavigationManager
 
 @if(ActivityModel != null){
-    <div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem">
-        <span class="fw-bold">@ScheduleModel.Name</span>
-        <br />
-        <div>
+    <div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between">
+        <span class="fw-bold schedule-name">@ScheduleModel.Name</span>
+        @*<br />*@
+        <div class="schedule-date"> 
             @ScheduleModel.DateTime
         </div>
-        <br />
-        <div style="font-size:0.7rem">
+       @* <br />*@
+        <div class="schedule-text">
             @ScheduleModel.UnitPrice @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
         </div>
         @if (ActivityModel.IsSetSession == true)
         {
-            <br />
-            <div style="font-size:0.7rem">
+            @*<br />*@
+            <div class="schedule-text">
                 Consume in - @ActivityModel.SessionName
             </div>
         }
-        <br />
+        @*<br />*@
         @if (AuthState.User.Identity.IsAuthenticated)
         {
             if (ButtonType == ScheduleButtonType.Choose)
             {
-                <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" style="width:fit-content;padding: 5px 10px">Choose</button>
+                <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose">Choose</button>
             }
             else
             {
-                <button class="btn-primary shadow-sm border-0 rounded" style="width:fit-content;padding: 5px 10px" @onclick="OnClickChange">
+                <button class="btn-primary shadow-sm border-0 rounded" @onclick="OnClickChange">
                     Change
                 </button>
             }
         }
         else
         {
-            <button class="btn-primary rounded border-0 shadow-sm" @onclick="() => modalLoginRef?.Show()" style="width:fit-content;padding: 5px 10px">Choose</button>
+            <button class="btn-primary rounded border-0 shadow-sm" @onclick="() => modalLoginRef?.Show()">Choose</button>
         }
 
     </div>

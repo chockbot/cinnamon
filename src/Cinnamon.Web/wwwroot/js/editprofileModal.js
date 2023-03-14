@@ -57,7 +57,7 @@ $(".js-save-cropped-avatar").on("click", function (event) {
     //Check image Size
     const size = roundedcanvas.size;
     //Show
-    const base64encodedImage = roundedcanvas.toDataURL();
+    const base64encodedImage = roundedcanvas.toDataURL("image/jpeg",0.9);
 
     imageData = base64encodedImage;
 
