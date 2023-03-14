@@ -51,7 +51,7 @@
                         </div>
                     </div>
                     <div class="xp-body-item">
-                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>modalRef.ShowModal(item)" class="btn-update" Style="
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" class="btn-update" Style="
                                                                                                                                         width: 352px;
                                                                                                                                         height: 40px;
                                                                                                                                         background: #FFA942;
@@ -64,7 +64,74 @@
         </Div>
     </div>
 }
-<ModalAttendance @ref="modalRef"></ModalAttendance>
+@*<ModalAttendance @ref="modalRef"></ModalAttendance>*@
+<Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
+    <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible">
+        <ModalHeader>
+            <h6 class="col-11 modal-title text-center" style="font-weight:bold">View Attendance</h6>
+            <button type="button" class="btn-close" @onclick="() => HideModal()" />
+        </ModalHeader>
+        <ModalBody MaxHeight="1500">
+            <div class="student-details-container">
+                <div class="student-details">
+                    @if (studentAttendances.Count != 0)
+                    {
+                        var item = studentAttendances.FirstOrDefault();
+                        <div class="student-details-major">
+                            <p class="">Name : <span>@item.Name</span></p>
+                            <p class="">Present Days : <span class="days-present">@item.SessionsAttended</span></p>
+                        </div>
+                    }
+                </div>
+            </div>
+            @* CALENDAR *@
+            <div class="wrap-content calendar">
+                <div class="calendar-header">
+
+                    <h1 class="calendar-header-details">@monthName @year</h1>
+                    <div class="calendar-arrow">
+                        <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
+                        <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
+                    </div>
+                </div>
+                <hr />
+                <hr />
+                <section>
+                    @foreach (var days in CalendarDays)
+                    {
+                        <div class="calendar-days">
+                            <p>@days</p>
+                        </div>
+                    }
+                    @for (int i = 0; i < numDummyColumn; i++)
+                    {
+                        <div></div>
+                    }
+                    @for (int i = 1; i <= monthEnd.Day; i++)
+                    {
+                        var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                        <div class="calendar-body">
+                            @if (calendarItem != null && calendarItem.IsPresent == true)
+                            {
+                                //Display
+                                <button class="btn-date">@i</button>
+                            }
+                            else if (calendarItem != null && calendarItem.IsPresent == false)
+                            {
+                                //Update
+                                <button class="btn-date-absent">@i</button>
+                            }
+                            else
+                            {
+                                <p class="calendar-dates">@i</p>
+                            }
+                        </div>
+                    }
+                </section>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 @code
 {
     [Parameter]
@@ -74,9 +141,20 @@
     public List<Students> students = new List<Students>();
     public ActivitySchedule Schedule = new ActivitySchedule();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    protected ModalAttendance modalRef { get; set; }
+    public string monthName = "";
+    public DateTime monthEnd;
+    public int monthsAway = 0;
+    public int numDummyColumn = 0;
+    public int year = 2023;
+    public int month = 0;
+    public DateTime passDates;
     public string Token;
-
+    public bool disableButtonRight { get; set; } = false;
+    public bool disableButtonLeft { get; set; } = false;
+    public Modal modalRef;
+    @functions {
+        string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
+    }
     private string GetImage()
     {
         if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
@@ -118,10 +196,83 @@
             }).ToList();
         }
         students = students.Where(a => a.ActivityId == Activity.ActivityId && a.CustomerId == Profile.Id).ToList();
+        await CreateMonth();
     }
     public double GetPercentage(double session, double total)
     {
         return Math.Round(session / total * 100);
+    }
+    public async Task CreateMonth()
+    {
+        if (monthsAway <= 2 && monthsAway >= -2)
+        {
+            if(monthsAway == 2)
+            {
+                disableButtonRight = true;
+            }else if(monthsAway == -2){
+                disableButtonLeft = true;
+            }
+            else{
+                disableButtonRight = false;
+                disableButtonLeft = false;
+            }
+            var tempDate = DateTime.Now.AddMonths(monthsAway);
+            month = tempDate.Month;
+            year = tempDate.Year;
+
+            DateTime monthStart = new DateTime(year, month, 1);
+            monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            monthName = monthStart.Month switch
+            {
+                1 => "January",
+                2 => "February",
+                3 => "March",
+                4 => "April",
+                5 => "May",
+                6 => "June",
+                7 => "July",
+                8 => "August",
+                9 => "September",
+                10 => "October",
+                11 => "November",
+                12 => "December",
+                _ => ""
+            };
+            numDummyColumn = (int)monthStart.DayOfWeek;
+        }
+    }
+
+    public async Task CreateCalendar(Students student)
+    {
+        await modalRef.Show();
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            {
+                StudentId = student.Id,
+                ActivityId = student.ActivityId
+            }, Token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId,
+                        Name = a.Name
+                    };
+            }).ToList();
+        }
+    }
+
+    private async Task HideModal()
+    {
+        await modalRef.Hide();
     }
 }
 
