@@ -452,7 +452,7 @@
 
     private int validImages = 0;
 
-    private long totalImageSizeMB = 0;
+    private decimal totalImageSizeMB = 0;
 
     private string imagesErrorMessage = string.Empty;
 
@@ -692,42 +692,44 @@
         totalImageSizeMB = 0;
         imagesErrorMessage = string.Empty;
 
-        if(selectedImageCount > 3)
+        if (selectedImageCount > 3)
         {
             imagesErrorMessage = "Must only select 3 images only";
             return;
         }
 
         var files = e.GetMultipleFiles();
-        foreach(var file in files)
+        foreach (var file in files)
         {
-            totalImageSizeMB += file.Size / 1024 / 1024;
+            totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
         }
 
-        if(IsImagesOverLimit)
+        if (IsImagesOverLimit)
         {
             imagesErrorMessage = "All images file size must only 10mb";
         }
-
-        var images = await jsRuntime
-                        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage","#photo-upload",new string[] {"#imgSrc1", "#imgSrc2", "#imgSrc3"});
-
-        // update image src state
-        for(int i = 0; i < imageItems.Count; i++)
+        else
         {
-            if(images.Count > i)
-            {
-                imageItems[i].Src = images[i].Url;
-                imageItems[i].DataName = images[i].FileName;
-                imageItems[i].IsValid = true;
-            }
-            else
-            {
-                imageItems[i].IsValid = false;
-            }
-        }
+            var images = await jsRuntime
+                       .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", "#photo-upload", new string[] { "#imgSrc1", "#imgSrc2", "#imgSrc3" });
 
-        validImages = imageItems.Count(i => i.IsValid);
+            // update image src state
+            for (int i = 0; i < imageItems.Count; i++)
+            {
+                if (images.Count > i)
+                {
+                    imageItems[i].Src = images[i].Url;
+                    imageItems[i].DataName = images[i].FileName;
+                    imageItems[i].IsValid = true;
+                }
+                else
+                {
+                    imageItems[i].IsValid = false;
+                }
+            }
+
+            validImages = imageItems.Count(i => i.IsValid);
+        }
 
         StateHasChanged();
     }
@@ -741,25 +743,27 @@
         var files = e.GetMultipleFiles();
         foreach (var file in files)
         {
-            totalImageSizeMB += file.Size / 1024 / 1024;
+            totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
         }
 
         if (IsImagesOverLimit)
         {
             imagesErrorMessage = "All images file size must only 10mb";
         }
-
-        var images = await jsRuntime
-        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
-
-        if (imageItems.Count > 0)
+        else
         {
-            imageItems[index].Src = images.FirstOrDefault()?.Url;
-            imageItems[index].DataName = images.FirstOrDefault()?.FileName;
-            imageItems[index].IsValid = true;
-        }
+            var images = await jsRuntime
+            .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
 
-        validImages = imageItems.Count(i => i.IsValid);
+            if (imageItems.Count > 0)
+            {
+                imageItems[index].Src = images.FirstOrDefault()?.Url;
+                imageItems[index].DataName = images.FirstOrDefault()?.FileName;
+                imageItems[index].IsValid = true;
+            }
+
+            validImages = imageItems.Count(i => i.IsValid);
+        }
 
         StateHasChanged();
     }
