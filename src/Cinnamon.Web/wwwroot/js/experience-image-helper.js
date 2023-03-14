@@ -36,18 +36,29 @@ let photoModals = [cropperCoverPhotoModal, cropperFirstSupportPhotoModal, croppe
 
 $(document).on('change', multiplePhotoUploadInput, function () {
     const inputElement = document.querySelector(multiplePhotoUploadInput);
-
+    let totalFileSize = 0;
+    
     for (let i = 0; i < 3; i++) {
         if (inputElement.files[i]) {
-            handlePhoto(this, coverPhotos[i], photoModals[i], [inputElement.files[i]]);
+            totalFileSize += inputElement.files[i].size / 1024 / 1024;
         }
     }
+    if (totalFileSize > 10) {
+        return;
+    }
+    else {
+        for (let i = 0; i < 3; i++) {
+            if (inputElement.files[i]) {
+                handlePhoto(this, coverPhotos[i], photoModals[i], [inputElement.files[i]]);
+            }
+        }
+    }
+
 });
 
 
 $(document).on('change', $jsPhotoUploadInput, function () {
     handlePhoto(this, imageCoverPhoto, cropperCoverPhotoModal, null);
-
 });
 
 $(document).on('change', firstSupportPhotoInput, function () {
@@ -90,7 +101,7 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
         var fileName = photo.name;
         if (photo.size > 10000000) {
 
-            alert("Please upload image less than 10MB.");
+            return;
         }
         else {
             var reader = new FileReader();
@@ -151,7 +162,7 @@ function saveCroppedCoverPhoto(event, imgSrc, photoModal, imgPreview, imageData,
     //Check image Size
     const size = roundedcanvas.size;
     //Show
-    const base64encodedImage = roundedcanvas.toDataURL();
+    const base64encodedImage = roundedcanvas.toDataURL("image/jpeg", "0.9");
 
     $(imageData).val(base64encodedImage);
 
