@@ -162,7 +162,7 @@ function saveCroppedCoverPhoto(event, imgSrc, photoModal, imgPreview, imageData,
     //Check image Size
     const size = roundedcanvas.size;
     //Show
-    const base64encodedImage = roundedcanvas.toDataURL("image/jpeg", "0.9");
+    const base64encodedImage = roundedcanvas.toDataURL("image/jpeg", 0.9);
 
     $(imageData).val(base64encodedImage);
 

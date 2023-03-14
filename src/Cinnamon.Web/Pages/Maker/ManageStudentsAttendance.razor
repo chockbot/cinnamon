@@ -12,7 +12,7 @@
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IDashboardApiHandler dashboardApiHandler;
 
-@if(studentAttendances.Count!=0){
+@if(student!=null){
     <div class="header">
         <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
         <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students - Attendance </h3>
@@ -85,35 +85,51 @@
             @for (int i = 1; i <= monthEnd.Day; i++)
             {
                 var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
-                <div class="calendar-body">
-                    @if (calendarItem != null && calendarItem.IsPresent == true)
-                    {
-                        //Display
-                        <button class="btn-date" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
-                    }
-                    else if (calendarItem != null && calendarItem.IsPresent == false)
-                    {
-                        //Update
-                        <button class="btn-date-absent" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
-                    }
-                    else
-                    {
-                        //Create
-                        var student = studentAttendances.FirstOrDefault();
-                        DateTime currentDate = DateTime.Today;
-                        passDates = new DateTime(year, month, i);
-                        
-                        if (passDates <= currentDate)
+                passDates = new DateTime(year, monthEnd.Month, i);
+                DateTime currentDate = DateTime.Today;
+                @if (calendarItem!=null)
+                {
+                    <div class="calendar-body">
+                        @if (calendarItem != null && calendarItem.IsPresent == true)
                         {
-                            DateTime selectedDate = passDates;
-                            <button class="btn-date-absent" @onclick="() => CreateAttendance(student, Token, selectedDate)">@i</button>
+                        //Display
+                            <button class="btn-date" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
+                        }
+                        else if (calendarItem != null && calendarItem.IsPresent == false)
+                        {
+                        //Update
+                            <button class="btn-date-absent" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
                         }
                         else
                         {
-                             <p class="calendar-dates">@i</p>
+                            //Create
+                            if (passDates <= currentDate)
+                            {
+                                DateTime selectedDate = passDates;
+                                <button class="btn-date-absent" @onclick="() => CreateAttendance(student, Token, selectedDate)">@i</button>
+                            }
+                            else
+                            {
+                                <p class="calendar-dates">@i</p>
+                            }
                         }
-                    }
-                </div>
+                    </div>
+                }
+                else
+                {
+                     <div class="calendar-body">
+                            @if (passDates <= DateTime.Today)
+                            {
+                                DateTime selectedDate = passDates;
+                                <button class="btn-date-absent" @onclick="() => CreateAttendance(student, Token, selectedDate)">@i</button>
+                            }
+                            else
+                            {
+                                <p class="calendar-dates">@i</p>
+                            }    
+                     </div>
+                }
+
             }
         </section>
     </div>
@@ -135,7 +151,7 @@
     public int                      year                = 2023;
     public int                      month               = 0;
     public string                   Token;
-    public DateTime passDates;
+    public DateTime passDates = new DateTime();
     public bool IsShowErrorMessage { get; set; }
     public string ErrorMessage { get; set; }
     public bool disableButtonRight { get; set; } = false;
@@ -359,7 +375,7 @@
         }
     }
 
-    private async void CreateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
+    private async void CreateAttendance(Students studentAttendance, string token, DateTime presentDate)
     {
         try
         {
@@ -367,14 +383,14 @@
                     {
                         AttendanceDate = presentDate,
                         IsPresent = true,
-                        StudentId = studentAttendance.StudentId
+                        StudentId = studentAttendance.Id
                     }, token);
 
             if (create.Succeeded && create.Result.IsSuccess)
             {
                 var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
                         {
-                            Id = studentAttendance.StudentId,
+                            Id = studentAttendance.Id,
                             SessionsAttended = studentAttendance.SessionsAttended + 1,
                         });
                 await OnInitializedAsync();
