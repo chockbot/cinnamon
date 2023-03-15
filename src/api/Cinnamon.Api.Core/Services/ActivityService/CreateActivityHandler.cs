@@ -242,6 +242,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        Order = order,
                         IsActiveSchedule = s.IsActiveSchedule
                     };
                 })

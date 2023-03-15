@@ -148,7 +148,8 @@ public class ActivityController : ControllerBase
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule,
                     };
                 }),
                 AdditionalRequirements = activity.AdditionalRequirements,
