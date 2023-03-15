@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Cinnamon.Api.Data.Repository.Entities;
@@ -14,5 +15,7 @@ public class ActivitySchedule : BaseEntity
     public int PerUnit2 { get; set; } = 1;
     public string PriceUnit2 { get; set; } = "Session";
     public int Order {get; set;}
+    [DefaultValue(true)]
+    public bool IsActiveSchedule { get; set; } = true;
     public virtual Activity Activity {get; set;}
 }

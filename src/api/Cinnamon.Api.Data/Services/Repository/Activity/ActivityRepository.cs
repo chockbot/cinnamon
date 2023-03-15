@@ -283,7 +283,8 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
-                        Order = s.Order
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }).ToList();
             }
@@ -459,7 +460,8 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             PerUnit2 = s.PerUnit2,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }).ToList();
                 }
@@ -654,7 +656,8 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
-                        Order = s.Order
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }).ToList();
             }
@@ -803,7 +806,8 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
-                        Order = s.Order
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }).ToList();
             }
@@ -1164,7 +1168,8 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             PerUnit2 = s.PerUnit2,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }).ToList();
                 }

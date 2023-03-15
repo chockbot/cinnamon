@@ -22,5 +22,6 @@ public class UpdateManySchedulesArgs
         public int? PerUnit2 { get; set; } = 1;
         public string? PriceUnit2 { get; set; } = "Session";
         public int? Order {get; set;}
+        public bool? IsActiveSchedule { get; set; }
     }    
 }

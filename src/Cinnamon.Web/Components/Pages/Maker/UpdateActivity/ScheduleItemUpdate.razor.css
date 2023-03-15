@@ -129,49 +129,21 @@ hr.solid {
     margin-top: 10px;
     text-align: center;
 }
-.form-switch {
+.active-label {
     float: left;
-    margin-left: 1rem;
-    color: var(--primary);
-    margin-top: 1rem;
-}
-
-.label-switch {
-    float: left;
-    font-weight: bold;
+    font-size: 16px;
     font-family: 'Nunito';
-    font-size: 18px;
-    margin-top: 1rem;
-}
-
-.set-exp {
-    float: left;
-    margin-top: 0.5rem;
-    font-weight: bold;
-    font-family: 'Nunito';
-    font-size: 18px;
-    margin-top: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.session-period {
-    float: left;
-    margin-left: 1rem;
-    font-family: 'Nunito';
-    font-size: 18px;
-    margin-top: 1rem;
-    width: 15rem;
+    line-height: 30px;
 }
 
 .form-check-input {
-    background-color: var(--primary);
+    margin-left: 5px;
+    margin-top: 8px;
 }
-.img-icon {
-    width: 25px;
-    height: 25px;
-    margin-left: 5rem;
-    margin-top: 0.5rem;
-    cursor: pointer;
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary);
+    border: none;
 }
 @media screen and (max-width: 767px) {
     .landing-sm {
@@ -185,7 +157,14 @@ hr.solid {
     .btn-primary {
         font-size: 3.5vw;
     }
+    .active-label {
+        display: none;
+    }
 
+    .form-check-input {
+        float: right;
+        margin-right: 30px;
+    }
     .content-creation textarea {
         width: 100%;
         height: 150px;

@@ -12,5 +12,6 @@ public class GetActivityScheduleResult
         public int ScheduleId {get; set;}
         public string ScheduleTitle {get; set;}
         public string ScheduleDescription {get; set; }
+        public bool IsActiveSchedule { get; set; }
     }
 }

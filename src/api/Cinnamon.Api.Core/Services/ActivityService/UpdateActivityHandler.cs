@@ -205,7 +205,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         })
                     });
@@ -235,7 +236,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         })
                     });

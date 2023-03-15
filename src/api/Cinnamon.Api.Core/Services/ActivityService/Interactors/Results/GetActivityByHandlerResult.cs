@@ -54,6 +54,7 @@ public class GetActivityByHandlerResult
         public int PerUnit2 {get; set;}
         public string PriceUnit2 {get; set;}
         public int Order {get; set;}
+        public bool IsActiveSchedule { get; set; }
     }
 
     public class ActivityImage 
