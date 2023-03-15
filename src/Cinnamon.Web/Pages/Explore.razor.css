@@ -96,7 +96,7 @@ a.dropdown-item {
     width: 100px;
 }
 
-img.img-icon {
+img.img-icon, img.img-icon-home {
     margin-top: 0.5rem;
     height: 50%;
 }
@@ -130,7 +130,7 @@ img.img-icon {
     color: inherit;
 }
 
-    .carousel-list:hover {
+    .activity-sm .swiper-slide:hover, .categories .swiper-slide:hover, .carousel-list:hover {
         color: #fff;
         background-color: #ffa942;
         border-radius: 5px;
@@ -169,13 +169,7 @@ img.img-icon {
     border: 1px;
 }
 
-    .card img {
-        width: 278px;
-        height: 340px;
-        object-fit: cover;
-        object-position: center;
-        border-radius: 10px;
-    }
+   
 
 .card-title1 {
     font-size: 16px;
@@ -187,63 +181,12 @@ img.img-icon {
     font-family: "Nunito";
 }
 
-.card-container {
-    display: flex;
-    background: #FFFFFF;
-    border-radius: 0px 0px 10px 10px;
-    padding-top: 0.7em;
-    padding-left: 0.5em;
-    padding-right: 0.7em;
-    justify-content: space-between;
-}
-
-
 .card-body1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-.xp-badges {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: absolute;
-    bottom: 0;
-    left: 210px;
-    z-index: 99;
-}
-
-.xp-badges-carousel {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    position: absolute;
-    bottom: 0;
-    left: 210px;
-    z-index: 99;
-}
-
-
-.new-tag-icon {
-    height: 12px !important;
-    width: 12px !important;
-    margin-left: 5px;
-}
-
-.new-badge {
-    display: flex;
-}
-
-.new-badge {
-    position: absolute;
-    width: 58.5px;
-    height: 23.09px;
-    background: #FFFFFF;
-    border-radius: 15px;
-    left: 18px;
-    top: 18px;
-}
 
 .active-badge {
     display: flex;
@@ -253,61 +196,6 @@ img.img-icon {
     margin-bottom: 16px;
 }
 
-.new-tag-icon {
-    height: 12px;
-    width: 12px;
-    margin-left: 5px;
-}
-
-.new-tag-label {
-    margin-top: 2px;
-    padding-right: 8px;
-}
-
-.pulse {
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: #34A853;
-    cursor: pointer;
-    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
-    animation: pulse 2s infinite;
-}
-
-    .pulse:hover {
-        animation: none;
-    }
-
-@-webkit-keyframes pulse {
-    0% {
-        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
-    }
-
-    70% {
-        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
-    }
-
-    100% {
-        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
-    }
-}
-
-@keyframes pulse {
-    0% {
-        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
-        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
-    }
-
-    70% {
-        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
-        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
-    }
-
-    100% {
-        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
-        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
-    }
-}
 
 .carousel-indicators button {
     border-radius: 100%;
@@ -323,62 +211,6 @@ img.img-icon {
 .modal-content {
     font-family: "Nunito";
 }
-
-.allow-button {
-    height: 30px;
-    width: 120px;
-    color: #fff;
-    font-size: 12px;
-    line-height: 10px;
-    border-radius: 3px;
-    border: 1px solid black;
-    background-color: #ffa942;
-}
-
-.activity-lg, .activity-popular-lg {
-    display: flex;
-}
-
-.section-2-lg .wish-icon {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    z-index: 99;
-    cursor: pointer;
-    font-size: 16px;
-    color: #717171;
-}
-
-.wish-icon .fa-heart-o {
-    color: white;
-}
-
-.btn-star {
-    position: absolute;
-    width: 50px;
-    height: 20px;
-    border-radius: 10px;
-    text-align: left;
-    font-size: 12px;
-    margin-left: 80%;
-    background-color: #FFFFFF;
-    border: none;
-    font-family: "Nunito";
-}
-
-.btn-join {
-    margin-left: 5rem;
-    background-color: #ffa942;
-    border-radius: 20px;
-    width: 25%;
-    height: 100%;
-    text-align: center;
-    font-family: "Nunito";
-}
-
-    .btn-join:hover {
-        color: white;
-    }
 
 .become {
     width: 15rem;
@@ -420,19 +252,6 @@ img.img-icon {
     visibility: hidden;
 }
 
-div.activity-lg.border-bottom,
-div.activity-sm.border-bottom,
-div.activity-md.border-bottom,
-div.activity-popular-lg.border-bottom,
-div.activity-popular-md.border-bottom,
-div.activity-popular-sm.border-bottom {
-    padding-bottom: 20px;
-    margin-bottom: 20px;
-}
-
-.wish-icon i {
-    color: #717171;
-}
 
 .in-person {
     color: #AA6843;
@@ -440,6 +259,28 @@ div.activity-popular-sm.border-bottom {
 
 .online {
     color: #43AA8B;
+}
+
+.swiper-scrollbar {
+    display: none
+}
+
+img {
+    object-fit: cover;
+    object-position: center;
+}
+
+.card-img-overlay {
+    z-index: 99;
+    height: 0px;
+}
+
+.new-badge-section, .activity-new-badge-section {
+    text-align: left;
+}
+
+.card{
+    margin: 0px;
 }
 
 /* Extra small devices (portrait phones, less than 576px) */
@@ -466,8 +307,9 @@ div.activity-popular-sm.border-bottom {
         margin-right: 0.5rem !important;
     }
 
-        .home-logo .img-icon {
-            height: 10vw;
+        .home-logo.img-icon-home {
+            width: 31px;
+            height: 34px;
             margin-top: 3px
         }
 
@@ -506,102 +348,13 @@ div.activity-popular-sm.border-bottom {
             margin-left: 0;
         }
 
-    .activity-sm, .activity-popular-sm {
-        display: flex;
-    }
-
-    .activity-md, .activity-popular-md {
-        display: none;
-    }
-
-    .activity-lg, .activity-popular-lg {
-        display: none;
-    }
-
-    .activity-sm .btn-family {
-        background-color: #ffa942;
-        border-radius: 20px;
-        text-align: center;
-        font-family: "Nunito";
-        padding: 5px;
-        width: 100%;
-        margin-top: 0.5rem !important;
-    }
-
-        .activity-sm .btn-family:hover {
-            color: white;
-        }
-
     .filter {
         display: none;
-    }
-
-    .section-2-lg {
-        display: block;
     }
 
     .row {
         padding: 0 !important;
         margin: 0 !important;
-    }
-
-    .col-md-2 {
-        display: none;
-    }
-
-    .activity-sm .carousel-control-prev,
-    .activity-sm .carousel-control-next {
-        background-color: transparent;
-        width: 3vh;
-        height: 3vh;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-right: -15px;
-        margin-left: -15px;
-        filter: invert(100%);
-    }
-
-    .activity-sm .carousel-control-next {
-        left: 80%;
-    }
-
-    .activity-popular-sm .carousel-control-prev, .activity-popular-sm .carousel-control-next {
-        background-color: black;
-        width: 2vh;
-        height: 2vh;
-        border-radius: 50%;
-        transform: translateY(-50%);
-        margin-right: 20px;
-        margin-left: -5px;
-        filter: invert(100%);
-        position: absolute;
-        right: -100%;
-        top: 0%;
-        bottom: 0%;
-    }
-
-    .activity-popular-sm .carousel-control-prev {
-        left: 85%;
-    }
-
-    .activity-popular-sm .carousel-control-next {
-        left: 92%;
-    }
-
-    .activity-sm .carousel-control-next-icon,
-    .activity-sm .carousel-control-prev-icon {
-        width: 2.5vh;
-    }
-
-    .activity-sm .wish-icon, .activity-popular-sm .wish-icon {
-        position: absolute;
-        right: 0px;
-        top: 8px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
     }
 
     .section-2-lg .carousel-control-prev,
@@ -629,41 +382,6 @@ div.activity-popular-sm.border-bottom {
         height: 6px;
     }
 
-    .section-2-lg .card img {
-        width: 183px;
-        height: 223.39px;
-        border-radius: 10px;
-    }
-
-    .activity-popular-sm .card img {
-        width: 183px;
-        height: 223.39px;
-        border-radius: 10px;
-    }
-
-    .section-2-lg .wish-icon {
-        position: absolute;
-        right: 0px;
-        top: 8px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .btn-star {
-        position: absolute;
-        width: 60px;
-        height: 20px;
-        border-radius: 10px;
-        text-align: left;
-        font-size: 12px;
-        margin-left: 80%;
-        background-color: #FFFFFF;
-        border: none;
-        font-family: "Nunito";
-    }
-
     .dropdown {
         display: none;
     }
@@ -680,58 +398,6 @@ div.activity-popular-sm.border-bottom {
         font-size: 22px;
         line-height: 30px;
         color: #343D4C;
-    }
-
-    .xp-badges {
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 0;
-        left: 115px;
-        z-index: 99;
-    }
-
-    .xp-badges-carousel {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: -2px;
-        left: 90px;
-        z-index: 99;
-    }
-
-        .xp-badges-carousel.fa.fa-star {
-            font-size: 12px;
-        }
-
-    .active-tag-label {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 22px;
-        color: #717171;
-    }
-
-    .new-badge {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px;
-        border-radius: 15px;
-        font-family: 'Nunito';
-        font-style: italic;
-        font-weight: 700;
-        font-size: 10px;
-        color: #343D4C;
-        position: absolute;
-        width: 58.5px;
-        height: 23.09px;
-        background: #FFFFFF;
-        left: 18px;
-        top: 18px;
-        z-index: 99;
     }
 
     .active-tag-label {
@@ -756,6 +422,151 @@ div.activity-popular-sm.border-bottom {
         line-height: 27px;
         color: #FFFFFF;
         width: 160px;
+    }
+
+    .swiper-slide.category[style] {
+        margin-right: 20px !important;
+        width: 77px;
+    }
+
+    img.img-icon {
+        margin-top: 0.5rem;
+        height: 50%;
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    img.img-icon-home {
+        width: 31px;
+        height: 34px;
+        margin-top: 5px
+    }
+
+    .swiper-slide.swiper-slide-popular {
+        width: 183px;
+        height: 223.39px;
+        border-radius: 10px;
+    }
+
+        .swiper-slide.swiper-slide-popular[style] {
+            margin-right: 30px !important;
+        }
+
+    .card img.card-img-top.img-fluid, img.card-img.img-fluid {
+        width: 183px;
+        height: 223.39px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .heart-badge-section {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .popular-activities {
+        height: 340px
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 19px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #AA6843;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #43AA8B;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 19px;
+        color: #343D4C;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 16px;
+        color: #717171;
+    }
+
+    .price-badge-section {
+        margin-top: 12px;
+        text-align: left;
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .categories img.img-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .categories .swiper-slide.category {
+        width: 50px; /*tied up with margin-left of .categories .schedule-swiper*/
+    }
+
+    .categories .schedule-swiper {
+        margin: 20px;
+        margin-left: 25px;
+    }
+
+    .price-section{
+        padding: 0px;
+    }
+
+    .active-badge-section {
+        padding: 0px;
+        margin-top: 1px
+    }
+
+    .card-body1{
+        margin-bottom: 10px;
+    }
+
+    .card-activity-body{
+        padding: 5px;
+    }
+
+    .activity-heart-badge-section {
+        text-align: center;
+        margin-top: -7px;
+        margin-left: 25px;
+    }
+
+    .activity-new-badge-section {
+        margin-left: -25px;
+        margin-top: -10px;
+    }
+
+    .categories, .activity-popular {
+        margin-bottom: 10px;
     }
 }
 
@@ -783,8 +594,9 @@ div.activity-popular-sm.border-bottom {
         margin-right: 0.5rem !important;
     }
 
-        .home-logo .img-icon {
-            height: 10vw;
+        .home-logo.img-icon-home {
+            width: 31px;
+            height: 34px;
             margin-top: 3px
         }
 
@@ -823,110 +635,14 @@ div.activity-popular-sm.border-bottom {
             margin-left: 0;
         }
 
-    .activity-sm, .activity-popular-sm {
-        display: flex;
-    }
-
-    .activity-md, .activity-popular-md {
-        display: none;
-    }
-
-    .activity-lg, .activity-popular-lg {
-        display: none;
-    }
-
-    .activity-sm .btn-family {
-        background-color: #ffa942;
-        border-radius: 20px;
-        text-align: center;
-        font-family: "Nunito";
-        padding: 5px;
-        width: 100%;
-        margin-top: 0.5rem !important;
-    }
-
-        .activity-sm .btn-family:hover {
-            color: white;
-        }
-
+  
     .filter {
         display: none;
-    }
-
-    .section-2-lg {
-        display: block;
     }
 
     .row {
         padding: 0 !important;
         margin: 0 !important;
-    }
-
-    .col-md-2 {
-        display: none;
-    }
-
-    .activity-sm .carousel-control-prev,
-    .activity-sm .carousel-control-next {
-        background-color: transparent;
-        width: 3vh;
-        height: 3vh;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-right: -15px;
-        margin-left: -15px;
-        filter: invert(100%);
-    }
-
-    .activity-popular-sm .carousel-control-prev,
-    .activity-popular-sm .carousel-control-next {
-        background-color: black;
-        width: 2vh;
-        height: 2vh;
-        border-radius: 50%;
-        transform: translateY(-50%);
-        margin-right: 20px;
-        margin-left: -5px;
-        filter: invert(100%);
-        position: absolute;
-        right: -100%;
-        top: 0%;
-        bottom: 0%;
-    }
-
-    .activity-popular-sm .carousel-control-prev {
-        left: 85%;
-    }
-
-    .activity-popular-sm .carousel-control-next {
-        left: 92%;
-    }
-
-    .activity-sm .carousel-control-next-icon,
-    .activity-sm .carousel-control-prev-icon {
-        width: 2.5vh;
-    }
-
-    .activity-sm .wish-icon {
-        position: absolute;
-        right: 0px;
-        top: 8px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .activity-popular-sm .wish-icon {
-        position: absolute;
-        right: 0px;
-        top: 8px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-        left: 130px;
     }
 
     .section-2-lg .carousel-control-prev,
@@ -954,41 +670,6 @@ div.activity-popular-sm.border-bottom {
         height: 6px;
     }
 
-    .section-2-lg .card img {
-        width: 183px;
-        height: 223.39px;
-        border-radius: 10px;
-    }
-
-    .activity-popular-sm .card img {
-        width: 183px;
-        height: 223.39px;
-        border-radius: 10px;
-    }
-
-    .section-2-lg .wish-icon {
-        position: absolute;
-        right: 0px;
-        top: 8px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .btn-star {
-        position: absolute;
-        width: 60px;
-        height: 20px;
-        border-radius: 10px;
-        text-align: left;
-        font-size: 12px;
-        margin-left: 80%;
-        background-color: #FFFFFF;
-        border: none;
-        font-family: "Nunito";
-    }
-
     .dropdown {
         display: none;
     }
@@ -1005,58 +686,6 @@ div.activity-popular-sm.border-bottom {
         font-size: 22px;
         line-height: 30px;
         color: #343D4C;
-    }
-
-    .xp-badges {
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 0;
-        left: 115px;
-        z-index: 99;
-    }
-
-    .xp-badges-carousel {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: -2px;
-        left: 115px;
-        z-index: 99;
-    }
-
-        .xp-badges-carousel.fa.fa-star {
-            font-size: 12px;
-        }
-
-    .active-tag-label {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 22px;
-        color: #717171;
-    }
-
-    .new-badge {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px;
-        border-radius: 15px;
-        font-family: 'Nunito';
-        font-style: italic;
-        font-weight: 700;
-        font-size: 10px;
-        color: #343D4C;
-        position: absolute;
-        width: 58.5px;
-        height: 23.09px;
-        background: #FFFFFF;
-        left: 18px;
-        top: 18px;
-        z-index: 99;
     }
 
     .active-tag-label {
@@ -1081,6 +710,151 @@ div.activity-popular-sm.border-bottom {
         line-height: 27px;
         color: #FFFFFF;
         width: 160px;
+    }
+
+    .swiper-slide.category[style] {
+        margin-right: 20px !important;
+        width: 77px;
+    }
+
+    img.img-icon {
+        margin-top: 0.5rem;
+        height: 50%;
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    img.img-icon-home {
+        width: 31px;
+        height: 34px;
+        margin-top: 5px
+    }
+
+    .swiper-slide.swiper-slide-popular {
+        width: 183px;
+        height: 223.39px;
+        border-radius: 10px;
+    }
+
+        .swiper-slide.swiper-slide-popular[style] {
+            margin-right: 30px !important;
+        }
+
+    .card img.card-img-top.img-fluid, img.card-img.img-fluid {
+        width: 183px;
+        height: 223.39px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .heart-badge-section {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .popular-activities {
+        height: 340px
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 19px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #AA6843;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #43AA8B;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 19px;
+        color: #343D4C;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 10px;
+        line-height: 16px;
+        color: #717171;
+    }
+
+    .price-badge-section {
+        margin-top: 12px;
+        text-align: left;
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .categories img.img-icon {
+        width: 24px;
+        height: 24px;
+    }
+
+    .categories .swiper-slide.category {
+        width: 50px; /*tied up with margin-left of .categories .schedule-swiper*/
+    }
+
+    .categories .schedule-swiper {
+        margin: 20px;
+        margin-left: 75px;
+    }
+
+    .price-section {
+        padding: 0px;
+    }
+
+    .active-badge-section {
+        padding: 0px;
+        margin-top: 1px
+    }
+
+    .card-body1 {
+        margin-bottom: 10px;
+    }
+
+    .card-activity-body {
+        padding: 5px;
+    }
+
+    .activity-heart-badge-section {
+        text-align: center;
+        margin-top: -7px;
+        margin-left: 25px;
+    }
+
+    .activity-new-badge-section {
+        margin-left: -25px;
+        margin-top: -10px;
+    }
+
+    .categories, .activity-popular {
+        margin-bottom: 10px;
     }
 }
 
@@ -1112,7 +886,7 @@ div.activity-popular-sm.border-bottom {
         }
 
             .top-row a:first-child {
-                margin-left:20px;
+                margin-left: 20px;
                 overflow: hidden;
                 text-overflow: ellipsis;
             }
@@ -1186,44 +960,6 @@ div.activity-popular-sm.border-bottom {
             width: 10%;
         }
 
-    .activity-sm, .activity-popular-sm {
-        display: none;
-    }
-
-    .activity-lg, .activity-popular-lg {
-        display: none;
-    }
-
-    .activity-md, .activity-popular-md {
-        display: flex;
-    }
-
-    .activity-lg .cards-wrapper, .activity-popular-lg .cards-wrapper {
-        margin-left: 1rem;
-    }
-
-    .activity-lg .carousel-control-next,
-    .activity-lg .carousel-control-prev,
-    .activity-popular-lg .carousel-control-next,
-    .activity-popular-lg .carousel-control-prev {
-        background-color: black;
-        width: 2vh;
-        height: 2vh;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-right: 20px;
-        margin-left: -5px;
-        filter: invert(100%);
-    }
-
-    .activity-lg .carousel-control-next-icon,
-    .activity-lg .carousel-control-prev-icon,
-    .activity-popular-lg .carousel-control-next-icon,
-    .activity-popular-lg .carousel-control-prev-icon {
-        width: 1.5vh;
-    }
-
     .section-2-lg .carousel-control-prev,
     .section-2-lg .carousel-control-next {
         background-color: black;
@@ -1242,110 +978,6 @@ div.activity-popular-sm.border-bottom {
         width: 1.2vh;
     }
 
-    .section-2-lg .wish-icon {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .btn-star {
-        position: absolute;
-        width: 50px;
-        height: 20px;
-        border-radius: 10px;
-        text-align: left;
-        font-size: 12px;
-        margin-left: 80%;
-        background-color: #FFFFFF;
-        border: none;
-        font-family: "Nunito";
-    }
-
-    .activity-md .carousel-control-prev,
-    .activity-md .carousel-control-next {
-        background-color: black;
-        width: 2vh;
-        height: 2vh;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-right: 0px;
-        margin-left: 0px;
-        filter: invert(100%);
-    }
-
-    .activity-popular-md .carousel-control-prev,
-    .activity-popular-md .carousel-control-next {
-        background-color: black;
-        width: 2vh;
-        height: 2vh;
-        border-radius: 50%;
-        transform: translateY(-50%);
-        margin-right: 20px;
-        margin-left: -5px;
-        filter: invert(100%);
-        position: absolute;
-        right: -100%;
-        top: 0%;
-        bottom: 0%;
-    }
-
-    .activity-popular-md .carousel-control-prev {
-        left: 88%;
-    }
-
-    .activity-popular-md .carousel-control-next {
-        left: 92%;
-    }
-
-    .activity-popular-md .wish-icon {
-        position: absolute;
-        right: 0px;
-        top: 10px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .section-3-md .carousel-control-prev,
-    .carousel-control-next {
-        background-color: #757474;
-        width: 2vh;
-        height: 2vh;
-        border-radius: 50%;
-        top: 50%;
-        transform: translateY(-50%);
-        margin-right: 0px;
-        margin-left: 10px;
-        filter: invert(100%);
-    }
-
-    .section-3-md .carousel-indicators button {
-        border-radius: 100%;
-        width: 8px;
-        height: 6px;
-    }
-
-    .section-3-md .carousel-indicators {
-        margin-right: 0.5rem;
-    }
-
-    .activity-sm {
-        display: none;
-    }
-
-    .activity-lg {
-        display: none;
-    }
-
-    .activity-md {
-        display: flex;
-    }
-
     .filter {
         text-decoration: none;
         padding-top: 50px;
@@ -1353,106 +985,10 @@ div.activity-popular-sm.border-bottom {
         width: 130px;
     }
 
-    .section-3-md {
-        display: flex;
-    }
-
-    .section-2-lg {
-        display: none;
-    }
-
-    .section-3-md .card {
-        margin: 0 0.5em;
-        border: 0.5px;
-    }
-
-        .section-3-md .card img {
-            width: 278px;
-            height: 340px;
-            border-radius: 10px;
-        }
-
-    .section-3-md .wish-icon {
-        position: absolute;
-        right: 0px;
-        top: 10px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .btn-star {
-        margin-left: 85%;
-    }
-
-    .card-container {
-        display: flex;
-        background: #FFFFFF;
-        border-radius: 0px 0px 10px 10px;
-        padding-top: 0.7em;
-        padding-left: 0.5em;
-        padding-right: 0.5em;
-    }
-
     .card-body1 {
         display: flex;
         flex-direction: column;
         gap: 10px;
-    }
-
-    .xp-badges {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 0;
-        left: 210px;
-        z-index: 99;
-    }
-
-    .xp-badges-carousel {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: -2px;
-        left: 210px;
-        z-index: 99;
-    }
-
-        .xp-badges-carousel.fa.fa-star {
-            font-size: 12px;
-        }
-
-    .new-tag-icon {
-        height: 12px !important;
-        width: 12px !important;
-        margin-left: 5px;
-    }
-
-    .new-badge {
-        display: flex;
-    }
-
-    .new-badge {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px;
-        border-radius: 15px;
-        font-family: 'Nunito';
-        font-style: italic;
-        font-weight: 700;
-        font-size: 10px;
-        color: #343D4C;
-        position: absolute;
-        width: 58.5px;
-        height: 23.09px;
-        background: #FFFFFF;
-        left: 18px;
-        top: 18px;
-        z-index: 99;
     }
 
     .active-badge {
@@ -1463,16 +999,8 @@ div.activity-popular-sm.border-bottom {
         margin-bottom: 16px;
     }
 
-
-    .new-tag-icon {
-        height: 12px;
-        width: 12px;
-        margin-left: 5px;
-    }
-
-    .new-tag-label {
-        margin-top: 2px;
-        padding-right: 8px;
+    .active-badge-section {
+        padding: 0px;
     }
 
     .heading {
@@ -1482,15 +1010,6 @@ div.activity-popular-sm.border-bottom {
         font-size: 32px;
         line-height: 44px;
         color: #343D4C;
-    }
-
-    .active-tag-label {
-        font-family: 'Nunito';
-        font-style: normal;
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 22px;
-        color: #717171;
     }
 
     .card-title3-carousel {
@@ -1506,6 +1025,116 @@ div.activity-popular-sm.border-bottom {
         line-height: 27px;
         color: #FFFFFF;
         width: 220px;
+    }
+
+    .swiper-slide.swiper-slide-popular {
+        width: 214.04px;
+        height: 261.78px;
+        border-radius: 10px;
+    }
+
+        .swiper-slide.swiper-slide-popular[style] {
+            margin-right: 30px !important;
+        }
+
+    .card img.card-img-top.img-fluid, img.card-img.img-fluid {
+        width: 214.04px;
+        height: 261.78px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .heart-badge-section {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .popular-activities {
+        height: 400px
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 22px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #AA6843;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #43AA8B;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 22px;
+        color: #343D4C;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #717171;
+    }
+
+    .price-badge-section {
+        margin-top: 12px;
+        text-align: left;
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .categories img.img-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .categories .swiper-slide.category {
+        width: 50px; /*tied up with margin-left of .categories .schedule-swiper*/
+    }
+
+    .categories .schedule-swiper {
+        margin: 30px;
+        margin-left: 75px;
+    }
+
+    .activity-heart-badge-section {
+        text-align: center;
+        margin-top: -5px;
+        margin-left: 5px;
+    }
+
+    .activity-new-badge-section {
+        margin-left: -10px;
+        margin-top: -10px;
+    }
+
+    .categories, .activity-popular {
+        margin-bottom: 20px;
     }
 }
 
@@ -1582,75 +1211,6 @@ div.activity-popular-sm.border-bottom {
             width: 10%;
         }
 
-    .activity-sm, .activity-popular-sm {
-        display: none;
-    }
-
-    .activity-md, .activity-popular-md {
-        display: none;
-    }
-
-    .activity-lg, .activity-popular-lg {
-        display: flex;
-    }
-
-        .activity-lg .cards-wrapper, .activity-popular-lg .cards-wrapper {
-            margin-left: 1rem;
-        }
-
-        .activity-lg .carousel-control-prev,
-        .activity-lg .carousel-control-next {
-            background-color: black;
-            width: 2vh;
-            height: 2vh;
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-right: 20px;
-            margin-left: -5px;
-            filter: invert(100%);
-        }
-
-        .activity-popular-lg .carousel-control-prev,
-        .activity-popular-lg .carousel-control-next {
-            background-color: black;
-            width: 2vh;
-            height: 2vh;
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-right: 20px;
-            margin-left: -5px;
-            filter: invert(100%);
-            position: absolute;
-            right: -100%;
-            top: 0%;
-            bottom: 0%;
-        }
-
-        .activity-popular-lg .wish-icon {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            z-index: 99;
-            cursor: pointer;
-            font-size: 16px;
-            color: #717171;
-        }
-
-        .activity-popular-lg .carousel-control-prev {
-            left: 70%;
-        }
-
-        .activity-popular-lg .carousel-control-next {
-            left: 72%;
-        }
-
-        .activity-lg .carousel-control-next-icon,
-        .activity-lg .carousel-control-prev-icon {
-            width: 1.5vh;
-        }
-
     .section-2-lg .carousel-control-prev,
     .section-2-lg .carousel-control-next {
         background-color: black;
@@ -1669,93 +1229,10 @@ div.activity-popular-sm.border-bottom {
         width: 1.2vh;
     }
 
-    .section-2-lg .wish-icon {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .btn-star {
-        position: absolute;
-        width: 50px;
-        height: 20px;
-        border-radius: 10px;
-        text-align: left;
-        font-size: 12px;
-        margin-left: 80%;
-        background-color: #FFFFFF;
-        border: none;
-        font-family: "Nunito";
-    }
-
-    .card-container {
-        display: flex;
-        background: #FFFFFF;
-        border-radius: 0px 0px 10px 10px;
-        padding-top: 0.7em;
-        padding-left: 0.5em;
-        padding-right: 0.5em;
-    }
-
-
     .card-body1 {
         display: flex;
         flex-direction: column;
         gap: 10px;
-    }
-
-    .xp-badges {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 0;
-        left: 210px;
-        z-index: 99;
-    }
-
-    .xp-badges-carousel {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 0;
-        left: 210px;
-        z-index: 99;
-    }
-
-    .new-tag-icon {
-        height: 12px !important;
-        width: 12px !important;
-        margin-left: 5px;
-    }
-
-    .new-badge {
-        display: flex;
-    }
-
-    .new-badge {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px;
-        border-radius: 15px;
-        font-family: 'Nunito';
-        font-style: italic;
-        font-weight: 700;
-        font-size: 10px;
-        color: #343D4C;
-        position: absolute;
-        width: 58.5px;
-        height: 23.09px;
-        background: #FFFFFF;
-        left: 18px;
-        top: 18px;
-        z-index: 99;
     }
 
     .active-badge {
@@ -1766,15 +1243,8 @@ div.activity-popular-sm.border-bottom {
         margin-bottom: 16px;
     }
 
-    .new-tag-icon {
-        height: 12px;
-        width: 12px;
-        margin-left: 5px;
-    }
-
-    .new-tag-label {
-        margin-top: 2px;
-        padding-right: 8px;
+    .active-badge-section{
+        padding: 0px;
     }
 
     .heading {
@@ -1808,6 +1278,116 @@ div.activity-popular-sm.border-bottom {
         line-height: 27px;
         color: #FFFFFF;
         width: 220px;
+    }
+
+    .swiper-slide.swiper-slide-popular {
+        width: 214.04px;
+        height: 261.78px;
+        border-radius: 10px;
+    }
+
+        .swiper-slide.swiper-slide-popular[style] {
+            margin-right: 30px !important;
+        }
+
+    .card img.card-img-top.img-fluid, img.card-img.img-fluid {
+        width: 214.04px;
+        height: 261.78px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .heart-badge-section {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .popular-activities{
+        height: 430px
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 22px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #AA6843;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #43AA8B;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 22px;
+        color: #343D4C;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #717171;
+    }
+
+    .price-badge-section {
+        margin-top: 12px;
+        text-align: left;
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .categories img.img-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .categories .swiper-slide.category {
+        width: 80px; /*tied up with margin-left of .categories .schedule-swiper*/
+    }
+
+    .categories .schedule-swiper {
+        margin: 50px;
+        margin-left: 110px;
+    }
+
+    .activity-heart-badge-section {
+        text-align: center;
+        margin-top: -7px;
+        margin-left: 10px;
+    }
+
+    .activity-new-badge-section {
+        margin-left: -10px;
+        margin-top: -10px;
+    }
+
+    .categories, .activity-popular {
+        margin-bottom: 20px;
     }
 }
 
@@ -1884,75 +1464,6 @@ div.activity-popular-sm.border-bottom {
             width: 10%;
         }
 
-    .activity-sm, .activity-popular-sm {
-        display: none;
-    }
-
-    .activity-md, .activity-popular-md {
-        display: none;
-    }
-
-    .activity-lg, .activity-popular-lg {
-        display: flex;
-    }
-
-        .activity-lg .cards-wrapper, .activity-popular-lg .cards-wrapper {
-            margin-left: 1rem;
-        }
-
-        .activity-lg .carousel-control-prev,
-        .activity-lg .carousel-control-next {
-            background-color: black;
-            width: 2vh;
-            height: 2vh;
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-right: 20px;
-            margin-left: -5px;
-            filter: invert(100%);
-        }
-
-        .activity-popular-lg .carousel-control-prev,
-        .activity-popular-lg .carousel-control-next {
-            background-color: black;
-            width: 2vh;
-            height: 2vh;
-            border-radius: 50%;
-            top: 50%;
-            transform: translateY(-50%);
-            margin-right: 20px;
-            margin-left: -5px;
-            filter: invert(100%);
-            position: absolute;
-            right: -100%;
-            top: 0%;
-            bottom: 0%;
-        }
-
-        .activity-popular-lg .wish-icon {
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            z-index: 99;
-            cursor: pointer;
-            font-size: 16px;
-            color: #717171;
-        }
-
-        .activity-popular-lg .carousel-control-prev {
-            left: 93%;
-        }
-
-        .activity-popular-lg .carousel-control-next {
-            left: 95%;
-        }
-
-        .activity-lg .carousel-control-next-icon,
-        .activity-lg .carousel-control-prev-icon {
-            width: 1.5vh;
-        }
-
     .section-2-lg .carousel-control-prev,
     .section-2-lg .carousel-control-next {
         background-color: black;
@@ -1971,93 +1482,10 @@ div.activity-popular-sm.border-bottom {
         width: 1.2vh;
     }
 
-    .section-2-lg .wish-icon {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        z-index: 99;
-        cursor: pointer;
-        font-size: 16px;
-        color: #717171;
-    }
-
-    .btn-star {
-        position: absolute;
-        width: 50px;
-        height: 20px;
-        border-radius: 10px;
-        text-align: left;
-        font-size: 12px;
-        margin-left: 80%;
-        background-color: #FFFFFF;
-        border: none;
-        font-family: "Nunito";
-    }
-
-    .card-container {
-        display: flex;
-        background: #FFFFFF;
-        border-radius: 0px 0px 10px 10px;
-        padding-top: 0.7em;
-        padding-left: 0.5em;
-        padding-right: 0.5em;
-    }
-
-
     .card-body1 {
         display: flex;
         flex-direction: column;
         gap: 10px;
-    }
-
-    .xp-badges {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 0;
-        left: 210px;
-        z-index: 99;
-    }
-
-    .xp-badges-carousel {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: absolute;
-        bottom: 0;
-        left: 200px;
-        z-index: 99;
-    }
-
-    .new-tag-icon {
-        height: 12px !important;
-        width: 12px !important;
-        margin-left: 5px;
-    }
-
-    .new-badge {
-        display: flex;
-    }
-
-    .new-badge {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        padding: 5px;
-        border-radius: 15px;
-        font-family: 'Nunito';
-        font-style: italic;
-        font-weight: 700;
-        font-size: 10px;
-        color: #343D4C;
-        position: absolute;
-        width: 58.5px;
-        height: 23.09px;
-        background: #FFFFFF;
-        left: 18px;
-        top: 18px;
-        z-index: 99;
     }
 
     .active-badge {
@@ -2068,23 +1496,12 @@ div.activity-popular-sm.border-bottom {
         margin-bottom: 16px;
     }
 
-    .new-tag-icon {
-        height: 12px;
-        width: 12px;
-        margin-left: 5px;
-    }
-
-    .new-tag-label {
-        margin-top: 2px;
-        padding-right: 8px;
-    }
-
     .heading {
-        font-family: 'Nunito-Bold';
+        font-family: 'Nunito';
         font-style: normal;
         font-weight: 800;
-        font-size: 32px;
-        line-height: 44px;
+        font-size: 36px;
+        line-height: 49px;
         color: #343D4C;
     }
 
@@ -2110,5 +1527,100 @@ div.activity-popular-sm.border-bottom {
         line-height: 27px;
         color: #FFFFFF;
         width: 220px;
+    }
+
+    .swiper-slide.swiper-slide-popular {
+        width: 278px;
+        height: 340px;
+        border-radius: 10px;
+    }
+
+        .swiper-slide.swiper-slide-popular[style] {
+            margin-right: 30px !important;
+        }
+
+    .card img.card-img-top.img-fluid, img.card-img.img-fluid {
+        width: 278px;
+        height: 340px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .heart-badge-section, .activity-heart-badge-section {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .popular-activities{
+        height: 500px
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 20px;
+        line-height: 27px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 27px;
+        color: #AA6843;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 27px;
+        color: #43AA8B;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 27px;
+        color: #343D4C;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #717171;
+    }
+
+    .price-badge-section {
+        margin-top: 15px;
+        text-align: left;
+    }
+
+    .categories img.img-icon {
+        width: 38px;
+        height: 38px;
+    }
+
+    .categories .swiper-slide.category {
+        width: 80px; /*tied up with margin-left of .categories .schedule-swiper*/
+    }
+
+    .categories .schedule-swiper {
+        margin: 50px;
+        margin-left: 220px;
+    }
+
+    .categories, .activity-popular {
+        margin-bottom: 20px;
     }
 }
