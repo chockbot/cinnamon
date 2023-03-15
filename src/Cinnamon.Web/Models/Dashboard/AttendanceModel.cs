@@ -28,8 +28,7 @@ public class AttendanceModel
         public string ScheduleTitle {get; set;}
         public string ScheduleDescription {get; set;}
         public bool IsSelected {get; set;}
-        public bool isSetSession { get; set; }
-        public string SessionName { get; set; }
+        public bool IsActiveSchedule { get; set;}
     }
 
     public class StudentAttendance 
