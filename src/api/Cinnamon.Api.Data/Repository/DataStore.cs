@@ -425,6 +425,12 @@ public class DataStore : IDataStore
                 CatergoryId = 7,
                 SubCatergory = "Chess"
             });
+            applicationContext.SubCategory.Add(new Entities.SubCategory
+            {
+                Id = 50,
+                CatergoryId = 7,
+                SubCatergory = "Fencing"
+            });
         }
             await applicationContext.SaveChangesAsync();
     }
