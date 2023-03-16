@@ -89,6 +89,27 @@ public class StudentController : ControllerBase
         }
     }
 
+    [Route("GetEnrolledStudents/{ActivityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEnrolledStudentsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetEnrolledStudents(int ActivityId)
+    {
+        try
+        {
+            var result = await studentRepository.GetEnrolledStudent(ActivityId);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetEnrolledStudentsResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
     [Route("CreateStudent")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateStudentResult), StatusCodes.Status201Created)]
@@ -163,4 +184,5 @@ public class StudentController : ControllerBase
             return new JsonResult(new UpdateStudentResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
 }

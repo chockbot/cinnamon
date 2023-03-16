@@ -14,4 +14,5 @@ public interface IStudentRepository
         int sessionsAttended, DateTime expirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, string remarks = "", string status = "ACTIVE");
     Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
         int? sessionsAttended, string? remarks, string? status, DateTime? expirationStartDate, DateTime? ExpirationEndDate);
+    Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudent(int ActivityId);
 }
