@@ -368,23 +368,10 @@ public class ActivityRepository : IActivityRepository
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
                         (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
-                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? a.IsNew : a.ExperienceCategoryId == experienceCategoryId : true) &&
-                        (string.IsNullOrEmpty(searchValue) ? true : a.Title.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.Address1.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.Address2.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.District.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.CityName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.Subdivision.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.RegionName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.BarangayName.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.Address.PostalCode.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.ExperienceType.Name.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.ExperienceCategory.Category.ToLower().Trim().Contains(searchValue.ToLower().Trim()) ||
-                                             a.SubCategory.SubCatergory.ToLower().Trim().Contains(searchValue.ToLower().Trim())
-                                             );
+                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? a.IsNew : a.ExperienceCategoryId == experienceCategoryId : true);
 
 
-            var result = await dataStore.Activity.FindActivitiesAsync(filter, count, skip, includes);
+            var result = await dataStore.Activity.FindActivitiesAsync(filter, searchValue, count, skip, includes);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
