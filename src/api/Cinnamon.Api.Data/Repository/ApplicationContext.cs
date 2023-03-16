@@ -159,6 +159,9 @@ public class ApplicationContext : IdentityDbContext
 
         // failed login
         modelBuilder.Entity<FailedLogin>().HasIndex(new string[] {"Email","LoginDate"});
+
+        // payout account
+        modelBuilder.Entity<PayoutAccount>().HasIndex(p => p.CustomerId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
