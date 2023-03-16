@@ -115,7 +115,6 @@
 
                 <Autocomplete TItem="Models.Entities.Region"
                           SelectedValue="@(Model.Activity.Region)"
-                          SelectedText="@(Model.Activity.RegionName)"
                           TValue="string"
                           Class="@RequiredCheck(Model.Activity.Region)"
                           Data="@regionList"
@@ -126,13 +125,12 @@
                           FreeTyping
                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                           SelectedValueChanged="@((value) => GetCitiesByRegion(value))"
-                          SelectedTextChanged="@((text) => SetRegionName(text))">
+                          SelectedTextChanged="@((text) => SetRegionName(text))" @ref="autocompleteRegion">
                     <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
                 </Autocomplete>
                 <div class="divider"></div>
                 <Autocomplete TItem="Models.Entities.City"
                           SelectedValue="@(Model.Activity.City)"
-                          SelectedText="@(Model.Activity.CityName)"
                           Disabled="@(cityList?.Count() == 0)"
                           Class="@RequiredCheck(Model.Activity.City)"
                           TValue="string"
@@ -144,13 +142,12 @@
                           FreeTyping
                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                           SelectedValueChanged="@((value) => GetBarangaysByCity(value))"
-                          SelectedTextChanged="@((text) => SetCityName(text))">
+                          SelectedTextChanged="@((text) => SetCityName(text))" @ref="autocompleteCity">
                     <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
                 </Autocomplete>
                 <div class="divider"></div>
                 <Autocomplete TItem="Models.Entities.Barangay"
                           SelectedValue="@(Model.Activity.Barangay)"
-                          SelectedText="@(Model.Activity.BarangayName)"
                           Disabled="@(barangayList?.Count() == 0)"
                           Class="@RequiredCheck(Model.Activity.Barangay)"
                           TValue="string"
@@ -162,7 +159,7 @@
                           FreeTyping
                           CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
                           SelectedValueChanged="@((value) => SetBarangay(value))"
-                          SelectedTextChanged="@((text) => SetBarangayName(text))">
+                          SelectedTextChanged="@((text) => SetBarangayName(text))" @ref="autocompleteBarangay">
                     <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
                 </Autocomplete>
                 <input class="form-control my-3 (Model.Activity.PostalCode)" placeholder="Postal Code" required @bind="Model.Activity.PostalCode" />
@@ -250,6 +247,11 @@
 {
     [Parameter]
     public ExperienceCreationModel Model {get; set;}
+    Autocomplete<Models.Entities.Region, string> autocompleteRegion = new Autocomplete<Models.Entities.Region, string>();
+    Autocomplete<Models.Entities.City, string> autocompleteCity = new Autocomplete<Models.Entities.City, string>();
+    Autocomplete<Models.Entities.Barangay, string> autocompleteBarangay = new Autocomplete<Models.Entities.Barangay, string>();
+
+    private string regionName = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -283,6 +285,7 @@
     private async Task GetCitiesByRegion(string regionCode)
     {
         Model.Activity.Region = regionCode;
+        autocompleteRegion.SelectedText = regionCode;
         Model.Activity.City = string.Empty;
         Model.Activity.CityName = string.Empty;
         Model.Activity.Barangay = string.Empty;
@@ -304,6 +307,7 @@
     private async Task GetBarangaysByCity(string cityCode)
     {
         Model.Activity.City = cityCode;
+        autocompleteCity.SelectedText = cityCode;
 
         var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode });
 
@@ -321,6 +325,7 @@
     private async Task SetBarangay(string barangayCode)
     {
         Model.Activity.Barangay = barangayCode;
+        autocompleteBarangay.SelectedText = barangayCode;
     }
 
     private async Task ToggleLocationModal(bool isDisplayed)
