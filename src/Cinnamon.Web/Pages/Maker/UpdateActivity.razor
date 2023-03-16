@@ -192,7 +192,20 @@
         var regions = await activityApiHandler.GetAllRegions();
         if ((!regions.Succeeded || regions.Result == null) || (regions.Succeeded && !regions.Result.IsSuccess))
         {
-            // an error occured when getting sub categories to api
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var cities = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = activity.Region });
+        if ((!cities.Succeeded || cities.Result == null) || (cities.Succeeded && !cities.Result.IsSuccess))
+        {
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City });
+        if ((!barangays.Succeeded || barangays.Result == null) || (barangays.Succeeded && !barangays.Result.IsSuccess))
+        {
             NavigationManager.NavigateTo("explore");
             return;
         }
@@ -221,10 +234,12 @@
                 Address1 = activity.Address1,
                 Address2 = activity.Address2,
                 CanAdultsJoin = activity.CanAdultsJoin,
-                City = activity.City,
+                    City = activity.City,
+                    CityName = activity.CityName,
                 Subdivision = activity.Subdivision,
                 Region = activity.Region,
-                Barangay = activity.Barangay,
+                    Barangay = activity.Barangay,
+                    BarangayName = activity.BarangayName,
                 PostalCode = activity.PostalCode,
                 CustomerBringWithThem = activity.CustomerBringWithThem,
                 Description = activity.Description,
@@ -281,6 +296,18 @@
                     Name = r.Name,
                     RegionName = r.RegionName
                 };
+            }),
+            Cities = cities.Result.Result.Select(r => new Models.Entities.City
+            {
+                Code = r.Code,
+                Name = r.Name,
+                RegionCode = r.RegionCode
+            }),
+            Barangays = barangays.Result.Result.Select(r => new Models.Entities.Barangay
+            {
+                Code = r.Code,
+                Name = r.Name,
+                CityCode = r.CityCode
             }),
             Token = token
         };
