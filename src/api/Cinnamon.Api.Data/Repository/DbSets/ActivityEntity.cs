@@ -24,7 +24,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             int limitCount = take.HasValue ? take.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.Set<Activity>().Where(expression).Skip(skipCount).Take(limitCount);
+            var query = applicationContext.Set<Activity>().Where(expression);
 
             if (!string.IsNullOrEmpty(searchValue))
             {
