@@ -1,17 +1,14 @@
 const maxMinWords = {};
 
 maxMinWords.max = (selector, max) => {
-  $(selector).keydown(function (e) {
-    const wordsLength = $(this)
-      .val()
-      .trim()
-      .split(" ")
-      .filter((t) => !!t).length;
+  $(selector).keyup(function (e) {
+      const inputValue = e.target.value;
+      const wordCount = inputValue.trim().split(/\s+/).length;
 
-    if (wordsLength === max && e.which !== 8) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+      if (wordCount >= 15 && !isSpace(inputValue)) {
+          e.preventDefault();
+          e.target.value = truncateText(inputValue);
+      }
   });
 };
 
@@ -30,4 +27,11 @@ maxMinWords.min = (selector, min) => {
   });
 };
 
+function isSpace(text) {
+    return text.trim().split(/\s+/).length === 14 && /\s$/.test(text);
+}
+
+function truncateText(text) {
+    return text.trim().split(/\s+/).slice(0, 15).join(' ');
+}
 export default maxMinWords;
