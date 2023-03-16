@@ -61,6 +61,8 @@ public class DataStore : IDataStore
 
     public IRequestRefund RequestRefund => new RequestRefundEntity(applicationContext);
 
+    public IPayoutAccount PayoutAccount => new PayoutAccountEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

@@ -54,6 +54,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<RequestRefund> RequestRefunds {get; set;}
 
+    public DbSet<PayoutAccount> PayoutAccounts {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
