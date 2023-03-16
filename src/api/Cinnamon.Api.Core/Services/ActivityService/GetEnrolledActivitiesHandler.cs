@@ -128,7 +128,8 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
                                 Id = s.Id,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivitySchedule>(),
                         Images = e.Images != null ? e.Images.OrderBy(i => i.Order).Select(i => {

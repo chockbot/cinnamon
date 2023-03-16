@@ -96,7 +96,8 @@ public class ActivityController : ControllerBase
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        Order = s.Order
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
@@ -147,6 +148,8 @@ public class ActivityController : ControllerBase
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule,
                     };
                 }),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -233,7 +236,8 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
@@ -479,7 +483,8 @@ public class ActivityController : ControllerBase
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
                                 Id = s.Id,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -563,7 +568,8 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -667,7 +673,8 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -767,7 +774,8 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -862,7 +870,8 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -954,7 +963,8 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1054,7 +1064,8 @@ public class ActivityController : ControllerBase
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1217,7 +1228,8 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,
@@ -1428,7 +1440,8 @@ public class ActivityController : ControllerBase
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }),
                         AdditionalRequirements = a.AdditionalRequirements,

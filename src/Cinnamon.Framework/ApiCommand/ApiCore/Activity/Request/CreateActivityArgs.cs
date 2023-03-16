@@ -69,5 +69,7 @@ public class CreateActivityArgs
         public string PriceUnit2 {get; set;}
         [Required]
         public int Order {get; set;}
+        [Required]
+        public bool IsActiveSchedule { get; set; }
     }
 }

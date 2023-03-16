@@ -57,7 +57,8 @@ public class DashboardController : ControllerBase
                             ScheduleDescription = s.ScheduleDescription,
                             ScheduleId = s.ScheduleId,
                             ScheduleTitle = s.ScheduleTitle,
-                            Title = s.Title
+                            Title = s.Title,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }) 
                 }

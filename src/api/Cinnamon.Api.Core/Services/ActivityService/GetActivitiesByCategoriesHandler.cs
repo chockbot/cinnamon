@@ -86,7 +86,8 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
                                 UnitPrice = s.UnitPrice,
-                                Order = s.Order
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivitySchedule>(),
                         Images = a.Images != null ? a.Images.OrderBy(i => i.Order).Select(i => {

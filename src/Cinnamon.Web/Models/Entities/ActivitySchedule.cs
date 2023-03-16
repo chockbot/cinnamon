@@ -13,8 +13,9 @@ public class ActivitySchedule
     public string PriceUnit2 {get; set;} = "Session";
     public int TempId {get; set;}
     public int Order {get; set;}
+    public bool IsActiveSchedule { get; set; } = true;
 
-    public long LongPrice {
+    public long LongPrice { 
         get{
             return (long)Price;
         }

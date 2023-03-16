@@ -23,15 +23,18 @@
         <div class="swiper-wrapper">
             @foreach (var schedule in Model.Schedules)
             {
-                <div class="swiper-slide shadow">
-                    <p class="schedule-title">@schedule.ActivityTitle</p>
-                    <p class="schedule-title">@schedule.ScheduleTitle</p>
-                    <p class="schedule-time">@schedule.ScheduleDescription</p>
-                    <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
-                        <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                        Select
-                    </Button>
-                </div>
+                @if (schedule.IsActiveSchedule == true)
+                {
+                    <div class="swiper-slide shadow">
+                        <p class="schedule-title">@schedule.ActivityTitle</p>
+                        <p class="schedule-title">@schedule.ScheduleTitle</p>
+                        <p class="schedule-time">@schedule.ScheduleDescription</p>
+                        <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
+                            <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                            Select
+                        </Button>
+                    </div>
+                }
             }
         </div>
         <div class="swiper-scrollbar"></div>
@@ -190,6 +193,7 @@
                     ScheduleDescription = s.ScheduleDescription,
                     ScheduleId = s.ScheduleId,
                     ScheduleTitle = s.ScheduleTitle,
+                    IsActiveSchedule = s.IsActiveSchedule
                 };
             }));
 

@@ -23,10 +23,8 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request
         [Required]
         public string PriceUnit2 { get; set; } = "Session";
         [Required]
-        public bool isSetSession { get; set; } = false;
-        [Required]
-        public string SessionName { get; set; }
-        [Required]
         public int Order {get; set;}
+        [Required]
+        public bool IsActiveSchedule { get; set; }
     }
 }

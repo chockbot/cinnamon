@@ -1,10 +1,10 @@
-using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
 using Ganss.XSS;
+using System.Security.Claims;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
@@ -161,7 +161,8 @@ public class CreateActivityHandler : ICreateActivityHandler
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        Order = order
+                        Order = order,
+                        IsActiveSchedule = s.IsActiveSchedule,
                     };
                 })
             });
@@ -241,6 +242,8 @@ public class CreateActivityHandler : ICreateActivityHandler
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        Order = order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 })
 

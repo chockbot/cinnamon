@@ -17,7 +17,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> CreateSchedule(int ActivityId, string Name, string datetime, 
                             decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                            int PerUnit2, string PriceUnit2, int order)
+                            int PerUnit2, string PriceUnit2, int order, bool IsActiveSchedule)
         {
             try
             {
@@ -38,7 +38,9 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = PriceUnit1,
                     PerUnit2 = PerUnit2,
                     PriceUnit2 = PriceUnit2,
-                    Order = order
+                    Order = order,
+                    IsActiveSchedule = IsActiveSchedule
+                    
                 });
 
                 if(!result.Succeeded || result.Result == null)
@@ -58,7 +60,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
-                    Order = result.Result.Order
+                    Order = result.Result.Order,
+                    IsActiveSchedule = result.Result.IsActiveSchedule
                 },
                 result.Message);
             }
@@ -91,7 +94,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        Order = s.Order
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 });
 
@@ -113,7 +117,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        Order = s.Order
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 });
 
@@ -182,6 +187,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = x.PriceUnit1,
                         PerUnit2 = x.PerUnit2,
                         PriceUnit2 = x.PriceUnit2,
+                        IsActiveSchedule = x.IsActiveSchedule
                     };
                 });
 
@@ -218,7 +224,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
-                    Order = result.Result.Order
+                    Order = result.Result.Order,
+                    IsActiveSchedule = result.Result.IsActiveSchedule  
                 },
                 result.Message); 
             }
@@ -249,7 +256,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         ActivityId = s.ActivityId,
-                        Order = s.Order
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 });
 
@@ -272,7 +280,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            Order = s.Order
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }), "Successfully update many schedules"
                 );
@@ -285,7 +294,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> UpdateSchedule(int ScheduleId, string Name, string datetime, 
                                     decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                                    int PerUnit2, string PriceUnit2, int order)
+                                    int PerUnit2, string PriceUnit2, int order, bool IsActiveSchedule)
         {
             try
             {
@@ -307,7 +316,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = PriceUnit1,
                     PerUnit2 = PerUnit2,
                     PriceUnit2 = PriceUnit2,
-                    Order = order
+                    Order = order,
+                    IsActiveSchedule = IsActiveSchedule
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -327,7 +337,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PriceUnit1 = result.Result.PriceUnit1,
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
-                    Order = result.Result.Order
+                    Order = result.Result.Order,
+                    IsActiveSchedule = result.Result.IsActiveSchedule
                 },
                 result.Message);
             }

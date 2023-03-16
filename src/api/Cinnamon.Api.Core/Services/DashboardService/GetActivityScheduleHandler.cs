@@ -51,6 +51,7 @@ public class GetActivityScheduleHandler : IGetActivitySchedulesHandler
                         ScheduleTitle = schedule.Name,
                         ScheduleDescription = schedule.DateTime,
                         ScheduleId = schedule.Id,
+                        IsActiveSchedule = schedule.IsActiveSchedule
                     });
                 }
             }
