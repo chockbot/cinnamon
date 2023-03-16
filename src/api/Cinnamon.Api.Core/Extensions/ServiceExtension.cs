@@ -43,6 +43,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IBarangayData, Modules.DataAccess.Location.BarangayData>();
         services.AddTransient<Modules.DataAccess.Handlers.IFailedLoginData, Modules.DataAccess.FailedLogin.FailedLoginData>();
         services.AddTransient<Modules.DataAccess.Handlers.IRequestRefundData, Modules.DataAccess.RequestRefund.RequestRefundData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IPayoutAccountData, Modules.DataAccess.PayoutAccount.PayoutAccountData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
