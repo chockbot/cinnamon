@@ -289,4 +289,42 @@ public class StudentRepository: IStudentRepository
             return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when creating many students");
         }
     }
+
+    public async Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudent(int ActivityId)
+    {
+        try
+        {
+            Expression<Func<Entities.Student, bool>> filter = a => (a.ActivityId == ActivityId);
+            var result= await dataStore.Student.FindAsync(filter);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var students = result.Result.Select(s => {
+                var studentDto = new StudentDTO
+                {
+                    ActivityId = s.ActivityId,
+                    CustomerId = s.CustomerId,
+                    Id = s.Id,
+                    Name = s.Name,
+                    NumberOfSessions = s.NumberOfSessions,
+                    Remarks = s.Remarks,
+                    ScheduleId = s.ScheduleId,
+                    SessionsAttended = s.SessionsAttended,
+                    Status = s.Status,
+                    StudentNo = s.StudentNo,
+                    ExpirationStartDate = s.ExpirationDateStart,
+                    ExpirationEndDate = s.ExpirationDateEnd
+                };
+
+                return studentDto;
+            });
+
+            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(students, "Successfully get students");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when getting students");
+        }
+    }
 }

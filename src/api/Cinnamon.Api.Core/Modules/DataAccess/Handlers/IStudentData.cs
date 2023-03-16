@@ -9,6 +9,7 @@ public interface IStudentData
 {
     Task<AppResult<GetStudentResult>> GetStudentById(int Id, int activityId);
     Task<AppResult<GetAllStudentResult>> GetAllStudents(GetAllStudentArgs args);
+    Task<AppResult<GetEnrolledStudentsResult>> GetEnrolledStudents(int activityId);
     Task<AppResult<CreateStudentResult>> CreateStudent(CreateStudentArgs args);
     Task<AppResult<CreateManyStudentResult>> CreateManyStudent(CreateManyStudentArgs args);
     Task<AppResult<UpdateStudentResult>> UpdateStudent(UpdateStudentArgs args);

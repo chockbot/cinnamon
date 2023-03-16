@@ -7,6 +7,7 @@
 @using Cinnamon.Web.Models.Entities
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
 @using Microsoft.EntityFrameworkCore
 
 @if (Model.Customer != null){
@@ -75,10 +76,19 @@
                 </div>
             </div>
         </div>
-        <div class="d-flex justify-content-between mt-3">
-            <div class="activity-title">
-                <label class="fw-bold mb-3 col-md-12 col-12" style="font-size:1.9rem">@activity.Title</label>
-                <span class="col-md-12 col-12 d-flex align-items-center">
+        <div class="mt-3">
+            <div class="d-flex activity-title">
+                <label class="fw-bold mb-3 col-lg-8 col-md-8 col-sm-12 col-12 title-text"> @activity.Title </label>
+                <label class="fw-bold mb-3 col-lg-4 col-md-4 col-4 ongoing-students">
+                        <label class="active-badge">
+                            <span class="pulse"></span>
+                            <span class="active-text">Ongoing Students</span>
+                            <span class="active-tag-label">@OngoingStudents</span>
+                        </label>
+                </label> 
+            </div>
+            <div class="d-flex activity-experiencetype">
+                <label class="mb-3 col-lg-8 col-md-8 col-8 col-sm-12 col-12">
                     @if (activity.ExperienceTypeId == 1)
                     {
                         <img class="img-thumbnail border-0" src="images/activity-summary/location.png" />
@@ -87,8 +97,15 @@
                     {
                         <img class="img-thumbnail border-0" src="images/activity-summary/laptop-icon.png" />
                     }
-                    <span>@experience.Name</span>
-                </span>
+                    <span class="experience-name">@experience.Name</span>
+                </label>
+                    <label class="fw-bold mb-3 col-lg-4 col-md-4 col-4 completed-students">
+                        <label class="active-badge">
+                            <span class="pulse-complete"></span>
+                            <span class="active-text">Completed Students</span>
+                            <span class="active-tag-label-complete">@CompletedStudents</span>
+                        </label>
+                    </label>
             </div>
         </div>
     </div>
@@ -341,7 +358,10 @@
     public CustomerProfile               customerDetail     = new CustomerProfile();
     public List<ExperienceType>          experienceTypes    = new List<ExperienceType>();
     public ExperienceType                experience         = new ExperienceType();
+    public List<Students>                enrolledStudents   = new List<Students>();
     private SchedulesModal               ModalSched { get; set; }
+    public int                           OngoingStudents { get; set; }
+    public int                           CompletedStudents { get; set; }
     protected override async Task OnInitializedAsync()
     {
         bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
@@ -467,6 +487,26 @@
                 ExperienceTypes = experienceTypes,
                 Customer = customerDetail
             };
+        //Get Ongoing and Completed Students
+        var students = await ongoingApiHandler.GetEnrolledStudents(intResult);
+        if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
+        {
+            enrolledStudents = students.Result.Result.Select(i =>
+            {
+                return new Students
+                   {
+                      ActivityId = i.ActivityId,
+                      Id = i.Id,
+                      Name = i.Name,
+                      NumberOfSessions = i.NumberOfSessions,
+                      SessionsAttended = i.SessionsAttended,
+                   };
+            }).ToList();
+        }
+
+        CompletedStudents = enrolledStudents.Where(a => a.SessionsAttended >= a.NumberOfSessions).Count();
+        OngoingStudents   = enrolledStudents.Where(a => a.SessionsAttended < a.NumberOfSessions).Count();
+
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

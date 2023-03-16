@@ -19,13 +19,15 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler;
     private readonly IUpdateOngoingActivityHadler updateOngoingActivityHadler;
     private readonly IAddActivityExpirationHandler addActivityExpirationHandler;
+    private readonly IGetEnrolledStudentsHandler getEnrolledStudentsHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
-        IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler)
+        IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler)
     {
         this.getAllOngoingActivitiesHandler = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler  = getOngoingActivityByIdHandler;
         this.updateOngoingActivityHadler    = updateOngoingActivityHadler;
-        this.addActivityExpirationHandler = addActivityExpirationHandler;
+        this.addActivityExpirationHandler   = addActivityExpirationHandler;
+        this.getEnrolledStudentsHandler     = getEnrolledStudentsHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -113,6 +115,52 @@ public class OnGoingActivitiesController : ControllerBase
             return new JsonResult(new GetOngoingActivityByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetEnrolledStudents/{activityId}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetEnrolledStudentsResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetEnrolledStudents(int activityId)
+    {
+        try
+        {
+            var result = await getEnrolledStudentsHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetEnrolledStudentsArgs
+            {
+                ActivityId = activityId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetEnrolledStudentsResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Students.Select(e => {
+                    return new StudentDTO
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        ActivityId = e.ActivityId,
+                        CustomerId = e.CustomerId,
+                        NumberOfSessions = e.NumberOfSessions,
+                        Remarks = e.Remarks,
+                        ScheduleId = e.ScheduleId,
+                        SessionsAttended = e.SessionsAttended,
+                        Status = e.Status,
+                        StudentNo = e.StudentNo,
+                        ExpirationStartDate = e.ExpirationStartDate,
+                        ExpirationEndDate = e.ExpirationEndDate,
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetEnrolledStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
 
     [Route("UpdateOngoingActivity")]
     [HttpPost]
