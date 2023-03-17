@@ -95,6 +95,7 @@ public class AccountController : ControllerBase
         this.requestRefundHandler = requestRefundHandler;
         this.getRequestRefundHandler = getRequestRefundHandler;
         this.deleteProfilePictureHandler = deleteProfilePictureHandler;
+        this.getPayoutAccountHandler = getPayoutAccountHandler;
         this.createUpdatePayoutAccountHandler = createUpdatePayoutAccountHandler;
     }
 
@@ -1140,11 +1141,15 @@ public class AccountController : ControllerBase
             {
                 return new JsonResult(new GetPayoutAccountResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
             }
+            
+            var accountNumber = result.Result.AccountNumber;
+            var maskedAccount = new String('*', accountNumber.Length - 5) + accountNumber.Substring(accountNumber.Length -5);
 
             return new JsonResult(new GetPayoutAccountResult {
                 Result = new PayoutAccountDTO {
                     AccountHolder = result.Result.AccountHolder,
-                    AccountNumber = result.Result.AccountNumber,
+                    // masked the account number
+                    AccountNumber = maskedAccount,
                     Id = result.Result.Id
                 },
                 IsSuccess = true
