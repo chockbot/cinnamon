@@ -137,10 +137,10 @@ function initializeCropper(imgPreview) {
     return new Cropper(imgPreview, {
         viewMode: 1,
         aspectRatio: 515 / 670,
-        minContainerWidth: 515,
-        minContainerHeight: 670,
-        minCropBoxWidth: 515,
-        minCropBoxHeight: 670,
+        minContainerWidth: 350,
+        minContainerHeight: 400,
+        minCropBoxWidth: 271,
+        minCropBoxHeight: 271,
         movable: true,
         ready: function () {
         },
