@@ -54,6 +54,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<RequestRefund> RequestRefunds {get; set;}
 
+    public DbSet<PayoutAccount> PayoutAccounts {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -157,6 +159,9 @@ public class ApplicationContext : IdentityDbContext
 
         // failed login
         modelBuilder.Entity<FailedLogin>().HasIndex(new string[] {"Email","LoginDate"});
+
+        // payout account
+        modelBuilder.Entity<PayoutAccount>().HasIndex(p => p.CustomerId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

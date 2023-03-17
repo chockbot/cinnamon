@@ -51,6 +51,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.ILocationRepository, Services.Repository.Location.LocationRepository>();
         services.AddTransient<Services.Repository.Interfaces.IFailedLoginRepository, Services.Repository.FailedLogin.FailedLoginRepository>();
         services.AddTransient<Services.Repository.Interfaces.IRequestRefundRepository, Services.Repository.RequestRefund.RequestRefundRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IPayoutAccountRepository, Services.Repository.PayoutAccount.PayoutAccountRepository>();
 
         return services;
     }
