@@ -1,6 +1,8 @@
 @page "/maker/update-activity";
 @layout CreationLayout;
 @using System.Security.Claims
+@using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+@using Cinnamon.Framework.Common;
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
@@ -146,7 +148,7 @@
             NavigationManager.NavigateTo("/maker/dashboard");
             return;
         }
-        
+
         var activityRes = await activityApiHandler.GetOwnedActivity(activityId, token, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
             IncludeActivityAddress = true,
             IncludeActivityDescription = true,
@@ -192,11 +194,30 @@
         var regions = await activityApiHandler.GetAllRegions();
         if ((!regions.Succeeded || regions.Result == null) || (regions.Succeeded && !regions.Result.IsSuccess))
         {
-            // an error occured when getting sub categories to api
             NavigationManager.NavigateTo("explore");
             return;
         }
 
+        AppResult<GetAllCitiesResult> cities = new AppResult<GetAllCitiesResult>{};
+        AppResult<GetAllBarangaysResult> barangays = new AppResult<GetAllBarangaysResult>();
+
+        if (activity.ExperienceTypeId == 1)
+        {
+            cities = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = activity.Region });
+            if ((!cities.Succeeded || cities.Result == null) || (cities.Succeeded && !cities.Result.IsSuccess))
+            {
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+
+            barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City });
+            if ((!barangays.Succeeded || barangays.Result == null) || (barangays.Succeeded && !barangays.Result.IsSuccess))
+            {
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+        }
+       
         Model = new ExperienceUpdateModel {
             Activity = new Models.Entities.Activity {
                 ActivityId = activity.ActivityId,
@@ -221,10 +242,12 @@
                 Address1 = activity.Address1,
                 Address2 = activity.Address2,
                 CanAdultsJoin = activity.CanAdultsJoin,
-                City = activity.City,
+                    City = activity.City,
+                    CityName = activity.CityName,
                 Subdivision = activity.Subdivision,
                 Region = activity.Region,
-                Barangay = activity.Barangay,
+                    Barangay = activity.Barangay,
+                    BarangayName = activity.BarangayName,
                 PostalCode = activity.PostalCode,
                 CustomerBringWithThem = activity.CustomerBringWithThem,
                 Description = activity.Description,
@@ -282,6 +305,18 @@
                     RegionName = r.RegionName
                 };
             }),
+            Cities = activity.ExperienceTypeId == 1 ? cities.Result.Result.Select(r => new Models.Entities.City
+            {
+                Code = r.Code,
+                Name = r.Name,
+                RegionCode = r.RegionCode
+            }) : new List<Models.Entities.City>(),
+            Barangays = activity.ExperienceTypeId == 1 ? barangays.Result.Result.Select(r => new Models.Entities.Barangay
+            {
+                Code = r.Code,
+                Name = r.Name,
+                CityCode = r.CityCode
+            }) : new List<Models.Entities.Barangay>(),
             Token = token
         };
 
