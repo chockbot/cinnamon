@@ -16,4 +16,6 @@ public class ExperienceUpdateModel
     public bool ExperienceHasError {get; set;}
     public bool ExperienceSetupHasError {get; set;}
     public IEnumerable<Region> Regions { get; set; }
+    public IEnumerable<City> Cities { get; set; }
+    public IEnumerable<Barangay> Barangays { get; set; }
 }

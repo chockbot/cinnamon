@@ -121,4 +121,24 @@ public class StudentData: IStudentData
             return AppResult<CreateManyStudentResult>.CreateFailed(ex, "An error occured when posting create many student api");
         }
     }
+
+    public async Task<AppResult<GetEnrolledStudentsResult>> GetEnrolledStudents(int activityId)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Student/GetEnrolledStudents/{activityId}")
+                            .GetJsonAsync<GetEnrolledStudentsResult>();
+
+            return AppResult<GetEnrolledStudentsResult>.CreateSucceeded(result, "Successfully getting student by id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEnrolledStudentsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEnrolledStudentsResult>.CreateFailed(ex, "An error occured when getting student by id api");
+        }
+    }
 }

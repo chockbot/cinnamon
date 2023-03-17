@@ -5,7 +5,12 @@
 .activity-image-container {
     color: white;
 }
-
+.title-text {
+    font-family: Nunito;
+    font-size: 36px;
+    font-weight: 700;
+    color:#343D4C;
+}
 .btn-primary {
     color: #fff;
     background-color: var(--primary);
@@ -63,8 +68,11 @@
     top: 10%;
 }
 
-.detail-label{
-    font-size:1.3rem !important;
+.detail-label {
+    color: #343D4C;
+    font-family: Nunito;
+    font-size: 18px;
+    font-weight: 500;
 }
 
 .footer-appname {
@@ -170,7 +178,128 @@ hr {
 .profile-container{
     font-family:'Nunito';
 }
+.active-badge{
+    display: flex;
+    justify-content: start;
+}
+.pulse {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #00ACEE;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
 
+    .pulse:hover {
+        animation: none;
+    }
+.pulse-complete {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #34A853;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
+
+    .pulse-complete:hover {
+    animation: none;
+    }
+.active-text {
+    font-size: 20px;
+    font-family: 'Nunito';
+    color: #717171;
+    margin-left: 1rem;
+}
+.active-tag-label {
+    font-size: 24px;
+    font-family: 'Nunito';
+    color: #00ACEE;
+    margin-left: auto;
+    font-weight: 700;
+}
+.active-tag-label-complete {
+    font-size: 24px;
+    font-family: 'Nunito';
+    color: #34A853;
+    margin-left: auto;
+    font-weight: 700;
+}
+.experience-name {
+    font-size: 20px;
+    font-family: 'Nunito';
+}
+.ongoing-enrolles{
+    display:none;
+}
+.completed-enrolles {
+    display: none;
+}
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+@-webkit-keyframes pulse-complete {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse-complete {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
 @media (max-width: 767px) {
     .carousel-inner .carousel-item > div {
         display: none;
@@ -180,8 +309,45 @@ hr {
         display: block;
     }
     .img-thumbnail {
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
+    }
+    .title-text {
+        font-size: 30px;
+    }
+    .experience-name {
+        font-size: 18px;
+    }
+    .ongoing-enrolles {
+        display: flex;
+    }
+
+    .completed-enrolles {
+        display: flex;
+    }
+    .ongoing-enrolles .active-text {
+        font-size: 18px;
+        font-family: 'Nunito';
+        color: #717171;
+    }
+    .completed-enrolles .active-text {
+        font-size: 18px;
+        font-family: 'Nunito';
+        color: #717171;
+    }
+    .ongoing-enrolles .active-tag-label {
+        font-size: 18px;
+        font-family: 'Nunito';
+        color: #00ACEE;
+        font-weight: 700;
+        margin-left: auto;
+    }
+    .completed-enrolles .active-tag-label-complete {
+        font-size: 18px;
+        font-family: 'Nunito';
+        color: #34A853;
+        font-weight: 700;
+        margin-left: auto;
     }
 }
 
@@ -191,18 +357,22 @@ hr {
     display: flex;
     gap:5px;
 }
-
 /* medium and up screens */
 @media (min-width: 768px) {
-
-    .carousel-inner .carousel-item-end.active,
-    .carousel-inner .carousel-item-next {
+    .carousel-inner .carousel-item-end.active, .carousel-inner .carousel-item-next {
         transform: translateX(25%);
     }
 
     .carousel-inner .carousel-item-start.active,
     .carousel-inner .carousel-item-prev {
         transform: translateX(-25%);
+    }
+    .ongoing-enrolles {
+        display: none;
+    }
+
+    .completed-enrolles {
+        display: none;
     }
 }
 
@@ -237,9 +407,14 @@ hr {
     .detail-md {
         display: none !important;
     }
-
-    .profile-container{
-        width:100% !important;
+    .activity-enrolles {
+        display: block;
+    }
+    .active-badge{
+        display:none;
+    }
+    .profile-container {
+        width: 100% !important;
     }
     .alert {
         margin-bottom: 50px;
@@ -253,11 +428,25 @@ hr {
     .carousel-control-next-icon, .carousel-control-prev-icon {
         width: 1.5vh;
     }
+    .ongoing-enrolles {
+        display: flex;
+    }
+
+    .completed-enrolles {
+        display: flex;
+    }
 }
 
 @media screen and (min-width: 767px) {
     .detail-sm {
         display: none !important;
+    }
+    .ongoing-enrolles {
+        display: none;
+    }
+
+    .completed-enrolles {
+        display: none;
     }
 /*
     .detail-lg {
@@ -280,5 +469,12 @@ hr {
     }
     .carousel-control-next-icon, .carousel-control-prev-icon {
         width: 1.5vh;
+    }
+    .ongoing-enrolles {
+        display: none;
+    }
+
+    .completed-enrolles {
+        display: none;
     }
 }
