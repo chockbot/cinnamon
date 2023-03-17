@@ -46,8 +46,12 @@ public class AccountController : ControllerBase
     private readonly IRequestRefundHandler requestRefundHandler;
     private readonly IGetRequestRefundHandler getRequestRefundHandler;
     private readonly IDeleteProfilePictureHandler deleteProfilePictureHandler;
+    private readonly IGetPayoutAccountHandler getPayoutAccountHandler;
+    private readonly ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler;
 
     #endregion
+
+    #region constructor
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
@@ -60,7 +64,8 @@ public class AccountController : ControllerBase
         IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
-        IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler)
+        IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
+        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -90,7 +95,10 @@ public class AccountController : ControllerBase
         this.requestRefundHandler = requestRefundHandler;
         this.getRequestRefundHandler = getRequestRefundHandler;
         this.deleteProfilePictureHandler = deleteProfilePictureHandler;
+        this.createUpdatePayoutAccountHandler = createUpdatePayoutAccountHandler;
     }
+
+    #endregion
 
     [Route("Register")]
     [HttpPost]
@@ -1085,6 +1093,66 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdatePayoutAccount")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdatePayoutAccountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdatePayoutAccount([FromBody] UpdatePayoutAccountArgs args)
+    {
+        try
+        {
+            var result = await createUpdatePayoutAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.CreateUpdatePayoutAccountArgs {
+                AccountHolder = args.AccountHolder,
+                AccountNumber = args.AccountNumber
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdatePayoutAccountResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new UpdatePayoutAccountResult
+            {
+                Result = new PayoutAccountDTO {
+                    AccountHolder = result.Result.AccountHolder,
+                    AccountNumber = result.Result.AccountNumber,
+                    Id = result.Result.Id
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdatePayoutAccountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetPayoutAccount")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetPayoutAccountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPayoutAccount()
+    {
+        try
+        {
+            var result = await getPayoutAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.GetPayoutAccountArgs {});
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetPayoutAccountResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+
+            return new JsonResult(new GetPayoutAccountResult {
+                Result = new PayoutAccountDTO {
+                    AccountHolder = result.Result.AccountHolder,
+                    AccountNumber = result.Result.AccountNumber,
+                    Id = result.Result.Id
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetPayoutAccountResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

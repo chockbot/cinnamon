@@ -78,6 +78,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IRequestRefundHandler, Services.AccountService.RequestRefundHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetRequestRefundHandler, Services.AccountService.GetRequestRefundHandler>();
         services.AddTransient<Services.AccountService.Handlers.IDeleteProfilePictureHandler, Services.AccountService.DeleteProfilePictureHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetPayoutAccountHandler, Services.AccountService.GetPayoutAccountHandler>();
+        services.AddTransient<Services.AccountService.Handlers.ICreateUpdatePayoutAccountHandler, Services.AccountService.CreateUpdatePayoutAccountHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

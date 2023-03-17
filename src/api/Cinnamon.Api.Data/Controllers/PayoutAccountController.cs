@@ -48,7 +48,7 @@ public class PayoutAccountController : ControllerBase
             var result = await payoutAccountRepository.GetByCustomerIdAsync(id);
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new GetPayoutAccountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new GetPayoutAccountResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = "NOTEXIST" } });
             }
 
             return new JsonResult(new GetPayoutAccountResult { Result = result.Result, IsSuccess = true });
