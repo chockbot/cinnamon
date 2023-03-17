@@ -202,6 +202,7 @@ function getRoundedCanvas(sourceCanvas) {
     context.drawImage(sourceCanvas, 0, 0, width, height);
     context.globalCompositeOperation = 'destination-in';
     context.beginPath();
+    context.rect(0, 0, width, height);
     context.fill();
     return canvas;
 }
