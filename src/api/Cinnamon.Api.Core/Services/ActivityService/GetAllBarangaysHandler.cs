@@ -33,7 +33,7 @@ namespace Cinnamon.Api.Core.Services.ActivityService
             {
                 var result = await barangayData.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiData.Location.Request.GetAllBarangayArgs()
                 {
-                    CountPerPage = 100,
+                    CountPerPage = interactor.CountPerPage,
                     PageIndex = 1,
                     CityCode = interactor.CityCode
                 });

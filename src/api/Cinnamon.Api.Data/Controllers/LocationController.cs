@@ -60,7 +60,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _locationRepository.GetAllCitiesByRegionAsync(args.RegionCode);
+                var result = await _locationRepository.GetAllCitiesByRegionAsync(args.RegionCode, args.CountPerPage);
 
                 if (!result.Succeeded || result.Result == null)
                 {
@@ -95,7 +95,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _locationRepository.GetAllBarangaysByCityAsync(args.CityCode);
+                var result = await _locationRepository.GetAllBarangaysByCityAsync(args.CityCode, args.CountPerPage);
 
                 if (!result.Succeeded || result.Result == null)
                 {

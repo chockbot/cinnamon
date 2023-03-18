@@ -32,7 +32,7 @@ namespace Cinnamon.Api.Core.Services.ActivityService
             {
                 var result = await cityData.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiData.Location.Request.GetAllCitiesArgs()
                 {
-                    CountPerPage = 100,
+                    CountPerPage = interactor.CountPerPage,
                     PageIndex = 1,
                     RegionCode = interactor.RegionCode
                 });
