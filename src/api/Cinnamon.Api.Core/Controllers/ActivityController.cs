@@ -1323,7 +1323,8 @@ public class ActivityController : ControllerBase
         {
             var result = await getAllCitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllCitiesArgs
             {
-                RegionCode = args.RegionCode
+                RegionCode = args.RegionCode,
+                CountPerPage = args.CountPerPage,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1361,7 +1362,8 @@ public class ActivityController : ControllerBase
         {
             var result = await getAllBarangaysHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetAllBarangaysArgs
             {
-                CityCode = args.CityCode
+                CityCode = args.CityCode,
+                CountPerPage = args.CountPerPage,
             });
             if (!result.Succeeded || result.Result == null)
             {

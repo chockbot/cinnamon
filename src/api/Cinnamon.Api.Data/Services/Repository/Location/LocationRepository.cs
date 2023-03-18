@@ -16,11 +16,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Location
             this.dataStore = dataStore;
         }
 
-        public async Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode)
+        public async Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode, int? count)
         {
             try
             {
-                var result = await dataStore.Barangay.FindAsync(c => c.CityCode == cityCode);
+                var result = await dataStore.Barangay.FindAsync(c => c.CityCode == cityCode, count);
 
                 if (!result.Succeeded || result.Result == null)
                 {
@@ -42,11 +42,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Location
             }
         }
 
-        public async Task<AppResult<IEnumerable<CityDTO>>> GetAllCitiesByRegionAsync(string regionCode)
+        public async Task<AppResult<IEnumerable<CityDTO>>> GetAllCitiesByRegionAsync(string regionCode, int? count)
         {
             try
             {
-                var result = await dataStore.City.FindAsync(c => c.RegionCode == regionCode);
+                var result = await dataStore.City.FindAsync(c => c.RegionCode == regionCode, count);
 
                 if (!result.Succeeded || result.Result == null)
                 {

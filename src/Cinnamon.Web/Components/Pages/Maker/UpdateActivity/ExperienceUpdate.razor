@@ -328,7 +328,7 @@
             Model.Activity.BarangayName = string.Empty;
         }
 
-        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode });
+        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode, CountPerPage = 1000 });
 
         if (result.Succeeded || result == null)
         {
@@ -348,7 +348,7 @@
             Model.Activity.City = cityCode;
             autocompleteCity.SelectedText = cityCode;
 
-            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode });
+            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, CountPerPage = 1000 });
 
             if (result.Succeeded || result == null)
             {
