@@ -27,13 +27,21 @@ export function initCircularProgress(selector, percentage) {
           "transform",
           "rotate(" + percentageToDegrees(percentage) + "deg)"
         );
-      }
-    } else {
+        }
+    }
+    else {
       right.css("transform", "rotate(180deg)");
       left.css(
         "transform",
         "rotate(" + percentageToDegrees(percentage - 50) + "deg)"
-      );
+        );
+        if (percentage > 100) {
+            right.css("transform", "rotate(180deg)");
+            left.css(
+                "transform",
+                "rotate(" + percentageToDegrees(50) + "deg)"
+            );
+        }
     }
   });
 
