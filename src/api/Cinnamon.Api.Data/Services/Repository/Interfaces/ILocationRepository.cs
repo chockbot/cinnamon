@@ -8,7 +8,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces
     public interface ILocationRepository
     {
         Task<AppResult<IEnumerable<RegionDTO>>> GetAllRegionsAsync();
-        Task<AppResult<IEnumerable<CityDTO>>> GetAllCitiesByRegionAsync(string regionCode);
-        Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode);
+        Task<AppResult<IEnumerable<CityDTO>>> GetAllCitiesByRegionAsync(string regionCode, int? count);
+        Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode, int? count);
     }
 }

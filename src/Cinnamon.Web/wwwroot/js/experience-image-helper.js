@@ -137,10 +137,10 @@ function initializeCropper(imgPreview) {
     return new Cropper(imgPreview, {
         viewMode: 1,
         aspectRatio: 515 / 670,
-        minContainerWidth: 515,
-        minContainerHeight: 670,
-        minCropBoxWidth: 515,
-        minCropBoxHeight: 670,
+        minContainerWidth: 350,
+        minContainerHeight: 400,
+        minCropBoxWidth: 271,
+        minCropBoxHeight: 271,
         movable: true,
         ready: function () {
         },
@@ -202,6 +202,7 @@ function getRoundedCanvas(sourceCanvas) {
     context.drawImage(sourceCanvas, 0, 0, width, height);
     context.globalCompositeOperation = 'destination-in';
     context.beginPath();
+    context.rect(0, 0, width, height);
     context.fill();
     return canvas;
 }

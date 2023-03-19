@@ -1,5 +1,6 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Account;
 @inject IAccountApiHandler accountApiHandler;
 
 <article class="personal-info-wrapper p-3">
@@ -135,6 +136,33 @@
             </Column>
         </Row>
     </div>
+    @if(Model.CustomerProfile.IsMaker)
+    {
+        <Divider />
+        <div class="p-section payout-account-section">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                    <p class="title mb-1">Payout Information</p>
+                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        @if(PayoutAccount == null)
+                        {
+                            <span>No Data Found</span>
+                            <span class="edit">
+                                <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Add</NavLink>
+                            </span>
+                        }
+                        else 
+                        {
+                            <span>@PayoutAccount.AccountNumber</span>
+                            <span class="edit">
+                                <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Edit</NavLink>
+                            </span>
+                        }
+                    </Div>
+                </Column>
+            </Row>
+        </div>
+    }
 </article>
 
 <style scoped>
@@ -193,6 +221,22 @@
     private IList<Models.Entities.FamilyMember> localStateFamilyMembers = new List<Models.Entities.FamilyMember>();
 
     private IList<int> RemovedIds = new List<int>();
+
+    private PayoutAccountModel PayoutAccount {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Model.Token);
+        if(fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        {
+            var payoutAccount = fetchPayoutAccount.Result.Result;
+            PayoutAccount = new PayoutAccountModel {
+                AccountHolder = payoutAccount.AccountHolder,
+                AccountNumber = payoutAccount.AccountNumber,
+                Id = payoutAccount.Id
+            };
+        }
+    }
 
     private void EditLegalNameClick()
     {

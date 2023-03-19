@@ -26,6 +26,7 @@ public interface IDataStore
     IBarangay Barangay{ get; }
     IFailedLogin FailedLogin { get; }
     IRequestRefund RequestRefund { get; }
+    IPayoutAccount PayoutAccount {get;}
 
     Task EnsureMigrate();
 

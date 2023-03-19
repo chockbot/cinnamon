@@ -34,4 +34,6 @@ public interface IAccountApiHandler
     Task<AppResult<RequestRefundResult>> RequestRefund(RequestRefundArgs args, string token);
     Task<AppResult<GetRequestedRefundsResult>> GetRequestedRefunds(GetRequestedRefundsArgs args, string token);
     Task<AppResult<DeleteProfilePictureResult>> DeleteProfilePicture(DeleteProfilePictureArgs args, string token);
+    Task<AppResult<UpdatePayoutAccountResult>> UpdatePayoutAccount(UpdatePayoutAccountArgs args, string token);
+    Task<AppResult<GetPayoutAccountResult>> GetPayoutAccount(string token);
 } 

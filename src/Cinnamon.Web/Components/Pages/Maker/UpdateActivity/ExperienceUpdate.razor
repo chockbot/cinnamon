@@ -29,7 +29,7 @@
         <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <textarea id="update-activity-title" @bind="Model.Activity.Title" class="@RequiredCheck(Model.Activity.Title)"></textarea>
-                <label>Max of 15 words</label>
+                <label id="label-title-editor"></label>
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@
         <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <textarea id="update-activity-description" class="@RequiredMin(Model.Activity.Description,20)" @bind="Model.Activity.Description"></textarea>
-                <label>Min of 20 words</label>
+                <label id="label-description-editor"></label>
             </div>
         </div>
     </div>
@@ -179,7 +179,7 @@
 
                 <div class="modal show fade remove-modal" tabindex="-1" role="dialog" id="setLocationModal" style="z-index:99999;">
                     <div class="modal-dialog" role="document">
-                        <div class="modal-content" style="width:600px">
+                        <div class="modal-content">
                             <div class="modal-header">
                                 <p class="col-11 modal-title text-center"></p>
                                 <button type="button" class="btn-close" id="btnCloseSetLocationModal" @onclick="@(() => ToggleLocationModal(false))" data-dismiss="modal" aria-label="Close"></button>
@@ -281,7 +281,11 @@
     {
         if (firstRender)
         {
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#update-activity-title", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#update-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#update-activity-description", "Min", 20);
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#update-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#update-activity-description", "Min", 20);
         }
     }
 
@@ -324,7 +328,7 @@
             Model.Activity.BarangayName = string.Empty;
         }
 
-        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode });
+        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode, CountPerPage = 1000 });
 
         if (result.Succeeded || result == null)
         {
@@ -344,7 +348,7 @@
             Model.Activity.City = cityCode;
             autocompleteCity.SelectedText = cityCode;
 
-            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode });
+            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, CountPerPage = 1000 });
 
             if (result.Succeeded || result == null)
             {

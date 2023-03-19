@@ -620,4 +620,47 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<DeleteProfilePictureResult>.CreateFailed(ex, "An error occured when requesting delete profile picture api");
         }
     }
+
+    public async Task<AppResult<UpdatePayoutAccountResult>> UpdatePayoutAccount(UpdatePayoutAccountArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/UpdatePayoutAccount")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdatePayoutAccountResult>();
+
+            return AppResult<UpdatePayoutAccountResult>.CreateSucceeded(result, "Successfully requested update payout account api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdatePayoutAccountResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdatePayoutAccountResult>.CreateFailed(ex, "An error occured when requesting update payout account api");
+        }
+    }
+
+    public async Task<AppResult<GetPayoutAccountResult>> GetPayoutAccount(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/GetPayoutAccount")
+                .GetJsonAsync<GetPayoutAccountResult>();
+
+            return AppResult<GetPayoutAccountResult>.CreateSucceeded(result, "Successfully get requested payout account api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetPayoutAccountResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetPayoutAccountResult>.CreateFailed(ex, "An error occured when get requested payout account api");
+        }
+    }
 }

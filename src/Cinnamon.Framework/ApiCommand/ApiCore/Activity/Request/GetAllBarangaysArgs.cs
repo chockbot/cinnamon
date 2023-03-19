@@ -9,5 +9,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request
     public class GetAllBarangaysArgs
     {
         public string CityCode { get; set; }
+        public int? CountPerPage { get; set; }
     }
 }
