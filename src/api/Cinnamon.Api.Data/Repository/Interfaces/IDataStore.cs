@@ -27,6 +27,7 @@ public interface IDataStore
     IFailedLogin FailedLogin { get; }
     IRequestRefund RequestRefund { get; }
     IPayoutAccount PayoutAccount {get;}
+    IPayoutLog PayoutLog {get;}
 
     Task EnsureMigrate();
 
