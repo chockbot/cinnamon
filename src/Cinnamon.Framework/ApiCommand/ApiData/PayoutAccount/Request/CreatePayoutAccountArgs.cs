@@ -11,4 +11,6 @@ public class CreatePayoutAccountArgs
     [Required]
     public string AccountHolder {get; set;}
     public string? Payload {get; set;}
+    [Required]
+    public string BankChannel {get; set;}
 }
