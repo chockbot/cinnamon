@@ -671,7 +671,7 @@ public class ActivityRepository : IActivityRepository
                         Id = s.Id,
                         ImageLocation = s.ImageLocation,
                         ImageName = s.ImageName,
-                        Order = s.Order
+                        Order = s.Order,
                     };
                 }).ToList();
             }

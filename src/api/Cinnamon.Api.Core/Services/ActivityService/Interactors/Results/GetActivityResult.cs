@@ -73,5 +73,6 @@ public class GetActivityResult
         public string LastName {get; set;}
         public string Email {get; set;}
         public string ImageSrc {get; set;}
+        public int IsVerified { get; set; }
     }
 }

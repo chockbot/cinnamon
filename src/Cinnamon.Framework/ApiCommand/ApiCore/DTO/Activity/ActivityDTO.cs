@@ -102,5 +102,6 @@ public class ActivityDTO
         public string ImageSrc {get; set;}
         public string FirstName {get; set;}
         public string LastName {get; set;}
+        public int IsVerified { get; set; }
     }
 }
