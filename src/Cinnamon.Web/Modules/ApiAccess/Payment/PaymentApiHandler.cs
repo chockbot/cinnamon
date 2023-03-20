@@ -56,4 +56,25 @@ public class PaymentApiHandler : IPaymentApiHandler
             return AppResult<GetPaymentChannelsResult>.CreateFailed(ex, "An error occured when get payment channels api");
         }
     }
+
+    public async Task<AppResult<VerifyPayoutCallbackResult>> VerifyPayoutCallback(VerifyPayoutCallbackArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Payment/VerifyPayoutCallback")
+                .PostJsonAsync(args)
+                .ReceiveJson<VerifyPayoutCallbackResult>();
+
+            return AppResult<VerifyPayoutCallbackResult>.CreateSucceeded(result, "Successfully posting verify callback api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<VerifyPayoutCallbackResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyPayoutCallbackResult>.CreateFailed(ex, "An error occured when posting verify callback api");
+        }
+    }
 }

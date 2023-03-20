@@ -77,7 +77,7 @@ builder.Services.AddQuartz(q => {
     q.AddTrigger(opts => opts
         .ForJob(payoutJobkey)
         .WithIdentity("GeneratePayoutHandler-trigger")
-        .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
+        .WithSimpleSchedule(x => x.WithIntervalInHours(3).RepeatForever())
     );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);

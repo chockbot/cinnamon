@@ -5,6 +5,7 @@ public class PayoutLog : BaseEntity
     public int PurchaseOrderId {get; set;}
     public int CustomerId {get; set;}
     public decimal Amount {get; set;}
+    // 0 = pending, 1 = succeed, 2 = failed
     public int Status {get; set;}
     public string Remarks {get; set;}
 }

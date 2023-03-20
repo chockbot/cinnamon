@@ -44,4 +44,35 @@ public class PaymentController : ControllerBase
             return BadRequest(new {message = "An error occured. Please try again", success = false});
         }
     }
+
+    [Route("VerifyPayoutCallback")]
+    [HttpPost]
+    public async Task<IActionResult> VerifyPayoutCallback([FromBody] PaymentVerifyPayoutCallback args)
+    {
+        try
+        {
+            var callbackToken = string.Empty;
+            if(Request.Headers.TryGetValue("x-callback-token", out Microsoft.Extensions.Primitives.StringValues value))
+            {
+                callbackToken = value;
+            }
+            var result = await paymentApiHandler.VerifyPayoutCallback(new Framework.ApiCommand.ApiCore.Payment.Request.VerifyPayoutCallbackArgs {
+                CallbackToken = callbackToken,
+                FailureCode = args.data.failure_code,
+                ReferenceId = args.data.reference_id,
+                Status = args.data.status
+            });
+
+            if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
+            {
+                return BadRequest(new {message = result.Result?.ErrorInfo?.Message ?? result.Message});
+            }
+
+            return Ok(new {message = result.Message, success = true});
+        }
+        catch
+        {
+            return BadRequest(new {message = "An error occured. Please try again", success = false});
+        }
+    }
 }

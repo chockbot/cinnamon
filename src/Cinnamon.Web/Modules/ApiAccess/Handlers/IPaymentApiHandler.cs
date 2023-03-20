@@ -8,4 +8,5 @@ public interface IPaymentApiHandler
 {
     Task<AppResult<VerifyCallbackResult>> VerifyCallback(VerifyCallbackArgs args);
     Task<AppResult<GetPaymentChannelsResult>> GetPaymentChannels();
+    Task<AppResult<VerifyPayoutCallbackResult>> VerifyPayoutCallback(VerifyPayoutCallbackArgs args);
 } 

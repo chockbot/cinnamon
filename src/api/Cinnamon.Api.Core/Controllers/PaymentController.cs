@@ -12,11 +12,14 @@ public class PaymentController : ControllerBase
 {
     private readonly IVerifyCallbackHandler verifyCallbackHandler;
     private readonly IGetPaymentChannelsHandler getPaymentChannelsHandler;
+    private readonly IVerifyPayoutCallbackHandler verifyPayoutCallbackHandler;
 
-    public PaymentController(IVerifyCallbackHandler verifyCallbackHandler, IGetPaymentChannelsHandler getPaymentChannelsHandler)
+    public PaymentController(IVerifyCallbackHandler verifyCallbackHandler, IGetPaymentChannelsHandler getPaymentChannelsHandler,
+        IVerifyPayoutCallbackHandler verifyPayoutCallbackHandler)
     {
         this.verifyCallbackHandler = verifyCallbackHandler;
         this.getPaymentChannelsHandler = getPaymentChannelsHandler;
+        this.verifyPayoutCallbackHandler = verifyPayoutCallbackHandler;
     }
 
     [Route("VerifyCallback")]
@@ -79,6 +82,39 @@ public class PaymentController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest(new GetPaymentChannelsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("VerifyPayoutCallback")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifyPayoutCallbackResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> VerifyPayoutCallback([FromBody] VerifyPayoutCallbackArgs args)
+    {
+        try
+        {
+            var result = await verifyPayoutCallbackHandler.ExecuteAsync(new Services.PaymentGatewayService.Interactors.VerifyPayoutCallbackArgs {
+                CallbackToken = args.CallbackToken,
+                FailureCode = args.FailureCode,
+                ReferenceId = args.ReferenceId,
+                Status = args.Status
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return BadRequest(new VerifyPayoutCallbackResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new VerifyPayoutCallbackResult 
+                {
+                    IsSuccess = true, 
+                    Result = new Framework.ApiCommand.ApiCore.DTO.Payment.VerifyCallbackDTO {
+                        Message = "Ok"
+                    }
+                }
+            ); 
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new VerifyPayoutCallbackResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }
