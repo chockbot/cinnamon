@@ -57,7 +57,8 @@ public class GetPayoutAccountHandler : IGetPayoutAccountHandler
                 AccountHolder = account.AccountHolder,
                 AccountNumber = account.AccountNumber,
                 Payload = account.Payload,
-                Id = account.Id
+                Id = account.Id,
+                BankChannel = account.BankChannel
             }, "Successfully get payout account");
         }
         catch (Exception ex)

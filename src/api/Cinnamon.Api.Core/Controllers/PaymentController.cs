@@ -11,10 +11,12 @@ namespace Cinnamon.Api.Core.Controllers;
 public class PaymentController : ControllerBase 
 {
     private readonly IVerifyCallbackHandler verifyCallbackHandler;
+    private readonly IGetPaymentChannelsHandler getPaymentChannelsHandler;
 
-    public PaymentController(IVerifyCallbackHandler verifyCallbackHandler)
+    public PaymentController(IVerifyCallbackHandler verifyCallbackHandler, IGetPaymentChannelsHandler getPaymentChannelsHandler)
     {
         this.verifyCallbackHandler = verifyCallbackHandler;
+        this.getPaymentChannelsHandler = getPaymentChannelsHandler;
     }
 
     [Route("VerifyCallback")]
@@ -46,6 +48,37 @@ public class PaymentController : ControllerBase
         catch (Exception ex)
         {
             return BadRequest(new VerifyCallbackResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetPaymentChannels")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetPaymentChannelsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPaymentChannels()
+    {
+        try
+        {
+            var result = await getPaymentChannelsHandler.ExecuteAsync(new Services.PaymentGatewayService.Interactors.GetPaymentChannelsArgs());
+            if(!result.Succeeded || result.Result == null)
+            {
+                return BadRequest(new GetPaymentChannelsResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetPaymentChannelsResult 
+                {
+                    IsSuccess = true, 
+                    Result = result.Result.PaymentChannels.Select(c => {
+                        return new Framework.ApiCommand.ApiCore.DTO.Payment.PaymentChannelDTO {
+                            Code = c.Code,
+                            Name = c.Name
+                        };
+                    })
+                }
+            ); 
+        }
+        catch (Exception ex)
+        {
+            return BadRequest(new GetPaymentChannelsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
 }

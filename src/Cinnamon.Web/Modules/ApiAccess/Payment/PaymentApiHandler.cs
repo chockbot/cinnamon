@@ -36,4 +36,24 @@ public class PaymentApiHandler : IPaymentApiHandler
             return AppResult<VerifyCallbackResult>.CreateFailed(ex, "An error occured when posting verify callback api");
         }
     }
+
+    public async Task<AppResult<GetPaymentChannelsResult>> GetPaymentChannels()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Payment/GetPaymentChannels")
+                .GetJsonAsync<GetPaymentChannelsResult>();
+
+            return AppResult<GetPaymentChannelsResult>.CreateSucceeded(result, "Successfully get payment channels api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetPaymentChannelsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetPaymentChannelsResult>.CreateFailed(ex, "An error occured when get payment channels api");
+        }
+    }
 }
