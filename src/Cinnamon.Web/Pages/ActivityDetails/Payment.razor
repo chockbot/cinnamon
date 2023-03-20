@@ -220,7 +220,9 @@
                                     <p class="owner">@($"{activity.Owner.FirstName} {activity.Owner.LastName}")</p>
                                 </div>
                                 <div class="ms-5 verified-logo">
-                                    <img src="images/VerifiedIcon.png" alt="verified-logo">
+                                    @if(activity.Owner.IsVerified == 2){
+                                        <img src="images/VerifiedIcon.png" alt="verified-logo" title="For uploading and completing all identification requirements.">
+                                    }
                                 </div>
                             </div>
                         </CardBody>
@@ -459,7 +461,8 @@
                     Handler = result.Owner.Handler,
                     ProfilePath = result.Owner.ImageSrc,
                     FirstName = result.Owner.FirstName,
-                    LastName = result.Owner.LastName
+                    LastName = result.Owner.LastName,
+                    IsVerified = result.Owner.IsVerified,
                 } : null
             };
         var selectedSchedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);

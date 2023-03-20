@@ -154,17 +154,18 @@
                 </div>
                 @if (customerDetail != null && customerDetail.IsMaker == true)
                 {
-                    <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first">
-                        <div class="profile-container w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
+                    <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first profile-container">
+                        <div class="w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
                             <img class="rounded-2 rounded-circle m-3" src="@customerDetail.ProfilePath" width="60" height="60" />
                             <div class="d-flex flex-column m-2">
                                 <span style="font-size:0.7rem;">Experience by</span>
                                 <span class="fw-bold text-capitalize" style="font-size:1rem;">@customerDetail.FirstName @customerDetail.LastName</span>
                                     <a class="text-decoration-none" href="/maker/profile/@(activity.Owner != null && !string.IsNullOrEmpty(activity.Owner.Handler) ? activity.Owner.Handler : activity.CreatedBy.ToString() )">View Profile</a>
                             </div>
-                            <div class="d-flex flex-column justify-content-center align-items-start flex-grow-1">
-                                <img class="px-3" src="images/details_profile_badge.png" />
-                            </div>
+                            @if (customerDetail.IsVerified == 2)
+                                {
+                                    <img class="px-3 verified-logo" src="images/VerifiedIcon.png" title="For uploading and completing all identification requirements." />
+                                }
                         </div>
                     </div>
                 }
@@ -499,7 +500,8 @@
                     LastName = args.LastName,
                     Id = args.Id,
                     IsMaker = args.IsMaker,
-                    ProfilePath = args.ProfileImg
+                    ProfilePath = args.ProfileImg,
+                    IsVerified = args.IsVerified
                 };
         }
         Model = new DetailActivityModel

@@ -1012,7 +1012,8 @@ public class ActivityController : ControllerBase
                             Id  = activity.Owner.Id,
                             ImageSrc = activity.Owner.ImageSrc,
                             FirstName = activity.Owner.FirstName,
-                            LastName = activity.Owner.LastName
+                            LastName = activity.Owner.LastName,
+                            IsVerified = activity.Owner.IsVerified,
                         } : null
                 }
             });

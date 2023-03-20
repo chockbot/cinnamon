@@ -120,7 +120,8 @@ public class GetActivityHandler : IGetActivityHandler
                     FirstName = activity.Owner.FirstName,
                     LastName = activity.Owner.LastName,
                     Email = activity.Owner.Email,
-                    ImageSrc = activity.Owner.ProfileImg ?? string.Empty
+                    ImageSrc = activity.Owner.ProfileImg ?? string.Empty,
+                    IsVerified = activity.Owner.IsVerified,
                 } : null
             };
 
