@@ -17,6 +17,8 @@ public class CreateManyStudentArgs
     public DateTime ExpirationEndDate { get; set; }
     [Required]
     public IEnumerable<StudentDetails> Students {get; set;}
+    [Required]
+    public int OngoingActivityId {get; set;}
 
     public class StudentDetails 
     {

@@ -43,6 +43,11 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
             {
                 return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
             }
+            var callbackToken = applicationConfig.Payment.Accounts.First().Settings.First(s => s.Name == "CallbackToken").Value;
+            if(callbackToken != args.CallbackToken)
+            {
+                return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
+            }
 
             var transactionId = int.Parse(args.TransactionId);
             var getPurchaseOrder = await purchaseOrderData.GetPurchaseOrderById(transactionId);
