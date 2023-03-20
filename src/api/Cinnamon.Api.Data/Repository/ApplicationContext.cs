@@ -151,6 +151,7 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<Student>()
             .HasIndex(s => s.FamilyMemberId);
+        modelBuilder.Entity<Student>().HasIndex(s => s.OngoingActivityId);
 
         // student attendance
         modelBuilder.Entity<StudentAttendance>()

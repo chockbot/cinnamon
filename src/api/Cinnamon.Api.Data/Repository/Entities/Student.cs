@@ -14,6 +14,7 @@ public class Student : BaseEntity
     public string Status {get; set;}
     public DateTime ExpirationDateStart {get; set;}
     public DateTime ExpirationDateEnd { get; set; }
+    public int OngoingActivityId {get; set;}
 
     public Customer Customer {get; set;}
     public Activity Activity {get; set;}
