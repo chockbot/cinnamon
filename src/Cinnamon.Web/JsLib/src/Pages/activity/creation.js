@@ -22,8 +22,10 @@ creation.init = async (obj, activityId) => {
 
 creation.uploadImages = async (activityId) => {
     const formData = new FormData();
+    const formDataPlaceholderImage = new FormData();
     let counter = 0;
     var file = null;
+
     $(".img-banner").each(function (e) {
         const name = $(this).attr("data-name");
         if (name) {
@@ -38,16 +40,62 @@ creation.uploadImages = async (activityId) => {
 
     formData.append("ActivityId", activityId);
 
-    const { data } = await axios.postForm(
-        "api/activity/UploadActivityImage",
-        formData
-    );
+    try {
+        const result = await axios.postForm(
+            "api/activity/UploadActivityImage",
+            formData
+        );
 
-    if (!data.success) {
-        dotnetObj.invokeMethodAsync("ShowError", data.message);
+        if (!result.data.success) {
+            dotnetObj.invokeMethodAsync("ShowError", result.message);
+        }
+
+        return result.data.success;
+    } catch (error) {
+        if (error.response && error.response.status === 400) {
+            try {
+                const response = await fetch('/images/placeholder-image.png');
+                if (!response.ok) {
+                    dotnetObj.invokeMethodAsync("ShowError", response);
+                }
+
+                const blob = await response.blob();
+
+                const file = new File([blob], 'placeholder-image.png', { type: blob.type });
+                const formEntries = Array.from(formData.entries());
+                const formLength = formEntries.length;
+
+                if (formLength > 0) {
+                    const filteredFormData = formEntries.filter((item) => item[0] !== 'ActivityId');
+
+                    for (const item of filteredFormData) {
+                        formDataPlaceholderImage.append(item[0], file);
+                    }
+                    formDataPlaceholderImage.append("ActivityId", activityId);
+
+                    try {
+                        const uploadResult = await axios.postForm(
+                            "api/activity/UploadActivityImage",
+                            formDataPlaceholderImage
+                        );
+
+                        if (!uploadResult.data.success) {
+                            dotnetObj.invokeMethodAsync("ShowError", uploadResult.message);
+                        }
+
+                        return uploadResult.data.success;
+                    } catch (uploadImageError) {
+                        dotnetObj.invokeMethodAsync("ShowError", uploadImageError.message);
+                    }
+                }
+
+            } catch (fetchImageError) {
+                dotnetObj.invokeMethodAsync("ShowError", fetchImageError.response);
+            }
+        } else {
+            dotnetObj.invokeMethodAsync("ShowError", error.response);
+        }
     }
-
-    return data.success;
 };
 
 function dataUrlToFile(dataUrl, filename) {
