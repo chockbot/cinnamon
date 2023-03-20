@@ -11,6 +11,8 @@ using Flurl.Http.Configuration;
 using Flurl.Http;
 using Cinnamon.Api.Core.Providers;
 using Microsoft.AspNetCore.Http.Features;
+using Quartz;
+using Cinnamon.Api.Core.Services.JobService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +67,20 @@ builder.Services.Configure<FormOptions>(opts => {
     // 10mb
     opts.MemoryBufferThreshold = 10000000;
 });
+
+builder.Services.AddQuartz(q => {
+    q.UseMicrosoftDependencyInjectionJobFactory();
+
+    var payoutJobkey = new JobKey("GeneratePayoutHandler");
+    q.AddJob<GeneratePayoutJob>(opts => opts.WithIdentity(payoutJobkey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(payoutJobkey)
+        .WithIdentity("GeneratePayoutHandler-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInMinutes(1).RepeatForever())
+    );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();

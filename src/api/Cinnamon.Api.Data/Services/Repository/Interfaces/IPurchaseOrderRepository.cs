@@ -13,4 +13,5 @@ public interface IPurchaseOrderRepository
         string? coupon, decimal? couponAmount, decimal overallTotal, int status, string payload);
     Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, decimal? convinienceFee,
         string? coupon, decimal? couponAmount, decimal? overallTotal, int? status);
+    Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllPurchaseOrderNeedToPayout();
 }
