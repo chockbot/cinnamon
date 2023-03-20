@@ -3,8 +3,10 @@
 @using Cinnamon.Web.Models.Account;
 @using System.ComponentModel.DataAnnotations;
 @using System.Security.Claims;
+@using Cinnamon.Web.Models.Entities;
 @using Blazorise;
 @inject IAccountApiHandler accountApiHandler;
+@inject IPaymentApiHandler paymentApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager;
 
@@ -14,8 +16,20 @@
         <p class="font-16 color-grey-100">Please provide your bank details. This will let you receive funds to your bank account.</p>
         <div class="payout-account-content-details mt-3">
             <Validations @ref="FormValidation" Model="Model" Mode="ValidationMode.Manual">
+                <Field class="mb-3">
+                    <FieldLabel class="font-20 color-grey-100">Bank Type</FieldLabel>
+                    <Select class="form-control" TValue="string" @bind-SelectedValue="SelectedPayment">
+                       @if(PaymentChannels != null)
+                       {
+                         @foreach (var item in PaymentChannels)
+                            {
+                                <SelectItem Value="item.Code" selected>@item.Name</SelectItem>
+                            }
+                       }
+                    </Select>
+                </Field>
                 <Validation>
-                    <Field class="mb-3">
+                    <Field>
                         <FieldLabel class="font-20 color-grey-100">Account Name</FieldLabel>
                         <TextEdit Placeholder="Enter your account name" @bind-Text="Model.AccountHolder">
                             <Feedback>
@@ -60,6 +74,8 @@
     private bool IsShowErrorMessage {get; set;}
     private bool IsShowSuccessMessage {get; set;}
     private string Token {get; set;}
+    private IEnumerable<PaymentChannel> PaymentChannels {get; set;}
+    private string SelectedPayment {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
@@ -72,6 +88,17 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+
+        var getPaymentChannels = await paymentApiHandler.GetPaymentChannels();
+        if(getPaymentChannels.Succeeded && getPaymentChannels.Result != null && getPaymentChannels.Result.IsSuccess)
+        {
+            PaymentChannels = getPaymentChannels.Result.Result.Select(c => {
+                return new PaymentChannel {
+                    Code = c.Code,
+                    Name = c.Name
+                };
+            });
+        }
     }
 
     private async Task SubmitPayoutAccount()
@@ -82,7 +109,8 @@
 
             var result = await accountApiHandler.UpdatePayoutAccount(new Framework.ApiCommand.ApiCore.Account.Request.UpdatePayoutAccountArgs {
                 AccountHolder = Model.AccountHolder,
-                AccountNumber = Model.AccountNumber
+                AccountNumber = Model.AccountNumber,
+                BankChannel = SelectedPayment
             }, Token);
 
             IsSubmitting = false;

@@ -7,4 +7,5 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
 public interface IPaymentApiHandler 
 {
     Task<AppResult<VerifyCallbackResult>> VerifyCallback(VerifyCallbackArgs args);
+    Task<AppResult<GetPaymentChannelsResult>> GetPaymentChannels();
 } 

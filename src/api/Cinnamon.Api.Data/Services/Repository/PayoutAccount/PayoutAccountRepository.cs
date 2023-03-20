@@ -15,7 +15,7 @@ public class PayoutAccountRepository : IPayoutAccountRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<PayoutAccountDTO>> Create(int customerId, string accountNo, string accountHolder, string payload)
+    public async Task<AppResult<PayoutAccountDTO>> Create(int customerId, string accountNo, string accountHolder, string payload, string bankChannel)
     {
         try
         {
@@ -30,7 +30,8 @@ public class PayoutAccountRepository : IPayoutAccountRepository
                 AccountNumber = accountNo,
                 AccountHolder = accountHolder,
                 CustomerId = customerId,
-                Payloads = payload
+                Payloads = payload,
+                BankChannel = bankChannel
             };
 
             var result = await dataStore.PayoutAccount.Add(entity);
@@ -44,7 +45,8 @@ public class PayoutAccountRepository : IPayoutAccountRepository
                 AccountNumber = result.Result.AccountNumber,
                 CustomerId = result.Result.CustomerId,
                 Id = result.Result.Id,
-                Payload = result.Result.Payloads
+                Payload = result.Result.Payloads,
+                BankChannel = result.Result.BankChannel
             }, "Successcully created payout account");
         }
         catch (Exception ex)
@@ -70,7 +72,8 @@ public class PayoutAccountRepository : IPayoutAccountRepository
                         AccountNumber = p.AccountNumber,
                         CustomerId = p.CustomerId,
                         Id = p.Id,
-                        Payload = p.Payloads
+                        Payload = p.Payloads,
+                        BankChannel = p.BankChannel
                     };
                 }), "Successfully get all payout accounts");
         }
@@ -97,7 +100,8 @@ public class PayoutAccountRepository : IPayoutAccountRepository
                         AccountNumber = p.AccountNumber,
                         CustomerId = p.CustomerId,
                         Id = p.Id,
-                        Payload = p.Payloads
+                        Payload = p.Payloads,
+                        BankChannel = p.BankChannel
                     };
                 }), "Successfully get all payout accounts");
         }
@@ -122,7 +126,8 @@ public class PayoutAccountRepository : IPayoutAccountRepository
                 AccountNumber = result.Result.AccountNumber,
                 CustomerId = result.Result.CustomerId,
                 Id = result.Result.Id,
-                Payload = result.Result.Payloads
+                Payload = result.Result.Payloads,
+                BankChannel = result.Result.BankChannel
             }, "Successfully get payout account by customer id");
         }
         catch (Exception ex)
@@ -146,7 +151,8 @@ public class PayoutAccountRepository : IPayoutAccountRepository
                 AccountNumber = result.Result.AccountNumber,
                 CustomerId = result.Result.CustomerId,
                 Id = result.Result.Id,
-                Payload = result.Result.Payloads
+                Payload = result.Result.Payloads,
+                BankChannel = result.Result.BankChannel
             }, "Successfully get payout account by id");            
         }
         catch (Exception ex)
@@ -155,7 +161,7 @@ public class PayoutAccountRepository : IPayoutAccountRepository
         }
     }
 
-    public async Task<AppResult<PayoutAccountDTO>> Update(int id, string? accountNo, string? accountHolder, string? payload)
+    public async Task<AppResult<PayoutAccountDTO>> Update(int id, string? accountNo, string? accountHolder, string? payload, string? bankChannel)
     {
         try
         {
@@ -169,6 +175,7 @@ public class PayoutAccountRepository : IPayoutAccountRepository
             account.AccountHolder = accountHolder ?? account.AccountHolder;
             account.AccountNumber = accountNo ?? account.AccountNumber;
             account.Payloads = payload ?? account.Payloads;
+            account.BankChannel = bankChannel ?? account.BankChannel;
 
             var updatedRes = await dataStore.PayoutAccount.Update(account);
             if(!updatedRes.Succeeded || updatedRes.Result == null)
@@ -182,7 +189,8 @@ public class PayoutAccountRepository : IPayoutAccountRepository
                 AccountNumber = updated.AccountNumber,
                 CustomerId = updated.CustomerId,
                 Id = updated.Id,
-                Payload = updated.Payloads
+                Payload = updated.Payloads,
+                BankChannel = updated.BankChannel
             }, "Successfully update payout account");
         }
         catch (Exception ex)

@@ -70,7 +70,8 @@ public class CreateUpdatePayoutAccountHandler : ICreateUpdatePayoutAccountHandle
                     AccountHolder = args.AccountHolder,
                     AccountNumber = args.AccountNumber,
                     CustomerId = account.Id,
-                    Payload = args.Payload
+                    Payload = args.Payload,
+                    BankChannel = args.BankChannel
                 });
                 if(!created.Succeeded || created.Result == null || !created.Result.IsSuccess)
                 {
@@ -82,7 +83,8 @@ public class CreateUpdatePayoutAccountHandler : ICreateUpdatePayoutAccountHandle
                     AccountHolder = newAcount.AccountHolder,
                     AccountNumber = newAcount.AccountNumber,
                     Id = newAcount.Id,
-                    Payload = newAcount.Payload
+                    Payload = newAcount.Payload,
+                    BankChannel = newAcount.BankChannel
                 }, "Successfully created payout account");
             }
 
@@ -91,7 +93,8 @@ public class CreateUpdatePayoutAccountHandler : ICreateUpdatePayoutAccountHandle
                 AccountHolder = args.AccountHolder,
                 AccountNumber = args.AccountNumber,
                 Payload = args.Payload,
-                Id = payoutRes.Result.Result.Id
+                Id = payoutRes.Result.Result.Id,
+                BankChannel = args.BankChannel
             });
             if(!updated.Succeeded || updated.Result == null || !updated.Result.IsSuccess)
             {
@@ -103,7 +106,8 @@ public class CreateUpdatePayoutAccountHandler : ICreateUpdatePayoutAccountHandle
                 AccountHolder = updatedAccount.AccountHolder,
                 AccountNumber = updatedAccount.AccountNumber,
                 Id = updatedAccount.Id,
-                Payload = updatedAccount.Payload
+                Payload = updatedAccount.Payload,
+                BankChannel = updatedAccount.BankChannel
             }, "Successfully update payout account");
         }
         catch (Exception ex)
