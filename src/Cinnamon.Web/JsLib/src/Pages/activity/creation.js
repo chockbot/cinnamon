@@ -54,14 +54,14 @@ creation.uploadImages = async (activityId) => {
     } catch (error) {
         if (error.response && error.response.status === 400) {
             try {
-                const response = await fetch('/images/placeholder-image.jpg');
+                const response = await fetch('/images/placeholder-image.png');
                 if (!response.ok) {
                     dotnetObj.invokeMethodAsync("ShowError", response);
                 }
 
                 const blob = await response.blob();
 
-                const file = new File([blob], 'placeholder-image.jpg', { type: blob.type });
+                const file = new File([blob], 'placeholder-image.png', { type: blob.type });
                 const formEntries = Array.from(formData.entries());
                 const formLength = formEntries.length;
 
