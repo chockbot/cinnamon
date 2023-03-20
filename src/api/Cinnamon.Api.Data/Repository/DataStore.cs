@@ -63,6 +63,8 @@ public class DataStore : IDataStore
 
     public IPayoutAccount PayoutAccount => new PayoutAccountEntity(applicationContext);
 
+    public IPayoutLog PayoutLog => new PayoutLogEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
@@ -432,6 +434,42 @@ public class DataStore : IDataStore
                 Id = 50,
                 CatergoryId = 7,
                 SubCatergory = "Fencing"
+            });
+            applicationContext.SubCategory.Add(new Entities.SubCategory
+            {
+                Id = 51,
+                CatergoryId = 2,
+                SubCatergory = "Others"
+            });
+            applicationContext.SubCategory.Add(new Entities.SubCategory
+            {
+                Id = 52,
+                CatergoryId = 3,
+                SubCatergory = "Others"
+            });
+            applicationContext.SubCategory.Add(new Entities.SubCategory
+            {
+                Id = 53,
+                CatergoryId = 4,
+                SubCatergory = "Others"
+            });
+            applicationContext.SubCategory.Add(new Entities.SubCategory
+            {
+                Id = 54,
+                CatergoryId = 5,
+                SubCatergory = "Others"
+            });
+            applicationContext.SubCategory.Add(new Entities.SubCategory
+            {
+                Id = 55,
+                CatergoryId = 6,
+                SubCatergory = "Others"
+            });
+            applicationContext.SubCategory.Add(new Entities.SubCategory
+            {
+                Id = 56,
+                CatergoryId = 7,
+                SubCatergory = "Others"
             });
         }
             await applicationContext.SaveChangesAsync();

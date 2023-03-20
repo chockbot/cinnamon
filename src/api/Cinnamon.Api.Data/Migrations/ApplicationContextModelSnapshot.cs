@@ -776,6 +776,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("BankChannel")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("ChangedBy")
                         .HasColumnType("integer");
 
@@ -800,6 +804,47 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("CustomerId");
 
                     b.ToTable("PayoutAccounts");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PayoutLog", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PurchaseOrderId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Remarks")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PayoutLogs");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PurchaseOrder", b =>
@@ -858,6 +903,8 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ActivityId");
 
                     b.HasIndex("ScheduleId");
+
+                    b.HasIndex("Status");
 
                     b.ToTable("PurchaseOrders");
                 });

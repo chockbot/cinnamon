@@ -6,4 +6,5 @@ public class CreateUpdatePayoutAccountResult
     public string AccountHolder {get; set;}
     public string AccountNumber {get; set;}
     public string Payload {get; set;}
+    public string BankChannel {get; set;}
 }

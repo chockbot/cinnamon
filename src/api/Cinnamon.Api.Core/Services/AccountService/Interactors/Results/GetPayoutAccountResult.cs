@@ -6,4 +6,5 @@ public class GetPayoutAccountResult
     public string AccountNumber {get; set;}
     public string AccountHolder {get; set;}
     public string Payload {get; set;}
+    public string BankChannel {get; set;}
 }

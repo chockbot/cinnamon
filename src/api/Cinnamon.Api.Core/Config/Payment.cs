@@ -11,6 +11,7 @@ public class Payment
         public string Name {get; set;}
         public IEnumerable<Setting> Settings {get; set;}
         public IEnumerable<PaymentMethod> PaymentMethods {get; set;}
+        public IEnumerable<PaymentChannel> PaymentChannels {get; set;}
 
         public class Setting 
         {
@@ -32,6 +33,12 @@ public class Payment
                 public bool Active {get; set;}
                 public string Type {get; set;}
             }
+        }
+
+        public class PaymentChannel 
+        {
+            public string Name {get; set;}
+            public string Code {get; set;}
         }
     }
 }

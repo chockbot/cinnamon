@@ -44,6 +44,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IFailedLoginData, Modules.DataAccess.FailedLogin.FailedLoginData>();
         services.AddTransient<Modules.DataAccess.Handlers.IRequestRefundData, Modules.DataAccess.RequestRefund.RequestRefundData>();
         services.AddTransient<Modules.DataAccess.Handlers.IPayoutAccountData, Modules.DataAccess.PayoutAccount.PayoutAccountData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IPayoutLogData, Modules.DataAccess.PayoutLog.PayoutLogData>();
 
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -135,6 +136,7 @@ public static class ServiceExtenstion
         // payment gateways
         services.AddTransient<Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();
         services.AddTransient<Services.PaymentGatewayService.Handlers.IVerifyCallbackHandler, Services.PaymentGatewayService.Zendit.VerifyCallbackHandler>();
+        services.AddTransient<Services.PaymentGatewayService.Handlers.IGetPaymentChannelsHandler, Services.PaymentGatewayService.GetPaymentChannelsHander>();
         
         return services;
     }

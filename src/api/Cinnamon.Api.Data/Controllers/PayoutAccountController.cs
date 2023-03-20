@@ -114,7 +114,7 @@ public class PayoutAccountController : ControllerBase
     {
         try
         {
-            var result = await payoutAccountRepository.Create(args.CustomerId, args.AccountNumber, args.AccountHolder, args.Payload ?? string.Empty);
+            var result = await payoutAccountRepository.Create(args.CustomerId, args.AccountNumber, args.AccountHolder, args.Payload ?? string.Empty, args.BankChannel);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -136,7 +136,7 @@ public class PayoutAccountController : ControllerBase
     {
         try
         {
-            var result = await payoutAccountRepository.Update(args.Id, args.AccountNumber, args.AccountHolder, args.Payload);
+            var result = await payoutAccountRepository.Update(args.Id, args.AccountNumber, args.AccountHolder, args.Payload, args.BankChannel);
 
             if (!result.Succeeded || result.Result == null)
             {

@@ -1106,7 +1106,8 @@ public class AccountController : ControllerBase
         {
             var result = await createUpdatePayoutAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.CreateUpdatePayoutAccountArgs {
                 AccountHolder = args.AccountHolder,
-                AccountNumber = args.AccountNumber
+                AccountNumber = args.AccountNumber,
+                BankChannel = args.BankChannel
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1118,7 +1119,8 @@ public class AccountController : ControllerBase
                 Result = new PayoutAccountDTO {
                     AccountHolder = result.Result.AccountHolder,
                     AccountNumber = result.Result.AccountNumber,
-                    Id = result.Result.Id
+                    Id = result.Result.Id,
+                    BankChannel = result.Result.BankChannel
                 },
                 IsSuccess = true
             });
@@ -1150,7 +1152,8 @@ public class AccountController : ControllerBase
                     AccountHolder = result.Result.AccountHolder,
                     // masked the account number
                     AccountNumber = maskedAccount,
-                    Id = result.Result.Id
+                    Id = result.Result.Id,
+                    BankChannel = result.Result.BankChannel
                 },
                 IsSuccess = true
             });
