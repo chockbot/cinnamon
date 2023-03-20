@@ -152,23 +152,6 @@
             <input type="number" class="form-control @RequiredCheck(Model.Activity.MinimumAge.ToString())"
                    placeholder="Minimum Age" required @bind="Model.Activity.MinimumAge" />
             <label class="fw-bold">
-                Can adults join?:
-            </label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value="true"
-                       checked="@Model.Activity.CanAdultsJoin" @oninput="CheckboxChanged">
-                <label class="form-check-label" for="yes">
-                    Yes
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value="false"
-                       checked="@(!Model.Activity.CanAdultsJoin)" @oninput="CheckboxChanged">
-                <label class="form-check-label" for="no">
-                    No
-                </label>
-            </div>
-            <label class="fw-bold">
                 Levels of Activity:
             </label>
             <select class="form-control @RequiredCheck(Model.Activity.ActivityLevel)" @bind="Model.Activity.ActivityLevel">
