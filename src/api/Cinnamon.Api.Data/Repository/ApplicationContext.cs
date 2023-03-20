@@ -56,6 +56,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<PayoutAccount> PayoutAccounts {get; set;}
 
+    public DbSet<PayoutLog> PayoutLogs {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -162,6 +164,9 @@ public class ApplicationContext : IdentityDbContext
 
         // payout account
         modelBuilder.Entity<PayoutAccount>().HasIndex(p => p.CustomerId);
+
+        // purchase order
+        modelBuilder.Entity<PurchaseOrder>().HasIndex(p => p.Status);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
