@@ -19,5 +19,6 @@ public class GetAllActivities
     public bool? IncludeCustomer {get; set;}
     public int? ExperienceCategoryId { get; set; }
     public string? SearchValue { get; set; }
+    public bool? IncludeStudents { get; set; }
 
 }

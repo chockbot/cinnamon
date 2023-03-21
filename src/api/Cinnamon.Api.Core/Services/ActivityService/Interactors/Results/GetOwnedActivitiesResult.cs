@@ -36,6 +36,8 @@ public class GetOwnedActivitiesResult
         public string CityName { get; set; }
         public string RegionName { get; set; }
         public string BarangayName { get; set; }
+        public int OngoingStudents { get; set; }
+        public int CompletedStudents { get; set; }
         public IEnumerable<string> SearchTags {get; set;}
         public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
         public IEnumerable<ActivityImage> Images {get; set;}

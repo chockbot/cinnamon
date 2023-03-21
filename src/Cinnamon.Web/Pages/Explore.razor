@@ -311,17 +311,25 @@
                                                                 </div>
                                                             </a>
                                                             <div class="card-container">
-                                                                <div class="card-body1 text-start">
-                                                                    <div>
-                                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                                        @if (@act.ExperienceTypeId == 1)
-                                                                        {
-                                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
-                                                                        }
-                                                                        else
-                                                                        {
-                                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                                        }
+                                                                <div class="row text-start">
+                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 title-section">
+                                                                        <div>
+                                                                            <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                                            @if (@act.ExperienceTypeId == 1)
+                                                                            {
+                                                                                <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                                        <div class="active-badge" style="text-align:center">
+                                                                            <span class="pulse"></span>
+                                                                            <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row price-badge-section">
@@ -470,18 +478,26 @@
 
                                             </div>
                                             <div class="card-container">
-                                                <div class="card-body1 text-start">
-                                                    <div>
-                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                        @if (@act.ExperienceTypeId == 1)
-                                                        {
-                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
-                                                        }
-                                                        else
-                                                        {
-                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                        }
+                                                <div class="row text-start">
+                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 title-section">
+                                                        <div>
+                                                            <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                            @if (@act.ExperienceTypeId == 1)
+                                                            {
+                                                                <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                            }
+                                                        </div>
                                                     </div>
+                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                        <div class="active-badge" style="text-align:center">
+                                                            <span class="pulse"></span>
+                                                            <span class="active-tag-label">@act.OngoingStudents</span>
+                                                        </div>
+                                                   </div>
                                                 </div>
                                                 <div class="row price-badge-section">
                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
@@ -717,7 +733,8 @@
                 CountPerPage = itemsPerPage,
                 ExperienceCategoryId = experienceCategoryId,
                 SearchValue = searchValue,
-                IncludeCustomer = true
+                IncludeCustomer = true,
+                IncludeStudents = true
 
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
@@ -763,6 +780,8 @@
                                    CreatedBy = r.CreatedBy,
                                    Handler = r.Handler,
                                    IsNew = r.IsNew,
+                                   OngoingStudents = r.OngoingStudents,
+                                   CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
                         {
                                     return new ActivitySchedule
@@ -838,7 +857,7 @@
                 IsActive = true,
                 PageIndex = pageIndex,
                 CountPerPage = 20,
-
+                IncludeStudents = true
             });
         if (popularActivityList.Succeeded && popularActivityList.Result != null && popularActivityList.Result.IsSuccess)
         {
@@ -882,6 +901,8 @@
                                    CreatedBy = r.CreatedBy,
                                    Handler = r.Handler,
                                    IsNew = r.IsNew,
+                                   OngoingStudents = r.OngoingStudents,
+                                   CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
                     {
                                 return new ActivitySchedule

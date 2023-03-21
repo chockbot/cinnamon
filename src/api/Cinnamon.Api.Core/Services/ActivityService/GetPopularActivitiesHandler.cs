@@ -42,6 +42,7 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                 IncludeSubCategories = args.IncludeSubCategories,
                 PageIndex = args.PageIndex,
                 CountPerPage = args.CountPerPage,
+                IncludeStudents = args.IncludeStudents
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -121,7 +122,9 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                             Handler = e.Owner.Handler,
                             Id = e.Owner.Id
                         } : null,
-                        IsNew = e.IsNew
+                        IsNew = e.IsNew,
+                        OngoingStudents = e.OngoingStudents,
+                        CompletedStudents = e.CompletedStudents
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
