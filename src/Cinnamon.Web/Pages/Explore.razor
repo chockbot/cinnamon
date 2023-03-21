@@ -269,27 +269,7 @@
                                                                 }
                                                                 <div class="card-img-overlay">
                                                                     <div class="row">
-                                                                        <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9">
-                                                                            @if (act.IsNew)
-                                                                            {
-                                                                                <span class="d-none d-xl-block">
-                                                                                    <img src="images/new-xl.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-none d-lg-block d-xl-none">
-                                                                                    <img src="images/new-lg.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-none d-md-block d-lg-none">
-                                                                                    <img src="images/new-md.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-none d-sm-block d-md-none">
-                                                                                    <img src="images/new-sm.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-block d-sm-none">
-                                                                                    <img src="images/new-sm.png" class="new-badge" />
-                                                                                </span>
-                                                                            }
-                                                                        </div>
-                                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3 heart-badge-section">
+                                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 heart-badge-section">
                                                                             <span class="d-none d-xl-block">
                                                                                 <img src="images/heart-xl.png" />
                                                                             </span>
@@ -311,8 +291,27 @@
                                                                 </div>
                                                             </a>
                                                             <div class="card-container">
+                                                                <div class="row text-start star-pulse-section">
+                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                                        <img src="images/star-tag-small.png" class="star-tag-badge" />
+                                                                        <span>
+                                                                            @if (act.IsNew)
+                                                                            {
+                                                                                <i> New Experience</i>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <i> 4.1(10)</i>
+                                                                            }
+                                                                        </span>
+                                                                       
+                                                                    </div>
+                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                                        <img src="images/verified-badge.png" class="verified-badge" />
+                                                                    </div>
+                                                                </div>
                                                                 <div class="row text-start">
-                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 title-section">
+                                                                    <div class="title-section">
                                                                         <div>
                                                                             <h4 class="card-title1 mb-0">@act.Title</h4>
                                                                             @if (@act.ExperienceTypeId == 1)
@@ -325,32 +324,13 @@
                                                                             }
                                                                         </div>
                                                                     </div>
-                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                                        <div class="active-badge" style="text-align:center">
-                                                                            <span class="pulse"></span>
-                                                                            <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                        </div>
-                                                                    </div>
                                                                 </div>
                                                                 <div class="row price-badge-section">
                                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                         <div class="active-badge" style="text-align:center">
-                                                                            <span class="d-none d-xl-block active-tag-label">
-                                                                                <img src="images/star-xl.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-none d-lg-block d-xl-none active-tag-label">
-                                                                                <img src="images/star-lg.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-none d-md-block d-lg-none active-tag-label">
-                                                                                <img src="images/star-md.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-none d-sm-block d-md-none active-tag-label">
-                                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-block d-sm-none active-tag-label">
-                                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
+                                                                            <span class="pulse-complete"></span>
+                                                                            <span class="active-tag-label">@act.CompletedStudents</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -437,27 +417,7 @@
                                             </div>
                                             <div class="card-img-overlay">
                                                 <div class="row">
-                                                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9 activity-new-badge-section">
-                                                        @if (act.IsNew)
-                                                        {
-                                                            <span class="d-none d-xl-block">
-                                                                <img src="images/new-xl.png" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-none d-lg-block d-xl-none">
-                                                                <img src="images/new-lg.png" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-none d-md-block d-lg-none">
-                                                                <img src="images/new-md.png" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-none d-sm-block d-md-none">
-                                                                <img src="images/new-sm.svg" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-block d-sm-none">
-                                                                <img src="images/new-sm.svg" class="new-badge" />
-                                                            </span>
-                                                        }
-                                                    </div>
-                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3 activity-heart-badge-section">
+                                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 heart-badge-section">
                                                         <span class="d-none d-xl-block">
                                                             <img src="images/heart-xl.png" />
                                                         </span>
@@ -475,11 +435,29 @@
                                                         </span>
                                                     </div>
                                                 </div>
-
                                             </div>
                                             <div class="card-container">
+                                                <div class="row text-start star-pulse-section">
+                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                        <img src="images/star-tag-small.png" class="star-tag-badge" />
+                                                        <span>
+                                                            @if (act.IsNew)
+                                                            {
+                                                                <i> New Experience</i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i> 4.1(10)</i>
+                                                            }
+                                                        </span>
+
+                                                    </div>
+                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                        <img src="images/verified-badge.png" class="verified-badge" />
+                                                    </div>
+                                                </div>
                                                 <div class="row text-start">
-                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 title-section">
+                                                    <div class="title-section">
                                                         <div>
                                                             <h4 class="card-title1 mb-0">@act.Title</h4>
                                                             @if (@act.ExperienceTypeId == 1)
@@ -492,32 +470,13 @@
                                                             }
                                                         </div>
                                                     </div>
-                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                        <div class="active-badge" style="text-align:center">
-                                                            <span class="pulse"></span>
-                                                            <span class="active-tag-label">@act.OngoingStudents</span>
-                                                        </div>
-                                                   </div>
                                                 </div>
                                                 <div class="row price-badge-section">
                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                         <div class="active-badge" style="text-align:center">
-                                                            <span class="d-none d-xl-block active-tag-label">
-                                                                <img src="images/star-xl.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-none d-lg-block d-xl-none active-tag-label">
-                                                                <img src="images/star-lg.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-none d-md-block d-lg-none active-tag-label">
-                                                                <img src="images/star-md.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-none d-sm-block d-md-none active-tag-label">
-                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-block d-sm-none active-tag-label">
-                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                            </span>
+                                                            <span class="pulse-complete"></span>
+                                                            <span class="active-tag-label">@act.CompletedStudents</span>
                                                         </div>
                                                     </div>
                                                 </div>
