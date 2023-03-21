@@ -240,7 +240,8 @@
             IncludeActivityDescription = true,
             IncludeActivityImages = true,
             IncludeAtivitySchedules = true,
-            IsActive = true
+            IsActive = true,
+            IncludeStudents =  true
         }, token);
         if(ownedActivitiesRes.Succeeded && ownedActivitiesRes.Result != null && ownedActivitiesRes.Result.IsSuccess)
         {
@@ -265,6 +266,8 @@
                     IsSetSession = a.IsSetSession,
                     SessionName = a.SessionName,
                     IsNew = a.IsNew,
+                    OngoingStudents = a.OngoingStudents,
+                    CompletedStudents = a.CompletedStudents,
                     Images = a.Images.Select(i => {
                         return new ActivityImage {
                             Id = i.Id,
@@ -312,7 +315,8 @@
         var enrolledRes = await activityApiHandler.GetEnrolledActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetEnrolledActivitiesArgs {
             IncludeActivityAddress = true,
             IncludeActivityImages = true,
-            IncludeAtivitySchedules = true
+            IncludeAtivitySchedules = true,
+            IncludeStudents = true
         }, token);
         if(enrolledRes.Succeeded && enrolledRes.Result != null && enrolledRes.Result.IsSuccess)
         {
@@ -344,7 +348,9 @@
                         {
                             Id = s.Id,
                         };
-                    }).ToList()
+                    }).ToList(),
+                    OngoingStudents = a.OngoingStudents,
+                    CompletedStudents = a.CompletedStudents
                 };
             }).ToList();
         }

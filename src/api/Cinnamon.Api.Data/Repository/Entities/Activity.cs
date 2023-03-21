@@ -31,4 +31,5 @@ public class Activity : BaseEntity
     public virtual SubCategory SubCategory {get; set;}
     [ForeignKey("CreatedBy")]
     public virtual Customer Customer {get; set;}
+    public virtual IList<Student> Students {get; set; }
 }

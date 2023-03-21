@@ -51,19 +51,26 @@
                     </div>
                 </a>
                 <div class="card-container">
-                    <div class="card-body1 text-start">
-                        <div>
-                            <h4 class="card-title1 mb-0">@Activity.Title</h4>
-                            @if (@Activity.ExperienceTypeId == 1)
-                            {
-                                <p class="card-title2 mb-0 in-person">@Activity.CityName, @Activity.RegionName</p>
-                            }
-                            else
-                            {
-                                <p class="card-title2 mb-0 online">@(Activity.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                            }
+                    <div class="row text-start">
+                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 title-section">
+                            <div>
+                                <h4 class="card-title1 mb-0">@Activity.Title</h4>
+                                @if (@Activity.ExperienceTypeId == 1)
+                                {
+                                    <p class="card-title2 mb-0 in-person">@Activity.CityName, @Activity.RegionName</p>
+                                }
+                                else
+                                {
+                                    <p class="card-title2 mb-0 online">@(Activity.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                }
+                            </div>
                         </div>
-
+                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                            <div class="active-badge" style="text-align:center">
+                                <span class="pulse"></span>
+                                <span class="active-tag-label">@Activity.OngoingStudents</span>
+                            </div>
+                        </div>
                     </div>
                     <div class="row price-badge-section">
                         <div class="col-lg-7 col-md-7 col-sm-7 col-7"><p class="card-title3">@GetPriceLabel(Activity)</p></div>

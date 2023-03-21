@@ -2,6 +2,106 @@
     border:none;
 }
 
+.pulse {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #00ACEE;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
+
+    .pulse:hover {
+        animation: none;
+    }
+
+.pulse-complete {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #34A853;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
+
+    .pulse-complete:hover {
+        animation: none;
+    }
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@-webkit-keyframes pulse-complete {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse-complete {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+.active-badge {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
     .image-header {
