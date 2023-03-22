@@ -70,6 +70,7 @@ public class GetOwnedActivitiesResult
         {
             public int Id {get; set;}
             public string Handler {get; set;}
+            public int IsVerified { get; set; }
         }
     }
 }

@@ -241,7 +241,8 @@
             IncludeActivityImages = true,
             IncludeAtivitySchedules = true,
             IsActive = true,
-            IncludeStudents =  true
+            IncludeStudents =  true,
+            IncludeCustomer = true
         }, token);
         if(ownedActivitiesRes.Succeeded && ownedActivitiesRes.Result != null && ownedActivitiesRes.Result.IsSuccess)
         {
@@ -275,6 +276,10 @@
                             Name = i.Name
                         };
                     }).ToList(),
+                    Owner = new CustomerProfile
+                    {
+                        IsVerified = a.Owner.IsVerified
+                    },
                     ActivitySchedules = a.ActivitySchedules.Select(e =>
                     {
                         return new ActivitySchedule

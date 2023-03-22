@@ -122,7 +122,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivityImage>(),
                         Owner = e.Owner != null ? new GetAllActivitiesResult.Activity.CustomerOwner {
                             Handler = e.Owner.Handler,
-                            Id = e.Owner.Id
+                            Id = e.Owner.Id,
+                            IsVerified = e.Owner.IsVerified,
                         } : null,
                         IsNew = e.IsNew,
                         CompletedStudents = e.CompletedStudents,

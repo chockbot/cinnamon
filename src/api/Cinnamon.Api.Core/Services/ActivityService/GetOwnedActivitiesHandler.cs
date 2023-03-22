@@ -125,7 +125,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivityImage>(),
                         Owner = a.Owner != null ? new GetOwnedActivitiesResult.Activity.CustomerOwner {
                             Handler = a.Owner.Handler,
-                            Id = a.Owner.Id
+                            Id = a.Owner.Id,
+                            IsVerified = a.Owner.IsVerified,
                         } : null
                     };
                 })
