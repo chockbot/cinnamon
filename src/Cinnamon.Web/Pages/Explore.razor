@@ -262,7 +262,7 @@
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card">
-                                                            <a class="button" href="/explore/@act.ActivityId" style="text-decoration:none;">
+                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
                                                                 @if (act.Images.Count > 0)
                                                                 {
                                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
@@ -304,10 +304,13 @@
                                                                                 <i> 4.1(10)</i>
                                                                             }
                                                                         </span>
-                                                                       
+
                                                                     </div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                                        <img src="images/verified-badge.png" class="verified-badge" />
+                                                                        @if (act?.Owner?.IsVerified == 2)
+                                                                        {
+                                                                            <img src="images/verified-badge.png" class="verified-badge" />
+                                                                        }
                                                                     </div>
                                                                 </div>
                                                                 <div class="row text-start">
@@ -456,7 +459,10 @@
 
                                                     </div>
                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                        <img src="images/verified-badge.png" class="verified-badge" />
+                                                        @if (act?.Owner?.IsVerified == 2)
+                                                        {
+                                                            <img src="images/verified-badge.png" class="verified-badge" />
+                                                        }
                                                     </div>
                                                 </div>
                                                 <div class="row text-start">
@@ -748,19 +754,19 @@
                                    OngoingStudents = r.OngoingStudents,
                                    CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
-                        {
-                                    return new ActivitySchedule
-                                    {
-                                        Id = e.Id,
-                                        Name = e.Name,
-                                        PerUnit1 = e.PerUnit1,
-                                        PerUnit2 = e.PerUnit2,
-                                        Price = e.Price,
-                                        PriceUnit1 = e.PriceUnit1,
-                                        PriceUnit2 = e.PriceUnit2,
-                                        UnitPrice = e.UnitPrice
-                                    };
-                                }).ToList(),
+                    {
+                                return new ActivitySchedule
+                                {
+                                    Id = e.Id,
+                                    Name = e.Name,
+                                    PerUnit1 = e.PerUnit1,
+                                    PerUnit2 = e.PerUnit2,
+                                    Price = e.Price,
+                                    PriceUnit1 = e.PriceUnit1,
+                                    PriceUnit2 = e.PriceUnit2,
+                                    UnitPrice = e.UnitPrice
+                                };
+                            }).ToList(),
                                    Images = r.Images.Select(i =>
 {
         return new ActivityImage
@@ -770,6 +776,10 @@
             Name = i.Name
         };
     }).ToList(),
+                                   Owner = new CustomerProfile
+                                   {
+                                       IsVerified = r.Owner.IsVerified
+                                   }
                                };
                        }).OrderBy(a => a.Guid).ToList();
 
@@ -822,7 +832,8 @@
                 IsActive = true,
                 PageIndex = pageIndex,
                 CountPerPage = 20,
-                IncludeStudents = true
+                IncludeStudents = true,
+                IncludeCustomer = true
             });
         if (popularActivityList.Succeeded && popularActivityList.Result != null && popularActivityList.Result.IsSuccess)
         {
@@ -869,19 +880,19 @@
                                    OngoingStudents = r.OngoingStudents,
                                    CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
-                    {
-                                return new ActivitySchedule
-                                {
-                                    Id = e.Id,
-                                    Name = e.Name,
-                                    PerUnit1 = e.PerUnit1,
-                                    PerUnit2 = e.PerUnit2,
-                                    Price = e.Price,
-                                    PriceUnit1 = e.PriceUnit1,
-                                    PriceUnit2 = e.PriceUnit2,
-                                    UnitPrice = e.UnitPrice
-                                };
-                            }).ToList(),
+                        {
+                                    return new ActivitySchedule
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                        PerUnit1 = e.PerUnit1,
+                                        PerUnit2 = e.PerUnit2,
+                                        Price = e.Price,
+                                        PriceUnit1 = e.PriceUnit1,
+                                        PriceUnit2 = e.PriceUnit2,
+                                        UnitPrice = e.UnitPrice
+                                    };
+                                }).ToList(),
                                    Images = r.Images.Select(i =>
 {
         return new ActivityImage
@@ -891,6 +902,10 @@
             Name = i.Name
         };
     }).ToList(),
+                                   Owner = new CustomerProfile
+                                   {
+                                       IsVerified = r.Owner.IsVerified
+                                   }
                                };
                        }).ToList();
 

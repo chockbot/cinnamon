@@ -616,7 +616,8 @@ public class ActivityController : ControllerBase
                         CompletedStudents = a.CompletedStudents,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
-                            Id  = a.Owner.Id
+                            Id  = a.Owner.Id,
+                            IsVerified = a.Owner.IsVerified,
                         } : null
                     };
                 })
@@ -728,7 +729,8 @@ public class ActivityController : ControllerBase
                         SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
-                            Id  = a.Owner.Id
+                            Id  = a.Owner.Id,
+                            IsVerified= a.Owner.IsVerified,
                         } : null,
                         IsNew = a.IsNew,
                         CompletedStudents = a.CompletedStudents,
@@ -1502,7 +1504,8 @@ public class ActivityController : ControllerBase
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
-                            Id = a.Owner.Id
+                            Id = a.Owner.Id,
+                            IsVerified = a.Owner.IsVerified,
                         } : null,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
