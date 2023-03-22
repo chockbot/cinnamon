@@ -329,8 +329,11 @@
                                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                         <div class="active-badge" style="text-align:center">
-                                                                            <span class="pulse-complete"></span>
-                                                                            <span class="active-tag-label">@act.CompletedStudents</span>
+                                                                            @if (act.OngoingStudents > 0)
+                                                                            {
+                                                                                <span class="pulse"></span>
+                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                            }
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -475,8 +478,11 @@
                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                         <div class="active-badge" style="text-align:center">
-                                                            <span class="pulse-complete"></span>
-                                                            <span class="active-tag-label">@act.CompletedStudents</span>
+                                                            @if (act.OngoingStudents > 0)
+                                                            {
+                                                                <span class="pulse"></span>
+                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>

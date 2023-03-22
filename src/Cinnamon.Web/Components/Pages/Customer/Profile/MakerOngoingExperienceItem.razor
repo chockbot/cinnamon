@@ -68,8 +68,11 @@
                         <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9 price-section"><p class="card-title3">@GetPriceLabel(Activity)</p></div>
                         <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3 active-badge-section">
                             <div class="active-badge" style="text-align:center">
-                                <span class="pulse-complete"></span>
-                                <span class="active-tag-label">@Activity.CompletedStudents</span>
+                                @if (Activity.OngoingStudents > 0)
+                                {
+                                    <span class="pulse"></span>
+                                    <span class="active-tag-label">@Activity.OngoingStudents</span>
+                                }
                             </div>
                         </div>
                     </div>
