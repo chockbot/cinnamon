@@ -103,7 +103,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                         Id = s.FamilyMemberId,
                         Name = s.Name
                     };
-                })
+                }),
+                PaymentMethod = args.PaymentMethod,
+                PaymentChannel = args.PaymentChannel ?? string.Empty
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -115,7 +117,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 CustomerId = id,
                 OverallTotal = overallTotal,
                 ScheduleId = args.ScheduleId,
-                Total = subTotal + fee,
+                Total = subTotal,
                 Status = (int)TransactionStatus.Pending,
                 Payload = serializedPayload
             });

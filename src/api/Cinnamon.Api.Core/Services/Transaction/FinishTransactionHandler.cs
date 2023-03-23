@@ -100,6 +100,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
 
+            var referenceId = "000000000000000".Substring(purchaseOrder.Id.ToString().Length) + purchaseOrder.Id;
+
             // send email notification for customer
             var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
                 Amount = purchaseOrder.Total,
@@ -113,7 +115,9 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                     return new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs.IncludedMembers {
                         Name = s.Name,
                     };
-                })
+                }),
+                PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
+                ReferenceNumber = referenceId
             });
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
@@ -132,7 +136,9 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                     return new Modules.NotificationDriver.Interactors.MakerEnrolledNotificationArgs.IncludedStudents {
                         Name = s.Name
                     };
-                })
+                }),
+                PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
+                ReferenceNumber = referenceId
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {
@@ -150,6 +156,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     class PayloadData 
     {
         public IEnumerable<Student> Students {get; set;}
+        public string PaymentMethod {get; set;}
+        public string PaymentChannel {get; set;}
     }
 
     class Student 
