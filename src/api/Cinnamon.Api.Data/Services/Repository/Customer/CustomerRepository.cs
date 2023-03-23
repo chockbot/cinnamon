@@ -245,7 +245,9 @@ public class CustomerRepository : ICustomerRepository
                     IsOG = c.IsOG,
                     IsOfficial = c.IsOfficialPartner,
                     ProfileImg = c.ProfilePath,
-                    Handler = c.Handler
+                    Handler = c.Handler,
+                    BackIdImagePath = c.BackIdImagePath,
+                    FrontIdImagePath = c.FrontIdImagePath
                 };
             });
 
