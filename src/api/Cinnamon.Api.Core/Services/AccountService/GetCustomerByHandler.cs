@@ -50,6 +50,8 @@ public class GetCustomerByHandler : IGetCustomerByHandler
                 Id = result.Result.Result.Id,
                 IsMaker = result.Result.Result.IsMaker,
                 IsVerified = result.Result.Result.IsVerified,
+                IsOG = result.Result.Result.IsOG,
+                IsOfficial = result.Result.Result.IsOfficial,
                 ProfileImg = result.Result.Result.ProfileImg,
                 About = result.Result.Result.About
 

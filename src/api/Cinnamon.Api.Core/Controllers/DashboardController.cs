@@ -1,8 +1,9 @@
- using Cinnamon.Api.Core.Services.DashboardService.Handlers;
+using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Badges;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,10 +21,11 @@ public class DashboardController : ControllerBase
     private readonly IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler;
     private readonly ICreateStudentAttendanceHandler createStudentAttendanceHandler;
     private readonly IUpdateAttendanceHandler updateAttendanceHandler;
+    private readonly IGetAllBadgesHandler getAllBadgesHandler;
 
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
-        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler)
+        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
@@ -32,6 +34,7 @@ public class DashboardController : ControllerBase
         this.getAllStudentAttendanceByIdHandler = getAllStudentAttendanceByIdHandler;
         this.createStudentAttendanceHandler = createStudentAttendanceHandler;
         this.updateAttendanceHandler = updateAttendanceHandler;
+        this.getAllBadgesHandler = getAllBadgesHandler;
     }
 
     [Route("GetActivitySchedules")]
@@ -316,4 +319,40 @@ public class DashboardController : ControllerBase
             return new JsonResult(new UpdateAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+    [Route("GetAllBadges")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllBadgesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllBadges()
+    {
+        try
+        {
+            var result = await getAllBadgesHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetAllBadgeArgs { });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllBadgesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetAllBadgesResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Badges.Select(e => {
+                    return new BadgeDTO
+                    {
+                        Id      = e.Id,
+                        Name    = e.Name,
+                        Description = e.Description,
+                        NumberOfStudent = e.NumberOfStudent,
+                        NumberOfCompleted = e.NumberOfCompleted,
+                        NumberOfReviews = e.NumberOfReviews,
+                        ImgScr = e.ImgScr,
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllBadgesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
 }

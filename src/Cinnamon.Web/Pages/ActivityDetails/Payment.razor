@@ -14,6 +14,7 @@
 @inject IAccountApiHandler accountApiHandler;
 @inject IActivityApiHandler activityApiHandler;
 @inject ITransactionApiHandler transactionApiHandler;
+@inject IDashboardApiHandler dashboardApiHandler
 
 
 @if(Model != null)
@@ -287,7 +288,26 @@
                                 </div>
                                 <div class="ms-5 verified-logo">
                                     @if(activity.Owner.IsVerified == 2){
-                                        <img src="images/VerifiedIcon.png" alt="verified-logo" title="For uploading and completing all identification requirements.">
+                                        <img src="images/Badges/VERIFIED.svg" alt="verified-logo" title="For uploading and completing all identification requirements.">
+                                    }
+                                    @if(activity.Owner.IsOG == true){
+                                        <img src="images/Badges/OG.svg" alt="verified-logo" title="For being part of the alpha and beta testing.">
+                                    }
+                                    @if (activity.Owner.IsOfficial == true)
+                                    {
+                                        <img src="images/Badges/OFFICIAL PARTNER.svg" alt="verified-logo" title="Legitimate experience provider in the platform.">
+                                    }
+                                    @if(MakerCompletedStudent >= 10 || MakerCompletedStudent < 25){
+                                        var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                        <img class="verified-logo" src="@rare.ImgScr" data-toggle="tooltip" data-placement="top" title="@rare.Description" />
+                                    }
+                                    @if(MakerCompletedStudent >= 25 || MakerCompletedStudent < 100){
+                                        var epic = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                        <img class="verified-logo" src="@epic.ImgScr" data-toggle="tooltip" data-placement="top" title="@epic.Description" />
+                                    }
+                                    @if(MakerCompletedStudent >= 100){
+                                        var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                                        <img class="verified-logo" src="@legendary.ImgScr" data-toggle="tooltip" data-placement="top" title="@legendary.Description" />
                                     }
                                 </div>
                             </div>
@@ -400,6 +420,12 @@
     private SchedulesModal ModalSched { get; set; }
 
     public AddChildrenModal AddChildrenModal { get; set; }
+
+    public List<BadgeList> badges = new List<BadgeList>();
+
+    public List<Activity> activities = new List<Activity>();
+    public int MakerOngoingStudennt { get; set; }
+    public int MakerCompletedStudent { get; set; }
 
     public bool isLoaded { get; set; } = false;
 
@@ -544,9 +570,11 @@
                     Id = result.Owner.Id,
                     Handler = result.Owner.Handler,
                     ProfilePath = result.Owner.ImageSrc,
-                    FirstName = result.Owner.FirstName,
+                    FirstName = result.Owner.FirstName,   
                     LastName = result.Owner.LastName,
                     IsVerified = result.Owner.IsVerified,
+                    IsOG = result.Owner.IsOG,
+                    IsOfficial = result.Owner.IsOfficial
                 } : null
             };
         var selectedSchedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
@@ -606,6 +634,7 @@
                 LastName = profile.LastName,
                 IsVerified = profile.IsVerified,
                 ProfilePath = profile.ProfileImg
+
             },
             SelectedSchedule = new ActivitySchedule {
                 DateTime = selectedSchedule.DateTime,
@@ -632,6 +661,50 @@
             { new PaymentOption {DisplayName = "GCASH", PaymentChannel = "GCASH", PaymentMethod = "EWALLET", Code = "GCASH"}},
             { new PaymentOption {DisplayName = "CARD", PaymentChannel = "CARD", PaymentMethod = "CARD", Code = "CARD"}}
         };
+
+        //Get Badges
+        var badgeList = await dashboardApiHandler.GetAllBadge();
+        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
+        {
+            badges = badgeList.Result.Result.Select(b =>
+            {
+                return new BadgeList
+                    {
+                        Id = b.Id,
+                        Name = b.Name,
+                        Description = b.Description,
+                        NumberOfStudent = b.NumberOfStudent,
+                        NumberOfCompleted = b.NumberOfCompleted,
+                        NumberOfReviews = b.NumberOfReviews,
+                        ImgScr = b.ImgScr
+                    };
+            }).ToList();
+        }
+
+        //Get Maker Activity
+        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+            {
+                CustomerId = activity.CreatedBy,
+                IncludeStudents = true,
+                IsActive = true,
+            });
+        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
+        {
+            if (ActivityList.Result.Result.Count() > 0)
+            {
+                activities = ActivityList.Result.Result.Select(r =>
+                {
+                    return new Activity
+                        {
+                            Id = r.ActivityId,
+                            OngoingStudents = r.OngoingStudents,
+                            CompletedStudents = r.CompletedStudents,
+                        };
+                }).ToList();
+            }
+        }
+        MakerOngoingStudennt = activities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
     }
 
     private void OnClickChange()

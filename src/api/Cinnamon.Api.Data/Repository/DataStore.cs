@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Repository.DbSets;
+using Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Repository;
 
@@ -64,6 +65,8 @@ public class DataStore : IDataStore
     public IPayoutAccount PayoutAccount => new PayoutAccountEntity(applicationContext);
 
     public IPayoutLog PayoutLog => new PayoutLogEntity(applicationContext);
+
+    public IBadgeList BadgeList => new BadgeListEntity(applicationContext);
 
     public IAdminUser AdminUser => new AdminUserEntity(applicationContext);
 
@@ -474,6 +477,82 @@ public class DataStore : IDataStore
                 SubCatergory = "Others"
             });
         }
-            await applicationContext.SaveChangesAsync();
+
+        var makerBadge = await applicationContext.BadgeList.FirstOrDefaultAsync();
+        if (makerBadge == null)
+        {
+            applicationContext.BadgeList.Add(new Entities.BadgeList
+            {
+                Id = 1,
+                Name = "Rare Cinnamon Maker",
+                Description = "Completed \"10\" number of students.",
+                NumberOfCompletedStudent = 10,
+                NumberOfEnrolledStudent = 0,
+                NumberOfReviews = 0,
+                ImgScr = "images/Badges/RARE.svg"
+            });
+            applicationContext.BadgeList.Add(new Entities.BadgeList
+            {
+                Id = 2,
+                Name = "Epic Cinnamon Maker",
+                Description = "Completed \"25\" number of students and receive \"10\" reviews.",
+                NumberOfCompletedStudent = 25,
+                NumberOfEnrolledStudent = 0,
+                NumberOfReviews = 10,
+                ImgScr = "images/Badges/EPIC.svg"
+            });
+            applicationContext.BadgeList.Add(new Entities.BadgeList
+            {
+                Id = 3,
+                Name = "Legendary Cinnamon Maker",
+                Description = "Completed \"100\" number of students and receive \"25\" reviews or more.",
+                NumberOfCompletedStudent = 100,
+                NumberOfEnrolledStudent = 0,
+                NumberOfReviews = 25,
+                ImgScr = "images/Badges/LEGENDARY.svg"
+            });
+            applicationContext.BadgeList.Add(new Entities.BadgeList
+            {
+                Id = 4,
+                Name = "High Demand",
+                Description = "First 50 sign-ups enrolled in his/her experience.",
+                NumberOfCompletedStudent = 0,
+                NumberOfEnrolledStudent = 50,
+                NumberOfReviews = 0,
+                ImgScr = "images/Badges/HIGH DEMAND.svg"
+            });
+            applicationContext.BadgeList.Add(new Entities.BadgeList
+            {
+                Id = 5,
+                Name = "Favorite Partner",
+                Description = "5 students enrolled more than once.",
+                NumberOfCompletedStudent = 0,
+                NumberOfEnrolledStudent = 0,
+                NumberOfReviews = 0,
+                ImgScr = "images/Badges/FAVORITE PARTNER.svg"
+            });
+            applicationContext.BadgeList.Add(new Entities.BadgeList
+            {
+                Id = 6,
+                Name = "Idea Generator",
+                Description = "Sent 5 feedbacks or suggestions.",
+                NumberOfCompletedStudent = 0,
+                NumberOfEnrolledStudent = 0,
+                NumberOfReviews = 0,
+                ImgScr = "images/Badges/IDEA GENERATOR.svg"
+            });
+            applicationContext.BadgeList.Add(new Entities.BadgeList
+            {
+                Id = 7,
+                Name = "Viral Profile",
+                Description = "One of the most visited profile in the platform.",
+                NumberOfCompletedStudent = 0,
+                NumberOfEnrolledStudent = 0,
+                NumberOfReviews = 0,
+                ImgScr = "images/Badges/VIRAL PROFILE.svg"
+            });
+        }
+
+        await applicationContext.SaveChangesAsync();
     }
 }

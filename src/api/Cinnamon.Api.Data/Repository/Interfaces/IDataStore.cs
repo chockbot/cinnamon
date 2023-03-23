@@ -24,6 +24,7 @@ public interface IDataStore
     IRegion Region { get; }
     ICity City { get; }
     IBarangay Barangay{ get; }
+    IBadgeList BadgeList { get; }
     IFailedLogin FailedLogin { get; }
     IRequestRefund RequestRefund { get; }
     IPayoutAccount PayoutAccount {get;}

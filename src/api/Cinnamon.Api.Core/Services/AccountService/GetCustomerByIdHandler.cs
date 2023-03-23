@@ -52,6 +52,8 @@ public class GetCustomerByIdHandler : IGetCustomerByIdHandler
                 LastName = result.Result.Result.LastName,
                 IsMaker = result.Result.Result.IsMaker,
                 IsVerified = result.Result.Result.IsVerified,
+                IsOG = result.Result.Result.IsOG,
+                IsOfficial = result.Result.Result.IsOfficial,
                 ProfileImg = result.Result.Result.ProfileImg,
                 Id = result.Result.Result.Id
             }, "Successfully getting customer information");

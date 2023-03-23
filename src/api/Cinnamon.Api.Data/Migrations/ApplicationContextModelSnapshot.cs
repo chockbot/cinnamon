@@ -400,6 +400,54 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("AdminUsers");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.BadgeList", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ImgScr")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("NumberOfCompletedStudent")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfEnrolledStudent")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("NumberOfReviews")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("BadgeList");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Barangay", b =>
                 {
                     b.Property<int>("Id")
@@ -525,6 +573,12 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("IsMaker")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOG")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsOfficialPartner")
                         .HasColumnType("boolean");
 
                     b.Property<int>("IsVerifiedBadge")

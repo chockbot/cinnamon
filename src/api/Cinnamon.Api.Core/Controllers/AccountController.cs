@@ -743,7 +743,9 @@ public class AccountController : ControllerBase
                     LastName = objResult.LastName,
                     IsVerified = objResult.IsVerified,
                     ProfileImg = objResult.ProfileImg,
-                    About = objResult.About
+                    About = objResult.About,
+                    IsOG = objResult.IsOG,
+                    IsOfficial = objResult.IsOfficial
                 },
                 IsSuccess = true,
             });
@@ -782,7 +784,9 @@ public class AccountController : ControllerBase
                     IsVerified = objResult.IsVerified,
                     LastName = objResult.LastName,
                     ProfileImg = objResult.ProfileImg,
-                    About = objResult.About
+                    About = objResult.About,
+                    IsOG = objResult.IsOG,
+                    IsOfficial = objResult.IsOfficial,
                 },
                 IsSuccess = true,
             });
@@ -825,7 +829,9 @@ public class AccountController : ControllerBase
                     ExternalLogin = objResult.ExternalLogin,
                     IsMaker = objResult.IsMaker,
                     LastName = objResult.LastName,
-                    ProfileImg = objResult.ProfileImg
+                    ProfileImg = objResult.ProfileImg,
+                    IsOfficial = objResult.IsOfficial,
+                    IsOG = objResult.IsOG,
                 },
                 IsSuccess = true,
             });

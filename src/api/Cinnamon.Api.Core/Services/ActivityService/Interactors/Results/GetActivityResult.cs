@@ -74,5 +74,7 @@ public class GetActivityResult
         public string Email {get; set;}
         public string ImageSrc {get; set;}
         public int IsVerified { get; set; }
+        public bool IsOG { get; set; }
+        public bool IsOfficial { get; set; }
     }
 }

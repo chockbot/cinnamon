@@ -16,6 +16,8 @@ public class Customer : BaseEntity
     public bool IsMaker {get; set;}
     public bool ExternalLogin {get; set;}
     public int IsVerifiedBadge { get; set; }
+    public bool IsOG { get; set; }
+    public bool IsOfficialPartner { get; set; }
     public string? FrontIdImagePath {get; set;}
     public string? BackIdImagePath {get; set;}
     public string Handler {get; set;}

@@ -499,6 +499,8 @@ public class ActivityRepository : IActivityRepository
                         Id = customer.Id,
                         IsMaker = customer.IsMaker,
                         IsVerified = customer.IsVerifiedBadge,
+                        IsOG = customer.IsOG,
+                        IsOfficial = customer.IsOfficialPartner,
                         LastName = customer.LastName,
                         ProfileImg = customer.ProfilePath
                     };
@@ -700,6 +702,8 @@ public class ActivityRepository : IActivityRepository
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
                     IsVerified = customer.IsVerifiedBadge,
+                    IsOG = customer.IsOG,
+                    IsOfficial = customer.IsOfficialPartner,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -850,6 +854,8 @@ public class ActivityRepository : IActivityRepository
                     Id = customer.Id,
                     IsMaker = customer.IsMaker,
                     IsVerified = customer.IsVerifiedBadge,
+                    IsOG = customer.IsOG,
+                    IsOfficial = customer.IsOfficialPartner,
                     LastName = customer.LastName,
                     ProfileImg = customer.ProfilePath
                 };
@@ -1216,6 +1222,8 @@ public class ActivityRepository : IActivityRepository
                         Id = customer.Id,
                         IsMaker = customer.IsMaker,
                         IsVerified = customer.IsVerifiedBadge,
+                        IsOG = customer.IsOG,
+                        IsOfficial = customer.IsOfficialPartner,
                         LastName = customer.LastName,
                         ProfileImg = customer.ProfilePath
                     };
