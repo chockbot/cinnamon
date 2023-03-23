@@ -64,19 +64,19 @@
                             <div class="card-label d-flex align-items-center">
                                 @if(SelectedPaymentCode != "CARD")
                                 {
-                                    <img class="me-4" src="images/payment/credit-card.png" alt="icon">
+                                    <img class="me-4 h-auto" src="images/payment/credit-card.svg" alt="icon">
                                     <span class="font-16">Credit or Debit Card</span>
                                 }
                                 else
                                 {
                                     if(CardPaymentModel.CardNumber[0] == '2' || CardPaymentModel.CardNumber[0] == '5')
                                     {
-                                        <img class="me-4" src="images/payment/master-card.svg" alt="icon">
+                                        <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
                                         <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
                                     }
                                     else if(CardPaymentModel.CardNumber[0] == '4')
                                     {
-                                        <img class="me-4" src="images/payment/visa-card.svg" alt="icon">
+                                        <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
                                         <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
                                     }
                                     else 
@@ -88,10 +88,10 @@
                             <div class="card-icon d-flex align-items-center">
                                 @if(SelectedPaymentCode != "CARD")
                                 {
-                                    <img class="me-4 h-auto" style="width: 24px;" src="images/payment/visa-card.svg" alt="icon">
-                                    <img class="me-4 h-auto" style="width: 18px;" src="images/payment/master-card.svg" alt="icon">
+                                    <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
+                                    <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
                                 }
-                                <img class="h-auto" style="width: 8px;" src="images/payment/credit-card-arrow.png" alt="icon">
+                                <img class="h-auto" style="width: 8px;" src="images/payment/credit-card-arrow.svg" alt="icon">
                             </div>
                         </div>
                     </div>
@@ -106,7 +106,7 @@
                                         id="ewallet-gcash" name="ewallet" value="GCASH" class="me-3 checkbox-round"/>
                                 </div>
                                 <div class="col-2">
-                                    <img src="images/payment/gcash.svg" alt="icon">
+                                    <img class="ewallet-icon" src="images/payment/gcash.svg" alt="icon">
                                 </div>
                                 <div class="col d-flex flex-column ps-2">
                                     <p class="mb-0 font-16 color-black-100">Gcash</p>
@@ -123,7 +123,7 @@
                                         class="me-3 checkbox-round" id="ewallet-grabpay" name="ewallet" value="GRABPAY"/>
                                 </div>
                                 <div class="col-2">
-                                    <img src="images/payment/grabpay.svg" alt="icon">
+                                    <img class="ewallet-icon" src="images/payment/grabpay.svg" alt="icon">
                                 </div>
                                 <div class="col d-flex flex-column ps-2">
                                     <p class="mb-0 font-16 color-black-100">Grab Pay</p>
@@ -140,7 +140,7 @@
                                         class="me-3 checkbox-round" id="ewallet-shopeepay" name="ewallet" value="SHOPEEPAY"/>
                                 </div>
                                 <div class="col-2">
-                                    <img src="images/payment/shoppepay.svg" alt="icon">
+                                    <img class="ewallet-icon" src="images/payment/shoppepay.svg" alt="icon">
                                 </div>
                                 <div class="col d-flex flex-column ps-2">
                                     <p class="mb-0 font-16 color-black-100">Shopee Pay</p>
@@ -157,7 +157,7 @@
                                         class="me-3 checkbox-round" id="ewallet-maya" name="ewallet" value="PAYMAYA"/>
                                 </div>
                                 <div class="col-2">
-                                    <img src="images/payment/maya.svg" alt="icon">
+                                    <img class="ewallet-icon" src="images/payment/maya.svg" alt="icon">
                                 </div>
                                 <div class="col d-flex flex-column ps-2">
                                     <p class="mb-0 font-16 color-black-100">Maya</p>
