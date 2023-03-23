@@ -58,6 +58,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<PayoutLog> PayoutLogs {get; set;}
 
+    public DbSet<BadgeList> BadgeList { get; set; }
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -167,6 +169,9 @@ public class ApplicationContext : IdentityDbContext
 
         // purchase order
         modelBuilder.Entity<PurchaseOrder>().HasIndex(p => p.Status);
+        //badge 
+        modelBuilder.Entity<BadgeList>().HasIndex(c => c.Id);
+
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

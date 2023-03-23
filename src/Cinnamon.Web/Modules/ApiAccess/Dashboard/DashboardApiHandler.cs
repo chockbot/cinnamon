@@ -60,6 +60,26 @@ public class DashboardApiHandler : IDashboardApiHandler
         }
     }
 
+    public async Task<AppResult<GetAllBadgesResult>> GetAllBadge()
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Dashboard/GetAllBadges")
+                .GetJsonAsync<GetAllBadgesResult>();
+
+            return AppResult<GetAllBadgesResult>.CreateSucceeded(result, "Successfully getting all ongoing activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllBadgesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllBadgesResult>.CreateFailed(ex, "An error occured when getting all ongoing activities api");
+        }
+    }
+
     public async Task<AppResult<GetAllStudentAttendanceByIdResult>> GetAllStudentAttendanceById(GetAllStudentAttendanceByIdArgs args, string token)
     {
         try

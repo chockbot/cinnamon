@@ -148,7 +148,7 @@ public class CustomerRepository : ICustomerRepository
                 LastName = lastname,
                 IsVerifiedBadge = 0,
                 UserId = userId,
-                Handler = handler
+                Handler = handler,
             };
 
             var createdCustomerRes = await dataStore.Customer.Add(customer);
@@ -242,6 +242,8 @@ public class CustomerRepository : ICustomerRepository
                     Id = c.Id,
                     IsMaker = c.IsMaker,
                     IsVerified = c.IsVerifiedBadge,
+                    IsOG = c.IsOG,
+                    IsOfficial = c.IsOfficialPartner,
                     ProfileImg = c.ProfilePath,
                     Handler = c.Handler
                 };
@@ -279,6 +281,8 @@ public class CustomerRepository : ICustomerRepository
                     Id = c.Id,
                     IsMaker = c.IsMaker,
                     IsVerified = c.IsVerifiedBadge,
+                    IsOG = c.IsOG,
+                    IsOfficial = c.IsOfficialPartner,
                     ProfileImg = c.ProfilePath,
                     Handler =c.Handler
                 };
@@ -313,6 +317,8 @@ public class CustomerRepository : ICustomerRepository
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
                 IsVerified = result.Result.IsVerifiedBadge,
+                IsOG = result.Result.IsOG,  
+                IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler
             };
@@ -347,6 +353,8 @@ public class CustomerRepository : ICustomerRepository
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
                 IsVerified = result.Result.IsVerifiedBadge,
+                IsOG = result.Result.IsOG,
+                IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler
             };
@@ -381,6 +389,8 @@ public class CustomerRepository : ICustomerRepository
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
                 IsVerified = result.Result.IsVerifiedBadge,
+                IsOG = result.Result.IsOG,
+                IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler
             };

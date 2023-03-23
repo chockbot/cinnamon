@@ -26,6 +26,7 @@ public static class ServiceExtenstion
         services.AddTransient<IWaitList, WaitListEntity>();
         services.AddTransient<IStudent, StudentEntity>();
         services.AddTransient<IStudentAttendance, StudentAttendanceEntity>();
+        services.AddTransient<IBadgeList, BadgeListEntity>();
         services.AddTransient<IFailedLogin, FailedLoginEntity>();
         services.AddTransient<IDataStore, DataStore>();
 
@@ -53,6 +54,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IRequestRefundRepository, Services.Repository.RequestRefund.RequestRefundRepository>();
         services.AddTransient<Services.Repository.Interfaces.IPayoutAccountRepository, Services.Repository.PayoutAccount.PayoutAccountRepository>();
         services.AddTransient<Services.Repository.Interfaces.IPayoutLogRepository, Services.Repository.PayoutLog.PayoutLogRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IBadgeListRepository, Services.Repository.BadgeList.BadgeListRepository>();
 
         return services;
     }

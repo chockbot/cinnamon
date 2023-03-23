@@ -221,7 +221,14 @@
                                 </div>
                                 <div class="ms-5 verified-logo">
                                     @if(activity.Owner.IsVerified == 2){
-                                        <img src="images/VerifiedIcon.png" alt="verified-logo" title="For uploading and completing all identification requirements.">
+                                        <img src="images/Badges/VERIFIED.svg" alt="verified-logo" title="For uploading and completing all identification requirements.">
+                                    }
+                                    @if(activity.Owner.IsOG == true){
+                                        <img src="images/Badges/OG.svg" alt="verified-logo" title="For being part of the alpha and beta testing.">
+                                    }
+                                    @if (activity.Owner.IsOfficial == true)
+                                    {
+                                        <img src="images/Badges/OFFICIAL PARTNER.svg" alt="verified-logo" title="Legitimate experience provider in the platform.">
                                     }
                                 </div>
                             </div>
@@ -460,9 +467,11 @@
                     Id = result.Owner.Id,
                     Handler = result.Owner.Handler,
                     ProfilePath = result.Owner.ImageSrc,
-                    FirstName = result.Owner.FirstName,
+                    FirstName = result.Owner.FirstName,   
                     LastName = result.Owner.LastName,
                     IsVerified = result.Owner.IsVerified,
+                    IsOG = result.Owner.IsOG,
+                    IsOfficial = result.Owner.IsOfficial
                 } : null
             };
         var selectedSchedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
@@ -522,6 +531,7 @@
                 LastName = profile.LastName,
                 IsVerified = profile.IsVerified,
                 ProfilePath = profile.ProfileImg
+
             },
             SelectedSchedule = new ActivitySchedule {
                 DateTime = selectedSchedule.DateTime,

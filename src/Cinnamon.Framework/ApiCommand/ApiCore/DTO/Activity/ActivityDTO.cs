@@ -103,5 +103,7 @@ public class ActivityDTO
         public string FirstName {get; set;}
         public string LastName {get; set;}
         public int IsVerified { get; set; }
+        public bool IsOG { get; set; }
+        public bool IsOfficial { get; set; }
     }
 }

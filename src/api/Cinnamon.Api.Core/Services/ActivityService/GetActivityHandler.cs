@@ -40,7 +40,7 @@ public class GetActivityHandler : IGetActivityHandler
                     IncludeSearchTags = args.IncludeActivitySearchTags,
                     IsActive = args.IsActive,
                     CustomerId = args.CustomerId,
-                    IncludeCustomer = args.IncludeCustomer
+                    IncludeCustomer = args.IncludeCustomer,
                 }
             );
 
@@ -122,6 +122,8 @@ public class GetActivityHandler : IGetActivityHandler
                     Email = activity.Owner.Email,
                     ImageSrc = activity.Owner.ProfileImg ?? string.Empty,
                     IsVerified = activity.Owner.IsVerified,
+                    IsOG = activity.Owner.IsOG,
+                    IsOfficial = activity.Owner.IsOfficial,
                 } : null
             };
 

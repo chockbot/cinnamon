@@ -8,6 +8,7 @@
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 @using Microsoft.EntityFrameworkCore
 
 @if (Model.Customer != null){
@@ -164,8 +165,19 @@
                             </div>
                             @if (customerDetail.IsVerified == 2)
                                 {
-                                    <img class="px-3 verified-logo" src="images/VerifiedIcon.png" title="For uploading and completing all identification requirements." />
+                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" data-toggle="tooltip" data-placement="top" data-html="true" title="For uploading and completing all identification requirements." />
                                 }
+                            @if (customerDetail.IsOG == true)
+                                {
+                                    <img class="verified-logo" src="images/Badges/OG.svg" data-toggle="tooltip" data-placement="top" data-html="true" title="For being part of the alpha and beta testing." />
+                                }
+                            @if (customerDetail.IsOfficial == true)
+                            {
+                                    <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" data-toggle="tooltip" data-placement="top" data-html="true" title="Legitimate experience provider in the platform." />
+                            }
+                            @if(compl){
+
+                            }
                         </div>
                     </div>
                 }
@@ -379,6 +391,7 @@
     public List<ExperienceType>          experienceTypes    = new List<ExperienceType>();
     public ExperienceType                experience         = new ExperienceType();
     public List<Students>                enrolledStudents   = new List<Students>();
+    public List<BadgeList>               badges             = new List<BadgeList>();
     private SchedulesModal               ModalSched { get; set; }
     public int                           OngoingStudents { get; set; }
     public int                           CompletedStudents { get; set; }
@@ -394,13 +407,14 @@
                 IncludeAtivitySchedules = true,
                 IncludeCustomer = true
             }) :
-            await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
-                IncludeActivityAddress = true,
-                IncludeActivityDescription = true,
-                IncludeActivityImages = true,
-                IncludeAtivitySchedules = true,
-                IncludeCustomer = true
-            });
+            await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+                {
+                    IncludeActivityAddress = true,
+                    IncludeActivityDescription = true,
+                    IncludeActivityImages = true,
+                    IncludeAtivitySchedules = true,
+                    IncludeCustomer = true
+                });
 
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
@@ -465,7 +479,8 @@
                             Name = i.Name
                         };
                     }).ToList(),
-                    Owner = result.Owner != null ? new CustomerProfile {
+                    Owner = result.Owner != null ? new CustomerProfile
+                    {
                         // map only required fields
                         Id = result.Owner.Id,
                         Handler = result.Owner.Handler
@@ -499,7 +514,9 @@
                     Id = args.Id,
                     IsMaker = args.IsMaker,
                     ProfilePath = args.ProfileImg,
-                    IsVerified = args.IsVerified
+                    IsVerified = args.IsVerified,
+                    IsOG = args.IsOG,
+                    IsOfficial = args.IsOfficial
                 };
         }
         Model = new DetailActivityModel
@@ -515,19 +532,38 @@
             enrolledStudents = students.Result.Result.Select(i =>
             {
                 return new Students
-                   {
-                      ActivityId = i.ActivityId,
-                      Id = i.Id,
-                      Name = i.Name,
-                      NumberOfSessions = i.NumberOfSessions,
-                      SessionsAttended = i.SessionsAttended,
-                   };
+                    {
+                        ActivityId = i.ActivityId,
+                        Id = i.Id,
+                        Name = i.Name,
+                        NumberOfSessions = i.NumberOfSessions,
+                        SessionsAttended = i.SessionsAttended,
+                    };
             }).ToList();
         }
 
         CompletedStudents = enrolledStudents.Where(a => a.SessionsAttended >= a.NumberOfSessions).Count();
-        OngoingStudents   = enrolledStudents.Where(a => a.SessionsAttended < a.NumberOfSessions).Count();
+        OngoingStudents = enrolledStudents.Where(a => a.SessionsAttended < a.NumberOfSessions).Count();
 
+        //Get Badges
+        var badgeList = await dashboardApiHandler.GetAllBadge();
+        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
+        {
+            badges = badgeList.Result.Result.Select(b =>
+            {
+                return new BadgeList
+                {
+                    Id = b.Id,
+                    Name = b.Name,
+                    Description = b.Description,
+                    NumberOfStudent = b.NumberOfStudent,
+                    NumberOfCompleted = b.NumberOfCompleted,
+                    NumberOfReviews = b.NumberOfReviews,
+                    ImgScr = b.ImgScr
+                };
+            }).ToList();
+        }
+        
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {

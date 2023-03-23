@@ -11,6 +11,8 @@ public class GetCustomerByIdResult
     public string? ProfileImg { get; set; }
     public bool IsMaker { get; set; }
     public int IsVerified { get; set; }
+    public bool IsOG { get; set; }
+    public bool IsOfficial { get; set; }
     public bool ExternalLogin { get; set; }
     public DateTime DateJoined { get; set; }
 }
