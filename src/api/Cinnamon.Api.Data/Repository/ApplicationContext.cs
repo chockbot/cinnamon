@@ -96,7 +96,12 @@ public class ApplicationContext : IdentityDbContext
             .HasOne<SearchTags>(a => a.SearchTag)
             .WithOne(s => s.Activity)
             .HasForeignKey<SearchTags>(s => s.ActivityId);
-        
+
+        modelBuilder.Entity<Activity>()
+            .HasMany<Student>(a => a.Students)
+            .WithOne(i => i.Activity)
+            .HasForeignKey(i => i.ActivityId);
+
         // add index to handler
         modelBuilder.Entity<Activity>()
             .HasIndex(a => a.Handler);
@@ -153,6 +158,7 @@ public class ApplicationContext : IdentityDbContext
 
         modelBuilder.Entity<Student>()
             .HasIndex(s => s.FamilyMemberId);
+        modelBuilder.Entity<Student>().HasIndex(s => s.OngoingActivityId);
 
         // student attendance
         modelBuilder.Entity<StudentAttendance>()

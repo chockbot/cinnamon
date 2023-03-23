@@ -51,7 +51,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                 IncludeImages = args.IncludeActivityImages,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents,
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -98,6 +99,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         IsSetSession = a.IsSetSession,
                         SessionName = a.SessionName,
                         IsNew = a.IsNew,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetOwnedActivitiesResult.Activity.ActivitySchedule {
                                 Id = s.Id,
@@ -122,7 +125,8 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         }) : Enumerable.Empty<GetOwnedActivitiesResult.Activity.ActivityImage>(),
                         Owner = a.Owner != null ? new GetOwnedActivitiesResult.Activity.CustomerOwner {
                             Handler = a.Owner.Handler,
-                            Id = a.Owner.Id
+                            Id = a.Owner.Id,
+                            IsVerified = a.Owner.IsVerified,
                         } : null
                     };
                 })

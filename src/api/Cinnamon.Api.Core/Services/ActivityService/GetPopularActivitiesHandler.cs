@@ -42,6 +42,7 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                 IncludeSubCategories = args.IncludeSubCategories,
                 PageIndex = args.PageIndex,
                 CountPerPage = args.CountPerPage,
+                IncludeStudents = args.IncludeStudents
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -119,9 +120,12 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                         }) : Enumerable.Empty<GetAllActivitiesResult.Activity.ActivityImage>(),
                         Owner = e.Owner != null ? new GetAllActivitiesResult.Activity.CustomerOwner {
                             Handler = e.Owner.Handler,
-                            Id = e.Owner.Id
+                            Id = e.Owner.Id,
+                            IsVerified = e.Owner.IsVerified
                         } : null,
-                        IsNew = e.IsNew
+                        IsNew = e.IsNew,
+                        OngoingStudents = e.OngoingStudents,
+                        CompletedStudents = e.CompletedStudents
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

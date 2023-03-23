@@ -133,4 +133,29 @@ public class PurchaseOrderController : ControllerBase
             return new JsonResult(new UpdatePurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetAllPurchaseOrderNeedToPayout")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllPurchaseOrderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllPurchaseOrderNeedToPayout()
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.GetAllPurchaseOrderNeedToPayout();
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllPurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllPurchaseOrderResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllPurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

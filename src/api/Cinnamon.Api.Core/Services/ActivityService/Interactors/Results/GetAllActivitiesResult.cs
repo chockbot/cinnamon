@@ -44,6 +44,8 @@ public class GetAllActivitiesResult
         public string Handler {get; set;}
         public bool IsSetSession { get; set; }
         public string SessionName { get; set; }
+        public int OngoingStudents { get; set; }
+        public int CompletedStudents { get; set; }
         public IEnumerable<string> SearchTags { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
@@ -80,8 +82,9 @@ public class GetAllActivitiesResult
         {
             public int Id {get; set;}
             public string Handler {get; set;}
+            public int IsVerified { get; set; }
         }
 
-       
+
     }
 }

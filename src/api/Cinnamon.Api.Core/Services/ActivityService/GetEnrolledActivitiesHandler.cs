@@ -76,7 +76,8 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                 IncludeSchedules = args.IncludeAtivitySchedules,
                 IsActive = args.IsActive,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents
             });
 
             if(!activitiesRes.Succeeded || activitiesRes.Result == null || !activitiesRes.Result.IsSuccess)
@@ -116,6 +117,8 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                         CreatedBy = e.CreatedBy,
                         IsSetSession = e.IsSetSession,
                         SessionName = e.SessionName,
+                        OngoingStudents = e.OngoingStudents,
+                        CompletedStudents = e.CompletedStudents,
                         ActivitySchedules = e.Schedules != null ? e.Schedules.Select(s => {
                             return new GetEnrolledActivitiesResult.ActivitySchedule
                             {

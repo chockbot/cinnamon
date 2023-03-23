@@ -63,5 +63,6 @@ public class Activity
     public bool IsNew { get; set; }
     public int Id { get; set; }
     public Guid Guid { get; set; }
-
+    public int OngoingStudents { get; set; }
+    public int CompletedStudents { get; set; }
 }

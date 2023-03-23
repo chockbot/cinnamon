@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Models;
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Shared
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -51,74 +52,127 @@
                             </Div>
                         </Column>
                     }
-                    <button class="btn-primary rounded shadow-sm border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
+                    <button class="btn-primary rounded border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
                 </div>
                 <hr />
                 <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div><h5 class="fw-bold">Pay with</h5></div>
-                        <div class="d-flex d-md-block d-lg-block d-none d-sm-none">
-                            <img class="img-thumbnail" src="/images/mastercard.png" />
-                            <img class="img-thumbnail" src="/images/paypal.png" />
+                    <h5 class="fw-bold font-20">Pay with</h5>
+                    <div class="card-payment-method mt-3">
+                        <label class="font-16">Cards</label>
+                        <div @onclick="() => CardModal.Show()" class="d-flex justify-content-between border-radius-5 border-1-solid border-color-grey-200 p-3 cursor-pointer">
+                            <div class="card-label d-flex align-items-center">
+                                @if(SelectedPaymentCode != "CARD")
+                                {
+                                    <img class="me-4" src="images/payment/credit-card.png" alt="icon">
+                                    <span class="font-16">Credit or Debit Card</span>
+                                }
+                                else
+                                {
+                                    if(CardPaymentModel.CardNumber[0] == '2' || CardPaymentModel.CardNumber[0] == '5')
+                                    {
+                                        <img class="me-4" src="images/payment/master-card.svg" alt="icon">
+                                        <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
+                                    }
+                                    else if(CardPaymentModel.CardNumber[0] == '4')
+                                    {
+                                        <img class="me-4" src="images/payment/visa-card.svg" alt="icon">
+                                        <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
+                                    }
+                                    else 
+                                    {
+                                        <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
+                                    }
+                                }
+                            </div>
+                            <div class="card-icon d-flex align-items-center">
+                                @if(SelectedPaymentCode != "CARD")
+                                {
+                                    <img class="me-4 h-auto" style="width: 24px;" src="images/payment/visa-card.svg" alt="icon">
+                                    <img class="me-4 h-auto" style="width: 18px;" src="images/payment/master-card.svg" alt="icon">
+                                }
+                                <img class="h-auto" style="width: 8px;" src="images/payment/credit-card-arrow.png" alt="icon">
+                            </div>
                         </div>
                     </div>
-                    <button class="d-md-none d-lg-none d-block d-sm-block" style="border:none;background-color:white" data-bs-toggle="modal" data-bs-target="#paymentModal"><i class="fas fa-credit-card mx-2"></i>Credit or debit card</button>
-                    <div class="col-lg-12 col-md-12 col-12 d-md-block d-lg-block d-none d-sm-none">
-                        <div class="form-outline mb-4 pb-1"> 
-                            <label>Credit or debit card</label>
-                            <select Class="form-control" @bind="SelectedPaymentCode">
-                                <option value="" selected disabled>Select Payment Method</option>
-                                @foreach (var item in Payments)
-                                {
-                                    <option value="@item.Code">@item.DisplayName</option>
-                                }
-                            </select>
-                            </div>
-
-                            <label class="mb-2">Enter Your Card Details</label>
-
-                            <div class="row mb-2">
-                                <div class="col-7">
-                                <input type="text" id="formControlLgXsd" class="form-control" value="" placeholder="Card number" />
-                                </div>
-                                <div class="col-3">
-                                    <div class="form-outline">
-                                        <input type="password" id="formControlLgExpk" class="form-control"
-                                                placeholder="MM/YYYY" />
-                                    </div>
+                    <div class="ewallet-payment-method mt-3">
+                        <label class="font-16">E-wallets</label>
+                        <fieldset class="border-radius-5 border-1-solid border-color-grey-200 p-3">
+                            <div class="d-flex align-items-center">
+                                <div class="col-1">
+                                    <input type="radio" 
+                                        checked='@(SelectedPaymentCode == "GCASH")' 
+                                        @onchange='() => SelectedPaymentCode = "GCASH"'
+                                        id="ewallet-gcash" name="ewallet" value="GCASH" class="me-3 checkbox-round"/>
                                 </div>
                                 <div class="col-2">
-                                    <div class="form-outline">
-                                        <input type="password" id="formControlLgcvv" class="form-control"
-                                                placeholder="CVV" />
-                                    </div>
+                                    <img src="images/payment/gcash.svg" alt="icon">
+                                </div>
+                                <div class="col d-flex flex-column ps-2">
+                                    <p class="mb-0 font-16 color-black-100">Gcash</p>
+                                    <p class="font-10 color-grey-100">
+                                        Payment should be completed within 30 mins. Accessible 24/7 and may entail additional 2% fee.
+                                    </p>
                                 </div>
                             </div>
-
-                            <div class="row mb-4">
-                                <div class="col-7">
-                                    <div class="form-outline">
-                                    <label class="form-label" for="formControlLgXM">Name on card</label>
-                                    <input type="text" id="formControlLgXM" class="form-control"
-                                                value="" placeholder="Name"/>
-                                    </div>
+                            <div class="d-flex align-items-center">
+                                <div class="col-1">
+                                    <input type="radio" 
+                                        checked='@(SelectedPaymentCode == "GRABPAY")' 
+                                        @onchange='() => SelectedPaymentCode = "GRABPAY"'
+                                        class="me-3 checkbox-round" id="ewallet-grabpay" name="ewallet" value="GRABPAY"/>
                                 </div>
-                                    <div class="col-5">
-                                    <div class="form-outline">
-                                    <label class="form-label" for="formControlLgXM">Contact number</label>
-                                        <input type="text" id="formControlLgXM" class="form-control"
-                                            value="" placeholder="contact no." />
-                                    </div>
+                                <div class="col-2">
+                                    <img src="images/payment/grabpay.svg" alt="icon">
+                                </div>
+                                <div class="col d-flex flex-column ps-2">
+                                    <p class="mb-0 font-16 color-black-100">Grab Pay</p>
+                                    <p class="font-10 color-grey-100">
+                                        Payment should be completed within 30 mins. Accessible 24/7 and may entail additional 2% fee.
+                                    </p>
                                 </div>
                             </div>
-                        </div>
+                            <div class="d-flex align-items-center">
+                                <div class="col-1">
+                                    <input type="radio" 
+                                        checked='@(SelectedPaymentCode == "SHOPEEPAY")' 
+                                        @onchange='() => SelectedPaymentCode = "SHOPEEPAY"'
+                                        class="me-3 checkbox-round" id="ewallet-shopeepay" name="ewallet" value="SHOPEEPAY"/>
+                                </div>
+                                <div class="col-2">
+                                    <img src="images/payment/shoppepay.svg" alt="icon">
+                                </div>
+                                <div class="col d-flex flex-column ps-2">
+                                    <p class="mb-0 font-16 color-black-100">Shopee Pay</p>
+                                    <p class="font-10 color-grey-100">
+                                        Payment should be completed within 30 mins. Accessible 24/7 and may entail additional 2% fee.
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="col-1">
+                                    <input type="radio" 
+                                        checked='@(SelectedPaymentCode == "PAYMAYA")'
+                                        @onchange='() => SelectedPaymentCode = "PAYMAYA"' 
+                                        class="me-3 checkbox-round" id="ewallet-maya" name="ewallet" value="PAYMAYA"/>
+                                </div>
+                                <div class="col-2">
+                                    <img src="images/payment/maya.svg" alt="icon">
+                                </div>
+                                <div class="col d-flex flex-column ps-2">
+                                    <p class="mb-0 font-16 color-black-100">Maya</p>
+                                    <p class="font-10 color-grey-100">
+                                        Payment should be completed within 30 mins. Accessible 24/7.
+                                    </p>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
                     <hr />
-                    <br />
                     <div class="form-outline">
                         <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                         <br />
                         <br />
-                        <button class="btn-primary form-control rounded shadow-sm border-0 py-2 px-3" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
+                        <button class="btn-primary rounded border-0 py-2 px-3 m-width-100" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
                             @if (isLoading)
                             {
                                 <i class="fa fa-spinner fa-spin"></i>
@@ -202,7 +256,19 @@
                             </div>
                             <hr />
                             <div class="d-flex align-items-center justify-content-center protected-footer">
-                                Your booking is protected by 
+                                <CustomTooltip MarginLeft="-100">
+                                    <TextContent>
+                                        <span class="color-grey-100">
+                                            Your booking is protected by
+                                        </span>
+                                    </TextContent>
+                                    <TooltipContent>
+                                        <span class="color-grey-100">
+                                            Your transaction is secured! Your purchase is supported by our Terms of Use. 
+                                            Any concerns about your purchase, you can reach us by sending an email to support@cinnamon.ph
+                                        </span>
+                                    </TooltipContent>
+                                </CustomTooltip> 
                                 <div class="app-name">
                                     @Resources.App.appName
                                 </div>
@@ -246,72 +312,84 @@
         <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" />
     }
 
-    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="paymentModalLabel">Pay with</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <Modal @ref="CardModal">
+        <ModalContent Centered>
+            <ModalHeader Border="Border.Is0">
+                <p class="col-12 modal-title">Add Card Details</p>
+                <button type="button" class="btn-close" @onclick='() => CardModal.Hide()' />
+            </ModalHeader>
+            <ModalBody Padding="Padding.Is0.FromTop">
+                <Divider Margin="Margin.Is0.FromTop.Is2.FromBottom" />
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <img class="me-3" src="images/payment/visa-card.svg" alt="icon">
+                        <img src="images/payment/master-card.svg" alt="icon">
+                    </div>
+                    <img src="images/payment/security-guranteed.png" alt="icon">
                 </div>
-                <div class="modal-body">
-                    <div class="d-flex">
-                        <img class="img-thumbnail" src="/images/mastercard.png" />
-                        <img class="img-thumbnail" src="/images/paypal.png" />
-                    </div>
-                    <div class="form-outline mb-2 pb-1">
-                        <label>Credit or debit card</label>
-                        <select Class="form-control" @bind="SelectedPaymentCode">
-                            <option value="" selected disabled>Select Payment Method</option>
-                            @foreach (var item in Payments)
-                            {
-                                <option value="@item.Code">@item.DisplayName</option>
-                            }
-                        </select>
-                    </div>
-
-                    <p class="fw-bold mb-1">Enter Your Card Details</p>
-
-                    <div class="row mb-2">
-                        <div class="col-12 mb-2">
-                            <input type="text" id="formControlLgXsd" class="form-control" value="" placeholder="Card number" />
-                        </div>
-                        <div class="col-6">
-                            <div class="form-outline">
-                                <input type="password" id="formControlLgExpk" class="form-control"
-                                    placeholder="MM/YYYY" />
+                <div class="mt-2">
+                    <Validations @ref="PaymentCardValidation" Model="CardPaymentModel" Mode="ValidationMode.Manual">
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="font-16 color-grey-100">Card Number</FieldLabel>
+                                <TextEdit @bind-Text="CardPaymentModel.CardNumber">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="font-16 color-grey-100">Name on Card</FieldLabel>
+                                <TextEdit @bind-Text="CardPaymentModel.CardHolder">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <div class="row">
+                            <div class="col">
+                                <Validation>
+                                    <Field class="mb-3">
+                                        <FieldLabel class="font-16 color-grey-100">Expiration</FieldLabel>
+                                        <TextEdit @bind-Text="CardPaymentModel.Expiration" Placeholder="Ex. 03/28">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
+                            </div>
+                            <div class="col">
+                                <Validation>
+                                    <Field class="mb-3">
+                                        <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
+                                        <TextEdit @bind-Text="CardPaymentModel.CVV">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
                             </div>
                         </div>
-                        <div class="col-6">
-                            <div class="form-outline">
-                                <input type="password" id="formControlLgcvv" class="form-control"
-                                    placeholder="CVV" />
-                            </div>
+                        <div>
+                            <Button Clicked="SelectCardPayment" class="btn-primary w-100 border-radius-5" Border="Border.Is0">
+                                <LoadingTemplate>
+                                    <i class="fa fa-spinner fa-spin"></i> Please Wait
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Submit
+                                </ChildContent>
+                            </Button>
                         </div>
-                    </div>
-
-                    <div class="row mb-2">
-                        <div class="col-12">
-                            <div class="form-outline">
-                                <label class="form-label" for="formControlLgXM">Name on card</label>
-                                <input type="text" id="formControlLgXM" class="form-control"
-                                    value="" placeholder="Name" />
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="form-outline">
-                                <label class="form-label" for="formControlLgXM">Contact number</label>
-                                <input type="text" id="formControlLgXM" class="form-control"
-                                    value="" placeholder="contact no." />
-                            </div>
-                        </div>
-                    </div>
+                    </Validations>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn" style="background-color:#ffa942;color:white" data-bs-dismiss="modal">Done</button>
-                </div>
-            </div>
-        </div>
-    </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 }
 
 @code 
@@ -335,6 +413,12 @@
     private IEnumerable<PaymentOption> Payments {get; set;} = new List<PaymentOption>();
     
     private string SelectedPaymentCode = string.Empty;
+
+    private Modal CardModal {get; set;}
+
+    private Validations PaymentCardValidation {get; set;}
+
+    private Models.Forms.CardPaymentModel CardPaymentModel {get; set;} = new();
 
     private enum CouponAction {
         NoCoupon = 0,
@@ -555,7 +639,8 @@
             { new PaymentOption {DisplayName = "SHOPEEPAY", PaymentChannel = "SHOPEEPAY", PaymentMethod = "EWALLET", Code = "SHOPEEPAY"} },
             { new PaymentOption {DisplayName = "GRABPAY", PaymentChannel = "GRABPAY", PaymentMethod = "EWALLET", Code = "GRABPAY"}},
             { new PaymentOption {DisplayName = "PAYMAYA", PaymentChannel = "PAYMAYA", PaymentMethod = "EWALLET", Code = "PAYMAYA"}},
-            { new PaymentOption {DisplayName = "GCASH", PaymentChannel = "GCASH", PaymentMethod = "EWALLET", Code = "GCASH"}}
+            { new PaymentOption {DisplayName = "GCASH", PaymentChannel = "GCASH", PaymentMethod = "EWALLET", Code = "GCASH"}},
+            { new PaymentOption {DisplayName = "CARD", PaymentChannel = "CARD", PaymentMethod = "CARD", Code = "CARD"}}
         };
     }
 
@@ -635,7 +720,8 @@
     private string payErrorMessage = string.Empty;
     private bool isShowPayErrorMessage = false;
     private bool isLoading = false;
-    private string payButtonStyle = "width:100% !important;font-weight:700;";
+    private string payButtonStyle = "font-weight:700;";
+
     private async Task OnPayConfirmedClicked()
     {
         if(string.IsNullOrEmpty(SelectedPaymentCode))
@@ -650,7 +736,7 @@
         if(Model.SelectedAttendees.Count > 0)
         {
             isLoading = true;
-            payButtonStyle = "width:100% !important;font-weight:700;background-color: #6c757d !important;";
+            payButtonStyle = "background-color: #6c757d !important;";
 
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs {
                 ActivityId = Model.Activity.ActivityId,
@@ -672,12 +758,10 @@
                 payErrorMessage = $"An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
                 isLoading = false;
-                payButtonStyle = "width:100% !important;font-weight:700;";
             }
             else 
             {
                 isLoading = false;
-                payButtonStyle = "width:100% !important;font-weight:700;";
                 if(submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
@@ -748,6 +832,20 @@
             }
             return activity.Owner.ProfilePath;
         }
+    }
+
+    private async Task SelectCardPayment()
+    {
+        if(await PaymentCardValidation.ValidateAll())
+        {
+            CardModal.Close(CloseReason.UserClosing);
+            SelectedPaymentCode = "CARD";
+        }
+    }
+
+    private string MaskedString(string value, int count)
+    {
+        return new String('*', value.Length - count) + value.Substring(value.Length - count);
     }
 
     class PaymentOption 

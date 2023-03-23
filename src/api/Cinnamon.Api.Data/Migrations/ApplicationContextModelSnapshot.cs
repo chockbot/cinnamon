@@ -1216,6 +1216,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<int>("NumberOfSessions")
                         .HasColumnType("integer");
 
+                    b.Property<int>("OngoingActivityId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("Remarks")
                         .IsRequired()
                         .HasColumnType("text");
@@ -1241,6 +1244,8 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("CustomerId");
 
                     b.HasIndex("FamilyMemberId");
+
+                    b.HasIndex("OngoingActivityId");
 
                     b.HasIndex("ScheduleId");
 

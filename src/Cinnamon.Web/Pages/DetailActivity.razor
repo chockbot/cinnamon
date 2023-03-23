@@ -526,7 +526,7 @@
                 Customer = customerDetail
             };
         //Get Ongoing and Completed Students
-        var students = await ongoingApiHandler.GetEnrolledStudents(intResult);
+        var students = await ongoingApiHandler.GetEnrolledStudents(ActivityListData.Result.Result.ActivityId);
         if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
         {
             enrolledStudents = students.Result.Result.Select(i =>

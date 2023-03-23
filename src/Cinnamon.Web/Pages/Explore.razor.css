@@ -192,7 +192,7 @@ img.img-icon, img.img-icon-home {
     display: flex;
     gap: 8px;
     align-items: center;
-    justify-content: center;
+    justify-content: right;
     margin-bottom: 16px;
 }
 
@@ -283,6 +283,120 @@ img {
     margin: 0px;
 }
 
+.pulse {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #00ACEE;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
+
+    .pulse:hover {
+        animation: none;
+    }
+
+.pulse-complete {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #34A853;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
+
+    .pulse-complete:hover {
+        animation: none;
+    }
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@-webkit-keyframes pulse-complete {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse-complete {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+.star-section span {
+    font-family: 'Nunito';
+    font-style: italic;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #717171;
+}
+
+.star-tag-badge{
+    margin-right:10px;
+}
+
+.pulse-section{
+    text-align: right;
+}
+.title-section{
+    margin-top:10px;
+}
+
+.star-pulse-section {
+    margin-top: 8px;
+}
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
     .top-row {
@@ -461,12 +575,13 @@ img {
     }
 
     .heart-badge-section {
-        text-align: center;
-        margin-top: 5px;
+        text-align: right;
+        margin-top: 0px;
+        margin-left: 10px;
     }
 
     .popular-activities {
-        height: 340px
+        height: 380px
     }
 
     .card-title1 {
@@ -515,7 +630,7 @@ img {
     }
 
     .price-badge-section {
-        margin-top: 12px;
+        margin-top: 12px !important;
         text-align: left;
     }
 
@@ -555,7 +670,7 @@ img {
     }
 
     .activity-heart-badge-section {
-        text-align: center;
+        text-align: right;
         margin-top: -7px;
         margin-left: 25px;
     }
@@ -567,6 +682,25 @@ img {
 
     .categories, .activity-popular {
         margin-bottom: 10px;
+    }
+
+    .pulse {
+        width: 13px;
+        height: 13px;
+        margin-top: 0px;
+    }
+
+    .title-section, .pulse-section, .star-section {
+        padding: 0px
+    }
+
+    .star-tag-badge{
+        margin-right: 5px;
+    }
+
+    .pulse-complete {
+        width: 14px;
+        height: 14px;
     }
 }
 
@@ -749,12 +883,13 @@ img {
     }
 
     .heart-badge-section {
-        text-align: center;
-        margin-top: 5px;
+        text-align: right;
+        margin-top: 0px;
+        margin-left: 10px;
     }
 
     .popular-activities {
-        height: 340px
+        height: 360px
     }
 
     .card-title1 {
@@ -803,7 +938,7 @@ img {
     }
 
     .price-badge-section {
-        margin-top: 12px;
+        margin-top: 12px !important;
         text-align: left;
     }
 
@@ -843,7 +978,7 @@ img {
     }
 
     .activity-heart-badge-section {
-        text-align: center;
+        text-align: right;
         margin-top: -7px;
         margin-left: 25px;
     }
@@ -855,6 +990,19 @@ img {
 
     .categories, .activity-popular {
         margin-bottom: 10px;
+    }
+
+    .title-section, .pulse-section, .star-section {
+        padding: 0px
+    }
+
+    .star-tag-badge {
+        margin-right: 5px;
+    }
+
+    .pulse-complete {
+        width: 14px;
+        height: 14px;
     }
 }
 
@@ -995,7 +1143,7 @@ img {
         display: flex;
         gap: 8px;
         align-items: center;
-        justify-content: center;
+        justify-content: right;
         margin-bottom: 16px;
     }
 
@@ -1046,12 +1194,12 @@ img {
     }
 
     .heart-badge-section {
-        text-align: center;
+        text-align: right;
         margin-top: 5px;
     }
 
     .popular-activities {
-        height: 400px
+        height: 430px
     }
 
     .card-title1 {
@@ -1123,7 +1271,7 @@ img {
     }
 
     .activity-heart-badge-section {
-        text-align: center;
+        text-align: right;
         margin-top: -5px;
         margin-left: 5px;
     }
@@ -1239,7 +1387,7 @@ img {
         display: flex;
         gap: 8px;
         align-items: center;
-        justify-content: center;
+        justify-content: right;
         margin-bottom: 16px;
     }
 
@@ -1299,7 +1447,7 @@ img {
     }
 
     .heart-badge-section {
-        text-align: center;
+        text-align: right;
         margin-top: 5px;
     }
 
@@ -1376,7 +1524,7 @@ img {
     }
 
     .activity-heart-badge-section {
-        text-align: center;
+        text-align: right;
         margin-top: -7px;
         margin-left: 10px;
     }
@@ -1492,7 +1640,7 @@ img {
         display: flex;
         gap: 8px;
         align-items: center;
-        justify-content: center;
+        justify-content: right;
         margin-bottom: 16px;
     }
 
@@ -1548,12 +1696,13 @@ img {
     }
 
     .heart-badge-section, .activity-heart-badge-section {
-        text-align: center;
+        text-align: right;
         margin-top: 5px;
+        margin-left: -10px;
     }
 
     .popular-activities{
-        height: 500px
+        height: 530px
     }
 
     .card-title1 {

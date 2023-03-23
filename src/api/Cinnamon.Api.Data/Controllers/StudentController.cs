@@ -119,7 +119,7 @@ public class StudentController : ControllerBase
         {
             var result = await studentRepository.Create(args.CustomerId, args.FamilyMemberId, 
                 args.ActivityId, args.ScheduleId, args.Name, args.StudentNo, 
-                args.NumberOfSessions, args.SessionsAttended, args.ExpirationEndDate, args.ExpirationStartDate);
+                args.NumberOfSessions, args.SessionsAttended, args.ExpirationEndDate, args.ExpirationStartDate, args.OngoingActivityId);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -147,7 +147,7 @@ public class StudentController : ControllerBase
                     Name = s.Name,
                     StudentNo = s.StudentNo
                 };
-            }));
+            }), args.OngoingActivityId);
 
             if (!result.Succeeded || result.Result == null)
             {

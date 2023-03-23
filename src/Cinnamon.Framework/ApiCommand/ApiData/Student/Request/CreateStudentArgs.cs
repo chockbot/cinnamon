@@ -21,4 +21,6 @@ public class CreateStudentArgs
     public int SessionsAttended {get; set;} = 0;
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
+    [Required]
+    public int OngoingActivityId {get; set;}
 }

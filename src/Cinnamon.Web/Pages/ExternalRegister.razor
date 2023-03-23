@@ -75,7 +75,18 @@
                 </Field>
             </Validation>
             <br />
-            <span>By selecting <b>Agree and continue</b>, you agree to our <a style="color:#ffa942" href="Terms" target="_blank">Terms and Conditions</a> and <a href="Policy" target="_blank" style="color:#ffa942">Privacy Policy</a></span>
+            <label class="d-flex" style="align-items: last baseline; margin-top: -1rem;">
+                <InputCheckbox @bind-Value="IsAcceptPrivacyPolicy" class="@GetCheckboxClass"/>
+                <span class="font-16">
+                    I have read and agreed to the website 
+                    <NavLink href="/help" target="_blank" class="color-primary hover-color-primary">Tems and Conditions</NavLink> and 
+                    <NavLink href="/help" target="_blank" class="color-primary hover-color-primary">Privacy Policy</NavLink>
+                </span>
+            </label>
+            @if(IsShowCheckboxError)
+            {
+                <div class="invalid-feedback d-block">Please accept terms and condition and privacy policy</div>
+            }
             <div>
             <Button Clicked="SubmitRegiter" Margin="Margin.Is3.FromTop" Shadow="Shadow.Small" class="btn-primary"
                     Disabled="Model.IsSubmitting" Loading="Model.IsSubmitting">
@@ -105,6 +116,10 @@
     [Parameter]
     [SupplyParameterFromQuery]
     public string? Uid { get; set; }
+
+    private bool IsAcceptPrivacyPolicy {get; set;}
+
+    private bool IsShowCheckboxError {get; set;}
 
     protected override void OnInitialized()
     {
@@ -143,7 +158,8 @@
     {
         try
         {
-            if (await Model.FormValidation.ValidateAll())
+            IsShowCheckboxError = !IsAcceptPrivacyPolicy;
+            if (await Model.FormValidation.ValidateAll() && IsAcceptPrivacyPolicy)
             {
                 Model.IsSubmitting = true;
 
@@ -187,6 +203,16 @@
         }
 
         return Task.CompletedTask;
+    }
+
+    private string GetCheckboxClass 
+    {
+        get 
+        {
+            if(IsAcceptPrivacyPolicy) return "me-3";
+
+            return "me-3 is-invalid";
+        }
     }
 
     string flexItemStyle = $" width:100%;";

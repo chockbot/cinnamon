@@ -103,7 +103,8 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                         Name = s.Name,
                         StudentNo = "00",
                     };
-                })
+                }),
+                OngoingActivityId = createOngoingActivityRes.Result.Result.Id
             });
 
             if(!createStudentRes.Succeeded || createStudentRes.Result == null || !createStudentRes.Result.IsSuccess)

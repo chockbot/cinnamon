@@ -262,34 +262,14 @@
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card">
-                                                            <a class="button" href="/explore/@act.ActivityId" style="text-decoration:none;">
+                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
                                                                 @if (act.Images.Count > 0)
                                                                 {
                                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
                                                                 }
                                                                 <div class="card-img-overlay">
                                                                     <div class="row">
-                                                                        <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9">
-                                                                            @if (act.IsNew)
-                                                                            {
-                                                                                <span class="d-none d-xl-block">
-                                                                                    <img src="images/new-xl.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-none d-lg-block d-xl-none">
-                                                                                    <img src="images/new-lg.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-none d-md-block d-lg-none">
-                                                                                    <img src="images/new-md.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-none d-sm-block d-md-none">
-                                                                                    <img src="images/new-sm.png" class="new-badge" />
-                                                                                </span>
-                                                                                <span class="d-block d-sm-none">
-                                                                                    <img src="images/new-sm.png" class="new-badge" />
-                                                                                </span>
-                                                                            }
-                                                                        </div>
-                                                                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3 heart-badge-section">
+                                                                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 heart-badge-section">
                                                                             <span class="d-none d-xl-block">
                                                                                 <img src="images/heart-xl.png" />
                                                                             </span>
@@ -311,38 +291,52 @@
                                                                 </div>
                                                             </a>
                                                             <div class="card-container">
-                                                                <div class="card-body1 text-start">
-                                                                    <div>
-                                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                                        @if (@act.ExperienceTypeId == 1)
+                                                                <div class="row text-start star-pulse-section">
+                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                                        <img src="images/star-tag-small.png" class="star-tag-badge" />
+                                                                        <span>
+                                                                            @if (act.IsNew)
+                                                                            {
+                                                                                <i> New Experience</i>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <i> 4.1(10)</i>
+                                                                            }
+                                                                        </span>
+
+                                                                    </div>
+                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                                        @if (act?.Owner?.IsVerified == 2)
                                                                         {
-                                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                                            <img src="images/verified-badge.png" class="verified-badge" />
                                                                         }
-                                                                        else
-                                                                        {
-                                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                                        }
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row text-start">
+                                                                    <div class="title-section">
+                                                                        <div>
+                                                                            <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                                            @if (@act.ExperienceTypeId == 1)
+                                                                            {
+                                                                                <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                                            }
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                                 <div class="row price-badge-section">
                                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                         <div class="active-badge" style="text-align:center">
-                                                                            <span class="d-none d-xl-block active-tag-label">
-                                                                                <img src="images/star-xl.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-none d-lg-block d-xl-none active-tag-label">
-                                                                                <img src="images/star-lg.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-none d-md-block d-lg-none active-tag-label">
-                                                                                <img src="images/star-md.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-none d-sm-block d-md-none active-tag-label">
-                                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
-                                                                            <span class="d-block d-sm-none active-tag-label">
-                                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                                            </span>
+                                                                            @if (act.OngoingStudents > 0)
+                                                                            {
+                                                                                <span class="pulse"></span>
+                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                            }
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -429,27 +423,7 @@
                                             </div>
                                             <div class="card-img-overlay">
                                                 <div class="row">
-                                                    <div class="col-xl-9 col-lg-9 col-md-9 col-sm-9 col-9 activity-new-badge-section">
-                                                        @if (act.IsNew)
-                                                        {
-                                                            <span class="d-none d-xl-block">
-                                                                <img src="images/new-xl.png" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-none d-lg-block d-xl-none">
-                                                                <img src="images/new-lg.png" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-none d-md-block d-lg-none">
-                                                                <img src="images/new-md.png" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-none d-sm-block d-md-none">
-                                                                <img src="images/new-sm.svg" class="new-badge" />
-                                                            </span>
-                                                            <span class="d-block d-sm-none">
-                                                                <img src="images/new-sm.svg" class="new-badge" />
-                                                            </span>
-                                                        }
-                                                    </div>
-                                                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-3 activity-heart-badge-section">
+                                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 heart-badge-section">
                                                         <span class="d-none d-xl-block">
                                                             <img src="images/heart-xl.png" />
                                                         </span>
@@ -467,41 +441,54 @@
                                                         </span>
                                                     </div>
                                                 </div>
-
                                             </div>
                                             <div class="card-container">
-                                                <div class="card-body1 text-start">
-                                                    <div>
-                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                        @if (@act.ExperienceTypeId == 1)
+                                                <div class="row text-start star-pulse-section">
+                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                        <img src="images/star-tag-small.png" class="star-tag-badge" />
+                                                        <span>
+                                                            @if (act.IsNew)
+                                                            {
+                                                                <i> New Experience</i>
+                                                            }
+                                                            else
+                                                            {
+                                                                <i> 4.1(10)</i>
+                                                            }
+                                                        </span>
+
+                                                    </div>
+                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                        @if (act?.Owner?.IsVerified == 2)
                                                         {
-                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                            <img src="images/verified-badge.png" class="verified-badge" />
                                                         }
-                                                        else
-                                                        {
-                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                        }
+                                                    </div>
+                                                </div>
+                                                <div class="row text-start">
+                                                    <div class="title-section">
+                                                        <div>
+                                                            <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                            @if (@act.ExperienceTypeId == 1)
+                                                            {
+                                                                <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                            }
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="row price-badge-section">
                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                         <div class="active-badge" style="text-align:center">
-                                                            <span class="d-none d-xl-block active-tag-label">
-                                                                <img src="images/star-xl.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-none d-lg-block d-xl-none active-tag-label">
-                                                                <img src="images/star-lg.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-none d-md-block d-lg-none active-tag-label">
-                                                                <img src="images/star-md.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-none d-sm-block d-md-none active-tag-label">
-                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                            </span>
-                                                            <span class="d-block d-sm-none active-tag-label">
-                                                                <img src="images/star-sm.png" class="star-badge" /> 4.1(10)
-                                                            </span>
+                                                            @if (act.OngoingStudents > 0)
+                                                            {
+                                                                <span class="pulse"></span>
+                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                            }
                                                         </div>
                                                     </div>
                                                 </div>
@@ -717,7 +704,8 @@
                 CountPerPage = itemsPerPage,
                 ExperienceCategoryId = experienceCategoryId,
                 SearchValue = searchValue,
-                IncludeCustomer = true
+                IncludeCustomer = true,
+                IncludeStudents = true
 
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
@@ -763,20 +751,22 @@
                                    CreatedBy = r.CreatedBy,
                                    Handler = r.Handler,
                                    IsNew = r.IsNew,
+                                   OngoingStudents = r.OngoingStudents,
+                                   CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
-                        {
-                                    return new ActivitySchedule
-                                    {
-                                        Id = e.Id,
-                                        Name = e.Name,
-                                        PerUnit1 = e.PerUnit1,
-                                        PerUnit2 = e.PerUnit2,
-                                        Price = e.Price,
-                                        PriceUnit1 = e.PriceUnit1,
-                                        PriceUnit2 = e.PriceUnit2,
-                                        UnitPrice = e.UnitPrice
-                                    };
-                                }).ToList(),
+                    {
+                                return new ActivitySchedule
+                                {
+                                    Id = e.Id,
+                                    Name = e.Name,
+                                    PerUnit1 = e.PerUnit1,
+                                    PerUnit2 = e.PerUnit2,
+                                    Price = e.Price,
+                                    PriceUnit1 = e.PriceUnit1,
+                                    PriceUnit2 = e.PriceUnit2,
+                                    UnitPrice = e.UnitPrice
+                                };
+                            }).ToList(),
                                    Images = r.Images.Select(i =>
 {
         return new ActivityImage
@@ -786,6 +776,10 @@
             Name = i.Name
         };
     }).ToList(),
+                                   Owner = new CustomerProfile
+                                   {
+                                       IsVerified = r.Owner.IsVerified
+                                   }
                                };
                        }).OrderBy(a => a.Guid).ToList();
 
@@ -838,7 +832,8 @@
                 IsActive = true,
                 PageIndex = pageIndex,
                 CountPerPage = 20,
-
+                IncludeStudents = true,
+                IncludeCustomer = true
             });
         if (popularActivityList.Succeeded && popularActivityList.Result != null && popularActivityList.Result.IsSuccess)
         {
@@ -882,20 +877,22 @@
                                    CreatedBy = r.CreatedBy,
                                    Handler = r.Handler,
                                    IsNew = r.IsNew,
+                                   OngoingStudents = r.OngoingStudents,
+                                   CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
-                    {
-                                return new ActivitySchedule
-                                {
-                                    Id = e.Id,
-                                    Name = e.Name,
-                                    PerUnit1 = e.PerUnit1,
-                                    PerUnit2 = e.PerUnit2,
-                                    Price = e.Price,
-                                    PriceUnit1 = e.PriceUnit1,
-                                    PriceUnit2 = e.PriceUnit2,
-                                    UnitPrice = e.UnitPrice
-                                };
-                            }).ToList(),
+                        {
+                                    return new ActivitySchedule
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                        PerUnit1 = e.PerUnit1,
+                                        PerUnit2 = e.PerUnit2,
+                                        Price = e.Price,
+                                        PriceUnit1 = e.PriceUnit1,
+                                        PriceUnit2 = e.PriceUnit2,
+                                        UnitPrice = e.UnitPrice
+                                    };
+                                }).ToList(),
                                    Images = r.Images.Select(i =>
 {
         return new ActivityImage
@@ -905,6 +902,10 @@
             Name = i.Name
         };
     }).ToList(),
+                                   Owner = new CustomerProfile
+                                   {
+                                       IsVerified = r.Owner.IsVerified
+                                   }
                                };
                        }).ToList();
 

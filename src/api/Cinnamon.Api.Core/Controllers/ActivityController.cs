@@ -458,7 +458,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents,
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -516,6 +517,8 @@ public class ActivityController : ControllerBase
                         Title = a.Title,
                         IsSetSession = a.IsSetSession,
                         SessionName = a.SessionName,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id
@@ -544,7 +547,8 @@ public class ActivityController : ControllerBase
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
-                IncludeCustomer = args.IncludeCustomer
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents ?? false
             });
             
             if(!result.Succeeded || result.Result == null)
@@ -608,9 +612,12 @@ public class ActivityController : ControllerBase
                         IsSetSession = a.IsSetSession,
                         SessionName = a.SessionName,
                         IsNew = a.IsNew,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
-                            Id  = a.Owner.Id
+                            Id  = a.Owner.Id,
+                            IsVerified = a.Owner.IsVerified,
                         } : null
                     };
                 })
@@ -645,7 +652,8 @@ public class ActivityController : ControllerBase
                 PageIndex = args.PageIndex,
                 CountPerPage = args.CountPerPage,
                 SearchValue= string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
-                ExperienceCategoryId = args.ExperienceCategoryId.GetValueOrDefault()
+                ExperienceCategoryId = args.ExperienceCategoryId.GetValueOrDefault(),
+                IncludeStudents = args.IncludeStudents ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -721,9 +729,12 @@ public class ActivityController : ControllerBase
                         SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
-                            Id  = a.Owner.Id
+                            Id  = a.Owner.Id,
+                            IsVerified= a.Owner.IsVerified,
                         } : null,
                         IsNew = a.IsNew,
+                        CompletedStudents = a.CompletedStudents,
+                        OngoingStudents = a.OngoingStudents
                     };
                 }).AsQueryable()
             });
@@ -1418,6 +1429,7 @@ public class ActivityController : ControllerBase
                 IncludeSubCategories = args.IncludeSubCategories ?? false,
                 PageIndex = args.PageIndex,
                 CountPerPage = args.CountPerPage,
+                IncludeStudents = args.IncludeStudents ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1494,9 +1506,12 @@ public class ActivityController : ControllerBase
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
-                            Id = a.Owner.Id
+                            Id = a.Owner.Id,
+                            IsVerified = a.Owner.IsVerified,
                         } : null,
                         IsNew = a.IsNew,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents
                     };
                 }).AsQueryable()
             });

@@ -87,7 +87,18 @@
                             </div>
                         </Field>
                     </Validation>
-                    <p>By selecting <b>Agree and continue</b>,you agree to our <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and <a href="Policy" style="color:#FFA942">Privacy Policy</a></p>
+                    <label class="d-flex" style="align-items: last baseline;">
+                        <InputCheckbox @bind-Value="IsAcceptPrivacyPolicy" class="@GetCheckboxClass"/>
+                        <span class="font-16">
+                            I have read and agreed to the website 
+                            <NavLink href="/help" target="_blank" class="color-primary hover-color-primary">Tems and Conditions</NavLink> and 
+                            <NavLink href="/help" target="_blank" class="color-primary hover-color-primary">Privacy Policy</NavLink>
+                        </span>
+                    </label>
+                    @if(IsShowCheckboxError)
+                    {
+                        <div class="invalid-feedback d-block">Please accept terms and condition and privacy policy</div>
+                    }
                     <div>
                         <Button Clicked="SubmitRegister" Margin="Margin.Is3.FromTop" Shadow="Shadow.Small" class="btn-primary"
                                 Disabled="viewModel.IsSubmitting" Loading="viewModel.IsSubmitting">
@@ -119,6 +130,10 @@
 
     private Modal ModalRef {get; set;}
 
+    private bool IsAcceptPrivacyPolicy {get; set;}
+
+    private bool IsShowCheckboxError {get; set;}
+
     protected override void OnInitialized()
     {
         viewModel.Birthdate = DateTime.Today.AddYears(-25);
@@ -141,7 +156,8 @@
     {
         try
         {
-            if (await viewModel.FormValidation.ValidateAll())
+            IsShowCheckboxError = !IsAcceptPrivacyPolicy;
+            if (await viewModel.FormValidation.ValidateAll() && IsAcceptPrivacyPolicy)
             {
                 viewModel.IsSubmitting = true;
 
@@ -190,6 +206,16 @@
         }
 
         return Task.CompletedTask;
+    }
+
+    private string GetCheckboxClass 
+    {
+        get 
+        {
+            if(IsAcceptPrivacyPolicy) return "me-3";
+
+            return "me-3 is-invalid";
+        }
     }
 
     string flexItemStyle = $" width:660px;";
