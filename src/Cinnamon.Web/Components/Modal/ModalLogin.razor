@@ -1,11 +1,14 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Flurl;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
 @inject IAccountApiHandler accountApiHandler;
 @inject Cinnamon.Web.Config.Config config;
 @inject IJSRuntime JsRuntime;
 @inject NavigationManager NavigationManager;
 @inject Cinnamon.Web.Config.Config config;
+@inject IAdminApiHandler adminApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 <Modal @ref="Model.EmailModal" class="modal-email">
     <ModalContent>
@@ -292,6 +295,12 @@
                 }
 
                 var redirect = string.IsNullOrEmpty(ReturnUrl) ? "/explore" : ReturnUrl;
+
+                if (result.IsAdmin)
+                {
+                    NavigationManager.NavigateTo("/admin/users", true);
+                    return;
+                }
 
                 NavigationManager.NavigateTo(redirect, true);
             }

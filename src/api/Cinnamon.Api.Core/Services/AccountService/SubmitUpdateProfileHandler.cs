@@ -46,7 +46,8 @@ public class SubmitUpdateProfileHandler : ISubmitUpdateProfileHandler
                 FirstName = args.FirstName ?? profile.FirstName,
                 LastName = args.LastName ?? profile.LastName,
                 Birthdate = args.Birthdate ?? profile.Birthdate,
-                CustomerId = profile.Id
+                CustomerId = profile.Id,
+                IsVerified = args.VerifiedBadge ?? profile.IsVerified
             });
             if(!result.Succeeded || result.Result == null)
             {

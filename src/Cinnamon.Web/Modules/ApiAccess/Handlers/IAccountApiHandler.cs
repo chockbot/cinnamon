@@ -36,4 +36,6 @@ public interface IAccountApiHandler
     Task<AppResult<DeleteProfilePictureResult>> DeleteProfilePicture(DeleteProfilePictureArgs args, string token);
     Task<AppResult<UpdatePayoutAccountResult>> UpdatePayoutAccount(UpdatePayoutAccountArgs args, string token);
     Task<AppResult<GetPayoutAccountResult>> GetPayoutAccount(string token);
+    Task<AppResult<GetAllCustomerResult>> GetAllCustomer(GetAllCustomersArgs args, string token);
+    Task<AppResult<UpdateProfileDetailsResult>> UpdateCustomerProfile(UpdateProfileDetailsArgs args, string token);
 } 

@@ -1,3 +1,4 @@
+using Cinnamon.Web.Enums;
 using Cinnamon.Web.Models.Account;
 using Cinnamon.Web.Models.Forms;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -15,12 +16,14 @@ namespace Cinnamon.Web.Controllers;
 public class AccountController : Controller 
 {
     private readonly IAccountApiHandler accountApiHandler;
+    private readonly IAdminApiHandler adminApiHandler;
     private readonly Cinnamon.Web.Config.Config config;
 
-    public AccountController(IAccountApiHandler accountApiHandler, Cinnamon.Web.Config.Config config)
+    public AccountController(IAccountApiHandler accountApiHandler, Cinnamon.Web.Config.Config config, IAdminApiHandler adminApiHandler)
     {
         this.accountApiHandler = accountApiHandler;
         this.config = config;
+        this.adminApiHandler = adminApiHandler;
     }
 
     [Route("logout")]
@@ -60,10 +63,23 @@ public class AccountController : Controller
                 return Json(new { success = false, message = loginResult.Result.ErrorInfo?.Message });
             }
 
+            var adminUserResult = await adminApiHandler.GetAdminUserByEmail(new Framework.ApiCommand.ApiCore.AdminUser.Request.GetAdminUserByEmailArgs
+            {
+                Email = model.Email
+            }, loginResult.Result.Result.GeneratedToken);
+
+            if (!adminUserResult.Succeeded || adminUserResult.Result == null || !adminUserResult.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = "An error occured please try again later" });
+            }
+
+            var adminUser = adminUserResult.Result.Result;
+
             var claims = new List<Claim>
             {
                 new Claim("Email", loginResult.Result.Result.Email),
                 new Claim("Token", loginResult.Result.Result.GeneratedToken),
+                new Claim(ClaimTypes.Role, adminUser.IsAdmin ? nameof(UserRole.Admin).ToLower() : nameof(UserRole.Customer).ToLower()),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -72,7 +88,7 @@ public class AccountController : Controller
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
 
-            return Json(new { success = true, message = "Successfully login" });
+            return Json(new { success = true, message = "Successfully login", isAdmin = adminUser.IsAdmin });
         }
         catch
         {
@@ -353,10 +369,27 @@ public class AccountController : Controller
 
             await HttpContext.SignOutAsync();
 
+            var adminUserResult = await adminApiHandler.GetAdminUserByEmail(new Framework.ApiCommand.ApiCore.AdminUser.Request.GetAdminUserByEmailArgs
+            {
+                Email = result.Result.Result.Email
+            }, result.Result.Result.GeneratedToken);
+
+            if(!adminUserResult.Succeeded || adminUserResult.Result == null || !adminUserResult.Result.IsSuccess) 
+            { 
+                await HttpContext.SignOutAsync();
+                return Redirect("/explore");
+            }
+
+            if (adminUserResult.Result.Result.IsAdmin)
+            {
+                redirect = "/admin/users";
+            }
+
             var claims = new List<Claim>
             {
                 new Claim("Email", result.Result.Result.Email),
                 new Claim("Token", result.Result.Result.GeneratedToken),
+                new Claim(ClaimTypes.Role, adminUserResult.Result.Result.IsAdmin ? nameof(UserRole.Admin).ToLower() : nameof(UserRole.Customer).ToLower()),
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

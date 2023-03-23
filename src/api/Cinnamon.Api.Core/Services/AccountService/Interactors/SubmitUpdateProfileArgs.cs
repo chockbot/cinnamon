@@ -8,4 +8,5 @@ public class SubmitUpdateProfileArgs : IInteractor
     public string? LastName {get; set;}
     public DateTime? Birthdate {get; set;}
     public string? About {get; set;}
+    public int? VerifiedBadge { get; set; }
 }

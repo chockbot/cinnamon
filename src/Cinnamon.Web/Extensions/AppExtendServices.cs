@@ -11,6 +11,10 @@ public static class ExtensionService
         services.AddTransient<Modules.ApiAccess.Handlers.IDashboardApiHandler, Modules.ApiAccess.Dashboard.DashboardApiHandler>();
         services.AddTransient<Modules.ApiAccess.Handlers.ISystemApiHandler, Modules.ApiAccess.System.SystemApiHandler>();
         services.AddTransient<Modules.ApiAccess.Handlers.IPaymentApiHandler, Modules.ApiAccess.Payment.PaymentApiHandler>();
+        services.AddTransient<Modules.ApiAccess.Handlers.IAdminApiHandler, Modules.ApiAccess.Admin.AdminApiHandler>();
+
+        services.AddHttpContextAccessor();
+        services.AddScoped(sp => sp.GetService<IHttpContextAccessor>().HttpContext?.User);
 
         return services;
     } 

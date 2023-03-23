@@ -1,0 +1,60 @@
+﻿@namespace Cinnamon.Web.Components
+@using System
+@using System.Text.RegularExpressions;
+@using Cinnamon.Web.Models.Customer;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+
+<Modal @ref="modalReference" Class="view-image-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Uploaded Photos</p>
+                <button type="button" class="btn-close" @onclick="() => modalReference.Hide()"></button>
+            </div>
+            <div class="modal-body">
+                <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell>
+                                Front of ID
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                Back of ID
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow>
+                            <TableRowCell class="name-body">
+                                <img class="front-image" src="@FrontIdImagePath" />
+                            </TableRowCell>
+                            <TableRowCell class="name-body">
+                                <img class="back-image" src="@BackIdImagePath" />
+                            </TableRowCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </div>
+        </div>
+    </div>
+</Modal>
+
+@code {
+    public string BackIdImagePath { get; set; }
+
+    public string FrontIdImagePath { get; set; }
+
+    private Blazorise.Modal modalReference = new Modal();
+
+    public Task ShowModal(string backIdImagePath, string frontIdImagePath)
+    {
+        BackIdImagePath = backIdImagePath;
+        FrontIdImagePath = frontIdImagePath;
+        return modalReference.Show();
+    }
+    public Task HideModal()
+    {
+        return modalReference.Hide();
+    }
+
+}

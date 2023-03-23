@@ -232,18 +232,20 @@ public class CustomerRepository : ICustomerRepository
             {
                 return new CustomerDTO
                 {
-                    About = c.About,
-                    Birthdate = c.Birthdate,
-                    DateJoined = c.CreatedOn,
-                    Email = c.Email,
-                    ExternalLogin = c.ExternalLogin,
-                    FirstName = c.FirstName,
-                    LastName = c.LastName,
-                    Id = c.Id,
-                    IsMaker = c.IsMaker,
-                    IsVerified = c.IsVerifiedBadge,
-                    ProfileImg = c.ProfilePath,
-                    Handler = c.Handler
+                    About            = c.About,
+                    Birthdate        = c.Birthdate,
+                    DateJoined       = c.CreatedOn,
+                    Email            = c.Email,
+                    ExternalLogin    = c.ExternalLogin,
+                    FirstName        = c.FirstName,
+                    LastName         = c.LastName,
+                    Id               = c.Id,
+                    IsMaker          = c.IsMaker,
+                    IsVerified       = c.IsVerifiedBadge,
+                    ProfileImg       = c.ProfilePath,
+                    Handler          = c.Handler,
+                    FrontIdImagePath = c.FrontIdImagePath,
+                    BackIdImagePath  = c.BackIdImagePath
                 };
             });
 

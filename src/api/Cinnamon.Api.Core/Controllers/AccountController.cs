@@ -48,6 +48,8 @@ public class AccountController : ControllerBase
     private readonly IDeleteProfilePictureHandler deleteProfilePictureHandler;
     private readonly IGetPayoutAccountHandler getPayoutAccountHandler;
     private readonly ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler;
+    private readonly IGetAllCustomersHandler getAllCustomersHandler;
+    private readonly IUpdateCustomerProfileHandler updateCustomerProfileHandler;
 
     #endregion
 
@@ -65,7 +67,7 @@ public class AccountController : ControllerBase
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
         IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
-        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler)
+        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -97,6 +99,8 @@ public class AccountController : ControllerBase
         this.deleteProfilePictureHandler = deleteProfilePictureHandler;
         this.getPayoutAccountHandler = getPayoutAccountHandler;
         this.createUpdatePayoutAccountHandler = createUpdatePayoutAccountHandler;
+        this.getAllCustomersHandler = getAllCustomersHandler;
+        this.updateCustomerProfileHandler = updateCustomerProfileHandler;
     }
 
     #endregion
@@ -569,6 +573,7 @@ public class AccountController : ControllerBase
                 Birthdate = args.Datebirth,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
+                VerifiedBadge = args.VerifiedBadge
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -1161,6 +1166,89 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetPayoutAccountResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("Customers")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllCustomerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllCustomers([FromQuery] GetAllCustomersArgs args)
+    {
+        try
+        {
+            var result = await getAllCustomersHandler.ExecuteAsync(new Services.AccountService.Interactors.GetAllCustomersArgs
+            {
+                CountPerPage = args.CountPerPage,
+                PageIndex = args.PageIndex
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new GetAllCustomerResult
+            {
+                Result = result.Result.Customers.Select(c => {
+                    return new CustomerDTO
+                    {
+                        About            = c.About,
+                        Birthdate        = c.Birthdate,
+                        Email            = c.Email,
+                        ExternalLogin    = c.ExternalLogin,
+                        FirstName        = c.FirstName,
+                        LastName         = c.LastName,
+                        Id               = c.Id,
+                        IsMaker          = c.IsMaker,
+                        Handler          = c.Handler,
+                        FrontIdImagePath = c.FrontIdImagePath,
+                        BackIdImagePath  = c.BackIdImagePath,
+                        IsVerified       = c.IsVerified
+                    };
+                }),
+                IsSuccess = true,
+                Pagination = result.Result.Pagination
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Customer/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateProfileDetailsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateCustomerProfile([FromBody] UpdateProfileDetailsArgs args)
+    {
+        try
+        {
+            var result = await updateCustomerProfileHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateCustomerProfileArgs
+            {
+                VerifiedBadge = args.VerifiedBadge,
+                CustomerId = args.CustomerId,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateProfileDetailsResult
+            {
+                Result = new CustomerDTO
+                {
+                    FirstName = result.Result.FirstName,
+                    LastName = result.Result.LastName,
+                    IsVerified = result.Result.VerifiedBadge,
+                    Id = result.Result.Id
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

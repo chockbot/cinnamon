@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.File;
+using Cinnamon.Web.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +66,7 @@ builder.Host.UseSerilog(logger);
 
 builder.Services.AppExtendServices();
 
+
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 
@@ -95,7 +97,10 @@ app.UseCookiePolicy(new CookiePolicyOptions()
 {
     MinimumSameSitePolicy = SameSiteMode.Lax
 });
+
+
 app.UseAuthentication();
+app.UseMiddleware<PageAuthMiddleware>();
 app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>

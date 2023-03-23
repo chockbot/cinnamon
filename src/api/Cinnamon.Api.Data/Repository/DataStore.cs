@@ -65,6 +65,8 @@ public class DataStore : IDataStore
 
     public IPayoutLog PayoutLog => new PayoutLogEntity(applicationContext);
 
+    public IAdminUser AdminUser => new AdminUserEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

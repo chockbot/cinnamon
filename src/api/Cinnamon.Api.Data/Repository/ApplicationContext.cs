@@ -57,6 +57,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<PayoutAccount> PayoutAccounts {get; set;}
 
     public DbSet<PayoutLog> PayoutLogs {get; set;}
+    public DbSet<AdminUser> AdminUsers {get; set; }
 
     #endregion
 
