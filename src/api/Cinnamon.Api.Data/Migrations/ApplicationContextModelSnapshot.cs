@@ -363,6 +363,43 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("ActivitySchedules");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.AdminUser", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("AdminUsers");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Barangay", b =>
                 {
                     b.Property<int>("Id")
@@ -1669,7 +1706,7 @@ namespace Cinnamon.Api.Data.Migrations
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Student", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
-                        .WithMany()
+                        .WithMany("Students")
                         .HasForeignKey("ActivityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -1769,6 +1806,8 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Navigation("SearchTag")
                         .IsRequired();
+
+                    b.Navigation("Students");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>

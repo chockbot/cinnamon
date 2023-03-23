@@ -1,0 +1,82 @@
+﻿@using Cinnamon.Web.Models.Layout;
+@using System.Security.Claims;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager navigationManager
+@inherits LayoutComponentBase
+
+
+<Layout Sider class="dashboard-layout">
+    <input type='checkbox' id='toggle' @bind="IsShowSidebar" />
+    <LayoutSider @onclick="() => IsShowSidebar = !IsShowSidebar">
+        <LayoutSiderContent>
+            @if (Model.IsAuthenticated)
+            {
+                <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                    <li class="nav-item">
+                        <div class="nav-link item-link sidebar-header">
+                            <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
+                            <a href="Explore" class="d-flex align-items-center  text-white text-decoration-none">
+                                <span class="app-name" id="angelo">Cinnamon</span>
+                            </a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToUsers">
+                            <img class="icon-home" src="images/Dashboard Icon/account icon.png"> <span class="ms-1 d-sm-inline nav-text">Users</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToExperiences">
+                            <img class="icon-home" src="images/Dashboard Icon/dashboard icon.png"> <span class="ms-1 d-sm-inline nav-text">Experiences</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToRefunds">
+                            <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Refunds</span>
+                        </a>
+                    </li>
+                </ul>
+            }
+        </LayoutSiderContent>
+    </LayoutSider>
+    <Layout>
+        <LayoutContent>
+            <Container Fluid>
+                <div class="render-body">
+                    @Body
+                </div>
+            </Container>
+        </LayoutContent>
+    </Layout>
+</Layout>
+
+@code {
+    private bool IsShowSidebar { get; set; } = false;
+    private HeaderModel Model { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if (user.Identity != null && user.Identity.IsAuthenticated && token != null)
+        {
+            Model.IsAuthenticated = true;
+        }
+    }
+
+    private void NavigateToUsers()
+    {
+        navigationManager.NavigateTo("/admin/users");
+    }
+
+    private void NavigateToExperiences()
+    {
+        navigationManager.NavigateTo("/admin/experiences");
+    }
+
+    private void NavigateToRefunds()
+    {
+        navigationManager.NavigateTo("/admin/refunds");
+    }
+}
