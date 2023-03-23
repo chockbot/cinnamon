@@ -30,6 +30,7 @@ public class ActivityController : ControllerBase
     private readonly IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler;
     private readonly IUpdateActivityImageOrderHandler updateActivityImageOrderHandler;
     private readonly IGetOwnedActivityByHandler getOwnedActivityByHandler;
+    private readonly IGetMakerActivitiesHandler getMakerActivitiesHandler;
     private readonly IGetActivityByHandler getActivityByHandler;
     private readonly IGetAllRegionsHandler getAllRegionsHandler;
     private readonly IGetAllCitiesHandler getAllCitiesHandler;
@@ -45,7 +46,7 @@ public class ActivityController : ControllerBase
         IGetActivityHandler getActivityHandler, IGetAddressHandler getAddressHandler, IGetAllActivitiesHandler getAllActivitiesHandler,
         IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,
         IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
-        IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler,
+        IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler, IGetMakerActivitiesHandler getMakerActivitiesHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler, 
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
         IGetRefundableExperienceHandler getRefundableExperienceHandler)
@@ -69,6 +70,7 @@ public class ActivityController : ControllerBase
         this.getEnrolledActivitiesHandler = getEnrolledActivitiesHandler;
         this.updateActivityImageOrderHandler = updateActivityImageOrderHandler;
         this.getOwnedActivityByHandler = getOwnedActivityByHandler;
+        this.getMakerActivitiesHandler = getMakerActivitiesHandler;
         this.getActivityByHandler = getActivityByHandler;
         this.getAllRegionsHandler = getAllRegionsHandler;
         this.getAllCitiesHandler = getAllCitiesHandler;
@@ -628,7 +630,48 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetOwnedActivitiesResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
-    
+
+    [Route("GetMakerActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetMakerActivitiesResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetMakerActivities([FromQuery] GetMakerActivitiesArgs args)
+    {
+        try
+        {
+            var result = await getMakerActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetMakerActivitiesArgs
+            {
+                CustomerId = args.CustomerId,
+                IncludeActivityDescription = args.IncludeActivityDescription,
+                IncludeStudents = args.IncludeStudents ?? false,
+                IsActive = args.IsActive ?? false,
+            }) ;
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetMakerActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetMakerActivitiesResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Activities.Select(a => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                    {
+                        ActivityId = a.Id,
+                        Description = a.Description,
+                        Title = a.Title,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetMakerActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
     [Route("GetAllActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]

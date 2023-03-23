@@ -499,4 +499,24 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetRefundableExperienceResult>.CreateFailed(ex, "An error occured when getting all refundable experience api");
         }
     }
+    public async Task<AppResult<GetMakerActivitiesResult>> GetMakerActivities(GetMakerActivitiesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/GetMakerActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetMakerActivitiesResult>();
+
+            return AppResult<GetMakerActivitiesResult>.CreateSucceeded(result, "Successfully getting maker activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetMakerActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetMakerActivitiesResult>.CreateFailed(ex, "An error occured when getting maker activities api");
+        }
+    }
 }

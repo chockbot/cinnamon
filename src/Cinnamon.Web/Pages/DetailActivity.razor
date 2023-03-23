@@ -165,18 +165,27 @@
                             </div>
                             @if (customerDetail.IsVerified == 2)
                                 {
-                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" data-toggle="tooltip" data-placement="top" data-html="true" title="For uploading and completing all identification requirements." />
+                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" data-toggle="tooltip" data-placement="top" title="For uploading and completing all identification requirements." />
                                 }
                             @if (customerDetail.IsOG == true)
                                 {
-                                    <img class="verified-logo" src="images/Badges/OG.svg" data-toggle="tooltip" data-placement="top" data-html="true" title="For being part of the alpha and beta testing." />
+                                    <img class="verified-logo" src="images/Badges/OG.svg" data-toggle="tooltip" data-placement="top" title="For being part of the alpha and beta testing." />
                                 }
                             @if (customerDetail.IsOfficial == true)
                             {
-                                    <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" data-toggle="tooltip" data-placement="top" data-html="true" title="Legitimate experience provider in the platform." />
+                                <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" data-toggle="tooltip" data-placement="top" title="Legitimate experience provider in the platform." />
                             }
-                            @if(compl){
-
+                            @if(MakerCompletedStudent >= 10 || MakerCompletedStudent < 25){
+                                var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                <img class="verified-logo" src="@rare.ImgScr" data-toggle="tooltip" data-placement="top" title="@rare.Description" />
+                            }
+                            @if(MakerCompletedStudent >= 25 || MakerCompletedStudent < 100){
+                                var epic = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                <img class="verified-logo" src="@epic.ImgScr" data-toggle="tooltip" data-placement="top" title="@epic.Description" />
+                            }
+                            @if(MakerCompletedStudent >= 100){
+                                var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                                <img class="verified-logo" src="@legendary.ImgScr" data-toggle="tooltip" data-placement="top" title="@legendary.Description" />
                             }
                         </div>
                     </div>
@@ -387,6 +396,7 @@
     public string Identifier { get; set; }
     public DetailActivityModel           Model              = new DetailActivityModel();
     public Activity                      activity           = new Activity();
+    public List<Activity>                activities         = new List<Activity>();
     public CustomerProfile               customerDetail     = new CustomerProfile();
     public List<ExperienceType>          experienceTypes    = new List<ExperienceType>();
     public ExperienceType                experience         = new ExperienceType();
@@ -395,6 +405,8 @@
     private SchedulesModal               ModalSched { get; set; }
     public int                           OngoingStudents { get; set; }
     public int                           CompletedStudents { get; set; }
+    public int                           MakerOngoingStudennt { get; set; }
+    public int                           MakerCompletedStudent { get; set; }
     protected override async Task OnInitializedAsync()
     {
         bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
@@ -487,6 +499,7 @@
                     } : null
                 };
         }
+
         // Get experience types
         var experienceType = await activityApiHandler.GetExperienceTypes();
         if (experienceType.Succeeded && experienceType.Result != null && experienceType.Result.IsSuccess)
@@ -500,8 +513,10 @@
                     };
             }).ToList();
         }
+
         //Get Experience Type
         experience = experienceTypes.Where(a => a.Id == activity.ExperienceTypeId).ElementAt(0);
+        
         //Get Customer
         var customer = await accountApiHandler.GetCustomerById(activity.CreatedBy);
         if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
@@ -525,6 +540,7 @@
                 ExperienceTypes = experienceTypes,
                 Customer = customerDetail
             };
+
         //Get Ongoing and Completed Students
         var students = await ongoingApiHandler.GetEnrolledStudents(ActivityListData.Result.Result.ActivityId);
         if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
@@ -541,7 +557,6 @@
                     };
             }).ToList();
         }
-
         CompletedStudents = enrolledStudents.Where(a => a.SessionsAttended >= a.NumberOfSessions).Count();
         OngoingStudents = enrolledStudents.Where(a => a.SessionsAttended < a.NumberOfSessions).Count();
 
@@ -552,19 +567,42 @@
             badges = badgeList.Result.Result.Select(b =>
             {
                 return new BadgeList
-                {
-                    Id = b.Id,
-                    Name = b.Name,
-                    Description = b.Description,
-                    NumberOfStudent = b.NumberOfStudent,
-                    NumberOfCompleted = b.NumberOfCompleted,
-                    NumberOfReviews = b.NumberOfReviews,
-                    ImgScr = b.ImgScr
-                };
+                    {
+                        Id = b.Id,
+                        Name = b.Name,
+                        Description = b.Description,
+                        NumberOfStudent = b.NumberOfStudent,
+                        NumberOfCompleted = b.NumberOfCompleted,
+                        NumberOfReviews = b.NumberOfReviews,
+                        ImgScr = b.ImgScr
+                    };
             }).ToList();
         }
-        
-    }
+        //Get Maker Activity
+        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+            {
+                CustomerId = activity.CreatedBy,
+                IncludeStudents = true,
+                IsActive = true,
+            });
+        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
+        {
+            if (ActivityList.Result.Result.Count() > 0)
+            {
+                activities = ActivityList.Result.Result.Select(r =>
+                {
+                    return new Activity
+                        {
+                            Id = r.ActivityId,
+                            OngoingStudents = r.OngoingStudents,
+                            CompletedStudents = r.CompletedStudents,
+                        };
+                }).ToList();
+            }
+        }
+        MakerOngoingStudennt = activities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
+    } 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if(firstRender)
