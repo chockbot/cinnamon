@@ -1,0 +1,201 @@
+﻿@layout AdminLayout
+@page "/admin/users"
+@using System.Security.Claims;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IAccountApiHandler accountApiHandler;
+@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+
+<div class="top-row">
+    <div class="dropdown">
+        <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
+            <div class="menu">
+                <img src="images/menu.png">
+            </div>
+        </button>
+        <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
+            @if (AuthState != null)
+            {
+                @if (AuthState.Identity.IsAuthenticated)
+                {
+                    <li class="dropdown-item">
+                        <Button Border="Border.Is0" Clicked="Logout">
+                            Logout
+                        </Button>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>
+<div class="header">
+    <p class="title">User Verification Board</p>
+</div>
+<div class="users-section">
+    <div class="table-list">
+        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+            <TableHeader>
+                <TableRow>
+                    <TableHeaderCell>
+                        Email
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        First Name
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Last Name
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        ID Uploaded
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Approve/Reject
+                    </TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                @foreach (var item in customers)
+                {
+                    <TableRow>
+                        <TableRowCell class="name-body">@item.Email</TableRowCell>
+                        <TableRowCell class="name-body">@item.FirstName</TableRowCell>
+                        <TableRowCell class="name-body">@item.LastName</TableRowCell>
+                        <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">
+                            <button type="button" class="btn btn-primary border-0" @onclick="(() => viewImageModal.ShowModal(item.BackIdImagePath, item.FrontIdImagePath))">Show ID</button>
+                        </TableRowCell>
+                        <TableRowCell class="name-body">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
+                            </div>
+                        </TableRowCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+        <Pagination Class="pagination-section" Style="margin-top: 50px">
+            @{
+                for (var i = 1; i <= Pagination.TotalPages; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                }
+            }
+        </Pagination>
+        <ViewImageModal @ref="viewImageModal"></ViewImageModal>
+    </div>
+</div>
+
+
+@code {
+    public bool clickButton { get; set; }
+    public ClaimsPrincipal AuthState { get; set; }
+    public List<CustomerProfile> customers = new List<CustomerProfile>();
+    protected ViewImageModal viewImageModal = new ViewImageModal();
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    private string currentPage = "1";
+    string token = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        token = user.FindFirstValue("Token");
+        AuthState = user;
+
+        await GetAllCustomers(1);
+    }
+
+    private async Task GetAllCustomers(int pageIndex)
+    {
+        var result = await accountApiHandler.GetAllCustomer(new Framework.ApiCommand.ApiCore.Account.Request.GetAllCustomersArgs
+            {
+                CountPerPage = 5,
+                PageIndex = pageIndex
+            }, token);
+
+        customers = result.Result.Result.Select(r => new CustomerProfile
+            {
+                Id = r.Id,
+                Email = r.Email,
+                LastName = r.LastName,
+                FirstName = r.FirstName,
+                FrontIdImagePath = r.FrontIdImagePath,
+                BackIdImagePath = r.BackIdImagePath,
+                IsVerified = r.IsVerified,
+                IsChecked = r.IsVerified == 2
+            }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
+
+        Pagination = result.Result.Pagination;
+    }
+
+    private string ShowMenu()
+    {
+        return clickButton ? "show" : "";
+    }
+
+    private void onClickMenu()
+    {
+        if (clickButton)
+        {
+            clickButton = false;
+        }
+        else
+        {
+            clickButton = true;
+        }
+        StateHasChanged();
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/api/account/logout", true);
+    }
+
+    private async Task HandleCheckedChanged(ChangeEventArgs e, CustomerProfile customer)
+    {
+        bool isChecked = (bool)e.Value;
+
+        int verifiedBadge = 0;
+
+        if (isChecked)
+        {
+            verifiedBadge = 2;
+        }
+        else
+        {
+            if (string.IsNullOrEmpty(customer.BackIdImagePath) && string.IsNullOrEmpty(customer.FrontIdImagePath))
+            {
+                verifiedBadge = 0;
+            }
+            else
+            {
+                verifiedBadge = 1;
+            }
+        }
+
+        var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+            {
+                VerifiedBadge = verifiedBadge,
+                CustomerId = customer.Id
+            }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            StateHasChanged();
+        }
+    }
+
+    private bool IsActive(string page)
+        => currentPage == page;
+
+    private async Task SetActive(string page)
+    {
+        currentPage = page;
+        await GetAllCustomers(int.Parse(page));
+    }
+}

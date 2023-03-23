@@ -14,7 +14,18 @@
         public bool IsOfficial { get; set; }
         public string About { get; set; }
         public string Handler {get; set;}
+        public string FrontIdImagePath { get; set; }
+        public string BackIdImagePath { get; set; }
 
         public IList<FamilyMember> FamilyMembers {get; set;}
+
+        private bool _isChecked;
+
+        public bool IsChecked
+        {
+            get { return _isChecked; }
+            set { _isChecked = value; }
+        }
+
     }
 }

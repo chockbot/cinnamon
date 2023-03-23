@@ -45,6 +45,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IRequestRefundData, Modules.DataAccess.RequestRefund.RequestRefundData>();
         services.AddTransient<Modules.DataAccess.Handlers.IPayoutAccountData, Modules.DataAccess.PayoutAccount.PayoutAccountData>();
         services.AddTransient<Modules.DataAccess.Handlers.IPayoutLogData, Modules.DataAccess.PayoutLog.PayoutLogData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IAdminUserData, Modules.DataAccess.AdminUser.AdminUserData>();
+
         services.AddTransient<Modules.DataAccess.Handlers.IBadgesData, Modules.DataAccess.Badges.BadgesData>();
          
         // ongoing activity services
@@ -82,6 +84,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IDeleteProfilePictureHandler, Services.AccountService.DeleteProfilePictureHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGetPayoutAccountHandler, Services.AccountService.GetPayoutAccountHandler>();
         services.AddTransient<Services.AccountService.Handlers.ICreateUpdatePayoutAccountHandler, Services.AccountService.CreateUpdatePayoutAccountHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGetAllCustomersHandler, Services.AccountService.GetAllCustomersHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IUpdateCustomerProfileHandler, Services.AccountService.UpdateCustomerProfileHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -142,7 +146,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.PaymentGatewayService.Handlers.IGetPaymentChannelsHandler, Services.PaymentGatewayService.GetPaymentChannelsHander>();
         services.AddTransient<Services.PaymentGatewayService.Handlers.IGeneratePayoutHandler, Services.PaymentGatewayService.GeneratePayoutHandler>();
         services.AddTransient<Services.PaymentGatewayService.Handlers.IVerifyPayoutCallbackHandler, Services.PaymentGatewayService.VerifyPayoutCallbackHandler>();
-        
+
+        //admin services
+        services.AddTransient<Services.AdminService.Handlers.IGetAdminUserByEmailHandler, Services.AdminService.GetAdminUserByEmailHandler>();
+
         return services;
     }
 }

@@ -663,4 +663,48 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetPayoutAccountResult>.CreateFailed(ex, "An error occured when get requested payout account api");
         }
     }
+
+    public async Task<AppResult<GetAllCustomerResult>> GetAllCustomer(GetAllCustomersArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Customers")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllCustomerResult>();
+
+            return AppResult<GetAllCustomerResult>.CreateSucceeded(result, "Successfully get all customers");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllCustomerResult>.CreateFailed(ex, "An error occured when getting all customers");
+        }
+    }
+
+    public async Task<AppResult<UpdateProfileDetailsResult>> UpdateCustomerProfile(UpdateProfileDetailsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Customer/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateProfileDetailsResult>();
+
+            return AppResult<UpdateProfileDetailsResult>.CreateSucceeded(result, "Successfully posting update profile details api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateProfileDetailsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateProfileDetailsResult>.CreateFailed(ex, "An error occured when posting update profile details api");
+        }
+    }
 }

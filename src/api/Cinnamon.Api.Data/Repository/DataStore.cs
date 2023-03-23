@@ -68,6 +68,8 @@ public class DataStore : IDataStore
 
     public IBadgeList BadgeList => new BadgeListEntity(applicationContext);
 
+    public IAdminUser AdminUser => new AdminUserEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
