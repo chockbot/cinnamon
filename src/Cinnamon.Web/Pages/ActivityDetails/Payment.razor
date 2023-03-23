@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Models;
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Shared
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -255,7 +256,21 @@
                             </div>
                             <hr />
                             <div class="d-flex align-items-center justify-content-center protected-footer">
-                                Your booking is protected by 
+                                <CustomTooltip MarginLeft="-100">
+                                    <TextContent>
+                                        <span class="color-grey-100">
+                                            Your booking is protected by
+                                        </span>
+                                    </TextContent>
+                                    <TooltipContent>
+                                        <span class="color-black-100">Your transactions are always secure.</span>
+                                        <br>
+                                        <span class="color-grey-100">
+                                            With our platform you can purchase experiences with confidence, 
+                                        knowing that your sensitive information is always safe and secure.
+                                        </span>
+                                    </TooltipContent>
+                                </CustomTooltip> 
                                 <div class="app-name">
                                     @Resources.App.appName
                                 </div>
