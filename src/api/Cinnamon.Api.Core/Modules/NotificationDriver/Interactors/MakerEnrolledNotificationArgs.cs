@@ -11,6 +11,8 @@ public class MakerEnrolledNotificationArgs : IInteractor
     public string MakerName {get; set;}
     public string PayerName {get; set;}
     public IEnumerable<IncludedStudents> Students {get; set;}
+    public string PaymentMethod {get; set;}
+    public string ReferenceNumber {get; set;}
 
     public class IncludedStudents
     {
