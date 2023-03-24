@@ -65,4 +65,5 @@ public class Activity
     public Guid Guid { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
+    public bool IsDeactivated { get; set; }
 }

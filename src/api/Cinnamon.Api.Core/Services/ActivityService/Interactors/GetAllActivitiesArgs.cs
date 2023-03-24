@@ -19,4 +19,5 @@ public class GetAllActivitiesArgs:IInteractor
     public int ExperienceCategoryId { get; set; }
     public string SearchValue { get; set; }
     public bool? IncludeStudents { get; set; }
+    public bool? IsDeactivated { get; set; }
 }

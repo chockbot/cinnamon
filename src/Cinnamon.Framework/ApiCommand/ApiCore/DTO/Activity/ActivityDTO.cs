@@ -49,6 +49,7 @@ public class ActivityDTO
     public string CityName { get; set; } = string.Empty;
     public string RegionName { get; set; } = string.Empty;
     public string BarangayName { get; set; } = string.Empty;
+    public bool IsDeactivated { get; set; }
 
     public class ActivitySchedule 
     {
@@ -107,5 +108,6 @@ public class ActivityDTO
         public int IsVerified { get; set; }
         public bool IsOG { get; set; }
         public bool IsOfficial { get; set; }
+        public string Email { get; set; }
     }
 }

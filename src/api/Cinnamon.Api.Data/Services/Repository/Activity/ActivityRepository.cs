@@ -345,7 +345,7 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip,
-        int experienceCategoryId, string searchValue,
+        int experienceCategoryId, string searchValue, bool? isDeactivated,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
         bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
@@ -369,7 +369,8 @@ public class ActivityRepository : IActivityRepository
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
                         (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
-                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? a.IsNew : a.ExperienceCategoryId == experienceCategoryId : true);
+                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? a.IsNew : a.ExperienceCategoryId == experienceCategoryId : true) &&
+                        (isDeactivated.HasValue ? a.IsDeactivated == isDeactivated.Value : true);
 
 
             var result = await dataStore.Activity.FindActivitiesAsync(filter, searchValue, count, skip, includes);
@@ -399,7 +400,8 @@ public class ActivityRepository : IActivityRepository
                     SubCategory          = a.SubCategory?.SubCatergory,
                     IsNew                = a.IsNew,
                     IsSetSession         = a.IsSetSession,
-                    SessionName          = a.SessionName
+                    SessionName          = a.SessionName,
+                    IsDeactivated        = a.IsDeactivated
                 };
 
                 // address fields
@@ -873,7 +875,7 @@ public class ActivityRepository : IActivityRepository
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, string? subdivision, string? region,
         string? barangay, string? postalcode,string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4, 
-        string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName, string pinnedLocation)
+        string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName, string pinnedLocation, bool? isDeactivated)
     {
         try
         {
@@ -932,6 +934,7 @@ public class ActivityRepository : IActivityRepository
             activity.IsPublished = isPublished ?? activity.IsPublished;
             activity.SessionName = SessionName ?? activity.SessionName;
             activity.IsSetSession = IsSetSession ?? activity.IsSetSession;
+            activity.IsDeactivated = isDeactivated ?? activity.IsDeactivated;
 
             var updatedActivity = await dataStore.Activity.Update(activity);
             if (!updatedActivity.Succeeded)
@@ -970,19 +973,20 @@ public class ActivityRepository : IActivityRepository
                 {
                     return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find barangay"), "Can't find barangay");
                 }
+
+                activityAddress.CityName = cityResult.Result != null ? cityResult.Result.Name : string.Empty;
+                activityAddress.RegionName = regionResult.Result != null ? regionResult.Result.Name : string.Empty;
+                activityAddress.BarangayName = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty;
             }
-           
+
 
             activityAddress.Address1       = address1 ?? activityAddress.Address1;
             activityAddress.Address2       = address2 ?? activityAddress.Address2;
             activityAddress.District       = district ?? activityAddress.District;
             activityAddress.City           = city ?? activityAddress.City;
-            activityAddress.CityName       = cityResult.Result != null ? cityResult.Result.Name : string.Empty;
             activityAddress.Subdivision    = subdivision?? activityAddress.Subdivision;    
             activityAddress.Region         = region?? activityAddress.Region;
-            activityAddress.RegionName     = regionResult.Result != null ? regionResult.Result.Name : string.Empty;
             activityAddress.Barangay       = barangay?? activityAddress.Barangay; 
-            activityAddress.BarangayName   = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty;
             activityAddress.PostalCode     = postalcode?? activityAddress.PostalCode;
             activityAddress.PinnedLocation = pinnedLocation?? activityAddress.PinnedLocation;
 
@@ -1073,7 +1077,7 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
     {
         try
         {
@@ -1092,7 +1096,8 @@ public class ActivityRepository : IActivityRepository
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
-                        (customerId.HasValue ? a.CreatedBy == customerId.Value : true) && a.PurchaseOrderCount > 0 && !a.IsNew;
+                        (customerId.HasValue ? a.CreatedBy == customerId.Value : true) && a.PurchaseOrderCount > 0 && !a.IsNew &&
+                        (isDeactivated.HasValue ? a.IsDeactivated == isDeactivated.Value : true);
 
 
             var result = await dataStore.Activity.GetPopularActivities(filter, count, skip, includes);

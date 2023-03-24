@@ -42,7 +42,8 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                 IncludeSubCategories = args.IncludeSubCategories,
                 PageIndex = args.PageIndex,
                 CountPerPage = args.CountPerPage,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IsDeactivated = args.IsDeactivated
             });
             if (!result.Succeeded || result.Result == null)
             {

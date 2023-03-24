@@ -32,6 +32,8 @@ public class UpdateActivityArgs : IInteractor
     public bool? IsSetSession { get; set; }
     public string? SessionName { get; set; }
     public string? PinnedLocation { get; set; }
+    public bool? IsDeactivated { get; set; }
+    public bool? IsAdmin { get; set; }
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<ActivitySchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int> DeletedScheduleIds {get; set;}
