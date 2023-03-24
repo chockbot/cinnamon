@@ -286,28 +286,40 @@
                                     <p class="experience-by">Experience by</p>
                                     <p class="owner">@($"{activity.Owner.FirstName} {activity.Owner.LastName}")</p>
                                 </div>
-                                <div class="ms-5 verified-logo">
+                                <div class="d-flex ms-5 verified-logo">
                                     @if(activity.Owner.IsVerified == 2){
-                                        <img src="images/Badges/VERIFIED.svg" alt="verified-logo" title="For uploading and completing all identification requirements.">
+                                        <Tooltip Multiline=true Text="For uploading and completing all identification requirements.">
+                                            <img class="verified-logo" src="images/Badges/VERIFIED.svg"/>
+                                        </Tooltip> 
                                     }
                                     @if(activity.Owner.IsOG == true){
-                                        <img src="images/Badges/OG.svg" alt="verified-logo" title="For being part of the alpha and beta testing.">
+                                        <Tooltip Multiline=true Text="For being part of the alpha and beta testing.">
+                                            <img class="verified-logo" src="images/Badges/OG.svg" />
+                                        </Tooltip>
                                     }
                                     @if (activity.Owner.IsOfficial == true)
                                     {
-                                        <img src="images/Badges/OFFICIAL PARTNER.svg" alt="verified-logo" title="Legitimate experience provider in the platform.">
+                                        <Tooltip Multiline=true Text="Legitimate experience provider in the platform.">
+                                            <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
+                                        </Tooltip>
                                     }
                                     @if(MakerCompletedStudent >= 10 && MakerCompletedStudent < 25){
                                         var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
-                                        <img class="verified-logo" src="@rare.ImgScr" data-toggle="tooltip" data-placement="top" title="@rare.Description" />
+                                        <Tooltip Multiline=true Text="@rare.Description">
+                                            <img class="verified-logo" src="@rare.ImgScr" />
+                                        </Tooltip>
                                     }
                                     @if(MakerCompletedStudent >= 25 && MakerCompletedStudent < 100){
                                         var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
-                                        <img class="verified-logo" src="@epic.ImgScr" data-toggle="tooltip" data-placement="top" title="@epic.Description" />
+                                        <Tooltip Multiline=true Text="@epic.Description">
+                                            <img class="verified-logo" src="@epic.ImgScr" />
+                                        </Tooltip>
                                     }
                                     @if(MakerCompletedStudent >= 100){
                                         var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
-                                        <img class="verified-logo" src="@legendary.ImgScr" data-toggle="tooltip" data-placement="top" title="@legendary.Description" />
+                                        <Tooltip Multiline=true Text="@legendary.Description">
+                                            <img class="verified-logo" src="@legendary.ImgScr" />
+                                        </Tooltip>
                                     }
                                 </div>
                             </div>
