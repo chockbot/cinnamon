@@ -187,12 +187,12 @@
                             {
                                 <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" data-toggle="tooltip" data-placement="top" title="Legitimate experience provider in the platform." />
                             }
-                            @if(MakerCompletedStudent >= 10 || MakerCompletedStudent < 25){
+                            @if(MakerCompletedStudent >= 10 && MakerCompletedStudent < 25){
                                 var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
                                 <img class="verified-logo" src="@rare.ImgScr" data-toggle="tooltip" data-placement="top" title="@rare.Description" />
                             }
-                            @if(MakerCompletedStudent >= 25 || MakerCompletedStudent < 100){
-                                var epic = badges.Where(r => r.Id == 1).FirstOrDefault();
+                            @if(MakerCompletedStudent >= 25 && MakerCompletedStudent < 100){
+                                var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
                                 <img class="verified-logo" src="@epic.ImgScr" data-toggle="tooltip" data-placement="top" title="@epic.Description" />
                             }
                             @if(MakerCompletedStudent >= 100){
