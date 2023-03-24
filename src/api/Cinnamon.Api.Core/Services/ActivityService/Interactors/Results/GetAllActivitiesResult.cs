@@ -54,6 +54,7 @@ public class GetAllActivitiesResult
         public string CityName { get; set; } = string.Empty;
         public string RegionName { get; set; } = string.Empty;
         public string BarangayName { get; set; } = string.Empty;
+        public bool IsDeactivated { get; set; }
 
         public class ActivitySchedule
         {
@@ -83,6 +84,10 @@ public class GetAllActivitiesResult
             public int Id {get; set;}
             public string Handler {get; set;}
             public int IsVerified { get; set; }
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+            public string Email { get; set; }
+
         }
 
 

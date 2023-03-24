@@ -71,8 +71,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
             }
 
             // check activity if existed
-            var activity = await activityData.GetActivityById(args.ActivityId, 
-                            new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs {IncludeSchedules = true, CustomerId = id });
+            var activity = args.IsAdmin.GetValueOrDefault() ? await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true }) : 
+                                                            await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true, CustomerId = id });
             if(!activity.Succeeded || activity.Result == null)
             {
                 return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(activity.Message), activity.Message);
@@ -153,7 +153,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Title = args.Title,
                 IsSetSession = args.IsSetSession,
                 SessionName = args.SessionName,
-                PinnedLocation = args.PinnedLocation
+                PinnedLocation = args.PinnedLocation,
+                IsDeactivated = args.IsDeactivated
             };
 
             if(args.SearchTags != null)

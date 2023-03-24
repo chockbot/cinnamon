@@ -38,4 +38,5 @@ public class UpdateActivity
     public bool? IsSetSession { get; set; }
     public string? SessionName { get; set; }
     public string? PinnedLocation { get; set; }
+    public bool? IsDeactivated { get; set; }
 }
