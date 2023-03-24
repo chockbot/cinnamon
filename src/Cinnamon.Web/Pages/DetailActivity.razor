@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Models
 @using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Components.Pages
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
@@ -164,13 +165,24 @@
                                     <a class="text-decoration-none" href="/maker/profile/@(activity.Owner != null && !string.IsNullOrEmpty(activity.Owner.Handler) ? activity.Owner.Handler : activity.CreatedBy.ToString() )">View Profile</a>
                             </div>
                             @if (customerDetail.IsVerified == 2)
-                                {
-                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" data-toggle="tooltip" data-placement="top" title="For uploading and completing all identification requirements." />
-                                }
+                            {
+                                <CustomTooltip>
+                                    <TextContent>
+                                        <span>
+                                            <img class="verified-logo" src="images/Badges/VERIFIED.svg"/>
+                                        </span>
+                                    </TextContent>
+                                    <TooltipContent>
+                                        <span class="color-grey-100">
+                                            For uploading and completing all identification requirements.
+                                        </span>
+                                    </TooltipContent>
+                                </CustomTooltip>
+                            }
                             @if (customerDetail.IsOG == true)
-                                {
-                                    <img class="verified-logo" src="images/Badges/OG.svg" data-toggle="tooltip" data-placement="top" title="For being part of the alpha and beta testing." />
-                                }
+                            {
+                                <img class="verified-logo" src="images/Badges/OG.svg" data-toggle="tooltip" data-placement="top" title="For being part of the alpha and beta testing." />
+                            }
                             @if (customerDetail.IsOfficial == true)
                             {
                                 <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" data-toggle="tooltip" data-placement="top" title="Legitimate experience provider in the platform." />
