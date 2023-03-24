@@ -705,8 +705,8 @@
                 ExperienceCategoryId = experienceCategoryId,
                 SearchValue = searchValue,
                 IncludeCustomer = true,
-                IncludeStudents = true
-
+                IncludeStudents = true,
+                IsDeactivated = false
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
@@ -833,7 +833,8 @@
                 PageIndex = pageIndex,
                 CountPerPage = 20,
                 IncludeStudents = true,
-                IncludeCustomer = true
+                IncludeCustomer = true,
+                IsDeactivated = false
             });
         if (popularActivityList.Succeeded && popularActivityList.Result != null && popularActivityList.Result.IsSuccess)
         {

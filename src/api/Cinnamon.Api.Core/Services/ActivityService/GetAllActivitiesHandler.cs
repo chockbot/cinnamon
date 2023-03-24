@@ -44,7 +44,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 CountPerPage = args.CountPerPage,
                 ExperienceCategoryId  = args.ExperienceCategoryId,
                 SearchValue = args.SearchValue,
-                IncludeStudents = args.IncludeStudents
+                IncludeStudents = args.IncludeStudents,
+                IsDeactivated = args.IsDeactivated
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -97,6 +98,7 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         Handler                 = e.Handler,
                         IsSetSession            = e.IsSetSession,
                         SessionName             = e.SessionName,
+                        IsDeactivated           = e.IsDeactivated,
                         ActivitySchedules       = e.Schedules != null ? e.Schedules.Select(s => {
                             return new GetAllActivitiesResult.Activity.ActivitySchedule
                             {
@@ -124,6 +126,9 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                             Handler = e.Owner.Handler,
                             Id = e.Owner.Id,
                             IsVerified = e.Owner.IsVerified,
+                            Email = e.Owner.Email,
+                            FirstName = e.Owner.FirstName,
+                            LastName = e.Owner.LastName,
                         } : null,
                         IsNew = e.IsNew,
                         CompletedStudents = e.CompletedStudents,
