@@ -71,14 +71,17 @@ builder.Services.Configure<FormOptions>(opts => {
 builder.Services.AddQuartz(q => {
     q.UseMicrosoftDependencyInjectionJobFactory();
 
-    var payoutJobkey = new JobKey("GeneratePayoutHandler");
-    q.AddJob<GeneratePayoutJob>(opts => opts.WithIdentity(payoutJobkey));
+    if(applicationConfig.Disbursement.RunDisbursement)
+    {
+        var payoutJobkey = new JobKey("GeneratePayoutHandler");
+        q.AddJob<GeneratePayoutJob>(opts => opts.WithIdentity(payoutJobkey));
 
-    q.AddTrigger(opts => opts
-        .ForJob(payoutJobkey)
-        .WithIdentity("GeneratePayoutHandler-trigger")
-        .WithSimpleSchedule(x => x.WithIntervalInHours(3).RepeatForever())
-    );
+        q.AddTrigger(opts => opts
+            .ForJob(payoutJobkey)
+            .WithIdentity("GeneratePayoutHandler-trigger")
+            .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Disbursement.RunPerHour).RepeatForever())
+        );
+    }
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
