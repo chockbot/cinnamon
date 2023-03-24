@@ -47,6 +47,7 @@ public class ActivityDTO
     public string PinnedLocation { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
+    public bool IsDeactivated { get; set; }
     public IList<ActivityScheduleDTO> Schedules { get; set; }
     public IList<ActivityImageDTO> Images { get; set; }
     public CustomerDTO Owner {get; set;}

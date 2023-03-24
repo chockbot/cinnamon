@@ -18,4 +18,5 @@ public class GetAllActivitiesArgs
     public int? ExperienceCategoryId { get; set; }
     public string? SearchValue { get; set; }
     public bool? IncludeStudents { get; set; }
+    public bool? IsDeactivated { get; set; }
 }

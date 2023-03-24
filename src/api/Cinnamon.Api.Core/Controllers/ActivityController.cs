@@ -226,6 +226,8 @@ public class ActivityController : ControllerBase
                 IsSetSession = args.IsSetSession,
                 SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
+                IsDeactivated = args.IsDeactivated,
+                IsAdmin = args.IsAdmin,
                 ActivitySchedules = args.ActivitySchedules != null ? 
                     args.ActivitySchedules.Select(s => {
                         return new Services.ActivityService.Interactors.UpdateActivityArgs.ActivitySchedule {
@@ -697,6 +699,7 @@ public class ActivityController : ControllerBase
                 SearchValue= string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 ExperienceCategoryId = args.ExperienceCategoryId.GetValueOrDefault(),
                 IncludeStudents = args.IncludeStudents ?? false,
+                IsDeactivated = args.IsDeactivated
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -774,10 +777,14 @@ public class ActivityController : ControllerBase
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
                             IsVerified= a.Owner.IsVerified,
+                            Email = a.Owner.Email,
+                            FirstName = a.Owner.FirstName,
+                            LastName = a.Owner.LastName,
                         } : null,
                         IsNew = a.IsNew,
                         CompletedStudents = a.CompletedStudents,
-                        OngoingStudents = a.OngoingStudents
+                        OngoingStudents = a.OngoingStudents,
+                        IsDeactivated = a.IsDeactivated
                     };
                 }).AsQueryable()
             });
@@ -1473,6 +1480,7 @@ public class ActivityController : ControllerBase
                 PageIndex = args.PageIndex,
                 CountPerPage = args.CountPerPage,
                 IncludeStudents = args.IncludeStudents ?? false,
+                IsDeactivated = args.IsDeactivated,
             });
             if (!result.Succeeded || result.Result == null)
             {
