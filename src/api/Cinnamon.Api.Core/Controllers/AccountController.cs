@@ -7,6 +7,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Waitlist;
 using Microsoft.AspNetCore.Authorization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.FamilyMember;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.RequestRefund;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -50,6 +51,7 @@ public class AccountController : ControllerBase
     private readonly ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler;
     private readonly IGetAllCustomersHandler getAllCustomersHandler;
     private readonly IUpdateCustomerProfileHandler updateCustomerProfileHandler;
+    private readonly IUpdateRequestRefundHandler updateRequestRefundHandler;
 
     #endregion
 
@@ -67,7 +69,7 @@ public class AccountController : ControllerBase
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
         IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
-        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler)
+        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, IUpdateRequestRefundHandler updateRequestRefundHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -101,6 +103,7 @@ public class AccountController : ControllerBase
         this.createUpdatePayoutAccountHandler = createUpdatePayoutAccountHandler;
         this.getAllCustomersHandler = getAllCustomersHandler;
         this.updateCustomerProfileHandler = updateCustomerProfileHandler;
+        this.updateRequestRefundHandler = updateRequestRefundHandler;
     }
 
     #endregion
@@ -1058,7 +1061,12 @@ public class AccountController : ControllerBase
         try
         {
             var result = await getRequestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.GetRequestRefundArgs {
-                Status = args.Status
+                Status = args.Status,
+                CountPerPage= args.CountPerPage,
+                PageIndex= args.PageIndex,
+                IsAdmin = args.IsAdmin,
+                IncludeCustomer = args.IncludeCustomer,
+                IncludePurchaseOrder= args.IncludePurchaseOrder
             });
             if(!result.Succeeded || result.Result == null)
             {
@@ -1068,11 +1076,18 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetRequestedRefundsResult {
                 Result = result.Result.RequestedRefunds.Select(r => {
                     return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.RequestedRefundDTO {
+                        Id            = r.Id,
                         ActivityTitle = r.ExperienceTitle,
-                        ReferenceNo = r.ReferenceNumber,
-                        Status = r.Status
+                        ReferenceNo   = r.ReferenceNumber,
+                        Status        = r.Status,
+                        Email         = r.Email,
+                        FirstName     = r.FirstName,
+                        LastName      = r.LastName,
+                        Reason        = r.Reason,
+                        OverAllTotal  = r.OverAllTotal
                     };
                 }),
+                Pagination = result.Result.Pagination,
                 IsSuccess = true
             });
         }
@@ -1250,6 +1265,45 @@ public class AccountController : ControllerBase
                     Id = result.Result.Id
                 },
                 IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Refund/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateRequestRefundResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateRefundRequest([FromBody] UpdateRequestRefundArgs args)
+    {
+        try
+        {
+            var result = await updateRequestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateRequestRefundArgs
+            {
+                RefundAmountGiven = args.RefundAmountGiven,
+                RefundId          = args.RefundId,
+                Status            = args.Status,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateRequestRefundResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateRequestRefundResult
+            {
+               IsSuccess= true,
+               Result = new RequestRefundDTO
+               {
+                   Status          = result.Result.Status,
+                   CustomerId      = result.Result.CustomerId,
+                   ExperienceTitle = result.Result.ExperienceTitle,
+                   Id              = result.Result.Id,
+                   PurchaseOrderId = result.Result.PurchaseOrderId,
+                   Reason          = result.Result.Reason
+               }
             });
         }
         catch (Exception ex)

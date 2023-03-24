@@ -38,4 +38,5 @@ public interface IAccountApiHandler
     Task<AppResult<GetPayoutAccountResult>> GetPayoutAccount(string token);
     Task<AppResult<GetAllCustomerResult>> GetAllCustomer(GetAllCustomersArgs args, string token);
     Task<AppResult<UpdateProfileDetailsResult>> UpdateCustomerProfile(UpdateProfileDetailsArgs args, string token);
+    Task<AppResult<UpdateRequestRefundResult>> UpdateRefundRequest(UpdateRequestRefundArgs args, string token);
 } 

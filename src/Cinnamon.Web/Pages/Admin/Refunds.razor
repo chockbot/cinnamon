@@ -1,29 +1,230 @@
 ﻿@layout AdminLayout
 @page "/admin/refunds"
+@using System.Security.Claims;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@inject IAccountApiHandler accountApiHandler;
+@using Cinnamon.Web.Components;
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Customer;
+@using static Cinnamon.Web.Models.Customer.RequestRefundModel;
 
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!--Bootstrap-->
-</head>
-<body>
-    <div class="container container-fluid">
-        <div class="row d-flex justify-content-center">
-            <div class="row justify-content-center">
-                <div class="col-sm-6 text-center">
-                    <img src="images/Missing/building-on-it.svg" class="img-coming-soon img-fluid">
-                </div>
+<div class="top-row">
+    <div class="dropdown">
+        <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
+            <div class="menu">
+                <img src="images/menu.png">
             </div>
-            <p class="coming-soon-caption">We’re building on it, come back soon.</p>
-            <p class="mini-caption">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+        </button>
+        <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
+            @if (AuthState != null)
+            {
+                @if (AuthState.Identity.IsAuthenticated)
+                {
+                    <li class="dropdown-item">
+                        <Button Border="Border.Is0" Clicked="Logout">
+                            Logout
+                        </Button>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-9">
+        <div class="header">
+            <p class="title">Refund Review Board</p>
         </div>
     </div>
-</body>
-</html>
+    <div class="col-lg-3">
+        <div class="search-section"></div>
+        <input class="form-check-input" type="radio" data-id="" name="refund-status" id="pending" @onchange='@(()=>CheckboxChanged(0))'> Pending
+        <input class="form-check-input" type="radio" data-id="" name="refund-status" id="issued" @onchange='@(()=>CheckboxChanged(1))'> Issued
+    </div>
+</div>
+<div class="users-section">
+    <div class="table-list">
+        <Table Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+            <TableHeader>
+                <TableRow>
+                    <TableHeaderCell>
+                        Email
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        First Name
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Last Name
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Reference Number
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Experience Title
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Reason
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Refund amount requested
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Refund amount given
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Issued
+                    </TableHeaderCell>
+                </TableRow>
+            </TableHeader>
+            <TableBody>
+                @foreach (var item in refundRequests)
+                {
+                    <TableRow>
+                        <TableRowCell class="name-body">@item.Email</TableRowCell>
+                        <TableRowCell class="name-body">@item.FirstName</TableRowCell>
+                        <TableRowCell class="name-body">@item.LastName</TableRowCell>
+                        <TableRowCell class="name-body">@item.ReferenceNo</TableRowCell>
+                        <TableRowCell class="name-body">@item.ExperienceTitle</TableRowCell>
+                        <TableRowCell class="name-body">@item.Reason</TableRowCell>
+                        <TableRowCell class="name-body">@item.OverAllTotal</TableRowCell>
+                        <TableRowCell class="name-body">
+                            <input class="form-control" type="text" placeholder="Enter Amount"
+                               @bind-value="@item.RefundAmount" />
+                        </TableRowCell>
+                        <TableRowCell class="name-body">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
+                            </div>
+                        </TableRowCell>
+                    </TableRow>
+                }
+            </TableBody>
+        </Table>
+        <Pagination Class="pagination-section" Style="margin-top: 50px">
+            @{
+                for (var i = 1; i <= Pagination.TotalPages; i++)
+                {
+                    var pageNumberAsString = i.ToString();
+                    <PaginationItem @key="pageNumberAsString" Active="@IsActive(pageNumberAsString)">
+                        <PaginationLink Page="@pageNumberAsString" Clicked="SetActive" Style="background-color: #ffa942; color: #ffffff;">
+                            @pageNumberAsString
+                        </PaginationLink>
+                    </PaginationItem>
+                }
+            }
+        </Pagination>
+    </div>
+</div>
+
 
 @code {
+    public bool clickButton { get; set; }
+    public ClaimsPrincipal AuthState { get; set; }
+    public List<Requested> refundRequests = new List<Requested>();
+    public Cinnamon.Framework.ApiCommand.ApiCore.Pagination Pagination = new Framework.ApiCommand.ApiCore.Pagination();
+    private string currentPage = "1";
+    string token = string.Empty;
+    private int refundStatus = 0;
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        token = user.FindFirstValue("Token");
+        AuthState = user;
 
+        await GetAllRefundRequests(1, refundStatus);
+    }
+
+    private async Task GetAllRefundRequests(int pageIndex, int refundStatus)
+    {
+        var result = await accountApiHandler.GetRequestedRefunds(new Framework.ApiCommand.ApiCore.Account.Request.GetRequestedRefundsArgs
+            {
+                Status = refundStatus,
+                CountPerPage = 10,
+                PageIndex = pageIndex,
+                IncludeCustomer = true,
+                IncludePurchaseOrder = true,
+                IsAdmin = true
+            }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            refundRequests = result.Result.Result
+            .Select(r => new Requested
+            {
+                Id              = r.Id,
+                Email           = r.Email,
+                ExperienceTitle = r.ActivityTitle,
+                FirstName       = r.FirstName,
+                LastName        = r.LastName,
+                OverAllTotal    = r.OverAllTotal,
+                Reason          = r.Reason,
+                ReferenceNo     = r.ReferenceNo,
+                Status          = r.Status,
+                IsChecked       = r.Status == 1
+            }).ToList();
+        }
+
+        Pagination = result.Result.Pagination;
+    }
+
+    private string ShowMenu()
+    {
+        return clickButton ? "show" : "";
+    }
+
+    private void onClickMenu()
+    {
+        if (clickButton)
+        {
+            clickButton = false;
+        }
+        else
+        {
+            clickButton = true;
+        }
+        StateHasChanged();
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/api/account/logout", true);
+    }
+
+    private async Task HandleCheckedChanged(ChangeEventArgs e, Requested refundRequest)
+    {
+        bool isChecked = (bool)e.Value;
+
+        if (isChecked)
+        {
+            var result = await accountApiHandler.UpdateRefundRequest(new Framework.ApiCommand.ApiCore.Account.Request.UpdateRequestRefundArgs
+            {
+                    RefundAmountGiven = refundRequest.RefundAmount,
+                    RefundId = refundRequest.Id,
+                    Status = 1
+            }, token);
+
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                StateHasChanged();
+
+            }
+        }
+    }
+
+    private bool IsActive(string page)
+        => currentPage == page;
+
+    private async Task SetActive(string page)
+    {
+        currentPage = page;
+        await GetAllRefundRequests(int.Parse(page), refundStatus);
+    }
+
+    private async Task CheckboxChanged(int val)
+    {
+        refundStatus = val;
+        await GetAllRefundRequests(1, refundStatus);
+    }
 }

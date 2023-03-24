@@ -1,4 +1,4 @@
-namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.RequestRefund;
+namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.RequestRefund;
 
 public class RequestRefundDTO 
 {

@@ -101,7 +101,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                     dto.Customer = new RequestRefundDTO.AssociatedCustomer {
                         FirstName = r.Customer.FirstName,
                         Id = r.Customer.Id,
-                        LastName = r.Customer.LastName
+                        LastName = r.Customer.LastName,
+                        Email = r.Customer.Email
                     };
                 }
 
@@ -185,7 +186,7 @@ public class RequestRefundRepository : IRequestRefundRepository
         }
     }
 
-    public async Task<AppResult<RequestRefundDTO>> Update(int id, int status)
+    public async Task<AppResult<RequestRefundDTO>> Update(int id, int status, decimal? refundAmountGiven)
     {
         try
         {
@@ -195,6 +196,7 @@ public class RequestRefundRepository : IRequestRefundRepository
                 return AppResult<RequestRefundDTO>.CreateFailed(new ApplicationException("Invalud request reqund id"), "Invalud request reqund id");
             }
             requestRefundChk.Result.Status = status;
+            requestRefundChk.Result.RefundAmountGiven = refundAmountGiven ?? requestRefundChk.Result.RefundAmountGiven;
 
             var updatedRes = await dataStore.RequestRefund.Update(requestRefundChk.Result);
             if(!updatedRes.Succeeded || updatedRes.Result == null)
@@ -210,7 +212,7 @@ public class RequestRefundRepository : IRequestRefundRepository
                 Status = updated.Status,
                 Reason = updated.Reason,
                 Id = updated.Id
-            }, "Successfully updated requst refund");
+            }, "Successfully updated request refund");
         }
         catch (Exception ex)
         {

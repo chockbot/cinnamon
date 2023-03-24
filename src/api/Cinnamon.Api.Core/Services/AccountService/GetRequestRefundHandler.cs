@@ -43,10 +43,25 @@ public class GetRequestRefundHandler : IGetRequestRefundHandler
             }
             int id = Convert.ToInt32(customerId);
 
-            var result = await requestRefundData.GetAllRequestRefund(new Framework.ApiCommand.ApiData.RequestRefund.Request.GetAllRequestRefundArgs {
+            var refundArgs = args.IsAdmin.GetValueOrDefault() ? new Framework.ApiCommand.ApiData.RequestRefund.Request.GetAllRequestRefundArgs
+            {
+                Status = args.Status,
+                CountPerPage = args.CountPerPage,
+                PageIndex = args.PageIndex,
+                IncludeCustomer = args.IncludeCustomer,
+                IncludePurchaseOrder = args.IncludePurchaseOrder
+            } : new Framework.ApiCommand.ApiData.RequestRefund.Request.GetAllRequestRefundArgs
+            {
                 CustomerId = id,
-                Status = args.Status
-            });
+                Status = args.Status,
+                CountPerPage = args.CountPerPage,
+                PageIndex = args.PageIndex,
+                IncludeCustomer = args.IncludeCustomer,
+                IncludePurchaseOrder = args.IncludePurchaseOrder
+            };
+
+            var result = await requestRefundData.GetAllRequestRefund(refundArgs);
+
             if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
             {
                 return AppResult<GetRequestRefundResult>.CreateFailed(
@@ -56,11 +71,24 @@ public class GetRequestRefundHandler : IGetRequestRefundHandler
             return AppResult<GetRequestRefundResult>.CreateSucceeded(new GetRequestRefundResult {
                 RequestedRefunds = result.Result.Result.Select(r => {
                     return new GetRequestRefundResult.RequestedRefund {
+                        Id              = r.Id,
                         ExperienceTitle = r.ExperienceTitle,
                         ReferenceNumber = "0000000000".Substring(r.Id.ToString().Length) + r.Id,
-                        Status = r.Status
+                        Status          = r.Status,
+                        Email           = r.Customer?.Email,
+                        FirstName       = r.Customer?.FirstName,
+                        LastName        = r.Customer?.LastName,
+                        Reason          = r.Reason,
+                        OverAllTotal    = r.PurchaseOrder?.OverAllTotal
                     };
-                })
+                }),
+                Pagination = new Framework.ApiCommand.ApiCore.Pagination
+                {
+                    PageIndex = result.Result.Pagination.PageIndex,
+                    PerPage = result.Result.Pagination.PerPage,
+                    TotalPages = result.Result.Pagination.TotalPages,
+                    TotalRecords = result.Result.Pagination.TotalRecords
+                }
             }, "Successfully get requested refunds");
         }
         catch (Exception ex)
