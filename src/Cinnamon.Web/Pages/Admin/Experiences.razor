@@ -73,6 +73,8 @@
             <TableBody>
                 @foreach (var item in activities)
                 {
+                    bool isChecked = !item.IsPublished;
+
                     <TableRow>
                         <TableRowCell class="name-body">@item.Owner.Email</TableRowCell>
                         <TableRowCell class="name-body">@item.Owner.FirstName</TableRowCell>
@@ -84,7 +86,7 @@
                         </TableRowCell>
                         <TableRowCell class="name-body">
                             <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsDeactivated" @onchange="((e) => HandleCheckedChanged(e, item))">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@isChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
                             </div>
                         </TableRowCell>
                     </TableRow>
@@ -133,7 +135,6 @@
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
                 IncludeAtivitySchedules = true,
-                IsActive = true,
                 PageIndex = pageIndex,
                 CountPerPage = 10,
                 IncludeCustomer = true,
@@ -259,7 +260,7 @@ LastName = r.Owner.LastName
 
         var result = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
             {
-                IsDeactivated = isChecked,
+                IsPublished = !isChecked,
                 ActivityId = activity.ActivityId,
                 IsAdmin = true
             }, token);
