@@ -8,4 +8,5 @@ public class UpdateRequestRefundArgs
     public int RefundId {get; set;}
     [Required]
     public int Status {get; set;}
+    public decimal? RefundAmountGiven { get; set; }
 }

@@ -11,4 +11,5 @@ public class RequestRefund : BaseEntity
 
     public PurchaseOrder PurchaseOrder {get; set;}
     public Customer Customer {get; set;}
+    public decimal RefundAmountGiven { get; set;}
 }

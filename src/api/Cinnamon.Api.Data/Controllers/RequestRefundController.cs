@@ -118,7 +118,7 @@ public class RequestRefundController : ControllerBase
     {
         try
         {
-            var result = await requestRefundRepository.Update(args.RefundId, args.Status);
+            var result = await requestRefundRepository.Update(args.RefundId, args.Status, args.RefundAmountGiven);
 
             if (!result.Succeeded || result.Result == null)
             {

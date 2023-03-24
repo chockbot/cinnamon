@@ -707,4 +707,26 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<UpdateProfileDetailsResult>.CreateFailed(ex, "An error occured when posting update profile details api");
         }
     }
+
+    public async Task<AppResult<UpdateRequestRefundResult>> UpdateRefundRequest(UpdateRequestRefundArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Refund/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateRequestRefundResult>();
+
+            return AppResult<UpdateRequestRefundResult>.CreateSucceeded(result, "Successfully called update refund request api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateRequestRefundResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateRequestRefundResult>.CreateFailed(ex, "An error occured when calling update refund request api");
+        }
+    }
 }
