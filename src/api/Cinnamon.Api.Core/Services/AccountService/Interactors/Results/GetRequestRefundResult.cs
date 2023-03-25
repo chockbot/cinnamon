@@ -18,5 +18,6 @@ public class GetRequestRefundResult
         public string LastName { get; set; }
         public string Reason { get; set; }
         public decimal? OverAllTotal { get; set; }
+        public decimal RefundAmountGiven { get; set; }
     }
 }
