@@ -1,4 +1,7 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using static Cinnamon.Web.Models.Customer.RequestRefundModel;
+@inject IAccountApiHandler accountApiHandler;
 
 <article class="cinnamon-credit-wrapper p-3">
     <Table Borderless>
@@ -11,12 +14,61 @@
             </TableRow>
         </TableHeader>
         <TableBody>
+            @foreach (var item in requestedRefunds)
+            {
+                <TableRow>
+                    <TableRowCell>@item.ReferenceNo</TableRowCell>
+                    <TableRowCell>@item.ExperienceTitle</TableRowCell>
+                    <TableRowCell>@GetStatus(item.Status)</TableRowCell>
+                    <TableRowCell>@item.RefundAmountGiven</TableRowCell>
+                </TableRow>
+            }
         </TableBody>
         <TableFooter style="border-top: 1px solid #D9D9D9;">
             <TableRow>
                 <TableRowCell ColumnSpan="3">Total</TableRowCell>
-                <TableRowCell>0.00</TableRowCell>
+                <TableRowCell> @requestedRefunds.Sum(r => r.RefundAmountGiven) </TableRowCell>
             </TableRow>
         </TableFooter>
     </Table>
 </article>
+
+
+@code {
+    [Parameter]
+    public string Token { get; set; }
+
+    private IList<Requested> requestedRefunds = new List<Requested>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchRequestedRefunds();
+    }
+
+    private string GetStatus(int status)
+    {
+        if (status == 0) return "Submitted";
+        if (status == 1) return "Approved";
+        if (status == 2) return "Disapproved";
+
+        return string.Empty;
+    }
+
+    private async Task FetchRequestedRefunds()
+    {
+        var result = await accountApiHandler.GetRequestedRefunds(new Framework.ApiCommand.ApiCore.Account.Request.GetRequestedRefundsArgs { Status = 1 }, Token);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            requestedRefunds = result.Result.Result.Select(r =>
+            {
+                return new Requested
+                    {
+                        ExperienceTitle = r.ActivityTitle,
+                        ReferenceNo = r.ReferenceNo,
+                        Status = r.Status,
+                        RefundAmountGiven = r.RefundAmountGiven
+                    };
+            }).ToList();
+        }
+    }
+}

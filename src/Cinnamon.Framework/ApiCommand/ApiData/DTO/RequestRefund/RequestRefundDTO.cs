@@ -10,6 +10,7 @@ public class RequestRefundDTO
     public string Reason {get; set;}
     public AssociatedCustomer Customer {get; set;}
     public AssociatedPurchase PurchaseOrder {get; set;}
+    public decimal RefundAmountGiven { get; set; }
 
     public class AssociatedCustomer 
     {

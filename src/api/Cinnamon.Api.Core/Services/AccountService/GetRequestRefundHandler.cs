@@ -79,7 +79,8 @@ public class GetRequestRefundHandler : IGetRequestRefundHandler
                         FirstName       = r.Customer?.FirstName,
                         LastName        = r.Customer?.LastName,
                         Reason          = r.Reason,
-                        OverAllTotal    = r.PurchaseOrder?.OverAllTotal
+                        OverAllTotal    = r.PurchaseOrder?.OverAllTotal,
+                        RefundAmountGiven = r.RefundAmountGiven
                     };
                 }),
                 Pagination = new Framework.ApiCommand.ApiCore.Pagination

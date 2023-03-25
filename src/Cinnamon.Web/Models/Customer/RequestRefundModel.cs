@@ -44,7 +44,7 @@ public class RequestRefundModel
         public string LastName { get; set; }
         public string Reason { get; set; }
         public decimal? OverAllTotal { get; set; }
-        public decimal RefundAmount { get; set; }
+        public decimal RefundAmountGiven { get; set; }
         public bool IsChecked { get; set; }
     }
 }

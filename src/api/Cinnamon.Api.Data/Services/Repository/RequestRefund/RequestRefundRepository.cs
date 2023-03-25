@@ -92,7 +92,8 @@ public class RequestRefundRepository : IRequestRefundRepository
                     PurchaseOrderId = r.PurchaseOrderId,
                     Status = r.Status,
                     Reason = r.Reason,
-                    Id = r.Id
+                    Id = r.Id,
+                    RefundAmountGiven = r.RefundAmountGiven,
                 };
 
                 // add customer details

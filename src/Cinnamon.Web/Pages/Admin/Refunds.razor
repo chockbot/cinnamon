@@ -9,6 +9,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Web.Models.Customer;
 @using static Cinnamon.Web.Models.Customer.RequestRefundModel;
+@inject IJSRuntime jsRuntime;
 
 <div class="top-row">
     <div class="dropdown">
@@ -90,13 +91,26 @@
                         <TableRowCell class="name-body">@item.Reason</TableRowCell>
                         <TableRowCell class="name-body">@item.OverAllTotal</TableRowCell>
                         <TableRowCell class="name-body">
-                            <input class="form-control" type="text" placeholder="Enter Amount"
-                               @bind-value="@item.RefundAmount" />
+                            @if (item.Status == 0)
+                            {
+                                <input class="form-control" type="number" min="0" placeholder="Enter Amount" @bind-value="@item.RefundAmountGiven" />
+                            }
+                            else
+                            {
+                                @item.RefundAmountGiven
+                            }
                         </TableRowCell>
                         <TableRowCell class="name-body">
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
-                            </div>
+                            @if (item.Status == 0)
+                            {
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
+                                </div>
+                            }
+                            else
+                            {
+                                @GetStatus(item.Status);
+                            }
                         </TableRowCell>
                     </TableRow>
                 }
@@ -153,16 +167,17 @@
             refundRequests = result.Result.Result
             .Select(r => new Requested
             {
-                Id              = r.Id,
-                Email           = r.Email,
-                ExperienceTitle = r.ActivityTitle,
-                FirstName       = r.FirstName,
-                LastName        = r.LastName,
-                OverAllTotal    = r.OverAllTotal,
-                Reason          = r.Reason,
-                ReferenceNo     = r.ReferenceNo,
-                Status          = r.Status,
-                IsChecked       = r.Status == 1
+                Id                = r.Id,
+                Email             = r.Email,
+                ExperienceTitle   = r.ActivityTitle,
+                FirstName         = r.FirstName,
+                LastName          = r.LastName,
+                OverAllTotal      = r.OverAllTotal,
+                Reason            = r.Reason,
+                ReferenceNo       = r.ReferenceNo,
+                Status            = r.Status,
+                IsChecked         = r.Status == 1,
+                RefundAmountGiven = r.RefundAmountGiven
             }).ToList();
         }
 
@@ -200,7 +215,7 @@
         {
             var result = await accountApiHandler.UpdateRefundRequest(new Framework.ApiCommand.ApiCore.Account.Request.UpdateRequestRefundArgs
             {
-                    RefundAmountGiven = refundRequest.RefundAmount,
+                    RefundAmountGiven = refundRequest.RefundAmountGiven,
                     RefundId = refundRequest.Id,
                     Status = 1
             }, token);
@@ -212,7 +227,7 @@
             }
         }
     }
-
+   
     private bool IsActive(string page)
         => currentPage == page;
 
@@ -226,5 +241,14 @@
     {
         refundStatus = val;
         await GetAllRefundRequests(1, refundStatus);
+    }
+
+    private string GetStatus(int status)
+    {
+        if (status == 0) return "Submitted";
+        if (status == 1) return "Approved";
+        if (status == 2) return "Disapproved";
+
+        return string.Empty;
     }
 }

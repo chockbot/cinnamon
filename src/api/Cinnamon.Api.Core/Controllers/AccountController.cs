@@ -1084,7 +1084,8 @@ public class AccountController : ControllerBase
                         FirstName     = r.FirstName,
                         LastName      = r.LastName,
                         Reason        = r.Reason,
-                        OverAllTotal  = r.OverAllTotal
+                        OverAllTotal  = r.OverAllTotal,
+                        RefundAmountGiven = r.RefundAmountGiven
                     };
                 }),
                 Pagination = result.Result.Pagination,
