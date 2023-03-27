@@ -825,7 +825,13 @@
                     };
                 }),
                 PaymentChannel = selectedPaymentMethod.Code,
-                PaymentMethod = selectedPaymentMethod.PaymentMethod
+                PaymentMethod = selectedPaymentMethod.PaymentMethod,
+                CardInformation = selectedPaymentMethod.Code == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.CardDetails {
+                    AccountHolder = CardPaymentModel.CardHolder ?? string.Empty,
+                    CardNumber = CardPaymentModel.CardNumber ?? string.Empty,
+                    CVV = CardPaymentModel.CVV ?? string.Empty,
+                    ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
+                } : null
             }, Model.Token);
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))

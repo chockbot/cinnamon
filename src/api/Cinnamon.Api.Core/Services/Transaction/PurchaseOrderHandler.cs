@@ -139,7 +139,13 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 CustomerId = id,
                 PaymentChannel = args.PaymentChannel ?? string.Empty,
                 PaymentMethod = args.PaymentMethod,
-                TransactionId = result.Result.Result.Id
+                TransactionId = result.Result.Result.Id,
+                CardInformation = args.CardInformation != null ? new RequestPaymentArgs.CardDetails {
+                    AccountHolder = args.CardInformation.AccountHolder,
+                    CardNumber = args.CardInformation.CardNumber,
+                    CVV = args.CardInformation.CVV,
+                    ExpireMonthYear = args.CardInformation.ExpireMonthYear
+                } : null
             });
 
             if(!requestPayment.Succeeded || requestPayment.Result == null)

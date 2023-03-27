@@ -16,6 +16,7 @@ public class SubmitPurchaseOrderArgs
     public string? PaymentChannel {get; set;}
     [Required]
     public IEnumerable<Enrollee> Students {get; set;}
+    public CardDetails? CardInformation {get; set;}
 
     public class Enrollee 
     {
@@ -23,5 +24,17 @@ public class SubmitPurchaseOrderArgs
         public int FamilyMemberId {get; set;}
         [Required]
         public string Name {get; set;}
+    }
+
+    public class CardDetails 
+    {
+        [Required]
+        public string CardNumber {get; set;}
+        [Required]
+        public string AccountHolder {get; set;}
+        [Required]
+        public string CVV {get; set;}
+        [Required]
+        public string ExpireMonthYear {get; set;}
     }
 }

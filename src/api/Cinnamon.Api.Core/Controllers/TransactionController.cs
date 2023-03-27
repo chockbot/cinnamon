@@ -41,7 +41,13 @@ public class TransactionController : ControllerBase
                     };
                 }),
                 PaymentChannel = args.PaymentChannel,
-                PaymentMethod = args.PaymentMethod
+                PaymentMethod = args.PaymentMethod,
+                CardInformation = args.CardInformation != null ? new Services.TransactionService.Interactors.PurchaseOrderArgs.CardDetails {
+                    AccountHolder = args.CardInformation.AccountHolder,
+                    CardNumber = args.CardInformation.CardNumber,
+                    CVV = args.CardInformation.CVV,
+                    ExpireMonthYear = args.CardInformation.ExpireMonthYear
+                } : null
             });
 
             if(!result.Succeeded || result.Result == null)

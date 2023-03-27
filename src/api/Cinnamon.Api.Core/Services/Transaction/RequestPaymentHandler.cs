@@ -54,12 +54,37 @@ public class RequestPaymentHandler : IRequestPaymentHandler
             var objType = containerProvider.Resolve(handler);
             IGenerateResponseHandler pgHandler = (IGenerateResponseHandler)objType;
 
+            // card details
+            PaymentGatewayService.Interactors.GenerateResponseArgs.CardInformation? cardInfo = null;
+            if(args.CardInformation != null)
+            {
+                var splitted = args.CardInformation.ExpireMonthYear.Split("/").ToList();
+                if(splitted.Count != 2)
+                {
+                    return AppResult<RequestPaymentResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
+                }
+
+                if(!int.TryParse(splitted[0], out int expiryMonth) || !int.TryParse(splitted[1], out int expiryYear))
+                {
+                    return AppResult<RequestPaymentResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
+                }
+
+                cardInfo = new PaymentGatewayService.Interactors.GenerateResponseArgs.CardInformation {
+                    CardHolderName = args.CardInformation?.AccountHolder ?? string.Empty,
+                    CardNumber = args.CardInformation?.CardNumber ?? string.Empty,
+                    Cvv = args.CardInformation?.CVV ?? string.Empty,
+                    ExpiryMonth = expiryMonth,
+                    ExpiryYear = expiryYear
+                };
+            }
+
             var result = await pgHandler.ExecuteAsync(new PaymentGatewayService.Interactors.GenerateResponseArgs {
                 Amount = args.Amount,
                 AmountCurrency = args.AmountCurrency,
                 MetaDatas = args.MetaDatas,
                 PaymentChannel = paymentChannel,
-                TransactionId = args.TransactionId
+                TransactionId = args.TransactionId,
+                CardDetails = cardInfo
             });
 
             if(!result.Succeeded || result.Result == null)
