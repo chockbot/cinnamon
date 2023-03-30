@@ -2,6 +2,7 @@ namespace Cinnamon.Api.Core.Services.PaymentGatewayService.Zendit.ReponseMessage
 
 public class RequestPaymentResult 
 {
+    public string Id {get; set;}
     public IEnumerable<ProceedAction> Actions {get; set;}
     public decimal Amount {get; set;}
     public string Capture_Method {get; set;}

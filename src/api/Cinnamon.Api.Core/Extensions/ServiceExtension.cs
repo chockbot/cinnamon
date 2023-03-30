@@ -143,6 +143,7 @@ public static class ServiceExtenstion
 
         // payment gateways
         services.AddTransient<Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();
+        services.AddTransient<Services.PaymentGatewayService.Zendit.CardGenerateResponseHandler>();
         services.AddTransient<Services.PaymentGatewayService.Handlers.IVerifyCallbackHandler, Services.PaymentGatewayService.Zendit.VerifyCallbackHandler>();
         services.AddTransient<Services.PaymentGatewayService.Handlers.IGetPaymentChannelsHandler, Services.PaymentGatewayService.GetPaymentChannelsHander>();
         services.AddTransient<Services.PaymentGatewayService.Handlers.IGeneratePayoutHandler, Services.PaymentGatewayService.GeneratePayoutHandler>();

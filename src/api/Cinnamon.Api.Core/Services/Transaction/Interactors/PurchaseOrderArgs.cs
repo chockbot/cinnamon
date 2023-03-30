@@ -11,10 +11,19 @@ public class PurchaseOrderArgs : IInteractor
     public string PaymentMethod {get; set;}
     public string? PaymentChannel {get; set;}
     public IEnumerable<Enrollee> Students {get; set;}
+    public CardDetails? CardInformation {get; set;}
 
     public class Enrollee
     {
         public int FamilyMemberId {get; set;}
         public string Name {get; set;}
+    }
+
+    public class CardDetails 
+    {
+        public string CardNumber {get; set;}
+        public string AccountHolder {get; set;}
+        public string CVV {get; set;}
+        public string ExpireMonthYear {get; set;}
     }
 }

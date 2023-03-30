@@ -14,6 +14,7 @@ public class RequestPaymentArgs
         public string reusability {get; set;}
         public string country {get; set;}
         public EWallet ewallet {get; set;}
+        public Card card {get; set;}
     }
 
     public class EWallet 
@@ -22,10 +23,26 @@ public class RequestPaymentArgs
         public Channel_Properties channel_properties {get; set;}
     }
 
+    public class Card 
+    {
+        public string currency {get; set;}
+        public Channel_Properties channel_properties {get; set;}
+        public CardInformation card_information {get; set;}
+    }
+
     public class Channel_Properties 
     {
         public string success_return_url {get; set;}
         public string failure_return_url {get; set;}
         public string cancel_return_url {get; set;}
+    }
+
+    public class CardInformation 
+    {
+        public string card_number {get; set;}
+        public string expiry_month {get; set;}
+        public string expiry_year {get; set;}
+        public string cvv {get; set;}
+        public string cardholder_name {get; set;}
     }
 }

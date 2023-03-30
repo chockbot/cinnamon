@@ -3,6 +3,7 @@ using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
+using Cinnamon.Api.Core.Services.PaymentGatewayService.Zendit.ReponseMessage;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Zendit.RequestMessage;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
@@ -112,20 +113,29 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                         reference_id = referenceId,
                     };
 
-                    var result = await flurlClient
+                    try
+                    {
+                        var result = await flurlClient
                                     .WithHeader("Authorization", $"Basic {authToken}")
                                     .WithHeader("Idempotency-key", referenceId)
                                     .Request()
                                     .PostJsonAsync(payoutRequest)
-                                    .ReceiveJson();
+                                    .ReceiveJson();   
+                    }
+                    catch (FlurlHttpException ex)
+                    {
+                        var error = await ex.GetResponseJsonAsync<ErrorResponse>();
+                        
+                        var updatedLog = await payoutLogData.UpdatePayoutLog(new Framework.ApiCommand.ApiData.PayoutLog.Request.UpdatePayoutLogArgs {
+                            Id = log.Id,
+                            Remarks = error.error_code,
+                            Status = 2
+                        });
+                    }
                 }
             }
 
             return AppResult<GeneratePayoutResult>.CreateSucceeded(new GeneratePayoutResult {}, "Successfully generate payout");
-        }
-        catch (FlurlHttpException ex)
-        {
-            return AppResult<GeneratePayoutResult>.CreateFailed(ex, $"An error occured in GenerateResponseHandler");
         }
         catch (Exception ex)
         {

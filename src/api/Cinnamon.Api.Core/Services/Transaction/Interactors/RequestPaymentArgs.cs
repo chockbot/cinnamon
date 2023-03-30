@@ -12,4 +12,13 @@ public class RequestPaymentArgs : IInteractor
     public string PaymentMethod {get; set;}
     public string PaymentChannel {get; set;}
     public IEnumerable<MetaData> MetaDatas {get; set;}
+    public CardDetails? CardInformation {get; set;}
+
+    public class CardDetails 
+    {
+        public string CardNumber {get; set;}
+        public string AccountHolder {get; set;}
+        public string CVV {get; set;}
+        public string ExpireMonthYear {get; set;}
+    }
 }
