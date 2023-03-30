@@ -836,7 +836,7 @@
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
-                payErrorMessage = $"An error occured. Please try again later.";
+                payErrorMessage = submit.Result?.ErrorInfo?.Message ?? $"An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
                 isLoading = false;
             }
