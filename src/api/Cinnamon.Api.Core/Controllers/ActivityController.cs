@@ -1402,9 +1402,11 @@ public class ActivityController : ControllerBase
                 {
                     return new Framework.ApiCommand.ApiCore.DTO.Location.CityDTO
                     {
-                        Code = s.Code,
-                        Name = s.Name,
-                        RegionCode = s.RegionCode
+                        Code           = s.Code,
+                        Name           = s.Name,
+                        RegionCode     = s.RegionCode,
+                        IsMunicipality = s.IsMunicipality,
+                        IsCity         = s.IsCity
                     };
                 })
             }
@@ -1428,6 +1430,8 @@ public class ActivityController : ControllerBase
             {
                 CityCode = args.CityCode,
                 CountPerPage = args.CountPerPage,
+                IsCity = args.IsCity,
+                IsMunicipality = args.IsMunicipality
             });
             if (!result.Succeeded || result.Result == null)
             {

@@ -9,6 +9,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces
     {
         Task<AppResult<IEnumerable<RegionDTO>>> GetAllRegionsAsync();
         Task<AppResult<IEnumerable<CityDTO>>> GetAllCitiesByRegionAsync(string regionCode, int? count);
-        Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode, int? count);
+        Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode, bool isCity, bool isMunicipality, int? count);
     }
 }

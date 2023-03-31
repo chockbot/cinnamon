@@ -95,7 +95,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _locationRepository.GetAllBarangaysByCityAsync(args.CityCode, args.CountPerPage);
+                var result = await _locationRepository.GetAllBarangaysByCityAsync(args.CityCode, args.IsCity, args.IsMunicipality, args.CountPerPage);
 
                 if (!result.Succeeded || result.Result == null)
                 {

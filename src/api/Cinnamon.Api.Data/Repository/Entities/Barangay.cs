@@ -5,5 +5,6 @@
         public string Code { get; set; }
         public string Name { get; set; }
         public string CityCode { get; set; }
+        public string MunicipalityCode { get; set; }
     }
 }
