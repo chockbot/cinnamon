@@ -46,7 +46,7 @@
 }
 @if (!AuthState.User.Identity.IsAuthenticated)
 {
-    <ModalLogin @ref="modalLoginRef" ReturnUrl="@($"/Payment/{ActivityId}/{ScheduleModel.Id}")"></ModalLogin>
+    <ModalLogin @ref="modalLoginRef" ReturnUrl="@($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}")"></ModalLogin>
 }
 
 @code {
@@ -54,9 +54,6 @@
     public ActivitySchedule ScheduleModel { get; set; }
     [Parameter]
     public Activity ActivityModel { get; set; }
-    [Parameter]
-    public int ActivityId { get; set; }
-
     [Parameter]
     public ScheduleButtonType ButtonType { get; set; } = ScheduleButtonType.Choose;
 
@@ -77,6 +74,6 @@
 
     private void OnClickChoose()
     {
-        NavigationManager.NavigateTo($"/Payment/{ActivityId}/{ScheduleModel.Id}", true);
+        NavigationManager.NavigateTo($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}", true);
     }
 }
