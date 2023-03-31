@@ -12,7 +12,7 @@
                     @foreach (var item in ScheduleModel.Where(s => s.IsActiveSchedule))
                     {
                         <div class="col-md-4 mb-2">
-                            <CarouselItemSchedule ScheduleModel="item" ActivityModel="ActivityModel"/>
+                            <CarouselItemSchedule ScheduleModel="item" ActivityModel="ActivityModel" OnChooseClick="OnScheduleChooseChanged" />
                         </div>
                     }
                 </div>
@@ -53,5 +53,11 @@
         ModalClass = "hide";
         ShowBackdrop = false;
         StateHasChanged();
+    }
+
+    public Task OnScheduleChooseChanged()
+    {
+        Close();
+        return Task.CompletedTask;
     }
 }

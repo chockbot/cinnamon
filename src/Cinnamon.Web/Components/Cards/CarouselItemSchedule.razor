@@ -61,6 +61,9 @@
     public EventCallback<MouseEventArgs> OnClickChange { get; set; } = new EventCallback<MouseEventArgs>();
 
     [Parameter]
+    public EventCallback OnChooseClick { get; set; }
+
+    [Parameter]
     public EventCallback<MouseEventArgs> OnClickLogin { get; set; } = new EventCallback<MouseEventArgs>();
 
     public AuthenticationState AuthState { get; set; }
@@ -74,6 +77,10 @@
 
     private void OnClickChoose()
     {
-        NavigationManager.NavigateTo($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}", true);
+        NavigationManager.NavigateTo($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}");
+        if(OnChooseClick.HasDelegate)
+        {
+            OnChooseClick.InvokeAsync();
+        }
     }
 }
