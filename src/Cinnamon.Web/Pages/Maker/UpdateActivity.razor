@@ -210,7 +210,9 @@
                 return;
             }
 
-            barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City });
+            var city = cities.Result.Result.FirstOrDefault(c => c.Code == activity.City);
+
+            barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality });
             if ((!barangays.Succeeded || barangays.Result == null) || (barangays.Succeeded && !barangays.Result.IsSuccess))
             {
                 NavigationManager.NavigateTo("explore");
@@ -309,7 +311,9 @@
             {
                 Code = r.Code,
                 Name = r.Name,
-                RegionCode = r.RegionCode
+                RegionCode = r.RegionCode,
+                IsCity = r.IsCity,
+                IsMunicipality = r.IsMunicipality
             }) : new List<Models.Entities.City>(),
             Barangays = activity.ExperienceTypeId == 1 ? barangays.Result.Result.Select(r => new Models.Entities.Barangay
             {

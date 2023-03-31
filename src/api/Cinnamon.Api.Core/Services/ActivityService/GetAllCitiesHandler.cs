@@ -50,9 +50,11 @@ namespace Cinnamon.Api.Core.Services.ActivityService
                 {
                     Cities = result.Result.Result.Select(r => new GetAllCitiesResult.City
                     {
-                        Code = r.Code,
-                        Name = r.Name,
-                        RegionCode = r.RegionCode
+                        Code           = r.Code,
+                        Name           = r.Name,
+                        RegionCode     = r.RegionCode,
+                        IsMunicipality = r.IsMunicipality,
+                        IsCity         = r.IsCity,
                     })
                 }, "Successfully get all cities");
             }

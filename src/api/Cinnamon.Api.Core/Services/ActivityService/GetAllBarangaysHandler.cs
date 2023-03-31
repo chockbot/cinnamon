@@ -27,15 +27,17 @@ namespace Cinnamon.Api.Core.Services.ActivityService
             }
         }
 
-        public async Task<AppResult<GetAllBarangaysResult>> ExecuteAsync(GetAllBarangaysArgs interactor)
+        public async Task<AppResult<GetAllBarangaysResult>> ExecuteAsync(GetAllBarangaysArgs args)
         {
             try
             {
                 var result = await barangayData.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiData.Location.Request.GetAllBarangayArgs()
                 {
-                    CountPerPage = interactor.CountPerPage,
+                    CountPerPage = args.CountPerPage,
                     PageIndex = 1,
-                    CityCode = interactor.CityCode
+                    CityCode = args.CityCode,
+                    IsCity = args.IsCity,
+                    IsMunicipality = args.IsMunicipality
                 });
 
                 if (!result.Succeeded || result.Result == null)

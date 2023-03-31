@@ -16,11 +16,12 @@ namespace Cinnamon.Api.Data.Services.Repository.Location
             this.dataStore = dataStore;
         }
 
-        public async Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode, int? count)
+        public async Task<AppResult<IEnumerable<BarangayDTO>>> GetAllBarangaysByCityAsync(string cityCode, bool isCity, bool isMunicipality, int? count)
         {
             try
             {
-                var result = await dataStore.Barangay.FindAsync(c => c.CityCode == cityCode, count);
+                var result = await dataStore.Barangay.FindAsync(c => (isCity ? c.CityCode == cityCode : true) &&
+                                                                     (isMunicipality ? c.MunicipalityCode == cityCode : true), count);
 
                 if (!result.Succeeded || result.Result == null)
                 {
@@ -31,7 +32,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Location
                 {
                     Code = r.Code,
                     Name = r.Name,
-                    CityCode = r.CityCode
+                    CityCode = isCity ? r.CityCode : r.MunicipalityCode
                 });
 
                 return AppResult<IEnumerable<BarangayDTO>>.CreateSucceeded(barangays, "Successfully get barangays");
@@ -55,9 +56,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Location
 
                 var regions = result.Result.Select(r => new CityDTO
                 {
-                    Code = r.Code,
-                    Name = r.Name,
-                    RegionCode = r.RegionCode
+                    Code           = r.Code,
+                    Name           = r.Name,
+                    RegionCode     = r.RegionCode,
+                    IsCity         = r.IsCity,
+                    IsMunicipality = r.IsMunicipality
                 });
 
                 return AppResult<IEnumerable<CityDTO>>.CreateSucceeded(regions, "Successfully get regions");

@@ -2,6 +2,7 @@
 @using Cinnamon.Web.Models;
 @inject IJSRuntime jsRuntime
 @using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
 
@@ -113,55 +114,33 @@
                 <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Unit No./ House No.*" required @bind="Model.Activity.Address1"/>
                 <input class="form-control my-3 (Model.Activity.Subdivision)" placeholder="Subdivision/Building" required @bind="Model.Activity.Subdivision" />
 
-                <Autocomplete TItem="Models.Entities.Region"
-                          SelectedValue="@(Model.Activity.Region)"
-                          TValue="string"
-                          Class="@RequiredCheck(Model.Activity.Region)"
-                          Data="@regionList"
-                          TextField="@(( item ) => item.Name)"
-                          ValueField="@(( item ) => item.Code)"
-                          Placeholder="Region/State"
-                          Filter="AutocompleteFilter.StartsWith"
-                          FreeTyping
-                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                          SelectedValueChanged="@((value) => GetCitiesByRegion(value))"
-                          SelectedTextChanged="@((text) => SetRegionName(text))" @ref="autocompleteRegion">
-                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
-                </Autocomplete>
+                <select class="form-control @RequiredCheck(Model.Activity.Region)" @onchange="GetCitiesByRegion">
+                    <option value="">--Select Region/State--</option>
+                    @foreach (var region in regionList)
+                    {
+                        <option value="@region.Code">@region.Name</option>
+                    }
+                </select>
+
                 <div class="divider"></div>
-                <Autocomplete TItem="Models.Entities.City"
-                          SelectedValue="@(Model.Activity.City)"
-                          Disabled="@(cityList?.Count() == 0)"
-                          Class="@RequiredCheck(Model.Activity.City)"
-                          TValue="string"
-                          Data="@cityList"
-                          TextField="@(( item ) => item.Name)"
-                          ValueField="@(( item ) => item.Code)"
-                          Placeholder="City"
-                          Filter="AutocompleteFilter.StartsWith"
-                          FreeTyping
-                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                          SelectedValueChanged="@((value) => GetBarangaysByCity(value))"
-                          SelectedTextChanged="@((text) => SetCityName(text))" @ref="autocompleteCity">
-                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
-                </Autocomplete>
+
+                <select class="form-control @RequiredCheck(Model.Activity.City)" @onchange="GetBarangaysByCity">
+                    <option value="">--Select City--</option>
+                    @foreach (var city in cityList)
+                    {
+                        <option value="@city.Code">@city.Name</option>
+                    }
+                </select>
+
                 <div class="divider"></div>
-                <Autocomplete TItem="Models.Entities.Barangay"
-                          SelectedValue="@(Model.Activity.Barangay)"
-                          Disabled="@(barangayList?.Count() == 0)"
-                          Class="@RequiredCheck(Model.Activity.Barangay)"
-                          TValue="string"
-                          Data="@barangayList"
-                          TextField="@(( item ) => item.Name)"
-                          ValueField="@(( item ) => item.Code)"
-                          Placeholder="Barangay"
-                          Filter="AutocompleteFilter.StartsWith"
-                          FreeTyping
-                          CustomFilter="@(( item, searchValue ) => item.Name.IndexOf( searchValue, 0, StringComparison.CurrentCultureIgnoreCase ) >= 0 )"
-                          SelectedValueChanged="@((value) => SetBarangay(value))"
-                          SelectedTextChanged="@((text) => SetBarangayName(text))" @ref="autocompleteBarangay">
-                    <NotFoundContent> Sorry... @context was not found. </NotFoundContent>
-                </Autocomplete>
+
+                <select class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay">
+                    <option value="">--Select Barangay--</option>
+                    @foreach (var barangay in barangayList)
+                    {
+                        <option value="@barangay.Code">@barangay.Name</option>
+                    }
+                </select>
                 <input class="form-control my-3 (Model.Activity.PostalCode)" placeholder="Postal Code" required @bind="Model.Activity.PostalCode" />
                 @*<input class="form-control my-3 (Model.Activity.PinnedLocation)" placeholder="Or click here to pin your location" @bind="Model.Activity.PinnedLocation" />*@
                 <div class="input-group border form-control p-1">
@@ -247,9 +226,6 @@
 {
     [Parameter]
     public ExperienceCreationModel Model {get; set;}
-    Autocomplete<Models.Entities.Region, string> autocompleteRegion = new Autocomplete<Models.Entities.Region, string>();
-    Autocomplete<Models.Entities.City, string> autocompleteCity = new Autocomplete<Models.Entities.City, string>();
-    Autocomplete<Models.Entities.Barangay, string> autocompleteBarangay = new Autocomplete<Models.Entities.Barangay, string>();
 
     private string regionName = string.Empty;
 
@@ -257,63 +233,61 @@
     {
         Model.Activity.ExperienceTypeId = 1;
         regionList = Model.Regions;
+        cityList = new List<City>();
+        barangayList = new List<Barangay>();
     }
 
     public string SearchTag { get; set; }
 
     public int SearchTagLength { get; set; } = 0;
 
-    IEnumerable<Models.Entities.Region> regionList;
-    IEnumerable<Models.Entities.City> cityList;
-    IEnumerable<Models.Entities.Barangay> barangayList;
+    IEnumerable<Region> regionList;
+    IEnumerable<City> cityList;
+    IEnumerable<Barangay> barangayList;
 
-    private void SetRegionName(string regionName)
+    private async Task GetCitiesByRegion(ChangeEventArgs e)
     {
-        Model.Activity.RegionName = regionName;
-    }
+        var regionCode = e.Value.ToString();
 
-    private void SetCityName(string cityName)
-    {
-        Model.Activity.CityName = cityName;
-    }
+        var region = regionList.FirstOrDefault(c => c.Code == regionCode);
 
-    private void SetBarangayName(string barangayName)
-    {
-        Model.Activity.BarangayName = barangayName;
-    }
-
-    private async Task GetCitiesByRegion(string regionCode)
-    {
-        Model.Activity.Region = regionCode;
-        autocompleteRegion.SelectedText = regionCode;
+        Model.Activity.Region = string.IsNullOrEmpty(regionCode) ? null : regionCode;
         Model.Activity.City = string.Empty;
         Model.Activity.CityName = string.Empty;
         Model.Activity.Barangay = string.Empty;
         Model.Activity.BarangayName = string.Empty;
+        cityList = new List<City>();
+        barangayList = new List<Barangay>();
+        Model.Activity.RegionName = region != null ? region.Name : string.Empty;
 
         var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode, CountPerPage = 1000 });
 
         if (result.Succeeded || result == null)
         {
-            cityList = result.Result.Result.Select(r => new Models.Entities.City
+            cityList = result.Result.Result.Select(r => new City
             {
                 Code = r.Code,
                 Name = r.Name,
-                RegionCode = r.RegionCode
+                RegionCode = r.RegionCode,
+                IsCity = r.IsCity,
+                IsMunicipality = r.IsMunicipality
             });
         }
     }
 
-    private async Task GetBarangaysByCity(string cityCode)
+    private async Task GetBarangaysByCity(ChangeEventArgs e)
     {
-        Model.Activity.City = cityCode;
-        autocompleteCity.SelectedText = cityCode;
+        var cityCode = e.Value.ToString();
+        var city = cityList.FirstOrDefault(c => c.Code == cityCode);
 
-        var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, CountPerPage = 1000 });
+        Model.Activity.City = string.IsNullOrEmpty(cityCode) ? null : cityCode;
+        Model.Activity.CityName = city != null ? city.Name : string.Empty;
+
+        var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality, CountPerPage = 1000 });
 
         if (result.Succeeded || result == null)
         {
-            barangayList = result.Result.Result.Select(r => new Models.Entities.Barangay
+            barangayList = result.Result.Result.Select(r => new Barangay
                 {
                     Code = r.Code,
                     Name = r.Name,
@@ -322,10 +296,13 @@
         }
     }
 
-    private async Task SetBarangay(string barangayCode)
+    private async Task SetBarangay(ChangeEventArgs e)
     {
-        Model.Activity.Barangay = barangayCode;
-        autocompleteBarangay.SelectedText = barangayCode;
+        var barangayCode = e.Value.ToString();
+        var barangay = barangayList.FirstOrDefault(c => c.Code == barangayCode);
+
+        Model.Activity.Barangay = string.IsNullOrEmpty(barangayCode) ? null : barangayCode;
+        Model.Activity.BarangayName = barangay != null ? barangay.Name : string.Empty;
     }
 
     private async Task ToggleLocationModal(bool isDisplayed)
