@@ -632,6 +632,7 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/CarouselSlider.js");
         }
     }
 
