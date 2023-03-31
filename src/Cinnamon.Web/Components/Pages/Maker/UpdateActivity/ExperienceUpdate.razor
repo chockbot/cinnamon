@@ -300,16 +300,19 @@
         Model.Activity.City = string.IsNullOrEmpty(cityCode) ? null : cityCode;
         Model.Activity.CityName = city != null ? city.Name : string.Empty;
 
-        var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality, CountPerPage = 1000 });
-
-        if (result.Succeeded || result == null)
+        if (city != null)
         {
-            barangayList = result.Result.Result.Select(r => new Barangay
-                {
-                    Code = r.Code,
-                    Name = r.Name,
-                    CityCode = r.CityCode
-                });
+            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality, CountPerPage = 1000 });
+
+            if (result.Succeeded || result == null)
+            {
+                barangayList = result.Result.Result.Select(r => new Barangay
+                    {
+                        Code = r.Code,
+                        Name = r.Name,
+                        CityCode = r.CityCode
+                    });
+            }
         }
     }
 
