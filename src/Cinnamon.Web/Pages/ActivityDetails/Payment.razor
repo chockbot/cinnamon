@@ -334,7 +334,7 @@
     {
         <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember" 
             Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
-        <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" />
+        <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
     }
 
     <Modal @ref="CardModal">
@@ -518,6 +518,7 @@
         var result = activityRes.Result.Result;
         activity = new Activity
             {
+                Id = result.ActivityId,
                 ActivityId = result.ActivityId,
                 ExperienceTypeId = result.ExperienceTypeId,
                 ExperienceCategoryId = result.ExperienceCategoryId,
@@ -563,7 +564,8 @@
                         PriceUnit1 = e.PriceUnit1,
                         PriceUnit2 = e.PriceUnit2,
                         UnitPrice = e.UnitPrice,
-                        Order = e.Order
+                        Order = e.Order,
+                        IsActiveSchedule = e.IsActiveSchedule
                     };
                 }).ToList(),
                 Images = result.Images.Select(i =>
@@ -600,6 +602,7 @@
         Model = new PurchaseModel {
             // map only required fields
             Activity = new Activity {
+                Id = activity.Id,
                 ActivityId = activity.ActivityId,
                 ActivityLevel = activity.ActivityLevel,
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -632,6 +635,7 @@
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }).ToList()
             },
