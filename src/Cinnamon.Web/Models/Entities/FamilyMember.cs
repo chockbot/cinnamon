@@ -7,4 +7,7 @@ public class FamilyMember
     public int BirthYear {get; set;}
     public string BirthMonth {get; set;}
     public string Gender {get; set;}
+
+    // extra properties
+    public bool IsSelected {get; set;}
 }

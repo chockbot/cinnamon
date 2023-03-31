@@ -41,10 +41,10 @@
                     <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                         <Div class="details overflow-auto" Display="Display.Flex">
                             <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
-                                @foreach (var item in Model.Customer.FamilyMembers)
+                                @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
                                 {
                                     <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                        <input type="checkbox" id="@item.Id" value="@item.Id" class="mx-2 checkbox-round" @onchange="() => OnSelectAttend(item)"/> <label for="@item.Id">@item.Name</label> 
+                                        <Check TValue="bool" id="@item.Id" @bind-Checked="item.IsSelected" class="mx-2 checkbox-round"/> <label for="@item.Id">@item.Name</label> 
                                     </div>
                                 }
                             </Column>
@@ -212,7 +212,7 @@
                                 <span class="fw-bold price-title">Price Details</span>
                                 <div class="d-flex justify-content-between py-1 price-per-head">
                                     <div>
-                                        @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @Model.SelectedAttendees.Count head
+                                        @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount head
                                     </div>
                                     <div>
                                         @GetTotalPerHeadPrice
@@ -747,15 +747,19 @@
 
         // fetch again the updated family members
         var updatedMembers = await accountApiHandler.GetFamilyMembers(Model.Token);
+        IDictionary<int, FamilyMember> tmpSelected = Model.Customer.FamilyMembers.Where(f => f.IsSelected).ToDictionary(f => f.Id);
+
         if(updatedMembers.Succeeded && updatedMembers.Result != null && updatedMembers.Result.IsSuccess)
         {
             Model.Customer.FamilyMembers = updatedMembers.Result.Result.Select(f => {
+                bool isSelected = tmpSelected.ContainsKey(f.Id);
                 return new FamilyMember {
                     BirthMonth = f.BirthMonth,
                     BirthYear = f.BirthYear,
                     Gender = f.Gender,
                     Id = f.Id,
-                    Name = f.Name
+                    Name = f.Name,
+                    IsSelected = isSelected
                 };
             }).ToList();
         }
@@ -763,16 +767,12 @@
         AddChildrenModal.Close();
     }
 
-    private void OnSelectAttend(FamilyMember familyMember)
+    private int SelectedAttendeesCount 
     {
-        var member = Model.SelectedAttendees.FirstOrDefault(m => m.Id == familyMember.Id);
-        if(member == null)
+        get 
         {
-            Model.SelectedAttendees.Add(familyMember);
-        }
-        else
-        {
-            Model.SelectedAttendees.Remove(member);
+            if(Model == null || Model.Customer == null || Model.Customer.FamilyMembers == null) return 0;
+            return Model.Customer.FamilyMembers.Where(f => f.IsSelected).Count();
         }
     }
 
@@ -792,7 +792,7 @@
 
         var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
 
-        if(Model.SelectedAttendees.Count > 0)
+        if(SelectedAttendeesCount > 0)
         {
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
@@ -800,9 +800,9 @@
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs {
                 ActivityId = Model.Activity.ActivityId,
                 CouponCode = "temporary coupon code",
-                NumberOfHeads = Model.SelectedAttendees.Count,
+                NumberOfHeads = SelectedAttendeesCount,
                 ScheduleId = Model.SelectedSchedule.Id,
-                Students = Model.SelectedAttendees.Select(s => {
+                Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s => {
                     return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.Enrollee {
                         FamilyMemberId = s.Id,
                         Name = s.Name
@@ -858,33 +858,33 @@
     {
         get 
         {
-            if(Model.SelectedAttendees.Count == 0)
+            if(SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
-            return "PHP " + (@Model.SelectedSchedule.Price * Model.SelectedAttendees.Count).ToString("#,###.00");
+            return "PHP " + (@Model.SelectedSchedule.Price * SelectedAttendeesCount).ToString("#,###.00");
         }
     }
 
     private string GetConvinienceFee 
     {
         get {
-            if(Model.SelectedAttendees.Count == 0)
+            if(SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
-            return "PHP " + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m).ToString("#,###.00");
+            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m).ToString("#,###.00");
         }
     }
 
     private string GetTotalPrice 
     {
         get {
-            if(Model.SelectedAttendees.Count == 0)
+            if(SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
-            return "PHP " + (((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00");
+            return "PHP " + (((Model.SelectedSchedule.Price * SelectedAttendeesCount) + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00");
         }
     }
 
