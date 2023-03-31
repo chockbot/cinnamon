@@ -17,11 +17,11 @@
 @inject IDashboardApiHandler dashboardApiHandler
 
 
-@if(Model != null)
+@if(IsFullyLoaded)
 {
     <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
         <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
-            <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0"> 
+            <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0">
                 <a class="text-decoration-none text-reset" href="/Explore/@Model.Activity.ActivityId"><img src="/images/previous.png" style="width:20px;" /></a>
                 <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
             </div>
@@ -33,26 +33,23 @@
             <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
                 <div class="col-lg-5 col-md-5 col-sm-12 col-12">
                     <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
-                    <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange" ActivityModel="activity"></CarouselItemSchedule>
+                    <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange" ActivityModel="Model.Activity"></CarouselItemSchedule>
                 </div>
                 <hr />
                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                     <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
-                    @if (isLoaded)
-                    {
-                        <Column ColumnSize="ColumnSize.Is12.OnDesktop">
-                            <Div class="details overflow-auto" Display="Display.Flex">
-                                <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
-                                    @foreach (var item in Model.Customer.FamilyMembers)
-                                    {
-                                        <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                            <input type="checkbox" id="@item.Id" value="@item.Id" class="mx-2 checkbox-round" @onchange="() => OnSelectAttend(item)"/> <label for="@item.Id">@item.Name</label> 
-                                        </div>
-                                    }
-                                </Column>
-                            </Div>
-                        </Column>
-                    }
+                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                        <Div class="details overflow-auto" Display="Display.Flex">
+                            <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
+                                @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
+                                {
+                                    <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
+                                        <Check TValue="bool" id="@item.Id" @bind-Checked="item.IsSelected" class="mx-2 checkbox-round"/> <label for="@item.Id">@item.Name</label> 
+                                    </div>
+                                }
+                            </Column>
+                        </Div>
+                    </Column>
                     <button class="btn-primary rounded border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
                 </div>
                 <hr />
@@ -215,7 +212,7 @@
                                 <span class="fw-bold price-title">Price Details</span>
                                 <div class="d-flex justify-content-between py-1 price-per-head">
                                     <div>
-                                        @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @Model.SelectedAttendees.Count head
+                                        @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount head
                                     </div>
                                     <div>
                                         @GetTotalPerHeadPrice
@@ -283,21 +280,21 @@
                                     <img src="@GetActivityOwnerProfileSrc" alt="owner-profile">
                                 </div>
                                 <div class="ms-2">
-                                    <p class="experience-by">Experience by</p>
-                                    <p class="owner">@($"{activity.Owner.FirstName} {activity.Owner.LastName}")</p>
+                                    <p class="experience-by text-capitalize">Experience by</p>
+                                    <p class="owner text-capitalize">@($"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}")</p>
                                 </div>
                                 <div class="d-flex ms-5 verified-logo">
-                                    @if(activity.Owner.IsVerified == 2){
+                                    @if(Model.Activity.Owner.IsVerified == 2){
                                         <Tooltip Multiline=true Text="For uploading and completing all identification requirements.">
                                             <img class="verified-logo" src="images/Badges/VERIFIED.svg"/>
                                         </Tooltip> 
                                     }
-                                    @if(activity.Owner.IsOG == true){
+                                    @if(Model.Activity.Owner.IsOG == true){
                                         <Tooltip Multiline=true Text="For being part of the alpha and beta testing.">
                                             <img class="verified-logo" src="images/Badges/OG.svg" />
                                         </Tooltip>
                                     }
-                                    @if (activity.Owner.IsOfficial == true)
+                                    @if (Model.Activity.Owner.IsOfficial == true)
                                     {
                                         <Tooltip Multiline=true Text="Legitimate experience provider in the platform.">
                                             <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
@@ -330,12 +327,9 @@
         </div>
     </div>
 
-    @if (isLoaded)
-    {
-        <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember" 
-            Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
-        <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
-    }
+    <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember" 
+        Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
+    <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
 
     <Modal @ref="CardModal">
         <ModalContent Centered>
@@ -425,8 +419,6 @@
     [Parameter]
     public int ScheduleId { get; set; }
 
-    public Activity activity { get; set; }
-
     private PurchaseModel Model {get; set;}
 
     private SchedulesModal ModalSched { get; set; }
@@ -435,18 +427,18 @@
 
     public List<BadgeList> badges = new List<BadgeList>();
 
-    public List<Activity> activities = new List<Activity>();
     public int MakerOngoingStudennt { get; set; }
+
     public int MakerCompletedStudent { get; set; }
 
-    public bool isLoaded { get; set; } = false;
+    private bool IsFullyLoaded {get; set;} = false;
 
     private IEnumerable<PaymentOption> Payments {get; set;} = new List<PaymentOption>();
     
     private string SelectedPaymentCode = string.Empty;
 
     private Modal CardModal {get; set;}
-
+    
     private Validations PaymentCardValidation {get; set;}
 
     private Models.Forms.CardPaymentModel CardPaymentModel {get; set;} = new();
@@ -461,7 +453,34 @@
 
     private decimal couponAmount = 50;
 
+    private string Token {get; set;}
+
     protected override async Task OnInitializedAsync()
+    {
+        await FetchAccountDetails();
+
+        await FetchSelectedAcivityAndSchedule();
+
+        await FetchMakerBadges();
+        
+        // payment options
+        Payments = new List<PaymentOption> {
+            { new PaymentOption {DisplayName = "SHOPEEPAY", PaymentChannel = "SHOPEEPAY", PaymentMethod = "EWALLET", Code = "SHOPEEPAY"} },
+            { new PaymentOption {DisplayName = "GRABPAY", PaymentChannel = "GRABPAY", PaymentMethod = "EWALLET", Code = "GRABPAY"}},
+            { new PaymentOption {DisplayName = "PAYMAYA", PaymentChannel = "PAYMAYA", PaymentMethod = "EWALLET", Code = "PAYMAYA"}},
+            { new PaymentOption {DisplayName = "GCASH", PaymentChannel = "GCASH", PaymentMethod = "EWALLET", Code = "GCASH"}},
+            { new PaymentOption {DisplayName = "CARD", PaymentChannel = "CARD", PaymentMethod = "CARD", Code = "CARD"}}
+        };
+
+        IsFullyLoaded = true;
+    }
+
+    protected override void OnParametersSet()
+    {
+        SelectedScheduleChanged();
+    }
+
+    private async Task FetchAccountDetails()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
@@ -499,6 +518,25 @@
             }).ToList();
         }
 
+        Model = new PurchaseModel {
+            // map only required fields
+            Customer = new CustomerProfile {
+                About = profile.About,
+                Birthdate = profile.Birthdate,
+                Email = profile.Email,
+                FamilyMembers = familyMembers,
+                FirstName = profile.FirstName,
+                IsMaker = profile.IsMaker,
+                LastName = profile.LastName,
+                IsVerified = profile.IsVerified,
+                ProfilePath = profile.ProfileImg
+            },
+            Token = token
+        };
+    }
+
+    private async Task FetchSelectedAcivityAndSchedule()
+    {
         // get activity
         var activityRes = await activityApiHandler.GetActivity(ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
             IncludeActivityAddress = true,
@@ -516,168 +554,86 @@
         }
 
         var result = activityRes.Result.Result;
-        activity = new Activity
-            {
-                Id = result.ActivityId,
-                ActivityId = result.ActivityId,
-                ExperienceTypeId = result.ExperienceTypeId,
-                ExperienceCategoryId = result.ExperienceCategoryId,
-                SubCategoryId = result.SubCategoryId,
-                Title = result.Title,
-                Description = result.Description,
-                Price = result.Price,
-                ScheduleIndicator = result.ScheduleIndicator,
-                Remarks = result.Remarks,
-                IsPublished = result.IsPublished,
-                Address1 = result.Address1,
-                Address2 = result.Address2,
-                District = result.District,
-                City = result.City,
-                CityName = result.CityName,
-                Subdivision = result.Subdivision,
-                Barangay = result.Barangay,
-                BarangayName = result.BarangayName,
-                Region = result.Region,
-                RegionName = result.RegionName,
-                PostalCode = result.PostalCode,
-                SpecificsYouWillProvide = result.SpecificsYouWillProvide,
-                CustomerBringWithThem = result.CustomerBringWithThem,
-                AdditionalRequirements = result.AdditionalRequirements,
-                ActivityLevel = result.ActivityLevel,
-                SkillLevel = result.SkillLevel,
-                MinimumAge = result.MinimumAge,
-                CanAdultsJoin = result.CanAdultsJoin,
-                CreatedBy = result.CreatedBy,
-                MapDetails = result.MapDetails,
-                IsSetSession = result.IsSetSession,
-                SessionName = result.SessionName,
-                ActivitySchedules = result.ActivitySchedules.Select(e =>
-                {
-                    return new ActivitySchedule
-                    {
-                        Id = e.Id,
-                        Name = e.Name,
-                        DateTime = e.DateTime,
-                        PerUnit1 = e.PerUnit1,
-                        PerUnit2 = e.PerUnit2,
-                        Price = e.Price,
-                        PriceUnit1 = e.PriceUnit1,
-                        PriceUnit2 = e.PriceUnit2,
-                        UnitPrice = e.UnitPrice,
-                        Order = e.Order,
-                        IsActiveSchedule = e.IsActiveSchedule
-                    };
-                }).ToList(),
-                Images = result.Images.Select(i =>
-                {
-                    return new ActivityImage
-                    {
-                        Id = i.Id,
-                        ImageSrc = i.ImageSrc,
-                        Name = i.Name,
-                        Order = i.Order
-                    };
-                }).ToList(),
-                Owner = result.Owner != null ? new CustomerProfile
-                {
-                    // map only required fields
-                    Id = result.Owner.Id,
-                    Handler = result.Owner.Handler,
-                    ProfilePath = result.Owner.ImageSrc,
-                    FirstName = result.Owner.FirstName,   
-                    LastName = result.Owner.LastName,
-                    IsVerified = result.Owner.IsVerified,
-                    IsOG = result.Owner.IsOG,
-                    IsOfficial = result.Owner.IsOfficial
-                } : null
-            };
-        var selectedSchedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
-        if(selectedSchedule == null)
+        var activity = new Activity
         {
-            // schedule id not associated to activity
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-
-        Model = new PurchaseModel {
-            // map only required fields
-            Activity = new Activity {
-                Id = activity.Id,
-                ActivityId = activity.ActivityId,
-                ActivityLevel = activity.ActivityLevel,
-                AdditionalRequirements = activity.AdditionalRequirements,
-                Address1 = activity.Address1,
-                Address2 = activity.Address2,
-                CanAdultsJoin = activity.CanAdultsJoin,
-                City = activity.City,
-                CustomerBringWithThem = activity.CustomerBringWithThem,
-                Description = activity.Description,
-                District = activity.District,
-                ExperienceCategoryId = activity.ExperienceCategoryId,
-                ExperienceTypeId = activity.ExperienceTypeId,
-                IsPublished = activity.IsPublished,
-                MinimumAge = activity.MinimumAge,
-                Price = activity.Price,
-                Remarks = activity.Remarks,
-                ScheduleIndicator = activity.ScheduleIndicator,
-                SkillLevel = activity.SkillLevel,
-                SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
-                SubCategoryId = activity.SubCategoryId,
-                Title = activity.Title,
-                ActivitySchedules = activity.ActivitySchedules.Select(s => {
-                    return new ActivitySchedule {
-                        DateTime = s.DateTime,
-                        Id = s.Id,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        PerUnit2 = s.PerUnit2,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        IsActiveSchedule = s.IsActiveSchedule
-                    };
-                }).ToList()
-            },
-            // map customer data fields
-            Customer = new CustomerProfile {
-                About = profile.About,
-                Birthdate = profile.Birthdate,
-                Email = profile.Email,
-                FamilyMembers = familyMembers,
-                FirstName = profile.FirstName,
-                IsMaker = profile.IsMaker,
-                LastName = profile.LastName,
-                IsVerified = profile.IsVerified,
-                ProfilePath = profile.ProfileImg
-
-            },
-            SelectedSchedule = new ActivitySchedule {
-                DateTime = selectedSchedule.DateTime,
-                Id = selectedSchedule.Id,
-                Name = selectedSchedule.Name,
-                PerUnit1 = selectedSchedule.PerUnit1,
-                PerUnit2 = selectedSchedule.PerUnit2,
-                Price = selectedSchedule.Price,
-                PriceUnit1 = selectedSchedule.PriceUnit1,
-                PriceUnit2 = selectedSchedule.PriceUnit2,
-                UnitPrice = selectedSchedule.UnitPrice,
-
-            },
-            Token = token
+            Id = result.ActivityId,
+            ActivityId = result.ActivityId,
+            ExperienceTypeId = result.ExperienceTypeId,
+            ExperienceCategoryId = result.ExperienceCategoryId,
+            SubCategoryId = result.SubCategoryId,
+            Title = result.Title,
+            Description = result.Description,
+            Price = result.Price,
+            ScheduleIndicator = result.ScheduleIndicator,
+            Remarks = result.Remarks,
+            IsPublished = result.IsPublished,
+            Address1 = result.Address1,
+            Address2 = result.Address2,
+            District = result.District,
+            City = result.City,
+            CityName = result.CityName,
+            Subdivision = result.Subdivision,
+            Barangay = result.Barangay,
+            BarangayName = result.BarangayName,
+            Region = result.Region,
+            RegionName = result.RegionName,
+            PostalCode = result.PostalCode,
+            SpecificsYouWillProvide = result.SpecificsYouWillProvide,
+            CustomerBringWithThem = result.CustomerBringWithThem,
+            AdditionalRequirements = result.AdditionalRequirements,
+            ActivityLevel = result.ActivityLevel,
+            SkillLevel = result.SkillLevel,
+            MinimumAge = result.MinimumAge,
+            CanAdultsJoin = result.CanAdultsJoin,
+            CreatedBy = result.CreatedBy,
+            MapDetails = result.MapDetails,
+            IsSetSession = result.IsSetSession,
+            SessionName = result.SessionName,
+            ActivitySchedules = result.ActivitySchedules.Select(e =>
+            {
+                return new ActivitySchedule
+                {
+                    Id = e.Id,
+                    Name = e.Name,
+                    DateTime = e.DateTime,
+                    PerUnit1 = e.PerUnit1,
+                    PerUnit2 = e.PerUnit2,
+                    Price = e.Price,
+                    PriceUnit1 = e.PriceUnit1,
+                    PriceUnit2 = e.PriceUnit2,
+                    UnitPrice = e.UnitPrice,
+                    Order = e.Order,
+                    IsActiveSchedule = e.IsActiveSchedule
+                };
+            }).ToList(),
+            Images = result.Images.Select(i =>
+            {
+                return new ActivityImage
+                {
+                    Id = i.Id,
+                    ImageSrc = i.ImageSrc,
+                    Name = i.Name,
+                    Order = i.Order
+                };
+            }).ToList(),
+            Owner = result.Owner != null ? new CustomerProfile
+            {
+                // map only required fields
+                Id = result.Owner.Id,
+                Handler = result.Owner.Handler,
+                ProfilePath = result.Owner.ImageSrc,
+                FirstName = result.Owner.FirstName,   
+                LastName = result.Owner.LastName,
+                IsVerified = result.Owner.IsVerified,
+                IsOG = result.Owner.IsOG,
+                IsOfficial = result.Owner.IsOfficial
+            } : null
         };
+        Model.Activity = activity;
+    }
 
-        isLoaded= true;
-
-        // payment options
-        Payments = new List<PaymentOption> {
-            { new PaymentOption {DisplayName = "SHOPEEPAY", PaymentChannel = "SHOPEEPAY", PaymentMethod = "EWALLET", Code = "SHOPEEPAY"} },
-            { new PaymentOption {DisplayName = "GRABPAY", PaymentChannel = "GRABPAY", PaymentMethod = "EWALLET", Code = "GRABPAY"}},
-            { new PaymentOption {DisplayName = "PAYMAYA", PaymentChannel = "PAYMAYA", PaymentMethod = "EWALLET", Code = "PAYMAYA"}},
-            { new PaymentOption {DisplayName = "GCASH", PaymentChannel = "GCASH", PaymentMethod = "EWALLET", Code = "GCASH"}},
-            { new PaymentOption {DisplayName = "CARD", PaymentChannel = "CARD", PaymentMethod = "CARD", Code = "CARD"}}
-        };
-
+    private async Task FetchMakerBadges()
+    {
         //Get Badges
         var badgeList = await dashboardApiHandler.GetAllBadge();
         if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
@@ -699,11 +655,13 @@
 
         //Get Maker Activity
         var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
-            {
-                CustomerId = activity.CreatedBy,
-                IncludeStudents = true,
-                IsActive = true,
-            });
+        {
+            CustomerId = Model.Activity.CreatedBy,
+            IncludeStudents = true,
+            IsActive = true,
+        });
+
+        var activities = new List<Activity>();
         if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
         {
             if (ActivityList.Result.Result.Count() > 0)
@@ -721,6 +679,28 @@
         }
         MakerOngoingStudennt = activities.Sum(x => x.OngoingStudents);
         MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
+    }
+
+    private void SelectedScheduleChanged()
+    {
+        var selectedSchedule = Model.Activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
+        if(selectedSchedule == null)
+        {
+            // schedule id not associated to activity
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        Model.SelectedSchedule = new ActivitySchedule {
+            DateTime = selectedSchedule.DateTime,
+            Id = selectedSchedule.Id,
+            Name = selectedSchedule.Name,
+            PerUnit1 = selectedSchedule.PerUnit1,
+            PerUnit2 = selectedSchedule.PerUnit2,
+            Price = selectedSchedule.Price,
+            PriceUnit1 = selectedSchedule.PriceUnit1,
+            PriceUnit2 = selectedSchedule.PriceUnit2,
+            UnitPrice = selectedSchedule.UnitPrice,
+        };
     }
 
     private void OnClickChange()
@@ -767,15 +747,19 @@
 
         // fetch again the updated family members
         var updatedMembers = await accountApiHandler.GetFamilyMembers(Model.Token);
+        IDictionary<int, FamilyMember> tmpSelected = Model.Customer.FamilyMembers.Where(f => f.IsSelected).ToDictionary(f => f.Id);
+
         if(updatedMembers.Succeeded && updatedMembers.Result != null && updatedMembers.Result.IsSuccess)
         {
             Model.Customer.FamilyMembers = updatedMembers.Result.Result.Select(f => {
+                bool isSelected = tmpSelected.ContainsKey(f.Id);
                 return new FamilyMember {
                     BirthMonth = f.BirthMonth,
                     BirthYear = f.BirthYear,
                     Gender = f.Gender,
                     Id = f.Id,
-                    Name = f.Name
+                    Name = f.Name,
+                    IsSelected = isSelected
                 };
             }).ToList();
         }
@@ -783,16 +767,12 @@
         AddChildrenModal.Close();
     }
 
-    private void OnSelectAttend(FamilyMember familyMember)
+    private int SelectedAttendeesCount 
     {
-        var member = Model.SelectedAttendees.FirstOrDefault(m => m.Id == familyMember.Id);
-        if(member == null)
+        get 
         {
-            Model.SelectedAttendees.Add(familyMember);
-        }
-        else
-        {
-            Model.SelectedAttendees.Remove(member);
+            if(Model == null || Model.Customer == null || Model.Customer.FamilyMembers == null) return 0;
+            return Model.Customer.FamilyMembers.Where(f => f.IsSelected).Count();
         }
     }
 
@@ -812,7 +792,7 @@
 
         var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
 
-        if(Model.SelectedAttendees.Count > 0)
+        if(SelectedAttendeesCount > 0)
         {
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
@@ -820,9 +800,9 @@
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs {
                 ActivityId = Model.Activity.ActivityId,
                 CouponCode = "temporary coupon code",
-                NumberOfHeads = Model.SelectedAttendees.Count,
+                NumberOfHeads = SelectedAttendeesCount,
                 ScheduleId = Model.SelectedSchedule.Id,
-                Students = Model.SelectedAttendees.Select(s => {
+                Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s => {
                     return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.Enrollee {
                         FamilyMemberId = s.Id,
                         Name = s.Name
@@ -866,9 +846,9 @@
 
     private string GetActivityFirstImage {
         get {
-            if(activity.Images.Count > 0 )
+            if(Model.Activity.Images.Count > 0 )
             {
-                return activity.Images.OrderBy(i => i.Order).First().ImageSrc;
+                return Model.Activity.Images.OrderBy(i => i.Order).First().ImageSrc;
             }
             return "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
         }
@@ -878,44 +858,44 @@
     {
         get 
         {
-            if(Model.SelectedAttendees.Count == 0)
+            if(SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
-            return "PHP " + (@Model.SelectedSchedule.Price * Model.SelectedAttendees.Count).ToString("#,###.00");
+            return "PHP " + (@Model.SelectedSchedule.Price * SelectedAttendeesCount).ToString("#,###.00");
         }
     }
 
     private string GetConvinienceFee 
     {
         get {
-            if(Model.SelectedAttendees.Count == 0)
+            if(SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
-            return "PHP " + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m).ToString("#,###.00");
+            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m).ToString("#,###.00");
         }
     }
 
     private string GetTotalPrice 
     {
         get {
-            if(Model.SelectedAttendees.Count == 0)
+            if(SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
-            return "PHP " + (((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) + ((Model.SelectedSchedule.Price * Model.SelectedAttendees.Count) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00");
+            return "PHP " + (((Model.SelectedSchedule.Price * SelectedAttendeesCount) + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00");
         }
     }
 
     private string GetActivityOwnerProfileSrc
     {
         get {
-            if(activity.Owner == null || string.IsNullOrEmpty(activity.Owner.ProfilePath))
+            if(Model.Activity.Owner == null || string.IsNullOrEmpty(Model.Activity.Owner.ProfilePath))
             {
                 return "images/profile/user.png";
             }
-            return activity.Owner.ProfilePath;
+            return Model.Activity.Owner.ProfilePath;
         }
     }
 
