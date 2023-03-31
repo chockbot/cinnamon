@@ -10,7 +10,7 @@ public class PurchaseOrder : BaseEntity
     public string? Coupon {get; set;}
     public decimal? CouponAmount {get; set;}
     public decimal OverallTotal {get; set;}
-    // 0 = pending, 1 = succeed, 2 failed, 3 = cancelled, 5 = disbursement
+    // 0 = pending, 1 = succeed, 2 failed, 3 = cancelled/refunded, 5 = disbursement
     public int Status {get; set;}
     public string Payload {get; set;}
 
