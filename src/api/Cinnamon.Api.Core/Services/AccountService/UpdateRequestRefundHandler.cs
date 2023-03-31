@@ -10,10 +10,12 @@ namespace Cinnamon.Api.Core.Services.AccountService;
 public class UpdateRequestRefundHandler : IUpdateRequestRefundHandler
 {
     private readonly IRequestRefundData requestRefundData;
+    private readonly IPurchaseOrderData purchaseOrderData;
 
-    public UpdateRequestRefundHandler(IRequestRefundData requestRefundData)
+    public UpdateRequestRefundHandler(IRequestRefundData requestRefundData, IPurchaseOrderData purchaseOrderData)
     {
         this.requestRefundData = requestRefundData;
+        this.purchaseOrderData = purchaseOrderData;
     }
     
     public AppResult<UpdateRequestRefundResult> Execute(UpdateRequestRefundArgs args)
@@ -32,6 +34,15 @@ public class UpdateRequestRefundHandler : IUpdateRequestRefundHandler
     {
         try
         {
+            // get refund data
+            var refundDataRes = await requestRefundData.GetRequestRefundById(args.RefundId);
+            if(!refundDataRes.Succeeded || refundDataRes.Result == null || !refundDataRes.Result.IsSuccess)
+            {
+                return AppResult<UpdateRequestRefundResult>.CreateFailed(
+                    new ApplicationException("Invalid refund request"), "Invalid refund request");
+            }
+            var refundData = refundDataRes.Result.Result;
+
             var result = await requestRefundData.UpdateRequestRefund(new Framework.ApiCommand.ApiData.RequestRefund.Request.UpdateRequestRefundArgs
             {
                 RefundAmountGiven = args.RefundAmountGiven,
@@ -43,6 +54,17 @@ public class UpdateRequestRefundHandler : IUpdateRequestRefundHandler
             {
                 return AppResult<UpdateRequestRefundResult>.CreateFailed(
                     new ApplicationException(result.Result?.ErrorInfo?.Message), result.Message);
+            }
+
+            // update purchase order data
+            var updatedPurchaseData = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
+                PurchaseOrderId = refundData.PurchaseOrderId,
+                Status = 3
+            });
+            if(!updatedPurchaseData.Succeeded || updatedPurchaseData.Result == null || !updatedPurchaseData.Result.IsSuccess)
+            {
+                return AppResult<UpdateRequestRefundResult>.CreateFailed(
+                    new ApplicationException(updatedPurchaseData.Result?.ErrorInfo?.Message), updatedPurchaseData.Message);
             }
 
             var refundResult = result.Result.Result;
