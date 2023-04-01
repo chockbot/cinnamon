@@ -400,7 +400,7 @@
             }
             <hr />
             <div class="end-container d-flex flex-column">
-                <span class="landing-header color-primary fs-2">@Resources.App.appName</span>
+                    <a href="/explore" style="text-decoration:none"><span class="landing-header color-primary fs-2">@Resources.App.appName</span></a>
                 <span>
                     Not happy with the experience? <br /> <a href="mailto:support@cinnamon.ph">Contact us</a> and we'll solve the problem for you.
                 </span>
@@ -633,7 +633,7 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "/js/CarouselSlider.js");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
         }
     }
 
