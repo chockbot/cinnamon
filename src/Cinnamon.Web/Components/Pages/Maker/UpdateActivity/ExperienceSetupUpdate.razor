@@ -223,7 +223,7 @@
             {
                 <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
                     <option disabled selected>Select Subcategory</option>
-                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId))
+                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId).OrderBy(s => s.Name))
                     {
                         <option value="@cat.Id">@cat.Name</option>
                     }
