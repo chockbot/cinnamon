@@ -352,6 +352,8 @@
             isLoading = true;
             StateHasChanged();
 
+            Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
+
             var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
             Model.Activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
                                                                         sortPrice.ElementAtOrDefault(0).UnitPrice, 
@@ -501,5 +503,29 @@
         errorMessage = message;
         showErrorMessage = true;
         StateHasChanged();
+    }
+
+    private IList<Models.Entities.ActivitySchedule> GetActivitySchedules(IList<Models.Entities.ActivitySchedule> activitySchedules)
+    {
+        var result = new List<Models.Entities.ActivitySchedule>();
+
+        bool isSingle = activitySchedules.Count == 1;
+
+        foreach (var schedule in activitySchedules)
+        {
+            if (!(string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)))
+            {
+                result.Add(schedule);
+            }
+        }
+
+        return result;
     }
 }
