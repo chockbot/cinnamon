@@ -10,7 +10,7 @@
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-@if(Model != null)
+@if (Model != null)
 {
     <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
         <ol class='breadcrumb @(currentIndex == 0 ? "active" : "")'>
@@ -44,7 +44,9 @@
     <div class="progress-container landing-sm shadow-sm">
         <div class="progress mx-4">
             <div id="myBar" class="progress-bar" role="progressbar" style='width: @(GetPerentCompletion)%;'
-                 aria-valuemin="0" aria-valuemax="100">@GetPerentCompletion%</div>
+             aria-valuemin="0" aria-valuemax="100">
+                @GetPerentCompletion%
+            </div>
         </div>
     </div>
 
@@ -68,7 +70,7 @@
 
             <div class="button-container" style="overflow:auto;">
                 <div style="float:right;">
-                    @if(currentIndex > 0) 
+                    @if (currentIndex > 0)
                     {
                         <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
                     }
@@ -86,22 +88,23 @@
     </div>
 }
 
-@if(ShowErrorMessage)
+@if (ShowErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-      <strong>Error!</strong> @errorMessage
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <strong>Error!</strong> @errorMessage
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-@if(ShowSuccessMessage){
+@if (ShowSuccessMessage)
+{
     <div class="alert alert-success alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-      <strong>Success!</strong> You'll be redirected to the dashboard page.
-      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <strong>Success!</strong> You'll be redirected to the dashboard page.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 }
 
-@code 
+@code
 {
     private Models.ExperienceCreationModel Model;
 
@@ -113,9 +116,9 @@
 
     private int currentIndex = 0;
 
-    private ExperienceCreation experienceCreationComponent {get; set;}
+    private ExperienceCreation experienceCreationComponent { get; set; }
 
-    private ExperienceSetup experienceSetupComponent {get; set;}
+    private ExperienceSetup experienceSetupComponent { get; set; }
 
     private bool isLoading = false;
 
@@ -129,7 +132,7 @@
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
-        if(token == null)
+        if (token == null)
         {
             // don't have current user login
             navigationManager.NavigateTo("explore");
@@ -138,7 +141,7 @@
 
         // get experience types
         var experienceTypes = await activityApiHandler.GetExperienceTypes();
-        if((!experienceTypes.Succeeded || experienceTypes.Result == null) || (experienceTypes.Succeeded && !experienceTypes.Result.IsSuccess))
+        if ((!experienceTypes.Succeeded || experienceTypes.Result == null) || (experienceTypes.Succeeded && !experienceTypes.Result.IsSuccess))
         {
             // an error occured when getting experience types to api
             navigationManager.NavigateTo("explore");
@@ -147,7 +150,7 @@
 
         // get experience categories
         var categories = await activityApiHandler.GetExperienceCategories();
-        if((!categories.Succeeded || categories.Result == null) || (categories.Succeeded && !categories.Result.IsSuccess))
+        if ((!categories.Succeeded || categories.Result == null) || (categories.Succeeded && !categories.Result.IsSuccess))
         {
             // an error occured when getting experience categories to api
             navigationManager.NavigateTo("explore");
@@ -156,7 +159,7 @@
 
         // get sub categories
         var subCategories = await activityApiHandler.GetSubCategories();
-        if((!subCategories.Succeeded || subCategories.Result == null) || (subCategories.Succeeded && !subCategories.Result.IsSuccess))
+        if ((!subCategories.Succeeded || subCategories.Result == null) || (subCategories.Succeeded && !subCategories.Result.IsSuccess))
         {
             // an error occured when getting sub categories to api
             navigationManager.NavigateTo("explore");
@@ -172,23 +175,30 @@
             return;
         }
 
-        Model = new Models.ExperienceCreationModel {
+        Model = new Models.ExperienceCreationModel
+            {
                 Token = token,
-                ExperienceTypes = experienceTypes.Result.Result.Select(e => {
-                    return new Models.Entities.ExperienceType {
+                ExperienceTypes = experienceTypes.Result.Result.Select(e =>
+                {
+                    return new Models.Entities.ExperienceType
+                    {
                         Id = e.Id,
                         Name = e.Name
                     };
                 }),
-                ExperienceCategories = categories.Result.Result.Select(c => {
-                    return new Models.Entities.ExperienceCategory {
+                ExperienceCategories = categories.Result.Result.Select(c =>
+                {
+                    return new Models.Entities.ExperienceCategory
+                    {
                         Category = c.Name,
                         IconPath = c.IconPath,
                         Id = c.Id
                     };
                 }),
-                SubCategories = subCategories.Result.Result.Select(s => {
-                    return new Models.Entities.SubCategory {
+                SubCategories = subCategories.Result.Result.Select(s =>
+                {
+                    return new Models.Entities.SubCategory
+                    {
                         CategoryId = s.CategoryId,
                         Id = s.Id,
                         Name = s.Name
@@ -210,110 +220,115 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
-        Task.Run(()=>module.InvokeVoidAsync("confirmation"));
+        Task.Run(() => module.InvokeVoidAsync("confirmation"));
     }
 
     /*private void OnClickNext()
     {
-        if (_viewModel.IsComplete)
-        {
-            _viewModel.UserList = UserModel;
-            var res = Task.Run(() => _viewModel.SaveActivity(_viewModel.activity)).Result;
-            if (res)
-            {
-                //Dashboard
-                ShowSuccessMessage = true;
-                Task.Run(()=>module.InvokeVoidAsync("OffBeforeUnload"));
-                HideMessageAfterDelay();
-                navigationManager.NavigateTo("maker/Dashboard");
-            }
-            else
-            {
-                ShowErrorMessage = true;
-                HideMessageAfterDelay();
-            }
-        }
-        else
-        {
-            _viewModel.NextStep();
-        }
-
-        if(!_viewModel.ExperienceSetupViewModel.IsValid)
-        {
-            Task.Run(() => module.InvokeVoidAsync("onScrollUp"));
-        }
+    if (_viewModel.IsComplete)
+    {
+_viewModel.UserList = UserModel;
+var res = Task.Run(() => _viewModel.SaveActivity(_viewModel.activity)).Result;
+    if (res)
+    {
+    //Dashboard
+    ShowSuccessMessage = true;
+    Task.Run(()=>module.InvokeVoidAsync("OffBeforeUnload"));
+    HideMessageAfterDelay();
+    navigationManager.NavigateTo("maker/Dashboard");
     }
-    */
+    else
+    {
+    ShowErrorMessage = true;
+    HideMessageAfterDelay();
+    }
+    }
+    else
+    {
+    _viewModel.NextStep();
+    }
+
+    if(!_viewModel.ExperienceSetupViewModel.IsValid)
+    {
+Task.Run(() => module.InvokeVoidAsync("onScrollUp"));
+}
+}
+*/
 
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
-        if(index == 0 && currentIndex == 3)
+        if (index == 0 && currentIndex == 3)
         {
             isLoading = true;
+            Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
 
             var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
+
             Model.Activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
-                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
-                                                                        sortPrice.ElementAtOrDefault(0).Price, 
-                                                                        sortPrice.ElementAtOrDefault(sortPrice.Count-1).Price) : String.Format("{0} {1} / {2} {3} / {4} {5}",
-                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice, 
-                                                                        sortPrice.ElementAtOrDefault(0).Price.ToString(), 
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice,
+                                                                        sortPrice.ElementAtOrDefault(0).Price,
+                                                                        sortPrice.ElementAtOrDefault(sortPrice.Count - 1).Price) : String.Format("{0} {1} / {2} {3} / {4} {5}",
+                                                                        sortPrice.ElementAtOrDefault(0).UnitPrice,
+                                                                        sortPrice.ElementAtOrDefault(0).Price.ToString(),
                                                                         sortPrice.ElementAtOrDefault(0).PerUnit1.ToString(),
                                                                         sortPrice.ElementAtOrDefault(0).PriceUnit1,
                                                                         sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
                                                                         sortPrice.ElementAtOrDefault(0).PriceUnit2);
 
-            var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs {
-                ActivityLevel = Model.Activity.ActivityLevel,
-                ActivitySchedules = Model.Activity.ActivitySchedules.Select(s => {
-                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule {
-                        DateTime = s.DateTime,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        PerUnit2 = s.PerUnit2,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
-                    };
-                }),
-                AdditionalRequirements = Model.Activity.AdditionalRequirements,
-                Address1 = Model.Activity.Address1,
-                Address2 = Model.Activity.Address2,
-                CanAdultsJoin = Model.Activity.CanAdultsJoin,
-                City = Model.Activity.City,
-                Subdivision = Model.Activity.Subdivision,
-                Region = Model.Activity.Region,
-                Barangay = Model.Activity.Barangay,
-                PostalCode = Model.Activity.PostalCode,
-                CustomerBringWithThem = Model.Activity.CustomerBringWithThem,
-                Description = Model.Activity.Description,
-                District = Model.Activity.District,
-                ExperienceCategoryId = Model.Activity.ExperienceCategoryId,
-                ExperienceTypeId = Model.Activity.ExperienceTypeId,
-                IsPublished = Model.Activity.IsPublished,
-                MinimumAge = Model.Activity.MinimumAge,
-                Price = Model.Activity.Price,
-                Remarks = Model.Activity.Remarks,
-                ScheduleIndicator = Model.Activity.ScheduleIndicator,
-                SearchTags = Model.Activity.SearchTags,
-                SkillLevel = Model.Activity.SkillLevel,
-                SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
-                SubCategoryId = Model.Activity.SubCategoryId,
-                Title = Model.Activity.Title,
-                IsSetSession = Model.Activity.IsSetSession,
-                SessionName = Model.Activity.SessionName,
-                PinnedLocation = Model.Activity.PinnedLocation
-            }, Model.Token);
-            
-            if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+            var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
+                {
+                    ActivityLevel = Model.Activity.ActivityLevel,
+                    ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
+                        {
+                            DateTime = s.DateTime,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            PerUnit2 = s.PerUnit2,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice,
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
+                        };
+                    }),
+                    AdditionalRequirements = Model.Activity.AdditionalRequirements,
+                    Address1 = Model.Activity.Address1,
+                    Address2 = Model.Activity.Address2,
+                    CanAdultsJoin = Model.Activity.CanAdultsJoin,
+                    City = Model.Activity.City,
+                    Subdivision = Model.Activity.Subdivision,
+                    Region = Model.Activity.Region,
+                    Barangay = Model.Activity.Barangay,
+                    PostalCode = Model.Activity.PostalCode,
+                    CustomerBringWithThem = Model.Activity.CustomerBringWithThem,
+                    Description = Model.Activity.Description,
+                    District = Model.Activity.District,
+                    ExperienceCategoryId = Model.Activity.ExperienceCategoryId,
+                    ExperienceTypeId = Model.Activity.ExperienceTypeId,
+                    IsPublished = Model.Activity.IsPublished,
+                    MinimumAge = Model.Activity.MinimumAge,
+                    Price = Model.Activity.Price,
+                    Remarks = Model.Activity.Remarks,
+                    ScheduleIndicator = Model.Activity.ScheduleIndicator,
+                    SearchTags = Model.Activity.SearchTags,
+                    SkillLevel = Model.Activity.SkillLevel,
+                    SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
+                    SubCategoryId = Model.Activity.SubCategoryId,
+                    Title = Model.Activity.Title,
+                    IsSetSession = Model.Activity.IsSetSession,
+                    SessionName = Model.Activity.SessionName,
+                    PinnedLocation = Model.Activity.PinnedLocation
+                }, Model.Token);
+
+            if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
                 errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
                 ShowErrorMessage = true;
@@ -324,19 +339,19 @@
             // upload image without checking if there is an error so that can't re update another activity
             bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.init", obj, submit.Result.Result.ActivityId);
             isLoading = false;
-            
+
             navigationManager.NavigateTo("/maker/dashboard");
 
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
             return;
         }
 
-        if(index != 0)
+        if (index != 0)
         {
-            switch(index)
+            switch (index)
             {
                 case 1:
-                    if(Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
+                    if (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
                     {
                         await module.InvokeVoidAsync("onScrollUp");
                         return;
@@ -344,12 +359,12 @@
                     currentIndex = 1;
                     break;
                 case 2:
-                    if(Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
+                    if (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
                     {
                         await module.InvokeVoidAsync("onScrollUp");
                         return;
                     };
-                    if(Model.HasError = !experienceSetupComponent.IsAllFieldsValidated())
+                    if (Model.HasError = !experienceSetupComponent.IsAllFieldsValidated())
                     {
                         await module.InvokeVoidAsync("onScrollUp");
                         return;
@@ -357,39 +372,41 @@
                     currentIndex = 2;
                     break;
             }
-            
+
             await Task.Delay(100);
             await module.InvokeVoidAsync("onScrollUp");
             return;
         }
-        if(currentIndex == 1 && (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated()))
+        if (currentIndex == 1 && (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated()))
         {
             await module.InvokeVoidAsync("onScrollUp");
             return;
         };
-        if(currentIndex == 2 && (Model.HasError = !experienceSetupComponent.IsAllFieldsValidated()))
+        if (currentIndex == 2 && (Model.HasError = !experienceSetupComponent.IsAllFieldsValidated()))
         {
             await module.InvokeVoidAsync("onScrollUp");
             return;
         };
-        
+
         currentIndex++;
 
         await Task.Delay(100);
         await module.InvokeVoidAsync("onScrollUp");
     }
 
-    private async Task OnBackClick(int index = 0) 
+    private async Task OnBackClick(int index = 0)
     {
-        if(currentIndex == 0) return;
-        currentIndex --;
+        if (currentIndex == 0) return;
+        currentIndex--;
 
         await Task.Delay(100);
         await module.InvokeVoidAsync("onScrollUp");
     }
 
-    private double GetPerentCompletion {
-        get {
+    private double GetPerentCompletion
+    {
+        get
+        {
             return Math.Round(currentIndex * 33.33);
         }
     }
@@ -400,5 +417,29 @@
         errorMessage = message;
         ShowErrorMessage = true;
         StateHasChanged();
+    }
+
+    private IList<Models.Entities.ActivitySchedule> GetActivitySchedules(IList<Models.Entities.ActivitySchedule> activitySchedules)
+    {
+        var result = new List<Models.Entities.ActivitySchedule>();
+
+        bool isSingle = activitySchedules.Count == 1;
+
+        foreach (var schedule in activitySchedules)
+        {
+            if (!(string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)))
+            {
+                result.Add(schedule);
+            }
+        }
+
+        return result;
     }
 }
