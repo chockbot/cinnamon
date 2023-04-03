@@ -26,8 +26,8 @@
             <div class="schedule-ordered text-center">
                 <p>@Model.SelectedSchedule.Name</p>
                 <p>@Model.SelectedSchedule.DateTime</p>
-                <p>PHP @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.Price / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
-                <p>Total: @Model.PurchaseOrder.OverallTotal</p>
+                <p>@Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
+                <p>Total: @((long)Model.PurchaseOrder.Total)</p>
             </div>
             <p class="text-center">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
             <div class="text-center mt-5 mb-5">

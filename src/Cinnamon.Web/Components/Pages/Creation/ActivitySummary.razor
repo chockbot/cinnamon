@@ -54,7 +54,7 @@
                     <div class="background-gray-100 border-radius-20 font-family-nunito p-4 m-padding-10 m-border-radius-10">
                         <p class="font-size-20 mb-2 m-font-size-10">@schedule.Name</p>
                         <p class="font-size-16 mb-4 m-font-size-10">@schedule.DateTime</p>
-                        <p class="font-size-16 mb-0 m-font-size-10">@schedule.UnitPrice @schedule.Price / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
+                        <p class="font-size-16 mb-0 m-font-size-10">@schedule.UnitPrice @Math.Truncate(schedule.Price) / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
                     </div>
                 </Column>
             }

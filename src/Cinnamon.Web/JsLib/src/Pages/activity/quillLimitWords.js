@@ -23,7 +23,7 @@ quillLimitWords.init = (selector, label, wordsLimit) => {
             editorInstance.setContents(oldDelta);
         }
 
-        // fix cursor jumping
+        // fix cursor jumpings
         const updatedLength = editorInstance.getLength();
         editorInstance.setSelection(updatedLength + 2, 0);
     });
