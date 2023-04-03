@@ -28,7 +28,7 @@
                             </div>
 
                             <div class="xp-body-item">
-                                <p class="secondary-caption">@item.SessionsAttended:@item.NumberOfSessions</p>
+                                <p class="secondary-caption">@item.SessionsAttended/@item.NumberOfSessions</p>
                                 <div class="progress">
                                     <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
                                 </div>
@@ -49,7 +49,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="row xp-body-item pulse-section">
+                    @*<div class="row xp-body-item pulse-section">
                         <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
                             <label>
                                 <span class="pulse"></span>
@@ -63,7 +63,7 @@
                                 <span class="active-tag-label-complete">@Activity.CompletedStudents</span>
                             </label>
                         </div>
-                    </div>
+                    </div>*@
                     <div class="xp-body-item">
                         <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" class="btn-update" Style="
                                                                                                                                         width: 352px;
