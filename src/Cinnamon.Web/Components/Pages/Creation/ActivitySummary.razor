@@ -44,7 +44,11 @@
             Schedule
         </h3>
         <Row Gutter="(20,20)" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
-            @foreach (var schedule in Activity.ActivitySchedules)
+            @foreach (var schedule in Activity.ActivitySchedules.Where(a => !string.IsNullOrEmpty(a.Name) && 
+                                                                            !string.IsNullOrEmpty(a.DateTime) && 
+                                                                            !string.IsNullOrEmpty(a.UnitPrice) && 
+                                                                            !string.IsNullOrEmpty(a.PriceUnit1) &&
+                                                                            !string.IsNullOrEmpty(a.PriceUnit2)))
             {
                 <Column class="background-black-100" ColumnSize="ColumnSize.Is6.OnMobile.Is4.OnTablet.Is3.OnDesktop">
                     <div class="background-gray-100 border-radius-20 font-family-nunito p-4 m-padding-10 m-border-radius-10">
