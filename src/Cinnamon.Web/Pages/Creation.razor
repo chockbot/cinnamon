@@ -204,15 +204,7 @@
                         Name = s.Name
                     };
                 }),
-                Regions = regions.Result.Result.Select(r =>
-                {
-                    return new Models.Entities.Region
-                    {
-                        Code = r.Code,
-                        Name = r.Name,
-                        RegionName = r.RegionName
-                    };
-                })
+                Regions = new List<Models.Entities.Region>()
             };
 
         obj = DotNetObjectReference.Create(this);
