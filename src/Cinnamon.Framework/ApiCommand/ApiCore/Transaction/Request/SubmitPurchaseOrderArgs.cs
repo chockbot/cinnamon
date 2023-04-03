@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Cinnamon.Framework.ValidationAttributes;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Transaction.Request;
 
@@ -28,13 +29,16 @@ public class SubmitPurchaseOrderArgs
 
     public class CardDetails 
     {
+        [CreditCard(ErrorMessage = "Provide valid card number")]
         [Required]
         public string CardNumber {get; set;}
         [Required]
         public string AccountHolder {get; set;}
         [Required]
+        [StringLength(4, MinimumLength = 3, ErrorMessage = "Provide valid CVV")]
         public string CVV {get; set;}
         [Required]
+        [CardExpiration(ErrorMessage = "Provide valid card expiration format. Eg: 03/23")]
         public string ExpireMonthYear {get; set;}
     }
 }
