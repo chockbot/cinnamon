@@ -368,7 +368,8 @@ public class AccountController : ControllerBase
                     Birthdate = profile.Birthdate,
                     IsVerified = profile.IsVerified,
                     ProfileImg = profile.ProfileImagePath,
-                    Handler = profile.Handler
+                    Handler = profile.Handler,
+                    TotalCredits = profile.TotalCredits
                 },
                 IsSuccess = true
             });

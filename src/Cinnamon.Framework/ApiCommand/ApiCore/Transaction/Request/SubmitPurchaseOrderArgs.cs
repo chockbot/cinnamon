@@ -18,6 +18,8 @@ public class SubmitPurchaseOrderArgs
     [Required]
     public IEnumerable<Enrollee> Students {get; set;}
     public CardDetails? CardInformation {get; set;}
+    [Required]
+    public bool IsCreditsApplied {get; set;}
 
     public class Enrollee 
     {

@@ -18,4 +18,5 @@ public class CustomerDTO
     public string Handler {get; set;}
     public string FrontIdImagePath {get; set; }
     public string BackIdImagePath { get; set; }
+    public decimal TotalCredits {get; set;}
 }

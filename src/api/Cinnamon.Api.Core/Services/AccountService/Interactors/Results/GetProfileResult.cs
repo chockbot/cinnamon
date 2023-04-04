@@ -12,4 +12,5 @@ public class GetProfileResult
     public int IsVerified {get; set;}
     public string ProfileImagePath {get; set;}
     public string Handler {get; set;}
+    public decimal TotalCredits {get; set;}
 }

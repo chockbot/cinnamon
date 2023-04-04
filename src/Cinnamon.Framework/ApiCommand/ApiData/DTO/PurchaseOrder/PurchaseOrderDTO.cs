@@ -13,6 +13,7 @@ public class PurchaseOrderDTO
     public decimal OverallTotal {get; set;}
     public int Status {get; set;}
     public string Payload {get; set;}
+    public decimal CreditAmount {get; set;}
 
     public AssociatedActivity Activity {get; set;}
     public AssociatedSchedule Schedule {get; set;}

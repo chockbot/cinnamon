@@ -12,4 +12,5 @@ public class ProfileDTO
     public bool IsMaker { get; set; }
     public int IsVerified { get; set; }
     public string Handler {get; set;}
+    public decimal TotalCredits {get; set;}
 }

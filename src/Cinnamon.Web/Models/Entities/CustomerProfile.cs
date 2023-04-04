@@ -16,6 +16,7 @@
         public string Handler {get; set;}
         public string FrontIdImagePath { get; set; }
         public string BackIdImagePath { get; set; }
+        public decimal TotalCredits {get; set;}
 
         public IList<FamilyMember> FamilyMembers {get; set;}
 

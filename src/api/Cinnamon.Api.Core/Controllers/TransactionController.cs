@@ -47,7 +47,8 @@ public class TransactionController : ControllerBase
                     CardNumber = args.CardInformation.CardNumber,
                     CVV = args.CardInformation.CVV,
                     ExpireMonthYear = args.CardInformation.ExpireMonthYear
-                } : null
+                } : null,
+                IsCreditsApplied = args.IsCreditsApplied
             });
 
             if(!result.Succeeded || result.Result == null)
