@@ -68,7 +68,7 @@ public class CreateActivityHandler : ICreateActivityHandler
             // create activity unique handler
             // remove special characters for creating handler name
             char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
-                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>'};
+                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>','.'};
             var removedCharacters = args.Title.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             var handlerName = string.Join("-",string.Join("",removedCharacters.Where(s => !string.IsNullOrEmpty(s))).Split(" ").Where(s => !string.IsNullOrEmpty(s))).ToLower();
 
