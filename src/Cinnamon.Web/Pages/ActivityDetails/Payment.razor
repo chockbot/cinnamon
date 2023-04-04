@@ -235,11 +235,18 @@
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-between py-1 price-per-head">
-                                    <div class="apply-credits">
-                                        Apply credits
+                                    <div class="apply-credits" @onclick="() => Model.IsCreditApplied = !Model.IsCreditApplied">
+                                        @if(!Model.IsCreditApplied)
+                                        {
+                                            <span>Apply credits</span>
+                                        }
+                                        else 
+                                        {
+                                            <span>Remove credits</span>
+                                        }
                                     </div>
                                     <div>
-                                        PHP 0.00
+                                        @GetTotalCredit
                                     </div>
                                 </div>
                                 <hr>
@@ -529,7 +536,8 @@
                 IsMaker = profile.IsMaker,
                 LastName = profile.LastName,
                 IsVerified = profile.IsVerified,
-                ProfilePath = profile.ProfileImg
+                ProfilePath = profile.ProfileImg,
+                TotalCredits = profile.TotalCredits
             },
             Token = token
         };
@@ -815,7 +823,8 @@
                     CardNumber = CardPaymentModel.CardNumber ?? string.Empty,
                     CVV = CardPaymentModel.CVV ?? string.Empty,
                     ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
-                } : null
+                } : null,
+                IsCreditsApplied = Model.IsCreditApplied
             }, Model.Token);
 
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -862,7 +871,7 @@
             {
                 return "PHP 0.00";
             }
-            return "PHP " + (@Model.SelectedSchedule.Price * SelectedAttendeesCount).ToString("#,###.00");
+            return "PHP " + (@Model.SelectedSchedule.Price * SelectedAttendeesCount).ToString("#,##0.00");
         }
     }
 
@@ -873,7 +882,7 @@
             {
                 return "PHP 0.00";
             }
-            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m).ToString("#,###.00");
+            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m).ToString("#,##0.00");
         }
     }
 
@@ -884,7 +893,40 @@
             {
                 return "PHP 0.00";
             }
-            return "PHP " + (((Model.SelectedSchedule.Price * SelectedAttendeesCount) + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m)) - (couponAction == CouponAction.AppliedCoupon ? couponAmount : 0)).ToString("#,###.00");
+
+            decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
+            decimal fee = subTotal * .15m;
+            decimal discount = 0;
+            decimal overallTotal = subTotal + fee;
+
+            if(Model.IsCreditApplied && Model.Customer.TotalCredits > 0)
+            {
+                var creditsBalance = Model.Customer.TotalCredits;
+                overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
+            }
+
+            return $"PHP {overallTotal.ToString("#,##0.00")}";
+        }
+    }
+
+    private string GetTotalCredit
+    {
+        get {
+            if(!(Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
+            {
+                return "PHP 0.00";
+            }
+
+            decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
+            decimal fee = subTotal * .15m;
+            decimal discount = 0;
+            decimal overallTotal = subTotal + fee;
+            decimal creditAmount = 0;
+
+            var creditsBalance = Model.Customer.TotalCredits;
+            creditAmount = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
+
+            return $"PHP {creditAmount.ToString("#,##0.00")}";
         }
     }
 

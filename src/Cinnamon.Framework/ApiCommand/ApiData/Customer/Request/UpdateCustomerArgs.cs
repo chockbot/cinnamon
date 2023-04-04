@@ -18,4 +18,5 @@ public class UpdateCustomerArgs
     public int? IsVerified { get; set; }
     public string? FrontIdImagePath { get; set; }
     public string? BackIdImagePath { get; set; }
+    public decimal? TotalCredits {get; set;}
 }

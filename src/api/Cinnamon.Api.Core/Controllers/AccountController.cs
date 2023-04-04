@@ -369,7 +369,8 @@ public class AccountController : ControllerBase
                     DateJoined = profile.DateJoined,
                     IsVerified = profile.IsVerified,
                     ProfileImg = profile.ProfileImagePath,
-                    Handler = profile.Handler
+                    Handler = profile.Handler,
+                    TotalCredits = profile.TotalCredits
                 },
                 IsSuccess = true
             });

@@ -225,7 +225,8 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.Update(args.CustomerId, args.FirstName, args.LastName, args.Email,
-                args.Birthdate, args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.IsVerified, args.FrontIdImagePath, args.BackIdImagePath);
+                args.Birthdate, args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, 
+                args.IsVerified, args.FrontIdImagePath, args.BackIdImagePath, args.TotalCredits);
 
             if (!result.Succeeded || result.Result == null)
             {

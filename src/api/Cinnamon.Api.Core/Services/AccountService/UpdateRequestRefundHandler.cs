@@ -11,11 +11,14 @@ public class UpdateRequestRefundHandler : IUpdateRequestRefundHandler
 {
     private readonly IRequestRefundData requestRefundData;
     private readonly IPurchaseOrderData purchaseOrderData;
+    private readonly IUpdateCreditBalanceHandler updateCreditBalanceHandler;
 
-    public UpdateRequestRefundHandler(IRequestRefundData requestRefundData, IPurchaseOrderData purchaseOrderData)
+    public UpdateRequestRefundHandler(IRequestRefundData requestRefundData, IPurchaseOrderData purchaseOrderData,
+        IUpdateCreditBalanceHandler updateCreditBalanceHandler)
     {
         this.requestRefundData = requestRefundData;
         this.purchaseOrderData = purchaseOrderData;
+        this.updateCreditBalanceHandler = updateCreditBalanceHandler;
     }
     
     public AppResult<UpdateRequestRefundResult> Execute(UpdateRequestRefundArgs args)
@@ -56,15 +59,29 @@ public class UpdateRequestRefundHandler : IUpdateRequestRefundHandler
                     new ApplicationException(result.Result?.ErrorInfo?.Message), result.Message);
             }
 
-            // update purchase order data
-            var updatedPurchaseData = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
-                PurchaseOrderId = refundData.PurchaseOrderId,
-                Status = 3
-            });
-            if(!updatedPurchaseData.Succeeded || updatedPurchaseData.Result == null || !updatedPurchaseData.Result.IsSuccess)
+            // refund is approved
+            if(args.Status == 1)
             {
-                return AppResult<UpdateRequestRefundResult>.CreateFailed(
-                    new ApplicationException(updatedPurchaseData.Result?.ErrorInfo?.Message), updatedPurchaseData.Message);
+                // update purchase order data
+                var updatedPurchaseData = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
+                    PurchaseOrderId = refundData.PurchaseOrderId,
+                    Status = 3
+                });
+                if(!updatedPurchaseData.Succeeded || updatedPurchaseData.Result == null || !updatedPurchaseData.Result.IsSuccess)
+                {
+                    return AppResult<UpdateRequestRefundResult>.CreateFailed(
+                        new ApplicationException(updatedPurchaseData.Result?.ErrorInfo?.Message), updatedPurchaseData.Message);
+                }
+
+                var updatedCredit = await updateCreditBalanceHandler.ExecuteAsync(new UpdateCreditBalanceArgs {
+                    ActionFlag = 0,
+                    Amount = args.RefundAmountGiven ?? 0,
+                    CustomerId = refundData.CustomerId
+                });
+                if(!updatedCredit.Succeeded || updatedCredit.Result == null)
+                {
+                    return AppResult<UpdateRequestRefundResult>.CreateFailed(new ApplicationException(updatedCredit.Message), updatedCredit.Message);
+                }
             }
 
             var refundResult = result.Result.Result;

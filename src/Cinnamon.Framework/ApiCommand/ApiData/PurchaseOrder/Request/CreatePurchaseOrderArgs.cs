@@ -24,4 +24,5 @@ public class CreatePurchaseOrderArgs
     [Range(0,2)]
     public int Status {get; set;}
     public string? Payload {get; set;}
+    public decimal CreditAmount {get; set;}
 }

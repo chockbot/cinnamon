@@ -111,6 +111,7 @@ public class CustomerRepository : ICustomerRepository
                 ProfileImg = validCustomer.ProfilePath,
                 DateJoined = validCustomer.DateJoined,
                 Handler = validCustomer.Handler,
+                TotalCredits = validCustomer.TotalCredits
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customer, "Success checking login credential");
@@ -247,7 +248,8 @@ public class CustomerRepository : ICustomerRepository
                     ProfileImg = c.ProfilePath,
                     Handler = c.Handler,
                     BackIdImagePath = c.BackIdImagePath,
-                    FrontIdImagePath = c.FrontIdImagePath
+                    FrontIdImagePath = c.FrontIdImagePath,
+                    TotalCredits = c.TotalCredits
                 };
             });
 
@@ -286,7 +288,8 @@ public class CustomerRepository : ICustomerRepository
                     IsOG = c.IsOG,
                     IsOfficial = c.IsOfficialPartner,
                     ProfileImg = c.ProfilePath,
-                    Handler =c.Handler
+                    Handler =c.Handler,
+                    TotalCredits = c.TotalCredits
                 };
             });
 
@@ -322,7 +325,8 @@ public class CustomerRepository : ICustomerRepository
                 IsOG = result.Result.IsOG,  
                 IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
-                Handler = result.Result.Handler
+                Handler = result.Result.Handler,
+                TotalCredits = result.Result.TotalCredits
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by email");
@@ -358,7 +362,8 @@ public class CustomerRepository : ICustomerRepository
                 IsOG = result.Result.IsOG,
                 IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
-                Handler = result.Result.Handler
+                Handler = result.Result.Handler,
+                TotalCredits = result.Result.TotalCredits
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by id");
@@ -394,7 +399,8 @@ public class CustomerRepository : ICustomerRepository
                 IsOG = result.Result.IsOG,
                 IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
-                Handler = result.Result.Handler
+                Handler = result.Result.Handler,
+                TotalCredits = result.Result.TotalCredits
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by handler");
@@ -447,7 +453,8 @@ public class CustomerRepository : ICustomerRepository
         }
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, 
-        string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, string? frontIdImagePath, string? backIdImageParh)
+        string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, string? frontIdImagePath, string? backIdImageParh,
+        decimal? totalCredits)
     {
         try
         {
@@ -470,6 +477,7 @@ public class CustomerRepository : ICustomerRepository
             customer.IsVerifiedBadge = isVerified ?? customer.IsVerifiedBadge;
             customer.FrontIdImagePath = frontIdImagePath ?? customer.FrontIdImagePath;
             customer.BackIdImagePath = backIdImageParh ?? customer.BackIdImagePath;
+            customer.TotalCredits = totalCredits ?? customer.TotalCredits;
 
             var updatedCustomerRes = await dataStore.Customer.Update(customer);
             if (!updatedCustomerRes.Succeeded)
@@ -490,7 +498,8 @@ public class CustomerRepository : ICustomerRepository
                 IsMaker = customer.IsMaker,
                 IsVerified = customer.IsVerifiedBadge,
                 ProfileImg = customer.ProfilePath,
-                Handler = customer.Handler
+                Handler = customer.Handler,
+                TotalCredits = customer.TotalCredits
             }, "Successfully updated customer data");
         }
         catch (Exception ex)

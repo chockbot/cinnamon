@@ -8,4 +8,5 @@ public class PurchaseModel
     public CustomerProfile Customer {get; set;}
     public string Token { get; set; } = string.Empty;
     public bool HasError { get; set; }
+    public bool IsCreditApplied {get; set;}
 }

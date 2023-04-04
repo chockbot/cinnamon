@@ -19,10 +19,12 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IGetActivityHandler getActivityHandler;
     private readonly IRequestPaymentHandler requestPaymentHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IFinishTransactionHandler finishTransactionHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
-        IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider)
+        IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
+        IFinishTransactionHandler finishTransactionHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -30,6 +32,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.customerData = customerData;
         this.requestPaymentHandler = requestPaymentHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.finishTransactionHandler = finishTransactionHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -90,11 +93,16 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
             decimal fee = subTotal * .15m;
-            // temporart discount amount
-            //decimal discount = string.IsNullOrEmpty(args.CouponCode) ? 0 : 50;
             var discount = 0;
-            // decimal overallTotal = (subTotal + fee) - discount;
             decimal overallTotal = subTotal + fee;
+            decimal creditAmount = 0;
+            
+            if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
+            {
+                var creditsBalance = customerRes.Result.Result.TotalCredits;
+                overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
+                creditAmount = subTotal + fee >= creditsBalance ? creditsBalance : subTotal + fee;
+            }
 
             // serialize students data to use later
             var payloadData = new {
@@ -118,8 +126,11 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 OverallTotal = overallTotal,
                 ScheduleId = args.ScheduleId,
                 Total = subTotal,
-                Status = (int)TransactionStatus.Pending,
-                Payload = serializedPayload
+                // if overall total is 0 due to applied credits,
+                // then status should be 1 no need to send transation to payment gateway
+                Status = overallTotal == 0 ? (int)TransactionStatus.Success : (int)TransactionStatus.Pending,
+                Payload = serializedPayload,
+                CreditAmount = creditAmount,
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -133,8 +144,26 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in PurchaseOrderHandler");
             }
 
+            if(overallTotal == 0)
+            {
+                var finishTransaction = await finishTransactionHandler.ExecuteAsync(new FinishTransactionArgs {
+                    TransactionId = result.Result.Result.Id
+                });
+                if(!finishTransaction.Succeeded || finishTransaction.Result == null)
+                {
+                    return AppResult<PurchaseOrderResult>.CreateFailed(
+                    new ApplicationException(finishTransaction.Message), finishTransaction.Message);
+                }
+
+                return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {
+                    Action = 0,
+                    Id = result.Result.Result.Id,
+                    Url = string.Empty
+                }, "Successfully request purchase order details"); 
+            }
+
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
-                Amount = subTotal + fee,
+                Amount = (subTotal + fee) - creditAmount,
                 AmountCurrency = "PHP",
                 CustomerId = id,
                 PaymentChannel = args.PaymentChannel ?? string.Empty,

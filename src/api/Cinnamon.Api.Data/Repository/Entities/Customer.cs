@@ -21,6 +21,7 @@ public class Customer : BaseEntity
     public string? FrontIdImagePath {get; set;}
     public string? BackIdImagePath {get; set;}
     public string Handler {get; set;}
+    public decimal TotalCredits {get; set;}
 
     public virtual IList<FamilyMember> FamilyMembers {get; set;}
     public virtual IList<OngoingActivity> OngoingActivities { get; set;}
