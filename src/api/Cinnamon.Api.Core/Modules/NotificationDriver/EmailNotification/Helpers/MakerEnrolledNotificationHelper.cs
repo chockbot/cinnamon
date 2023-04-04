@@ -95,6 +95,10 @@ public class MakerEnrolledNotificationHelper
                             ><u style='text-transform: uppercase'>{paymentMethod}</u></span
                         >
                         </p>
+                        <br>
+                        <p style='margin: 0; font-size: 16px; color: #717171'>
+                            Note: Please check your attendance section
+                        </p>
                     </div>
                 </div>
 
