@@ -519,4 +519,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetMakerActivitiesResult>.CreateFailed(ex, "An error occured when getting maker activities api");
         }
     }
+
+    public async Task<AppResult<UpdateScheduleResult>> UpdateActivitySchedule(UpdateScheduleArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/Schedule/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateScheduleResult>();
+
+            return AppResult<UpdateScheduleResult>.CreateSucceeded(result, "Successfully called update schedule api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateScheduleResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateScheduleResult>.CreateFailed(ex, "An error occured when calling update schedule api");
+        }
+    }
 }

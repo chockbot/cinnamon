@@ -29,6 +29,12 @@
                         <p class="schedule-title">@schedule.ActivityTitle</p>
                         <p class="schedule-title">@schedule.ScheduleTitle</p>
                         <p class="schedule-time">@schedule.ScheduleDescription</p>
+                        <p class="schedule-toggle">
+                            <div class="form-check form-switch">
+                                <span class="active-label">Set Inactive/Active:</span>
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(schedule.IsActiveSchedule == true)" @onchange="((e) => UpdateSchedule(e, schedule))">
+                             </div>
+                        </p>
                         <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
                             <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
                             Select
@@ -436,5 +442,16 @@
     public void Dispose()
     {
         checkUncheckAllTimer?.Dispose();
+    }
+
+    public async Task UpdateSchedule(ChangeEventArgs e, AttendanceModel.Schedule schedule)
+    {
+        bool isChecked = (bool)e.Value;
+
+        var result = await activityApiHandler.UpdateActivitySchedule(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateScheduleArgs
+        {
+            Id = schedule.ScheduleId,
+            IsActiveSchedule = isChecked
+        }, Model.Token);
     }
 }
