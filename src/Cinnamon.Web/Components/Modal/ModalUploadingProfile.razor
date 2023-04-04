@@ -7,19 +7,19 @@
 @inject IWebHostEnvironment Environment
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
-<Modal @ref="modalRef" class="upload-profile-picture">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center">Profile Photo</p>
-                <button type="button" class="btn-close" @onclick="() => modalRef.Hide()"></button>
-            </div>
-            <div class="modal-body">
-                <p class="top-text">People can get to know you better if your profile shows your face.</p>
-                <div class="col-12-lg d-flex justify-content-center">
-                    <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
-                        <div class="btn-delete">
-                            <button type="button" @onclick="DeleteProfilePicture" class="btn border-0">
+    <Modal @ref="modalRef" class="upload-profile-picture">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center">Profile Photo</p>
+                    <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                    <div class="col-12-lg d-flex justify-content-center">
+                        <Card Class="customer-profile-card" Border="Border.Is1" ColumnSize="ColumnSize.Is8.OnDesktop.Is11.OnMobile" TextAlignment="TextAlignment.Center">
+                            <div class="btn-delete">
+                                 <button type="button" @onclick="DeleteProfilePicture" class="btn border-0">
                                 <i class="fa fa-trash" style="color:black;"></i>
                             </button>
                         </div>
@@ -50,6 +50,7 @@
                             Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="js-save-cropped-avatar" Loading="isLoading" Disabled="isDisabled" Clicked="Upload">
                         <LoadingTemplate>
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Uploading
                         </LoadingTemplate>
                         <ChildContent>
                             Upload
@@ -244,6 +245,7 @@
     }
     public Task HideModal()
     {
+        NavigationManager.NavigateTo("/customer/profile", true);
         return modalRef.Hide();
     }
     public Task ShowLoading()
@@ -290,12 +292,7 @@
 
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                //Hide Loading
-                await HideLoading();
-                //Hide Modal
-                await HideModal();
-                //Load Customer Profile Page
-                NavigationManager.NavigateTo("/customer/profile", true);
+                profilePicture.ImageFileName = "/images/Profile/user.png";
             }
         }
     }

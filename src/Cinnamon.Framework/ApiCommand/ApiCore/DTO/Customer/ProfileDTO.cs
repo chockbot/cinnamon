@@ -7,6 +7,7 @@ public class ProfileDTO
     public string LastName { get; set; }
     public string Email { get; set; }
     public DateTime Birthdate { get; set; }
+    public DateTime DateJoined { get; set; }
     public string About { get; set; }
     public string ProfileImg { get; set; }
     public bool IsMaker { get; set; }
