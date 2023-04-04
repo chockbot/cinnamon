@@ -40,7 +40,7 @@
                                     Continue
                                 </ChildContent>
                             </Button>
-
+                            <p>@testingCode</p>
                         </div>
                     </Validations>
                     <div class="divider">
@@ -417,8 +417,10 @@
         return Task.CompletedTask;
     }
 
+    private string testingCode = string.Empty;
     private Task OnPasswordTextSubmit(KeyboardEventArgs e)
     {
+        testingCode = e.Code;
         if(e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             return SubmitLogin();
