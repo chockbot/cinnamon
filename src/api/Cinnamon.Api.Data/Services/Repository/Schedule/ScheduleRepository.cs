@@ -292,33 +292,34 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             }
         }
 
-        public async Task<AppResult<ScheduleDTO>> UpdateSchedule(int ScheduleId, string Name, string datetime, 
-                                    decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                                    int PerUnit2, string PriceUnit2, int order, bool IsActiveSchedule)
+        public async Task<AppResult<ScheduleDTO>> UpdateSchedule(int? ScheduleId, string? Name, string? datetime, decimal? Price, 
+                                                                string? UnitPrice, int? PerUnit1, string? PriceUnit1, int? PerUnit2, 
+                                                                string? PriceUnit2, int? order, bool? IsActiveSchedule)
         {
             try
             {
-                var checkSchedule = await _dataStore.ActivitySchedule.GetByIdAsync(ScheduleId);
+                var checkSchedule = await _dataStore.ActivitySchedule.GetByIdAsync(ScheduleId.GetValueOrDefault());
                 if(!checkSchedule.Succeeded || checkSchedule.Result == null)
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(checkSchedule.Error.Exception, checkSchedule.Message);
                 }
 
-                var result = await _dataStore.ActivitySchedule.Update(new Data.Repository.Entities.ActivitySchedule()
-                {
-                    Id = ScheduleId,
-                    ActivityId = checkSchedule.Result.ActivityId,
-                    Name = Name,
-                    DateTime = datetime,
-                    Price = Price,
-                    UnitPrice = UnitPrice,
-                    PerUnit1 = PerUnit1,
-                    PriceUnit1 = PriceUnit1,
-                    PerUnit2 = PerUnit2,
-                    PriceUnit2 = PriceUnit2,
-                    Order = order,
-                    IsActiveSchedule = IsActiveSchedule
-                });
+                var schedule = checkSchedule.Result;
+
+                schedule.Id               = ScheduleId.GetValueOrDefault();
+                schedule.ActivityId       = schedule.ActivityId;
+                schedule.Name             = Name ?? schedule.Name;
+                schedule.DateTime         = datetime ?? schedule.DateTime;
+                schedule.Price            = Price ?? schedule.Price;
+                schedule.UnitPrice        = UnitPrice ?? schedule.UnitPrice;
+                schedule.PerUnit1         = PerUnit1 ?? schedule.PerUnit1;
+                schedule.PriceUnit1       = PriceUnit1 ?? schedule.PriceUnit1;
+                schedule.PerUnit2         = PerUnit2 ?? schedule.PerUnit2;
+                schedule.PriceUnit2       = PriceUnit2 ?? schedule.PriceUnit2;
+                schedule.Order            = order ?? schedule.Order;
+                schedule.IsActiveSchedule = IsActiveSchedule ?? schedule.IsActiveSchedule;
+
+                var result = await _dataStore.ActivitySchedule.Update(schedule);
 
                 if (!result.Succeeded || result.Result == null)
                 {

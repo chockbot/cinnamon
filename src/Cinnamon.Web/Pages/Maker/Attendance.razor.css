@@ -39,7 +39,10 @@
 
 .student-attendance .activities-schedule-section .swiper-slide .schedule-time {
   font-size: 16px;
-  margin-bottom: 4rem;
+}
+
+.student-attendance .activities-schedule-section .swiper-slide .schedule-toggle {
+    margin-bottom: 4rem;
 }
 
 .student-attendance .student-attendance-section {
@@ -71,6 +74,17 @@
   cursor: pointer;
 }
 
+.active-label {
+    float: left;
+    font-size: 16px;
+    font-family: 'Nunito';
+    line-height: 30px;
+}
+
+.form-check-input {
+    margin-left: 5px;
+}
+
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .student-attendance .activities-schedule-section {
     margin-top: -10px;
@@ -94,9 +108,17 @@
     .swiper-slide
     .schedule-time {
     font-size: 14px;
-    margin-bottom: 3rem;
     line-height: 1.3;
   }
+
+    .student-attendance
+    .activities-schedule-section
+    .swiper-slide
+    .schedule-toggle {
+        font-size: 14px;
+        margin-bottom: 3rem;
+        line-height: 1.3;
+    }
 
   .student-attendance .activities-schedule-section .swiper-slide {
     width: 200px;
@@ -106,14 +128,36 @@
   .student-attendance .student-attendance-section {
     margin-top: 10px;
   }
+
+    .active-label {
+        font-size: 14px;
+    }
 }
 
-::deep th.sessions-attended-header {
-  text-align: center;
-  vertical-align: middle;
+@media (min-width: 0px) and (max-width: 575.98px) {
+    .active-label {
+        font-size: 10px;
+    }
+
+    .form-check-input {
+        margin-left: 5px;
+        margin-top: 8px;
+    }
 }
 
-::deep th.present-header {
-  text-align: center;
-  vertical-align: middle;
-}
+    ::deep th.sessions-attended-header {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    ::deep th.present-header {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .form-switch .form-check-input:checked {
+        background-color: var(--primary);
+        border: none;
+    }
+
+   
