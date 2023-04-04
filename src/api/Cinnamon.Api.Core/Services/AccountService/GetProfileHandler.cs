@@ -58,6 +58,7 @@ public class GetProfileHandler : IGetProfileHandler
                 Id = profile.Id,
                 IsMaker = profile.IsMaker,
                 LastName = profile.LastName,
+                DateJoined = profile.DateJoined,
                 ProfileImagePath = profile.ProfileImg,
                 IsVerified = profile.IsVerified,
                 Handler = profile.Handler,

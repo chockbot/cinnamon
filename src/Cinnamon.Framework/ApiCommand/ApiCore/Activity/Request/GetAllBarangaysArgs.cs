@@ -10,5 +10,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request
     {
         public string CityCode { get; set; }
         public int? CountPerPage { get; set; }
+        public bool IsCity { get; set; }
+        public bool IsMunicipality { get; set; }
     }
 }

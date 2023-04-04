@@ -1,5 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
-@page "/getverified/{Token}"
+@page "/getverified"
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager NavigationManager
 
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
@@ -47,11 +49,20 @@
 
 
 @code {
-    [Parameter]
-    public string Token { get; set; }
-
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+    }
     private void NavigateToUploading()
     {
-        NavigationManager.NavigateTo("/uploadGovermentId/" + Token);
+        NavigationManager.NavigateTo("/uploadGovermentId");
     }
 }

@@ -56,6 +56,9 @@
                                     Logout
                                 </Button>
                             </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
+                            </li>
                         }
                         else
                         {
@@ -63,6 +66,9 @@
                                 <Button Border="Border.Is0" Clicked="() => signinModal.Show()">
                                     @Resources.App.Sign
                                 </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
                             </li>
                         }
                     </ul>
@@ -98,6 +104,9 @@
                                     Logout
                                 </Button>
                             </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
+                            </li>
                         }
                         else
                         {
@@ -108,6 +117,9 @@
                             </li>
                             <li class="dropdown-item">
                                 <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
                             </li>
                         }
                     </ul>
@@ -160,6 +172,10 @@
     private void NavigateToAccount()
     {
         NavigationManager.NavigateTo("/customer/profile");
+    }
+    private void NavigateToHelp()
+    {
+        NavigationManager.NavigateTo("/Help");
     }
     private void NavigateToCreation()
     {

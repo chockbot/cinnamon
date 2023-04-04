@@ -71,14 +71,20 @@
                             }
                         </CardBody>
                         <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
+                            @if (MakerOngoingStudent != 0)
+                            {
                                 <div class="ongoing-students">
-                                <p class="ongoing-students-label">On going no. of students</p>
-                                <p class="ongoing-students-number">50</p>
+                                    <p class="ongoing-students-label">On going no. of students</p>
+                                    <p class="ongoing-students-number">@MakerOngoingStudent</p>
                                 </div>
+                            }
+                            @if (MakerCompletedStudent != 0)
+                            {
                                 <div class="completed-students">
                                     <p class="completed-students-label">Completed students</p>
-                                    <p class="completed-students-number">50</p>
+                                    <p class="completed-students-number">@MakerCompletedStudent</p>
                                 </div>
+                            }  
                         </CardFooter>
                     </Card>
                 </Column>
@@ -86,7 +92,7 @@
                     <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                         <Div>
                             <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@Model.CustomerProfile.FirstName</span></p>
-                            <p class="m-0 text-color-8080 font-14">Joined in 2022</p>
+                            <p class="m-0 text-color-8080 font-14">Joined in @Model.CustomerProfile.DateJoined.Year</p>
                         </Div>
                         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                             <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
@@ -205,6 +211,12 @@
     private bool isEditAbout = false;
 
     private string aboutLocalState = string.Empty;
+
+    public int MakerOngoingStudent { get; set; }
+
+    public int MakerCompletedStudent { get; set; }
+
+    public List<Activity> activities = new List<Activity>();
 
     private Task OnSelectedTabChanged(string name)
     {
@@ -372,6 +384,7 @@
                 IsMaker = profile.IsMaker,
                 IsVerified = profile.IsVerified,
                 ProfilePath = profile.ProfileImg,
+                DateJoined = profile.DateJoined
             },
             FamilyMembers = familyMembers,
             OwnedActivities = ownedActivities,
@@ -379,6 +392,31 @@
         };
 
         ImageSource = Model.CustomerProfile.ProfilePath;
+
+        //Get Ongoing and completed enrollees
+        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+            {
+                CustomerId = Model.CustomerProfile.Id,
+                IncludeStudents = true,
+                IsActive = true,
+            });
+        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
+        {
+            if (ActivityList.Result.Result.Count() > 0)
+            {
+                activities = ActivityList.Result.Result.Select(r =>
+                {
+                    return new Activity
+                        {
+                            Id = r.ActivityId,
+                            OngoingStudents = r.OngoingStudents,
+                            CompletedStudents = r.CompletedStudents,
+                        };
+                }).ToList();
+            }
+        }
+        MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -418,11 +456,11 @@
     }
     private void NavigateToGetVerified()
     {
-        NavigationManager.NavigateTo("/getverified/" + Model.Token);
+        NavigationManager.NavigateTo("/getverified/");
     }
     private void NavigateToUploadId()
     {
-        NavigationManager.NavigateTo("/uploadGovermentId/" + Model.Token);
+        NavigationManager.NavigateTo("/uploadGovermentId/");
     }
 }
 

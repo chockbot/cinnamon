@@ -53,7 +53,8 @@ public class GetCustomerByHandler : IGetCustomerByHandler
                 IsOG = result.Result.Result.IsOG,
                 IsOfficial = result.Result.Result.IsOfficial,
                 ProfileImg = result.Result.Result.ProfileImg,
-                About = result.Result.Result.About
+                About = result.Result.Result.About,
+                DateJoined = result.Result.Result.DateJoined
 
             }, "Successfully getting customer information");
         }

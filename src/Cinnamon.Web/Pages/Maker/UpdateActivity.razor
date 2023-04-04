@@ -210,7 +210,9 @@
                 return;
             }
 
-            barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City });
+            var city = cities.Result.Result.FirstOrDefault(c => c.Code == activity.City);
+
+            barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality });
             if ((!barangays.Succeeded || barangays.Result == null) || (barangays.Succeeded && !barangays.Result.IsSuccess))
             {
                 NavigationManager.NavigateTo("explore");
@@ -309,7 +311,9 @@
             {
                 Code = r.Code,
                 Name = r.Name,
-                RegionCode = r.RegionCode
+                RegionCode = r.RegionCode,
+                IsCity = r.IsCity,
+                IsMunicipality = r.IsMunicipality
             }) : new List<Models.Entities.City>(),
             Barangays = activity.ExperienceTypeId == 1 ? barangays.Result.Result.Select(r => new Models.Entities.Barangay
             {
@@ -347,6 +351,8 @@
         {
             isLoading = true;
             StateHasChanged();
+
+            Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
 
             var sortPrice = Model.Activity.ActivitySchedules.OrderBy(x => x.Price).ToList();
             Model.Activity.Price = sortPrice.Count > 1 ? String.Format("{0} {1} - {2}",
@@ -497,5 +503,29 @@
         errorMessage = message;
         showErrorMessage = true;
         StateHasChanged();
+    }
+
+    private IList<Models.Entities.ActivitySchedule> GetActivitySchedules(IList<Models.Entities.ActivitySchedule> activitySchedules)
+    {
+        var result = new List<Models.Entities.ActivitySchedule>();
+
+        bool isSingle = activitySchedules.Count == 1;
+
+        foreach (var schedule in activitySchedules)
+        {
+            if (!(string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)))
+            {
+                result.Add(schedule);
+            }
+        }
+
+        return result;
     }
 }

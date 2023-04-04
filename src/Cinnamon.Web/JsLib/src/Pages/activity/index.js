@@ -6,6 +6,7 @@ import maxMinWords from "./maxMinWords";
 import previewImage from "./previewImage";
 import imageHelper from './imageHelper'
 import moveImage from "./moveImage";
+import carouselSwipe from "./carouselSwipe"; 
 
 export default {
     creation,
@@ -16,5 +17,6 @@ export default {
     maxMinWords,
     previewImage,
     moveImage,
-    imageHelper
+    imageHelper,
+    carouselSwipe
 };

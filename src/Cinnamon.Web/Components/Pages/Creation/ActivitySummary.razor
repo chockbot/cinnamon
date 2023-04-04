@@ -43,14 +43,18 @@
         <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Schedule
         </h3>
-        <Row Gutter="(20,20)" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
-            @foreach (var schedule in Activity.ActivitySchedules)
+        <Row HorizontalGutter="20" VerticalGutter="20" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
+            @foreach (var schedule in Activity.ActivitySchedules.Where(a => !string.IsNullOrEmpty(a.Name) && 
+                                                                            !string.IsNullOrEmpty(a.DateTime) && 
+                                                                            !string.IsNullOrEmpty(a.UnitPrice) && 
+                                                                            !string.IsNullOrEmpty(a.PriceUnit1) &&
+                                                                            !string.IsNullOrEmpty(a.PriceUnit2)))
             {
                 <Column class="background-black-100" ColumnSize="ColumnSize.Is6.OnMobile.Is4.OnTablet.Is3.OnDesktop">
                     <div class="background-gray-100 border-radius-20 font-family-nunito p-4 m-padding-10 m-border-radius-10">
-                        <p class="font-size-20 mb-2 m-font-size-10">@Activity.ActivityLevel</p>
+                        <p class="font-size-20 mb-2 m-font-size-10">@schedule.Name</p>
                         <p class="font-size-16 mb-4 m-font-size-10">@schedule.DateTime</p>
-                        <p class="font-size-16 mb-0 m-font-size-10">@schedule.UnitPrice @schedule.Price / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
+                        <p class="font-size-16 mb-0 m-font-size-10">@schedule.UnitPrice @Math.Truncate(schedule.Price) / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
                     </div>
                 </Column>
             }
@@ -71,12 +75,12 @@
         </div>
     }
     <Divider />
-    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
+    <div class="experience-provide">
         <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
             margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             What you will provide
         </h3>
-        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
+        <p>
             @if (string.IsNullOrEmpty(Activity.SpecificsYouWillProvide))
             {
                 @("N/A");
@@ -93,12 +97,12 @@
 
     </div>
     <Divider />
-    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
+    <div class="experience-requirements">
         <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
             margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Customer Requirements
         </h3>
-        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
+        <p>
             @if (string.IsNullOrEmpty(Activity.CustomerBringWithThem))
             {
                 @("N/A");

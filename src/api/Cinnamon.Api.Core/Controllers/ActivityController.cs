@@ -37,6 +37,7 @@ public class ActivityController : ControllerBase
     private readonly IGetAllBarangaysHandler getAllBarangaysHandler;
     private readonly IGetPopularActivitiesHandler getPopularActivitiesHandler;
     private readonly IGetRefundableExperienceHandler getRefundableExperienceHandler;
+    private readonly IUpdateActivityScheduleHandler updateActivityScheduleHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -47,9 +48,9 @@ public class ActivityController : ControllerBase
         IGetActivityImagesHandler getActivityImagesHandler, IGetActiviesByCategoriesHandler getActiviesByCategoriesHandler,
         IGetActivitiesBySubCategoriesHandler getActivitiesBySubCategoriesHandler, IGetEnrolledActivitiesHandler getEnrolledActivitiesHandler,
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler, IGetMakerActivitiesHandler getMakerActivitiesHandler,
-        IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler, 
+        IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
-        IGetRefundableExperienceHandler getRefundableExperienceHandler)
+        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler)
     {
         _logger = logger;
 
@@ -77,6 +78,7 @@ public class ActivityController : ControllerBase
         this.getAllBarangaysHandler = getAllBarangaysHandler;
         this.getPopularActivitiesHandler = getPopularActivitiesHandler;
         this.getRefundableExperienceHandler = getRefundableExperienceHandler;
+        this.updateActivityScheduleHandler = updateActivityScheduleHandler;
     }
 
     [Route("CreateActivity")]
@@ -568,6 +570,7 @@ public class ActivityController : ControllerBase
                         ActivityLevel = a.ActivityLevel,
                         ActivitySchedules = a.ActivitySchedules.Select(s => {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule {
+                                Id = s.Id,
                                 DateTime = s.DateTime,
                                 Name = s.Name,
                                 PerUnit1 = s.PerUnit1,
@@ -1402,9 +1405,11 @@ public class ActivityController : ControllerBase
                 {
                     return new Framework.ApiCommand.ApiCore.DTO.Location.CityDTO
                     {
-                        Code = s.Code,
-                        Name = s.Name,
-                        RegionCode = s.RegionCode
+                        Code           = s.Code,
+                        Name           = s.Name,
+                        RegionCode     = s.RegionCode,
+                        IsMunicipality = s.IsMunicipality,
+                        IsCity         = s.IsCity
                     };
                 })
             }
@@ -1428,6 +1433,8 @@ public class ActivityController : ControllerBase
             {
                 CityCode = args.CityCode,
                 CountPerPage = args.CountPerPage,
+                IsCity = args.IsCity,
+                IsMunicipality = args.IsMunicipality
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1600,6 +1607,62 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetRefundableExperienceResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("Schedule/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateScheduleResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateActivitySchedule([FromBody] UpdateScheduleArgs args)
+    {
+        try
+        {
+            var updateResult = await updateActivityScheduleHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateScheduleArgs
+            {
+                Id               = args.Id,
+                DateTime         = args.DateTime,
+                IsActiveSchedule = args.IsActiveSchedule,
+                IsSetSession     = args.IsSetSession,
+                Name             = args.Name,
+                Order            = args.Order,
+                PerUnit1         = args.PerUnit1,
+                PerUnit2         = args.PerUnit2,
+                Price            = args.Price,
+                PriceUnit1       = args.PriceUnit1,
+                PriceUnit2       = args.PriceUnit2,
+                SessionName      = args.SessionName,
+                UnitPrice        = args.UnitPrice
+            });
+
+            if (!updateResult.Succeeded || updateResult.Result == null)
+            {
+                return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = updateResult.Message } });
+            }
+
+            var updated = updateResult.Result;
+
+            return new JsonResult(new UpdateScheduleResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiData.DTO.Schedule.ScheduleDTO
+                {
+                    Id               = updated.Id,
+                    DateTime         = updated.DateTime,
+                    IsActiveSchedule = updated.IsActiveSchedule,
+                    Name             = updated.Name,
+                    Order            = updated.Order,
+                    PerUnit1         = updated.PerUnit1,
+                    PerUnit2         = updated.PerUnit2,
+                    Price            = updated.Price,
+                    PriceUnit1       = updated.PriceUnit1,
+                    PriceUnit2       = updated.PriceUnit2,
+                    UnitPrice        = updated.UnitPrice
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

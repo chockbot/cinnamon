@@ -12,7 +12,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <p class="col-11 modal-title text-center">Profile Photo</p>
-                    <button type="button" class="btn-close" @onclick="() => modalRef.Hide()"></button>
+                    <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
                 </div>
                 <div class="modal-body">
                     <p class="top-text">People can get to know you better if your profile shows your face.</p>
@@ -21,63 +21,71 @@
                             <div class="btn-delete">
                                  <button type="button" @onclick="DeleteProfilePicture" class="btn border-0">
                                 <i class="fa fa-trash" style="color:black;"></i>
-                                </button> 
-                            </div>
-                            <div class="figure-profile">
-                                <label for="fileinput" class="upload-image">
-                                    <Figure Border="Border.RoundedCircle">
+                            </button>
+                        </div>
+                        <div class="figure-profile">
+                            <label for="fileinput" class="upload-image">
+                                <Figure Border="Border.RoundedCircle">
                                     <CardImage Source="@profilePicture.ImageFileName" id="@profilePicture.ImageId" Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
-                                    </Figure>
-                                </label>
+                                </Figure>
+                            </label>
                             <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" data-input-id="js-photo-upload" class="js-photo-upload" style="display:none;" />
-                                <div class="round">
-                                <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" data-input-id="js-photo-upload" class="js-photo-upload" OnChange="IsEnabled" />
-                                    <i class="fa fa-camera" style="color: black;"></i>
-                                </div>
+                            <div class="round">
+                                <InputFile id="@profilePicture.ImageName" @ref="inputFile" accept="image/*" type="file" name="photo" data-input-id="js-photo-upload" class="js-photo-upload" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args))" />
+                                <i class="fa fa-camera" style="color: black;"></i>
                             </div>
-                        </Card>
-                    </div>
-                    <p class="bottom-text">JPEG or PNG only</p>
-                    <div class="btn-upload">
+                        </div>
+                    </Card>
+                </div>
+                <p class="bottom-text">JPEG or PNG only</p>
+                @if (isFileValid.HasValue)
+                {
+                    @if (!isFileValid.GetValueOrDefault())
+                    {
+                        <p class="activity-image-photos-error-message text-center">@uploadErrorMessage</p>
+                    }
+                }
+                <div class="btn-upload">
                     <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" Type="ButtonType.Submit"
                             Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="js-save-cropped-avatar" Loading="isLoading" Disabled="isDisabled" Clicked="Upload">
                         <LoadingTemplate>
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Uploading
                         </LoadingTemplate>
                         <ChildContent>
                             Upload
                         </ChildContent>
                     </Button>
                     @*<button class="btn btn-primary js-save-cropped-avatar" @onclick="() => Upload()" >Upload</button>*@
-                    </div>
                 </div>
-                <Alert Width="Width.Is100" Margin="Margin.Is1.FromTop" Color="Color.Danger" @bind-Visible="isShowErrorMessage">
-                    <AlertMessage>
-                        @errorMessage
-                    </AlertMessage>
-                </Alert>
             </div>
-        </div>
-    </Modal>
-<!--ModalEdit-->
-    <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <p class="col-11 modal-title text-center">Edit Profile Photo</p>
-                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <p class="top-text">People can get to know you better if your profile shows your face.</p>
-                     <div class="col-12-lg d-flex justify-content-center">
-                        <img class="js-avatar-preview" src="">
-                    </div>
-                    <button class="btn btn-primary js-save-cropped-avatar">Save</button>
-                </div>
-            </div> 
+            <Alert Width="Width.Is100" Margin="Margin.Is1.FromTop" Color="Color.Danger" @bind-Visible="isShowErrorMessage">
+                <AlertMessage>
+                    @errorMessage
+                </AlertMessage>
+            </Alert>
         </div>
     </div>
-    <input type="hidden" id="originalImage" @bind-value="originalImage" />
+</Modal>
+<!--ModalEdit-->
+<div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-11 modal-title text-center">Edit Profile Photo</p>
+                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="top-text">People can get to know you better if your profile shows your face.</p>
+                <div class="col-12-lg d-flex justify-content-center">
+                    <img class="js-avatar-preview" src="">
+                </div>
+                <button class="btn btn-primary js-save-cropped-avatar">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="originalImage" @bind-value="originalImage" />
 @code {
     IJSObjectReference module;
 
@@ -105,7 +113,11 @@
     private bool hasChanged = false;
 
     private string errorMessage = string.Empty;
+    private string uploadErrorMessage = string.Empty;
     private string originalImage = string.Empty;
+    private List<string> allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
+    private bool? isFileValid;
+    private decimal totalImageSizeMB = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -118,9 +130,9 @@
         objRef = DotNetObjectReference.Create(this);
         profilePicture.ImageFileName = result.Result.Result.ProfileImagePath;
         originalImage = result.Result.Result.ProfileImagePath;
-        profilePicture.ImageName     = "ProfilePicture";
-        profilePicture.ImageId       = "avatar-crop";
-        profilePicture.ErrorId       = "id-profile-image";
+        profilePicture.ImageName = "ProfilePicture";
+        profilePicture.ImageId = "avatar-crop";
+        profilePicture.ErrorId = "id-profile-image";
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -131,6 +143,15 @@
             //await jsRuntime.InvokeAsync<IJSObjectReference>("MyLib.Components.modal.uploadProfilePicture.init", objRef);
         }
     }
+
+    private bool IsImagesOverLimit
+    {
+        get
+        {
+            return totalImageSizeMB > 10;
+        }
+    }
+
     private string GetProfileSrc()
     {
         if (!string.IsNullOrEmpty(profilePicture.ImageFileName)) return profilePicture.ImageFileName;
@@ -175,13 +196,13 @@
 
         var upload = await accountApiHandler.UploadProfilePicture(new Framework.ApiCommand.ApiCore.Account.Request.UploadProfilePictureArgs
             {
-               ProfileImageId = file
+                ProfileImageId = file
             }, Token);
         if (upload.Succeeded && upload.Result != null && upload.Result.IsSuccess)
         {
             //Hide Loading
             await HideLoading();
-            //Hide Modal 
+            //Hide Modal
             await HideModal();
             //Load Customer Profile Page
             NavigationManager.NavigateTo("/customer/profile", true);
@@ -192,10 +213,30 @@
         }
 
     }
-    private Task IsEnabled()
+    private Task LoadFile(InputFileChangeEventArgs e)
     {
-        isDisabled = false;
-        hasChanged = true;
+        var file = e.File;
+        totalImageSizeMB = 0;
+        totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
+
+        if (IsImagesOverLimit)
+        {
+            uploadErrorMessage = "Please upload image less than 10MB.";
+            isFileValid = false;
+
+        }
+        else if (!allowedFileTypes.Contains(Path.GetExtension(file.Name.ToLower())))
+        {
+            uploadErrorMessage = "Only JPEG or PNG files are accepted. Please try again.";
+            isFileValid = false;
+        }
+        else
+        {
+            isDisabled = false;
+            hasChanged = true;
+            isFileValid = true;
+        }
+
         return Task.CompletedTask;
     }
     public Task ShowModal()
@@ -204,6 +245,7 @@
     }
     public Task HideModal()
     {
+        NavigationManager.NavigateTo("/customer/profile", true);
         return modalRef.Hide();
     }
     public Task ShowLoading()
@@ -250,12 +292,7 @@
 
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                //Hide Loading
-                await HideLoading();
-                //Hide Modal
-                await HideModal();
-                //Load Customer Profile Page
-                NavigationManager.NavigateTo("/customer/profile", true);
+                profilePicture.ImageFileName = "/images/Profile/user.png";
             }
         }
     }

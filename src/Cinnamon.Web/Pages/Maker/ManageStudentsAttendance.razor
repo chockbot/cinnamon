@@ -60,64 +60,65 @@
     </div>
 
     @* CALENDAR *@
-    <div class="wrap-content calendar">
-        <div class="calendar-header">
+    <LoadingIndicator @ref="loadingIndicator">
+        <div class="wrap-content calendar">
+            <div class="calendar-header">
 
-            <h1 class="calendar-header-details">@monthName @year</h1>
-            <div class="calendar-arrow">
-                <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth();}" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
-                <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
-            </div>
-        </div>
-        <hr />
-        <hr />
-        <section>
-            @foreach (var days in CalendarDays)
-            {
-                <div class="calendar-days">
-                    <p>@days</p>
+                <h1 class="calendar-header-details">@monthName @year</h1>
+                <div class="calendar-arrow">
+                    <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth();}" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
+                    <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
                 </div>
-            }
-            @for (int i = 0; i < numDummyColumn; i++)
-            {
-                <div></div>
-            }
-            @for (int i = 1; i <= monthEnd.Day; i++)
-            {
-                var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
-                passDates = new DateTime(year, monthEnd.Month, i);
-                DateTime currentDate = DateTime.Today;
-                @if (calendarItem!=null)
+            </div>
+            <hr />
+            <hr />
+            <section>
+                @foreach (var days in CalendarDays)
                 {
-                    <div class="calendar-body">
-                        @if (calendarItem != null && calendarItem.IsPresent == true)
-                        {
-                        //Display
-                            <button class="btn-date" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
-                        }
-                        else if (calendarItem != null && calendarItem.IsPresent == false)
-                        {
-                        //Update
-                            <button class="btn-date-absent" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
-                        }
-                        else
-                        {
-                            //Create
-                            if (passDates <= currentDate)
+                    <div class="calendar-days">
+                        <p>@days</p>
+                    </div>
+                }
+                @for (int i = 0; i < numDummyColumn; i++)
+                {
+                    <div></div>
+                }
+                @for (int i = 1; i <= monthEnd.Day; i++)
+                {
+                    var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                    passDates = new DateTime(year, monthEnd.Month, i);
+                    DateTime currentDate = DateTime.Today;
+                    @if (calendarItem != null)
+                    {
+                        <div class="calendar-body">
+                            @if (calendarItem != null && calendarItem.IsPresent == true)
                             {
-                                DateTime selectedDate = passDates;
-                                <button class="btn-date-absent" @onclick="() => CreateAttendance(student, Token, selectedDate)">@i</button>
+                                //Display
+                                <button class="btn-date" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
+                            }
+                            else if (calendarItem != null && calendarItem.IsPresent == false)
+                            {
+                            //Update
+                                <button class="btn-date-absent" @onclick="() => UpdateAttendance(calendarItem, Token, calendarItem.Date)">@i</button>
                             }
                             else
                             {
-                                <p class="calendar-dates">@i</p>
+                                //Create
+                                if (passDates <= currentDate)
+                                {
+                                    DateTime selectedDate = passDates;
+                                    <button class="btn-date-absent" @onclick="() => CreateAttendance(student, Token, selectedDate)">@i</button>
+                                }
+                                else
+                                {
+                                    <p class="calendar-dates">@i</p>
+                                }
                             }
-                        }
-                    </div>
-                }
-                else
-                {
-                     <div class="calendar-body">
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="calendar-body">
                             @if (passDates <= DateTime.Today)
                             {
                                 DateTime selectedDate = passDates;
@@ -126,13 +127,14 @@
                             else
                             {
                                 <p class="calendar-dates">@i</p>
-                            }    
-                     </div>
-                }
+                            }
+                        </div>
+                    }
 
-            }
-        </section>
-    </div>
+                }
+            </section>
+        </div>
+    </LoadingIndicator>
 }
 @code {
     [Parameter]
@@ -156,6 +158,8 @@
     public string ErrorMessage { get; set; }
     public bool disableButtonRight { get; set; } = false;
     public bool disableButtonLeft { get; set; } = false;
+    LoadingIndicator loadingIndicator;
+
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
@@ -313,6 +317,8 @@
     {
         try
         {
+            await loadingIndicator.Show();
+
             studentAttendance.IsPresent = !studentAttendance.IsPresent;
             if (studentAttendance.IsPresent)
             {
@@ -367,11 +373,14 @@
                         });
                 }
             }*@
+
+            await loadingIndicator.Hide();
         }
         catch (Exception ex)
         {
             IsShowErrorMessage = true;
             ErrorMessage = "An error occured. Please try again later.";
+            await loadingIndicator.Hide();
         }
     }
 
@@ -379,6 +388,8 @@
     {
         try
         {
+            await loadingIndicator.Show();
+
             var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
                     {
                         AttendanceDate = presentDate,
@@ -424,12 +435,13 @@
                         });
                 }
             }*@
-
+            await loadingIndicator.Hide();
         }
         catch (Exception ex)
         {
             IsShowErrorMessage = true;
             ErrorMessage = "An error occured. Please try again later.";
+            await loadingIndicator.Hide();
         }
     }
 }

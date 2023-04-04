@@ -222,7 +222,7 @@
             {
                 <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
                     <option disabled selected>Select Subcategory</option>
-                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId))
+                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId).OrderBy(s =>s.Name))
                     {
                         <option value="@cat.Id">@cat.Name</option>
                     }
@@ -458,7 +458,7 @@
     {
         if(firstRender)
         {
-            await Task.Delay(2000);
+            await Task.Delay(3000);
             await jsRuntime
                  .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide .ql-container","#label-specific-editor",maxEditorWordLimit);
 
@@ -626,16 +626,18 @@
 
     private bool IsAllSchedulesValid()
     {
+        bool isSingle = Model.Activity.ActivitySchedules.Count == 1;
+
         foreach(var schedule in Model.Activity.ActivitySchedules)
         {
-            if(string.IsNullOrEmpty(schedule.Name) ||
+            if((string.IsNullOrEmpty(schedule.Name) ||
                 string.IsNullOrEmpty(schedule.DateTime) ||
                 schedule.Price <= 0 ||
                 string.IsNullOrEmpty(schedule.UnitPrice) ||
                 schedule.PerUnit1 <= 0 ||
                 string.IsNullOrEmpty(schedule.PriceUnit1) ||
                 schedule.PerUnit2 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit2)) return false;
+                string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle)) return false;
         }
         return true;
     }
