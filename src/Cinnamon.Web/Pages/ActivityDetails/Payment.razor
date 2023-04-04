@@ -182,10 +182,9 @@
 
                             }
                         </button>
-                        @if(isShowPayErrorMessage)
-                        {
-                            <p class="text-danger">@payErrorMessage</p>
-                        }
+                        <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="isShowPayErrorMessage">
+                            <AlertDescription>@payErrorMessage</AlertDescription>
+                        </Alert>
                     </div>
                 </div>
             </div>
