@@ -409,6 +409,7 @@
 
     private Task OnEmailTextSubmit(KeyboardEventArgs e)
     {
+        testingCode = e.Code;
         if(e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             return SubmitEmail();
