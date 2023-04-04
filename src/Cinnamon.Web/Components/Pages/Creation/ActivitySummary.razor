@@ -43,7 +43,7 @@
         <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Schedule
         </h3>
-        <Row Gutter="(20,20)" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
+        <Row HorizontalGutter="20" VerticalGutter="20" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
             @foreach (var schedule in Activity.ActivitySchedules.Where(a => !string.IsNullOrEmpty(a.Name) && 
                                                                             !string.IsNullOrEmpty(a.DateTime) && 
                                                                             !string.IsNullOrEmpty(a.UnitPrice) && 
