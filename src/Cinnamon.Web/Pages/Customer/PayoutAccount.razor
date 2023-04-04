@@ -131,6 +131,7 @@
         [Required(ErrorMessage = "Account holder field required")]
         public string AccountHolder {get; set;}
         [Required(ErrorMessage = "Account number field required")]
+        [StringLength(30, MinimumLength = 10, ErrorMessage = "Account Number must be a minimum length of 10 and a maximum length of 30.")]
         public string AccountNumber {get; set;}
     }
 }

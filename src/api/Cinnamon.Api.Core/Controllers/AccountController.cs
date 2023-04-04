@@ -1172,7 +1172,9 @@ public class AccountController : ControllerBase
             }
             
             var accountNumber = result.Result.AccountNumber;
-            var maskedAccount = new String('*', accountNumber.Length - 5) + accountNumber.Substring(accountNumber.Length -5);
+            var maskedCount = accountNumber.Length < 5 ? accountNumber.Length : 5;
+
+            var maskedAccount = new String('*', accountNumber.Length - maskedCount) + accountNumber.Substring(accountNumber.Length - maskedCount);
 
             return new JsonResult(new GetPayoutAccountResult {
                 Result = new PayoutAccountDTO {
