@@ -12,7 +12,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <p class="col-11 modal-title text-center">Profile Photo</p>
-                    <button type="button" class="btn-close" @onclick="() => modalRef.Hide()"></button>
+                    <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
                 </div>
                 <div class="modal-body">
                     <p class="top-text">People can get to know you better if your profile shows your face.</p>
@@ -43,6 +43,7 @@
                             Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="js-save-cropped-avatar" Loading="isLoading" Disabled="isDisabled" Clicked="Upload">
                         <LoadingTemplate>
                             <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Uploading
                         </LoadingTemplate>
                         <ChildContent>
                             Upload
@@ -78,7 +79,7 @@
         </div>
     </div>
     <input type="hidden" id="originalImage" @bind-value="originalImage" />
-@code {
+    @code {
     IJSObjectReference module;
 
     [Parameter]
@@ -204,6 +205,7 @@
     }
     public Task HideModal()
     {
+        NavigationManager.NavigateTo("/customer/profile", true);
         return modalRef.Hide();
     }
     public Task ShowLoading()
@@ -250,12 +252,7 @@
 
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                //Hide Loading
-                await HideLoading();
-                //Hide Modal
-                await HideModal();
-                //Load Customer Profile Page
-                NavigationManager.NavigateTo("/customer/profile", true);
+                profilePicture.ImageFileName = "/images/Profile/user.png";
             }
         }
     }
