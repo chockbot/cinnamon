@@ -19,11 +19,12 @@
                 <Field class="mb-3">
                     <FieldLabel class="font-20 color-grey-100">Bank Type</FieldLabel>
                     <Select class="form-control" TValue="string" @bind-SelectedValue="SelectedPayment">
+                        <SelectItem selected Disabled>Select Payout Account</SelectItem>
                        @if(PaymentChannels != null)
                        {
                          @foreach (var item in PaymentChannels)
                             {
-                                <SelectItem Value="item.Code" selected>@item.Name</SelectItem>
+                                <SelectItem Value="item.Code">@item.Name</SelectItem>
                             }
                        }
                     </Select>
@@ -59,6 +60,11 @@
                             Submit
                         </ChildContent>
                     </Button>
+                </div>
+                <div class="error-success-messages">
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="IsShowErrorMessage">
+                        <AlertDescription>@Message</AlertDescription>
+                    </Alert>
                 </div>
             </Validations>
         </div>
@@ -103,7 +109,7 @@
 
     private async Task SubmitPayoutAccount()
     {
-        if (await FormValidation.ValidateAll())
+        if (await FormValidation.ValidateAll() && !string.IsNullOrEmpty(SelectedPayment))
         {
             IsSubmitting = true;
 
@@ -123,6 +129,12 @@
             }
 
             NavigationManager.NavigateTo("/customer/profile");
+        }
+
+        if(string.IsNullOrEmpty(SelectedPayment))
+        {
+            Message = "Please select Payout Account.";
+            IsShowErrorMessage = true;
         }
     }
 
