@@ -104,7 +104,6 @@ input.invalid {
 
 #name-input {
     float:left;
-    width: 90%;
 }
 
 #delete-icon {
@@ -143,7 +142,8 @@ hr.solid {
     background-color: var(--primary);
     border: none;
 }
-@media screen and (max-width: 767px) {
+
+@media (min-width: 0px) and (max-width: 575.98px) {
     .landing-sm {
         display: block;
     }
@@ -155,14 +155,11 @@ hr.solid {
     .btn-primary {
         font-size: 3.5vw;
     }
-    .active-label {
-        display:none;
-    }
 
     .form-check-input {
-      float: right;
-      margin-right: 30px;
+        margin-right: 30px;
     }
+
     .content-creation textarea {
         width: 100%;
         height: 150px;
@@ -178,18 +175,75 @@ hr.solid {
         width: 50%;
         margin-left: 25%;
     }
+
     .per-text {
         width: 100%;
         text-align: center;
     }
+
     .img-icon {
         width: 25px;
         height: 25px;
         margin-left: 8px;
     }
 
+    .active-schedule-section {
+        display: flex;
+        justify-content: center;
+    }
 }
-@media screen and (min-width: 767px) {
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .landing-sm {
+        display: block;
+    }
+
+    .landing-md {
+        display: none;
+    }
+
+    .btn-primary {
+        font-size: 3.5vw;
+    }
+
+    .form-check-input {
+        margin-right: 30px;
+    }
+
+    .content-creation textarea {
+        width: 100%;
+        height: 150px;
+        font-size: 2rem
+    }
+
+    .label-container-section {
+        padding: 0 0 0 15px;
+    }
+
+
+    .unit-input {
+        width: 50%;
+        margin-left: 25%;
+    }
+
+    .per-text {
+        width: 100%;
+        text-align: center;
+    }
+
+    .img-icon {
+        width: 25px;
+        height: 25px;
+        margin-left: 8px;
+    }
+
+    .active-schedule-section {
+        display: flex;
+        justify-content: center;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
     .landing-sm {
         display: none;
     }
@@ -197,11 +251,17 @@ hr.solid {
     .landing-md {
         display: block;
     }
+
     .img-icon {
         cursor: pointer;
     }
+    .form-switch {
+        padding-left: 0px;
+    }
 }
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+}
+
 @media (min-width: 1200px) {
 }
-
-
