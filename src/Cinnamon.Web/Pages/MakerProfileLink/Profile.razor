@@ -61,7 +61,7 @@
                     <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                         <Div>
                             <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@customerDetail.FirstName</span></p>
-                            <p class="m-0 text-color-8080 font-14">Joined in 2022</p>
+                            <p class="m-0 text-color-8080 font-14">Joined in @customerDetail.DateJoined.Year</p>
                         </Div>
                         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                             <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
@@ -117,7 +117,7 @@
     protected override async Task OnInitializedAsync()
     {
         //Get Customer By Id
-        bool isIdUsed = int.TryParse(Id.Trim().ToString(), out int intId);
+        bool isIdUsed = int.TryParse(Id, out int intId);
         var customer = isIdUsed ? await accountApiHandler.GetCustomerById(intId) : await accountApiHandler.GetMakerDetailByHandler(Id.Trim());
         if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
         {
@@ -131,6 +131,7 @@
                     ProfilePath = args.ProfileImg,
                     IsVerified = args.IsVerified,
                     About = args.About,
+                    DateJoined = args.DateJoined
                 };
             ImageSource = customerDetail.ProfilePath;
         }

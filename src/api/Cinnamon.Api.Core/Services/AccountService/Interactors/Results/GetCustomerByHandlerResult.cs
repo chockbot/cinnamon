@@ -11,4 +11,5 @@ public class GetCustomerByHandlerResult
     public bool IsOfficial { get; set; }
     public string ProfileImg {get; set;}
     public string About {get; set;}
+    public DateTime DateJoined { get; set; }
 }

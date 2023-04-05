@@ -366,9 +366,11 @@ public class AccountController : ControllerBase
                     Id = profile.Id,
                     About = profile.About,
                     Birthdate = profile.Birthdate,
+                    DateJoined = profile.DateJoined,
                     IsVerified = profile.IsVerified,
                     ProfileImg = profile.ProfileImagePath,
-                    Handler = profile.Handler
+                    Handler = profile.Handler,
+                    TotalCredits = profile.TotalCredits
                 },
                 IsSuccess = true
             });
@@ -748,7 +750,8 @@ public class AccountController : ControllerBase
                     ProfileImg = objResult.ProfileImg,
                     About = objResult.About,
                     IsOG = objResult.IsOG,
-                    IsOfficial = objResult.IsOfficial
+                    IsOfficial = objResult.IsOfficial,
+                    DateJoined = objResult.DateJoined
                 },
                 IsSuccess = true,
             });
@@ -790,6 +793,7 @@ public class AccountController : ControllerBase
                     About = objResult.About,
                     IsOG = objResult.IsOG,
                     IsOfficial = objResult.IsOfficial,
+                    DateJoined = objResult.DateJoined
                 },
                 IsSuccess = true,
             });

@@ -40,7 +40,6 @@
                                     Continue
                                 </ChildContent>
                             </Button>
-
                         </div>
                     </Validations>
                     <div class="divider">
@@ -55,8 +54,8 @@
                     </div>                            
                     <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
                         By signing up you agree to our
-                        <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and
-                        <a href="Policy" style="color:#FFA942">Privacy Policy</a>
+                        <a href="Terms" style="color:#FFA942" @onclick="CloseEmailModal">Terms and Conditions</a> and
+                        <a href="Policy" style="color:#FFA942" @onclick="CloseEmailModal">Privacy Policy</a>
                     </p>
 
                     <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
@@ -435,5 +434,10 @@
         }
 
         return Task.CompletedTask;
+    }
+
+    private async Task CloseEmailModal()
+    {
+        await Model.EmailModal.Hide();
     }
 }

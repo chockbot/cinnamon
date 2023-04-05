@@ -10,6 +10,7 @@ public class ManageStudentsModel
     public List<Activity> activities = new List<Activity>();
 
     public List<Students> students = new List<Students>();
+    public List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
 
     public List<ManageStudentsData> manageStudents = new List<ManageStudentsData>();
 
@@ -21,7 +22,7 @@ public class ManageStudentsModel
 
     public string customFilterValue;
 
-    public string selectedFilter;
+    public int selectedFilter;
 
     public TextEdit textEdit;
 

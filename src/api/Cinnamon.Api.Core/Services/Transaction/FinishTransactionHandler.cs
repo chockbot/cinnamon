@@ -7,6 +7,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Cinnamon.Api.Core.Services.AccountService.Handlers;
 
 namespace Cinnamon.Api.Core.Services.TransactionService;
 
@@ -19,10 +20,12 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IPurchaseOrderData purchaseOrderData;
     private readonly ICustomerData customerData;
+    private readonly IUpdateCreditBalanceHandler updateCreditBalanceHandler;
 
     public FinishTransactionHandler(ICreateOngoingActivityHandler createOngoingActivityHandler, ICustomerPayedNotificationHandler customerPayedNotificationHandler,
         IMakerEnrolledNotificationHandler makerEnrolledNotificationHandler, IJsonSerializationProvider jsonSerializationProvider,
-        IPurchaseOrderData purchaseOrderData, ICustomerData customerData, IGetActivityHandler getActivityHandler)
+        IPurchaseOrderData purchaseOrderData, ICustomerData customerData, IGetActivityHandler getActivityHandler,
+        IUpdateCreditBalanceHandler updateCreditBalanceHandler)
     {
         this.createOngoingActivityHandler = createOngoingActivityHandler;
         this.customerPayedNotificationHandler = customerPayedNotificationHandler;
@@ -31,6 +34,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
         this.purchaseOrderData = purchaseOrderData;
         this.customerData = customerData;
         this.getActivityHandler = getActivityHandler;
+        this.updateCreditBalanceHandler = updateCreditBalanceHandler;
     }
 
     public AppResult<FinishTransactionResult> Execute(FinishTransactionArgs args)
@@ -99,6 +103,21 @@ public class FinishTransactionHandler : IFinishTransactionHandler
             {
                 return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
             }
+
+            // if there is credit applied in purchase order then subract in balance credit
+            if(purchaseOrder.CreditAmount > 0)
+            {
+                var updateCredit = await updateCreditBalanceHandler.ExecuteAsync(new AccountService.Interactors.UpdateCreditBalanceArgs {
+                    ActionFlag = 1,
+                    Amount = purchaseOrder.CreditAmount,
+                    CustomerId = purchaseOrder.CustomerId
+                });
+                if(!updateCredit.Succeeded || updateCredit.Result == null)
+                {
+                    return AppResult<FinishTransactionResult>.CreateFailed(new ApplicationException("An error occured. Please contact support"), "An error occured. Please contact support");
+                }
+            }
+
 
             var referenceId = "000000000000000".Substring(purchaseOrder.Id.ToString().Length) + purchaseOrder.Id;
 

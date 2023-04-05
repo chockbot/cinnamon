@@ -1,5 +1,7 @@
 ﻿@namespace Cinnamon.Web.Components
 @page "/verificationprocess"
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager NavigationManager
 
 <div class="col-lg-12 justify-content-center col-md-12 justify-content-center col-sm-12 justify-content-center col-12 justify-content-center text-lg-center text-md-center text-sm-center">
@@ -11,3 +13,17 @@
         <a href="/customer/profile" class="link-explore">Go Back to Account</a>
     </div>
 </div> 
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+    }
+}

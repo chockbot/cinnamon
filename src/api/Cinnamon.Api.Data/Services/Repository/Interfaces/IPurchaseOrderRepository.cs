@@ -10,8 +10,8 @@ public interface IPurchaseOrderRepository
         bool? includeActivity, bool? includeSchedule, int? customerId, int? status);
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync();
     Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, decimal total, decimal convinienceFee,
-        string? coupon, decimal? couponAmount, decimal overallTotal, int status, string payload);
+        string? coupon, decimal? couponAmount, decimal overallTotal, int status, string payload, decimal creditAmount);
     Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, decimal? convinienceFee,
-        string? coupon, decimal? couponAmount, decimal? overallTotal, int? status);
+        string? coupon, decimal? couponAmount, decimal? overallTotal, int? status, decimal? creditAmount);
     Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllPurchaseOrderNeedToPayout();
 }
