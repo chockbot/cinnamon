@@ -253,110 +253,87 @@
                     </div>
                 </div>
                 <div class="activity-popular border-bottom" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                        <div class="row d-flex justify-content-start">
-                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                                <label class="heading">Most Popular</label>
-                                <section class="popular-activities mt-4 overflow-hidden">
-                                    <div class="activities-schedule-section schedule-swiper">
-                                        <div class="swiper-wrapper">
-                                            @foreach (var act in popularActivities)
-                                            {
-                                                <div class="swiper-slide swiper-slide-popular">
-                                                    <Div ElementId="#b-animate">
-                                                        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                    <div class="row d-flex justify-content-start">
+                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                            <label class="heading">Most Popular</label>
+                            <section class="popular-activities mt-4 overflow-hidden">
+                                <div class="activities-schedule-section schedule-swiper">
+                                    <div class="swiper-wrapper">
+                                        @foreach (var act in popularActivities)
+                                        {
+                                            <div class="swiper-slide swiper-slide-popular">
+                                                <Div ElementId="#b-animate">
+                                                    <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card">
                                                             <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
                                                                 @if (act.Images.Count > 0)
+                                                                {
+                                                                    <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
+                                                                }
+                                                                <div class="card-img-overlay">
+                                                                    @if (act.OngoingStudents > 0)
                                                                     {
-                                                                        <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
-                                                                    }
-                                                                    <div class="card-img-overlay">
-                                                                        <div class="row">
-                                                                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 heart-badge-section">
-                                                                               @* <span class="d-none d-xl-block">
-                                                                                    <img src="images/heart-xl.png" />
-                                                                                </span>
-                                                                                <span class="d-none d-lg-block d-xl-none">
-                                                                                    <img src="images/heart-lg.png" />
-                                                                                </span>
-                                                                                <span class="d-none d-md-block d-lg-none">
-                                                                                    <img src="images/heart-md.png" />
-                                                                                </span>
-                                                                                <span class="d-none d-sm-block d-md-none">
-                                                                                    <img src="images/heart-sm.png" />
-                                                                                </span>
-                                                                                <span class="d-block d-sm-none">
-                                                                                    <img src="images/heart-sm.png" />
-                                                                                </span>*@
+                                                                        <div class="rounded-pill ongoing-section">
+                                                                            <div class="active-badge" style="text-align:center">
+                                                                                <span class="pulse"></span>
+                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
                                                                             </div>
                                                                         </div>
+                                                                    }
+                                                                </div>
+                                                            </a>
+                                                            <div class="card-container">
+                                                                <div class="row text-start star-pulse-section">
+                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                                        @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
+                                                                        <span>
+                                                                            @if (act.IsNew)
+                                                                            {
+                                                                                <i> New Experience</i>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                            }
+                                                                        </span>
 
                                                                     </div>
-                                                                </a>
-                                                                <div class="card-container">
-                                                                    <div class="row text-start star-pulse-section">
-                                                                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                                            @*<img src="images/star-tag-small.png" class="star-tag-badge" />*@
-                                                                            <span>
-                                                                                @if (act.IsNew)
-                                                                                {
-                                                                                    <i> New Experience</i>
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    @*<i> 4.1(10)</i>*@
-                                                                                }
-                                                                            </span>
-
-                                                                        </div>
-                                                                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                                            @if (act?.Owner?.IsVerified == 2)
+                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                                    </div>
+                                                                </div>
+                                                                <div class="row text-start">
+                                                                    <div class="title-section">
+                                                                        <div>
+                                                                            <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                                            @if (@act.ExperienceTypeId == 1)
                                                                             {
-                                                                                <img src="images/verified-badge.png" class="verified-badge" />
+                                                                                <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
                                                                             }
                                                                         </div>
                                                                     </div>
-                                                                    <div class="row text-start">
-                                                                        <div class="title-section">
-                                                                            <div>
-                                                                                <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                                                @if (@act.ExperienceTypeId == 1)
-                                                                                {
-                                                                                    <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                                                }
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="row price-badge-section">
-                                                                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
-                                                                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
-                                                                            <div class="active-badge" style="text-align:center">
-                                                                                @if (act.OngoingStudents > 0)
-                                                                                {
-                                                                                    <span class="pulse"></span>
-                                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                                }
-                                                                            </div>
-                                                                        </div>
+                                                                </div>
+                                                                <div class="row price-badge-section">
+                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
+                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </Animate>
-                                                    </Div>
-                                                </div>
-                                            }
-                                        </div>
-                                        <div class="swiper-scrollbar"></div>
+                                                        </div>
+                                                    </Animate>
+                                                </Div>
+                                            </div>
+                                        }
                                     </div>
-                                </section>
+                                    <div class="swiper-scrollbar"></div>
+                                </div>
+                            </section>
 
-                            </div>
                         </div>
                     </div>
+                </div>
             </div>
             <!--Section 2-->
             <div class="section-2-lg row">
@@ -424,30 +401,20 @@
                                                 </button>
                                             </div>
                                             <div class="card-img-overlay">
-                                                <div class="row">
-                                                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 heart-badge-section">
-                                                      @*  <span class="d-none d-xl-block">
-                                                            <img src="images/heart-xl.png" />
-                                                        </span>
-                                                        <span class="d-none d-lg-block d-xl-none">
-                                                            <img src="images/heart-lg.png" />
-                                                        </span>
-                                                        <span class="d-none d-md-block d-lg-none">
-                                                            <img src="images/heart-md.png" />
-                                                        </span>
-                                                        <span class="d-none d-sm-block d-md-none">
-                                                            <img src="images/heart-sm.png" />
-                                                        </span>
-                                                        <span class="d-block d-sm-none">
-                                                            <img src="images/heart-sm.png" />
-                                                        </span>*@
+                                                @if (act.OngoingStudents > 0)
+                                                {
+                                                    <div class="rounded-pill ongoing-section">
+                                                        <div class="active-badge" style="text-align:center">
+                                                            <span class="pulse"></span>
+                                                            <span class="active-tag-label">@act.OngoingStudents</span>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                }
                                             </div>
                                             <div class="card-container">
                                                 <div class="row text-start star-pulse-section">
                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                        @*<img src="images/star-tag-small.png" class="star-tag-badge" />*@
+                                                        @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
                                                         <span>
                                                             @if (act.IsNew)
                                                             {
@@ -455,16 +422,11 @@
                                                             }
                                                             else
                                                             {
-                                                                @*<i> 4.1(10)</i>*@
                                                             }
                                                         </span>
 
                                                     </div>
                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                        @if (act?.Owner?.IsVerified == 2)
-                                                        {
-                                                            <img src="images/verified-badge.png" class="verified-badge" />
-                                                        }
                                                     </div>
                                                 </div>
                                                 <div class="row text-start">
@@ -485,13 +447,6 @@
                                                 <div class="row price-badge-section">
                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
-                                                        <div class="active-badge" style="text-align:center">
-                                                            @if (act.OngoingStudents > 0)
-                                                            {
-                                                                <span class="pulse"></span>
-                                                                <span class="active-tag-label">@act.OngoingStudents</span>
-                                                            }
-                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -756,19 +711,19 @@
                                    OngoingStudents = r.OngoingStudents,
                                    CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
-                    {
-                                return new ActivitySchedule
-                                {
-                                    Id = e.Id,
-                                    Name = e.Name,
-                                    PerUnit1 = e.PerUnit1,
-                                    PerUnit2 = e.PerUnit2,
-                                    Price = e.Price,
-                                    PriceUnit1 = e.PriceUnit1,
-                                    PriceUnit2 = e.PriceUnit2,
-                                    UnitPrice = e.UnitPrice
-                                };
-                            }).ToList(),
+                {
+                            return new ActivitySchedule
+                            {
+                                Id = e.Id,
+                                Name = e.Name,
+                                PerUnit1 = e.PerUnit1,
+                                PerUnit2 = e.PerUnit2,
+                                Price = e.Price,
+                                PriceUnit1 = e.PriceUnit1,
+                                PriceUnit2 = e.PriceUnit2,
+                                UnitPrice = e.UnitPrice
+                            };
+                        }).ToList(),
                                    Images = r.Images.Select(i =>
 {
         return new ActivityImage
@@ -883,19 +838,19 @@
                                    OngoingStudents = r.OngoingStudents,
                                    CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
-                        {
-                                    return new ActivitySchedule
-                                    {
-                                        Id = e.Id,
-                                        Name = e.Name,
-                                        PerUnit1 = e.PerUnit1,
-                                        PerUnit2 = e.PerUnit2,
-                                        Price = e.Price,
-                                        PriceUnit1 = e.PriceUnit1,
-                                        PriceUnit2 = e.PriceUnit2,
-                                        UnitPrice = e.UnitPrice
-                                    };
-                                }).ToList(),
+                    {
+                                return new ActivitySchedule
+                                {
+                                    Id = e.Id,
+                                    Name = e.Name,
+                                    PerUnit1 = e.PerUnit1,
+                                    PerUnit2 = e.PerUnit2,
+                                    Price = e.Price,
+                                    PriceUnit1 = e.PriceUnit1,
+                                    PriceUnit2 = e.PriceUnit2,
+                                    UnitPrice = e.UnitPrice
+                                };
+                            }).ToList(),
                                    Images = r.Images.Select(i =>
 {
         return new ActivityImage
