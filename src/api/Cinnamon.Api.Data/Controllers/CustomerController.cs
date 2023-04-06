@@ -179,7 +179,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.Create(args.UserId, args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Handler);
+                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Handler, args.HasAcceptedTerms);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -202,7 +202,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.CreateWithPassword(args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password, args.Handler);
+                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password, args.Handler, args.HasAcceptedTerms);
 
             if (!result.Succeeded || result.Result == null)
             {

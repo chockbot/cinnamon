@@ -11,4 +11,5 @@ public class SubmitRegisterArgs : IInteractor
     public DateTime Birthdate {get; set;}
     public string ProfilePath {get; set;}
     public bool ExternalLogin {get; set;}
+    public bool HasAcceptedTerms { get; set; }
 }

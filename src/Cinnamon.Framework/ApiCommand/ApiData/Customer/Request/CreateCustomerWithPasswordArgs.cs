@@ -22,4 +22,5 @@ public class CreateCustomerWithPasswordArgs
     public bool ExternalLogin { get; set; } = false;
     [Required]
     public string Handler {get; set;}
+    public bool HasAcceptedTerms { get; set; }
 }

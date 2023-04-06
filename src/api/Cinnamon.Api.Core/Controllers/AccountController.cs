@@ -123,7 +123,8 @@ public class AccountController : ControllerBase
                 FirstName = args.FirstName,
                 LastName = args.LastName,
                 Password = args.Password,
-                ProfilePath = args.ProfilePath
+                ProfilePath = args.ProfilePath,
+                HasAcceptedTerms = args.HasAcceptedTerms
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -168,7 +169,8 @@ public class AccountController : ControllerBase
                 LastName = args.LastName,
                 Password = args.Password,
                 ProfilePath = args.ProfilePath,
-                Token = args.Token
+                Token = args.Token,
+                HasAcceptedTerms = args.HasAcceptedTerms
             });
 
             if(!result.Succeeded || result.Result == null)

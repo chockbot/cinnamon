@@ -11,9 +11,9 @@ public interface ICustomerRepository
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isActive, int? count, int? skip, string? handlerLike = null);
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync();
     Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate,
-        string? about, string profilePath, bool ismaker, bool externalLogin, string handler);
+        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms);
     Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, DateTime birthdate,
-        string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler);
+        string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms);
     Task<AppResult<CustomerDTO>> CheckLogin(string email, string password);
     Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, 

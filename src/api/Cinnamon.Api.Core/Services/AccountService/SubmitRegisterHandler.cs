@@ -118,7 +118,8 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 LastName = args.LastName,
                 ProfilePath = args.ProfilePath,
                 Password = args.Password,
-                Handler = handlerName
+                Handler = handlerName,
+                HasAcceptedTerms = args.HasAcceptedTerms
             });
 
             if(!createCustomer.Succeeded)
