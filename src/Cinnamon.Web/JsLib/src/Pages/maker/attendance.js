@@ -8,7 +8,9 @@ export function initSwiper(selector, scrollbarSelector) {
     },
     scrollbar: {
       el: ".swiper-scrollbar",
-    },
+      },
+      observer: true,
+      observeParents: true,
   });
 }
 
