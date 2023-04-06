@@ -46,13 +46,15 @@
                         <img src="images/Home.png" class="img-icon-home">
                     </a>
                 </div>
-                <div class="input-group border rounded-pill p-1">
-                    <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
-                    <div class="input-group-append border-0">
-                        <button id="button-addon3" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
-                        <button id="button-addon3" type="button" @onclick="Search" class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
+                <form @onsubmit=Search>
+                    <div class="input-group border rounded-pill p-1">
+                        <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
+                        <div class="input-group-append border-0">
+                            <button id="button-addon3" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
+                            <button id="button-addon3" type="button" @onclick="Search" class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
             <!--Menu-->
             <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-1 d-flex justify-content-end col-1 d-flex justify-content-end">
@@ -238,102 +240,107 @@
                         </div>
                     </div>
                 </div>
-                <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
-                    <div class="card col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" aria-hidden="true">
-                        <div class="card-body">
-                            <h5 class="card-title placeholder-glow">
-                                <span class="placeholder col-6"></span>
-                            </h5>
-                            <p class="card-text placeholder-glow">
-                                <span class="placeholder col-12"></span>
-                                <span class="placeholder col-12"></span>
-                                <span class="placeholder col-12"></span>
-                            </p>
+
+                @if (string.IsNullOrEmpty(searchValue))
+                {
+                    InitializeSwiper();
+                    <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
+                        <div class="card col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12" aria-hidden="true">
+                            <div class="card-body">
+                                <h5 class="card-title placeholder-glow">
+                                    <span class="placeholder col-6"></span>
+                                </h5>
+                                <p class="card-text placeholder-glow">
+                                    <span class="placeholder col-12"></span>
+                                    <span class="placeholder col-12"></span>
+                                    <span class="placeholder col-12"></span>
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="activity-popular border-bottom" style="@SetActivitiesStyle(showOverlayPopularActivities)">
-                    <div class="row d-flex justify-content-start">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <label class="heading">Most Popular</label>
-                            <section class="popular-activities mt-4 overflow-hidden">
-                                <div class="activities-schedule-section schedule-swiper">
-                                    <div class="swiper-wrapper">
-                                        @foreach (var act in popularActivities)
-                                        {
-                                            <div class="swiper-slide swiper-slide-popular">
-                                                <Div ElementId="#b-animate">
-                                                    <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                                        <div class="card">
-                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
-                                                                @if (act.Images.Count > 0)
-                                                                {
-                                                                    <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
-                                                                }
-                                                                <div class="card-img-overlay">
-                                                                    @if (act.OngoingStudents > 0)
+                    <div class="activity-popular border-bottom" style="@SetActivitiesStyle(showOverlayPopularActivities)">
+                        <div class="row d-flex justify-content-start">
+                            <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
+                                <label class="heading">Most Popular</label>
+                                <section class="popular-activities mt-4 overflow-hidden">
+                                    <div class="activities-schedule-section activity-swiper">
+                                        <div class="swiper-wrapper">
+                                            @foreach (var act in popularActivities)
+                                            {
+                                                <div class="swiper-slide swiper-slide-popular">
+                                                    <Div ElementId="#b-animate">
+                                                        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                                            <div class="card">
+                                                                <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
+                                                                    @if (act.Images.Count > 0)
                                                                     {
-                                                                        <div class="rounded-pill ongoing-section">
-                                                                            <div class="active-badge" style="text-align:center">
-                                                                                <span class="pulse"></span>
-                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                        <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
+                                                                    }
+                                                                    <div class="card-img-overlay">
+                                                                        @if (act.OngoingStudents > 0)
+                                                                        {
+                                                                            <div class="rounded-pill popular-ongoing-section">
+                                                                                <div class="active-badge" style="text-align:center">
+                                                                                    <span class="pulse"></span>
+                                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                                </div>
+                                                                            </div>
+                                                                        }
+                                                                    </div>
+                                                                </a>
+                                                                <div class="card-container">
+                                                                    <div class="row text-start star-pulse-section">
+                                                                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                                            @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
+                                                                            <span>
+                                                                                @if (act.IsNew)
+                                                                                {
+                                                                                    <i> New Experience</i>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                }
+                                                                            </span>
+
+                                                                        </div>
+                                                                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row text-start">
+                                                                        <div class="title-section">
+                                                                            <div>
+                                                                                <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                                                @if (@act.ExperienceTypeId == 1)
+                                                                                {
+                                                                                    <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                                                }
                                                                             </div>
                                                                         </div>
-                                                                    }
-                                                                </div>
-                                                            </a>
-                                                            <div class="card-container">
-                                                                <div class="row text-start star-pulse-section">
-                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                                        @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
-                                                                        <span>
-                                                                            @if (act.IsNew)
-                                                                            {
-                                                                                <i> New Experience</i>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                            }
-                                                                        </span>
-
                                                                     </div>
-                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row text-start">
-                                                                    <div class="title-section">
-                                                                        <div>
-                                                                            <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                                            @if (@act.ExperienceTypeId == 1)
-                                                                            {
-                                                                                <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                                            }
+                                                                    <div class="row price-badge-section">
+                                                                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
+                                                                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                         </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div class="row price-badge-section">
-                                                                    <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
-                                                                    <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    </Animate>
-                                                </Div>
-                                            </div>
-                                        }
+                                                        </Animate>
+                                                    </Div>
+                                                </div>
+                                            }
+                                        </div>
+                                        <div class="activity-swiper-scrollbar"></div>
                                     </div>
-                                    <div class="swiper-scrollbar"></div>
-                                </div>
-                            </section>
+                                </section>
 
+                            </div>
                         </div>
                     </div>
-                </div>
+                }
             </div>
             <!--Section 2-->
             <div class="section-2-lg row">
@@ -371,7 +378,7 @@
                                 <Div ElementId="#b-animate">
                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                         <div class="card activities-card">
-                                            <div id="carousel1-@act.ActivityId" class="carousel slide carousel-fade" data-bs-ride="carousel" data-bs-interval="false">
+                                            <div id="carousel1-@act.ActivityId" class="carousel slide carousel-fade" data-bs-interval="false" data-bs-touch="true" data-bs-ride="carousel">
                                                 <div class="carousel-indicators">
                                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -588,6 +595,7 @@
         if (firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
         }
 
@@ -907,7 +915,6 @@
         experienceCategoryId = 0;
         pageIndex = 1;
         itemsPerPage = 20;
-
         await FetchActivities(false);
     }
 
@@ -987,5 +994,10 @@
     {
         if (isDisplayed) return "display:none";
         return "display:block";
+    }
+
+    private async Task InitializeSwiper()
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
     }
 }

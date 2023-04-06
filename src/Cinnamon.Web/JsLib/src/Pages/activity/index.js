@@ -7,6 +7,7 @@ import previewImage from "./previewImage";
 import imageHelper from './imageHelper'
 import moveImage from "./moveImage";
 import carouselSwipe from "./carouselSwipe"; 
+import explore from "./explore"; 
 
 export default {
     creation,
@@ -18,5 +19,6 @@ export default {
     previewImage,
     moveImage,
     imageHelper,
-    carouselSwipe
+    carouselSwipe,
+    explore
 };
