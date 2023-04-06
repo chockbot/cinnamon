@@ -112,7 +112,7 @@ public class SubmitExternalRegisterHandler : IExternalRegisterHandler
             if(age < 18 || age > 120)
             {
                 return AppResult<ExternalRegisterResult>.CreateFailed(
-                    new ApplicationException("Please provide validate birth year. Age between 18 and 120"), "Please provide validate birth year. Age between 18 and 120");
+                    new ApplicationException("Please provide valid birth year. Age between 18 and 120"), "Please provide valid birth year. Age between 18 and 120");
             }
 
             var createCustomer = await customerData.CreateCustomerWithPassword(new Framework.ApiCommand.ApiData.Customer.Request.CreateCustomerWithPasswordArgs {

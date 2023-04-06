@@ -63,6 +63,10 @@
                             </Column>
                         </Row>
                         <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveBirthDate">Save</Button>
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <p class="activity-image-photos-error-message text-center">@errorMessage</p>
+                        }
                     }
                 </div>
             </Column>
@@ -224,6 +228,8 @@
 
     private PayoutAccountModel PayoutAccount {get; set;}
 
+    private string errorMessage = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Model.Token);
@@ -361,10 +367,15 @@
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
                 Model.CustomerProfile.Birthdate = result.Result.Result.Birthdate;
+                errorMessage = string.Empty;
+                isEditBirthDate = false;
                 await ModelChanged.InvokeAsync(Model);
             }
+            else
+            {
+                errorMessage = result?.Result?.ErrorInfo?.Message;
+            }
         }
-        isEditBirthDate = false;
     }
 }
 
