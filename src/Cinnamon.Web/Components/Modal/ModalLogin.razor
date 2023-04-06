@@ -23,7 +23,7 @@
                         <div class="">
                             <div class="col-12">
                                 <Validation>
-                                    <TextEdit @ref="Model.TextEmail" KeyDown="OnEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
+                                    <TextEdit @ref="Model.TextEmail" KeyPress="OnInput" KeyDown="OnEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
                                         @bind-Text="Model.EmailModel.Email" class="input-email">
                                         <Feedback>
                                             <ValidationError TextAlignment="TextAlignment.Start" />
@@ -40,6 +40,7 @@
                                     Continue
                                 </ChildContent>
                             </Button>
+                            <p>@KeyboardCode</p>
                         </div>
                     </Validations>
                     <div class="divider">
@@ -226,6 +227,8 @@
     string modalHeaderStyle = $"border:none;";
     string alertStyle = $"margin-bottom:0px;";
 
+    private string KeyboardCode {get; set;}
+
     private async Task SubmitEmail()
     {
         try
@@ -408,6 +411,18 @@
 
     private Task OnEmailTextSubmit(KeyboardEventArgs e)
     {
+        KeyboardCode = e.Code + "-keydown";
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            return SubmitEmail();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnInput(KeyboardEventArgs e)
+    {
+        KeyboardCode = e.Code + "-keypress";
         if(e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             return SubmitEmail();
