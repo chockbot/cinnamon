@@ -25,4 +25,5 @@ public class ExternaRegisterAutoLogin
 
     [Required]
     public string Token {get; set;}
+    public bool HasAcceptedTerms { get; set; }
 }

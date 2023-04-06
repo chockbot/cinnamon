@@ -12,4 +12,5 @@ public class ExternalRegisterArgs : IInteractor
     public string Guid {get; set;}
     public string Token {get; set;}
     public string ProfilePath {get; set;}
+    public bool HasAcceptedTerms { get; set; }
 }

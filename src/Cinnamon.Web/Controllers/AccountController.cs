@@ -159,6 +159,7 @@ public class AccountController : Controller
                 Password = model.Password,
                 ProfilePath = "/images/Profile/user.png",
                 IsMaker = false,
+                HasAcceptedTerms = model.HasAcceptedTerms
             });
 
             if(!registerResult.Succeeded || registerResult.Result == null)
@@ -227,6 +228,7 @@ public class AccountController : Controller
                 Password = model.Password,
                 ProfilePath = "/images/Profile/user.png",
                 Token = model.Token,
+                HasAcceptedTerms = model.HasAcceptedTerms,
             });
 
             if(!registerResult.Succeeded || registerResult.Result == null)
