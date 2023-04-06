@@ -23,7 +23,7 @@
                         <div class="">
                             <div class="col-12">
                                 <Validation>
-                                    <TextEdit @ref="Model.TextEmail" @onkeydown="OnInput" KeyDown="OnEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
+                                    <TextEdit @ref="Model.TextEmail" KeyDown="OnEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
                                         @bind-Text="Model.EmailModel.Email" class="input-email">
                                         <Feedback>
                                             <ValidationError TextAlignment="TextAlignment.Start" />
@@ -411,18 +411,7 @@
 
     private Task OnEmailTextSubmit(KeyboardEventArgs e)
     {
-        if(e.Code == "Enter" || e.Code == "NumpadEnter")
-        {
-            return SubmitEmail();
-        }
-
-        return Task.CompletedTask;
-    }
-
-    private Task OnInput(KeyboardEventArgs e)
-    {
-        KeyboardCode = e.Key + "-keypress";
-        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        if(e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
         {
             return SubmitEmail();
         }
@@ -432,7 +421,7 @@
 
     private Task OnPasswordTextSubmit(KeyboardEventArgs e)
     {
-        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        if(e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
         {
             return SubmitLogin();
         }
@@ -442,7 +431,7 @@
 
     private Task OnForgotPasswordTextSubmit(KeyboardEventArgs e)
     {
-        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        if(e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
         {
             return SubmitResetPassword();
         }
