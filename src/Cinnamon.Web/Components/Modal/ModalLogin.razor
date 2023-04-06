@@ -411,7 +411,6 @@
 
     private Task OnEmailTextSubmit(KeyboardEventArgs e)
     {
-        KeyboardCode = e.Code + "-keydown";
         if(e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             return SubmitEmail();
@@ -422,7 +421,7 @@
 
     private Task OnInput(KeyboardEventArgs e)
     {
-        KeyboardCode = e.Code + "-keypress";
+        KeyboardCode = e.Key + "-keypress";
         if(e.Code == "Enter" || e.Code == "NumpadEnter")
         {
             return SubmitEmail();
