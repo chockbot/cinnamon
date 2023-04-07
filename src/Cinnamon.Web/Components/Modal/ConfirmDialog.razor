@@ -1,0 +1,70 @@
+@namespace Cinnamon.Web.Components
+
+<Modal @ref="ModalRef">
+    <ModalContent Centered>
+        <ModalHeader>
+            <div class="modal-title">
+                @HeaderContent
+            </div>
+        </ModalHeader>
+        <ModalBody>
+            <div>
+                @BodyContent
+            </div>
+        </ModalBody>
+        <ModalFooter>
+            <Button class="btn-primary width-70" Border="Border.Is0" Clicked="AcceptAction">@AcceptLabel</Button>
+            <Button class="text-white width-70" Background="Background.Danger" Clicked="DeclineAction">@DeclineLabel</Button>
+        </ModalFooter>
+    </ModalContent>
+</Modal>
+
+@code 
+{
+    private Modal ModalRef {get; set;}
+
+    [Parameter]
+    public RenderFragment HeaderContent {get; set;}
+
+    [Parameter]
+    public RenderFragment BodyContent {get; set;}
+
+    [Parameter]
+    public string AcceptLabel {get; set;}
+
+    [Parameter]
+    public string DeclineLabel {get; set;}
+
+    [Parameter]
+    public EventCallback<bool> OnConfirmationChanged {get; set;}
+
+    public Task Open()
+    {
+        return ModalRef.Show();
+    }
+
+    public Task Close()
+    {
+        return ModalRef.Close(CloseReason.UserClosing);
+    }
+
+    private Task AcceptAction()
+    {
+        if(OnConfirmationChanged.HasDelegate)
+        {
+            OnConfirmationChanged.InvokeAsync(true);
+        }
+        Close();
+        return Task.CompletedTask;
+    }
+
+    private Task DeclineAction()
+    {
+        if(OnConfirmationChanged.HasDelegate)
+        {
+            OnConfirmationChanged.InvokeAsync(false);
+        }
+        Close();
+        return Task.CompletedTask;
+    }
+}
