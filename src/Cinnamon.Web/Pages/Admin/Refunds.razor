@@ -93,7 +93,8 @@
                         <TableRowCell class="name-body">
                             @if (item.Status == 0)
                             {
-                                <input class="form-control" type="number" min="0" placeholder="Enter Amount" @bind-value="@item.RefundAmountGiven" />
+                                <input class='@($"form-control {item.ExtraClass}")' type="number" min="0" max="@item.OverAllTotal" 
+                                    placeholder="Enter Amount" @bind-value="@item.RefundAmountGiven" @oninput="(e) => AmountChanged(e.Value, item)" />
                             }
                             else
                             {
@@ -104,7 +105,9 @@
                             @if (item.Status == 0)
                             {
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" 
+                                        checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))" 
+                                        disabled='@(string.IsNullOrEmpty(item.ExtraClass) ? false : true)'>
                                 </div>
                             }
                             else
@@ -213,6 +216,12 @@
 
         if (isChecked)
         {
+            if(refundRequest.RefundAmountGiven > refundRequest.OverAllTotal)
+            {
+                refundRequest.ExtraClass = "is-invalid";
+                return;
+            }
+
             var result = await accountApiHandler.UpdateRefundRequest(new Framework.ApiCommand.ApiCore.Account.Request.UpdateRequestRefundArgs
             {
                     RefundAmountGiven = refundRequest.RefundAmountGiven,
@@ -223,7 +232,6 @@
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
                 StateHasChanged();
-
             }
         }
     }
@@ -250,5 +258,26 @@
         if (status == 2) return "Disapproved";
 
         return string.Empty;
+    }
+
+    private Task AmountChanged(object value, Requested requestedItem)
+    {
+        if(decimal.TryParse(value.ToString(), out decimal amount))
+        {
+            if(amount > requestedItem.OverAllTotal)
+            {
+                requestedItem.ExtraClass = "is-invalid";
+            }
+            else 
+            {
+                requestedItem.ExtraClass = string.Empty;
+            }
+        }
+        else 
+        {
+            requestedItem.ExtraClass = "is-invalid";
+        }
+        
+        return Task.CompletedTask;
     }
 }
