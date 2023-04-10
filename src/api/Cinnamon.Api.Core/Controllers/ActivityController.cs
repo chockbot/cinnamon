@@ -647,9 +647,14 @@ public class ActivityController : ControllerBase
             var result = await getMakerActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetMakerActivitiesArgs
             {
                 CustomerId = args.CustomerId,
-                IncludeActivityDescription = args.IncludeActivityDescription,
-                IncludeStudents = args.IncludeStudents ?? false,
-                IsActive = args.IsActive ?? false,
+                IncludeActivityAddress = args.IncludeActivityAddress ?? false,
+                IncludeActivityDescription = args.IncludeActivityDescription ?? false,
+                IncludeActivityImages = args.IncludeActivityImages ?? false,
+                IncludeActivitySearchTags = args.IncludeActivitySearchTags ?? false,
+                IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer,
+                IncludeStudents = args.IncludeStudents ?? false
             }) ;
 
             if (!result.Succeeded || result.Result == null)
@@ -664,10 +669,68 @@ public class ActivityController : ControllerBase
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
                     {
                         ActivityId = a.Id,
+                        ActivityLevel = a.ActivityLevel,
+                        ActivitySchedules = a.ActivitySchedules.Select(s => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                            {
+                                Id = s.Id,
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice,
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
+                            };
+                        }),
+                        AdditionalRequirements = a.AdditionalRequirements,
+                        Address1 = a.Address1,
+                        Address2 = a.Address2,
+                        CanAdultsJoin = a.CanAdultsJoin,
+                        City = a.City,
+                        CityName = a.CityName,
+                        Region = a.Region,
+                        RegionName = a.RegionName,
+                        Barangay = a.Barangay,
+                        BarangayName = a.BarangayName,
+                        CustomerBringWithThem = a.CustomerBringWithThem,
                         Description = a.Description,
+                        District = a.District,
+                        ExperienceCategoryId = a.ExperienceCategoryId,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        Images = a.Images.Select(i => {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
+                            {
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name,
+                                Order = i.Order
+                            };
+                        }),
+                        IsPublished = a.IsPublished,
+                        MinimumAge = a.MinimumAge,
+                        Price = a.Price,
+                        Remarks = a.Remarks,
+                        ScheduleIndicator = a.ScheduleIndicator,
+                        SearchTags = a.SearchTags,
+                        SkillLevel = a.SkillLevel,
+                        SpecificsYouWillProvide = a.SpecificsYouWillProvide,
+                        SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
+                        Handler = a.Handler,
+                        IsSetSession = a.IsSetSession,
+                        SessionName = a.SessionName,
+                        IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
+                        {
+                            Handler = a.Owner.Handler,
+                            Id = a.Owner.Id,
+                            IsVerified = a.Owner.IsVerified,
+                        } : null
                     };
                 })
             });
@@ -677,6 +740,7 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetMakerActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("GetAllActivities")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllActivitiesResult), StatusCodes.Status200OK)]
