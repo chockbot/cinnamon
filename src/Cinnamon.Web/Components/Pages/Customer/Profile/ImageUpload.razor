@@ -2,6 +2,13 @@
 @using Cinnamon.Web.Models.Customer;
 @inject IJSRuntime JsRuntime
 
+@if (isFileValid.HasValue)
+{
+    @if (!isFileValid.GetValueOrDefault())
+    {
+        <p class="activity-image-photos-error-message text-left">@uploadErrorMessage</p>
+    }
+}
 <div class="image-wrapper justify-content-center">
     <label for="@Model.ImageName" class="upload-image justify-content-center" style="display:flex">
         <Figure TextAlignment="TextAlignment.Center">
@@ -16,14 +23,52 @@
     [Parameter]
     public UploadGovernmenId Model { get; set; }
     private InputFile? inputFile;
-
+    private List<string> allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
+    private string errorMessage = string.Empty;
+    private string uploadErrorMessage = string.Empty;
+    private string originalImage = string.Empty;
+    private bool? isFileValid;
+    private decimal totalImageSizeMB = 0;
+    private bool isDisabled = true;
+    private bool isShowErrorMessage = false;
+    private bool hasChanged = false;
     private string GetFrontImageSrc()
     {
         if(!string.IsNullOrEmpty(Model.ImageFileName)) return Model.ImageFileName;
 
         return "/images/Profile/blank.png";
     }
+    private bool IsImagesOverLimit
+    {
+        get
+        {
+            return totalImageSizeMB > 10;
+        }
+    }
+    private async Task ShowPreview(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        totalImageSizeMB = 0;
+        totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
 
-    private async Task ShowPreview()
-        => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, Model.ImageId);
+        if (IsImagesOverLimit)
+        {
+            uploadErrorMessage = "Please upload image less than 10MB.";
+            isFileValid = false;
+
+        }
+        else if (!allowedFileTypes.Contains(Path.GetExtension(file.Name.ToLower())))
+        {
+            uploadErrorMessage = "Only JPEG or PNG files are accepted. Please try again.";
+            isFileValid = false;
+        }
+        else
+        {
+            isDisabled = false;
+            hasChanged = true;
+            isFileValid = true;
+            await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, Model.ImageId);
+        }
+        await Task.CompletedTask;
+    }  
 }

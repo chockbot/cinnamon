@@ -13,66 +13,45 @@
 
 @foreach (var item in students)
 {
-    <div class="swiper-slide">
-        <Div ElementId="#b-animate">
-            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                <div class="experience-box">
-                    <div class="row">
-                        <div class="experience-content col-xl-8 col-lg-8 col-md-8 col-sm-8 col-8">
-                            <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                                <label class="xp-title">@Activity.Title</label>
-                            </a>
+    <div class="experience-box">
+        <div class="row">
+            <div class="experience-content col-xl-8 col-lg-8 col-md-8 col-sm-7 col-7">
+                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                    <label class="xp-title">@Activity.Title</label>
+                </a>
 
-                            <div class="xp-body-item">
-                                <p class="secondary-caption">@item.Name</p>
-                            </div>
+                <div class="xp-body-item">
+                    <p class="secondary-caption">@item.Name</p>
+                </div>
 
-                            <div class="xp-body-item">
-                                <p class="secondary-caption">@item.SessionsAttended/@item.NumberOfSessions</p>
-                                <div class="progress">
-                                    <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
-                                </div>
-                            </div>
-                            @if (Activity.IsSetSession)
-                            {
-                                <div class="xp-body-item">
-                                    <p class="secondary-caption">
-                                        Consume in : @Activity.SessionName <br>
-                                        Expiring in : @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                                    </p>
-                                </div>
-                            }
-                        </div>
-                        <div class="experience-header col-xl-4 col-lg-4 col-md-4 col-sm-4 col-4">
-                            <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
-                                <img class="image-header" src="@GetImage()" />
-                            </a>
-                        </div>
-                    </div>
-                    @*<div class="row xp-body-item pulse-section">
-                        <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12">
-                            <label>
-                                <span class="pulse"></span>
-                                <span class="secondary-caption">Ongoing Enrollees</span>
-                                <span class="active-tag-label">@Activity.OngoingStudents</span>
-                            </label>
-                            <div class="divider"></div>
-                            <label>
-                                <span class="pulse-complete"></span>
-                                <span class="secondary-caption">Completed Enrollees</span>
-                                <span class="active-tag-label-complete">@Activity.CompletedStudents</span>
-                            </label>
-                        </div>
-                    </div>*@
-                    <div class="xp-body-item">
-                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" Style="width: 352px;height: 40px;background: #FFA942;border-radius: 10px;">
-                            View
-                        </Button>
+                <div class="xp-body-item">
+                    <p class="secondary-caption">@item.SessionsAttended/@item.NumberOfSessions</p>
+                    <div class="progress">
+                        <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
                     </div>
                 </div>
-            </Animate>
-        </Div>
-    </div>
+                @if (Activity.IsSetSession)
+                {
+                    <div class="xp-body-item">
+                        <p class="secondary-caption">
+                            Consume in : @Activity.SessionName <br>
+                            Expiring in : @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                        </p>
+                    </div>
+                }
+            </div>
+            <div class="experience-header col-xl-4 col-lg-4 col-md-5 col-sm-5 justify-content-start col-4 justify-content-start">
+                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                    <img class="image-header" src="@GetImage()" />
+                </a>
+            </div>
+        </div>
+            <div class="xp-body-item">
+                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" Style="width: 352px;height: 40px;background: #FFA942;border-radius: 10px;">
+                    View
+                </Button>
+            </div>
+        </div>
 }
 @*<ModalAttendance @ref="modalRef"></ModalAttendance>*@
 <Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
