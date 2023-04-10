@@ -47,7 +47,7 @@ public class GetCustomerByIdHandler : IGetCustomerByIdHandler
                 About = result.Result.Result.About,
                 //Birthdate = result.Result.Result.Birthdate,
                 DateJoined = result.Result.Result.DateJoined,
-                //Email = result.Result.Result.Email,
+                Email = result.Result.Result.Email,
                 FirstName = result.Result.Result.FirstName,
                 LastName = result.Result.Result.LastName,
                 IsMaker = result.Result.Result.IsMaker,
