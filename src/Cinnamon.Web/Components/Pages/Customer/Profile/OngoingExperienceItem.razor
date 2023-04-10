@@ -71,6 +71,13 @@
                             <p class="">Present Days : <span class="days-present">@item.SessionsAttended</span></p>
                         </div>
                     }
+                    else
+                    {
+                        <div class="student-details-major">
+                            <p class="">Name : <span>@selectedName</span></p>
+                            <p class="">Present Days : <span class="days-present">@studentAttendances.Count</span></p>
+                        </div>
+                    }
                 </div>
             </div>
             @* CALENDAR *@
@@ -141,6 +148,8 @@
     public bool disableButtonRight { get; set; } = false;
     public bool disableButtonLeft { get; set; } = false;
     public Modal modalRef;
+    public string selectedName = string.Empty;
+
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
@@ -257,6 +266,8 @@
                     };
             }).ToList();
         }
+
+        selectedName = student.Name;
     }
 
     private async Task HideModal()
