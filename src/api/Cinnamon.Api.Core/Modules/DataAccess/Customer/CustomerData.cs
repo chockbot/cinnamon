@@ -70,7 +70,9 @@ public class CustomerData : ICustomerData
                                 new {
                                     countPerPage = args.CountPerPage,
                                     isVerified = args.IsVerified,
-                                    pageIndex = args.PageIndex }).GetJsonAsync<GetAllCustomerResult>();
+                                    pageIndex = args.PageIndex,
+                                    handlerLike = args.HandlerLike
+                                }).GetJsonAsync<GetAllCustomerResult>();
 
             return AppResult<GetAllCustomerResult>.CreateSucceeded(result, "Successfully getting get all customers api");
         }
