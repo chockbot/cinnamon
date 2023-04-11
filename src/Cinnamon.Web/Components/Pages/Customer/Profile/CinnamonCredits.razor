@@ -10,7 +10,7 @@
                 <TableHeaderCell>Reference No</TableHeaderCell>
                 <TableHeaderCell>Experience Title</TableHeaderCell>
                 <TableHeaderCell>Status</TableHeaderCell>
-                <TableHeaderCell>Credits</TableHeaderCell>
+                <TableHeaderCell class="text-end">Credits</TableHeaderCell>
             </TableRow>
         </TableHeader>
         <TableBody>
@@ -20,14 +20,14 @@
                     <TableRowCell>@item.ReferenceNo</TableRowCell>
                     <TableRowCell>@item.ExperienceTitle</TableRowCell>
                     <TableRowCell>@GetStatus(item.Status)</TableRowCell>
-                    <TableRowCell>@item.RefundAmountGiven</TableRowCell>
+                    <TableRowCell class="text-end">@item.RefundAmountGiven.ToString("#,##0.00")</TableRowCell>
                 </TableRow>
             }
         </TableBody>
         <TableFooter style="border-top: 1px solid #D9D9D9;">
             <TableRow>
                 <TableRowCell ColumnSpan="3">Total</TableRowCell>
-                <TableRowCell> @requestedRefunds.Sum(r => r.RefundAmountGiven) </TableRowCell>
+                <TableRowCell class="text-end"> @requestedRefunds.Sum(r => r.RefundAmountGiven).ToString("#,##0.00") </TableRowCell>
             </TableRow>
         </TableFooter>
     </Table>
