@@ -12,8 +12,8 @@
         <TextEdit class="border-10 color-black-100 font-16" id="legalFirstname" Size="Size.Default" @bind-Text="Model.Name" />
     </Field>
     <Row HorizontalGutter="10">
-        <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is12.OnMobile">
-            <Field Margin="Margin.Is3.FromTop" class="profile-info-input gender">
+        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+            <Field Margin="Margin.Is3.FromTop" class="gender">
                 <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Gender</FieldLabel>
                 <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.Gender" 
                     class="form-select border-10 text-capitalize color-black-100 font-16">
@@ -24,7 +24,33 @@
                 </Select>
             </Field>
         </Column>
-        <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is12.OnMobile">
+                
+        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+            <Field Margin="Margin.Is3.FromTop" class="birthmonth">
+                <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Birth Month</FieldLabel>
+                <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.BirthMonth" 
+                    class="form-select border-10 text-capitalize color-black-100 font-16">
+                    @foreach (var item in months)
+                    {
+                        <SelectItem Value="item">@item</SelectItem>
+                    }
+                </Select>
+            </Field>
+        </Column>
+
+        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+            <Field Margin="Margin.Is3.FromTop" class="year">
+                <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Year</FieldLabel>
+                <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear"
+                        class="form-select border-10 text-capitalize color-black-100 font-16">
+                    @foreach (var item in years)
+                    {
+                        <SelectItem Value="item">@item</SelectItem>
+                    }
+                </Select>
+            </Field>
+        </Column>
+@*        <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is12.OnMobile">
             <Row HorizontalGutter="10">
                 <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnMobile">
                     <Field Margin="Margin.Is3.FromTop" class="profile-info-input birthmonth">
@@ -51,7 +77,7 @@
                     </Field>
                 </Column>
             </Row>
-        </Column>
+        </Column>*@
     </Row>
 </Div>
 
