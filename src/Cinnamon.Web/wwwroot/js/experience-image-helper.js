@@ -142,6 +142,7 @@ function initializeCropper(imgPreview) {
         minCropBoxWidth: 271,
         minCropBoxHeight: 271,
         movable: true,
+        center: true,
         ready: function () {
         },
     });
