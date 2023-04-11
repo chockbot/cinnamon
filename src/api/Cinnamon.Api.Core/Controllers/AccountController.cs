@@ -753,7 +753,8 @@ public class AccountController : ControllerBase
                     About = objResult.About,
                     IsOG = objResult.IsOG,
                     IsOfficial = objResult.IsOfficial,
-                    DateJoined = objResult.DateJoined
+                    DateJoined = objResult.DateJoined,
+                    Email = objResult.Email,
                 },
                 IsSuccess = true,
             });
@@ -795,7 +796,8 @@ public class AccountController : ControllerBase
                     About = objResult.About,
                     IsOG = objResult.IsOG,
                     IsOfficial = objResult.IsOfficial,
-                    DateJoined = objResult.DateJoined
+                    DateJoined = objResult.DateJoined,
+                    Email = objResult.Email
                 },
                 IsSuccess = true,
             });

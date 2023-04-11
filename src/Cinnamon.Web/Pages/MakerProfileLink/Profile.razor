@@ -7,6 +7,7 @@
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using System.Security.Claims
+@using System.Text.RegularExpressions
 @inject IModalService modal
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -14,7 +15,7 @@
 @inject IAccountApiHandler accountApiHandler;
 @inject IActivityApiHandler activityApiHandler;
 
-@if (customerDetail != null)
+@if (activities!=null)
 {
     <section class="py-3 mt-5 profile-content">
         <Container>
@@ -46,7 +47,7 @@
                                         break;
                                     case 2:
                                         <p class="text-color-8080 my-1 font-24">
-                                            <img class="img-verified" src="images/VerifiedIcon.png" />
+                                            <img class="img-verified" src="images/Badges/VERIFIED.svg" />
                                             <span class="span-verified">Verified</span>
                                         </p>
                                         break;
@@ -61,6 +62,7 @@
                     <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                         <Div>
                             <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@customerDetail.FirstName</span></p>
+                            <p class="m-0 text-color-8080 font-14">Email: @customerDetail.Email</p>
                             <p class="m-0 text-color-8080 font-14">Joined in @customerDetail.DateJoined.Year</p>
                         </Div>
                         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
@@ -83,13 +85,14 @@
                 </Items>
                 <Content>
                     <TabPanel Name="maker-experience">
-                         <MakerExperiences Activities="activities" /> 
+                        <MakerExperiences Activities="activities" />
                     </TabPanel>
                 </Content>
             </Tabs>
         </Container>
     </section>
 }
+
 
 @code 
 {
@@ -105,6 +108,8 @@
     private string ImageSource { get; set; } = "images/Profile/user";
 
     public CustomerProfile customerDetail = new CustomerProfile();
+
+    public int MakerId { get; set; }
 
     //public CustomerModel Customer { get; set; }
 
@@ -131,60 +136,66 @@
                     ProfilePath = args.ProfileImg,
                     IsVerified = args.IsVerified,
                     About = args.About,
-                    DateJoined = args.DateJoined
+                    DateJoined = args.DateJoined,
+                    Email = args.Email
                 };
             ImageSource = customerDetail.ProfilePath;
         }
-        //Get All Activities
-        var ActivityListData = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
+        //Get Maker Activity
+       // string output = string.Concat(Id.Where(Char.IsDigit));
+        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
             {
+                CustomerId = customerDetail.Id,
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
                 IncludeActivityImages = true,
                 IncludeAtivitySchedules = true,
+                IsActive = true,
                 IncludeStudents = true,
-                IncludeCustomer = true,
-                IsActive = true
+                IncludeCustomer = true
             });
-        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
         {
-            activities = ActivityListData.Result.Result.Select(r =>
+            if (ActivityList.Result.Result.Count() > 0)
             {
-                return new Activity
-                    {
-                        ActivityId = r.ActivityId,
-                        ExperienceTypeId = r.ExperienceTypeId,
-                        ExperienceCategoryId = r.ExperienceCategoryId,
-                        SubCategoryId = r.SubCategoryId,
-                        Title = r.Title,
-                        Description = r.Description,
-                        Price = r.Price,
-                        ScheduleIndicator = r.ScheduleIndicator,
-                        Remarks = r.Remarks,
-                        IsPublished = r.IsPublished,
-                        Address1 = r.Address1,
-                        Address2 = r.Address2,
-                        District = r.District,
-                        City = r.City,
-                        CityName = r.CityName,
-                        Region = r.Region,
-                        RegionName = r.RegionName,
-                        Barangay = r.Barangay,
-                        BarangayName = r.BarangayName,
-                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                        CustomerBringWithThem = r.CustomerBringWithThem,
-                        AdditionalRequirements = r.AdditionalRequirements,
-                        ActivityLevel = r.ActivityLevel,
-                        SkillLevel = r.SkillLevel,
-                        MinimumAge = r.MinimumAge,
-                        CanAdultsJoin = r.CanAdultsJoin,
-                        CreatedBy = r.CreatedBy,
-                        IsSetSession = r.IsSetSession,
-                        SessionName = r.SessionName,
-                        IsNew = r.IsNew,
-                        OngoingStudents = r.OngoingStudents,
-                        CompletedStudents = r.CompletedStudents,
-                        ActivitySchedules = r.ActivitySchedules.Select(e =>
+                activities = ActivityList.Result.Result.Select(a =>
+                {
+                    return new Activity
+                        {
+                            ActivityId = a.ActivityId,
+                            District = a.District,
+                            City = a.City,
+                            CityName = a.CityName,
+                            Region = a.Region,
+                            RegionName = a.RegionName,
+                            Barangay = a.Barangay,
+                            BarangayName = a.BarangayName,
+                            Address1 = a.Address1,
+                            Address2 = a.Address2,
+                            ExperienceTypeId = a.ExperienceTypeId,
+                            Description = a.Description,
+                            IsPublished = a.IsPublished,
+                            Price = a.Price,
+                            Title = a.Title,
+                            IsSetSession = a.IsSetSession,
+                            SessionName = a.SessionName,
+                            IsNew = a.IsNew,
+                            OngoingStudents = a.OngoingStudents,
+                            CompletedStudents = a.CompletedStudents,
+                            Images = a.Images.Select(i =>
+                            {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
+                            Owner = new CustomerProfile
+                            {
+                                IsVerified = a.Owner.IsVerified
+                            },
+                            ActivitySchedules = a.ActivitySchedules.Select(e =>
                         {
                             return new ActivitySchedule
                             {
@@ -198,26 +209,11 @@
                                 UnitPrice = e.UnitPrice
                             };
                         }).ToList(),
-                        Images = r.Images.Select(i =>
-                        {
-                            return new ActivityImage
-                            {
-                                Id = i.Id,
-                                ImageSrc = i.ImageSrc,
-                                Name = i.Name
-                            };
-                        }).ToList(),
-                        Owner = new CustomerProfile
-                        {
-                            IsVerified = r.Owner.IsVerified
-                        }
                     };
-            }).ToList();
+                }).ToList();
+            }
         }
-        //Get Maker Activities
-        activities = activities.Where(p => p.CreatedBy == customerDetail.Id).ToList();
     }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");

@@ -54,8 +54,8 @@ public class GetCustomerByHandler : IGetCustomerByHandler
                 IsOfficial = result.Result.Result.IsOfficial,
                 ProfileImg = result.Result.Result.ProfileImg,
                 About = result.Result.Result.About,
-                DateJoined = result.Result.Result.DateJoined
-
+                DateJoined = result.Result.Result.DateJoined,
+                Email = result.Result.Result.Email
             }, "Successfully getting customer information");
         }
         catch (Exception ex)

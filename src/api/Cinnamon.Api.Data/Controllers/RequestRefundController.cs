@@ -59,7 +59,7 @@ public class RequestRefundController : ControllerBase
 
             // get all without pagination to get all rows
             var all = isHaveFilter ?
-                await requestRefundRepository.GetAllAsync(null, null, null, null, null, null) :
+                await requestRefundRepository.GetAllAsync(null, null, null, null, args.CustomerId, args.Status) :
                 await requestRefundRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
