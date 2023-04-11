@@ -10,6 +10,7 @@
 @inject IAccountApiHandler accountApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
+@inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
 
 @if (Model.Customer != null){
@@ -371,8 +372,6 @@
     IJSObjectReference module;
     [Parameter]
     public string Identifier { get; set; }
-    [Parameter]
-    public int MakerId {get; set;}
     public DetailActivityModel           Model              = new DetailActivityModel();
     public Activity                      activity           = new Activity();
     public List<Activity>                activities         = new List<Activity>();
@@ -388,9 +387,11 @@
     public int                           MakerCompletedStudent { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
-        //Get Activity by Id
-        var ActivityListData = isIdentifierInt ? await activityApiHandler.GetActivity(intResult, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+        try
+        {
+            bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
+            //Get Activity by Id
+            var ActivityListData = isIdentifierInt ? await activityApiHandler.GetActivity(intResult, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
             {
                 IncludeActivityAddress = true,
                 IncludeActivityDescription = true,
@@ -398,7 +399,7 @@
                 IncludeAtivitySchedules = true,
                 IncludeCustomer = true
             }) :
-            await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+                await activityApiHandler.GetActivityByHandler(Identifier.Trim(), new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
                 {
                     IncludeActivityAddress = true,
                     IncludeActivityDescription = true,
@@ -407,10 +408,10 @@
                     IncludeCustomer = true
                 });
 
-        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
-        {
-            var result = ActivityListData.Result.Result;
-            activity = new Activity
+            if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+            {
+                var result = ActivityListData.Result.Result;
+                activity = new Activity
                 {
                     Id = result.ActivityId,
                     ActivityId = result.ActivityId,
@@ -478,31 +479,31 @@
                         Handler = result.Owner.Handler
                     } : null
                 };
-        }
+            }
 
-        // Get experience types
-        var experienceType = await activityApiHandler.GetExperienceTypes();
-        if (experienceType.Succeeded && experienceType.Result != null && experienceType.Result.IsSuccess)
-        {
-            experienceTypes = experienceType.Result.Result.Select(i =>
+            // Get experience types
+            var experienceType = await activityApiHandler.GetExperienceTypes();
+            if (experienceType.Succeeded && experienceType.Result != null && experienceType.Result.IsSuccess)
             {
-                return new ExperienceType
+                experienceTypes = experienceType.Result.Result.Select(i =>
+                {
+                    return new ExperienceType
                     {
                         Id = i.Id,
                         Name = i.Name
                     };
-            }).ToList();
-        }
+                }).ToList();
+            }
 
-        //Get Experience Type
-        experience = experienceTypes.Where(a => a.Id == activity.ExperienceTypeId).ElementAt(0);
-        
-        //Get Customer
-        var customer = await accountApiHandler.GetCustomerById(activity.CreatedBy);
-        if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
-        {
-            var args = customer.Result.Result;
-            customerDetail = new CustomerProfile
+            //Get Experience Type
+            experience = experienceTypes.Where(a => a.Id == activity.ExperienceTypeId).ElementAt(0);
+
+            //Get Customer
+            var customer = await accountApiHandler.GetCustomerById(activity.CreatedBy);
+            if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+            {
+                var args = customer.Result.Result;
+                customerDetail = new CustomerProfile
                 {
                     FirstName = args.FirstName,
                     LastName = args.LastName,
@@ -513,21 +514,21 @@
                     IsOG = args.IsOG,
                     IsOfficial = args.IsOfficial
                 };
-        }
-        Model = new DetailActivityModel
+            }
+            Model = new DetailActivityModel
             {
                 Activity = activity,
                 ExperienceTypes = experienceTypes,
                 Customer = customerDetail
             };
 
-        //Get Ongoing and Completed Students
-        var students = await ongoingApiHandler.GetEnrolledStudents(ActivityListData.Result.Result.ActivityId);
-        if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
-        {
-            enrolledStudents = students.Result.Result.Select(i =>
+            //Get Ongoing and Completed Students
+            var students = await ongoingApiHandler.GetEnrolledStudents(ActivityListData.Result.Result.ActivityId);
+            if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
             {
-                return new Students
+                enrolledStudents = students.Result.Result.Select(i =>
+                {
+                    return new Students
                     {
                         ActivityId = i.ActivityId,
                         Id = i.Id,
@@ -535,18 +536,18 @@
                         NumberOfSessions = i.NumberOfSessions,
                         SessionsAttended = i.SessionsAttended,
                     };
-            }).ToList();
-        }
-        CompletedStudents = enrolledStudents.Where(a => a.SessionsAttended >= a.NumberOfSessions).Count();
-        OngoingStudents = enrolledStudents.Where(a => a.SessionsAttended < a.NumberOfSessions).Count();
+                }).ToList();
+            }
+            CompletedStudents = enrolledStudents.Where(a => a.SessionsAttended >= a.NumberOfSessions).Count();
+            OngoingStudents = enrolledStudents.Where(a => a.SessionsAttended < a.NumberOfSessions).Count();
 
-        //Get Badges
-        var badgeList = await dashboardApiHandler.GetAllBadge();
-        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
-        {
-            badges = badgeList.Result.Result.Select(b =>
+            //Get Badges
+            var badgeList = await dashboardApiHandler.GetAllBadge();
+            if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
             {
-                return new BadgeList
+                badges = badgeList.Result.Result.Select(b =>
+                {
+                    return new BadgeList
                     {
                         Id = b.Id,
                         Name = b.Name,
@@ -556,32 +557,38 @@
                         NumberOfReviews = b.NumberOfReviews,
                         ImgScr = b.ImgScr
                     };
-            }).ToList();
-        }
-        //Get Maker Activity
-        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+                }).ToList();
+            }
+            //Get Maker Activity
+            var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
             {
                 CustomerId = activity.CreatedBy,
                 IncludeStudents = true,
                 IsActive = true,
             });
-        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
-        {
-            if (ActivityList.Result.Result.Count() > 0)
+            if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
             {
-                activities = ActivityList.Result.Result.Select(r =>
+                if (ActivityList.Result.Result.Count() > 0)
                 {
-                    return new Activity
+                    activities = ActivityList.Result.Result.Select(r =>
+                    {
+                        return new Activity
                         {
                             Id = r.ActivityId,
                             OngoingStudents = r.OngoingStudents,
                             CompletedStudents = r.CompletedStudents,
                         };
-                }).ToList();
+                    }).ToList();
+                }
             }
+            MakerOngoingStudennt = activities.Sum(x => x.OngoingStudents);
+            MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
         }
-        MakerOngoingStudennt = activities.Sum(x => x.OngoingStudents);
-        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
+        catch(Exception e)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            throw e;
+        }
     } 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
