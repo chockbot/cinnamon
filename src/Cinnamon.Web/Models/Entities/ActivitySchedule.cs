@@ -1,4 +1,4 @@
-namespace Cinnamon.Web.Models.Entities;
+﻿namespace Cinnamon.Web.Models.Entities;
 
 public class ActivitySchedule 
 {
