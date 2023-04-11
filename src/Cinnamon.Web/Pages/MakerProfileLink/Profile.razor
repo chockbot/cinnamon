@@ -62,7 +62,6 @@
                     <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                         <Div>
                             <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@customerDetail.FirstName</span></p>
-                            <p class="m-0 text-color-8080 font-14">Email: @customerDetail.Email</p>
                             <p class="m-0 text-color-8080 font-14">Joined in @customerDetail.DateJoined.Year</p>
                         </Div>
                         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
@@ -138,13 +137,10 @@
                         ProfilePath = args.ProfileImg,
                         IsVerified = args.IsVerified,
                         About = args.About,
-                        DateJoined = args.DateJoined
+                        DateJoined = args.DateJoined,
+                        Email = args.Email
                     };
                 ImageSource = customerDetail.ProfilePath;
-            }
-            else
-            {
-                NavigationManager.NavigateTo("/page-not-found");
             }
             //Get Maker Activity
             var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
