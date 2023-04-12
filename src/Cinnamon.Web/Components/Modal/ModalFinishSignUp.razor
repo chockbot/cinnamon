@@ -37,11 +37,11 @@
                     <Validation>
                         <Field>
                             <FieldLabel>BirthDate</FieldLabel>
-                            <DateEdit Placeholder="your birthdate" TValue="DateTime" @bind-Date="viewModel.Birthdate">
+                            <DatePicker @bind-Date=viewModel.Birthdate Placeholder="your birthday" TValue="DateTime">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
-                            </DateEdit>  
+                            </DatePicker>
                         </Field>
                     </Validation>
                     <p class="sub-info">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
@@ -133,6 +133,8 @@
     private bool IsAcceptPrivacyPolicy {get; set;}
 
     private bool IsShowCheckboxError {get; set;}
+
+    IReadOnlyList<DateTime?> selectedDates;
 
     protected override void OnInitialized()
     {
