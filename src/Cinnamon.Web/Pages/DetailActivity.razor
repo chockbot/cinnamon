@@ -36,6 +36,10 @@
                         }
                     </div>
                 </div>
+                @if (activity.Images.Count > 0)
+                {
+                    InitializeCarouselSwipe();
+                }
                 <div class="d-flex flex-row detail-sm mx-auto">
                     <Div ElementId="#b-animate">
                         <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
@@ -386,6 +390,7 @@
     public ExperienceType                experience         = new ExperienceType();
     public List<Students>                enrolledStudents   = new List<Students>();
     public List<BadgeList>               badges             = new List<BadgeList>();
+    private IAnimation                   selectedAnimation  = Animations.FadeIn;
     private SchedulesModal               ModalSched { get; set; }
     public int                           OngoingStudents { get; set; }
     public int                           CompletedStudents { get; set; }
@@ -603,6 +608,10 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
         }
+    }
+    private async Task InitializeCarouselSwipe()
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
     }
 
 }
