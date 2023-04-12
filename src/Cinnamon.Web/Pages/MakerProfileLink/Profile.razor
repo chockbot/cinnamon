@@ -15,6 +15,8 @@
 @inject IAccountApiHandler accountApiHandler;
 @inject IActivityApiHandler activityApiHandler;
 
+<PageTitle>Cinnamon Maker Profile - @MakerFullname | CinnamonPH</PageTitle>
+
 @if (activities!=null)
 {
     <section class="py-3 mt-5 profile-content">
@@ -220,6 +222,17 @@
             throw e;
         }
     }
+
+    private string MakerFullname
+    {
+        get 
+        {
+            if(customerDetail == null) return string.Empty;
+
+            return customerDetail.FirstName?.ToUpper() + " " + customerDetail.LastName?.ToUpper();
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
