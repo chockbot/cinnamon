@@ -455,13 +455,13 @@
                                 <Div ElementId="#b-animate">
                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                         <div class="card activities-card">
-                                            <div id="carousel1-@act.ActivityId" class="carousel slide carousel-fade" data-bs-interval="false" data-bs-touch="true" data-bs-ride="carousel">
+                                            <div id="carousel1-@act.ActivityId" class="carousel slide" data-bs-ride="carousel">
                                                 <div class="carousel-indicators">
                                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
                                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
                                                     <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
                                                 </div>
-                                                <div class="carousel-inner1">
+                                                <div class="carousel-inner">
                                                     @if (act.Images.Count > 0)
                                                     {
                                                         <div class="carousel-item active">
@@ -674,6 +674,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.explore.initSwiper", ".activity-swiper", ".activity-swiper-scrollbar");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
         }
 
 
