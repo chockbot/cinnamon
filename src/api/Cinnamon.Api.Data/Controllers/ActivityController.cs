@@ -83,17 +83,25 @@ public class ActivityController : ControllerBase
                 }
             }
 
+            int? skip = 0;
+            int? take = args.CountPerPage;
+
             var isUsedFilters = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.IsActive.HasValue ||
                 args.IncludeAddress.HasValue || args.IncludeDescription.HasValue || args.IncludeImages.HasValue ||
                 args.IncludeSchedules.HasValue || args.IncludeSearchTags.HasValue || ids.Count > 0 ||
                 !string.IsNullOrEmpty(args.LikeHandler) || args.IncludeCustomer.HasValue || args.IncludeExperienceTypes.HasValue || args.IncludeExperienceCategories.HasValue || args.IncludeSubCategories.HasValue || args.IncludeStudents.HasValue || args.IsDeactivated.HasValue;
             
             var includeAddress = args.IncludeAddress ?? false;
-                
+
+            if (args.PageIndex > 1)
+            {
+                skip = ((args.PageIndex - 2) * args.CountPerPage) + 20;
+            }
+
             var result =
                 isUsedFilters ?
                     await activityRepository
-                        .GetAllAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated,
+                        .GetAllAsync(args.CustomerId, args.IsActive, take, skip, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated,
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
                             args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false) :
