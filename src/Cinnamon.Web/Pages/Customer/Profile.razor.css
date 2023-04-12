@@ -19,8 +19,26 @@
     justify-content: center;
 }
 
-
-
+.verified-logo img {
+    margin-right: 5px;
+    cursor: pointer;
+}
+.badges-column img {
+    vertical-align: middle;
+    width: 53px;
+    height: 53px;
+    display: flex;
+    margin-right: 18px;
+}
+::deep .badges-column .card-body {
+    display: flex;
+}
+::deep .badges-column {
+    width: 100%;
+    background-color: #F3F6FC;
+    padding: 25px;
+    border: none;
+}
 .profile-content {
   font-family: "Nunito";
   color: #343d4c;
@@ -69,9 +87,8 @@
   padding-right: 0.5rem;
   line-height: 0.3;
 }
-
 .profile-info-input label {
-  padding-top: 0.5rem;
+    padding-top: 0.5rem;
 }
 
 .personal-tab-swiper .swiper-slide {
@@ -140,8 +157,18 @@
     .edit-icon {
     text-align: right;
     margin-right: 3rem;
-    
   }
+  .badges-column img, svg {
+      vertical-align: middle;
+      width: 50px;
+      height: 50px;
+      display: flex;
+      margin-right: 1rem;
+      align-content: center;
+  }
+    ::deep .badges-column {
+        padding: 10px;
+    }
 }
 @media only screen and (max-width: 576px) {
   .profile-banner {

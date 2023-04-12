@@ -13,10 +13,10 @@
     </Field>
     <Row HorizontalGutter="10">
         <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-            <Field Margin="Margin.Is3.FromTop" class="gender">
+            <Field Margin="Margin.Is3.FromTop" class="profile-info-input-gender">
                 <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Gender</FieldLabel>
                 <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.Gender" 
-                    class="form-select border-10 text-capitalize color-black-100 font-16">
+                    class="form-select border-10 text-capitalize color-black-100 font-15">
                     @foreach (var item in genders)
                     {
                         <SelectItem Value="item">@item</SelectItem>
@@ -24,39 +24,13 @@
                 </Select>
             </Field>
         </Column>
-                
-        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-            <Field Margin="Margin.Is3.FromTop" class="birthmonth">
-                <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Birth Month</FieldLabel>
-                <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.BirthMonth" 
-                    class="form-select border-10 text-capitalize color-black-100 font-16">
-                    @foreach (var item in months)
-                    {
-                        <SelectItem Value="item">@item</SelectItem>
-                    }
-                </Select>
-            </Field>
-        </Column>
-
-        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
-            <Field Margin="Margin.Is3.FromTop" class="year">
-                <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Year</FieldLabel>
-                <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear"
-                        class="form-select border-10 text-capitalize color-black-100 font-16">
-                    @foreach (var item in years)
-                    {
-                        <SelectItem Value="item">@item</SelectItem>
-                    }
-                </Select>
-            </Field>
-        </Column>
-@*        <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is12.OnMobile">
-            <Row HorizontalGutter="10">
-                <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnMobile">
+        <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is12.OnMobile">
+            <Row HorizontalGutter="2">
+                <Column ColumnSize="ColumnSize.Is7.OnDesktop.IsFull.OnMobile">
                     <Field Margin="Margin.Is3.FromTop" class="profile-info-input birthmonth">
                         <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Birth Month</FieldLabel>
                         <Select TValue="int" Size="Size.Default" @bind-bind-SelectedValue="Model.BirthMonth" 
-                            class="form-select border-10 text-capitalize color-black-100 font-16">
+                            class="form-select border-10 text-capitalize color-black-100 font-15">
                             @foreach (var item in months)
                             {
                                 <SelectItem Value="@item">@item</SelectItem>
@@ -64,11 +38,11 @@
                         </Select>
                     </Field>
                 </Column>
-                <Column ColumnSize="ColumnSize.IsHalf.OnDesktop.IsFull.OnMobile">
+                <Column ColumnSize="ColumnSize.Is5.OnDesktop.IsFull.OnMobile">
                     <Field Margin="Margin.Is3.FromTop" class="profile-info-input year">
                         <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Year</FieldLabel>
                         <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear" 
-                            class="form-select border-10 text-capitalize color-black-100 font-16">
+                            class="form-select border-10 text-capitalize color-black-100 font-15">
                             @foreach (var item in years)
                             {
                                 <SelectItem Value="@item">@item</SelectItem>
@@ -77,7 +51,7 @@
                     </Field>
                 </Column>
             </Row>
-        </Column>*@
+        </Column>
     </Row>
 </Div>
 
@@ -155,3 +129,12 @@
         return Task.CompletedTask;
     }
 }
+<style scoped>
+    .family-members .profile-info-input-gender {
+        margin-left:0;
+        margin-right: 1rem;
+    }
+    .customer-profile-details .family-members {
+         width: 80%;
+    }
+</style>

@@ -11,8 +11,9 @@
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
+@if (Model != null)
+{
 <PageTitle>Dashboard | CinnamonPH</PageTitle>
-
 <div class="header">
     <p class="title">Experiences</p>
     <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
@@ -30,28 +31,29 @@
                     {
                         <img src="images/activity-summary/location.png">
                             <span>Face to Face</span>
-                    }
-                    else
-                    {
-                        <img src="images/activity-summary/laptop-icon.png">
+                        }
+                        else
+                        {
+                            <img src="images/activity-summary/laptop-icon.png">
                             <span>Online</span>
-                    }
+                        }
+                    </div>
+                </div>
             </div>
-    </div>
-    </div>
-    <hr>
-    <div class="xp-actions">
-        <div class="active">
-            <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
-                <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-            </button>
-                <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+            <hr>
+            <div class="xp-actions">
+                <div class="active">
+                    <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                        <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    </button>
+                    <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                </div>
+                <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+            </div>
         </div>
-        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
-    </div>
-</div>
-
+    }
 }
+
 
 @code
 {
@@ -63,70 +65,82 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var token = user.FindFirstValue("Token");
-        if(token == null)
+        try
         {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-        if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-        {
-            // an error occured
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        var customer = result.Result.Result;
+            var token = user.FindFirstValue("Token");
+            if (token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
 
-        // check if customer is maker
-        if(!customer.IsMaker)
-        {
-            // account is not maker redirect to explore page
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+            {
+                // an error occured
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            var customer = result.Result.Result;
 
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-        {
-            IncludeActivityImages = true,
-        }, token);
+            // check if customer is maker
+            if (!customer.IsMaker)
+            {
+                // account is not maker redirect to explore page
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
 
-        if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-        {
-            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a => {
-                // map only required fields
-                return new Activity {
-                    ActivityId = a.ActivityId,
-                    IsPublished = a.IsPublished,
-                    Title = a.Title,
-                    Description = a.Description,
-                    ExperienceTypeId = a.ExperienceTypeId,
-                    Images = a.Images.Select(i=>
-                    {
-                        return new ActivityImage
+            var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+                {
+                    IncludeActivityImages = true,
+                }, token);
+
+            if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+            {
+                activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                {
+                    // map only required fields
+                    return new Activity
                         {
-                            Id = i.Id,
-                            ImageSrc = i.ImageSrc,
-                            Name = i.Name
+                            ActivityId = a.ActivityId,
+                            IsPublished = a.IsPublished,
+                            Title = a.Title,
+                            Description = a.Description,
+                            ExperienceTypeId = a.ExperienceTypeId,
+                            Images = a.Images.Select(i =>
+                            {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
                         };
-                    }).ToList(),
+                }).ToList();
+            }
+            Model = new DashboardModel
+                {
+                    Activities = activities,
+                    ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
+                    Token = token
                 };
-            }).ToList();
         }
-        Model = new DashboardModel {
-            Activities = activities,
-            ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
-            Token = token
-        };
+        catch (Exception e)
+        {
+            throw e;
+        }
     }
+
     private void NavigateToCreation()
     {
-        NavigationManager.NavigateTo("creation");
+        NavigationManager.NavigateTo("creation", true);
     }
+
     private void CheckUnCheckAllStudent(Activity activity)
     {
         activity.IsPublished = !activity.IsPublished;
