@@ -144,6 +144,10 @@
                     };
                 ImageSource = customerDetail.ProfilePath;
             }
+            else
+            {
+                 NavigationManager.NavigateTo("/page-not-found");
+            }
             //Get Maker Activity
             var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
                 {
