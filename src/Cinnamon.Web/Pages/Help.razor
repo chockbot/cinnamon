@@ -6,109 +6,99 @@
 @using Cinnamon.Web.Components
 @inject IJSRuntime jsRuntime;
 
-<!DOCTYPE html>
+<PageTitle>@Title | CinnamonPH</PageTitle>
 
-<html lang="en">
-<head>
-    <!-- Required meta tags -->
+<HeadContent>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-<body>
-    <div class="container container-fluid">
-        <div class="row d-flex justify-content-center">
-            <div class="row justify-content-center">
-                <label class="heading text-center">How can we help you?</label>
-                <div class="btn-section border-bottom col-lg-12 d-lg-block d-md-none d-sm-none d-none">
-                    <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
-                        <img src="/images/Dashboard Icon/faq.png" />
-                        <span class="btn-caption">Frequently Asked Questions</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
-                        <img src="/images/Dashboard Icon/terms.png" />
-                        <span class="btn-caption">Terms & Conditions</span>
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
-                        <img src="/images/Dashboard Icon/privacy.png" />
-                        <span class="btn-caption">Privacy Policy</span>
-                    </button>
-                </div>
-                <div class="btn-carousel-section border-bottom d-lg-none d-md-block d-sm-none d-none ">
-                    <div class="schedule-swiper">
-                        <div class="swiper-wrapper text-center">
-                            <div class="swiper-slide faq">
-                                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
-                                    <img src="/images/Dashboard Icon/faq.png" />
-                                    <span class="btn-caption">Frequently Asked Questions</span>
-                                </button>
-                                
-                            </div>
-                            <div class="swiper-slide terms">
-                                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
-                                    <img src="/images/Dashboard Icon/terms.png" />
-                                    <span class="btn-caption">Terms & Conditions</span>
-                                </button>
+</HeadContent>
 
-                            </div>
-                            <div class="swiper-slide policy">
-                                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
-                                    <img src="/images/Dashboard Icon/privacy.png" />
-                                    <span class="btn-caption">Privacy Policy</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="swiper-scrollbar"></div>
-                    </div>
-                </div>
-                <div class="btn-carousel-section border-bottom d-lg-none d-md-none d-sm-block d-block">
-                    <div class="schedule-swiper">
-                        <div class="swiper-wrapper text-center">
-                            <div class="swiper-slide faq">
-                                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
-                                    <img src="/images/Dashboard Icon/faq.png" />
-                                    <span class="btn-caption">Frequently Asked Questions</span>
-                                </button>
-
-                            </div>
-                            <div class="swiper-slide terms">
-                                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
-                                    <img src="/images/Dashboard Icon/terms.png" />
-                                    <span class="btn-caption">Terms & Conditions</span>
-                                </button>
-
-                            </div>
-                            <div class="swiper-slide policy">
-                                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
-                                    <img src="/images/Dashboard Icon/privacy.png" />
-                                    <span class="btn-caption">Privacy Policy</span>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="swiper-scrollbar"></div>
-                    </div>
-                </div>
-                @if (isFaqDisplayed)
-                {
-                    <FAQ></FAQ>
-                }
-                @if (isTermsDisplayed)
-                {
-                    <Terms></Terms>
-                }
-                @if (isPrivacyDisplayed)
-                {
-                    <Policy></Policy>
-                }
+<div class="container container-fluid">
+    <div class="row d-flex justify-content-center">
+        <div class="row justify-content-center">
+            <label class="heading text-center">How can we help you?</label>
+            <div class="btn-section border-bottom col-lg-12 d-lg-block d-md-none d-sm-none d-none">
+                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+                    <img src="/images/Dashboard Icon/faq.png" />
+                    <span class="btn-caption">Frequently Asked Questions</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+                    <img src="/images/Dashboard Icon/terms.png" />
+                    <span class="btn-caption">Terms & Conditions</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+                    <img src="/images/Dashboard Icon/privacy.png" />
+                    <span class="btn-caption">Privacy Policy</span>
+                </button>
             </div>
-            <Contact></Contact>
-            <Footer></Footer>
+            <div class="btn-carousel-section border-bottom d-lg-none d-md-block d-sm-none d-none ">
+                <div class="schedule-swiper">
+                    <div class="swiper-wrapper text-center">
+                        <div class="swiper-slide faq">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+                                <img src="/images/Dashboard Icon/faq.png" />
+                                <span class="btn-caption">Frequently Asked Questions</span>
+                            </button>
+                            
+                        </div>
+                        <div class="swiper-slide terms">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+                                <img src="/images/Dashboard Icon/terms.png" />
+                                <span class="btn-caption">Terms & Conditions</span>
+                            </button>
+                        </div>
+                        <div class="swiper-slide policy">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+                                <img src="/images/Dashboard Icon/privacy.png" />
+                                <span class="btn-caption">Privacy Policy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="swiper-scrollbar"></div>
+                </div>
+            </div>
+            <div class="btn-carousel-section border-bottom d-lg-none d-md-none d-sm-block d-block">
+                <div class="schedule-swiper">
+                    <div class="swiper-wrapper text-center">
+                        <div class="swiper-slide faq">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+                                <img src="/images/Dashboard Icon/faq.png" />
+                                <span class="btn-caption">Frequently Asked Questions</span>
+                            </button>
+                        </div>
+                        <div class="swiper-slide terms">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+                                <img src="/images/Dashboard Icon/terms.png" />
+                                <span class="btn-caption">Terms & Conditions</span>
+                            </button>
+                        </div>
+                        <div class="swiper-slide policy">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+                                <img src="/images/Dashboard Icon/privacy.png" />
+                                <span class="btn-caption">Privacy Policy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="swiper-scrollbar"></div>
+                </div>
+            </div>
+            @if (isFaqDisplayed)
+            {
+                <FAQ></FAQ>
+            }
+            @if (isTermsDisplayed)
+            {
+                <Terms></Terms>
+            }
+            @if (isPrivacyDisplayed)
+            {
+                <Policy></Policy>
+            }
         </div>
-
+        <Contact></Contact>
+        <Footer></Footer>
     </div>
-
-
-</body>
-</html>
+</div>
 
 @code {
     private bool isFaqDisplayed = false;
@@ -117,6 +107,8 @@
 
     [Parameter]
     public string Section { get; set; }
+
+    private string Title {get; set;} = "Frequently Asked Questions";
 
     protected override async Task OnInitializedAsync()
     {
@@ -157,6 +149,7 @@
 
     private void NavigateToFaq()
     {
+        Title = "Frequently Asked Questions";
         isFaqDisplayed = true;
         isTermsDisplayed = false;
         isPrivacyDisplayed = false;
@@ -164,6 +157,7 @@
 
     private void NavigateToTerms()
     {
+        Title = "Terms & Conditions";
         isFaqDisplayed = false;
         isTermsDisplayed = true;
         isPrivacyDisplayed = false;
@@ -171,6 +165,7 @@
 
     private void NavigateToPrivacy()
     {
+        Title = "Privacy Policy";
         isFaqDisplayed = false;
         isTermsDisplayed = false;
         isPrivacyDisplayed = true;

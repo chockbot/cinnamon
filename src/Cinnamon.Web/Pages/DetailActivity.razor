@@ -13,6 +13,8 @@
 @inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
 
+<PageTitle>@(activity == null ? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH" : $"Cinnamon Activity - {activity.Title} | CinnamonPH")</PageTitle>
+
 @if (Model.Customer != null){
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
         <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 justify-content-center col-md-10 justify-content-center col-sm-12 justify-content-center col-12 justify-content-center">

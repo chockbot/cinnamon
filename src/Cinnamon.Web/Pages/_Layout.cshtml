@@ -1,6 +1,7 @@
 ﻿@using Microsoft.AspNetCore.Components.Web
 @namespace Cinnamon.Web.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Config.Config config;
 
 <!DOCTYPE html>
 <html lang="en">
@@ -24,6 +25,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700&display=swap" rel="stylesheet">
     <link href="_content/Blazorise.LoadingIndicator/blazorise.loadingindicator.css" rel="stylesheet" />
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
+    @if(config?.Environment?.ToLower() != "production")
+    {
+        <meta name="robots" content="noindex,nofollow">
+    }
 </head>
 <body>
     @RenderBody()
