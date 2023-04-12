@@ -13,24 +13,7 @@
 
 @if (Model != null)
 {
-    <div class="header">
-        <p class="title">Experiences</p>
-        <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
-    </div>
-    @foreach (var item in activities)
-    {
-        <div class="experience-container">
-            <div class="xp-content">
-                <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
-                <div class="xp-context">
-                    <p class="xp-title">@item.Title</p>
-                    <p class="xp-description">@item.Description</p>
-                    <div class="xp-category">
-                        @if (item.ExperienceTypeId == 1)
-                        {
-                            <img src="images/activity-summary/location.png">
 <PageTitle>Dashboard | CinnamonPH</PageTitle>
-
 <div class="header">
     <p class="title">Experiences</p>
     <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
