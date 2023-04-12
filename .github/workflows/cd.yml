@@ -47,7 +47,7 @@ jobs:
         with:
           files: "src/Cinnamon.Web/appsettings.json"
         env:
-          AppConfig.Environment: ${{ $FLAG_ENV }}
+          AppConfig.Environment: "$FLAG_ENV"
 
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
