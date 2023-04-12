@@ -12,6 +12,8 @@ public class ProfileDTO
     public string ProfileImg { get; set; }
     public bool IsMaker { get; set; }
     public int IsVerified { get; set; }
+    public bool IsOG { get; set; }
+    public bool IsOfficial { get; set; }
     public string Handler {get; set;}
     public decimal TotalCredits {get; set;}
 }

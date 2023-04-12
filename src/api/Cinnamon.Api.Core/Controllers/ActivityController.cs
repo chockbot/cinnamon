@@ -527,7 +527,13 @@ public class ActivityController : ControllerBase
                         CompletedStudents = a.CompletedStudents,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
-                            Id  = a.Owner.Id
+                            Id = a.Owner.Id,
+                            ImageSrc = a.Owner.ImageSrc,
+                            FirstName = a.Owner.FirstName,
+                            LastName = a.Owner.LastName,
+                            IsVerified = a.Owner.IsVerified,
+                            IsOG = a.Owner.IsOG,
+                            IsOfficial = a.Owner.IsOfficial
                         } : null
                     };
                 })
