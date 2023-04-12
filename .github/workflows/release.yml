@@ -29,6 +29,10 @@ jobs:
         env:
           ConnectionStrings.CinnamonDB: ${{ secrets.PROD_DB_CONNECTION }}
 
+      # copy sitemaps
+      - name: Copy sitemap
+        run: cp output/sitemap.xml src/Cinnamon.Web/wwwroot/sitemap.xml
+
       - name: Restore Web
         run: dotnet restore src/Cinnamon.Web/Cinnamon.Web.csproj
 

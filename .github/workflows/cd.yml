@@ -49,10 +49,6 @@ jobs:
         env:
           AppConfig.Environment: ${{ env.FLAG_ENV }}
 
-      # copy sitemaps
-      - name: Copy sitemap
-        run: cp output/sitemap.xml src/Cinnamon.Web/wwwroot/sitemap.xml
-
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
 
