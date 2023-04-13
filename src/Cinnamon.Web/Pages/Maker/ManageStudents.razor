@@ -307,7 +307,7 @@
                             };
             //List DataGrid Content
             Model.manageStudents = query.ToList();
-            Model.FilteredStudents = Model.manageStudents;
+            Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.Name).ThenBy(a => a.SessionsAttended).ToList();
         }
         catch (Exception)
         {
@@ -343,14 +343,14 @@
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).ToList();
+            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).OrderBy(a => a.Name).ThenBy(a=>a.SessionsAttended).ToList();
 
             activitySchedules = Model.activitySchedules.Where(a => a.ActivityId == activityId).ToList();
         }
     }
     private void TextSearchChanged(string search)
     {
-        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(a=> a.SessionsAttended).ToList();
     }
     private async void SaveChanges(int Id, int StudentNo)
     {
@@ -379,12 +379,12 @@
     {
         if (!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Name).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Name).ThenBy(a=> a.SessionsAttended).ToList();
             Model.IsSortNameAsc = false;
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Name).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Name).ThenBy(a => a.SessionsAttended).ToList();
             Model.IsSortNameAsc = true;
         }
     }
@@ -392,12 +392,12 @@
     {
         if (!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Title).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Title).ThenBy(a => a.SessionsAttended).ToList();
             Model.IsSortExperienceAsc = false;
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Title).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Title).ThenBy(a => a.SessionsAttended).ToList();
             Model.IsSortExperienceAsc = true;
         }
     }
