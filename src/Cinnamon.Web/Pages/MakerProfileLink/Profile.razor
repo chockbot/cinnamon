@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using System.Security.Claims
 @using System.Text.RegularExpressions
+@using Cinnamon.Web.Components.Pages;
 @inject IModalService modal
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -16,6 +17,9 @@
 @inject IActivityApiHandler activityApiHandler;
 
 <PageTitle>Cinnamon Maker Profile - @MakerFullname | CinnamonPH</PageTitle>
+<SeoMeta Subject="Cinnamon Maker Profile" Title="Cinnamon Maker Profile" 
+    Url='@($"/maker/profile/{Id}")' Description="@(customerDetail?.About ?? string.Empty)"
+    Image="@(customerDetail?.ProfilePath ?? string.Empty)" />
 
 @if (activities!=null)
 {

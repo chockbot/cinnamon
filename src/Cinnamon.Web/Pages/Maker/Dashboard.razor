@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler;
@@ -12,6 +13,7 @@
 @attribute [Authorize]
 
 <PageTitle>Dashboard | CinnamonPH</PageTitle>
+<SeoMeta Title="Dashboard" Subject="Dashboard" Url="/maker/dashboard" />
 
 <div class="header">
     <p class="title">Experiences</p>

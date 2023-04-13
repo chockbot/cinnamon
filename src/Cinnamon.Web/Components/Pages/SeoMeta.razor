@@ -1,0 +1,152 @@
+@using Flurl;
+@inject Web.Config.Config config;
+
+<HeadContent>
+    <meta name='keywords' content='@GetKeywords'>
+    <meta name='description' content='@GetDescription'>
+    <meta name='subject' content='@GetSubject'>
+    <meta name='copyright' content='CinnamonPH'>
+
+    <meta property="og:title" content="@GetTitle" />
+    <meta property="og:description" content="@GetDescription" />
+    <meta name='og:url' content='@GetUrl'>
+    <meta property="og:image" content="@GetImage" />
+
+    <meta name="twitter:title" content="@GetTitle" data-qmeta="twitterTitle">
+    <meta name="twitter:description" content="@GetDescription" data-qmeta="twitterDescription">
+    <meta name="twitter:image" content="@GetImage" data-qmeta="twitterImage">
+    <meta name="twitter:url" content="@GetUrl" data-qmeta="twitterUrl">
+
+    <link rel="canonical" href="@GetUrl" data-qmeta="0">
+    <link rel="alternate" href="@GetUrl" media="only screen and (max-width: 768px)" data-qmeta="1">
+    @ExtraMeta
+</HeadContent>
+
+@code 
+{
+    [Parameter]
+    public RenderFragment ExtraMeta {get; set;}
+
+    [Parameter]
+    public IList<string>? Keywords {get; set;}
+
+    [Parameter]
+    public string? Description {get; set;}
+
+    [Parameter]
+    public string? Subject {get; set;}
+
+    [Parameter]
+    public string? Title {get; set;}
+
+    [Parameter]
+    public string? Url {get; set;}
+
+    [Parameter]
+    public string? Image {get; set;}
+
+    private string GetKeywords 
+    {
+        get
+        {
+            string defaultKeywords = "cinnamon, learning, education, music, experience, cinnamon experience, tutor, online teaching, " +
+                                    "coaching, activities, activity, kids, sports, skills, child, children";
+            if(Keywords != null) 
+            {
+                foreach(var k in Keywords)
+                {
+                    if(!string.IsNullOrEmpty(k))
+                    {
+                        defaultKeywords += $", {k}";
+                    }
+                }
+            }
+            return defaultKeywords;
+        }
+    }
+
+    private string GetDescription
+    {
+        get
+        {
+            string defaultDescription = "Cinnamon is an activity, learning, and events marketplace. Our main focus in Cinnamon is to " +
+                                        "help everyone spend their time on meaningful and fun experiences by connecting you to people who are " +
+                                        "passionate about sharing their skills and knowledge. We would be honored to partner with you in " +
+                                        "experiencing life and creating moments!";
+            
+            if(!string.IsNullOrEmpty(Description))
+            {
+                defaultDescription = $"{Description} | {defaultDescription}";
+            }
+
+            return defaultDescription;
+        }
+    }
+
+    private string GetSubject 
+    {
+        get 
+        {
+            string defaultSubject = "Activities, learnings and events for you and your loved ones.";
+
+            if(!string.IsNullOrEmpty(Subject))
+            {
+                defaultSubject = $"{Subject} | {defaultSubject}";
+            }
+
+            return defaultSubject;
+        }
+    }
+
+    private string GetTitle 
+    {
+        get
+        {
+            string defaultTitle = "Cinnamon Activities, learnings and events for you and your loved ones.";
+
+            if(!string.IsNullOrEmpty(Title))
+            {
+                defaultTitle = $"{Title} | {defaultTitle}";
+            }
+
+            return defaultTitle;
+        }
+    }
+
+    private string GetUrl 
+    {
+        get 
+        {
+            string defaultUrl = config.BaseUrl;
+
+            if(!string.IsNullOrEmpty(Url))
+            {
+                defaultUrl = defaultUrl.AppendPathSegment(Url).ToString();
+            }
+
+            return defaultUrl;
+        }
+    }
+
+    private string GetImage 
+    {
+        get 
+        {
+            string defaultImage = config.BaseUrl.AppendPathSegment("/images/landing_image2.png").ToString();
+
+            if(!string.IsNullOrEmpty(Image))
+            {
+                if(Image.ToLower().Contains("http"))
+                {
+                    defaultImage = Image;
+                }
+                else 
+                {
+                    defaultImage = config.BaseUrl.AppendPathSegment(Image).ToString();
+                }
+            }
+
+            return defaultImage;
+        }
+    }
+}
