@@ -136,13 +136,12 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
 function initializeCropper(imgPreview) {
     return new Cropper(imgPreview, {
         viewMode: 1,
-        aspectRatio: 2/3,
+        aspectRatio: 4/5,
         minContainerWidth: 350,
         minContainerHeight: 400,
         minCropBoxWidth: 271,
         minCropBoxHeight: 271,
         movable: true,
-        center: true,
         ready: function () {
         },
     });

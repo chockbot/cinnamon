@@ -1,5 +1,6 @@
 @page "/customer/profile"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Modals;
 @using Cinnamon.Web.Models.Entities;
@@ -9,10 +10,12 @@
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 
 <PageTitle>Your Profile | CinnamonPH</PageTitle>
+<SeoMeta Title="Your Profile" Subject="Profile" Url="/customer/profile" />
 
 @if(Model != null)
 {
@@ -75,14 +78,14 @@
                             @if (MakerOngoingStudent != 0)
                             {
                                 <div class="ongoing-students">
-                                    <p class="ongoing-students-label">On going no. of students</p>
+                                    <p class="ongoing-students-label">Ongoing Enrollees</p>
                                     <p class="ongoing-students-number">@MakerOngoingStudent</p>
                                 </div>
                             }
                             @if (MakerCompletedStudent != 0)
                             {
                                 <div class="completed-students">
-                                    <p class="completed-students-label">Completed students</p>
+                                    <p class="completed-students-label">Completed Enrollees</p>
                                     <p class="completed-students-number">@MakerCompletedStudent</p>
                                 </div>
                             }  
@@ -115,6 +118,54 @@
                         else
                         {
                             <MemoEdit Border="Border.Rounded" @bind-Text="aboutLocalState" Rows="5" />
+                        }
+                        @if(Model.CustomerProfile.IsVerified != 0){
+                        <p class="my-3 fw-bold font-18">Badges</p>
+                        <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
+                            <Card class="badges-column">
+                                <CardBody>
+                                    @if (Model.CustomerProfile.IsVerified == 2)
+                                    {
+                                        <Tooltip Multiline=true Text="For uploading and completing all identification requirements.">
+                                            <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                                        </Tooltip>
+                                    }
+                                    @if (Model.CustomerProfile.IsOG == true)
+                                    {
+                                        <Tooltip Multiline=true Text="For being part of the alpha and beta testing.">
+                                            <img class="verified-logo" src="images/Badges/OG.svg" />
+                                        </Tooltip>
+                                    }
+                                    @if (Model.CustomerProfile.IsOfficial == true)
+                                    {
+                                        <Tooltip Multiline=true Text="Legitimate experience provider in the platform.">
+                                            <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
+                                        </Tooltip>
+                                    }
+                                    @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                    {
+                                        var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                        <Tooltip Multiline=true Text="@rare.Description">
+                                            <img class="verified-logo" src="@rare.ImgScr" />
+                                        </Tooltip>
+                                    }
+                                    @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                    {
+                                        var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
+                                        <Tooltip Multiline=true Text="@epic.Description">
+                                            <img class="verified-logo" src="@epic.ImgScr" />
+                                        </Tooltip>
+                                    }
+                                    @if (MakerCompletedStudent >= 100)
+                                    {
+                                        var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                                        <Tooltip Multiline=true Text="@legendary.Description">
+                                            <img class="verified-logo" src="@legendary.ImgScr" />
+                                        </Tooltip>
+                                    }
+                                </CardBody>
+                            </Card>
+                        </Div>
                         }
                     </Div>
                 </Column>
@@ -220,6 +271,8 @@
 
     public List<Activity> activities = new List<Activity>();
 
+    public List<BadgeList> badges = new List<BadgeList>();
+
     private Task OnSelectedTabChanged(string name)
     {
         selectedTab = name;
@@ -228,6 +281,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await FetchMakerBadges();
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
@@ -354,6 +408,8 @@
                     Title = a.Title,
                     IsSetSession = a.IsSetSession,
                     SessionName = a.SessionName,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
                     Images = a.Images.Select(i => {
                         return new ActivityImage {
                             Id = i.Id,
@@ -368,8 +424,12 @@
                             Id = s.Id,
                         };
                     }).ToList(),
-                    OngoingStudents = a.OngoingStudents,
-                    CompletedStudents = a.CompletedStudents
+                    Owner = a.Owner != null ? new CustomerProfile
+                    {
+                        // map only required fields
+                        Id = a.Owner.Id,
+                        Handler = a.Owner.Handler,
+                    } : null
                 };
             }).ToList();
         }
@@ -385,6 +445,8 @@
                 Id = profile.Id,
                 IsMaker = profile.IsMaker,
                 IsVerified = profile.IsVerified,
+                IsOG = profile.IsOG,
+                IsOfficial = profile.IsOfficial,
                 ProfilePath = profile.ProfileImg,
                 DateJoined = profile.DateJoined
             },
@@ -463,6 +525,27 @@
     private void NavigateToUploadId()
     {
         NavigationManager.NavigateTo("/uploadGovermentId/");
+    }
+    private async Task FetchMakerBadges()
+    {
+        //Get Badges
+        var badgeList = await dashboardApiHandler.GetAllBadge();
+        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
+        {
+            badges = badgeList.Result.Result.Select(b =>
+            {
+                return new BadgeList
+                    {
+                        Id = b.Id,
+                        Name = b.Name,
+                        Description = b.Description,
+                        NumberOfStudent = b.NumberOfStudent,
+                        NumberOfCompleted = b.NumberOfCompleted,
+                        NumberOfReviews = b.NumberOfReviews,
+                        ImgScr = b.ImgScr
+                    };
+            }).ToList();
+        }
     }
 }
 

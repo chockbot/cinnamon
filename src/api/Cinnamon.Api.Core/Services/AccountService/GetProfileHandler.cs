@@ -61,6 +61,8 @@ public class GetProfileHandler : IGetProfileHandler
                 DateJoined = profile.DateJoined,
                 ProfileImagePath = profile.ProfileImg,
                 IsVerified = profile.IsVerified,
+                IsOG = profile.IsOG,
+                IsOfficial = profile.IsOfficial,
                 Handler = profile.Handler,
                 TotalCredits = profile.TotalCredits
             }, "Successfully get profile");

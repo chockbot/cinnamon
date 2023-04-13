@@ -1,6 +1,7 @@
 ﻿@layout CreationLayout
 @page "/Creation"
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.Creation;
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -11,6 +12,7 @@
 @attribute [Authorize]
 
 <PageTitle>Create Experience | CinnamonPH</PageTitle>
+<SeoMeta Title="Create Experience" Subject="Create Experience" Url="/creation" />
 
 @if (Model != null)
 {
@@ -226,41 +228,8 @@
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
-        Task.Run(() => module.InvokeVoidAsync("confirmation"));
+            await Task.Run(() =>  module.InvokeVoidAsync("confirmation"));
     }
-
-    /*private void OnClickNext()
-    {
-    if (_viewModel.IsComplete)
-    {
-_viewModel.UserList = UserModel;
-var res = Task.Run(() => _viewModel.SaveActivity(_viewModel.activity)).Result;
-    if (res)
-    {
-    //Dashboard
-    ShowSuccessMessage = true;
-    Task.Run(()=>module.InvokeVoidAsync("OffBeforeUnload"));
-    HideMessageAfterDelay();
-    navigationManager.NavigateTo("maker/Dashboard");
-    }
-    else
-    {
-    ShowErrorMessage = true;
-    HideMessageAfterDelay();
-    }
-    }
-    else
-    {
-    _viewModel.NextStep();
-    }
-
-    if(!_viewModel.ExperienceSetupViewModel.IsValid)
-    {
-Task.Run(() => module.InvokeVoidAsync("onScrollUp"));
-}
-}
-*/
-
     private async Task OnNextClick(int index = 0)
     {
         // for submit action

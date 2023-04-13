@@ -16,6 +16,7 @@
 @attribute [Authorize]
 
 <PageTitle>Student Management | CinnamonPH</PageTitle>
+<SeoMeta Title="Student Management" Subject="Student Management" Url="/maker/dashboard/managestudents" />
 
 <section class="mt-5 maker-dashboard">
     <div class="header">
@@ -307,7 +308,7 @@
                             };
             //List DataGrid Content
             Model.manageStudents = query.ToList();
-            Model.FilteredStudents = Model.manageStudents;
+            Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
         }
         catch (Exception)
         {
@@ -343,14 +344,14 @@
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).ToList();
+            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
 
             activitySchedules = Model.activitySchedules.Where(a => a.ActivityId == activityId).ToList();
         }
     }
     private void TextSearchChanged(string search)
     {
-        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
     }
     private async void SaveChanges(int Id, int StudentNo)
     {
@@ -379,12 +380,12 @@
     {
         if (!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Name).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Name).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
             Model.IsSortNameAsc = false;
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Name).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Name).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
             Model.IsSortNameAsc = true;
         }
     }
@@ -392,12 +393,12 @@
     {
         if (!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Title).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Title).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
             Model.IsSortExperienceAsc = false;
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Title).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Title).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
             Model.IsSortExperienceAsc = true;
         }
     }

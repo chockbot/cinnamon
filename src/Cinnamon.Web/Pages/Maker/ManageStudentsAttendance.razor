@@ -5,6 +5,7 @@
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
 @using System.Globalization;
+@using Cinnamon.Web.Components.Pages;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler
@@ -13,6 +14,7 @@
 @inject IDashboardApiHandler dashboardApiHandler;
 
 <PageTitle>Manage Student Attendance | CinnamonPH</PageTitle>
+<SeoMeta Title="Manage Student Attendance" Subject="Manage Student Attendance" />
 
 @if(student!=null){
     <div class="header">

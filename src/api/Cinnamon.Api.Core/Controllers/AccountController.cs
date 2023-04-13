@@ -370,6 +370,8 @@ public class AccountController : ControllerBase
                     Birthdate = profile.Birthdate,
                     DateJoined = profile.DateJoined,
                     IsVerified = profile.IsVerified,
+                    IsOfficial = profile.IsOfficial,
+                    IsOG = profile.IsOG,
                     ProfileImg = profile.ProfileImagePath,
                     Handler = profile.Handler,
                     TotalCredits = profile.TotalCredits

@@ -4,6 +4,7 @@
 @using Cinnamon.Web.Components;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Models
+@using Cinnamon.Web.Components.Pages;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject ITransactionApiHandler transactionApiHandler;
@@ -11,6 +12,7 @@
 @inject IJSRuntime jsRuntime;
 
 <PageTitle>Payment Successful | CinnamonPH</PageTitle>
+<SeoMeta Title="Payment Successful" Subject="Payment Successful" Url="/purchase/order" />
 
 @if(Model != null)
 {
