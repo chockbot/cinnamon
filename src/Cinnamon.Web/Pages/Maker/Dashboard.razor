@@ -5,31 +5,34 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler;
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
+<PageTitle>Dashboard | CinnamonPH</PageTitle>
+<SeoMeta Title="Dashboard" Subject="Dashboard" Url="/maker/dashboard" />
+
 @if (Model != null)
 {
-<PageTitle>Dashboard | CinnamonPH</PageTitle>
-<div class="header">
-    <p class="title">Experiences</p>
-    <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
-</div>
-@foreach (var item in activities)
-{
-<div class="experience-container">
-    <div class="xp-content">
-            <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
-    <div class="xp-context">
-        <p class="xp-title">@item.Title</p>
-        <p class="xp-description">@item.Description</p>
-            <div class="xp-category">
-                    @if (item.ExperienceTypeId==1)
-                    {
-                        <img src="images/activity-summary/location.png">
+    <div class="header">
+        <p class="title">Experiences</p>
+        <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
+    </div>
+    @foreach (var item in activities)
+    {
+        <div class="experience-container">
+            <div class="xp-content">
+                <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
+                <div class="xp-context">
+                    <p class="xp-title">@item.Title</p>
+                    <p class="xp-description">@item.Description</p>
+                    <div class="xp-category">
+                        @if (item.ExperienceTypeId==1)
+                        {
+                            <img src="images/activity-summary/location.png">
                             <span>Face to Face</span>
                         }
                         else
