@@ -7,13 +7,28 @@ using Cinnamon.Api.Data.Repository;
 using Cinnamon.Api.Data.Extensions;
 using Newtonsoft.Json.Serialization;
 using Cinnamon.Api.Data.Repository.Interfaces;
+using Azure.Security.KeyVault.Secrets;
+using Microsoft.Extensions.Configuration;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 // entity framework
-var dbConnectionString = builder.Configuration.GetConnectionString("CinnamonDB");
+var keyVaultUri = builder.Configuration.GetSection("KeyVault:KeyVaultUri").Value;
+
+var tenantId = builder.Configuration.GetSection("AzureAd:TenantId").Value;
+var clientId = builder.Configuration.GetSection("AzureAd:ClientId").Value;
+var clientSecret = builder.Configuration.GetSection("AzureAd:ClientSecret").Value;
+
+var certCredential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+
+var client = new SecretClient(new Uri(keyVaultUri), certCredential);
+
+// setup from config file
+var dbConnectionString = client.GetSecret(builder.Configuration.GetSection("KeyVault:CinnamonDbConnectionString").Value).Value.Value;
+
 builder.Services.AddDbContext<ApplicationContext>(opts => opts.UseNpgsql(dbConnectionString), ServiceLifetime.Transient);
 
 // indentity framework
