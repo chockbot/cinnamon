@@ -12,6 +12,7 @@
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IDashboardApiHandler dashboardApiHandler;
 @using Blazorise.DataGrid
 @attribute [Authorize]
 
@@ -55,6 +56,11 @@
                         </TableHeaderCell>
                         <TableHeaderCell class="sessions-attended-header col-lg-2 col-md2">
                             <label class="sotring-column">
+                                Completion Date
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell class="sessions-attended-header col-lg-2 col-md2">
+                            <label class="sotring-column">
                                 Sessions Attended
                             </label>
                         </TableHeaderCell>
@@ -82,6 +88,11 @@
                     {
                         <TableRow>
                             <TableRowCell class="name-body">@item.Name</TableRowCell>
+                            @if(item.SessionsAttended >= item.NumberOfSessions)
+                            {
+                                var result = GetAttendance(item.Id, item.ActivityId);
+                                <TableRowCell class="name-body">@result</TableRowCell>
+                            }
                             <TableRowCell class="progress-body">
                                 <center>
                                     @if (item.SessionsAttended > item.NumberOfSessions)
@@ -201,6 +212,7 @@
     public Modal modalRef;
     public Modal modalRefViewSchedule;
     private List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     string token = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -416,6 +428,35 @@
                 Id = schedule.Id,
                 IsActiveSchedule = isChecked
             }, token);
+    }
+    private async Task<DateTime> GetAttendance(int Id, int ActivityId)
+    {
+
+        var attendance =  await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            {
+                StudentId = Id,
+                ActivityId = ActivityId
+            }, token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId
+                    };
+            }).ToList();
+        }
+        var result = studentAttendances.OrderBy(a => a.Date).LastOrDefault();
+
+        return result.Date;
     }
 
     private void ViewSchedule()
