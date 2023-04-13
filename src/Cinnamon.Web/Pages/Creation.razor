@@ -1,6 +1,7 @@
 ﻿@layout CreationLayout
 @page "/Creation"
 @using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.Creation;
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -11,6 +12,7 @@
 @attribute [Authorize]
 
 <PageTitle>Create Experience | CinnamonPH</PageTitle>
+<SeoMeta Title="Create Experience" Subject="Create Experience" Url="/creation" />
 
 @if (Model != null)
 {
