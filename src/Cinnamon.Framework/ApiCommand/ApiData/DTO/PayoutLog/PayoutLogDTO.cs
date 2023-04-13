@@ -8,4 +8,5 @@ public class PayoutLogDTO
     public decimal Amount {get; set;}
     public int Status {get; set;}
     public string Remarks {get; set;}
+    public string Payload {get; set;}
 }

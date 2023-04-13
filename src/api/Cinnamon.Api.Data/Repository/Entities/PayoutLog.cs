@@ -8,4 +8,5 @@ public class PayoutLog : BaseEntity
     // 0 = pending, 1 = succeed, 2 = failed
     public int Status {get; set;}
     public string Remarks {get; set;}
+    public string Payload {get; set;}
 }
