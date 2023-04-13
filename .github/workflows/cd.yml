@@ -25,13 +25,18 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      # substitute database connection string
+      # substitute api data environment variables
       - name: App Settings Variable Substitution
         uses: microsoft/variable-substitution@v1
         with:
           files: "src/api/Cinnamon.Api.Data/appsettings.json"
         env:
           ConnectionStrings.CinnamonDB: ${{ secrets.DEV_DB_CONNECTION }}
+          KeyVault.KeyVaultUri: ${{ secrets.DEV_KVAULT_URL }}
+          KeyVault.CinnamonDbConnectionString: ${{ secrets.DEV_KVAULT_DB }}
+          AzureAd.ClientId: ${{ secrets.SHARED_AZUREAD_CLIENTID }}
+          AzureAd.TenantId: ${{ secrets.SHARED_AZUREAD_TENANTID }}
+          AzureAd.ClientSecret: ${{ secrets.DEV_AZUREAD_SECRET }}
 
       # substitute api core environment variables
       - name: App Settings Variable Substitution for Api Core
