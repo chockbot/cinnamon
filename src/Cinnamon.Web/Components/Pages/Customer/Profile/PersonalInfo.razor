@@ -1,6 +1,7 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Account;
+@using Cinnamon.Web.Models.Entities;
 @inject IAccountApiHandler accountApiHandler;
 
 <article class="personal-info-wrapper p-3">
@@ -109,15 +110,15 @@
                         <p class="title mb-1">Kids Info</p>
                         <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Cancel</span>
                     </Div>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is12.OnMobile">
+                    <Div Margin="Margin.Is2">
                     <p class="details">
                         We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
                     </p>
-                    @for(int i = 0; i < localStateFamilyMembers.Count; i++)
+                    @for(int i = 0; i < localStateFamilyMembers.Count ; i++)
                     {
-                        <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
+                        <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
                     }
+                    </Div>
                     <Div Display="Display.Flex">
                         <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop" 
                             TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">Add</Button>
@@ -222,7 +223,7 @@
 
     private string birthDateLocalstate = string.Empty;
 
-    private IList<Models.Entities.FamilyMember> localStateFamilyMembers = new List<Models.Entities.FamilyMember>();
+    private IList<FamilyMember> localStateFamilyMembers = new List<FamilyMember>();
 
     private IList<int> RemovedIds = new List<int>();
 

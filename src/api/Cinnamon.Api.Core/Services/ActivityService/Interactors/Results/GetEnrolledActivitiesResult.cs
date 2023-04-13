@@ -68,7 +68,14 @@ public class GetEnrolledActivitiesResult
 
     public class CustomerOwner 
     {
-        public int Id {get; set;}
-        public string Handler {get; set;}
+        public int Id { get; set; }
+        public string Handler { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+        public string ImageSrc { get; set; }
+        public int IsVerified { get; set; }
+        public bool IsOG { get; set; }
+        public bool IsOfficial { get; set; }
     }
 }

@@ -23,6 +23,7 @@
     font-family: 'Nunito';
     font-size: 1vw;
 }
+
 .policy-style {
     font-family: 'Nunito';
 }
@@ -49,3 +50,43 @@
 .justify {
     text-align: justify;
 }
+
+.alpha-list-upper {
+    list-style-type: upper-alpha;
+}
+
+.alpha-list-lower {
+    list-style-type: lower-alpha;
+}
+
+.tbl-bordered, .tbl-bordered tr td {
+    border: 1px solid #000000
+}
+
+li + li {
+    margin-top: 15px;
+}
+
+.alpha-list-parentheses {
+    list-style-type: none;
+}
+
+    .alpha-list-parentheses li {
+        counter-increment: alpha-step-counter;
+    }
+
+        .alpha-list-parentheses li:before {
+            content: "(" counter(alpha-step-counter, lower-alpha) ") ";
+        }
+
+.numbered-list-parentheses {
+    list-style-type: none;
+}
+
+    .numbered-list-parentheses li {
+        counter-increment: numbered-step-counter;
+    }
+
+        .numbered-list-parentheses li:before {
+            content: "(" counter(numbered-step-counter) ") ";
+        }

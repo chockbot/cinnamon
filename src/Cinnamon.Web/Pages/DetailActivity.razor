@@ -42,8 +42,14 @@
                         }
                     </div>
                 </div>
+                @if (activity.Images.Count > 0)
+                {
+                    InitializeCarouselSwipe();
+                }
                 <div class="d-flex flex-row detail-sm mx-auto">
-                    <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
+                    <Div ElementId="#b-animate">
+                        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                        <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-indicators">
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -72,6 +78,8 @@
                             <span class="visually-hidden">Next</span>
                         </button>
                     </div>
+                        </Animate>
+                    </Div>
                 </div>
             </div>
             <div class="w-100 order-lg-first order-md-first order-sm-last">
@@ -388,6 +396,7 @@
     public ExperienceType                experience         = new ExperienceType();
     public List<Students>                enrolledStudents   = new List<Students>();
     public List<BadgeList>               badges             = new List<BadgeList>();
+    private IAnimation                   selectedAnimation  = Animations.FadeIn;
     private SchedulesModal               ModalSched { get; set; }
     public int                           OngoingStudents { get; set; }
     public int                           CompletedStudents { get; set; }
@@ -603,8 +612,12 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
+            await InitializeCarouselSwipe();
         }
+    }
+    private async Task InitializeCarouselSwipe()
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
     }
 
 }

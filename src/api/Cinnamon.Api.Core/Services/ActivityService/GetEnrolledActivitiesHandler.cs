@@ -145,7 +145,14 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                         }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivityImage>(),
                         Owner = e.Owner != null ? new GetEnrolledActivitiesResult.CustomerOwner {
                             Handler = e.Owner.Handler,
-                            Id = e.Owner.Id
+                            Id = e.Owner.Id,
+                            FirstName = e.Owner.FirstName,
+                            LastName = e.Owner.LastName,
+                            Email = e.Owner.Email,
+                            ImageSrc = e.Owner.ProfileImg ?? string.Empty,
+                            IsVerified = e.Owner.IsVerified,
+                            IsOG = e.Owner.IsOG,
+                            IsOfficial = e.Owner.IsOfficial,
                         } : null
                     };
                 })
