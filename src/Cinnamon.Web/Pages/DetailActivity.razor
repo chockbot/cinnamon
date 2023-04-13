@@ -42,10 +42,6 @@
                         }
                     </div>
                 </div>
-                @if (activity.Images.Count > 0)
-                {
-                    InitializeCarouselSwipe();
-                }
                 <div class="d-flex flex-row detail-sm mx-auto">
                     <Div ElementId="#b-animate">
                         <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
@@ -58,6 +54,7 @@
                         <div class="carousel-inner">
                             @if (activity.Images.Count > 0)
                             {
+                                InitializeCarouselSwipe();
                                 <div class="carousel-item active">
                                     <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(0).ImageSrc" />
                                 </div>
@@ -612,6 +609,10 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            await InitializeCarouselSwipe();
+        }
+        else
+        {
             await InitializeCarouselSwipe();
         }
     }
