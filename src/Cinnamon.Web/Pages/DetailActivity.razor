@@ -43,7 +43,7 @@
                 <div class="d-flex flex-row detail-sm mx-auto">
                     <Div ElementId="#b-animate">
                         <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                            <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
+                        <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-indicators">
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
                             <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -606,7 +606,7 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
+            await InitializeCarouselSwipe();
         }
     }
     private async Task InitializeCarouselSwipe()

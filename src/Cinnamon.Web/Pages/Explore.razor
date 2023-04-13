@@ -872,76 +872,71 @@
             if (popularActivityList.Result.Result.Count() > 0)
             {
                 var activityResult = popularActivityList.Result.Result.Select(r =>
-                       {
-                           return new Activity
-                               {
-                                   ActivityId = r.ActivityId,
-                                   ExperienceTypeId = r.ExperienceTypeId,
-                                   ExperienceType = r.ExperienceType,
-                                   ExperienceCategoryId = r.ExperienceCategoryId,
-                                   SubCategoryId = r.SubCategoryId,
-                                   ExperienceCategory = r.ExperienceCategory,
-                                   SubCategory = r.SubCategory,
-                                   Title = r.Title,
-                                   Description = r.Description,
-                                   Price = r.Price,
-                                   ScheduleIndicator = r.ScheduleIndicator,
-                                   Remarks = r.Remarks,
-                                   IsPublished = r.IsPublished,
-                                   Address1 = r.Address1,
-                                   Address2 = r.Address2,
-                                   District = r.District,
-                                   City = r.City,
-                                   CityName = r.CityName,
-                                   Subdivision = r.Subdivision,
-                                   Region = r.Region,
-                                   RegionName = r.RegionName,
-                                   Barangay = r.Barangay,
-                                   BarangayName = r.BarangayName,
-                                   PostalCode = r.PostalCode,
-                                   SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                                   CustomerBringWithThem = r.CustomerBringWithThem,
-                                   AdditionalRequirements = r.AdditionalRequirements,
-                                   ActivityLevel = r.ActivityLevel,
-                                   SkillLevel = r.SkillLevel,
-                                   MinimumAge = r.MinimumAge,
-                                   CanAdultsJoin = r.CanAdultsJoin,
-                                   CreatedBy = r.CreatedBy,
-                                   Handler = r.Handler,
-                                   IsNew = r.IsNew,
-                                   OngoingStudents = r.OngoingStudents,
-                                   CompletedStudents = r.CompletedStudents,
-                                   ActivitySchedules = r.ActivitySchedules.Select(e =>
+                {
+                return new Activity
                     {
-                                return new ActivitySchedule
-                                {
-                                    Id = e.Id,
-                                    Name = e.Name,
-                                    PerUnit1 = e.PerUnit1,
-                                    PerUnit2 = e.PerUnit2,
-                                    Price = e.Price,
-                                    PriceUnit1 = e.PriceUnit1,
-                                    PriceUnit2 = e.PriceUnit2,
-                                    UnitPrice = e.UnitPrice
-                                };
-                            }).ToList(),
-                                   Images = r.Images.Select(i =>
-{
-        return new ActivityImage
-        {
-            Id = i.Id,
-            ImageSrc = i.ImageSrc,
-            Name = i.Name
-        };
-    }).ToList(),
-                                   Owner = new CustomerProfile
-                                   {
-                                       IsVerified = r.Owner.IsVerified
-                                   }
-                               };
-                       }).ToList();
-
-                popularActivities = activityResult;
+                        ActivityId = r.ActivityId,
+                        ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceType = r.ExperienceType,
+                        ExperienceCategoryId = r.ExperienceCategoryId,
+                        SubCategoryId = r.SubCategoryId,
+                        ExperienceCategory = r.ExperienceCategory,
+                        SubCategory = r.SubCategory,
+                        Title = r.Title,
+                        Description = r.Description,
+                        Price = r.Price,
+                        ScheduleIndicator = r.ScheduleIndicator,
+                        Remarks = r.Remarks,
+                        IsPublished = r.IsPublished,
+                        Address1 = r.Address1,
+                        Address2 = r.Address2,
+                        District = r.District,
+                        City = r.City,
+                        CityName = r.CityName,
+                        Subdivision = r.Subdivision,
+                        Region = r.Region,
+                        RegionName = r.RegionName,
+                        Barangay = r.Barangay,
+                        BarangayName = r.BarangayName,
+                        PostalCode = r.PostalCode,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem = r.CustomerBringWithThem,
+                        AdditionalRequirements = r.AdditionalRequirements,
+                        ActivityLevel = r.ActivityLevel,
+                        SkillLevel = r.SkillLevel,
+                        MinimumAge = r.MinimumAge,
+                        CanAdultsJoin = r.CanAdultsJoin,
+                        CreatedBy = r.CreatedBy,
+                        Handler = r.Handler,
+                        IsNew = r.IsNew,
+                        OngoingStudents = r.OngoingStudents,
+                        CompletedStudents = r.CompletedStudents,
+                        ActivitySchedules = r.ActivitySchedules.Select(e =>{
+                        return new ActivitySchedule
+                        {
+                            Id = e.Id,
+                            Name = e.Name,
+                            PerUnit1 = e.PerUnit1,
+                            PerUnit2 = e.PerUnit2,
+                            Price = e.Price,
+                            PriceUnit1 = e.PriceUnit1,
+                            PriceUnit2 = e.PriceUnit2,
+                            UnitPrice = e.UnitPrice
+                        };
+                        }).ToList(),
+                        Images = r.Images.Select(i =>{
+                        return new ActivityImage
+                        {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };}).ToList(),
+                        Owner = new CustomerProfile
+                        {
+                            IsVerified = r.Owner.IsVerified
+                        }
+                };}).ToList();
+            popularActivities = activityResult;
             }
             else
             {
@@ -1024,13 +1019,6 @@
     {
         return clickButton ? "show" : "";
     }
-
-    private async Task OnFilterSelectedChanged(int[] ids)
-    {
-
-        //activity    = (await CoreDI.DataStore.Activities.GetActivitiesBySubCategoriesAsync(ids)).ToList();
-    }
-
     private void Logout()
     {
         NavigationManager.NavigateTo("/api/account/logout", true);
