@@ -89,7 +89,7 @@ builder.Services.AddQuartz(q => {
     q.AddTrigger(opts => opts
         .ForJob(activityGuidJobKey)
         .WithIdentity("UpdateActivityGuidHandler-trigger")
-        .WithSimpleSchedule(x => x.WithIntervalInSeconds(applicationConfig.Activity.RunPerHour).RepeatForever())
+        .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Activity.RunPerHour).RepeatForever())
     );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
