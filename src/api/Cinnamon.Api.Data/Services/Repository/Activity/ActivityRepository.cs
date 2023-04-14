@@ -369,7 +369,7 @@ public class ActivityRepository : IActivityRepository
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
                         (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
-                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? a.IsNew : a.ExperienceCategoryId == experienceCategoryId : true) &&
+                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? (DateTime.UtcNow - a.CreatedOn).Days <= 30 : a.ExperienceCategoryId == experienceCategoryId : true) &&
                         (isDeactivated.HasValue ? a.IsDeactivated == isDeactivated.Value : true);
 
 
@@ -393,12 +393,13 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
                     SubCategoryId        = a.SubCategoryId ?? 0,
                     CreatedBy            = a.CreatedBy,
+                    CreatedOn            = a.CreatedOn,
                     ExperienceTypeId     = a.ExperienceTypeId,
                     Handler              = a.Handler,
                     ExperienceType       = a.ExperienceType?.Name,
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
-                    IsNew                = a.IsNew,
+                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
                     IsSetSession         = a.IsSetSession,
                     SessionName          = a.SessionName,
                     IsDeactivated        = a.IsDeactivated
@@ -1110,24 +1111,24 @@ public class ActivityRepository : IActivityRepository
             {
                 var activityDTO = new ActivityDTO
                 {
-                    Id = a.Id,
-                    SubTitle = a.Subtitle,
-                    Title = a.Title,
-                    Description = a.Description,
-                    Price = a.Price,
-                    Remarks = a.Remarks,
-                    IsPublished = a.IsPublished,
+                    Id                   = a.Id,
+                    SubTitle             = a.Subtitle,
+                    Title                = a.Title,
+                    Description          = a.Description,
+                    Price                = a.Price,
+                    Remarks              = a.Remarks,
+                    IsPublished          = a.IsPublished,
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0,
-                    CreatedBy = a.CreatedBy,
-                    ExperienceTypeId = a.ExperienceTypeId,
-                    Handler = a.Handler,
-                    ExperienceType = a.ExperienceType?.Name,
-                    ExperienceCategory = a.ExperienceCategory?.Category,
-                    SubCategory = a.SubCategory?.SubCatergory,
-                    IsNew = a.IsNew,
-                    IsSetSession = a.IsSetSession,
-                    SessionName = a.SessionName
+                    SubCategoryId        = a.SubCategoryId ?? 0,
+                    CreatedBy            = a.CreatedBy,
+                    ExperienceTypeId     = a.ExperienceTypeId,
+                    Handler              = a.Handler,
+                    ExperienceType       = a.ExperienceType?.Name,
+                    ExperienceCategory   = a.ExperienceCategory?.Category,
+                    SubCategory          = a.SubCategory?.SubCatergory,
+                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsSetSession         = a.IsSetSession,
+                    SessionName          = a.SessionName
                 };
 
                 // address fields
