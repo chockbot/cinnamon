@@ -10,10 +10,12 @@ public class ManageStudentsModel
     public List<Activity> activities = new List<Activity>();
 
     public List<Students> students = new List<Students>();
+
     public List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
 
     public List<ManageStudentsData> manageStudents = new List<ManageStudentsData>();
 
+    public List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     public List<ManageStudentsData> FilteredStudents { get; set; } = new();
 
     public bool? IsSortNameAsc { get; set; }
