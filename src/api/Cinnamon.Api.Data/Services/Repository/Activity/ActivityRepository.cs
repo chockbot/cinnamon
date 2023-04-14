@@ -1253,4 +1253,42 @@ public class ActivityRepository : IActivityRepository
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured in getting activities");
         }
     }
+
+    public async Task<AppResult<bool>> UpdateActivityGuid()
+    {
+        try
+        {
+            bool isSuccess = false;
+
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            Expression<Func<Entities.Activity, bool>> filter = a => (true);
+
+            var result = await dataStore.Activity.FindActivitiesAsync(filter, string.Empty, int.MaxValue, 0, includes);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            if (result != null)
+            {
+                var activities = result.Result.ToList();
+
+                foreach (var item in activities)
+                {
+                    item.Guid = Guid.NewGuid().ToString();
+                }
+
+                await dataStore.Activity.UpdateRange(activities);
+
+                isSuccess = true;
+            }
+
+            return AppResult<bool>.CreateSucceeded(isSuccess, "Successfully updated activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured in updating activities");
+        }
+    }
 }

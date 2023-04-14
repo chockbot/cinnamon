@@ -22,6 +22,7 @@ public class Activity : BaseEntity
     public string SessionName { get; set; }
     public int PurchaseOrderCount { get; set; }
     public bool IsDeactivated { get; set; }
+    public string Guid { get; set; }
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
     public virtual SearchTags SearchTag {get; set;}

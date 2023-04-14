@@ -115,6 +115,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetPopularActivitiesHandler, Services.ActivityService.GetPopularActivitiesHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetRefundableExperienceHandler, Services.ActivityService.GetRefundableExperienceHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityScheduleHandler, Services.ActivityService.UpdateActivityScheduleHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityGuidHandler, Services.ActivityService.UpdateActivityGuidHandler>();
         
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

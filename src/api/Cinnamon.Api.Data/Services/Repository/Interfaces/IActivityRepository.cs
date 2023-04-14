@@ -36,4 +36,6 @@ public interface IActivityRepository
     Task<AppResult<ActivityDTO>> GetActivitieByCategoriesAsync(int experienceCategoryId, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
         bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false);
+
+    Task<AppResult<bool>> UpdateActivityGuid();
 }

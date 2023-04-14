@@ -279,4 +279,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new GetAllActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("Guid/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdatedActivityResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateActivityGuid([FromBody] UpdateActivity args)
+    {
+        try
+        {
+            var result = await activityRepository.UpdateActivityGuid();
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new UpdatedActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdatedActivityResult { IsSuccess = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdatedActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
