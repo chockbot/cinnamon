@@ -1,25 +1,25 @@
 ﻿@layout DashboardLayout
 @page "/maker/dashboard/managestudents"
-@using Cinnamon.Web.Models.Dashboard;
+@using Cinnamon.Web.Models.Dashboard
 @using System.Security.Claims
 @using System.Globalization
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
-@using Cinnamon.Web.Models.Entities;
-@using Cinnamon.Web.Models.Maker;
-@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.Maker
+@using Cinnamon.Web.Components.Pages
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
-@inject IDashboardApiHandler dashboardApiHandler;
+@inject IDashboardApiHandler dashboardApiHandler
 @using Blazorise.DataGrid
 @attribute [Authorize]
 
 <PageTitle>Student Management | CinnamonPH</PageTitle>
 <SeoMeta Title="Student Management" Subject="Student Management" Url="/maker/dashboard/managestudents" />
-
-<section class="mt-5 maker-dashboard">
+@if(Model != null){
+    <section class="mt-5 maker-dashboard">
     <div class="header">
 
         <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
@@ -88,11 +88,22 @@
                     {
                         <TableRow>
                             <TableRowCell class="name-body">@item.Name</TableRowCell>
-                            @if(item.SessionsAttended >= item.NumberOfSessions)
-                            {
-                                var result = GetAttendance(item.Id, item.ActivityId);
-                                <TableRowCell class="name-body">@result</TableRowCell>
-                            }
+                                <TableRowCell class="completion-date-body">
+                                    @if(item.SessionsAttended >= item.NumberOfSessions)
+                                    {
+                                        var result = Attendances.item.Where(s=> s.StudentId == item.Id && s.IsPresent == true).ToList();
+                                        var attendance = result.OrderBy(a => a.Date).LastOrDefault();
+                                        if (attendance != null)
+                                        {
+                                            @attendance.Date.ToString("MMMM dd, yyyy");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        string ongoing = "N/A";
+                                        @ongoing
+                                    }
+                                </TableRowCell>
                             <TableRowCell class="progress-body">
                                 <center>
                                     @if (item.SessionsAttended > item.NumberOfSessions)
@@ -191,7 +202,7 @@
         </ModalBody>
     </ModalContent>
 </Modal>
-
+}
 @if (Model.showErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
@@ -213,6 +224,7 @@
     public Modal modalRefViewSchedule;
     private List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    private GetAttendance Attendances = new GetAttendance();
     string token = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -321,6 +333,33 @@
             //List DataGrid Content
             Model.manageStudents = query.ToList();
             Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+            //Get Student Attendance 
+            foreach (var item in Model.FilteredStudents)
+            {
+                var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+                    {
+                        StudentId = item.Id,
+                        ActivityId = item.ActivityId
+                    }, token);
+                if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+                {
+                    studentAttendances = attendance.Result.Result.Select(a =>
+                    {
+                        return new StudentAttendance
+                            {
+                                Id = a.Id,
+                                Date = a.Date,
+                                IsPresent = a.IsPresent,
+                                ActivityId = a.ActivityId,
+                                NumberOfSessions = a.NumberOfSessions,
+                                SessionsAttended = a.SessionsAttended,
+                                ScheduleId = a.ScheduleId,
+                                StudentId = a.StudentId
+                            };
+                    }).ToList();
+                    Attendances.item.AddRange(studentAttendances);
+                }
+            }
         }
         catch (Exception)
         {
@@ -418,7 +457,6 @@
     {
         return (int)((sessionsAttended / numberSessions) * 100);
     }
-
     public async Task UpdateSchedule(ChangeEventArgs e, ActivitySchedule schedule)
     {
         bool isChecked = (bool)e.Value;
@@ -429,39 +467,13 @@
                 IsActiveSchedule = isChecked
             }, token);
     }
-    private async Task<DateTime> GetAttendance(int Id, int ActivityId)
-    {
-
-        var attendance =  await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-            {
-                StudentId = Id,
-                ActivityId = ActivityId
-            }, token);
-        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-        {
-            studentAttendances = attendance.Result.Result.Select(a =>
-            {
-                return new StudentAttendance
-                    {
-                        Id = a.Id,
-                        Date = a.Date,
-                        IsPresent = a.IsPresent,
-                        ActivityId = a.ActivityId,
-                        NumberOfSessions = a.NumberOfSessions,
-                        SessionsAttended = a.SessionsAttended,
-                        ScheduleId = a.ScheduleId,
-                        StudentId = a.StudentId
-                    };
-            }).ToList();
-        }
-        var result = studentAttendances.OrderBy(a => a.Date).LastOrDefault();
-
-        return result.Date;
-    }
-
     private void ViewSchedule()
     {
         modalRefViewSchedule.Show();
+    }
+    public class GetAttendance
+    {
+        public List<StudentAttendance> item = new List<StudentAttendance>();    
     }
 }
 
