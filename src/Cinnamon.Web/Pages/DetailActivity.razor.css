@@ -180,9 +180,70 @@ hr {
     height: 45px;
     margin-right: 3px;
 }
-.profile-container{
-    font-family:'Nunito';
+
+.maker-pic img{
+    height:70px;
+    width:70px;
 }
+
+
+.maker-profile-details,.maker-pic {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: stretch;
+}
+
+
+
+.profile-container {
+    font-family: 'Nunito';
+}
+
+.xp-by {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    color: #A6A6A6;
+}
+
+.maker-name {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    color: #343D4C;
+}
+
+.view-profile {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    text-decoration-line: underline;
+    color: #4285F4;
+}
+
+.profile-badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 .active-badge{
     display: flex;
     justify-content: start;
@@ -245,13 +306,23 @@ hr {
 .completed-enrolles {
     display: none;
 }
-.verified-logo{
-    margin-top:1.4rem;
-    width: 70%;
-    height: 2.8rem;
-    cursor: pointer;
-    margin-right: 1rem;
+.verified-logo {
+    width: 45px;
+    height: 45px;
+    margin-left: 10px;
+    margin-right: 10px;
 }
+
+
+.verified-logo:hover {
+    -webkit-animation: swing 1s ease;
+    animation: swing 1s ease;
+    -webkit-animation-iteration-count: 1;
+    animation-iteration-count: 1;
+}
+
+
+
 
 @-webkit-keyframes pulse {
     0% {
@@ -313,6 +384,98 @@ hr {
         box-shadow: 0 0 0 0 rgba(52,168,83, 0);
     }
 }
+
+
+
+
+
+
+
+
+
+
+@-webkit-keyframes swing {
+    15% {
+        -webkit-transform: translateY(5px);
+        transform: translateY(5px);
+    }
+
+    30% {
+        -webkit-transform: translateY(-5px);
+        transform: translateY(-5px);
+    }
+
+    50% {
+        -webkit-transform: translateY(3px);
+        transform: translateY(3px);
+    }
+
+    65% {
+        -webkit-transform: translateY(-3px);
+        transform: translateY(-3px);
+    }
+
+    80% {
+        -webkit-transform: translateY(2px);
+        transform: translateY(2px);
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+@keyframes swing {
+    15% {
+        -webkit-transform: translateY(5px);
+        transform: translateY(5px);
+    }
+
+    30% {
+        -webkit-transform: translateY(-5px);
+        transform: translateY(-5px);
+    }
+
+    50% {
+        -webkit-transform: translateY(3px);
+        transform: translateY(3px);
+    }
+
+    65% {
+        -webkit-transform: translateY(-3px);
+        transform: translateY(-3px);
+    }
+
+    80% {
+        -webkit-transform: translateY(2px);
+        transform: translateY(2px);
+    }
+
+    100% {
+        -webkit-transform: translateY(0);
+        transform: translateY(0);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @media (max-width: 767px) {
     .carousel-inner .carousel-item > div {
         display: none;
@@ -369,12 +532,19 @@ hr {
         margin-right: 0.5rem;
     }
 }
+
+
+
 .carousel-inner .carousel-item.active,
 .carousel-inner .carousel-item-next,
 .carousel-inner .carousel-item-prev {
     display: flex;
     gap:5px;
 }
+
+
+
+
 /* medium and up screens */
 @media (min-width: 768px) {
     .carousel-inner .carousel-item-end.active, .carousel-inner .carousel-item-next {
@@ -398,6 +568,8 @@ hr {
 .carousel-inner .carousel-item-start {
     transform: translateX(0);
 }
+
+
 
 .carousel-control-next,
 .carousel-control-prev /*, .carousel-indicators */ {
@@ -456,7 +628,71 @@ hr {
     .verified-logo {
         width: 60%;
     }
+
+
+    .maker-pic img {
+        height: 60px;
+        width: 60px;
+    }
+
+    .maker-profile-details, .maker-pic {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: stretch;
+    }
+
+
+
+    .profile-container {
+        font-family: 'Nunito';
+    }
+
+    .xp-by {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        color: #A6A6A6;
+    }
+
+    .maker-name {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        color: #343D4C;
+    }
+
+    .view-profile {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        text-decoration-line: underline;
+        color: #4285F4;
+    }
+
+    .profile-badges {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        flex-grow: 1;
+        justify-content: center;
+    }
+
+    .verified-logo {
+        width: 40px;
+        height: 40px;
+        margin-left: 5px;
+        margin-right: 5px;
+    }
+
 }
+
+
+
+
 
 @media screen and (min-width: 767px) {
     .detail-sm {
@@ -481,6 +717,7 @@ hr {
     .mapframe{
 
     }
+
 }
 
 

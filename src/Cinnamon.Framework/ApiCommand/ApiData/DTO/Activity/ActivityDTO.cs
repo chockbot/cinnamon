@@ -37,6 +37,7 @@ public class ActivityDTO
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
     public int CreatedBy { get; set; }
+    public DateTime CreatedOn { get; set; }
     public string MapDetails { get; set; }
     public string Handler {get; set;}
     public string ExperienceCategory { get; set; }

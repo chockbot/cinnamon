@@ -369,7 +369,7 @@ public class ActivityRepository : IActivityRepository
                         (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
                         (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
                         (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
-                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? a.IsNew : a.ExperienceCategoryId == experienceCategoryId : true) &&
+                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? (DateTime.UtcNow - a.CreatedOn).Days <= 30 : a.ExperienceCategoryId == experienceCategoryId : true) &&
                         (isDeactivated.HasValue ? a.IsDeactivated == isDeactivated.Value : true);
 
 
@@ -393,12 +393,13 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
                     SubCategoryId        = a.SubCategoryId ?? 0,
                     CreatedBy            = a.CreatedBy,
+                    CreatedOn            = a.CreatedOn,
                     ExperienceTypeId     = a.ExperienceTypeId,
                     Handler              = a.Handler,
                     ExperienceType       = a.ExperienceType?.Name,
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
-                    IsNew                = a.IsNew,
+                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
                     IsSetSession         = a.IsSetSession,
                     SessionName          = a.SessionName,
                     IsDeactivated        = a.IsDeactivated
@@ -1110,24 +1111,24 @@ public class ActivityRepository : IActivityRepository
             {
                 var activityDTO = new ActivityDTO
                 {
-                    Id = a.Id,
-                    SubTitle = a.Subtitle,
-                    Title = a.Title,
-                    Description = a.Description,
-                    Price = a.Price,
-                    Remarks = a.Remarks,
-                    IsPublished = a.IsPublished,
+                    Id                   = a.Id,
+                    SubTitle             = a.Subtitle,
+                    Title                = a.Title,
+                    Description          = a.Description,
+                    Price                = a.Price,
+                    Remarks              = a.Remarks,
+                    IsPublished          = a.IsPublished,
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0,
-                    CreatedBy = a.CreatedBy,
-                    ExperienceTypeId = a.ExperienceTypeId,
-                    Handler = a.Handler,
-                    ExperienceType = a.ExperienceType?.Name,
-                    ExperienceCategory = a.ExperienceCategory?.Category,
-                    SubCategory = a.SubCategory?.SubCatergory,
-                    IsNew = a.IsNew,
-                    IsSetSession = a.IsSetSession,
-                    SessionName = a.SessionName
+                    SubCategoryId        = a.SubCategoryId ?? 0,
+                    CreatedBy            = a.CreatedBy,
+                    ExperienceTypeId     = a.ExperienceTypeId,
+                    Handler              = a.Handler,
+                    ExperienceType       = a.ExperienceType?.Name,
+                    ExperienceCategory   = a.ExperienceCategory?.Category,
+                    SubCategory          = a.SubCategory?.SubCatergory,
+                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsSetSession         = a.IsSetSession,
+                    SessionName          = a.SessionName
                 };
 
                 // address fields
@@ -1250,6 +1251,44 @@ public class ActivityRepository : IActivityRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured in getting activities");
+        }
+    }
+
+    public async Task<AppResult<bool>> UpdateActivityGuid()
+    {
+        try
+        {
+            bool isSuccess = false;
+
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            Expression<Func<Entities.Activity, bool>> filter = a => (true);
+
+            var result = await dataStore.Activity.FindActivitiesAsync(filter, string.Empty, int.MaxValue, 0, includes);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            if (result != null)
+            {
+                var activities = result.Result.ToList();
+
+                foreach (var item in activities)
+                {
+                    item.Guid = Guid.NewGuid().ToString();
+                }
+
+                await dataStore.Activity.UpdateRange(activities);
+
+                isSuccess = true;
+            }
+
+            return AppResult<bool>.CreateSucceeded(isSuccess, "Successfully updated activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured in updating activities");
         }
     }
 }

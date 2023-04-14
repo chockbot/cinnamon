@@ -82,6 +82,15 @@ builder.Services.AddQuartz(q => {
             .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Disbursement.RunPerHour).RepeatForever())
         );
     }
+
+    var activityGuidJobKey = new JobKey("UpdateActivityGuidHandler");
+    q.AddJob<UpdateActivityGuidJob>(opts => opts.WithIdentity(activityGuidJobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(activityGuidJobKey)
+        .WithIdentity("UpdateActivityGuidHandler-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Activity.RunPerHour).RepeatForever())
+    );
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
