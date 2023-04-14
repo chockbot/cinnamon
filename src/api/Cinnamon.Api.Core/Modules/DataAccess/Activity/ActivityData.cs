@@ -183,4 +183,25 @@ public class ActivityData: IActivityData
             return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
         }
     }
+
+    public async Task<AppResult<UpdatedActivityResult>> UpdateActivityGuid(UpdateActivity args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Activity/Guid/Update")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<UpdatedActivityResult>();
+
+            return AppResult<UpdatedActivityResult>.CreateSucceeded(result, "Successfully updated activity guids");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdatedActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdatedActivityResult>.CreateFailed(ex, "An error occured when updating activity guids");
+        }
+    }
 }
