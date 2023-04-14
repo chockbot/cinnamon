@@ -1,0 +1,281 @@
+﻿@layout DashboardLayout
+@page "/maker/dashboard/badges"
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@using System.Security.Claims;
+@inject IJSRuntime jsRuntime;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAccountApiHandler accountApiHandler
+
+<PageTitle>Badges | CinnamonPH</PageTitle>
+<SeoMeta Title="Badges" Subject="Badges" Url="/maker/dashboard/badges" />
+
+<div class="container container-fluid badges-main-section">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-2 col-md-2 col-sm-2 col-4 text-center">
+            <img src="@imagePath" class="img-profile" />
+        </div>
+        <div class="col-lg-10 col-md-10 col-sm-10 col-8">
+            <div class="greeting-section">
+                <p class="title-primary">Hi, @firstName @lastName</p>
+                <p class="title-secondary">Welcome to your badges page, see your achievements and journey here as a Cinnamon maker.</p>
+            </div>
+            <div class="journey-section">
+            </div>
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center progress-bar-section">
+        <div class="col-lg-2 col-md-2 col-sm col">
+        </div>
+        <div class="col-lg-10 col-md-10 col-sm-12 col-12">
+            <div class="row journey-card-section">
+                <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card verified-label">
+                        Verified
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card rare-label">
+                        Rare
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card epic-label">
+                        Epic
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card legendary-label">
+                        Legendary
+                    </div>
+                </div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 66%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/VERIFIED.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Verified</p>
+                            <p class="title-badge-secondary">Completed all identification requirements</p>
+                            <p class="mini-details">Obtained 03-21-2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/IDEA GENERATOR.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Idea Generator</p>
+                            <p class="title-badge-secondary">Sent 5 feedbacks or suggestions</p>
+                            <p class="mini-details">0/5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/HIGH DEMAND.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Rising Star</p>
+                            <p class="title-badge-secondary">100 enrollees to his/her experiences</p>
+                            <p class="mini-details">25/100</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/OG.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">OG</p>
+                            <p class="title-badge-secondary">For being part of the alpha and beta testing</p>
+                            <p class="mini-details">Obtained 03-21-2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/FAVORITE PARTNER.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Favorite Partner</p>
+                            <p class="title-badge-secondary">5 students enrolled more than once</p>
+                            <p class="mini-details">1/5</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/OFFICIAL PARTNER.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Official Partner</p>
+                            <p class="title-badge-secondary">Legitimate experience provider in the platform</p>
+                            <p class="mini-details">Obtained 03-21-2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/VIRAL PROFILE.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Viral Profile</p>
+                            <p class="title-badge-secondary">One of the most visited profile in the platform</p>
+                            <p class="mini-details">Obtained 03-21-2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/RARE.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Rare Cinnamon Maker</p>
+                            <p class="title-badge-secondary">Completed 10 students</p>
+                            <p class="mini-details">1/10</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/EPIC.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Epic Cinnamon Maker</p>
+                            <p class="title-badge-secondary">Completed 25 & receive 10 reviews</p>
+                            <p class="mini-details">2/35</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/LEGENDARY.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Legendary Cinnamon Maker</p>
+                            <p class="title-badge-secondary">Completed 100 students & receive 25 reviews</p>
+                            <p class="mini-details">2/125</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+        </div>
+    </div>
+</div>
+
+@code {
+    private string firstName = string.Empty;
+    private string lastName = string.Empty;
+    private string imagePath = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+
+        var profile = result.Result.Result;
+
+        firstName = profile.FirstName;
+        lastName = profile.LastName;
+        imagePath = profile.ProfileImg;
+    }
+}
