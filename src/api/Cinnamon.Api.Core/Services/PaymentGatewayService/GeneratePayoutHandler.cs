@@ -121,7 +121,7 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                 var log = payoutLogres.Result.Result;
 
                 // generate ids with 15 characters
-                var referenceId = "999000000000000".Substring(log.Id.ToString().Length) + log.Id;
+                var referenceId = "000000000000000".Substring(log.Id.ToString().Length) + log.Id;
                 var payoutRequest = new PayoutArgs {
                     amount = summary.TotalAmount,
                     channel_code = summary.BankChannel,

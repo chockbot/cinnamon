@@ -42,7 +42,7 @@ public class GetCurrentDateAttendanceHandler : IGetCurrentDateAttendanceHandler
             }
 
             return AppResult<GetCurrentDateAttendanceResult>.CreateSucceeded(new GetCurrentDateAttendanceResult {
-                StudentAttendaces = result.Result.StudentAttendaces.Select(s => {
+                StudentAttendaces = result.Result.StudentAttendaces.Where(s => s.SessionsAttended < s.NumberOfSessions).Select(s => {
                     return new GetCurrentDateAttendanceResult.StudentAttendace {
                         ActivityDescription = s.ActivityDescription,
                         ActivityId = s.ActivityId,

@@ -136,7 +136,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                     };
                 }),
                 PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
-                ReferenceNumber = referenceId
+                ReferenceNumber = referenceId,
+                MakerEmail = $"{activity.Owner?.Email}"
             });
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
@@ -157,7 +158,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                     };
                 }),
                 PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
-                ReferenceNumber = referenceId
+                ReferenceNumber = referenceId,
+                PayerEmail = customer.Email
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {

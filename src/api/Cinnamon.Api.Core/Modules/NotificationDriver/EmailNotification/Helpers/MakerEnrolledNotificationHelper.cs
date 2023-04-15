@@ -7,7 +7,8 @@ public class MakerEnrolledNotificationHelper
 {
     public string GetTemplate(string makerName, string experienceName,
         DateTime purchaseDate, string payerName, decimal amount, string host, 
-        IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod)
+        IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
+        string payerEmail)
     {
         string imgSrc = host.AppendPathSegment("images/cinnamon-logo.png");
         string enrolleesString = string.Empty;
@@ -93,6 +94,12 @@ public class MakerEnrolledNotificationHelper
                         <span style='color: #717171'>Payment Method: </span>
                         <span style='color: #000'
                             ><u style='text-transform: uppercase'>{paymentMethod}</u></span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Contact Info: </span>
+                        <span style='color: #000'
+                            ><u style='text-transform: uppercase'>{payerEmail.ToLower()}</u></span
                         >
                         </p>
                         <br>
