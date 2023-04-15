@@ -13,5 +13,7 @@ public class CreatePayoutLogArgs
     [Required]
     public int Status {get; set;}
     [Required]
-    public string Remarks {get; set;}   
+    public string Remarks {get; set;}
+    [Required]
+    public string Payload {get; set;}
 }

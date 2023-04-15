@@ -159,4 +159,26 @@ public class PurchaseOrderController : ControllerBase
             return new JsonResult(new GetAllPurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("UpdatePurchaseOrdersStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdatePurchaseOrdersStatusResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdatePurchaseOrdersStatus([FromBody] UpdatePurchaseOrdersStatusArgs args)
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.UpdatePurchaseOrdersStatus(args.Ids, args.Status);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdatePurchaseOrdersStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdatePurchaseOrdersStatusResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdatePurchaseOrdersStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

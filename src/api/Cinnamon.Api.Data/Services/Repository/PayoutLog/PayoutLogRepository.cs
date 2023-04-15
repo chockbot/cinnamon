@@ -15,7 +15,8 @@ public class PayoutLogRepository : IPayoutLogRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<PayoutLogDTO>> Create(int purchaseOrderId, int customerId, decimal amount, int status, string remarks)
+    public async Task<AppResult<PayoutLogDTO>> Create(int purchaseOrderId, int customerId, 
+        decimal amount, int status, string remarks, string payload)
     {
         try
         {
@@ -24,7 +25,8 @@ public class PayoutLogRepository : IPayoutLogRepository
                 CustomerId = customerId,
                 PurchaseOrderId = purchaseOrderId,
                 Remarks = remarks,
-                Status = status
+                Status = status,
+                Payload = payload
             };
 
             var result = await dataStore.PayoutLog.Add(entity);
@@ -40,7 +42,8 @@ public class PayoutLogRepository : IPayoutLogRepository
                 Id = created.Id,
                 PurchaseOrderId = created.PurchaseOrderId,
                 Remarks = created.Remarks,
-                Status = created.Status
+                Status = created.Status,
+                Payload = created.Payload
             }, "Successully create payout log");
         }
         catch (Exception ex)
@@ -66,7 +69,8 @@ public class PayoutLogRepository : IPayoutLogRepository
                     Id = p.Id,
                     PurchaseOrderId = p.PurchaseOrderId,
                     Remarks = p.Remarks,
-                    Status = p.Status
+                    Status = p.Status,
+                    Payload = p.Payload
                 };
              }), "Successfully get payout logs");
         }
@@ -93,7 +97,8 @@ public class PayoutLogRepository : IPayoutLogRepository
                     Id = p.Id,
                     PurchaseOrderId = p.PurchaseOrderId,
                     Remarks = p.Remarks,
-                    Status = p.Status
+                    Status = p.Status,
+                    Payload = p.Payload
                 };
              }), "Successfully get payout logs");
         }
@@ -120,7 +125,8 @@ public class PayoutLogRepository : IPayoutLogRepository
                 Id = payoutLog.Id,
                 PurchaseOrderId = payoutLog.PurchaseOrderId,
                 Remarks = payoutLog.Remarks,
-                Status = payoutLog.Status
+                Status = payoutLog.Status,
+                Payload = payoutLog.Payload
             }, "Successfully get payout log by id");
         }
         catch (Exception ex)
@@ -156,7 +162,8 @@ public class PayoutLogRepository : IPayoutLogRepository
                 Id = updated.Id,
                 PurchaseOrderId = updated.PurchaseOrderId,
                 Remarks = updated.Remarks,
-                Status = updated.Status
+                Status = updated.Status,
+                Payload = updated.Payload
             }, "Successfully update payout log");
         }
         catch (Exception ex)

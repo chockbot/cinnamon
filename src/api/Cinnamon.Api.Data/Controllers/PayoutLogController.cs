@@ -93,7 +93,8 @@ public class PayoutLogController : ControllerBase
     {
         try
         {
-            var result = await payoutLogRepository.Create(args.PurchaseOrderId, args.CustomerId, args.Amount, args.Status, args.Remarks);
+            var result = await payoutLogRepository.Create(args.PurchaseOrderId, args.CustomerId, 
+                args.Amount, args.Status, args.Remarks, args.Payload);
 
             if (!result.Succeeded || result.Result == null)
             {

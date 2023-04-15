@@ -339,4 +339,34 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting purchase order");
         }
     }
+
+    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> UpdatePurchaseOrdersStatus(IEnumerable<int> ids, int status)
+    {
+        try
+        {
+            var entities = ids.Select(i => {
+                return new Entities.PurchaseOrder {
+                    Id = i,
+                    Status = status
+                };
+            });
+
+            var updateStatusResult = await dataStore.PurchaseOrder.UpdatePurchaseOrdersByStatus(entities);
+            if(!updateStatusResult.Succeeded || updateStatusResult.Result == null)
+            {
+                return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(new ApplicationException(updateStatusResult.Message), updateStatusResult.Message);
+            }
+
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateSucceeded(updateStatusResult.Result.Select(p => {
+                return new PurchaseOrderDTO {
+                    Id = p.Id,
+                    Status = p.Status
+                };
+            }), "Successfully update purchase orders");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when updating purchase orders");
+        }
+    }
 }

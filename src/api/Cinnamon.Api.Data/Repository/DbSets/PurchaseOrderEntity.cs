@@ -40,4 +40,27 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
             return AppResult<IEnumerable<PurchaseOrder>>.CreateFailed(ex, "An error occured when trying to get purchase orders need to payout");
         }
     }
+
+    public async Task<AppResult<IEnumerable<PurchaseOrder>>> UpdatePurchaseOrdersByStatus(IEnumerable<PurchaseOrder> purchaseOrders)
+    {
+        try
+        {
+            foreach(var order in purchaseOrders)
+            {
+                var entity = await applicationContext.PurchaseOrders.FindAsync(order.Id);
+                if(entity != null)
+                {
+                    entity.Status = order.Status;
+                }
+            }
+
+            await applicationContext.SaveChangesAsync();
+
+            return AppResult<IEnumerable<PurchaseOrder>>.CreateSucceeded(purchaseOrders, "Successfully update purchase orders");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PurchaseOrder>>.CreateFailed(ex, "An error occured when trying to update purchase orders");
+        }
+    }
 }
