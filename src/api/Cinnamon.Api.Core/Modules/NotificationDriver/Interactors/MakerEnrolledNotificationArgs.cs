@@ -13,6 +13,7 @@ public class MakerEnrolledNotificationArgs : IInteractor
     public IEnumerable<IncludedStudents> Students {get; set;}
     public string PaymentMethod {get; set;}
     public string ReferenceNumber {get; set;}
+    public string PayerEmail {get; set;}
 
     public class IncludedStudents
     {

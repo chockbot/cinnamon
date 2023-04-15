@@ -138,6 +138,10 @@
                     }
                 </TableBody>
             </Table>
+            @if(IsHaveCheckedSchedule && Model.FilteredAttendance.Count == 0)
+            {
+                <p>Nothing follows</p>
+            }
         </div>
     </div>
 </section>
@@ -456,5 +460,13 @@
             Id = schedule.ScheduleId,
             IsActiveSchedule = isChecked
         }, Model.Token);
+    }
+
+    private bool IsHaveCheckedSchedule
+    {
+        get
+        {
+            return Model.Schedules.Any(s => s.IsSelected);
+        }
     }
 }
