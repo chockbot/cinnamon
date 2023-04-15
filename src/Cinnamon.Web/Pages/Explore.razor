@@ -754,7 +754,6 @@
                        {
                            return new Activity
                                {
-                                   Guid = Guid.NewGuid(),
                                    ActivityId = r.ActivityId,
                                    ExperienceTypeId = r.ExperienceTypeId,
                                    ExperienceType = r.ExperienceType,
@@ -819,7 +818,7 @@
                                        IsVerified = r.Owner.IsVerified
                                    }
                                };
-                       }).OrderBy(a => a.Guid).ToList();
+                       }).ToList();
 
                 if (isFromScroll)
                 {

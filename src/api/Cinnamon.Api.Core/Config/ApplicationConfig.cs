@@ -9,4 +9,5 @@ public class ApplicationConfig
     public EmailService EmailService {get; set;}
     public FailedLogin FailedLogin {get; set;}
     public Payment Payment {get; set;}
+    public Activity Activity { get; set; }
 }

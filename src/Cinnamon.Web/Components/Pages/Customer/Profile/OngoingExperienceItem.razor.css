@@ -13,6 +13,9 @@
     background: #F3F6FC;
     border-radius: 10px;
     padding: 14px;
+
+    width: 380px;
+
 }
 
 .image-header {
@@ -21,10 +24,15 @@
     border-radius: 5px;
 }
 
-.experience-content {
+/*.experience-content {
     border-radius: 0px 0px 10px 10px;
     padding: 0px 0px 0px 9px;
+}*/
+.top-content {
+    display: flex;
+    justify-content: space-between;
 }
+
 
 
 .xp-title {
@@ -39,6 +47,8 @@
 .xp-body-item {
     display: flex;
     gap: 50px;
+
+    margin-top:7px;
 }
 
     .xp-body-item.student-name {
@@ -67,6 +77,10 @@
         line-height: 22px;
         color: #717171;
     }
+
+.view-button{
+    margin-top:10px;
+}
 
 .progress {
     width: 181px;
@@ -404,9 +418,12 @@ section {
     font-style: normal;
     font-weight: 400;
     font-size: 16px;
-    line-height: 22px;
     color: #717171;
+
+    margin:0px !important;
 }
+
+
 
 .pulse {
     width: 20px;
@@ -831,6 +848,9 @@ section {
 
 /* Small devices (landscape phones, 576px and up) */
 @media screen and (max-width: 767px) {
+
+
+
     .header {
         display: flex;
         color: var(--primary);
@@ -1104,7 +1124,7 @@ section {
 
     .experience-box {
         display: block;
-        width: 340px;
+        width: 100%;
         margin:auto;
     }
 
@@ -1232,7 +1252,9 @@ section {
         width: 110px;
         height: 145px;
     }
-
+    .experience-box {
+        width: 380px;
+    }
     .xp-title {
         font-family: 'Nunito';
         font-style: normal;
