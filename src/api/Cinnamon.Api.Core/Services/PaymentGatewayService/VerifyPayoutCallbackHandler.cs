@@ -1,5 +1,6 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Handlers;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
@@ -12,13 +13,15 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
     private readonly IPayoutLogData payoutLogData;
     private readonly IPurchaseOrderData purchaseOrderData;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IJsonSerializationProvider jsonSerializationProvider;
 
     public VerifyPayoutCallbackHandler(IPayoutLogData payoutLogData, IPurchaseOrderData purchaseOrderData,
-        ApplicationConfig applicationConfig)
+        ApplicationConfig applicationConfig, IJsonSerializationProvider jsonSerializationProvider)
     {
         this.payoutLogData = payoutLogData;
         this.purchaseOrderData = purchaseOrderData;
         this.applicationConfig = applicationConfig;
+        this.jsonSerializationProvider = jsonSerializationProvider;
     }
 
     public AppResult<VerifyPayoutCallbackResult> Execute(VerifyPayoutCallbackArgs args)
@@ -58,18 +61,18 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
             var payoutLog = getPayoutLogRes.Result.Result;
 
             // get purchase order data
-            var getPurchaseOrderRes = await purchaseOrderData.GetPurchaseOrderById(getPayoutLogRes.Result.Result.PurchaseOrderId);
-            if(!getPurchaseOrderRes.Succeeded || getPurchaseOrderRes.Result == null || !getPurchaseOrderRes.Result.IsSuccess)
-            {
-                return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
-            }
-            var transaction = getPurchaseOrderRes.Result.Result;
+            // var getPurchaseOrderRes = await purchaseOrderData.GetPurchaseOrderById(getPayoutLogRes.Result.Result.PurchaseOrderId);
+            // if(!getPurchaseOrderRes.Succeeded || getPurchaseOrderRes.Result == null || !getPurchaseOrderRes.Result.IsSuccess)
+            // {
+            //     return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
+            // }
+            // var transaction = getPurchaseOrderRes.Result.Result;
 
-            // can only update if transaction status is succeed
-            if(transaction.Status != 1)
-            {
-                return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
-            }
+            // // can only update if transaction status is succeed
+            // if(transaction.Status != 1)
+            // {
+            //     return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
+            // }
 
             int status = args.Status switch 
             {
@@ -96,12 +99,14 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
                 return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
             }
 
+            var deserializedPayload = jsonSerializationProvider.Deserialize<PayloadData>(updatePayoutLog.Result.Result.Payload);
+
             // update only purchase order if callback status = 1
-            if(status == 1)
+            if(status == 1 && deserializedPayload != null)
             {
-                var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrderArgs {
-                    Status = 5,
-                    PurchaseOrderId = transaction.Id
+                var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrdersStatus(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrdersStatusArgs {
+                    Ids = deserializedPayload.PurchaseOrderIds,
+                    Status = 5
                 });
                 if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
                 {
@@ -116,4 +121,9 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
             return AppResult<VerifyPayoutCallbackResult>.CreateFailed(ex, "An error occured in VerifyPayoutCallbackHandler");
         }
     }
-}
+
+    class PayloadData 
+    {
+        public IEnumerable<int> PurchaseOrderIds {get; set;}
+    }
+}   
