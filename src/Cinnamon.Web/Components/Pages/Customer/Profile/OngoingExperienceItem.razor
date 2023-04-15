@@ -14,8 +14,8 @@
 @foreach (var item in students)
 {
     <div class="experience-box">
-        <div class="row">
-            <div class="experience-content col-xl-8 col-lg-8 col-md-8 col-sm-7 col-7">
+        <div class="top-content">
+            <div class="experience-content">
                 <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
                     <label class="xp-title">@Activity.Title</label>
                 </a>
@@ -40,14 +40,14 @@
                     </div>
                 }
             </div>
-            <div class="experience-header col-xl-4 col-lg-4 col-md-5 col-sm-5 justify-content-start col-4 justify-content-start">
+            <div class="experience-header">
                 <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
                     <img class="image-header" src="@GetImage()" />
                 </a>
             </div>
         </div>
-            <div class="xp-body-item">
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" Style="width: 352px;height: 40px;background: #FFA942;border-radius: 10px;">
+            <div class="view-button">
+                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
                     View
                 </Button>
             </div>
