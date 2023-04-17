@@ -10,6 +10,7 @@ public class Students
     public string StudentNo { get; set; }
     public int NumberOfSessions { get; set; }
     public int SessionsAttended { get; set; }
+    public int NumberOfBacktracking { get; set; }
     public string Remarks { get; set; }
     public string Status { get; set; }
     public DateTime ExpirationDateStart { get; set; }

@@ -51,6 +51,7 @@ public class GetOngoingActivityByIdHandler: IGetOngoingActivityByIdHandler
                 Remarks = result.Result.Result.Remarks,
                 ScheduleId = result.Result.Result.ScheduleId,
                 SessionsAttended = result.Result.Result.SessionsAttended,
+                NumberOfBacktracking = result.Result.Result.NumberOfBackTracking,
                 Status = result.Result.Result.Status,
                 StudentNo = result.Result.Result.StudentNo,
                 ExpirationStartDate= result.Result.Result.ExpirationStartDate,

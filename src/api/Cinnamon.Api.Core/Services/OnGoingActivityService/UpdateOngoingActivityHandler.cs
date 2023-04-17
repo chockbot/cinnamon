@@ -37,6 +37,7 @@ public class UpdateOngoingActivityHandler: IUpdateOngoingActivityHadler
                 Remarks = args.Remarks,
                 Name = args.Name,
                 NumberOfSessions = args.NumberOfSessions,
+                NumberOfBacktracking = args.NumberOfBacktracking,
                 Status = args.Status,
                 StudentNo = args.StudentNo,
                 StudentId = args.Id,

@@ -4,6 +4,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.Student;
 
@@ -17,20 +18,24 @@ public class StudentRepository: IStudentRepository
     }
 
     public async Task<AppResult<StudentDTO>> Create(int customerId, int familyMemberId, int activityId, int scheduleId, 
-        string name, string studentNo, int numberOfSessions, int sessionsAttended, DateTime ExpirationStartDate, DateTime ExpirationEndDate, 
+        string name, string studentNo, int numberOfSessions, int sessionsAttended, int numberOfBacktracking, DateTime ExpirationStartDate, DateTime ExpirationEndDate, 
         int ongoingActivityId, string remarks = "", string status = "ACTIVE")
     {
         try
         {
+            ExpirationStartDate = ExpirationStartDate.SetKindUtc();
+            ExpirationEndDate = ExpirationEndDate.SetKindUtc();
+            
             var student = new Entities.Student {
-                ActivityId = activityId,
                 CustomerId = customerId,
                 FamilyMemberId = familyMemberId,
+                ActivityId = activityId,
                 ScheduleId = scheduleId,
                 Name = name,
                 StudentNo = studentNo,
                 NumberOfSessions = numberOfSessions,
                 SessionsAttended = sessionsAttended,
+                NumberOfBacktracking = numberOfBacktracking,
                 Remarks = remarks,
                 Status = status,
                 ExpirationDateStart = ExpirationStartDate,
@@ -54,6 +59,7 @@ public class StudentRepository: IStudentRepository
                 Remarks = newStudent.Remarks,
                 ScheduleId = newStudent.ScheduleId,
                 SessionsAttended = newStudent.SessionsAttended,
+                NumberOfBackTracking = newStudent.NumberOfBacktracking,
                 Status = newStudent.Status,
                 StudentNo = newStudent.StudentNo,
                 ExpirationStartDate = newStudent.ExpirationDateStart,
@@ -88,6 +94,7 @@ public class StudentRepository: IStudentRepository
                     Id = s.Id,
                     Name = s.Name,
                     NumberOfSessions = s.NumberOfSessions,
+                    NumberOfBackTracking = s.NumberOfBacktracking,
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     SessionsAttended = s.SessionsAttended,
@@ -128,6 +135,7 @@ public class StudentRepository: IStudentRepository
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     SessionsAttended = s.SessionsAttended,
+                    NumberOfBackTracking = s.NumberOfBacktracking,
                     Status = s.Status,
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
@@ -165,6 +173,7 @@ public class StudentRepository: IStudentRepository
                 Remarks = student.Remarks,
                 ScheduleId = student.ScheduleId,
                 SessionsAttended = student.SessionsAttended,
+                NumberOfBackTracking = student.NumberOfBacktracking,
                 Status = student.Status,
                 StudentNo = student.StudentNo,
                 ExpirationStartDate = student.ExpirationDateStart,
@@ -180,7 +189,7 @@ public class StudentRepository: IStudentRepository
     }
 
     public async Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
-        int? sessionsAttended, string? remarks, string? status, DateTime? ExpirationStartDate, DateTime? ExpirationEndDate)
+        int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? ExpirationStartDate, DateTime? ExpirationEndDate)
     {
         try
         {
@@ -195,6 +204,7 @@ public class StudentRepository: IStudentRepository
             student.StudentNo = studentNo ?? student.StudentNo;
             student.NumberOfSessions = numberOfSessions ?? student.NumberOfSessions;
             student.SessionsAttended = sessionsAttended ?? student.SessionsAttended;
+            student.NumberOfBacktracking = numberOfBacktracking ?? student.NumberOfBacktracking;
             student.Remarks = remarks ?? student.Remarks;
             student.Status = status ?? student.Status;
             student.ExpirationDateStart = ExpirationStartDate ?? student.ExpirationDateStart;
@@ -216,6 +226,7 @@ public class StudentRepository: IStudentRepository
                 Remarks = updatedStudent.Remarks,
                 ScheduleId = updatedStudent.ScheduleId,
                 SessionsAttended = updatedStudent.SessionsAttended,
+                NumberOfBackTracking = updatedStudent.NumberOfBacktracking,
                 Status = updatedStudent.Status,
                 StudentNo = updatedStudent.StudentNo,
                 ExpirationStartDate = updatedStudent.ExpirationDateStart,
@@ -231,7 +242,7 @@ public class StudentRepository: IStudentRepository
     }
 
     public async Task<AppResult<IEnumerable<StudentDTO>>> Create(int customerId, int activityId, int scheduleId,int numberOfSessions, 
-        int sessionsAttended, DateTime ExpirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, 
+        int sessionsAttended, int numberOfBacktracking, DateTime ExpirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, 
         int ongoingActivityId, string remarks = "", string status = "ACTIVE")
     {
         try
@@ -243,6 +254,9 @@ public class StudentRepository: IStudentRepository
                 return AppResult<IEnumerable<StudentDTO>>.CreateFailed(
                     new ApplicationException("Can't find customer id provided"), "Can't find customer id provided");
             }
+            
+            ExpirationStartDate = ExpirationStartDate.SetKindUtc();
+            ExpirationEndDate = ExpirationEndDate.SetKindUtc();
 
             var students = familyMembers.Select(f => {
                 return new Entities.Student {
@@ -254,6 +268,7 @@ public class StudentRepository: IStudentRepository
                     Remarks = remarks,
                     ScheduleId = scheduleId,
                     SessionsAttended = sessionsAttended,
+                    NumberOfBacktracking = numberOfBacktracking,
                     StudentNo  = f.StudentNo,
                     Status = status,
                     ExpirationDateStart = ExpirationStartDate,
@@ -278,6 +293,7 @@ public class StudentRepository: IStudentRepository
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     SessionsAttended = s.SessionsAttended,
+                    NumberOfBackTracking = s.NumberOfBacktracking,
                     Status = s.Status,
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
@@ -315,6 +331,7 @@ public class StudentRepository: IStudentRepository
                     Remarks = s.Remarks,
                     ScheduleId = s.ScheduleId,
                     SessionsAttended = s.SessionsAttended,
+                    NumberOfBackTracking = s.NumberOfBacktracking,
                     Status = s.Status,
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
