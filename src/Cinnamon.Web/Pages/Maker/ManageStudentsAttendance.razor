@@ -21,12 +21,19 @@
         <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
         <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students - Attendance </h3>
     </div>
-    <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
+    @if (IsShowErrorMessage== true)
+    {
+        <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+            <strong>Reminder: </strong> @ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    @*<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
         <AlertMessage>
             @ErrorMessage
         </AlertMessage>
         <CloseButton Float="Float.End"/>
-    </Alert>
+    </Alert>*@
     <div class="student-details-container">
         <div class="student-details">
             <div class="student-details-major">
@@ -452,6 +459,7 @@
             {
                 IsShowErrorMessage = true;
                 ErrorMessage = "Already reached maximium number of attendance backtacking.";
+                await loadingIndicator.Hide();
             }
     }
         catch (Exception ex)
