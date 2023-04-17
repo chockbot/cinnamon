@@ -454,11 +454,11 @@
                     Id = Id,
                     NumberOfBacktracking = studentAttendance.NumberOfBacktracking - 1,
                 });
-        }
+            }
             else
             {
                 IsShowErrorMessage = true;
-                ErrorMessage = "Already reached maximium number of attendance backtacking.";
+                ErrorMessage = "You can only adjust attendance up to half of the total offered sessions.";
                 await loadingIndicator.Hide();
             }
     }

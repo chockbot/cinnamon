@@ -98,7 +98,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             else
             {
                 decimal value = schedule.PerUnit2 / 2;
-                numberOfBackTracking = Math.Ceiling(value) + 1;
+                numberOfBackTracking = Math.Ceiling(value);
             }
             // enroll the students
             var createStudentRes = await studentData.CreateManyStudent(new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs {
