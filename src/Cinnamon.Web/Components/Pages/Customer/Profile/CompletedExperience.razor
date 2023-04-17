@@ -2,14 +2,14 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
 <article class="ongoing-experience-wrapper py-3">
-    <h3 class="title">Ongoing Experiences</h3>
+    <h3 class="title">Completed Experiences</h3>
     <Div class="ongoing-experiences-container activitySwiper" Margin="Margin.Is3.FromTop">
         <div class="swiper-wrapper customer-wrapper">
             @if (Activities != null)
             {
                 foreach (var item in Activities)
                 {
-                    <OngoingExperienceItem ActivityItemType="OngoingExperienceItem.ItemType.Ongoing" Activity="item" Profile="Profile"/>
+                    <OngoingExperienceItem ActivityItemType="OngoingExperienceItem.ItemType.Completed" Activity="item" Profile="Profile"/>
                 }
             }
         </div>
