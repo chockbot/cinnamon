@@ -23,9 +23,9 @@ public class StudentRepository: IStudentRepository
         try
         {
             var student = new Entities.Student {
-                ActivityId = activityId,
                 CustomerId = customerId,
                 FamilyMemberId = familyMemberId,
+                ActivityId = activityId,
                 ScheduleId = scheduleId,
                 Name = name,
                 StudentNo = studentNo,

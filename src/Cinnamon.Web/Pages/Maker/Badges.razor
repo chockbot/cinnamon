@@ -7,9 +7,11 @@
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
 @using System.Security.Claims;
+@using Cinnamon.Web.Models.Entities;
 @inject IJSRuntime jsRuntime;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
 
 <PageTitle>Badges | CinnamonPH</PageTitle>
 <SeoMeta Title="Badges" Subject="Badges" Url="/maker/dashboard/badges" />
@@ -200,7 +202,18 @@
                         <div class="badge-details-section">
                             <p class="title-badge-primary">Rare Cinnamon Maker</p>
                             <p class="title-badge-secondary">Completed 10 students</p>
-                            <p class="mini-details">1/10</p>
+                            <p class="mini-details">
+                                @if(MakerCompletedStudent <= 10)
+                                {
+                                    string data = MakerCompletedStudent + "/10";
+                                    @data
+                                }
+                                else
+                                {
+                                    string data1 = "10/10";
+                                    @data1;
+                                }
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -218,7 +231,18 @@
                         <div class="badge-details-section">
                             <p class="title-badge-primary">Epic Cinnamon Maker</p>
                             <p class="title-badge-secondary">Completed 25 & receive 10 reviews</p>
-                            <p class="mini-details">2/35</p>
+                            <p class="mini-details">
+                                @if (MakerCompletedStudent <= 25)
+                                {
+                                    string data = MakerCompletedStudent + "/25";
+                                    @data
+                                }
+                                else
+                                {
+                                    string data1 = "25/25";
+                                    @data1;
+                                }
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -236,7 +260,18 @@
                         <div class="badge-details-section">
                             <p class="title-badge-primary">Legendary Cinnamon Maker</p>
                             <p class="title-badge-secondary">Completed 100 students & receive 25 reviews</p>
-                            <p class="mini-details">2/125</p>
+                            <p class="mini-details">
+                                @if (MakerCompletedStudent <= 100)
+                                {
+                                    string data = MakerCompletedStudent + "/100";
+                                    @data
+                                }
+                                else
+                                {
+                                    string data1 = "100/100";
+                                    @data1;
+                                }
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -253,6 +288,10 @@
     private string firstName = string.Empty;
     private string lastName = string.Empty;
     private string imagePath = string.Empty;
+    private int customerID = 0;
+    public int MakerOngoingStudent { get; set; }
+    public int MakerCompletedStudent { get; set; }
+    public List<Activity> activities = new List<Activity>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -264,7 +303,6 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
-
         var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
         if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
         {
@@ -278,5 +316,28 @@
         firstName = profile.FirstName;
         lastName = profile.LastName;
         imagePath = profile.ProfileImg;
+        customerID = profile.Id;
+
+        //Get Ongoing and completed enrollees
+        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+            {
+                CustomerId = customerID,
+                IncludeStudents = true,
+                IsActive = true,
+            });
+        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
+        {
+            activities = ActivityList.Result.Result.Select(r =>
+               {
+                   return new Activity
+                       {
+                           Id = r.ActivityId,
+                           OngoingStudents = r.OngoingStudents,
+                           CompletedStudents = r.CompletedStudents,
+                       };
+               }).ToList();
+        }
+        MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
     }
 }

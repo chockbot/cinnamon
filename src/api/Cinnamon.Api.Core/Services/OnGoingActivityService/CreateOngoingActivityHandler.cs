@@ -102,12 +102,14 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             }
             // enroll the students
             var createStudentRes = await studentData.CreateManyStudent(new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs {
-                ActivityId = args.ActivityId,
                 CustomerId = args.CustomerId,
-                NumberOfSessions = schedule.PerUnit2,
+                ActivityId = args.ActivityId,
                 ScheduleId = schedule.Id,
+                NumberOfSessions = schedule.PerUnit2,
                 SessionsAttended = 0,
                 NumberOfBacktracking = Convert.ToInt32(numberOfBackTracking),
+                ExpirationEndDate = DateTime.Now,
+                ExpirationStartDate = DateTime.Now,
                 Students = args.Students.Select(s => {
                     return new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs.StudentDetails {
                         FamilyMemberId = s.FamilyMemberId,
