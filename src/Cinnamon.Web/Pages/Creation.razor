@@ -69,7 +69,7 @@
             </div>
 
             <div class='tab @(currentIndex == 3 ? "show" : "")'>
-                <ActivitySummary Activity="Model.Activity" />
+                <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
             </div>
 
             <div class="button-container" style="overflow:auto;">
@@ -129,6 +129,8 @@
     private DotNetObjectReference<Creation>? obj;
 
     private string errorMessage = "There was a problem publishing the experience creation. Please refresh the page and try again.";
+
+    private ActivitySummary ActivitySummary {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
@@ -235,6 +237,8 @@
         // for submit action
         if (index == 0 && currentIndex == 3)
         {
+            if(!ActivitySummary.Validate()) return;
+
             isLoading = true;
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
 

@@ -58,7 +58,7 @@
                 <ExperienceSetupUpdate @ref="experienceSetupUpdateComponent" Model="Model" />
             </div>
             <div class='tab @(currentIndex == 2 ? "show" : "")'>
-                <ActivitySummary Activity="Model.Activity" />
+                <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
             </div>
             <div class="button-container" style="overflow:auto;">
                 <div style="float:right;">
@@ -114,6 +114,8 @@
             return currentIndex * 50;
         }
     }
+
+    private ActivitySummary ActivitySummary {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
@@ -353,6 +355,8 @@
         // for submit action
         if(index == 0 && currentIndex == 2)
         {
+            if(!ActivitySummary.Validate()) return;
+
             isLoading = true;
             StateHasChanged();
 
