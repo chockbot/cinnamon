@@ -150,6 +150,20 @@
     <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 text-center m-font-size-12">
         <Check TValue="bool" Checked="Activity.IsPublished" CheckedChanged="CheckChange" style="accent-color: #ffa942;">Active</Check>
     </div>
+    <Divider />
+    <div class="experience-confirmation-checkbox margin-botton-3rem m-margin-bottom-10">
+        <div class="d-flex align-items-center justify-content-center">
+            <Check TValue="bool" Checked="CheckboxConfirmation" CheckedChanged="ConfirmationCheckChanged" style="accent-color: #ffa942;" />
+            <p class="ms-3 font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12" style="line-height: 1.2;">
+                I understand that I need that to check and complete the attendance of my customers 
+                in the CHECK ATTENDANCE section so that I can receive the payment.
+            </p>
+        </div>
+        @if(isShowErrorMessage)
+        {
+            <p style="color: red; font-size: 12px; text-align: center;">Please accept and confirm</p>
+        }
+    </div>
 </Div>
 
 @code
@@ -159,8 +173,27 @@
 
     private bool isPublished { get; set; } = true;
 
+    private bool CheckboxConfirmation {get; set;}
+
+    private bool isShowErrorMessage {get; set;}
+
     private void CheckChange(bool value)
     {
         isPublished = isPublished;
+    }
+
+    private Task ConfirmationCheckChanged(bool value)
+    {
+        CheckboxConfirmation = value;
+        return Task.CompletedTask;
+    }
+
+    public bool Validate()
+    {
+        if(!CheckboxConfirmation)
+        {
+            isShowErrorMessage = true;
+        }
+        return CheckboxConfirmation;
     }
 }
