@@ -150,6 +150,15 @@
     public Modal modalRef;
     public string selectedName = string.Empty;
 
+    public enum ItemType 
+    {
+        Ongoing = 0,
+        Completed = 1
+    }
+
+    [Parameter]
+    public ItemType ActivityItemType {get; set;}
+
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
     }
@@ -194,6 +203,15 @@
             }).ToList();
         }
         students = students.Where(a => a.ActivityId == Activity.ActivityId && a.CustomerId == Profile.Id).ToList();
+        if(ActivityItemType == ItemType.Ongoing)
+        {
+            students = students.Where(s => s.SessionsAttended < s.NumberOfSessions).ToList();
+        }
+        else 
+        {
+            students = students.Where(s => s.SessionsAttended >= s.NumberOfSessions).ToList();
+        }
+
         await CreateMonth();
     }
     public double GetPercentage(double session, double total)

@@ -21,6 +21,15 @@
         <p class="title">Experiences</p>
         <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
     </div>
+    @if(activities.Count > 0)
+    {
+        <div class="announcement">
+            <Alert Color="Color.Success" Visible>
+                <AlertMessage>Note!</AlertMessage>
+                <AlertDescription>Please check your attendance section</AlertDescription>
+            </Alert>
+        </div>
+    }
     @foreach (var item in activities)
     {
         <div class="experience-container">
