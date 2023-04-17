@@ -4,6 +4,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Student;
 using Cinnamon.Framework.Common;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
+using Cinnamon.Api.Data.Extensions;
 
 namespace Cinnamon.Api.Data.Services.Repository.Student;
 
@@ -22,6 +23,9 @@ public class StudentRepository: IStudentRepository
     {
         try
         {
+            ExpirationStartDate = ExpirationStartDate.SetKindUtc();
+            ExpirationEndDate = ExpirationEndDate.SetKindUtc();
+            
             var student = new Entities.Student {
                 CustomerId = customerId,
                 FamilyMemberId = familyMemberId,
@@ -250,6 +254,9 @@ public class StudentRepository: IStudentRepository
                 return AppResult<IEnumerable<StudentDTO>>.CreateFailed(
                     new ApplicationException("Can't find customer id provided"), "Can't find customer id provided");
             }
+            
+            ExpirationStartDate = ExpirationStartDate.SetKindUtc();
+            ExpirationEndDate = ExpirationEndDate.SetKindUtc();
 
             var students = familyMembers.Select(f => {
                 return new Entities.Student {
