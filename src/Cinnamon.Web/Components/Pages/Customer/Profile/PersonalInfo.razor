@@ -360,21 +360,32 @@
     {
         if(isEditBirthDate)
         {
-            var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+            //Check B-Day
+            DateTime birthDate = DateTime.Parse(birthDateLocalstate);
+            DateTime today = DateTime.Now;
+            var age = today.Year - birthDate.Year;
+            if (age < 18)
             {
-                Datebirth = Convert.ToDateTime(birthDateLocalstate)
-            }, Model.Token);
-
-            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                Model.CustomerProfile.Birthdate = result.Result.Result.Birthdate;
-                errorMessage = string.Empty;
-                isEditBirthDate = false;
-                await ModelChanged.InvokeAsync(Model);
+                errorMessage = "Invalid Birthday";
             }
             else
             {
-                errorMessage = result?.Result?.ErrorInfo?.Message;
+                var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                    {
+                        Datebirth = Convert.ToDateTime(birthDateLocalstate)
+                    }, Model.Token);
+
+                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                {
+                    Model.CustomerProfile.Birthdate = result.Result.Result.Birthdate;
+                    errorMessage = string.Empty;
+                    isEditBirthDate = false;
+                    await ModelChanged.InvokeAsync(Model);
+                }
+                else
+                {
+                    errorMessage = result?.Result?.ErrorInfo?.Message;
+                }
             }
         }
     }

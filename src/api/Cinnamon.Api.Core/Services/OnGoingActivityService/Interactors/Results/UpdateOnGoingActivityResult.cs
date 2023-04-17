@@ -9,6 +9,7 @@ public class UpdateOnGoingActivityResult
     public string StudentNo { get; set; }
     public int NumberOfSessions { get; set; }
     public int SessionsAttended { get; set; }
+    public int NumberOfBacktracking { get; set; }
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
     public string Remarks { get; set; }

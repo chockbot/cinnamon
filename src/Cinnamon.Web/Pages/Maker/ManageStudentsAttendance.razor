@@ -200,14 +200,15 @@
         {
             student = new Students
                     {
-                        Id               = result.Result.Result.Id,
-                        CustomerId       = result.Result.Result.CustomerId,
-                        Name             = result.Result.Result.Name,
-                        Remarks          = result.Result.Result.Remarks,
-                        ActivityId       = result.Result.Result.ActivityId,
-                        ScheduleId       = result.Result.Result.ScheduleId,
-                        NumberOfSessions = result.Result.Result.NumberOfSessions,
-                        SessionsAttended = result.Result.Result.SessionsAttended,
+                        Id                   = result.Result.Result.Id,
+                        CustomerId           = result.Result.Result.CustomerId,
+                        Name                 = result.Result.Result.Name,
+                        Remarks              = result.Result.Result.Remarks,
+                        ActivityId           = result.Result.Result.ActivityId,
+                        ScheduleId           = result.Result.Result.ScheduleId,
+                        NumberOfSessions     = result.Result.Result.NumberOfSessions,
+                        SessionsAttended     = result.Result.Result.SessionsAttended,
+                        NumberOfBacktracking = result.Result.Result.NumberOfBacktracking
                     };
         }
         //Get Parent Name
@@ -377,15 +378,15 @@
                         });
                 }
             }*@
-
-            await loadingIndicator.Hide();
-        }
-        catch (Exception ex)
-        {
-            IsShowErrorMessage = true;
-            ErrorMessage = "An error occured. Please try again later.";
-            await loadingIndicator.Hide();
-        }
+        //Update Number of Backtracking
+        await loadingIndicator.Hide();
+    }
+    catch (Exception ex)
+    {
+        IsShowErrorMessage = true;
+        ErrorMessage = "An error occured. Please try again later.";
+        await loadingIndicator.Hide();
+    }
     }
 
     private async void CreateAttendance(Students studentAttendance, string token, DateTime presentDate)
@@ -393,54 +394,66 @@
         try
         {
             await loadingIndicator.Show();
-
-            var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
-                    {
-                        AttendanceDate = presentDate,
-                        IsPresent = true,
-                        StudentId = studentAttendance.Id
-                    }, token);
-
-            if (create.Succeeded && create.Result.IsSuccess)
+            if (studentAttendance.NumberOfBacktracking != 0)
             {
-                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
                         {
-                            Id = studentAttendance.Id,
-                            SessionsAttended = studentAttendance.SessionsAttended + 1,
-                        });
-                await OnInitializedAsync();
-                StateHasChanged();
-            }
-             @*//Get Activity Details
-            var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
-            if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
-            {
-                var result = activityResult.Result.Result;
-                activity = new Activity
-                    {
-                        IsSetSession = result.IsSetSession,
-                        SessionName = result.SessionName,
-                        ActivityId = result.ActivityId
-                    };
-            }
-            //Set Session Expiration
-            if (activity != null && activity.IsSetSession == true)
-            {
-                //Check if first attendance
-                if (studentAttendance.SessionsAttended == 0)
+                            AttendanceDate = presentDate,
+                            IsPresent = true,
+                            StudentId = studentAttendance.Id
+                        }, token);
+
+                if (create.Succeeded && create.Result.IsSuccess)
                 {
-                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                        {
-                            Id = studentAttendance.StudentId,
-                            ScheduleId = studentAttendance.ScheduleId,
-                            SessionName = activity.SessionName,
-                            ExpirationStartDate = presentDate,
-                            ExpirationEndDate = DateTime.UtcNow
-                        });
+                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                            {
+                                Id = studentAttendance.Id,
+                                SessionsAttended = studentAttendance.SessionsAttended + 1,
+                            });
+                    await OnInitializedAsync();
+                    StateHasChanged();
                 }
-            }*@
+                @*//Get Activity Details
+                var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
+                if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+                {
+                    var result = activityResult.Result.Result;
+                    activity = new Activity
+                        {
+                            IsSetSession = result.IsSetSession,
+                            SessionName = result.SessionName,
+                            ActivityId = result.ActivityId
+                        };
+                }
+                //Set Session Expiration
+                if (activity != null && activity.IsSetSession == true)
+                {
+                    //Check if first attendance
+                    if (studentAttendance.SessionsAttended == 0)
+                    {
+                        await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                            {
+                                Id = studentAttendance.StudentId,
+                                ScheduleId = studentAttendance.ScheduleId,
+                                SessionName = activity.SessionName,
+                                ExpirationStartDate = presentDate,
+                                ExpirationEndDate = DateTime.UtcNow
+                            });
+                    }
+                }*@
             await loadingIndicator.Hide();
+            var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                {
+                    Id = Id,
+                    NumberOfBacktracking = studentAttendance.NumberOfBacktracking - 1,
+                });
         }
+            else
+            {
+                IsShowErrorMessage = true;
+                ErrorMessage = "Already reached maximium number of attendance backtacking.";
+            }
+    }
         catch (Exception ex)
         {
             IsShowErrorMessage = true;

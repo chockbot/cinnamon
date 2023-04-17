@@ -9,6 +9,7 @@ public class StudentDTO
     public string Name {get; set;}
     public string StudentNo {get; set;}
     public int NumberOfSessions {get; set;}
+    public int NumberOfBackTracking { get; set; }
     public int SessionsAttended {get; set;}
     public string Remarks {get; set;}
     public string Status {get; set;}

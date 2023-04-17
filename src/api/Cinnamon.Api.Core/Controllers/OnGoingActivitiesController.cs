@@ -1,7 +1,5 @@
-﻿using Cinnamon.Api.Core.Services.AccountService;
-using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
+﻿using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
-using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
@@ -102,6 +100,7 @@ public class OnGoingActivitiesController : ControllerBase
                     Remarks = objResult.Remarks,
                     ScheduleId = objResult.ScheduleId,
                     SessionsAttended = objResult.SessionsAttended,
+                    NumberOfBacktracking = objResult.NumberOfBacktracking,
                     Status = objResult.Status,
                     StudentNo = objResult.StudentNo,
                     ExpirationStartDate = objResult.ExpirationStartDate,
@@ -176,6 +175,7 @@ public class OnGoingActivitiesController : ControllerBase
                 NumberOfSessions= args.NumberOfSessions,
                 Remarks= args.Remarks,
                 SessionsAttended= args.SessionsAttended,
+                NumberOfBacktracking = args.NumberOfBacktracking,
                 Status= args.Status,
                 StudentNo= args.StudentNo,
                 ExpirationStartDate = args.ExpirationStartDate,
@@ -194,6 +194,7 @@ public class OnGoingActivitiesController : ControllerBase
                    SessionsAttended = result.Result.SessionsAttended,
                    Remarks = result.Result.Remarks,
                    NumberOfSessions= result.Result.NumberOfSessions,
+                   NumberOfBacktracking = result.Result.NumberOfBacktracking,
                    Name= result.Result.Name,
                    Id= result.Result.Id,
                    ExpirationStartDate= result.Result.ExpirationStartDate,
