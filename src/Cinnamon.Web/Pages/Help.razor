@@ -1,0 +1,170 @@
+﻿@page "/help/"
+@page "/help/{Section}"
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@inject IJSRuntime jsRuntime;
+
+<PageTitle>@Title | CinnamonPH</PageTitle>
+<SeoMeta Title="@Title" Subject="@Title" Url="/help" />
+
+<div class="container container-fluid">
+    <div class="row d-flex justify-content-center">
+        <div class="row justify-content-center">
+            <label class="heading text-center">How can we help you?</label>
+            <div class="btn-section border-bottom col-lg-12 d-lg-block d-md-none d-sm-none d-none">
+                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+                    <img src="/images/Dashboard Icon/faq.png" />
+                    <span class="btn-caption">Frequently Asked Questions</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+                    <img src="/images/Dashboard Icon/terms.png" />
+                    <span class="btn-caption">Terms & Conditions</span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+                    <img src="/images/Dashboard Icon/privacy.png" />
+                    <span class="btn-caption">Privacy Policy</span>
+                </button>
+            </div>
+            <div class="btn-carousel-section border-bottom d-lg-none d-md-block d-sm-none d-none ">
+                <div class="schedule-swiper">
+                    <div class="swiper-wrapper text-center">
+                        <div class="swiper-slide faq">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+                                <img src="/images/Dashboard Icon/faq.png" />
+                                <span class="btn-caption">Frequently Asked Questions</span>
+                            </button>
+                            
+                        </div>
+                        <div class="swiper-slide terms">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+                                <img src="/images/Dashboard Icon/terms.png" />
+                                <span class="btn-caption">Terms & Conditions</span>
+                            </button>
+                        </div>
+                        <div class="swiper-slide policy">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+                                <img src="/images/Dashboard Icon/privacy.png" />
+                                <span class="btn-caption">Privacy Policy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="swiper-scrollbar"></div>
+                </div>
+            </div>
+            <div class="btn-carousel-section border-bottom d-lg-none d-md-none d-sm-block d-block">
+                <div class="schedule-swiper">
+                    <div class="swiper-wrapper text-center">
+                        <div class="swiper-slide faq">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToFaq">
+                                <img src="/images/Dashboard Icon/faq.png" />
+                                <span class="btn-caption">Frequently Asked Questions</span>
+                            </button>
+                        </div>
+                        <div class="swiper-slide terms">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToTerms">
+                                <img src="/images/Dashboard Icon/terms.png" />
+                                <span class="btn-caption">Terms & Conditions</span>
+                            </button>
+                        </div>
+                        <div class="swiper-slide policy">
+                            <button type="button" class="btn btn-outline-secondary" @onclick="NavigateToPrivacy">
+                                <img src="/images/Dashboard Icon/privacy.png" />
+                                <span class="btn-caption">Privacy Policy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="swiper-scrollbar"></div>
+                </div>
+            </div>
+            @if (isFaqDisplayed)
+            {
+                <FAQ></FAQ>
+            }
+            @if (isTermsDisplayed)
+            {
+                <Terms></Terms>
+            }
+            @if (isPrivacyDisplayed)
+            {
+                <Policy></Policy>
+            }
+        </div>
+        <Contact></Contact>
+        <Footer></Footer>
+    </div>
+</div>
+
+@code {
+    private bool isFaqDisplayed = false;
+    private bool isTermsDisplayed = false;
+    private bool isPrivacyDisplayed = false;
+
+    [Parameter]
+    public string Section { get; set; }
+
+    private string Title {get; set;} = "Frequently Asked Questions";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!string.IsNullOrEmpty(Section))
+        {
+            Section = Section.Trim().ToLower();
+
+            if (Section == "faq")
+            {
+                NavigateToFaq();
+            }
+            else if (Section == "terms")
+            {
+                NavigateToTerms();
+            }
+            else if (Section == "privacy")
+            {
+                NavigateToPrivacy();
+            }
+            else
+            {
+                NavigateToFaq();
+            }
+        }
+        else
+        {
+            NavigateToFaq();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+        }
+    }
+
+    private void NavigateToFaq()
+    {
+        Title = "Frequently Asked Questions";
+        isFaqDisplayed = true;
+        isTermsDisplayed = false;
+        isPrivacyDisplayed = false;
+    }
+
+    private void NavigateToTerms()
+    {
+        Title = "Terms & Conditions";
+        isFaqDisplayed = false;
+        isTermsDisplayed = true;
+        isPrivacyDisplayed = false;
+    }
+
+    private void NavigateToPrivacy()
+    {
+        Title = "Privacy Policy";
+        isFaqDisplayed = false;
+        isTermsDisplayed = false;
+        isPrivacyDisplayed = true;
+    }
+}

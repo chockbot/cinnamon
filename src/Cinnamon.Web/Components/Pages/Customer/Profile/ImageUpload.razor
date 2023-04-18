@@ -2,31 +2,73 @@
 @using Cinnamon.Web.Models.Customer;
 @inject IJSRuntime JsRuntime
 
-<Div class="image-wrapper">
-    <label for="@Model.ImageName" class="upload-image">
-        <Figure Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0">
-            <FigureImage id="@Model.ImageId" Width="Width.Is100" Height="Height.Is100" Margin="Margin.Is0" Source="@GetFrontImageSrc()" />
+@if (isFileValid.HasValue)
+{
+    @if (!isFileValid.GetValueOrDefault())
+    {
+        <p class="activity-image-photos-error-message text-left">@uploadErrorMessage</p>
+    }
+}
+<div class="image-wrapper justify-content-center">
+    <label for="@Model.ImageName" class="upload-image justify-content-center" style="display:flex">
+        <Figure TextAlignment="TextAlignment.Center">
+            <FigureImage id="@Model.ImageId" class="figure-image" Margin="Margin.Is0" Source="@GetFrontImageSrc()" />
         </Figure>
     </label>
     <InputFile @ref="inputFile" style="display: none;" id="@Model.ImageName" name="@Model.ImageName" accept=".png,.jpg,.jpeg" OnChange="ShowPreview" />
-    <p class="m-0">@Model.Label</p>
     <p class="m-0 error-message" id="@Model.ErrorId" style="font-size: 12px; color: red; display: none;">Please provide image</p>
-</Div>
-
+</div>
 @code 
 {
     [Parameter]
-    public UploadGovernmenId Model {get; set;}
-
+    public UploadGovernmenId Model { get; set; }
     private InputFile? inputFile;
-
+    private List<string> allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
+    private string errorMessage = string.Empty;
+    private string uploadErrorMessage = string.Empty;
+    private string originalImage = string.Empty;
+    private bool? isFileValid;
+    private decimal totalImageSizeMB = 0;
+    private bool isDisabled = true;
+    private bool isShowErrorMessage = false;
+    private bool hasChanged = false;
     private string GetFrontImageSrc()
     {
         if(!string.IsNullOrEmpty(Model.ImageFileName)) return Model.ImageFileName;
 
         return "/images/Profile/blank.png";
     }
+    private bool IsImagesOverLimit
+    {
+        get
+        {
+            return totalImageSizeMB > 10;
+        }
+    }
+    private async Task ShowPreview(InputFileChangeEventArgs e)
+    {
+        var file = e.File;
+        totalImageSizeMB = 0;
+        totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
 
-    private async Task ShowPreview()
-        => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, Model.ImageId);
+        if (IsImagesOverLimit)
+        {
+            uploadErrorMessage = "Please upload image less than 10MB.";
+            isFileValid = false;
+
+        }
+        else if (!allowedFileTypes.Contains(Path.GetExtension(file.Name.ToLower())))
+        {
+            uploadErrorMessage = "Only JPEG or PNG files are accepted. Please try again.";
+            isFileValid = false;
+        }
+        else
+        {
+            isDisabled = false;
+            hasChanged = true;
+            isFileValid = true;
+            await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, Model.ImageId);
+        }
+        await Task.CompletedTask;
+    }  
 }

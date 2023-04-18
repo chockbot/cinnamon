@@ -1,44 +1,69 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
-<Div Position="Position.Relative" Flex="Flex.NoWrap.OnDesktop.Wrap.OnMobile" class="family-members">
-    <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input name">
-        <TextEdit class="border-10" id="legalFirstname" Size="Size.Default" @bind-Text="Model.Name" />
-        <FieldLabel for="legalFirstname">Name</FieldLabel>
-    </Field>
-    <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input gender">
-        <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.Gender" 
-            class="form-select border-10 text-capitalize">
-            @foreach (var item in genders)
-            {
-                <SelectItem Value="item">@item</SelectItem>
-            }
-        </Select>
-        <FieldLabel for="legalFirstname">Gender</FieldLabel>
-    </Field>
-    <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input birthmonth">
-        <Select TValue="int" Size="Size.Default" @bind-bind-SelectedValue="Model.BirthMonth" 
-            class="form-select border-10 text-capitalize">
-            @foreach (var item in months)
-            {
-                <SelectItem Value="@item">@item</SelectItem>
-            }
-        </Select>
-        <FieldLabel for="legalFirstname">Birth Month</FieldLabel>
-    </Field>
-    <Field Margin="Margin.Is3.FromTop" class="form-floating profile-info-input year">
-        <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear" 
-            class="form-select border-10 text-capitalize">
-            @foreach (var item in years)
-            {
-                <SelectItem Value="@item">@item</SelectItem>
-            }
-        </Select>
-        <FieldLabel for="legalFirstname">Year</FieldLabel>
-    </Field>
+<div class="d-flex align-content-center justify-content-between mt-3">
+    <p class="font-16 font-weight-700 color-black-100 mb-1">Enrollee Number @ErolleeCount</p>
     <Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3 abs-delete" @onclick="DeleteClick"> 
         <Icon Name="IconName.Delete" IconStyle="IconStyle.Solid" />
     </Button>
+</div>
+<Div Position="Position.Relative" class="family-members">
+    <Field class="profile-info-input name">
+        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Name</FieldLabel>
+        <TextEdit class="border-10 color-black-100 font-16" id="legalFirstname" Size="Size.Default" @bind-Text="Model.Name" />
+    </Field>
+    <Row HorizontalGutter="10">
+        <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is12.OnMobile">
+            <Field Margin="Margin.Is3.FromTop" class="profile-info-input-gender">
+                <FieldLabel class="font-16 color-grey-100" for="legalFirstname">Gender</FieldLabel>
+                <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.Gender" 
+                    class="form-select border-10 text-capitalize color-black-100 font-15">
+                    @foreach (var item in genders)
+                    {
+                        <SelectItem Value="item">@item</SelectItem>
+                    }
+                </Select>
+            </Field>
+        </Column>
+        <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is12.OnMobile">
+            <Row HorizontalGutter="2">
+                <Column ColumnSize="ColumnSize.Is7.OnDesktop.IsFull.OnMobile">
+                    <Field Margin="Margin.Is3.FromTop" class="profile-info-input birthmonth">
+                        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Birth Month</FieldLabel>
+                        <Select TValue="string" Size="Size.Default" @bind-SelectedValue="Model.BirthMonth" 
+                            class="form-select border-10 text-capitalize color-black-100 font-15">
+                            @foreach (var item in months)
+                            {
+                                <SelectItem Value="@item">@item</SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is5.OnDesktop.IsFull.OnMobile">
+                    <Field Margin="Margin.Is3.FromTop" class="profile-info-input year">
+                        <FieldLabel for="legalFirstname" class="font-16 color-grey-100">Year</FieldLabel>
+                        <Select TValue="int" Size="Size.Default" @bind-SelectedValue="Model.BirthYear" 
+                            class="form-select border-10 text-capitalize color-black-100 font-15">
+                            @foreach (var item in years)
+                            {
+                                <SelectItem Value="@item">@item</SelectItem>
+                            }
+                        </Select>
+                    </Field>
+                </Column>
+            </Row>
+        </Column>
+    </Row>
 </Div>
+
+<ConfirmDialog @ref="confirmDialogRef" AcceptLabel="Yes" DeclineLabel="No" 
+    OnConfirmationChanged="ConfirmDeleteChanged">
+    <HeaderContent>
+        <p class="m-0">Confirm Action!</p>
+    </HeaderContent>
+    <BodyContent>
+        <p class="m-0">Are you sure you want to remove this family member?</p>
+    </BodyContent>
+</ConfirmDialog>
 
 @code
 {
@@ -52,11 +77,16 @@
     [Parameter]
     public EventCallback<Models.Entities.FamilyMember> OnDelete {get; set;}
 
+    [Parameter]
+    public int ErolleeCount {get; set;}
+
     private IList<string> genders = new List<string>();
 
     private IList<int> years = new List<int>();
     
     private IList<string> months = new List<string>();
+
+    private ConfirmDialog confirmDialogRef {get; set;}
 
     protected override void OnInitialized()
     {
@@ -87,6 +117,24 @@
 
     private void DeleteClick()
     {
-        OnDelete.InvokeAsync(Model);
+        confirmDialogRef.Open();
+    }
+
+    private Task ConfirmDeleteChanged(bool value)
+    {
+        if(value)
+        {
+            OnDelete.InvokeAsync(Model);
+        }
+        return Task.CompletedTask;
     }
 }
+<style scoped>
+    .family-members .profile-info-input-gender {
+        margin-left:0;
+        margin-right: 1rem;
+    }
+    .customer-profile-details .family-members {
+         width: 80%;
+    }
+</style>

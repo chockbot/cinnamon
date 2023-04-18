@@ -4,10 +4,15 @@
 @using Cinnamon.Web.Components;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Models
+@using Cinnamon.Web.Components.Pages;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @inject ITransactionApiHandler transactionApiHandler;
 @inject IActivityApiHandler activityApiHandler;
+@inject IJSRuntime jsRuntime;
+
+<PageTitle>Payment Successful | CinnamonPH</PageTitle>
+<SeoMeta Title="Payment Successful" Subject="Payment Successful" Url="/purchase/order" />
 
 @if(Model != null)
 {
@@ -25,8 +30,8 @@
             <div class="schedule-ordered text-center">
                 <p>@Model.SelectedSchedule.Name</p>
                 <p>@Model.SelectedSchedule.DateTime</p>
-                <p>PHP @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.Price / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
-                <p>Total: @Model.PurchaseOrder.OverallTotal</p>
+                <p>@Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
+                <p>Total: @((long)Model.PurchaseOrder.Total)</p>
             </div>
             <p class="text-center">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
             <div class="text-center mt-5 mb-5">
@@ -120,5 +125,13 @@
             },
             Token = token
         };
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Payment Confirmation Page Loaded");
+        }
     }
 }

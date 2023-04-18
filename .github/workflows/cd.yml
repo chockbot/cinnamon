@@ -4,6 +4,10 @@ on:
   push:
     branches: [develop]
 
+env:
+  FLAG_ENV: Development
+  BASE_URL: "https://dev.cinnamon.ph"
+
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -21,13 +25,36 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      # substitute database connection string
+      # substitute api data environment variables
       - name: App Settings Variable Substitution
         uses: microsoft/variable-substitution@v1
         with:
           files: "src/api/Cinnamon.Api.Data/appsettings.json"
         env:
           ConnectionStrings.CinnamonDB: ${{ secrets.DEV_DB_CONNECTION }}
+          KeyVault.KeyVaultUri: ${{ secrets.DEV_KVAULT_URL }}
+          KeyVault.CinnamonDbConnectionString: ${{ secrets.DEV_KVAULT_DB }}
+          AzureAd.ClientId: ${{ secrets.SHARED_AZUREAD_CLIENTID }}
+          AzureAd.TenantId: ${{ secrets.SHARED_AZUREAD_TENANTID }}
+          AzureAd.ClientSecret: ${{ secrets.DEV_AZUREAD_SECRET }}
+
+      # substitute api core environment variables
+      - name: App Settings Variable Substitution for Api Core
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/api/Cinnamon.Api.Core/appsettings.json"
+        env:
+          Applicationconfig.Payment.Accounts.0.Settings.0.Value: ${{ secrets.ZENDIT_TOKEN }}
+          Applicationconfig.Payment.Accounts.0.Settings.1.Value: ${{ secrets.ZENDIT_CALLBACK_TOKEN }}
+
+      # substitute web blazor server environemnt variables
+      - name: App Settings Variables Substitution for Web Blazor
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/Cinnamon.Web/appsettings.json"
+        env:
+          AppConfig.Environment: ${{ env.FLAG_ENV }}
+          AppConfig.BaseUrl: ${{ env.BASE_URL }}
 
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj

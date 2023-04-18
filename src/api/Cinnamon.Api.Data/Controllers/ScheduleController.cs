@@ -58,7 +58,7 @@ namespace Cinnamon.Api.Data.Controllers
             try
             {
                 var result = await _scheduleRepository.GetAllAsync();
-                if (!result.Succeeded)
+                if (!result.Succeeded || result.Result == null)
                 {
                     return new JsonResult(new GetAllScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
@@ -80,8 +80,9 @@ namespace Cinnamon.Api.Data.Controllers
             {
                 var result = await _scheduleRepository.CreateSchedule(scheduleArgs.ActivityId,scheduleArgs.Name,scheduleArgs.DateTime,
                                                                       scheduleArgs.Price, scheduleArgs.UnitPrice, scheduleArgs.PerUnit1,
-                                                                      scheduleArgs.PriceUnit1, scheduleArgs.PerUnit2, scheduleArgs.PriceUnit2);
-                if (!result.Succeeded)
+                                                                      scheduleArgs.PriceUnit1, scheduleArgs.PerUnit2, scheduleArgs.PriceUnit2, 
+                                                                      scheduleArgs.Order, scheduleArgs.IsActiveSchedule);
+                if (!result.Succeeded || result.Result == null)
                 {
                     return new JsonResult(new CreateScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
@@ -103,8 +104,9 @@ namespace Cinnamon.Api.Data.Controllers
             {
                 var result = await _scheduleRepository.UpdateSchedule(updateScheduleArgs.Id, updateScheduleArgs.Name,updateScheduleArgs.DateTime,
                                                                       updateScheduleArgs.Price, updateScheduleArgs.UnitPrice, updateScheduleArgs.PerUnit1,
-                                                                      updateScheduleArgs.PriceUnit1, updateScheduleArgs.PerUnit2, updateScheduleArgs.PriceUnit2);
-                if (!result.Succeeded)
+                                                                      updateScheduleArgs.PriceUnit1, updateScheduleArgs.PerUnit2, updateScheduleArgs.PriceUnit2,
+                                                                      updateScheduleArgs.Order, updateScheduleArgs.IsActiveSchedule);
+                if (!result.Succeeded || result.Result == null)
                 {
                     return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
@@ -133,7 +135,9 @@ namespace Cinnamon.Api.Data.Controllers
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule,
                     };
                 });
 
@@ -169,7 +173,9 @@ namespace Cinnamon.Api.Data.Controllers
                         PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                         PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                         UnitPrice = s.UnitPrice ?? string.Empty,
-                        ActivityId = s.ActivityId
+                        ActivityId = s.ActivityId,
+                        Order = s.Order ?? 0,
+                        IsActiveSchedule = s.IsActiveSchedule ?? true
                     };
                 }));
                 if (!result.Succeeded || result.Result == null)

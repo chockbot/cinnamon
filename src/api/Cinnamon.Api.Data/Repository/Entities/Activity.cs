@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Cinnamon.Api.Data.Repository.Entities;
 
 public class Activity : BaseEntity
@@ -14,7 +16,13 @@ public class Activity : BaseEntity
     public bool IsPublished { get; set;}
     public int? ExperienceCategoryId {get; set;}
     public int? SubCategoryId {get; set;}
-
+    public string Handler {get; set;}
+    public bool IsNew { get; set; }
+    public bool IsSetSession { get; set; }
+    public string SessionName { get; set; }
+    public int PurchaseOrderCount { get; set; }
+    public bool IsDeactivated { get; set; }
+    public string Guid { get; set; }
     public virtual ActivityAddress Address {get; set;}
     public virtual ActivityDescription ActivityDescription {get; set;}
     public virtual SearchTags SearchTag {get; set;}
@@ -23,4 +31,7 @@ public class Activity : BaseEntity
     public virtual ExperienceType ExperienceType {get; set;}
     public virtual ExperienceCategory ExperienceCategory {get; set;}
     public virtual SubCategory SubCategory {get; set;}
+    [ForeignKey("CreatedBy")]
+    public virtual Customer Customer {get; set;}
+    public virtual IList<Student> Students {get; set; }
 }

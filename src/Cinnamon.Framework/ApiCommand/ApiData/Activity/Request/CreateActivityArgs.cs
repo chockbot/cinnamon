@@ -22,10 +22,14 @@ public class CreateActivityArgs
     public string Address2 { get; set; } = string.Empty;
     public string District { get; set; } = string.Empty;
     public string City { get; set; } = string.Empty;
-    [Required]
-    public string SpecificsYouWillProvide { get; set; }
-    [Required]
-    public string CustomerBringWithThem { get; set; }
+    public string Subdivision { get; set; } = string.Empty;
+    public string Region { get; set; } = string.Empty;
+    public string Barangay { get; set; } = string.Empty;
+    public string PostalCode { get; set; } = string.Empty;
+    public string PinnedLocation { get; set; } = string.Empty;
+
+    public string? SpecificsYouWillProvide { get; set; }
+    public string? CustomerBringWithThem { get; set; }
     public string? AdditionalRequirements { get; set; }
     public string ActivityLevel { get; set; } = string.Empty;
     public string SkillLevel { get; set; } = string.Empty;
@@ -40,4 +44,8 @@ public class CreateActivityArgs
     public int ExperienceCategoryId {get; set;}
     [Required]
     public int SubCategoryId {get; set;}
+    [Required]
+    public string Handler {get; set;}
+    public bool IsSetSession { get; set; } = false;
+    public string SessionName { get; set; } = string.Empty;
 }

@@ -15,4 +15,7 @@ public interface ICustomerData
     Task<AppResult<CheckCustomerLoginResult>> CheckCustomerLogin(CheckCustomerLoginArgs args);
     Task<AppResult<GetGovernmentIdResult>> GetGovernmentIds(int customerId);
     Task<AppResult<GetProfilePictureResult>> GetProfilePicture(int customerId);
+    Task<AppResult<GetCustomerResult>> GetCustomerByHandler(string handler);
+    Task<AppResult<GenerateResetPasswordTokenResult>> GenerateResetPasswordToken(GenerateResetPasswordTokenArgs args);
+    Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args);
 }

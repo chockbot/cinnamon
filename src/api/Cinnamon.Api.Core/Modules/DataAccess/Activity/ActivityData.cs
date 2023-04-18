@@ -58,12 +58,54 @@ public class ActivityData: IActivityData
         }
     }
 
+    public async Task<AppResult<GetActivitiesBySubCategoriesResult>> GetActivitiesBySubCategories(int id, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Activity/GetActivitiesBySubCategories/{id}")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetActivitiesBySubCategoriesResult>();
+
+            return AppResult<GetActivitiesBySubCategoriesResult>.CreateSucceeded(result, "Successfully getting activity by id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivitiesBySubCategoriesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivitiesBySubCategoriesResult>.CreateFailed(ex, "An error occured when getting activity by id api");
+        }
+    }
+
     public async Task<AppResult<GetActivityResult>> GetActivityById(int id, GetActivityArgs? args = null)
     {
         try
         {
             var result = await flurlClient
                             .Request($"Activity/GetActivityById/{id}")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting activity by id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting activity by id api");
+        }
+    }
+
+    public async Task<AppResult<GetActivityResult>> GetActivityByHandler(string handler, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Activity/GetActivityByHandler/{handler}")
                             .SetQueryParams(args)
                             .GetJsonAsync<GetActivityResult>();
 
@@ -118,6 +160,48 @@ public class ActivityData: IActivityData
         catch (Exception ex)
         {
             return AppResult<UpdatedActivityResult>.CreateFailed(ex, "An error occured when posting update activity api");
+        }
+    }
+
+    public async Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivities args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Activity/Popular")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetAllActivitiesResult>();
+
+            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting get all activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
+        }
+    }
+
+    public async Task<AppResult<UpdatedActivityResult>> UpdateActivityGuid(UpdateActivity args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Activity/Guid/Update")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<UpdatedActivityResult>();
+
+            return AppResult<UpdatedActivityResult>.CreateSucceeded(result, "Successfully updated activity guids");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdatedActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdatedActivityResult>.CreateFailed(ex, "An error occured when updating activity guids");
         }
     }
 }

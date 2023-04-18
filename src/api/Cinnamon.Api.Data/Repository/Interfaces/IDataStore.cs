@@ -17,6 +17,19 @@ public interface IDataStore
     IWaitList WaitList { get; }
     ISubCategory SubCategory { get; } 
     ISearchTags SearchTags { get; }
+    IExternalLoginToken ExternalLoginToken { get; }
+    IStudent Student { get; }
+    IStudentAttendance StudentAttendance { get; }
+    IResetPassword ResetPassword { get; }
+    IRegion Region { get; }
+    ICity City { get; }
+    IBarangay Barangay{ get; }
+    IBadgeList BadgeList { get; }
+    IFailedLogin FailedLogin { get; }
+    IRequestRefund RequestRefund { get; }
+    IPayoutAccount PayoutAccount {get;}
+    IPayoutLog PayoutLog {get;}
+    IAdminUser AdminUser {get; }
 
     Task EnsureMigrate();
 

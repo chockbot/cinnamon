@@ -93,7 +93,7 @@ public class ActivityImageController : ControllerBase
     {
         try
         {
-            var result = await activityImageRepository.Create(args.ActivityId, args.ImageName, args.ImagePath);
+            var result = await activityImageRepository.Create(args.ActivityId, args.ImageName, args.ImagePath, args.Order);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -115,7 +115,7 @@ public class ActivityImageController : ControllerBase
     {
         try
         {
-            var result = await activityImageRepository.Update(args.ActivityImageId, args.ImageName, args.ImagePath);
+            var result = await activityImageRepository.Update(args.ActivityImageId, args.ImageName, args.ImagePath, args.Order);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -142,7 +142,8 @@ public class ActivityImageController : ControllerBase
                     ActivityId = s.ActivityId,
                     Id = s.Id,
                     ImageLocation = s.ImageSrc,
-                    ImageName = s.ImageName
+                    ImageName = s.ImageName,
+                    Order = s.Order
                 };
             }));
 
@@ -170,7 +171,8 @@ public class ActivityImageController : ControllerBase
                 return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
                     ActivityId = s.ActivityId,
                     ImageLocation = s.ImageSrc,
-                    ImageName = s.ImageName
+                    ImageName = s.ImageName,
+                    Order = s.Order
                 };
             }));
 

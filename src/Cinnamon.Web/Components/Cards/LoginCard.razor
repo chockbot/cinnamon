@@ -7,7 +7,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
- <div class="w-100 text-center"> 
+<div class="w-100 text-center">
     <form id="email-submit" method="post">
         <div class="d-flex flex-column gap-3 align-items-center">
             <div class="col-12">
@@ -20,53 +20,49 @@
         </div>
     </form>
     <div class="divider">
-            <hr class="left" />or<hr class="right" />
-        </div>
-        <div class="col-12">
-              <form id="external-account" 
-                    action="/Identity/Account/ExternalLogin" 
-                    asp-route-returnUrl="/onboarding" 
-                    method="post">
-                <input type="hidden" name="provider" value="Google">
-                <input type="hidden" name="returnUrl" value="@ReturnUrl">
-                <button class="btn btn-md btn-google" type="submit"><img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail</button>
-            </form>
-        </div>
-</div>
-<div class="modal fade" id="login-password-modal" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center">Log In</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" data-modal-id="login-password-modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card-filter">
-                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
-                    <br />
-                    <h6>Password</h6>
-                    <form id="form-signin" method="post">
-                        <div class="d-flex flex-column gap-3 align-items-center">
-                            <div class="col-12">
-                                <input id="text-password" asp-for="@Input.Password" required placeholder="Password" class="input-group fs-12" type="password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
-                                <span asp-validation-for="@Input.Password" class="text-danger"></span>
-                                <input type="hidden" id="hidden-email" asp-for="@Input.Email" />
-                            </div>
-                            @* <div id="error-message-container" class="mb-4">
-                            <ul id="error-list" class="fw-bold">
-                            <li style="font-family:'Nunito';font-size:12px;">Invalid password! Please insert correct password.</li>
-                            </ul>
-                            </div> *@
-                            <button class="btn-primary rounded-pill shadow-sm text-center" id="login-password" type="submit" style="width:100%;white-space:nowrap;padding-right:50px;">
-                                <i id="spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Log In
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <hr class="left" />or<hr class="right" />
+    </div>
+    <div class="col-12">
+          <form id="external-account" 
+                action="/Identity/Account/ExternalLogin" 
+                asp-route-returnUrl="/onboarding" 
+                method="post">
+            <input type="hidden" name="provider" value="Google">
+            <input type="hidden" name="returnUrl" value="@ReturnUrl">
+            <button class="btn btn-md btn-google" type="submit">
+                <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Gmail
+            </button>
+        </form>
     </div>
 </div>
+
+<Modal @ref="passwordModal" id="login-password-modal">
+    <ModalContent>
+        <ModalHeader>
+            <p class="col-11 modal-title text-center">Log In</p>
+            <CloseButton />
+        </ModalHeader>
+        <ModalBody>
+            <div class="card-filter">
+                <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+                <br />
+                <h6>Password</h6>
+                <form id="form-signin" method="post">
+                    <div class="d-flex flex-column gap-3 align-items-center">
+                        <div class="col-12">
+                            <input id="text-password" asp-for="@Input.Password" required placeholder="Password" class="input-group fs-12" type="password" style="border-radius:5px;border:0.5px solid black;padding:12px;background-color:#EDF2F8;font-family:'Nunito';" />
+                            <span asp-validation-for="@Input.Password" class="text-danger"></span>
+                            <input type="hidden" id="hidden-email" asp-for="@Input.Email" />
+                        </div>
+                        <button class="btn-primary rounded-pill shadow-sm text-center" id="login-password" type="submit" style="width:100%;white-space:nowrap;padding-right:50px;">
+                            <i id="spinner-loading" class="fa fa-spinner fa-spin d-none"></i> Log In
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 
 <div class="modal fade" id="verificationModal" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
     <div class="modal-dialog">
@@ -90,6 +86,9 @@
 </div>
 
 @code {
+
+    private Modal passwordModal;
+
     IJSObjectReference module;  
 
     public WaitListModel Model = new WaitListModel();

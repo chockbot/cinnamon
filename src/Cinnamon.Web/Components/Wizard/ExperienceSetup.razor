@@ -1,54 +1,41 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Models.Entities
+@using Blazorise.RichTextEdit;
+@inject IJSRuntime jsRuntime;
 
 <h3 class="fw-bold mb-2">@Resources.App.experienceSetup</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
         <li>@Resources.App.fillRequiredField</li>
+        @if(isShowImageErrorMessage)
+        {
+            <li>Can only upload total of 10mb for all images</li>
+        }
     </ul>
 </div>
-<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+
+<div class="content-creation activity-creation-experience-setup-wrapper col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+
     <div class="row">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-               @Resources.App.letsDescribeExperience 
-            </label>
-            <p>
-                @Resources.App.whatClientsGoingToDo
-                <br/><br/>
-                @Resources.App.whatClientsGoingToDoItem1<br/>
-                @Resources.App.whatClientsGoingToDoItem2<br/>
-            </p>
-        </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.Description)" maxlength="200" @bind="Model.Activity.Description"></textarea>
-                <label>200 Max</label>
-            </div>
-        </div>
-    </div>
-    <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
               @Resources.App.createExperienceSchedule 
             </label>
-            <p>
-                @Resources.App.createExperienceDescription
-            </p>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="label-paragraph">
+                Breakdown your experience by type, age group and time, this will be reflected in your experience details for customers to   and book.
+            </label>
         </div>
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @foreach (var schedule in Model.Activity.ActivitySchedules)
+            @foreach (var schedule in Model.Activity.ActivitySchedules.OrderBy(s => s.Order))
             {
-                <div draggable="true" @key=@schedule.Id id="@schedule.Id"
-                    ondragover="event.preventDefault();" 
-                    @ondragstart="@( (e) => HandleDragStart(e, schedule))"
-                    @ondrop="@(() => HandleOnDrop(schedule))"
-                    @ondragenter="@( () => HandleDragEnter(schedule))"
-                    @ondragend="HandleDragEnd"
-                >
+                <div @key=@schedule.Id id='@($"schedule-{schedule.TempId}")' data-order="@schedule.Order">
                     <ScheduleItem @key="schedule" scheduleModel="schedule" @bind-Model="Model" />
-                    <div class="center" style="width:100%;">
-                        <img class="drag-icon" draggable="false" src="/images//reorder-icon.png"/>
+                    <div class="center w-100 p-3">
+                        @* <img class="drag-icon" draggable="false" src="/images//reorder-icon.png" /> *@
+                        <Button Border="Border.Is0" Clicked='() => MoveScheduleUp(schedule)' class="btn-primary me-2">Move Up</Button>
+                        <Button Border="Border.Is0" Clicked='() => MoveScheduleDown(schedule)' class="btn-primary">Move Down</Button>
                     </div>
                     <hr class="solid"/>
                 </div>
@@ -59,42 +46,86 @@
                 @ondragenter="HandleDragEnterBottom"
             />
             <div class="button-container" style="overflow:auto; margin-top: 20px;">
-                <div style="float:left;">
+                <div class="button-add">
                     <button class="btn-primary" type="button" id="addScheduleBtn" @onclick=AddSchedule>Add</button>
                 </div>
             </div>
         </div>
     </div>
-    <div class="row mrow">
+
+    <div class="row mrow editor-specific-will-provide">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Include specifics on what you will provide
+                Include specifics on what things you will provide 
+                during your experience (optional)
             </label>
-            <p>
-                You can make your guests feel at home by giving them food and drinks, special 
-                equipment, concert tickets, or anything else unique.
-            </p>
+            <br/>
+            <label class="label-paragraph">
+                This can be training equipment, free notebook, free uniform or 
+                anything that you would want to share to your customers to make 
+                their experience unique.
+            </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.SpecificsYouWillProvide)" maxlength="200" @bind="Model.Activity.SpecificsYouWillProvide"></textarea>
-                <label>200 Max</label>
+                <RichTextEdit @ref="EditSpecificProvide"
+                            Theme="RichTextEditTheme.Snow"
+                            ContentChanged="@EditSpecificChanged"
+                            PlaceHolder="Type your post here..."
+                            SubmitOnEnter="false"
+                            ToolbarPosition="Placement.Start">
+                    <Editor></Editor>
+                    <Toolbar>
+                        <RichTextEditToolbarGroup>
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                        </RichTextEditToolbarGroup>
+                    </Toolbar>
+                </RichTextEdit>
+                <label id="label-specific-editor"></label>
             </div>
         </div>
     </div>
-    <div class="row mrow">
+
+    <div class="row mrow editor-customer-requirement-provide">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                What customers must bring with them
+               What should your customers bring 
+               with them? (optional)
             </label>
-            <p>
-                Help them get ready by being specific and writing each thing down on its own list.
-            </p>
+            <br />
+            <label class="label-paragraph">
+                Should your customer have their own tablet or computer for their
+                online experience? How about their own water bottle for their face to
+                face experience? Describe the things that they need to prepare and 
+                bring for the best experience possible.
+            </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea class="@RequiredCheck(Model.Activity.CustomerBringWithThem)" maxlength="200" @bind="Model.Activity.CustomerBringWithThem"></textarea>
-                <label>200 Max</label>
+                <RichTextEdit @ref="EditCustomerBring"
+                            Theme="RichTextEditTheme.Snow"
+                            ContentChanged="@EditCustomerRequirement"
+                            PlaceHolder="Type your post here..."
+                            SubmitOnEnter="false"
+                            ToolbarPosition="Placement.Start">
+                    <Editor></Editor>
+                    <Toolbar>
+                        <RichTextEditToolbarGroup>
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                            <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                        </RichTextEditToolbarGroup>
+                    </Toolbar>
+                </RichTextEdit>
+                <label id="label-customer-requirement-editor"></label>
             </div>
         </div>
     </div>
@@ -102,32 +133,22 @@
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Customer Requirements
+                Your requirements to your customers.
             </label>
-            <p>
-                Remember that the person who books your experience may also book spots for other people. Put them here if there are strict rules about age, skill level, or certifications.
-            </p>
+            <br />
+            <label class="label-paragraph">
+                Remember that the person who books your experience may also 
+                book spots for other people. Put them here if there are strict rules
+                about age, skill level, or certification
+            </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <label class="fw-bold">
                 Minimum Age:
             </label>   
             <input type="number" class="form-control @RequiredCheck(Model.Activity.MinimumAge.ToString())" placeholder="Minimum Age" required @bind="@Model.Activity.MinimumAge" />
-            <label class="fw-bold">
-                Can adults join?:
-            </label>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="yes" value="true" checked @oninput="CheckboxChanged">
-                <label class="form-check-label" for="yes">
-                    Yes
-                </label>
-            </div>
-            <div class="form-check">
-                <input class="form-check-input" type="radio" name="can-adults-join" id="no" value="false" @oninput="CheckboxChanged">
-                <label class="form-check-label" for="no">
-                    No
-                </label>
-            </div>
             <label class="fw-bold">
                 Levels of Activity:
             </label>
@@ -157,7 +178,9 @@
                 Additional requirements (optional):
             </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
                 <textarea maxlength="200" @bind="Model.Activity.AdditionalRequirements"></textarea>
                 <label>200 Max</label>
@@ -165,52 +188,214 @@
         </div>
     </div>
 
+    @*Category, subcategory and subcategory suggestions*@
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                @Resources.App.experienceCategory
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <select @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
+                <option disabled selected>Select Category</option>
+                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
+                {
+                    <option value="@cat.Id">@cat.Category</option>
+                }
+            </select>
+        </div>
+    </div>
+    
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Sub-category
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            @if (Model.Activity.ExperienceCategoryId != 0)
+            {
+                <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
+                    <option disabled selected>Select Subcategory</option>
+                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId).OrderBy(s =>s.Name))
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <select class="form-control @RequiredCheck(Model.Activity.SubCategoryId)" disabled>
+                    <option disabled selected>Select Sub-category</option>
+                </select>
+            }
+        </div>
+    </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Sub-category missing? You can suggest!
+            </label>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="tagsinputcontainer col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
+            <input type="text" class="form-control" @onblur="OnSuggestSubCategoryLeave" 
+                placeholder="Sub category name" size="@SearchTagLength" @bind-value="SearchTag">
+            <label>Suggested sub-category is subject for approval</label>
+        </div>
+    </div>
+    @*Upload Experience Pictures*@
     <div class="row mrow">
         <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 Post pictures!
             </label>
+            <br />
+            <label class="label-paragraph">
+                Pictures must have:
+            </label>
+                <ul>
+                    <li class="label-paragraph">Different angles and details, including photos of people at work</li>
+                    <li class="label-paragraph">Innocent, yet illuminating, snippets from the experience</li>
+                    <li class="label-paragraph">Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks</li>
+                </ul>
+        </div>
+        <div class="mb-3 px-0">
+            <label for="photo-upload" style="cursor: pointer;" >
+                <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                    Upload 3 photos (10MB)
+                </Button>
+                <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
+            </label>
+        </div>
+        <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperCoverPhotoModal" style="z-index:99999;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center">Edit Cover Photo</p>
+                        <button type="button" class="btn-close" id="btnCloseCropperCoverPhotoModal" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align:center">
+                        <div class="col-12-lg d-flex justify-content-center">
+                            <img id="imgCoverPhotoPreview" src="">
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveCropCoverPhoto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="coverPhotoData" />
+        <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperFirstSupportPhotoModal" style="z-index:99999;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center">Edit First Supporting Photo</p>
+                        <button type="button" class="btn-close" id="btnCloseCropperFirstSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align:center">
+                        <div class="col-12-lg d-flex justify-content-center">
+                            <img id="imgFirstSupportPhotoPreview" src="">
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveCropFirstPhoto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="firstPhotoData" />
+        <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperSecondSupportPhotoModal" style="z-index:99999;">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center">Edit Second Supporting Photo</p>
+                        <button type="button" class="btn-close" id="btnCloseCropperSecondSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="text-align:center">
+                        <div class="col-12-lg d-flex justify-content-center">
+                            <img id="imgSecondSupportPhotoPreview" src="">
+                        </div>
+                        <button class="btn btn-primary" id="btnSaveCropSecondPhoto">Save</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="secondPhotoData" />
+        <div class="activity-image-dragable">
+            <DropContainer TItem="ImageItem" Items="imageItems" ItemsFilter="@((item,dropZone) => item.Group == dropZone)" Display="Display.Flex">
+                <ChildContent>
+                    <DropZone TItem="ImageItem" Name="Image" AllowReorder>
+                    </DropZone>
+                </ChildContent>
+                <ItemTemplate>
+                    <div class="image-container @context.Id">
+                        <div class="hover-move-image">
+                            <Button Clicked='() => MovePrevious(context)' Border="Border.Is0" class="btn-primary mb-1" Type="ButtonType.Button">&#60;&#60;</Button>
+                            <Button Clicked='() => MoveNext(context)' Border="Border.Is0" class="btn-primary mt-1" Type="ButtonType.Button">&#62;&#62;</Button>
+                        </div>
+                        <img id="@context.Id" name="@context.Id" class='experience-image img-banner invalid'
+                            src="@context.Src" data-name="@context.DataName" />
+                    </div>
+                </ItemTemplate>
+            </DropContainer>
+        </div>
+        <div class="activity-image-photos-label" style="text-align:center">
+            <p>This is your cover photo</p>
+            <p>Supporting photo</p>
+            <p>Supporting photo</p>
+        </div>
+        <div class="activity-image-photos-label" style="text-align:center">
             <p>
-                Pictures must have:<br/>
-                -Different angles and details, including photos of people at work<br/>
-                -Innocent, yet illuminating, snippets from the experience<br/>
-                -Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks<br/>
+                <label for="cover-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="cover-photo" accept=".png,.jpg,.jpeg" name="cover-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 0))" />
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(0))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+
+            </p>
+            <p>
+                <label for="first-support-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="first-support-photo" accept=".png,.jpg,.jpeg" name="first-support-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 1))" />
+                </label>
+             
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(1))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
+            </p>
+            <p>
+                <label for="second-support-photo" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        <i class="fa fa-edit"></i>
+                    </Button>
+                    <InputFile id="second-support-photo" accept=".png,.jpg,.jpeg" name="second-support-photo" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, 2))" />
+                </label>
+                <label style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(2))">
+                        <i class="fa fa-trash"></i>
+                    </Button>
+                </label>
             </p>
         </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
-            <div>
-                <ImageCacheItem @ref="Image1" InputId="image-input-1" ImageId="image-src-1"  /> 
-                <p>This is your cover photo</p>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
-            <div>
-                <ImageCacheItem @ref="Image2" InputId="image-input-2" ImageId="image-src-2"  /> 
-                <p>Supporting photo</p>
-            </div>
-        </div>
-
-        <div class="col-lg-4 col-md-4 col-sm-4 col-4 label-container-section text-lg-start text-md-start text-sm-center">
-             <div>
-                <ImageCacheItem @ref="Image3" InputId="image-input-3" ImageId="image-src-3"  /> 
-                <p>Supporting photo</p>
-            </div>
-        </div>
-
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-6 col-6 text-lg-start text-md-start text-sm-center">
-            <div>Upload 3 photos (10MB)</div>
-        </div>
-            @* <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center" hidden="@viewModel.maxImageUploaded"></div> *@
-            @* <div class="textarea-container col-lg-4 col-md-4 col-sm-4 col-4 text-lg-start text-md-start text-sm-center">
-                <label for="fileinput">
-                    <button class="btn-primary" style="pointer-events: none;" type="button">Upload</button>
-                </label>
-                <div class="custom-input-hide">
-                <InputFile id="fileinput" accept=".png,.jpg,.jpeg,.tiff,.gif" OnChange="@LoadFiles"/>
-                </div>
-            </div> *@
+        @if(!string.IsNullOrEmpty(imagesErrorMessage))
+        {
+            <p class="activity-image-photos-error-message">@imagesErrorMessage</p>
+        }
     </div>
 
     <div class="row mrow">
@@ -231,14 +416,64 @@
     public Models.ExperienceCreationModel Model {get; set;}
 
     private ImageCacheItem Image1 {get; set;}
-    
+
     private ImageCacheItem Image2 {get; set;}
 
     private ImageCacheItem Image3 {get; set;}
 
+    public string SearchTag { get; set; }
+
+    public int SearchTagLength { get; set; } = 0;
+
+    private RichTextEdit EditSpecificProvide;
+
+    private RichTextEdit EditCustomerBring;
+
+    private bool isShowImageErrorMessage = false;
+
+    private int maxEditorWordLimit = 80;
+
+    private int selectedImageCount = 0;
+
+    private int validImages = 0;
+
+    private decimal totalImageSizeMB = 0;
+
+    private string imagesErrorMessage = string.Empty;
+
+    private IList<ImageItem> imageItems = new List<ImageItem>();
+
+    private string emptyImageSrc = "https://i1.wp.com/www.slntechnologies.com/wp-content/uploads/2017/08/ef3-placeholder-image.jpg";
+
+    List<FileDetails> fileDetails = new List<FileDetails>()
+        {
+            new FileDetails{ Id = 0, ImageId = "#imgSrc1", FileControlId = "#cover-photo"},
+            new FileDetails{ Id = 1, ImageId = "#imgSrc2", FileControlId = "#first-support-photo"},
+            new FileDetails{ Id = 2, ImageId = "#imgSrc3", FileControlId = "#second-support-photo"}
+        };
+
+    IJSObjectReference module;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await Task.Delay(3000);
+            await jsRuntime
+                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-specific-will-provide .ql-container","#label-specific-editor",maxEditorWordLimit);
+
+            await jsRuntime
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init",".editor-customer-requirement-provide .ql-container","#label-customer-requirement-editor",maxEditorWordLimit);
+
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+        }
+    }
+
     protected override void OnInitialized()
     {
-        base.OnInitialized();
+        imageItems.Add(new ImageItem {Name = "Image1", Id = "imgSrc1", Group = "Image", DataName = "", Src = emptyImageSrc});
+        imageItems.Add(new ImageItem {Name = "Image2", Id = "imgSrc2", Group = "Image", DataName = "", Src = emptyImageSrc});
+        imageItems.Add(new ImageItem {Name = "Image3", Id = "imgSrc3", Group = "Image", DataName = "", Src = emptyImageSrc});
         AddSchedule();
     }
 
@@ -259,6 +494,45 @@
         }
 
         return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (Model.HasError && (value == null || value.Value == 0))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    public void Enter(KeyboardEventArgs e)
+    {
+        if (e.Code == "Comma")
+        {
+            bool condition = Model.Activity.SearchTags.Count < 5 &&
+                                (Model.Activity.SearchTags.Where(x => x.ToLower() == SearchTag.ToLower())
+                                    .FirstOrDefault()) == null;
+            if (condition)
+            {
+                Model.Activity.SearchTags.Add(SearchTag);
+            }
+
+            SearchTag = string.Empty;
+        }
+    }
+
+    private string RequiredCheck(IEnumerable<string> searchTags)
+    {
+        if (Model.HasError && Model.Activity.SearchTags.Count == 0)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private void RemoveSearchTag(string tag)
+    {
+        Model.Activity.SearchTags.Remove(tag);
     }
 
     private string ShowErrorMessage()
@@ -317,11 +591,17 @@
     {
         // Get Next Number
         var maxIdItem = Model.Activity.ActivitySchedules.MaxBy(x => x.Id);
+        var MaxOrder = Model.Activity.ActivitySchedules.MaxBy(s => s.Order);
         var maxId = 0;
+        int order = 0;
         if (maxIdItem != null) {
-            maxId = (int)maxIdItem.Id; 
+            maxId = maxIdItem.Id;
         }
-        Model.Activity.ActivitySchedules.Add(new ActivitySchedule {Id = maxId + 1});
+        if(MaxOrder != null)
+        {
+            order = maxIdItem.Order;
+        }
+        Model.Activity.ActivitySchedules.Add(new ActivitySchedule {Id = maxId + 1, PerUnit1 = 1, PerUnit2 = 1, Order = order + 1});
     }
 
     private ActivitySchedule? DraggedItem;
@@ -330,28 +610,34 @@
 
     public bool IsAllFieldsValidated()
     {
-        if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
+        //if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
         if(!IsAllSchedulesValid()) return false;
-        if(string.IsNullOrEmpty(Model.Activity.SpecificsYouWillProvide)) return false;
-        if(string.IsNullOrEmpty(Model.Activity.CustomerBringWithThem)) return false;
+        //if(string.IsNullOrEmpty(Model.Activity.SpecificsYouWillProvide)) return false;
+        //if(string.IsNullOrEmpty(Model.Activity.CustomerBringWithThem)) return false;
         if(string.IsNullOrEmpty(Model.Activity.ActivityLevel)) return false;
         if(string.IsNullOrEmpty(Model.Activity.SkillLevel)) return false;
-        if(!IsAllImagesValid()) return false;
+        if(Model.Activity.ExperienceCategoryId <= 0) return false;
+        //if(Model.Activity.SearchTags.Count == 0) return false;
+        //if(!IsAllImagesValid()) return false;
+        if(!IsAllImageSizeAccepted()) return false;
+        if(IsImagesInvalid) return false;
         return true;
     }
 
     private bool IsAllSchedulesValid()
     {
+        bool isSingle = Model.Activity.ActivitySchedules.Count == 1;
+
         foreach(var schedule in Model.Activity.ActivitySchedules)
         {
-            if(string.IsNullOrEmpty(schedule.Name) ||
+            if((string.IsNullOrEmpty(schedule.Name) ||
                 string.IsNullOrEmpty(schedule.DateTime) ||
                 schedule.Price <= 0 ||
                 string.IsNullOrEmpty(schedule.UnitPrice) ||
                 schedule.PerUnit1 <= 0 ||
                 string.IsNullOrEmpty(schedule.PriceUnit1) ||
                 schedule.PerUnit2 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit2)) return false;
+                string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle)) return false;
         }
         return true;
     }
@@ -359,5 +645,212 @@
     private bool IsAllImagesValid()
     {
         return !(Image1.HaveEmptyImage() || Image2.HaveEmptyImage() || Image3.HaveEmptyImage());
+    }
+
+    private bool IsAllImageSizeAccepted()
+    {
+        var totalSize = totalImageSizeMB;
+
+        bool isReachLimit = totalSize > 10;
+
+        isShowImageErrorMessage = isReachLimit;
+
+        return !isReachLimit;
+    }
+
+    private async Task EditSpecificChanged()
+    {
+        Model.Activity.SpecificsYouWillProvide = await EditSpecificProvide.GetHtmlAsync();
+    }
+
+    private async Task EditCustomerRequirement()
+    {
+        Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync();
+    }
+
+    private void OnSuggestSubCategoryLeave()
+    {
+        Model.Activity.SearchTags.Add(SearchTag);
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        selectedImageCount = e.FileCount;
+        totalImageSizeMB = 0;
+        imagesErrorMessage = string.Empty;
+
+        if (selectedImageCount > 3)
+        {
+            imagesErrorMessage = "Must only select 3 images only";
+            return;
+        }
+
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
+        }
+
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 10mb";
+        }
+        else
+        {
+            var images = await jsRuntime
+                       .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", "#photo-upload", new string[] { "#imgSrc1", "#imgSrc2", "#imgSrc3" });
+
+            // update image src state
+            for (int i = 0; i < imageItems.Count; i++)
+            {
+                if (images.Count > i)
+                {
+                    imageItems[i].Src = images[i].Url;
+                    imageItems[i].DataName = images[i].FileName;
+                    imageItems[i].IsValid = true;
+                }
+                else
+                {
+                    imageItems[i].IsValid = false;
+                }
+            }
+
+            validImages = imageItems.Count(i => i.IsValid);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e, int index)
+    {
+        totalImageSizeMB = 0;
+        imagesErrorMessage = string.Empty;
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
+        }
+
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 10mb";
+        }
+        else
+        {
+            var images = await jsRuntime
+            .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
+
+            if (imageItems.Count > 0)
+            {
+                imageItems[index].Src = images.FirstOrDefault()?.Url;
+                imageItems[index].DataName = images.FirstOrDefault()?.FileName;
+                imageItems[index].IsValid = true;
+            }
+
+            validImages = imageItems.Count(i => i.IsValid);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task RemoveFile(int index)
+    {
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var images = await jsRuntime
+        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.imageHelper.loadEmptySrc", imageDetails?.ImageId);
+
+        if (imageItems.Count > 0)
+        {
+            imageItems[index].Src = string.Empty;
+            imageItems[index].IsValid = false;
+        }
+
+
+        validImages = imageItems.Count(i => i.IsValid);
+
+        StateHasChanged();
+    }
+
+    private class FileDetails
+    {
+        public int Id { get; set; }
+        public string ImageId { get; set; }
+        public string FileControlId { get; set; }
+    }
+
+    private async Task MoveNext(ImageItem item)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.moveNext",$".{item.Id}");
+    }
+
+    private async Task MovePrevious(ImageItem item)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.moveImage.movePrevious",$".{item.Id}");
+    }
+
+    private bool IsImagesOverLimit {
+        get{
+            return totalImageSizeMB > 10;
+        }
+    }
+
+    private bool IsImagesInvalid 
+    {
+        get{
+            return IsImagesOverLimit || (validImages != 3);
+        }
+    }
+    
+    private void MoveScheduleUp(ActivitySchedule selected)
+    {
+        var orderedSchedules = Model.Activity.ActivitySchedules.OrderBy(s => s.Order).ToList();
+        for(int i =0; i < orderedSchedules.Count; i++)
+        {
+            var schedule = orderedSchedules[i];
+            if(selected == schedule)
+            {
+                if(i > 0)
+                {
+                    orderedSchedules[i-1].Order += 1;
+                    schedule.Order -=1;
+                }
+            }
+        }
+    }
+
+    private void MoveScheduleDown(ActivitySchedule selected)
+    {
+        var orderedSchedules = Model.Activity.ActivitySchedules.OrderBy(s => s.Order).ToList();
+        for(int i =0; i < orderedSchedules.Count; i++)
+        {
+            var schedule = orderedSchedules[i];
+            if(selected == schedule)
+            {
+                if(i != orderedSchedules.Count -1)
+                {
+                    orderedSchedules[i+1].Order -= 1;
+                    schedule.Order +=1;
+                }
+            }
+        }
+    }
+
+    private class ImageItem 
+    {
+        public string Name {get; set;}
+        public string Id {get; set;}
+        public string Group {get; set;}
+        public string DataName {get; set;}
+        public string Src {get; set;}
+        public bool IsValid { get; set; }
+    }
+
+    private class ImageUrl
+    {
+        public string Url {get; set;}
+        public string FileName {get; set;}
     }
 }

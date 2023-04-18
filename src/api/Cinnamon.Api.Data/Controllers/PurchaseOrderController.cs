@@ -45,9 +45,11 @@ public class PurchaseOrderController : ControllerBase
     {
         try
         {
-            var result =
-                args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await purchaseOrderRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+            bool isHaveFilter = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.CustomerId.HasValue || args.Status.HasValue;
+
+            var result = isHaveFilter?
+                await purchaseOrderRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, 
+                    args.IncludeActivity, args.IncludeSchedule, args.CustomerId, args.Status) :
                 await purchaseOrderRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -56,8 +58,8 @@ public class PurchaseOrderController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue ?
-                await purchaseOrderRepository.GetAllAsync(null, null) :
+            var all = isHaveFilter ?
+                await purchaseOrderRepository.GetAllAsync(null, null, null, null, null, null) :
                 await purchaseOrderRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
@@ -94,7 +96,8 @@ public class PurchaseOrderController : ControllerBase
         try
         {
             var result = await purchaseOrderRepository.Create(args.ActivityId, args.ScheduleId, args.CustomerId,
-                args.Total, args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal);
+                args.Total, args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, 
+                args.Status, args.Payload ?? string.Empty, args.CreditAmount);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -117,7 +120,7 @@ public class PurchaseOrderController : ControllerBase
         try
         {
             var result = await purchaseOrderRepository.Update(args.PurchaseOrderId, args.ScheduleId, args.Total,
-                args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal);
+                args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, args.Status, args.CreditAmount);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -129,6 +132,53 @@ public class PurchaseOrderController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdatePurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetAllPurchaseOrderNeedToPayout")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllPurchaseOrderResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllPurchaseOrderNeedToPayout()
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.GetAllPurchaseOrderNeedToPayout();
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllPurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllPurchaseOrderResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllPurchaseOrderResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdatePurchaseOrdersStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdatePurchaseOrdersStatusResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdatePurchaseOrdersStatus([FromBody] UpdatePurchaseOrdersStatusArgs args)
+    {
+        try
+        {
+            var result = await purchaseOrderRepository.UpdatePurchaseOrdersStatus(args.Ids, args.Status);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdatePurchaseOrdersStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdatePurchaseOrdersStatusResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdatePurchaseOrdersStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

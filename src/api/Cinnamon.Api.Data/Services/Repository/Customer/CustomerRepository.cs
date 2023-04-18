@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Cinnamon.Api.Data.Services.Repository.Interfaces;
-using Entities = Cinnamon.Api.Data.Repository.Entities;
-using Cinnamon.Framework.Common;
-using Cinnamon.Api.Data.Repository.Interfaces;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
-using Cinnamon.Framework.ApiCommand.ApiData.DTO.Waitlist;
-
+﻿using System.Linq.Expressions;
 using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Api.Data.Repository.Interfaces;
+using Cinnamon.Api.Data.Services.Repository.Interfaces;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.Common;
+using Microsoft.AspNetCore.Identity;
+using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Customer;
 
@@ -24,6 +23,54 @@ public class CustomerRepository : ICustomerRepository
         this.userManager = userManager;
         this.userStore = userStore;
         this.emailStore = GetEmailStore();
+    }
+
+    public async Task<AppResult<string>> GenerateResetPasswordToken(string email)
+    {
+        try
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return AppResult<string>.CreateFailed(new ApplicationException("Invalid email provided"), "Invalid email provided");
+            }
+
+            var token = await userManager.GeneratePasswordResetTokenAsync(user);
+            if(string.IsNullOrEmpty(token))
+            {
+                return AppResult<string>.CreateFailed(new ApplicationException("An error occured when generate token."), "An error occured when generate token.");
+            }
+
+            return AppResult<string>.CreateSucceeded(token, "Successfully generate token for reset password");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<string>.CreateFailed(ex, "An error occured when generating reset password token");
+        }
+    }
+
+    public async Task<AppResult<bool>> ResetPassword(string email, string token, string newPassword)
+    {
+        try
+        {
+            var user = await userManager.FindByEmailAsync(email);
+            if(user == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("Can't find customer account."), "Can't find customer account.");
+            }
+
+            var result = await userManager.ResetPasswordAsync(user, token, newPassword);
+            if(!result.Succeeded)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException("An error occured when updating password"), "An error occured when updating password");
+            }
+
+            return AppResult<bool>.CreateSucceeded(true, "Successfully reset password");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when resetting password");
+        }
     }
 
     public async Task<AppResult<CustomerDTO>> CheckLogin(string email, string password)
@@ -59,10 +106,12 @@ public class CustomerRepository : ICustomerRepository
                 FirstName = validCustomer.FirstName,
                 Id = validCustomer.Id,
                 IsMaker = validCustomer.IsMaker,
-                IsVerified = validCustomer.IsVerified,
+                IsVerified = validCustomer.IsVerifiedBadge,
                 LastName = validCustomer.LastName,
                 ProfileImg = validCustomer.ProfilePath,
-                DateJoined = validCustomer.DateJoined
+                DateJoined = validCustomer.DateJoined,
+                Handler = validCustomer.Handler,
+                TotalCredits = validCustomer.TotalCredits
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customer, "Success checking login credential");
@@ -74,7 +123,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, 
-        string? about, string profilePath, bool ismaker, bool externalLogin)
+        string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms)
     {
         try
         {
@@ -98,8 +147,10 @@ public class CustomerRepository : ICustomerRepository
                 IsMaker = ismaker,
                 FirstName = firstname,
                 LastName = lastname,
-                IsVerified = false,
+                IsVerifiedBadge = 0,
                 UserId = userId,
+                Handler = handler,
+                HasAcceptedTerms = hasAcceptedTerms
             };
 
             var createdCustomerRes = await dataStore.Customer.Add(customer);
@@ -117,11 +168,12 @@ public class CustomerRepository : ICustomerRepository
                 Email = createdCustomer.Email,
                 FirstName = createdCustomer.FirstName,
                 LastName = createdCustomer.LastName,
-                IsVerified = createdCustomer.IsVerified,
+                IsVerified = createdCustomer.IsVerifiedBadge,
                 ExternalLogin = createdCustomer.ExternalLogin,
                 IsMaker = createdCustomer.IsMaker,
                 Id = createdCustomer.Id,
-                ProfileImg = createdCustomer.ProfilePath
+                ProfileImg = createdCustomer.ProfilePath,
+                Handler = createdCustomer.Handler
 
             }, "Successfully created customer data");
         }
@@ -132,7 +184,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, 
-        DateTime birthdate, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword)
+        DateTime birthdate, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms)
     {
         try
         {
@@ -156,7 +208,7 @@ public class CustomerRepository : ICustomerRepository
 
             var userId = await userManager.GetUserIdAsync(user);
 
-            return await Create(userId, firstname, lastname, email, birthdate, about, profilePath, isMaker, externalLogin);
+            return await Create(userId, firstname, lastname, email, birthdate, about, profilePath, isMaker, externalLogin, handler, hasAcceptedTerms);
         }
         catch (Exception ex)
         {
@@ -164,11 +216,15 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified, int? count, int? skip)
+    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified, int? count, int? skip, string? handlerLike = null)
     {
         try
         {
-            var result = await dataStore.Customer.FindAsync(i => isVerified.HasValue ? i.IsVerified == isVerified.Value : true,count, skip);
+            Expression<Func<Entities.Customer,bool>> filter = 
+                a => /*(isVerified.HasValue ? a.IsVerified == isVerified.Value : true) &&*/
+                    (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower()));
+
+            var result = await dataStore.Customer.FindAsync(filter,count, skip);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -187,8 +243,14 @@ public class CustomerRepository : ICustomerRepository
                     LastName = c.LastName,
                     Id = c.Id,
                     IsMaker = c.IsMaker,
-                    IsVerified = c.IsVerified,
+                    IsVerified = c.IsVerifiedBadge,
+                    IsOG = c.IsOG,
+                    IsOfficial = c.IsOfficialPartner,
                     ProfileImg = c.ProfilePath,
+                    Handler = c.Handler,
+                    BackIdImagePath = c.BackIdImagePath,
+                    FrontIdImagePath = c.FrontIdImagePath,
+                    TotalCredits = c.TotalCredits
                 };
             });
 
@@ -223,8 +285,12 @@ public class CustomerRepository : ICustomerRepository
                     LastName = c.LastName,
                     Id = c.Id,
                     IsMaker = c.IsMaker,
-                    IsVerified = c.IsVerified,
+                    IsVerified = c.IsVerifiedBadge,
+                    IsOG = c.IsOG,
+                    IsOfficial = c.IsOfficialPartner,
                     ProfileImg = c.ProfilePath,
+                    Handler =c.Handler,
+                    TotalCredits = c.TotalCredits
                 };
             });
 
@@ -256,8 +322,12 @@ public class CustomerRepository : ICustomerRepository
                 LastName = result.Result.LastName,
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
-                IsVerified = result.Result.IsVerified,
+                IsVerified = result.Result.IsVerifiedBadge,
+                IsOG = result.Result.IsOG,  
+                IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
+                Handler = result.Result.Handler,
+                TotalCredits = result.Result.TotalCredits
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by email");
@@ -289,8 +359,12 @@ public class CustomerRepository : ICustomerRepository
                 LastName = result.Result.LastName,
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
-                IsVerified = result.Result.IsVerified,
+                IsVerified = result.Result.IsVerifiedBadge,
+                IsOG = result.Result.IsOG,
+                IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
+                Handler = result.Result.Handler,
+                TotalCredits = result.Result.TotalCredits
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by id");
@@ -298,6 +372,43 @@ public class CustomerRepository : ICustomerRepository
         catch (Exception ex)
         {
             return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in getting customer by id");
+        }
+    }
+
+    public async Task<AppResult<CustomerDTO>> GetByHandlerAsync(string handler)
+    {
+        try
+        {
+            var result = await dataStore.Customer.FindFirstAsync(c => c.Handler == handler);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<CustomerDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var customerDTO = new CustomerDTO
+            {
+                About = result.Result.About,
+                Birthdate = result.Result.Birthdate,
+                DateJoined = result.Result.CreatedOn,
+                Email = result.Result.Email,
+                ExternalLogin = result.Result.ExternalLogin,
+                FirstName = result.Result.FirstName,
+                LastName = result.Result.LastName,
+                Id = result.Result.Id,
+                IsMaker = result.Result.IsMaker,
+                IsVerified = result.Result.IsVerifiedBadge,
+                IsOG = result.Result.IsOG,
+                IsOfficial = result.Result.IsOfficialPartner,
+                ProfileImg = result.Result.ProfilePath,
+                Handler = result.Result.Handler,
+                TotalCredits = result.Result.TotalCredits
+            };
+
+            return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by handler");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerDTO>.CreateFailed(ex, "An error occured in getting customer by handler");
         }
     }
 
@@ -343,7 +454,8 @@ public class CustomerRepository : ICustomerRepository
         }
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, 
-        string? about, string? profilePath, bool? ismaker, bool? externalLogin, bool? isVerified, string? frontIdImagePath, string? backIdImageParh)
+        string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, string? frontIdImagePath, string? backIdImageParh,
+        decimal? totalCredits)
     {
         try
         {
@@ -363,9 +475,10 @@ public class CustomerRepository : ICustomerRepository
             customer.ProfilePath = profilePath ?? customer.ProfilePath;
             customer.IsMaker = ismaker ?? customer.IsMaker;
             customer.ExternalLogin = externalLogin ?? customer.ExternalLogin;
-            customer.IsVerified = isVerified ?? customer.IsVerified;
+            customer.IsVerifiedBadge = isVerified ?? customer.IsVerifiedBadge;
             customer.FrontIdImagePath = frontIdImagePath ?? customer.FrontIdImagePath;
             customer.BackIdImagePath = backIdImageParh ?? customer.BackIdImagePath;
+            customer.TotalCredits = totalCredits ?? customer.TotalCredits;
 
             var updatedCustomerRes = await dataStore.Customer.Update(customer);
             if (!updatedCustomerRes.Succeeded)
@@ -384,8 +497,10 @@ public class CustomerRepository : ICustomerRepository
                 ExternalLogin = customer.ExternalLogin,
                 Id = customer.Id,
                 IsMaker = customer.IsMaker,
-                IsVerified = customer.IsVerified,
-                ProfileImg = customer.ProfilePath
+                IsVerified = customer.IsVerifiedBadge,
+                ProfileImg = customer.ProfilePath,
+                Handler = customer.Handler,
+                TotalCredits = customer.TotalCredits
             }, "Successfully updated customer data");
         }
         catch (Exception ex)

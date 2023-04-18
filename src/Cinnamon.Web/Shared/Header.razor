@@ -1,118 +1,185 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Security.Claims
+@inherits LayoutComponentBase
+@using Cinnamon.Web.Models.Layout;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Components;
 @inject NavigationManager NavigationManager
-@using Cinnamon.Web.Components.Modals
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAccountApiHandler accountApiHandler;
 
 
 <PageTitle>Cinnamon.Web</PageTitle>
 
 <div class="page">
     <main>
-    <div class="top-row px-4">
-        <!--App Name-->
-        <div class="app-name col-lg-3 col-md-3">
-            <a href="/explore" class="app-name">@Resources.App.appName</a>
-        </div>
-        <!--Menu-->
+        <div class="top-row px-4">
+            <!--App Name-->
+            <div class="app-name col-lg-3 col-md-3">
+                <a href="/explore" class="app-name">@Resources.App.appName</a>
+            </div>
+            <!--Menu-->
             <div class="d-flex flex-row justify-content-end" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
-                @* @if (UserModel != null && UserModel.IsMaker)
+                @if (Model.Profile != null && Model.Profile.IsMaker)
                 {
                     <div class="become">
                         <a @onclick="NavigateToDashboard" class="btn border-0">Go to Dashboard</a>
                     </div>
-                }
+                } 
                 else
                 {
                     <div class="become">
                         <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
                     </div>
-                } *@
+                }
+                @*DESKTOP*@
                 <div class="dropdown">
-                    <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
+                    <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" 
+                        aria-expanded="false" border="none" @onclick="onClickMenu">
                         <div class="menu">
                             <img src="images/menu.png">
-                           @* <span class="menu-label">@Resources.App.menu</span>*@
                         </div>
                     </button>
                     <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
-                        @if (AuthState != null)
+                        @if (Model.IsAuthenticated)
                         {
-                            @if (AuthState.User.Identity.IsAuthenticated)
-                            {
-                                @* if (UserModel != null && UserModel.IsMaker)
-                                {
-                                    <li class="dropdown-item">
-                                        <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
-                                    </li>
-                                } *@
-                                <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToAccount" Text="Account" />
-                                </li>
-                                <li class="dropdown-item">
-                                    <form class="form-inline" asp-area="Identity" action="Identity/Account/Logout" method="post">
-                                        <button type="submit" class="btn border-0">
-                                            Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            }
-                            else
+                            if (Model.Profile != null && Model.Profile.IsMaker)
                             {
                                 <li class="dropdown-item">
-                                    <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#loginModal">
-                                        @Resources.App.Sign
-                                    </button>
+                                    <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
                                 </li>
                             }
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToAccount" Text="Account" />
+                            </li>
+                            <li class="dropdown-item">
+                                <Button Border="Border.Is0" Clicked="Logout">
+                                    Logout
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
+                            </li>
                         }
                         else
                         {
                             <li class="dropdown-item">
-                                <button type="button" class="btn border-0" data-bs-toggle="modal" data-bs-target="#sigupModal">
+                                <Button Border="Border.Is0" Clicked="() => signinModal.Show()">
                                     @Resources.App.Sign
-                                </button>
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
+                            </li>
+                        }
+                    </ul>
+                </div>
+                @*MOBILE*@
+                 <div class="dropdown-mobile">
+                    <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" 
+                        aria-expanded="false" border="none" @onclick="onClickMenu">
+                        <div class="menu">
+                            <img src="images/menu.png">
+                        </div>
+                    </button>
+                    <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
+                        @if (Model.IsAuthenticated)
+                        {
+                            if (Model.Profile != null && Model.Profile.IsMaker)
+                            {
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                </li>
+                            }
+                            else if (Model.Profile != null && !Model.Profile.IsMaker)
+                            {
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                                </li>
+                            }
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToAccount" Text="Account" />
+                            </li>
+                            <li class="dropdown-item">
+                                <Button Border="Border.Is0" Clicked="Logout">
+                                    Logout
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="dropdown-item">
+                                <Button Border="Border.Is0" Clicked="() => signinModal.Show()">
+                                    @Resources.App.Sign
+                                </Button>
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                            </li>
+                            <li class="dropdown-item">
+                                <NavButton OnClick="NavigateToHelp" Text="Help" />
                             </li>
                         }
                     </ul>
                 </div>
             </div>
-    </div>
+        </div>
         <article class="content">
             @Body
         </article>
     </main>
-    <ModalSignUp></ModalSignUp>
 </div>
 
-@if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
-{
-    <ModalLogin ReturnUrl="@NavigationManager.Uri"></ModalLogin>
-}
+<ModalLogin @ref="signinModal" />
+
 
 @code 
 {
-    public bool clickButton { get; set; }
-    //public CustomerModel UserModel = new CustomerModel();
-    public AuthenticationState AuthState { get; set; }
-    private bool mouseEnter { get; set; }
-     protected override async Task OnInitializedAsync()
-    {
-        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    private ModalLogin signinModal {get; set;}
 
-        //if(AuthState != null && AuthState.User.Identity.IsAuthenticated)
-        //{
-        //    var email = AuthState.User.FindFirstValue(ClaimTypes.Email);
-        //    UserModel = await CoreDI.DataStore.Customers.GetCustomerByEmailAsync(email);
-        //}
+    public bool clickButton { get; set; }
+
+    private bool mouseEnter { get; set; }
+
+    private HeaderModel Model {get; set;} = new();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if(user.Identity != null && user.Identity.IsAuthenticated && token != null)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                // map only required field
+                Model.Profile = new Models.Entities.CustomerProfile {
+                    IsMaker = result.Result.Result.IsMaker
+                };
+                Model.IsAuthenticated = true;
+            }
+        }
     }
 
     private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");
     }
+
     private void NavigateToAccount()
     {
         NavigationManager.NavigateTo("/customer/profile");
+    }
+    private void NavigateToHelp()
+    {
+        NavigationManager.NavigateTo("/Help");
+    }
+    private void NavigateToCreation()
+    {
+        NavigationManager.NavigateTo("/Onboarding", true);
     }
     
     private void onClickMenu()
@@ -136,6 +203,11 @@
     private void OnMouseEnter()
     {
         mouseEnter = !mouseEnter;
+    }
+
+    private void Logout()
+    {
+        NavigationManager.NavigateTo("/api/account/logout", true);
     }
 }
 

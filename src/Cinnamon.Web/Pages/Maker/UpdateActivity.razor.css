@@ -1,40 +1,58 @@
 /* Style the form */
 
 * {
-    font-family: 'Varela Round', sans-serif;
+  font-family: "Varela Round", sans-serif;
 }
 
 .publish-container {
-    font-family: 'Nunito';
-    width: 80%;
-    padding: 5rem;
-    text-align: center;
-    margin-left: 10%;
+  font-family: "Nunito";
+  width: 80%;
+  padding: 5rem;
+  text-align: center;
+  margin-left: 10%;
 }
 
 .publish-text h2 {
-    font-size: 4vw;
+  font-size: 4vw;
 }
 .publish-text h6 {
-    margin-top: 2rem;
+  margin-top: 2rem;
 }
 .button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 40px;
+  display: flex;
+  justify-content: center;
+  margin-top: 40px;
 }
 
-.btn-primary {
+::deep .button-container .btn-primary {
     color: #fff;
     background-color: var(--primary);
     border-color: var(--primary);
     height: auto;
     padding: 5px;
-    font-size: 1.2vw;
-    font-family: 'Nunito-Bold';
+    font-size: 20px;
+    font-family: "Nunito-Bold";
     border-width: 0px;
     margin: 0 auto;
     border-radius: 5px;
+    height: 55px;
+    width: 130px;
+    border-radius: 5px;
+}
+::deep .button-container .btn-back {
+    color: white;
+    background-color: #D9D9D9;
+    border-color: #D9D9D9;
+    padding: 5px;
+    font-size: 20px;
+    font-family: "Nunito-Bold";
+    height: 55px;
+    width: 100px;
+    border-radius: 5px;
+    margin-right: 20px;
+}
+::deep .fa-spin {
+    font-size: 15px;
 }
 
 #regForm {
@@ -48,174 +66,198 @@
 }
 
 a {
-    text-decoration: none;
-    font-family: 'Nunito';
-    color: #000000;
+  text-decoration: none;
+  font-family: "Nunito";
+  color: #000000;
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
-    content: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0yLjUgMEwxIDEuNSAzLjUgNCAxIDYuNSAyLjUgOGw0LTQtNC00eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+);
+  content: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0yLjUgMEwxIDEuNSAzLjUgNCAxIDYuNSAyLjUgOGw0LTQtNC00eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+);
 }
 /* Mark input boxes that gets an error on validation: */
 input.invalid {
-    background-color: #ffdddd;
+  background-color: #ffdddd;
 }
 
 /* Hide all steps by default: */
 .tab {
-    display: none;
+  display: none;
 }
 /* Make circles that indicate the steps of the form: */
 .step {
-    opacity: 0.5;
-    display: flex;
-    align-items: center;
+  opacity: 0.5;
+  display: flex;
+  align-items: center;
 }
 
 .tab.show {
-    display: inline;
+  display: inline;
 }
 
 .icon-step {
-    height: 23px;
-    width: 23px;
-    margin: 0 2px;
-    background-color: #bbbbbb;
-    border: none;
-    border-radius: 50%;
-    display: inline-block;
-    opacity: 0.5;
-    text-align: center;
-    font-size: 1rem;
-    margin-left: 10px;
+  height: 23px;
+  width: 23px;
+  margin: 0 2px;
+  background-color: #bbbbbb;
+  border: none;
+  border-radius: 50%;
+  display: inline-block;
+  opacity: 0.5;
+  text-align: center;
+  font-size: 1rem;
+  margin-left: 10px;
 }
 
-.progress-container {
-    width: 100%;
-    font-size: 1.3rem;
-    background-color: white;
-    padding: 20px;
-    margin: 1px auto;
-    position: fixed;
-    top: 50px;
+/*.progress-container {
+  width: 100%;
+  font-size: 1.3rem;
+  background-color: white;
+  padding: 20px;
+  margin: 1px auto;
+  position: fixed;
+  top: 50px;
 }
 
 .progress-bar {
-    background-color: #FFA942;
-}
+  background-color: #00875a;
+}*/
 
 /* Mark the active step: */
 .icon-step.active {
-    opacity: 1;
-    background-color: #FFA942;
+  opacity: 1;
+  background-color: #ffa942;
 }
 
 .step.active {
-    opacity: 1;
+  opacity: 1;
 }
 
 .step.finish {
-    color: black;
-    opacity: 1;
+  color: black;
+  opacity: 1;
 }
 
 /* Mark the steps that are finished and valid: */
 .icon-step.finish {
-    background-color: #107c41;
-    color: black;
-    opacity: 1;
+  background-color: #107c41;
+  color: black;
+  opacity: 1;
 }
 
 .nav-breadcrumbs {
-    width: 100%;
-    font-size: 1.3rem;
-    background-color: white;
-    padding: 15px 50px;
-    position: fixed;
-    top: 70px;
-    border-bottom: 1px solid rgba(0,0,0,0.2);
-    z-index: 9999;
+  width: 100%;
+  font-size: 1.3rem;
+  background-color: white;
+  padding: 15px 50px;
+  position: absolute;
+  top: 70px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  z-index: 9999;
 }
 
 .breadcrumb {
-    display: flex;
-    margin-bottom: 0px !important;
+  display: flex;
+  margin-bottom: 0px !important;
 }
 
 .step-yellow {
-    padding: 5px;
-    border-radius: 5px;
-    font-weight: bold;
-    margin-right: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  font-weight: bold;
+  margin-right: 10px;
 }
 
 .button-container {
-    display: flex;
-    justify-content: center;
-    margin-top: 0px;
-    padding: 0;
+  display: flex;
+  justify-content: center;
+  margin-top: 0px;
+  padding: 0;
 }
 
 @media screen and (max-width: 767px) {
-    .landing-sm {
-        display: block;
+  .landing-sm {
+    display: block;
+  }
+
+  .landing-md {
+    display: none;
+  }
+
+  .btn-primary {
+    font-size: 3.5vw;
+  }
+
+  #regForm {
+    margin-top: 110px;
+    width: 100%;
+  }
+
+  .publish-text .btn-primary {
+    font-size: 1rem;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .publish-text h2 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin: 0px;
+  }
+
+  .publish-text p {
+    font-size: 0.8rem;
+    margin: 0px;
+  }
+
+  .publish-container {
+    font-family: "Nunito";
+    width: 100%;
+    margin-left: 0px;
+  }
+    .progress {
+        height: 2rem;
+        border-radius: 20px;
     }
 
-    .landing-md {
-        display: none;
-    }
+        .progress:after {
+            border: 2px solid #f5f5f5;
+            border-radius: 20px;
+        }
 
-    .btn-primary {
-        font-size: 3.5vw;
-    }
-
-    #regForm {
-        margin-top: 110px;
+    .progress-container {
         width: 100%;
+        font-size: 1.3rem;
+        background-color: white;
+        padding: 20px;
+        margin: 1px auto;
+        position: absolute;
+        top: 50px;
     }
 
-    .publish-text .btn-primary {
-        font-size: 1rem;
-        width: 100%;
-        padding: 10px;
-    }
-
-    .publish-text h2 {
-        font-size: 3rem;
-        font-weight: 800;
-        margin: 0px;
-    }
-
-    .publish-text p {
-        font-size: 0.8rem;
-        margin: 0px;
-    }
-
-    .publish-container {
-        font-family: 'Nunito';
-        width: 100%;
-        margin-left: 0px;
+    .progress-bar {
+        background-color: #00875a;
+        border-radius: 20px;
     }
 }
 
 @media screen and (min-width: 767px) {
-    .landing-sm {
-        display: none;
-    }
+  .landing-sm {
+    display: none;
+  }
 
-    .landing-md {
-        display: block;
-    }
+  .landing-md {
+    display: block;
+  }
 
-    .publish-container {
-        background-image: url('../../images/PublishBackground.png');
-        background-size: 100% 100%;
-        background-repeat: no-repeat;
-    }
+  .publish-container {
+    background-image: url("../../images/PublishBackground.png");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+  }
 
-    #publish-image {
-        display: none;
-    }
+  #publish-image {
+    display: none;
+  }
 }
 
 @media (min-width: 1200px) {

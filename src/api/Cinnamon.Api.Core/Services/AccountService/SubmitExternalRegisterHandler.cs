@@ -1,0 +1,176 @@
+using System.Text;
+using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Services.AccountService.Handlers;
+using Cinnamon.Api.Core.Services.AccountService.Interactors;
+using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
+using Cinnamon.Framework.Common;
+using Microsoft.AspNetCore.WebUtilities;
+
+namespace Cinnamon.Api.Core.Services.AccountService;
+
+public class SubmitExternalRegisterHandler : IExternalRegisterHandler
+{
+    private readonly IExternalLoginTokenData externalLoginTokenData;
+    private readonly ICustomerData customerData;
+
+    public SubmitExternalRegisterHandler(IExternalLoginTokenData externalLoginTokenData, ICustomerData customerData)
+    {
+        this.externalLoginTokenData = externalLoginTokenData;
+        this.customerData = customerData;
+    }
+
+    public AppResult<ExternalRegisterResult> Execute(ExternalRegisterArgs args)
+    {
+        try
+        {
+            return ExecuteAsync(args).Result;
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ExternalRegisterResult>.CreateFailed(ex, "An error occured in SubmitExternalRegisterHandler");
+        }
+    }
+
+    public async Task<AppResult<ExternalRegisterResult>> ExecuteAsync(ExternalRegisterArgs args)
+    {
+        try
+        {
+            // check if email already in used
+            var checkCustomer = await customerData.GetCustomerByEmail(args.Email);
+            if(!checkCustomer.Succeeded || checkCustomer.Result == null)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("An error occured in SubmitExternalRegisterHandler"), "An error occured in SubmitExternalRegisterHandler");
+            }
+
+            if(checkCustomer.Succeeded && checkCustomer.Result.IsSuccess)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("Email address already registered by other user"), "Email address already registered by other user");
+            }
+
+            // check token and guid
+            var decodedToken = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(args.Token));
+            var chkToken = await externalLoginTokenData.GetLoginToken(decodedToken, args.Guid);
+            if(!chkToken.Succeeded || chkToken.Result == null)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("An error occured in SubmitExternalRegisterHandler"), "An error occured in SubmitExternalRegisterHandler");
+            }
+            if(chkToken.Succeeded && !chkToken.Result.IsSuccess)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("Invalid guid and token"), "Invalid guid and token");
+            }
+            if(chkToken.Result.Result.IsUsed)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("Invalid guid and token"), "Invalid guid and token");
+            }
+            // check if email is the same
+            if(chkToken.Result.Result.Email != args.Email.Trim())
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("Invalid guid and token"), "Invalid guid and token");
+            }
+
+            // create customer unique handler
+            // remove special characters for creating handler name
+            char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
+                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>'};
+            var removedCharacters = $"{args.FirstName} {args.LastName}".Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            var handlerName = string.Join("-",string.Join("",removedCharacters.Where(s => !string.IsNullOrEmpty(s))).Split(" ").Where(s => !string.IsNullOrEmpty(s))).ToLower();
+
+            var queryCustomerHandler = await customerData.GetAllCustomers(new Framework.ApiCommand.ApiData.Customer.Request.GetAllCustomersArgs {
+                HandlerLike = handlerName
+            });
+            if(!queryCustomerHandler.Succeeded || queryCustomerHandler.Result == null || !queryCustomerHandler.Result.IsSuccess)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException(queryCustomerHandler.Result?.ErrorInfo?.Message), queryCustomerHandler.Message);
+            }
+            var customerHandlers = queryCustomerHandler.Result.Result.OrderBy(a => a.Handler);
+            if(customerHandlers.Count() > 0)
+            {
+                var splittedLastHandler = customerHandlers.Last().Handler.Split("-");
+                if(splittedLastHandler.Count() > 0)
+                {
+                    var lastIdentifier = splittedLastHandler.Last();
+                    if(int.TryParse(lastIdentifier, out int intResult))
+                    {
+                        handlerName = $"{handlerName}-{intResult +1}";
+                    }
+                    else 
+                    {
+                        handlerName = $"{handlerName}-1";
+                    }
+                }
+            }
+
+            // validate birthdate, age between 18 to 120
+            var age = DateTime.Today.Year - args.Birthdate.Year;
+            if(age < 18 || age > 120)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException("Please provide valid birth year. Age between 18 and 120"), "Please provide valid birth year. Age between 18 and 120");
+            }
+
+            var createCustomer = await customerData.CreateCustomerWithPassword(new Framework.ApiCommand.ApiData.Customer.Request.CreateCustomerWithPasswordArgs {
+                Birthdate = args.Birthdate,
+                Email = args.Email,
+                ExternalLogin = true,
+                FirstName = args.FirstName,
+                LastName = args.LastName,
+                ProfilePath = args.ProfilePath,
+                Password = args.Password,
+                Handler = handlerName,
+                HasAcceptedTerms = args.HasAcceptedTerms
+            });
+
+            if(!createCustomer.Succeeded || createCustomer.Result == null)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(createCustomer.Error.Exception,createCustomer.Message);
+            }
+
+            if(createCustomer.Succeeded && !createCustomer.Result.IsSuccess)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException(createCustomer.Result.ErrorInfo?.Message), "An error occured in SubmitExternalRegisterHandler");
+            }
+
+            var created = createCustomer.Result.Result;
+
+            // update external login token
+            var externalLoginRes = await externalLoginTokenData.UpdateToken(new Framework.ApiCommand.ApiData.ExternalLoginToken.Request.UpdateExternalLoginTokenArgs {
+                Id = chkToken.Result.Result.Id,
+                IsUsed = true
+            });
+
+            if(!externalLoginRes.Succeeded || externalLoginRes.Result == null)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException(externalLoginRes.Message), externalLoginRes.Message);
+            }
+            if(externalLoginRes.Succeeded && !externalLoginRes.Result.IsSuccess)
+            {
+                return AppResult<ExternalRegisterResult>.CreateFailed(
+                    new ApplicationException(externalLoginRes.Result.ErrorInfo?.Message), "An error occured in SubmitExternalRegisterHandler");
+            }
+
+            return AppResult<ExternalRegisterResult>.CreateSucceeded(new ExternalRegisterResult {
+                Birthdate = created.Birthdate,
+                Email = created.Email,
+                FirstName = created.FirstName,
+                Id = created.Id,
+                LastName = created.LastName,
+                ProfileImg = created.ProfileImg,
+                Handler = created.Handler
+            }, "Successfully registered");
+
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ExternalRegisterResult>.CreateFailed(ex, "An error occured in SubmitExternalRegisterHandler");
+        }
+    }
+}

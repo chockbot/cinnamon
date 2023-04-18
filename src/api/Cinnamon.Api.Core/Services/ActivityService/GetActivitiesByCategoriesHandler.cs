@@ -1,10 +1,8 @@
 ﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using System.Security.Claims;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
-using Microsoft.AspNetCore.Http;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
@@ -23,7 +21,7 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
         }
         catch (Exception ex)
         {
-            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured in GetOwnedActivityHandler");
+            return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured in GetActivitiesByCategoriesHandler");
         }
     }
 
@@ -31,7 +29,6 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
     {
         try
         {
-            // get customer id saved in claims
             var result = await activityData.GetActivitiesByCategories(args.CategoryId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs
             {
                 IncludeAddress = args.IncludeActivityAddress,
@@ -39,7 +36,8 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
                 IncludeImages = args.IncludeActivityImages,
                 IncludeSchedules = args.IncludeAtivitySchedules,
                 IncludeSearchTags = args.IncludeActivitySearchTags,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -50,7 +48,7 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
             if (result.Succeeded && !result.Result.IsSuccess)
             {
                 return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(
-                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetOwnedActivityHandler");
+                    new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in GetActivitiesByCategoriesHandler");
             }
             return AppResult<GetActivitiesByCategoriesResult>.CreateSucceeded(new GetActivitiesByCategoriesResult{
                 Activities = result.Result.Result.Select(a => {
@@ -87,16 +85,23 @@ public class GetActivitiesByCategoriesHandler: IGetActiviesByCategoriesHandler
                                 Price = s.Price,
                                 PriceUnit1 = s.PriceUnit1,
                                 PriceUnit2 = s.PriceUnit2,
-                                UnitPrice = s.UnitPrice
+                                UnitPrice = s.UnitPrice,
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivitySchedule>(),
-                        Images = a.Images != null ? a.Images.Select(i => {
+                        Images = a.Images != null ? a.Images.OrderBy(i => i.Order).Select(i => {
                             return new GetActivitiesByCategoriesResult.Activity.ActivityImage
                             {
                                 ImageSrc = i.ImageLocation,
-                                Name = i.ImageName
+                                Name = i.ImageName,
+                                Order = i.Order
                             };
-                        }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivityImage>()
+                        }) : Enumerable.Empty<GetActivitiesByCategoriesResult.Activity.ActivityImage>(),
+                        Owner = a.Owner != null ? new GetActivitiesByCategoriesResult.Activity.CustomerOwner {
+                            Handler = a.Owner.Handler,
+                            Id = a.Owner.Id
+                        } : null,
                     };
                 })
             }, "Successfully get activities by categories");

@@ -1,54 +1,43 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
-@using Models.Entities
+@using Models.Entities'
 
-<div class="modal fade @ModalClass" id="addChildrenModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="display:@ModalDisplay">
-    <div class="modal-dialog modal-lg modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="()=>Close()"></button>
+<Modal @ref="ModalRef">
+    <ModalContent Centered Scrollable Padding="Padding.Is1">
+        <ModalHeader Border="Border.Is0">
+            <ModalTitle class="text-center col font-20 font-weight-700 color-black-000">Add Enrollees</ModalTitle>
+            <Button Type="ButtonType.Button" class="btn-close" Clicked="() => ModalRef.Close(CloseReason.UserClosing)"></Button>
+        </ModalHeader>
+        <ModalBody Padding="Padding.Is0.FromTop">
+            <Divider Margin="Margin.Is0.FromTop" />
+            <p class="font-14 text-center color-black-100 mb-0">
+                We do not share your information. It will be used when you purchase an experience for attendance monitoring.
+            </p>
+            <div class="list-enrollees mb-4">
+                @for (int i = 0; i < localStateFamilyMembers.Count; i++)
+                {
+                    <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
+                    <Divider Margin="Margin.Is4.FromTop" />
+                }
             </div>
-            <div class="modal-body">
-                <div class="p-section children-section">
-                    <Row>
-                        <Column ColumnSize="ColumnSize.Is12.OnDesktop.Is10.OnMobile">
-                            <p class="details">
-                                We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
-                            </p>
-                            @* @for (int i = 0; i < localStateFamilyMembers.Count; i++)
-                            {
-                                if (localStateFamilyMembers[i].Id == 0)
-                                {
-                                    <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
-                                }
-                            } *@
-                            <Div Display="Display.Flex">
-                                <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop"
-                                        TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">
-                                    Add
-                                </Button>
-                                <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" @onclick="OnSaveFamilyMember"
-                                    TextColor="TextColor.White" Color="Color.Primary">
-                                    Save
-                                </Button>
-                            </Div>
-                        </Column>
-                    </Row>
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
-
-@if (ShowBackdrop)
-{
-    <div class="modal-backdrop fade show"></div>
-}
-
+            <Div Display="Display.Flex" Flex="Flex.JustifyContent.End.OnDesktop.JustifyContent.Center.OnMobile">
+                <Button class="me-2 font-weight-700 font-16" Border="Border.Is0"
+                        TextColor="TextColor.White" Color="Color.Primary" style="width: 120px;" @onclick="AddFamilyMember">
+                    Add
+                </Button>
+                <Button Border="Border.Is0" class="font-weight-700 font-16" @onclick="OnSaveFamilyMember"
+                    TextColor="TextColor.White" Color="Color.Primary" style="width: 120px;">
+                    Submit
+                </Button>
+            </Div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
 
 @code 
 {
+    private Modal ModalRef { get; set;}
+
     [Parameter]
     public IList<FamilyMember> Model { get; set; }
 
@@ -73,7 +62,7 @@
         localStateFamilyMembers.Remove(member);
     }
 
-     private void AddFamilyMember()
+    private void AddFamilyMember()
     {
         localStateFamilyMembers.Add(new() { BirthMonth = "january", BirthYear = 1900, Gender = "male" });
     }
@@ -81,17 +70,13 @@
     public void Open()
     {
         localStateFamilyMembers = Model;
-        ModalDisplay = "block;";
-        ModalClass = "show";
-        ShowBackdrop = true;
+        ModalRef.Show();
         StateHasChanged();
     }
 
     public void Close()
     {
-        ModalDisplay = "none";
-        ModalClass = "hide";
-        ShowBackdrop = false;
+        ModalRef.Close(CloseReason.UserClosing);
         StateHasChanged();
     }
 }

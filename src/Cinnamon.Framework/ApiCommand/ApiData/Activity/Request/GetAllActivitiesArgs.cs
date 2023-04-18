@@ -11,4 +11,15 @@ public class GetAllActivities
     public bool? IncludeSearchTags {get; set;}
     public bool? IncludeSchedules {get; set;}
     public bool? IncludeImages {get; set;}
+    public bool? IncludeExperienceTypes { get; set; }
+    public bool? IncludeExperienceCategories { get; set; }
+    public bool? IncludeSubCategories { get; set; }
+    public string? Ids {get; set;}
+    public string? LikeHandler {get; set;}
+    public bool? IncludeCustomer {get; set;}
+    public int? ExperienceCategoryId { get; set; }
+    public string? SearchValue { get; set; }
+    public bool? IncludeStudents { get; set; }
+    public bool? IsDeactivated { get; set; }
+
 }

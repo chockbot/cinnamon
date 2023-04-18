@@ -1,0 +1,646 @@
+.card{
+    border:none;
+}
+
+.pulse {
+    width: 20px;
+    height: 20px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: #00ACEE;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
+
+    .pulse:hover {
+        animation: none;
+    }
+
+.pulse-complete {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #34A853;
+    cursor: pointer;
+    box-shadow: 0 0 0 rgba(52,168,83, 0.4);
+    animation: pulse 1s infinite;
+}
+
+    .pulse-complete:hover {
+        animation: none;
+    }
+
+@-webkit-keyframes pulse {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@-webkit-keyframes pulse-complete {
+    0% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -webkit-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -webkit-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+@keyframes pulse-complete {
+    0% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0.4);
+    }
+
+    70% {
+        -moz-box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+        box-shadow: 0 0 0 10px rgba(52,168,83, 0);
+    }
+
+    100% {
+        -moz-box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+        box-shadow: 0 0 0 0 rgba(52,168,83, 0);
+    }
+}
+
+.active-badge {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: left;
+    margin-bottom: 16px;
+}
+
+.star-section span {
+    font-family: 'Nunito';
+    font-style: italic;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: #717171;
+}
+
+.star-tag-badge {
+    margin-right: 10px;
+}
+
+.pulse-section {
+    text-align: right;
+}
+
+.title-section {
+    margin-top: 10px;
+}
+
+.star-pulse-section {
+}
+
+
+
+/* Extra small devices (portrait phones, less than 576px) */
+@media (min-width: 0px) and (max-width: 575.98px) {
+    .image-header {
+        width: 183px;
+        height: 223.39px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .img-card {
+        position: relative;
+    }
+
+    .new-badge {
+        margin-top: -5px;
+        margin-left: -5px;
+    }
+
+    .heart-badge {
+        text-align: right;
+        margin-top: -5px;
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 19px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #343D4C;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #34A853;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #343D4C;
+    }
+
+    .price-badge-section {
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .pulse, .pulse-complete {
+        width: 14px;
+        height: 14px;
+    }
+
+    .heart-badge-section, .activity-heart-badge-section {
+        text-align: right;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #717171;
+    }
+
+    .active-badge {
+        margin-top: 11px;
+    }
+
+    .ongoing-section {
+        width: 52px;
+        height: 24px;
+        background: #FFFFFF;
+        margin-left: 100px;
+        margin-top: 175px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pulse {
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+}
+
+/* Small devices (landscape phones, 576px and up) */
+@media (min-width: 576px) and (max-width: 767.98px){
+    .image-header {
+        width: 183px;
+        height: 223.39px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .img-card {
+        position: relative;
+    }
+
+    .new-badge {
+        margin-top: -5px;
+        margin-left: -5px;
+    }
+
+    .heart-badge {
+        text-align: right;
+        margin-top: -5px;
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 14px;
+        line-height: 19px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #343D4C;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #34A853;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #343D4C;
+    }
+
+    .price-badge-section {
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .pulse, .pulse-complete {
+        width: 14px;
+        height: 14px;
+    }
+
+    .heart-badge-section, .activity-heart-badge-section {
+        text-align: right;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #717171;
+    }
+
+    .active-badge {
+        margin-top: 11px;
+    }
+
+    .ongoing-section {
+        width: 52px;
+        height: 24px;
+        background: #FFFFFF;
+        margin-left: 100px;
+        margin-top: 175px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pulse {
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+}
+
+/* Medium devices (tablets, 768px and up) */
+@media (min-width: 768px) and (max-width: 991.98px){
+    .image-header {
+        width: 214.04px;
+        height: 261.78px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .img-card {
+        position: relative;
+    }
+
+    .heart-badge {
+        text-align: right;
+        margin-top: 5px;
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 22px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #343D4C;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #34A853;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #343D4C;
+    }
+
+    .price-badge-section {
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .heart-badge-section, .activity-heart-badge-section {
+        text-align: right;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #717171;
+    }
+
+    .active-badge {
+        margin-top: 11px;
+    }
+
+    .ongoing-section {
+        width: 52px;
+        height: 24px;
+        background: #FFFFFF;
+        margin-left: 130px;
+        margin-top: 210px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pulse {
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+}
+
+/* Large devices (desktops, 992px and up) */
+@media (min-width: 992px) and (max-width: 1199.98px){
+    .image-header {
+        width: 214.04px;
+        height: 261.78px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .img-card {
+        position: relative;
+    }
+
+    .heart-badge {
+        text-align: right;
+        margin-top: 5px;
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        line-height: 22px;
+        color: #344869;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #343D4C;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        text-decoration-line: underline;
+        color: #34A853;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #343D4C;
+    }
+
+    .price-badge-section {
+    }
+
+    .star-badge {
+        margin-top: -3px;
+    }
+
+    .heart-badge-section, .activity-heart-badge-section {
+        text-align: right;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 19px;
+        color: #717171;
+    }
+
+    .active-badge {
+        margin-top: 11px;
+    }
+
+    .ongoing-section {
+        width: 52px;
+        height: 24px;
+        background: #FFFFFF;
+        margin-left: 130px;
+        margin-top: 210px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pulse {
+        width: 14px;
+        height: 14px;
+        margin-top: 2px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+}
+
+/* Extra large devices (large desktops, 1200px and up) */
+@media (min-width: 1200px){
+    .image-header {
+        width: 278px;
+        height: 340px;
+        object-fit: cover;
+        object-position: center;
+        border-radius: 10px;
+    }
+
+    .img-card{
+        position:relative;
+    }
+
+    .heart-badge {
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .card-title1 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 20px;
+        line-height: 27px;
+        color: #343D4C;
+    }
+
+    .card-title2.mb-0.in-person {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        text-decoration-line: underline;
+        color: #343D4C;
+    }
+
+    .card-title2.mb-0.online {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        text-decoration-line: underline;
+        color: #34A853;
+    }
+
+    .card-title3 {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 27px;
+        color: #343D4C;
+    }
+
+    .price-badge-section{
+    }
+
+    .heart-badge-section, .activity-heart-badge-section {
+        text-align: right;
+        margin-top: 5px;
+        margin-left: -30px;
+    }
+
+    .active-tag-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 16px;
+        line-height: 22px;
+        color: #717171;
+    }
+
+    .active-badge {
+        margin-top: 13px;
+    }
+
+    .ongoing-section {
+        width: 60px;
+        height: 28px;
+        background: #FFFFFF;
+        margin-left: 185px;
+        margin-top: 283px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pulse {
+        width: 16px;
+        height: 16px;
+        margin-top: 2px;
+        margin-left: 0px;
+        margin-right: 0px;
+    }
+}

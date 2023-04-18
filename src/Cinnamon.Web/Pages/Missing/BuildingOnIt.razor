@@ -1,0 +1,33 @@
+@page "/missing/buildingonit"
+@layout EmptyLayout
+@using Cinnamon.Web.Components.Pages;
+@inject NavigationManager navigationManager
+
+<PageTitle>Coming Soon | CinnamonPH</PageTitle>
+<SeoMeta Title="Coming Soon" Subject="Coming Soon" Url="/missing/buildingonit" />
+
+<div class="error-pictures">
+    <div class="error-desktop">
+        <img src="images/Missing/building-on-it.svg"/>
+
+    </div>
+</div>
+
+<div class="error-details">
+    <p class="error-tagline">We're building on it, come back soon.</p>
+
+    <p class="error-subline">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+
+    <button class="error-button" @onclick="NavigateToExplore">Go Home</button>
+</div>
+
+@code{
+    private void NavigateToExplore()
+    {
+        navigationManager.NavigateTo("explore");
+    }
+
+}
+
+
+

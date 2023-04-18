@@ -1,24 +1,443 @@
 ﻿@namespace Cinnamon.Web.Components
+@using Flurl;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@inject IAccountApiHandler accountApiHandler;
+@inject Cinnamon.Web.Config.Config config;
+@inject IJSRuntime JsRuntime;
+@inject NavigationManager NavigationManager;
+@inject Cinnamon.Web.Config.Config config;
+@inject IAdminApiHandler adminApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center">Sign Up/Log In</p>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="card-filter">
-                    <h5> Welcome to <span style="color:#ffa942;font-family:'Backline'">@Resources.App.appName</span></h5>
-                    <br/>
-                    <h6>Email</h6>
-                    <LoginCard ReturnUrl="@ReturnUrl"></LoginCard>
+<Modal @ref="Model.EmailModal" class="modal-email">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title">Log In / Sign Up</p>
+        </ModalHeader>
+        <ModalBody>
+            <div class="card-filter">
+                <p class="email-text-header">Email</p>
+                <div class="w-100 text-center">
+                    <Validations @ref="Model.EmailModelValidation" Mode="ValidationMode.Manual" Model="Model.EmailModel">
+                        <div class="">
+                            <div class="col-12">
+                                <Validation>
+                                    <TextEdit @ref="Model.TextEmail" KeyDown="OnEmailTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
+                                        @bind-Text="Model.EmailModel.Email" class="input-email">
+                                        <Feedback>
+                                            <ValidationError TextAlignment="TextAlignment.Start" />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Validation>
+                            </div>
+                            <Button Clicked="SubmitEmail" Type="ButtonType.Submit" class="btn-primary"
+                                Loading="Model.EmailModel.IsEmailSubmitting" Disabled="Model.EmailModel.IsEmailSubmitting">
+                                <LoadingTemplate>
+                                    <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Continue
+                                </ChildContent>
+                            </Button>
+                        </div>
+                    </Validations>
+                    <div class="divider">
+                        or
+                    </div>
+                    <div class="col-12">
+                        <button class="btn-google" @onclick="GoogleSignInClick">
+                            <div class="btn-google-content">
+                            <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Google
+                            </div>
+                        </button>
+                    </div>                            
+                    <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
+                        By signing up you agree to our
+                        <a href="Terms" style="color:#FFA942" @onclick="CloseEmailModal">Terms and Conditions</a> and
+                        <a href="Policy" style="color:#FFA942" @onclick="CloseEmailModal">Privacy Policy</a>
+                    </p>
+
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.EmailModel.IsShowErrorMessage">
+                        <AlertDescription>An error occured. Please try again later</AlertDescription>
+                    </Alert>
                 </div>
             </div>
-        </div>  
-    </div>
-</div>
-@code {
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="Model.PasswordModal">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title">Log In</p>
+            <button type="button" class="btn-close" @onclick="() => Model.PasswordModal.Hide()" />
+        </ModalHeader>
+        <ModalBody>
+            <div class="card-filter">
+                <p class="password-text-header">Password</p>
+                <Validations @ref="Model.PasswordModelValidation" Model="Model.PasswordModel" Mode="ValidationMode.Manual">
+                    <div class="">
+                        <div class="col-12 password-content">
+                            <Validation>
+                                <TextEdit @ref="Model.TextPassword" KeyDown="OnPasswordTextSubmit" Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" 
+                                    Placeholder="Enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
+                                    <Feedback>
+                                        <ValidationError TextAlignment="TextAlignment.Start"/>
+                                    </Feedback>
+                                    
+                                </TextEdit>
+                                <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => Model.IsRevealPassword = !Model.IsRevealPassword"></span>
+                            </Validation>
+
+                            <Alert Color="Color.Danger" Margin="Margin.Is2.FromTop" Visible="Model.PasswordModel.IShowErrorMessage" Style="@alertStyle">
+                                <AlertDescription>@Model.PasswordModel.ErrorMessage</AlertDescription>
+                            </Alert>
+                        </div>
+                        <Button Clicked="SubmitLogin" Type="ButtonType.Submit" class="btn-primary" Shadow="Shadow.Small" TextAlignment="TextAlignment.Center" 
+                            Disabled="Model.PasswordModel.IsPasswordSubmitting" Loading="Model.PasswordModel.IsPasswordSubmitting">
+                            <LoadingTemplate>
+                                <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Login
+                            </ChildContent>
+                        </Button>
+                    </div>
+                </Validations>
+                <div class="divider">
+                    or
+                </div>
+                <div class="col-12">
+                    <button class="btn-google" @onclick="GoogleSignInClick">
+                        <div class="btn-google-content">
+                            <img src="https://img.icons8.com/color/48/000000/gmail-new.png" class="img-icon" /> Continue with Google
+                        </div>
+                    </button>
+                </div>
+                <p style="font-family:'Nunito';font-size:12px;font-weight:400;">
+                    By signing up you agree to our
+                    <a href="Terms" style="color:#FFA942">Terms and Conditions</a> and
+                    <a href="Policy" style="color:#FFA942">Privacy Policy</a>
+                </p>
+
+                <p class="forgot-password" @onclick="() => ForgotPassword()">Forgot Password?</p>
+
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="Model.VerificationModal" Closed="VerificationModalClosed">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title text-center">Verification Email</p>
+            <button type="button" class="btn-close" @onclick="() => Model.VerificationModal.Hide()" />
+        </ModalHeader>
+        <ModalBody>
+            <h5 class="col-12 text-center"> Welcome to <span style="color:#ffa942;font-family:'Backline'">Cinnamon</span></h5>
+            <div class="card-filter">
+                <div class="col-12 text-center">
+                    <p>We've sent an email to your inbox. Please check and click verify.</p>
+                    <p>
+                        Haven't received a verification email?
+                        @if(!Model.IsResendingVerification)
+                        {
+                            <span @onclick="ResendVerification" class="resend-link"> Resend</span>
+                        }
+                        else 
+                        {
+                            <span>Please Wait...</span>
+                        }
+                    </p>
+                </div>
+                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.IsResendVerificationShowError">
+                    <AlertDescription>@Model.ResendVrificationErrorMessage</AlertDescription>
+                </Alert>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+<Modal @ref="Model.ForgotPasswordModal" class="modal-forgot-password">
+    <ModalContent>
+        <ModalHeader Style="@modalHeaderStyle">
+            <p class="col-12 modal-title">Forgot Password?</p>
+        </ModalHeader>
+        <ModalBody>
+            <p class="col-12 text-center forgot-password-sub-info">Enter the email address you used when you joined and we’ll send you instructions to reset your password.</p>
+            <div class="card-filter">
+                <p class="email-text-header">Email</p>
+                <div class="w-100 text-center">
+                    <Validations @ref="Model.ResetPasswordValidation" Mode="ValidationMode.Manual" Model="Model.ResetPasswordModel">
+                        <div class="">
+                            <div class="col-12">
+                                <Validation>
+                                    <TextEdit @ref="Model.TextForgetPassword" KeyDown="OnForgotPasswordTextSubmit" Role="TextRole.Email" Placeholder="Enter email address" 
+                                        @bind-Text="Model.ResetPasswordModel.Email" class="input-email">
+                                        <Feedback>
+                                            <ValidationError TextAlignment="TextAlignment.Start" />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Validation>
+                            </div>
+                            <Button Type="ButtonType.Submit" class="btn-primary"
+                                    Clicked="SubmitResetPassword"
+                                    Loading="Model.ResetPasswordModel.IsForgotPasswordSubmitting" 
+                                    Disabled="Model.ResetPasswordModel.IsForgotPasswordSubmitting">
+                                <LoadingTemplate>
+                                    <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Reset Password
+                                </ChildContent>
+                            </Button>
+
+                        </div>
+                    </Validations>
+
+                    <p class="go-back" @onclick="() => GoBack()">Go Back</p>
+
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.ResetPasswordModel.IsShowForgotPassworErrordMessage">
+                        <AlertDescription>@Model.ResetPasswordModel.ForgotPasswordErrorMessage</AlertDescription>
+                    </Alert>
+                    <Alert Color="Color.Success" Margin="Margin.Is3.FromTop" Visible="Model.ResetPasswordModel.IsShowForgorPasswordSuccessMessage">
+                        <AlertDescription>@Model.ResetPasswordModel.ForgotPasswordSuccessMessage</AlertDescription>
+                    </Alert>
+                </div>
+            </div>
+        </ModalBody>
+    </ModalContent>
+</Modal>
+
+@code 
+{
+    private Models.Modals.LoginModal Model = new();
+
     [Parameter]
     public string ReturnUrl { get; set; } = "";
+
+    public async Task Show()
+    {
+        await Model.EmailModal.Show();
+        await Model.TextEmail.Focus();
+    }
+
+    string modalHeaderStyle = $"border:none;";
+    string alertStyle = $"margin-bottom:0px;";
+
+    private async Task SubmitEmail()
+    {
+        try
+        {
+            if(await Model.EmailModelValidation.ValidateAll())
+            {
+                Model.EmailModel.IsEmailSubmitting = true;
+
+                var registerWaitlist = await accountApiHandler.RegisterWaitlist(new Framework.ApiCommand.ApiCore.Account.Request.RegisterWaitlistArgs {
+                    Email = Model.EmailModel.Email,
+                    ValidationRoute = config.BaseUrl + "/explore"
+                });
+
+                Model.EmailModel.IsEmailSubmitting = false;
+
+                if(!registerWaitlist.Succeeded || registerWaitlist.Result == null)
+                {
+                    Model.EmailModel.IsShowErrorMessage = true;
+                    return;
+                }
+
+                if(registerWaitlist.Succeeded && !registerWaitlist.Result.IsSuccess)
+                {
+                    switch(registerWaitlist.Result.ErrorInfo?.Code)
+                    {
+                        case "EMAIL-ALREADY-REGISTERED":
+                            await Model.PasswordModal.Show();
+                            await Model.TextPassword.Focus();
+                            return;
+                        case "EMAIL-ALREADY-REGISTERED-NOT-VERIFIED":
+                        case "EMAIL-ALREADY-REGISTERED-VERIFIED":
+                            await Model.VerificationModal.Show();
+                            break;
+                        default:
+                            Model.EmailModel.IsShowErrorMessage = true;
+                            return;
+                    }
+                }
+
+                await Model.VerificationModal.Show();
+            }
+        }
+        catch
+        {
+            Model.EmailModel.IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task SubmitLogin()
+    {
+        try
+        {
+            if(await Model.PasswordModelValidation.ValidateAll())
+            {
+                Model.PasswordModel.IsPasswordSubmitting = true;
+
+                var result = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Account.login",Model.EmailModel.Email,Model.PasswordModel.Password);
+
+                Model.PasswordModel.IsPasswordSubmitting = false;
+
+                if(!result.Success)
+                {
+                    Model.PasswordModel.ErrorMessage = result.Message;
+                    Model.PasswordModel.IShowErrorMessage = true;
+                    return;
+                }
+
+                var redirect = string.IsNullOrEmpty(ReturnUrl) ? "/explore" : ReturnUrl;
+
+                if (result.IsAdmin)
+                {
+                    NavigationManager.NavigateTo("/admin/users", true);
+                    return;
+                }
+
+                NavigationManager.NavigateTo(redirect, true);
+            }
+        }
+        catch
+        {
+            Model.PasswordModel.IShowErrorMessage = true;
+        }
+    }
+
+    private async Task ResendVerification()
+    {
+        try
+        {
+            Model.IsResendingVerification = true;
+
+            var result = await accountApiHandler.ResendVerification(new Framework.ApiCommand.ApiCore.Account.Request.ResendVerificationArgs {
+                Email = Model.EmailModel.Email,
+                ValidationRoute = "/explore"
+            });
+
+            Model.IsResendingVerification = false;
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                Model.ResendVrificationErrorMessage = "An error occured. Please try again later.";
+                Model.IsResendVerificationShowError = true;
+                return;
+            }
+
+            if(result.Succeeded && !result.Result.IsSuccess)
+            {
+                Model.ResendVrificationErrorMessage = result.Result.ErrorInfo?.Message ?? "An error occured. please try again later.";
+                Model.IsResendVerificationShowError = true;
+                return;
+            }
+        }
+        catch
+        {
+            Model.ResendVrificationErrorMessage = "An error occured. Please try again later.";
+            Model.IsResendVerificationShowError = true;
+        }
+    }
+
+    
+
+    private void VerificationModalClosed()
+    {
+        Model.ResendVrificationErrorMessage = string.Empty;
+        Model.IsResendingVerification = false;
+        Model.IsResendVerificationShowError = false;
+    }
+
+    private void GoogleSignInClick()
+    {
+        NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=" + ReturnUrl, true);
+    }
+
+    private async Task ForgotPassword()
+    {
+        await Model.ForgotPasswordModal.Show();
+        await Model.EmailModal.Hide();
+        await Model.PasswordModal.Hide();
+        Model.ResetPasswordModel.Email = Model.EmailModel.Email;
+        await Model.TextForgetPassword.Focus();
+    }
+
+    private void GoBack()
+    {
+        Model.ForgotPasswordModal.Hide();
+        Model.EmailModal.Show();
+        Model.PasswordModal.Show();
+        
+    }
+
+    private async Task SubmitResetPassword()
+    {
+        try
+        {
+            if(await Model.ResetPasswordValidation.ValidateAll())
+            {
+                Model.ResetPasswordModel.IsForgotPasswordSubmitting = true;
+                var resetPasswordRes = await accountApiHandler.ResetPassword(new Framework.ApiCommand.ApiCore.Account.Request.ResetPasswordArgs {
+                    Email = Model.ResetPasswordModel.Email,
+                    ValidationRoute = config.BaseUrl.AppendPathSegment("verify-reset-password")
+                });
+                if(!resetPasswordRes.Succeeded || resetPasswordRes.Result == null || !resetPasswordRes.Result.IsSuccess)
+                {
+                    Model.ResetPasswordModel.ForgotPasswordErrorMessage = resetPasswordRes.Result?.ErrorInfo?.Message ?? resetPasswordRes.Message;
+                    Model.ResetPasswordModel.IsShowForgotPassworErrordMessage = true;
+                }
+                else 
+                {
+                    Model.ResetPasswordModel.ForgotPasswordSuccessMessage = "Successfully request reset password. Please see your reset verification link to your email";
+                    Model.ResetPasswordModel.IsShowForgorPasswordSuccessMessage = true;
+                }
+                Model.ResetPasswordModel.IsForgotPasswordSubmitting = false;
+            }
+        }
+        catch
+        {
+            Model.ResetPasswordModel.ForgotPasswordErrorMessage = "An error occured. Please try again later";
+            Model.ResetPasswordModel.IsShowForgotPassworErrordMessage = true;
+        }
+    }
+
+    private Task OnEmailTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
+        {
+            return SubmitEmail();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnPasswordTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
+        {
+            return SubmitLogin();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnForgotPasswordTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
+        {
+            return SubmitResetPassword();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task CloseEmailModal()
+    {
+        await Model.EmailModal.Hide();
+    }
 }

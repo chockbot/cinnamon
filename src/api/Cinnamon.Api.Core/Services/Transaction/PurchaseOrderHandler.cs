@@ -1,6 +1,9 @@
 using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Api.Core.Modules.NotificationDriver.Handler;
+using Cinnamon.Api.Core.Providers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
+using Cinnamon.Api.Core.Services.OngoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Handlers;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors;
 using Cinnamon.Api.Core.Services.TransactionService.Interactors.Results;
@@ -14,14 +17,22 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly ICustomerData customerData;
     private readonly IHttpContextAccessor httpContext;
     private readonly IGetActivityHandler getActivityHandler;
+    private readonly IRequestPaymentHandler requestPaymentHandler;
+    private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IFinishTransactionHandler finishTransactionHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
-        IGetActivityHandler getActivityHandler, ICustomerData customerData)
+        IGetActivityHandler getActivityHandler, ICustomerData customerData,
+        IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
+        IFinishTransactionHandler finishTransactionHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
         this.getActivityHandler = getActivityHandler;
         this.customerData = customerData;
+        this.requestPaymentHandler = requestPaymentHandler;
+        this.jsonSerializationProvider = jsonSerializationProvider;
+        this.finishTransactionHandler = finishTransactionHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -51,7 +62,11 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             // check activity id
             var activityRes = await getActivityHandler.ExecuteAsync(
-                    new ActivityService.Interactors.GetActivityArgs {ActivityId = args.ActivityId, IncludeAtivitySchedules = true});
+                    new ActivityService.Interactors.GetActivityArgs {
+                        ActivityId = args.ActivityId, 
+                        IncludeAtivitySchedules = true,
+                        IncludeCustomer = true});
+
             if(!activityRes.Succeeded || activityRes.Result == null)
             {
                 return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("Invalid activity id provided"), "Invalid activity id provided");
@@ -78,9 +93,29 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
             decimal fee = subTotal * .15m;
-            // temporart discount amount
-            decimal discount = string.IsNullOrEmpty(args.CouponCode) ? 0 : 50;
-            decimal overallTotal = (subTotal + fee) - discount;
+            var discount = 0;
+            decimal overallTotal = subTotal + fee;
+            decimal creditAmount = 0;
+            
+            if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
+            {
+                var creditsBalance = customerRes.Result.Result.TotalCredits;
+                overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
+                creditAmount = subTotal + fee >= creditsBalance ? creditsBalance : subTotal + fee;
+            }
+
+            // serialize students data to use later
+            var payloadData = new {
+                Students = args.Students.Select(s => {
+                    return new {
+                        Id = s.FamilyMemberId,
+                        Name = s.Name
+                    };
+                }),
+                PaymentMethod = args.PaymentMethod,
+                PaymentChannel = args.PaymentChannel ?? string.Empty
+            };
+            var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
             var result = await purchaseOrderData.CreatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.CreatePurchaseOrderArgs {
                 ActivityId = args.ActivityId,
@@ -90,7 +125,12 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 CustomerId = id,
                 OverallTotal = overallTotal,
                 ScheduleId = args.ScheduleId,
-                Total = subTotal + fee
+                Total = subTotal,
+                // if overall total is 0 due to applied credits,
+                // then status should be 1 no need to send transation to payment gateway
+                Status = overallTotal == 0 ? (int)TransactionStatus.Success : (int)TransactionStatus.Pending,
+                Payload = serializedPayload,
+                CreditAmount = creditAmount,
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -104,7 +144,49 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     new ApplicationException(result.Result.ErrorInfo?.Message), "An error occured in PurchaseOrderHandler");
             }
 
-            return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {Id = result.Result.Result.Id}, "Successfully create submit purchase order");
+            if(overallTotal == 0)
+            {
+                var finishTransaction = await finishTransactionHandler.ExecuteAsync(new FinishTransactionArgs {
+                    TransactionId = result.Result.Result.Id
+                });
+                if(!finishTransaction.Succeeded || finishTransaction.Result == null)
+                {
+                    return AppResult<PurchaseOrderResult>.CreateFailed(
+                    new ApplicationException(finishTransaction.Message), finishTransaction.Message);
+                }
+
+                return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {
+                    Action = 0,
+                    Id = result.Result.Result.Id,
+                    Url = string.Empty
+                }, "Successfully request purchase order details"); 
+            }
+
+            var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
+                Amount = (subTotal + fee) - creditAmount,
+                AmountCurrency = "PHP",
+                CustomerId = id,
+                PaymentChannel = args.PaymentChannel ?? string.Empty,
+                PaymentMethod = args.PaymentMethod,
+                TransactionId = result.Result.Result.Id,
+                CardInformation = args.CardInformation != null ? new RequestPaymentArgs.CardDetails {
+                    AccountHolder = args.CardInformation.AccountHolder,
+                    CardNumber = args.CardInformation.CardNumber,
+                    CVV = args.CardInformation.CVV,
+                    ExpireMonthYear = args.CardInformation.ExpireMonthYear
+                } : null
+            });
+
+            if(!requestPayment.Succeeded || requestPayment.Result == null)
+            {
+                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException(requestPayment.Message), requestPayment.Message);
+            }
+
+            return AppResult<PurchaseOrderResult>.CreateSucceeded(new PurchaseOrderResult {
+                Action = requestPayment.Result.Action,
+                Id = result.Result.Result.Id,
+                Url = requestPayment.Result.Url
+            }, "Successfully request purchase order details");
         }
         catch (Exception ex)
         {

@@ -1,13 +1,27 @@
-@page "/maker/profile/{Id:int}"
+@page "/maker/profile/{Id}"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Modals;
+@using Cinnamon.Web.Models
+@using Cinnamon.Web.Models.Customer
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using System.Security.Claims
+@using System.Text.RegularExpressions
+@using Cinnamon.Web.Components.Pages;
 @inject IModalService modal
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@inject IAccountApiHandler accountApiHandler;
+@inject IActivityApiHandler activityApiHandler;
 
-@if(Model != null)
+<PageTitle>Cinnamon Maker Profile - @MakerFullname | CinnamonPH</PageTitle>
+<SeoMeta Subject="Cinnamon Maker Profile" Title="Cinnamon Maker Profile" 
+    Url='@($"/maker/profile/{Id}")' Description="@(customerDetail?.About ?? string.Empty)"
+    Image="@(customerDetail?.ProfilePath ?? string.Empty)" />
+
+@if (activities!=null)
 {
     <section class="py-3 mt-5 profile-content">
         <Container>
@@ -15,21 +29,37 @@
                 <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                     <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
                         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
-                            <Figure Width="Width.Max100" Border="Border.RoundedCircle" Size="FigureSize.Is128x128" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
+                            <Figure>
                                 <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                             </Figure>
                         </CardHeader>
                         <CardBody Border="Border.Is0" Padding="Padding.Is3.OnY">
                             <CardTitle TextAlignment="TextAlignment.Center">
-                                @*<p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.Customer.FirstName @Model.Customer.LastName</p>*@
-                                @*@if(Model.Customer.IsVerified)
-                                {
-                                    <p class="text-color-8080 my-1 font-24">
-                                        <Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />
-                                        <span class="text-capitalize">verified user</span>
-                                    </p>
-                                }*@
+                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@customerDetail.FirstName @customerDetail.LastName</p>
                                 <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
+                                @switch (customerDetail.IsVerified)
+                                {
+                                    case 0:
+                                        <p class="text-color-8080 my-1 font-24">
+                                            <img class="img-not" src="images/not-icon.png" />
+                                            <span class="span-not">Not Verified</span>
+                                        </p>
+                                        break;
+                                    case 1:
+                                        <p class="text-color-8080 my-1 font-24">
+                                            <img class="img-pending" src="images/PendingIcon.png" />
+                                            <span class="span-pending">Pending Verification</span>
+                                        </p>
+                                        break;
+                                    case 2:
+                                        <p class="text-color-8080 my-1 font-24">
+                                            <img class="img-verified" src="images/Badges/VERIFIED.svg" />
+                                            <span class="span-verified">Verified</span>
+                                        </p>
+                                        break;
+                                    default:
+                                        break;
+                                }
                             </CardTitle>
                         </CardBody>
                     </Card>
@@ -37,15 +67,15 @@
                 <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                     <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                         <Div>
-                            @*<p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@Model.Customer.FirstName</span></p>*@
-                            <p class="m-0 text-color-8080 font-14">Joined in 2022</p>
+                            <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@customerDetail.FirstName</span></p>
+                            <p class="m-0 text-color-8080 font-14">Joined in @customerDetail.DateJoined.Year</p>
                         </Div>
                         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                             <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
                                 <p class="my-3 fw-bold font-18">About you</p>
                             </Div>
                         </Div>
-                        @*<p class="m-0 text-color-8080 font-16">@Model.Customer.About</p>*@
+                        <p class="m-0 text-color-8080 font-16">@customerDetail.About</p>
                     </Div>
                 </Column>
             </Row>
@@ -60,7 +90,7 @@
                 </Items>
                 <Content>
                     <TabPanel Name="maker-experience">
-                        @* <OngoingExperience Activities="activities" /> *@
+                        <MakerExperiences Activities="activities" />
                     </TabPanel>
                 </Content>
             </Tabs>
@@ -68,12 +98,13 @@
     </section>
 }
 
+
 @code 
 {
     [Parameter]
-    public int Id { get; set; }
+    public string Id { get; set; }
 
-    //private IList<ActivityModel> activities = new List<ActivityModel>();
+    public List<Activity> activities = new List<Activity>();
 
     private MakerExperiences makerExperiences;
 
@@ -81,7 +112,9 @@
 
     private string ImageSource { get; set; } = "images/Profile/user";
 
-    private Models.Customer.Profile Model;
+    public CustomerProfile customerDetail = new CustomerProfile();
+
+    public int MakerId { get; set; }
 
     //public CustomerModel Customer { get; set; }
 
@@ -93,36 +126,123 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        try
+        {
+            //Get Customer By Id
+            bool isIdUsed = int.TryParse(Id, out int intId);
+            var customer = isIdUsed ? await accountApiHandler.GetCustomerById(intId) : await accountApiHandler.GetMakerDetailByHandler(Id.Trim());
+            if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+            {
+                var args = customer.Result.Result;
+                customerDetail = new CustomerProfile
+                    {
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        IsMaker = args.IsMaker,
+                        ProfilePath = args.ProfileImg,
+                        IsVerified = args.IsVerified,
+                        About = args.About,
+                        DateJoined = args.DateJoined,
+                        Email = args.Email
+                    };
+                ImageSource = customerDetail.ProfilePath;
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/page-not-found");
+            }
+            //Get Maker Activity
+            var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+                {
+                    CustomerId = customerDetail.Id,
+                    IncludeActivityAddress = true,
+                    IncludeActivityDescription = true,
+                    IncludeActivityImages = true,
+                    IncludeAtivitySchedules = true,
+                    IsActive = true,
+                    IncludeStudents = true,
+                    IncludeCustomer = true
+                });
+            if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
+            {
+                if (ActivityList.Result.Result.Count() > 0)
+                {
+                    activities = ActivityList.Result.Result.Select(a =>
+                    {
+                        return new Activity
+                            {
+                                ActivityId = a.ActivityId,
+                                District = a.District,
+                                City = a.City,
+                                CityName = a.CityName,
+                                Region = a.Region,
+                                RegionName = a.RegionName,
+                                Barangay = a.Barangay,
+                                BarangayName = a.BarangayName,
+                                Address1 = a.Address1,
+                                Address2 = a.Address2,
+                                ExperienceTypeId = a.ExperienceTypeId,
+                                Description = a.Description,
+                                IsPublished = a.IsPublished,
+                                Price = a.Price,
+                                Title = a.Title,
+                                IsSetSession = a.IsSetSession,
+                                SessionName = a.SessionName,
+                                IsNew = a.IsNew,
+                                OngoingStudents = a.OngoingStudents,
+                                CompletedStudents = a.CompletedStudents,
+                                Images = a.Images.Select(i =>
+                        {
+                                        return new ActivityImage
+                                        {
+                                            Id = i.Id,
+                                            ImageSrc = i.ImageSrc,
+                                            Name = i.Name
+                                        };
+                                    }).ToList(),
+                                Owner = new CustomerProfile
+                                {
+                                    IsVerified = a.Owner.IsVerified
+                                },
+                                ActivitySchedules = a.ActivitySchedules.Select(e =>
+                    {
+                                    return new ActivitySchedule
+                                    {
+                                        Id = e.Id,
+                                        Name = e.Name,
+                                        PerUnit1 = e.PerUnit1,
+                                        PerUnit2 = e.PerUnit2,
+                                        Price = e.Price,
+                                        PriceUnit1 = e.PriceUnit1,
+                                        PriceUnit2 = e.PriceUnit2,
+                                        UnitPrice = e.UnitPrice
+                                    };
+                                }).ToList(),
+                            };
+                    }).ToList();
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            NavigationManager.NavigateTo("/page-not-found");
+            throw e;
+        }
+    }
 
-        //var currentCustomer = await signedCustomer.ExecuteAsync(new Core.Module.CustomerService.Interactors.CurrentLogin { User = user});
-        
-        //var currentCustomer = await CoreDI.DataStore.Customers.GetCustomerById(Id);
-        ////Get Customer Information
-        //Model = new();
-        //Model.Customer = currentCustomer;
-        //ImageSource   = Model.Customer.ProfilePath;
+    private string MakerFullname
+    {
+        get 
+        {
+            if(customerDetail == null) return string.Empty;
 
-        //Get Customer Activities
-
-
-        //Get Maker Activities
-        //var customer = currentCustomer;
-        //activities = (await CoreDI.DataStore.Activities.GetActivityByCreatedId(customer.Id)).OrderBy(i => i.Id).ToList();
-      
+            return customerDetail.FirstName?.ToUpper() + " " + customerDetail.LastName?.ToUpper();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
-
-
-    //private IList<ActivityModel> OngoingActivities 
-    //{
-    //    get 
-    //    {
-    //        return Model.Customer.OngoingActivities.Select(i => i.Activity).ToList();
-    //    }    
-    //}
 }

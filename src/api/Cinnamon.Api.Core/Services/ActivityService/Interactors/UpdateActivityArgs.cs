@@ -18,6 +18,10 @@ public class UpdateActivityArgs : IInteractor
     public string? Address2 {get; set;}
     public string? District {get; set;}
     public string? City {get; set;}
+    public string? Subdivision { get; set; }
+    public string? Region { get; set; }
+    public string? Barangay { get; set; }
+    public string? PostalCode { get; set; }
     public string? SpecificsYouWillProvide {get; set;}
     public string? CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}
@@ -25,6 +29,11 @@ public class UpdateActivityArgs : IInteractor
     public string? SkillLevel {get; set;}
     public int? MinimumAge {get; set;}
     public bool? CanAdultsJoin {get; set;}
+    public bool? IsSetSession { get; set; }
+    public string? SessionName { get; set; }
+    public string? PinnedLocation { get; set; }
+    public bool? IsDeactivated { get; set; }
+    public bool? IsAdmin { get; set; }
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<ActivitySchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int> DeletedScheduleIds {get; set;}
@@ -41,5 +50,7 @@ public class UpdateActivityArgs : IInteractor
         public string? PriceUnit1 {get; set;}
         public int? PerUnit2 {get; set;}
         public string? PriceUnit2 {get; set;}
+        public int Order {get; set;}
+        public bool IsActiveSchedule { get; set; }
     }
 }

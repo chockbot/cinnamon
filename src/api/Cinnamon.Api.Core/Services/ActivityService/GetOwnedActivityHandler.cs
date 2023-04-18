@@ -50,7 +50,8 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 IncludeActivityImages = args.IncludeActivityImages,
                 IncludeActivitySearchTags = args.IncludeActivitySearchTags,
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules,
-                IsActive = args.IsActive
+                IsActive = args.IsActive,
+                IncludeCustomer = args.IncludeCustomer
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -67,6 +68,13 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 Address2 = activity.Address2,
                 CanAdultsJoin = activity.CanAdultsJoin,
                 City = activity.City,
+                CityName = activity.CityName,
+                Subdivision = activity.Subdivision,
+                Region = activity.Region,
+                RegionName = activity.RegionName,   
+                Barangay = activity.Barangay,
+                BarangayName = activity.BarangayName,
+                PostalCode = activity.PostalCode,
                 CustomerBringWithThem = activity.CustomerBringWithThem,
                 Description = activity.Description,
                 District = activity.District,
@@ -82,6 +90,10 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName,
+                PinnedLocation = activity.PinnedLocation,
                 ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityResult.ActivitySchedule {
                         Id = s.Id,
@@ -92,16 +104,23 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }) : Enumerable.Empty<GetOwnedActivityResult.ActivitySchedule>(),
-                Images = activity.Images != null ? activity.Images.Select(i => {
+                Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
                     return new GetOwnedActivityResult.ActivityImage {
                         Id = i.Id,
                         ImageSrc = i.ImageSrc,
-                        Name = i.Name
+                        Name = i.Name,
+                        Order = i.Order
                     };
-                }) : Enumerable.Empty<GetOwnedActivityResult.ActivityImage>()
+                }) : Enumerable.Empty<GetOwnedActivityResult.ActivityImage>(),
+                Owner = activity.Owner != null ? new GetOwnedActivityResult.CustomerOwner {
+                    Handler = activity.Owner.Handler,
+                    Id = activity.Owner.Id
+                } : null
             };
 
             return AppResult<GetOwnedActivityResult>.CreateSucceeded(activityEntity, "Successfully get owned activity");

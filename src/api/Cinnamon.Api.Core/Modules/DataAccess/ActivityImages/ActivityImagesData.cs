@@ -64,12 +64,7 @@ public class ActivityImagesData : IActivityImagesData
         {
             var result = await flurlClient
                             .Request("ActivityImages/GetAllActivityImages")
-                            .SetQueryParams(
-                                new
-                                {
-                                    countPerPage = args.CountPerPage,
-                                    pageIndex = args.PageIndex
-                                }).GetJsonAsync<GetAllActivityImagesResult>();
+                            .GetJsonAsync<GetAllActivityImagesResult>();
 
             return AppResult<GetAllActivityImagesResult>.CreateSucceeded(result, "Successfully getting get all activity image api");
         }

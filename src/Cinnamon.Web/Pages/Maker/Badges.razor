@@ -1,0 +1,271 @@
+﻿@layout DashboardLayout
+@page "/maker/dashboard/badges"
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@using System.Security.Claims;
+@using Cinnamon.Web.Models.Entities;
+@inject IJSRuntime jsRuntime;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+
+<PageTitle>Badges | CinnamonPH</PageTitle>
+<SeoMeta Title="Badges" Subject="Badges" Url="/maker/dashboard/badges" />
+
+<div class="container container-fluid badges-main-section">
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-2 col-md-2 col-sm-2 col-4 text-center">
+            <img src="@imagePath" class="img-profile" />
+        </div>
+        <div class="col-lg-10 col-md-10 col-sm-10 col-8">
+            <div class="greeting-section">
+                <p class="title-primary">Hi, @firstName @lastName</p>
+                <p class="title-secondary">Welcome to your badges page, see your achievements and journey here as a Cinnamon maker.</p>
+            </div>
+            <div class="journey-section">
+            </div>
+
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center progress-bar-section">
+        <div class="col-lg-2 col-md-2 col-sm col">
+        </div>
+        <div class="col-lg-10 col-md-10 col-sm-12 col-12">
+            <div class="row journey-card-section">
+                <div class="col-lg-2 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card verified-label">
+                        Verified
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card rare-label">
+                        Rare
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card epic-label">
+                        Epic
+                    </div>
+                    <div class="epic-arrow-down"></div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-sm-3 col-3">
+                    <div class="journey-card legendary-label">
+                        Legendary
+                    </div>
+                </div>
+            </div>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: 65%" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/VERIFIED.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Verified</p>
+                            <p class="title-badge-secondary">Completed all identification requirements</p>
+                            <p class="mini-details">Obtained 03-21-2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/OFFICIAL PARTNER.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Official Partner</p>
+                            <p class="title-badge-secondary">Legitimate experience provider in the platform</p>
+                            <p class="mini-details">Obtained 03-21-2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/OG.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">OG</p>
+                            <p class="title-badge-secondary">For being part of the alpha and beta testing</p>
+                            <p class="mini-details">Obtained 03-21-2023</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/RARE.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Rare Cinnamon Maker</p>
+                            <p class="title-badge-secondary">Completed 10 students</p>
+                            <p class="mini-details">
+                                @if(MakerCompletedStudent <= 10)
+                                {
+                                    string data = MakerCompletedStudent + "/10";
+                                    @data
+                                }
+                                else
+                                {
+                                    string data1 = "10/10";
+                                    @data1;
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/EPIC.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Epic Cinnamon Maker</p>
+                            <p class="title-badge-secondary">Completed 25 & receive 10 reviews</p>
+                            <p class="mini-details">
+                                @if (MakerCompletedStudent <= 25)
+                                {
+                                    string data = MakerCompletedStudent + "/25";
+                                    @data
+                                }
+                                else
+                                {
+                                    string data1 = "25/25";
+                                    @data1;
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+            <div class="achievement-card">
+                <div class="row">
+                    <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                        <div class="badge-section text-center">
+                            <img src="images/Badges/LEGENDARY.svg" class="img-badge" />
+                        </div>
+                    </div>
+                    <div class="col-lg-8 col-md-8 col-sm-8 col-8">
+                        <div class="badge-details-section">
+                            <p class="title-badge-primary">Legendary Cinnamon Maker</p>
+                            <p class="title-badge-secondary">Completed 100 students & receive 25 reviews</p>
+                            <p class="mini-details">
+                                @if (MakerCompletedStudent <= 100)
+                                {
+                                    string data = MakerCompletedStudent + "/100";
+                                    @data
+                                }
+                                else
+                                {
+                                    string data1 = "100/100";
+                                    @data1;
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 col-12">
+        </div>
+    </div>
+</div>
+
+@code {
+    private string firstName = string.Empty;
+    private string lastName = string.Empty;
+    private string imagePath = string.Empty;
+    private int customerID = 0;
+    public int MakerOngoingStudent { get; set; }
+    public int MakerCompletedStudent { get; set; }
+    public List<Activity> activities = new List<Activity>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+
+        var profile = result.Result.Result;
+
+        firstName = profile.FirstName;
+        lastName = profile.LastName;
+        imagePath = profile.ProfileImg;
+        customerID = profile.Id;
+
+        //Get Ongoing and completed enrollees
+        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+            {
+                CustomerId = customerID,
+                IncludeStudents = true,
+                IsActive = true,
+            });
+        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
+        {
+            activities = ActivityList.Result.Result.Select(r =>
+               {
+                   return new Activity
+                       {
+                           Id = r.ActivityId,
+                           OngoingStudents = r.OngoingStudents,
+                           CompletedStudents = r.CompletedStudents,
+                       };
+               }).ToList();
+        }
+        MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
+    }
+}

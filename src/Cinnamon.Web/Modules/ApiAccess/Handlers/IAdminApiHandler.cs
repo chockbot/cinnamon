@@ -1,0 +1,11 @@
+﻿using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Response;
+using Cinnamon.Framework.Common;
+
+namespace Cinnamon.Web.Modules.ApiAccess.Handlers
+{
+    public interface IAdminApiHandler
+    {
+        Task<AppResult<GetAdminUserByEmailResult>> GetAdminUserByEmail(GetAdminUserByEmailArgs args, string token);
+    }
+}

@@ -9,4 +9,5 @@ public class SubmitRegisterResult
     public DateTime Birthdate {get; set;}
     public string ProfileImg {get; set;}
     public bool ExternalLogin {get; set;}
+    public string Handler {get; set;}
 }

@@ -1,0 +1,224 @@
+﻿@page "/external-register"
+@using Cinnamon.Web.Models.Account;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Components.Pages;
+@inject NavigationManager NavigationManager;
+@inject IAccountApiHandler accountApiHandler;
+@inject IJSRuntime jsRuntime
+
+<PageTitle>Finish Registration | CinnamonPH</PageTitle>
+<SeoMeta Title="Finish Registration" Subject="Finish Registration" Url="/external-register"/>
+
+<div class="container">
+    <div class="">
+        <div class="title">
+            <p id="external-login-title">Finish signing up</p>
+        </div>
+        <Validations Mode="ValidationMode.Manual" @ref="Model.FormValidation" Model="Model.Model">
+            <div class="name">
+                <Validation>
+                    <Field Style="@flexItemStyle">
+                        <FieldLabel>First Name</FieldLabel>
+                        <TextEdit Placeholder="your firstname" @bind-Text="Model.Model.FirstName">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                    </Field>
+                </Validation>
+
+                <Validation>
+                    <Field  Style="@flexItemStyle">
+                        <FieldLabel>Last Name</FieldLabel>
+                        <TextEdit  Placeholder="your lastname" @bind-Text="Model.Model.LastName">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                    </Field>
+                </Validation>
+            </div>
+            <span class="font-11">Be sure it's the same as what appears on your government ID.</span>
+            <br />
+            <Validation>
+                <Field>
+                    <FieldLabel>BirthDate</FieldLabel>
+                    <DateEdit Placeholder="your birthdate" TValue="DateTime" @bind-Date="Model.Model.Birthdate">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </DateEdit>  
+                </Field>
+            </Validation>
+            <span class="font-11">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</span>
+            <br />
+            <Validation>
+                <Field>
+                    <FieldLabel>Email Address</FieldLabel>
+                    <TextEdit Disabled Role="TextRole.Email" Placeholder="your email" @bind-Text="Model.Model.Email">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>  
+                </Field>
+            </Validation>
+            <span class="font-11">For email confirmations and receipts.</span>
+            <br />
+            <Validation>
+                <Field Style="@flexItemStyle">
+                    <FieldLabel>Password</FieldLabel>
+                    <div class="password-content">
+                        <TextEdit KeyDown="OnPasswordTextSubmit" Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" Placeholder="your password" 
+                            @bind-Text="Model.Model.Password" class="input-password">
+                            <Feedback>
+                                <ValidationError />
+                            </Feedback>
+                        </TextEdit>
+                        <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => Model.IsRevealPassword = !Model.IsRevealPassword"></span>
+                    </div>
+                </Field>
+            </Validation>
+            <br />
+            <label class="d-flex" style="align-items: last baseline; margin-top: -1rem;">
+                <InputCheckbox @bind-Value="IsAcceptPrivacyPolicy" class="@GetCheckboxClass"/>
+                <span class="font-16">
+                    I have read and agreed to the website 
+                    <NavLink href="/help/terms" target="_blank" class="color-primary hover-color-primary">Tems and Conditions</NavLink> and 
+                    <NavLink href="/help/privacy" target="_blank" class="color-primary hover-color-primary">Privacy Policy</NavLink>
+                </span>
+            </label>
+            @if(IsShowCheckboxError)
+            {
+                <div class="invalid-feedback d-block">Please accept terms and condition and privacy policy</div>
+            }
+            <div>
+            <Button Clicked="SubmitRegiter" Margin="Margin.Is3.FromTop" Shadow="Shadow.Small" class="btn-primary"
+                    Disabled="Model.IsSubmitting" Loading="Model.IsSubmitting">
+                <LoadingTemplate>
+                    <i class="fa fa-spinner fa-spin"></i> Please Wait
+                </LoadingTemplate>
+                <ChildContent>
+                    Agree and continue
+                </ChildContent>
+            </Button>
+            <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="Model.IsShowErrorMessage">
+                <AlertDescription>@Model.ErrorMessage</AlertDescription>
+            </Alert>
+            </div>
+        </Validations>
+    </div>
+</div>
+
+@code
+{
+    private ExternalRegisterModel Model { get; set; } = new();
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Token { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Uid { get; set; }
+
+    private bool IsAcceptPrivacyPolicy {get; set;}
+
+    private bool IsShowCheckboxError {get; set;}
+
+    protected override void OnInitialized()
+    {
+        Model.Model.Birthdate = DateTime.Today.AddYears(-25);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (string.IsNullOrEmpty(Token) || string.IsNullOrEmpty(Uid))
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        try
+        {
+            var result = await accountApiHandler.GetExternalLoginDetail(Token, Uid);
+            if (!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("/explore");
+                return;
+            }
+
+            Model.Model.Email = result.Result.Result.Email;
+            Model.Model.FirstName = result.Result.Result.FirstName;
+            Model.Model.LastName = result.Result.Result.LastName;
+        }
+        catch
+        {
+            Model.ErrorMessage = "An error occured. Please try again later";
+            Model.IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task SubmitRegiter()
+    {
+        try
+        {
+            IsShowCheckboxError = !IsAcceptPrivacyPolicy;
+            if (await Model.FormValidation.ValidateAll() && IsAcceptPrivacyPolicy)
+            {
+                Model.IsSubmitting = true;
+
+                var result = await jsRuntime.InvokeAsync<Models.JsResultModel>
+                        ("MyLib.Pages.customer.externalRegister.init",
+                            new
+                            {
+                                firstname = Model.Model.FirstName,
+                                lastname = Model.Model.LastName,
+                                email = Model.Model.Email,
+                                birthdate = Model.Model.Birthdate,
+                                password = Model.Model.Password,
+                                token = Token,
+                                guid = Uid,
+                                hasAcceptedTerms = IsAcceptPrivacyPolicy
+                            });
+
+                Model.IsSubmitting = false;
+
+                if (!result.Success)
+                {
+                    Model.ErrorMessage = result.Message;
+                    Model.IsShowErrorMessage = true;
+                    return;
+                }
+
+                NavigationManager.NavigateTo("/explore", true);
+            }
+        }
+        catch
+        {
+            Model.ErrorMessage = "An error occured. Please try again later";
+            Model.IsShowErrorMessage = true;
+        }
+    }
+
+    private Task OnPasswordTextSubmit(KeyboardEventArgs e)
+    {
+        if(e.Code == "Enter" || e.Code == "NumpadEnter")
+        {
+            return SubmitRegiter();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private string GetCheckboxClass 
+    {
+        get 
+        {
+            if(IsAcceptPrivacyPolicy) return "me-3";
+
+            return "me-3 is-invalid";
+        }
+    }
+
+    string flexItemStyle = $" width:100%;";
+}

@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+env:
+  FLAG_ENV: Production
+  BASE_URL: "https://cinnamon.ph"
+
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -21,13 +25,41 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-        # substitute database connection string
+      # substitute api data environment variables
       - name: App Settings Variable Substitution
         uses: microsoft/variable-substitution@v1
         with:
           files: "src/api/Cinnamon.Api.Data/appsettings.json"
         env:
-          ConnectionStrings.CinnamonDB: ${{ secrets.PROD_DB_CONNECTION }}
+          KeyVault.KeyVaultUri: ${{ secrets.PROD_KVAULT_URL }}
+          KeyVault.CinnamonDbConnectionString: ${{ secrets.PROD_KVAULT_DB }}
+          AzureAd.ClientId: ${{ secrets.SHARED_AZUREAD_CLIENTID }}
+          AzureAd.TenantId: ${{ secrets.SHARED_AZUREAD_TENANTID }}
+          AzureAd.ClientSecret: ${{ secrets.PROD_AZUREAD_SECRET }}
+
+      # substitute api core environment variables
+      - name: App Settings Variable Substitution for Api Core
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/api/Cinnamon.Api.Core/appsettings.json"
+        env:
+          Applicationconfig.Payment.Accounts.0.Settings.0.Value: ${{ secrets.PROD_ZENDIT_TOKEN }}
+          Applicationconfig.Payment.Accounts.0.Settings.1.Value: ${{ secrets.PROD_ZENDIT_CALLBACK_TOKEN }}
+          Applicationconfig.Disbursement.RunDisbursement: true
+          Applicationconfig.Disbursement.RunPerHour: 48
+
+      # substitute web blazor server environemnt variables
+      - name: App Settings Variables Substitution for Web Blazor
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/Cinnamon.Web/appsettings.json"
+        env:
+          AppConfig.Environment: ${{ env.FLAG_ENV }}
+          AppConfig.BaseUrl: ${{ env.BASE_URL }}
+
+      # copy sitemaps
+      - name: Copy sitemap
+        run: cp output/sitemap.xml src/Cinnamon.Web/wwwroot/sitemap.xml
 
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
@@ -74,13 +106,13 @@ jobs:
       - name: Add Environment Variables
         run: echo "${{ secrets.ENV_PROD }}" >> .env.prod
 
-      - name: Copy Cinnamon.Api.Data Artifacts to DEV Server
+      - name: Copy Cinnamon.Api.Data Artifacts to PROD Server
         run: rsync -avz output/publish-data/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src-data
 
-      - name: Copy Cinnamon.Api.Core Artifacts to DEV Server
+      - name: Copy Cinnamon.Api.Core Artifacts to PROD Server
         run: rsync -avz output/publish-core/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src-core
 
-      - name: Copy Cinnamon.Web Artifacts to DEV Server
+      - name: Copy Cinnamon.Web Artifacts to PROD Server
         run: rsync -avz output/publish-web/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src-web
 
       - name: Copy Environment File

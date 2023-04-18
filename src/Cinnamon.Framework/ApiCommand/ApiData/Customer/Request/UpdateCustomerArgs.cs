@@ -15,7 +15,8 @@ public class UpdateCustomerArgs
     public string? ProfilePath { get; set; }
     public bool? IsMaker { get; set; }
     public bool? ExternalLogin { get; set; }
-    public bool? IsVerified { get; set; }
+    public int? IsVerified { get; set; }
     public string? FrontIdImagePath { get; set; }
     public string? BackIdImagePath { get; set; }
+    public decimal? TotalCredits {get; set;}
 }

@@ -4,6 +4,7 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Account;
 
@@ -22,6 +23,27 @@ public class AccountApiHandler : IAccountApiHandler
         {
             var result = await flurlClient
                 .Request("Account/Register")
+                .PostJsonAsync(args)
+                .ReceiveJson<SubmitRegisterResult>();
+
+            return AppResult<SubmitRegisterResult>.CreateSucceeded(result, "Successfully posting register api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SubmitRegisterResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubmitRegisterResult>.CreateFailed(ex, "An error occured when posting register api");
+        }
+    }
+
+    public async Task<AppResult<SubmitRegisterResult>> ExternalRegister(SubmitExternalRegisterArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/ExternalRegister")
                 .PostJsonAsync(args)
                 .ReceiveJson<SubmitRegisterResult>();
 
@@ -118,6 +140,47 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<VerifiedLoginResult>.CreateFailed(ex, "An error occured when posting account login api");
+        }
+    }
+
+    public async Task<AppResult<ExternalLoginResult>> ExternalLogin(ExternalLoginArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/tMSSMcKhx9YpmcYCAfCkGnSfau8SE8")
+                .PostJsonAsync(args)
+                .ReceiveJson<ExternalLoginResult>();
+
+            return AppResult<ExternalLoginResult>.CreateSucceeded(result, "Successfully posting account login api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ExternalLoginResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ExternalLoginResult>.CreateFailed(ex, "An error occured when posting account login api");
+        }
+    }
+
+    public async Task<AppResult<GetExternalLoginDetailResult>> GetExternalLoginDetail(string token, string guid)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Account/GetExternalLoginDetail/{token}/{guid}")
+                .GetJsonAsync<GetExternalLoginDetailResult>();
+
+            return AppResult<GetExternalLoginDetailResult>.CreateSucceeded(result, "Successfully getting external login detail api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetExternalLoginDetailResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetExternalLoginDetailResult>.CreateFailed(ex, "An error occured when getting external login detail api");
         }
     }
 
@@ -347,6 +410,7 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<GetProfilePictureResult>.CreateFailed(ex, "An error occured when getting profile picture api");
         }
     }
+
     public async Task<AppResult<GetWaitListResult>> GetAllWaitList()
     {
         try
@@ -426,6 +490,243 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<GetCustomerByIdResult>.CreateFailed(ex, "An error occured when getting cutomer by email api");
+        }
+    }
+
+    public async Task<AppResult<GetCustomerByIdResult>> GetMakerDetailByHandler(string handler)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Account/GetCustomerByHandler/{handler}")
+                .GetJsonAsync<GetCustomerByIdResult>();
+
+            return AppResult<GetCustomerByIdResult>.CreateSucceeded(result, "Successfully getting cutomer by handler api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerByIdResult>.CreateFailed(ex, "An error occured when getting cutomer by handler api");
+        }
+    }
+
+    public async Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/ResetPassword")
+                .PostJsonAsync(args)
+                .ReceiveJson<ResetPasswordResult>();
+
+            return AppResult<ResetPasswordResult>.CreateSucceeded(result, "Successfully posting reset password api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, "An error occured when posting reset password api");
+        }
+    }
+
+    public async Task<AppResult<VerifyResetPasswordResult>> VerifyResetPassword(VerifyResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Account/VerifyResetPassword")
+                .PostJsonAsync(args)
+                .ReceiveJson<VerifyResetPasswordResult>();
+
+            return AppResult<VerifyResetPasswordResult>.CreateSucceeded(result, "Successfully verify reset password api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<VerifyResetPasswordResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyResetPasswordResult>.CreateFailed(ex, "An error occured when verify reset password api");
+        }
+    }
+
+    public async Task<AppResult<RequestRefundResult>> RequestRefund(RequestRefundArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/RequestRefund")
+                .PostJsonAsync(args)
+                .ReceiveJson<RequestRefundResult>();
+
+            return AppResult<RequestRefundResult>.CreateSucceeded(result, "Successfully request refund api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<RequestRefundResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<RequestRefundResult>.CreateFailed(ex, "An error occured when request refund  api");
+        }
+    }
+
+    public async Task<AppResult<GetRequestedRefundsResult>> GetRequestedRefunds(GetRequestedRefundsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/GetRequestedRefunds")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetRequestedRefundsResult>();
+
+            return AppResult<GetRequestedRefundsResult>.CreateSucceeded(result, "Successfully get requested refunds api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetRequestedRefundsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetRequestedRefundsResult>.CreateFailed(ex, "An error occured when get requested refunds  api");
+        }
+    }
+
+    public async Task<AppResult<DeleteProfilePictureResult>> DeleteProfilePicture(DeleteProfilePictureArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/DeleteProfilePicture")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteProfilePictureResult>();
+
+            return AppResult<DeleteProfilePictureResult>.CreateSucceeded(result, "Successfully requested delete profile picture api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<DeleteProfilePictureResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteProfilePictureResult>.CreateFailed(ex, "An error occured when requesting delete profile picture api");
+        }
+    }
+
+    public async Task<AppResult<UpdatePayoutAccountResult>> UpdatePayoutAccount(UpdatePayoutAccountArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/UpdatePayoutAccount")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdatePayoutAccountResult>();
+
+            return AppResult<UpdatePayoutAccountResult>.CreateSucceeded(result, "Successfully requested update payout account api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdatePayoutAccountResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdatePayoutAccountResult>.CreateFailed(ex, "An error occured when requesting update payout account api");
+        }
+    }
+
+    public async Task<AppResult<GetPayoutAccountResult>> GetPayoutAccount(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/GetPayoutAccount")
+                .GetJsonAsync<GetPayoutAccountResult>();
+
+            return AppResult<GetPayoutAccountResult>.CreateSucceeded(result, "Successfully get requested payout account api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetPayoutAccountResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetPayoutAccountResult>.CreateFailed(ex, "An error occured when get requested payout account api");
+        }
+    }
+
+    public async Task<AppResult<GetAllCustomerResult>> GetAllCustomer(GetAllCustomersArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Customers")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllCustomerResult>();
+
+            return AppResult<GetAllCustomerResult>.CreateSucceeded(result, "Successfully get all customers");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllCustomerResult>.CreateFailed(ex, "An error occured when getting all customers");
+        }
+    }
+
+    public async Task<AppResult<UpdateProfileDetailsResult>> UpdateCustomerProfile(UpdateProfileDetailsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Customer/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateProfileDetailsResult>();
+
+            return AppResult<UpdateProfileDetailsResult>.CreateSucceeded(result, "Successfully posting update profile details api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateProfileDetailsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateProfileDetailsResult>.CreateFailed(ex, "An error occured when posting update profile details api");
+        }
+    }
+
+    public async Task<AppResult<UpdateRequestRefundResult>> UpdateRefundRequest(UpdateRequestRefundArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Refund/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateRequestRefundResult>();
+
+            return AppResult<UpdateRequestRefundResult>.CreateSucceeded(result, "Successfully called update refund request api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateRequestRefundResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateRequestRefundResult>.CreateFailed(ex, "An error occured when calling update refund request api");
         }
     }
 }

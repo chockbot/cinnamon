@@ -1,36 +1,56 @@
 @namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@using Models
+@using Models.Entities
 
-<div class="row"> <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
+<div class="row"> 
+    <div class="col-xl-8 col-lg-6 col-md-9 col-sm-11 col-11 text-lg-start text-md-start text-sm-center label-container-section">
         <input class="form-control @RequiredCheck(scheduleModel.Name)" id="name-input" placeholder="Detailed Activity Breakdown" required @bind="scheduleModel.Name" />
-       <i class="fa fa-trash" id="delete-icon" @onclick=DeleteSchedule></i>
-   
+    </div>
+    <div class="col-xl-4 col-lg-6 justify-content-start col-md-3 justify-content-start col-sm-1 justify-content-start col-1 justify-content-start text-lg-start text-md-start text-sm-center label-container-section">
+        <div class="d-xl-block d-lg-block d-md-none d-sm-none d-none">
+            <div class="form-check form-switch">
+                <span class="active-label">Set Inactive/Active:</span>
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
+            </div>
+        </div>
     </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
         <p>
             Detailed activity breakdown if needed (age group, different sub-activity, etc)
         </p>
     </div>
-    <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center label-container-section">
         <input class="form-control @RequiredCheck(scheduleModel.DateTime)" placeholder="Frequency of Experience" required @bind="scheduleModel.DateTime" />
         <p>
             Example: Monday, Tuesday and Friday - 9am-5pm
         </p>
     </div>
+    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 col-12 active-schedule-section">
+        <div class="d-xl-none d-lg-none d-md-block d-sm-block d-block">
+            <div class="form-check form-switch">
+                <span class="active-label">Set Inactive/Active:</span>
+                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
+            </div>
+        </div>
+    </div>
     <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center px-0">
-        <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
-        <input class="form-control unit-input @RequiredCheck(scheduleModel.UnitPrice)" id="price-input" placeholder="Unit Price" required @bind="scheduleModel.UnitPrice" />
+        <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.LongPrice" />
+        <input class="form-control unit-input @RequiredCheck(scheduleModel.UnitPrice)" id="price-input" placeholder="Unit Price" required @bind="scheduleModel.UnitPrice" readonly />
         <div class="per-text">per</div>
-        <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit1)" id="unit1-input" required @bind="scheduleModel.PerUnit1" />
-        <input class="form-control unit-input @RequiredCheck(scheduleModel.PriceUnit1)" id="unit1-input" placeholder="Unit 1" required @bind="scheduleModel.PriceUnit1" />
+        <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit1)" id="unit1-input" required @bind="scheduleModel.PerUnit1" type="number" min="1" />
+        <input class="form-control unit-input @RequiredCheck(scheduleModel.PriceUnit1)" id="unit1-input" placeholder="Unit 1" required @bind="scheduleModel.PriceUnit1" readonly />
         <div class="per-text">per</div>
-        <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" />
-        <input class="form-control unit-input @RequiredCheck(scheduleModel.PriceUnit2)" id="unit2-input" placeholder="Unit 2" required @bind="scheduleModel.PriceUnit2" />
+        <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+        <input class="form-control unit-input @RequiredCheck(scheduleModel.PriceUnit2)" id="unit2-input" placeholder="Unit 2" required @bind="scheduleModel.PriceUnit2" readonly />
     </div>
 </div>
 @code {
     [Parameter]
     public Models.Entities.ActivitySchedule scheduleModel { get; set; }
-
+    [Parameter]
+    public ExperienceUpdateModel Model { get; set; }
+    [Parameter]
+    public EventCallback<ExperienceUpdateModel> ModelChanged { get; set; }
     [Parameter]
     public EventCallback<Models.Entities.ActivitySchedule> OnScheduleRemoved {get; set;}
 

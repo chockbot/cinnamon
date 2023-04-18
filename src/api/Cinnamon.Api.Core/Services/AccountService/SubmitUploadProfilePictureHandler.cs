@@ -54,6 +54,7 @@ public class SubmitUploadProfilePictureHandler: IUploadProfilePictureHandler
                 return AppResult<UploadProfilePictureResult>.CreateFailed(
                     new ApplicationException("Invalid image file formats. Can only accept png and jpg"), "Invalid image file formats. Can only accept png and jpg");
             }
+            // get profile details
             var profilePicture = await profilePictureHandler.ExecuteAsync(new GetProfilePictureArgs { });
             if (!profilePicture.Succeeded || profilePicture.Result == null)
             {
@@ -69,7 +70,7 @@ public class SubmitUploadProfilePictureHandler: IUploadProfilePictureHandler
             int id = Convert.ToInt32(customerId);
 
             // create unique name
-            var profileUniqueName = $"{Guid.NewGuid().ToString()}-front-id.{isProfileValid.Result}";
+            var profileUniqueName = $"{Guid.NewGuid().ToString()}-profile-picture.{isProfileValid.Result}";
             // get image data
             var images = new List<AzureUploadArgs.Image> {
                 new AzureUploadArgs.Image {File = args.ProfileImage, ImageName = profileUniqueName},
@@ -86,7 +87,7 @@ public class SubmitUploadProfilePictureHandler: IUploadProfilePictureHandler
                 return AppResult<UploadProfilePictureResult>.CreateFailed(
                     new ApplicationException("An error occured when uploading images"), "An error occured when uploading images");
             }
-            // if have existing front and back ids then delete in azure blob
+            // if have existing profile picture then delete in azure blob
             // to prevent multiple uplaod causing to blob azure storage full
             var imageNames = new List<string>();
             if (!string.IsNullOrEmpty(profilePicture.Result.ProfileImagseSrc))

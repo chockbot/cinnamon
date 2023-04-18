@@ -41,12 +41,21 @@ public class SubmitUpdateProfileHandler : ISubmitUpdateProfileHandler
             }
             var profile = profileRes.Result;
 
+            // validate birthdate, age between 18 to 120
+            var age = DateTime.Today.Year - args.Birthdate.GetValueOrDefault().Year;
+            if (age < 18 || age > 120)
+            {
+                return AppResult<SubmitUpdateProfileResult>.CreateFailed(
+                    new ApplicationException("Please provide valid birth year. Age between 18 and 120"), "Please provide valid birth year. Age between 18 and 120");
+            }
+
             var result = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
                 About = args.About ?? profile.About,
                 FirstName = args.FirstName ?? profile.FirstName,
                 LastName = args.LastName ?? profile.LastName,
                 Birthdate = args.Birthdate ?? profile.Birthdate,
-                CustomerId = profile.Id
+                CustomerId = profile.Id,
+                IsVerified = args.VerifiedBadge ?? profile.IsVerified
             });
             if(!result.Succeeded || result.Result == null)
             {

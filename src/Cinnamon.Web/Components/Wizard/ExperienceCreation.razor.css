@@ -1,9 +1,23 @@
 ﻿/* Style the form */
 
 * {
-    font-family: 'Varela Round', sans-serif;
+  font-family: "Varela Round", sans-serif;
 }
-
+.label-paragraph {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+    text-align: justify;
+}
+.set-exp {
+    font-family: Nunito;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 19px;
+    letter-spacing: 0em;
+    text-align: left;
+}
 .btn-primary {
     color: #fff;
     background-color: var(--primary);
@@ -11,7 +25,7 @@
     height: auto;
     padding: 5px;
     font-size: 1.2vw;
-    font-family: 'Nunito-Bold';
+    font-family: "Nunito-Bold";
     border-width: 0px;
     margin: 0 auto;
     border-radius: 5px;
@@ -19,86 +33,142 @@
 
 /* Mark input boxes that gets an error on validation: */
 input.invalid {
-    background-color: #ffdddd;
+  background-color: #ffdddd;
 }
-
-
+.form-switch .form-check-input {
+    background-color: var(--primary);
+    border: none;
+}
+    .form-switch .form-check-input:checked {
+        background-color: green;
+        border: none;
+    }
+.form-check-input:checked {
+    background-color: var(--primary);
+}
+.session-period {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #717171;
+}
+.form-check-label {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 22px;
+    letter-spacing: 0em;
+    text-align: left;
+    color: #343D4C;
+}
 .content-creation .mrow {
     margin-top: 60px;
 }
-
 .content-creation textarea {
-    border: 2px solid #bbbbbb;
-    border-radius: 10px;
+    border: 1px solid #000000;
+    border-radius: 5px;
     width: 100%;
     height: 150px;
     font-size: 1rem;
     resize: none;
+    font-family: 'Nunito';
+    font-weight: 400;
 }
 
 .title-description {
-    font-size: 1.1rem;
+  font-size: 1.1rem;
 }
 
 .label-container-section > p {
-    font-size: 0.7rem;
+  font-size: 0.7rem;
 }
 
 .label-container-section {
-    padding: 0 50px 0 0;
+  padding: 0 50px 0 0;
 }
 
-.textarea-container label, .tagsinputcontainer label {
+.textarea-container label,
+.tagsinputcontainer label {
     text-align: right;
     padding-right: 10px;
     font-size: 0.8rem;
+    color: #717171;
 }
 
-#error-message-container{
-    width:100%;
-    background-color:#ffd8d8;
-    border: 1px solid #ffb2b2;
-    color:#f25151;
-    padding:10px;
+#error-message-container {
+  width: 100%;
+  background-color: #ffd8d8;
+  border: 1px solid #ffb2b2;
+  color: #f25151;
+  padding: 10px;
 }
 
-#error-list{
-    margin:0;
+#error-list {
+  margin: 0;
 }
 
 @media screen and (max-width: 767px) {
-    .landing-sm {
-        display: block;
-    }
+  .landing-sm {
+    display: block;
+  }
 
-    .landing-md {
-        display: none;
-    }
+  .landing-md {
+    display: none;
+  }
 
-    .btn-primary {
-        font-size: 3.5vw;
-    }
+  .btn-primary {
+    font-size: 3.5vw;
+  }
 
-    .content-creation textarea {
-        width: 100%;
-        height: 150px;
-        font-size: 2rem
-    }
+  .content-creation textarea {
+    width: 100%;
+    height: 150px;
+  }
 
-    .label-container-section {
-        padding: 0 0 0 15px;
-    }
+  .label-container-section {
+    padding: 0 0 0 15px;
+  }
 }
 
 @media screen and (min-width: 767px) {
-    .landing-sm {
-        display: none;
-    }
+  .landing-sm {
+    display: none;
+  }
 
-    .landing-md {
-        display: block;
-    }
+  .landing-md {
+    display: block;
+  }
 }
 
 @media (min-width: 1200px) {
+}
+
+.divider{
+    padding:10px;
+}
+
+.placeholder-search-modal {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 27px;
+}
+
+.iframe-search-modal {
+    border: 0;
+    width: 724px;
+    height: 438px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+#btnConfirmLocation {
+    width: 100%;
+    height: 66px;
+    background: #FFA942;
+    border-radius: 5px;
 }

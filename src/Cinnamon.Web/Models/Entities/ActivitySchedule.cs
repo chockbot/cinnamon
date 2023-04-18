@@ -1,8 +1,10 @@
-namespace Cinnamon.Web.Models.Entities;
+﻿namespace Cinnamon.Web.Models.Entities;
 
 public class ActivitySchedule 
 {
+
     public int Id {get; set;}
+    public int ActivityId {get; set; }
     public string Name {get; set;}
     public string DateTime {get; set;}
     public decimal Price {get; set;}
@@ -12,4 +14,15 @@ public class ActivitySchedule
     public int PerUnit2 {get; set;}
     public string PriceUnit2 {get; set;} = "Session";
     public int TempId {get; set;}
+    public int Order {get; set;}
+    public bool IsActiveSchedule { get; set; } = true;
+
+    public long LongPrice { 
+        get{
+            return (long)Price;
+        }
+        set {
+            Price = value;
+        }
+    }
 }

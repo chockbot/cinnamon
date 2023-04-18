@@ -4,6 +4,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Ganss.XSS;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
@@ -15,6 +16,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
     private readonly ISubCategoryData subCategoryData;
     private readonly IExperienceTypeData experienceTypeData;
     private readonly IScheduleData scheduleData;
+    private readonly HtmlSanitizer htmlSanitizer;
 
     public UpdateActivityHandler(IActivityData activityData, IExperienceCategoryData categoryData,
         ISubCategoryData subCategoryData, IExperienceTypeData experienceTypeData, IScheduleData scheduleData,
@@ -26,6 +28,10 @@ public class UpdateActivityHandler : IUpdateActivityHandler
         this.experienceTypeData = experienceTypeData;
         this.scheduleData = scheduleData;
         this.httpContext = httpContext;
+
+        this.htmlSanitizer = new 
+            HtmlSanitizer(
+                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br"});
     }
 
     public AppResult<UpdateActivityResult> Execute(UpdateActivityArgs args)
@@ -53,9 +59,20 @@ public class UpdateActivityHandler : IUpdateActivityHandler
             }
             int id = Convert.ToInt32(customerId);
 
+            const int maxWords = 80;
+            var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
+            var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
+
+            if(customerBringLength > maxWords || specificProvideLength > maxWords)
+            {
+                return AppResult<UpdateActivityResult>.CreateFailed(
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
+            }
+
             // check activity if existed
-            var activity = await activityData.GetActivityById(args.ActivityId, 
-                            new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs {IncludeSchedules = true, CustomerId = id });
+            var activity = args.IsAdmin.GetValueOrDefault() ? await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true }) : 
+                                                            await activityData.GetActivityById(args.ActivityId, new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs { IncludeSchedules = true, CustomerId = id });
             if(!activity.Succeeded || activity.Result == null)
             {
                 return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(activity.Message), activity.Message);
@@ -116,7 +133,11 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Address2 = args.Address2,
                 CanAdultsJoin = args.CanAdultsJoin,
                 City = args.City,
-                CustomerBringWithThem = args.CustomerBringWithThem,
+                Subdivision = args.Subdivision,
+                Region = args.Region,
+                Barangay = args.Barangay,
+                PostalCode = args.PostalCode,
+                CustomerBringWithThem = args.CustomerBringWithThem == null ? args.CustomerBringWithThem : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
                 Description = args.Description,
                 District = args.District,
                 ExperienceCategoryId = args.ExperienceCategoryId,
@@ -127,9 +148,13 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Remarks = args.Remarks,
                 ScheduleIndicator = args.ScheduleIndicator,
                 SkillLevel = args.SkillLevel,
-                SpecificsYouWillProvide = args.SpecificsYouWillProvide,
+                SpecificsYouWillProvide = args.SpecificsYouWillProvide == null ? args.SpecificsYouWillProvide : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
-                Title = args.Title
+                Title = args.Title,
+                IsSetSession = args.IsSetSession,
+                SessionName = args.SessionName,
+                PinnedLocation = args.PinnedLocation,
+                IsDeactivated = args.IsDeactivated
             };
 
             if(args.SearchTags != null)
@@ -156,9 +181,15 @@ public class UpdateActivityHandler : IUpdateActivityHandler
             // update activity schedules
             if(args.ActivitySchedules != null)
             {
+                int order = 0;
+                var orderedSchedules = args.ActivitySchedules.OrderBy(s => s.Order).Select(s => {
+                    order += 1;
+                    s.Order = order;
+                    return s;
+                }).ToList();
                 var associatedIds = activity.Result.Result.Schedules.Select(s => s.Id);
-                var newSchedules = args.ActivitySchedules.Where(s => s.Id == 0);
-                var updatedSchedules = args.ActivitySchedules.Where(s => associatedIds.Contains(s.Id));
+                var newSchedules = orderedSchedules.Where(s => s.Id == 0);
+                var updatedSchedules = orderedSchedules.Where(s => associatedIds.Contains(s.Id));
 
                 if(newSchedules.Count() > 0)
                 {
@@ -174,7 +205,9 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 Price = s.Price ?? 1,
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
-                                UnitPrice = s.UnitPrice ?? string.Empty
+                                UnitPrice = s.UnitPrice ?? string.Empty,
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         })
                     });
@@ -203,7 +236,9 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 Price = s.Price ?? 1,
                                 PriceUnit1 = s.PriceUnit1 ?? string.Empty,
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
-                                UnitPrice = s.UnitPrice ?? string.Empty
+                                UnitPrice = s.UnitPrice ?? string.Empty,
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule
                             };
                         })
                     });
@@ -250,6 +285,10 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Address2 = updated.Address2,
                 CanAdultsJoin = updated.CanAdultsJoin,
                 City = updated.City,
+                Subdivision = updated.Subdivision,
+                Region= updated.Region,
+                Barangay= updated.Barangay,
+                PostalCode= updated.PostalCode,
                 CustomerBringWithThem = updated.CustomerBringWithThem,
                 Description = updated.Description,
                 District = updated.District,
@@ -263,12 +302,33 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SkillLevel = updated.SkillLevel,
                 SpecificsYouWillProvide = updated.SpecificsYouWillProvide,
                 SubCategoryId = updated.SubCategoryId,
-                Title = updated.Title
+                Title = updated.Title,
+                Handler = updated.Handler,
+                IsSetSession = updated.IsSetSession,
+                SessionName = updated.SessionName
             }, "Successfully update activity details");
         }
         catch (Exception ex)
         {
             return AppResult<UpdateActivityResult>.CreateFailed(ex, "An error occured in UpdateActivityHandler");
         }
+    }
+
+    private int WordsLenght(string text)
+    {
+        var words = htmlSanitizer
+                        .Sanitize(text)
+                        .Replace("<br>"," ").Replace("</br>"," ")
+                        .Replace("<p>","").Replace("</p>","")
+                        .Replace("<strong>","").Replace("</strong>","")
+                        .Replace("<em>","").Replace("</em>","")
+                        .Replace("<ul>","").Replace("</ul>","")
+                        .Replace("<ol>","").Replace("</ol>","")
+                        .Replace("<li>","").Replace("</li>","")
+                        .Trim()
+                        .Split(" ")
+                        .Where(t => !string.IsNullOrEmpty(t.Trim()));
+        
+        return words.Count();
     }
 }

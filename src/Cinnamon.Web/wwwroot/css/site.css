@@ -112,6 +112,18 @@ a,
     display: none;
   }
 }
+
+@media only screen and (max-width: 768px) {
+  .profile-card {
+    margin-top: -8rem;
+    box-shadow: none;
+    background: transparent;
+  }
+
+  .customer-profile-details .nav.nav-tabs {
+    display: none;
+  }
+}
 /* end profile styling section */
 
 /* maker dashboard styling */
@@ -178,8 +190,19 @@ a,
 }
 
 .customer-profile-details .activitySwiper .swiper-slide {
-  width: 23%;
+  width: 100%;
+  /* display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:40PX;*/
 }
+
+.customer-profile-details .activitySwiper .maker-swiper-slide {
+  width: 100%;
+  /*display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30PX;*/
+}
+
 .customer-profile-details .experience-review-swiper .swiper-slide {
   width: 23%;
 }
@@ -256,7 +279,7 @@ a,
     width: 50%;
   }
   .customer-profile-details .activitySwiper .swiper-slide {
-    width: 45%;
+    width: 100%;
   }
   .customer-profile-details .experience-review-swiper .swiper-slide {
     width: 45%;
@@ -278,7 +301,7 @@ a,
     background: transparent;
   }
   .customer-profile-details .activitySwiper .swiper-slide {
-    width: 80%;
+    width: 100%;
   }
   .customer-profile-details .experience-review-swiper .swiper-slide {
     width: 80%;
@@ -288,7 +311,7 @@ a,
   }
 
   .customer-profile-details .family-members .profile-info-input.name {
-    width: 90%;
+    width: 100%;
   }
   .customer-profile-details .family-members .profile-info-input.gender {
     margin-left: 0;
@@ -315,4 +338,680 @@ a,
 
 .btn-primary {
   background-color: #ffa942 !important;
+}
+
+/* activity creation editor styling */
+
+.activity-creation-experience-setup-wrapper .ql-container,
+.activity-update-experience-setup-wrapper .ql-container {
+  height: 150px;
+  font-size: 1rem;
+}
+
+.activity-image-dragable {
+  padding: 0;
+  margin: 0;
+}
+
+.activity-image-dragable .b-drop-zone {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.activity-image-dragable .b-drop-zone-draggable {
+  width: 30%;
+}
+
+.activity-image-dragable .draggable-placeholder {
+  border: 2px dashed #ffa942;
+}
+
+.activity-image-photos-label {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  margin-top: 3px;
+  margin-left: 0;
+  margin-right: 0;
+  padding: 0;
+}
+
+.activity-image-photos-label p {
+  width: 30%;
+  margin-bottom: 5px;
+}
+
+.activity-image-photos-error-message {
+  font-size: 14px;
+  color: red;
+  padding: 0;
+}
+
+/* dashboard attendance styles */
+.student-attendance .activities-schedule-section .swiper-slide .check-button,
+.student-attendance .student-attendance-section .table-list .check-button,
+.student-attendance .student-attendance-section .tool-action .check-button {
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  border-radius: 5px;
+  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.25);
+  background-color: #f3f6fc;
+}
+
+.student-attendance .activities-schedule-section .swiper-slide .check-button {
+  position: absolute;
+  bottom: 1rem;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+
+.student-attendance .student-attendance-section .table-list .check-button {
+  margin: 0;
+}
+
+.student-attendance .student-attendance-section .tool-action .check-button {
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  background-color: transparent;
+  margin-left: -1rem;
+}
+
+.student-attendance .student-attendance-section .table-list .b-table.table {
+  border: 2px solid #343d4c !important;
+}
+
+.student-attendance .student-attendance-section .table-list table thead {
+  background-color: #343d4c;
+  color: #fff;
+}
+
+.student-attendance .student-attendance-section .table-list table thead th {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+.student-attendance .student-attendance-section .table-list table tbody td {
+  vertical-align: middle;
+}
+
+.student-attendance .search-text {
+  width: 200px;
+  background-color: #f3f6fc;
+  border: 0;
+}
+
+.student-attendance
+  .student-attendance-section
+  .table-list
+  table
+  tbody
+  tr
+  td:first-child
+  > div {
+  display: none;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .student-attendance .student-attendance-section .table-list .b-table.table {
+    border: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .student-attendance .student-attendance-section .table-list table thead {
+    display: none;
+  }
+
+  .student-attendance .student-attendance-section .table-list table tbody tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 2rem;
+    font-size: 14px;
+    border: 1px solid;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td {
+    padding-top: 15px;
+    padding-bottom: 15px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child {
+    background-color: #343d4c;
+    color: #fff;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    > div {
+    display: block;
+    margin-right: 10px;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:first-child
+    .std-name::before {
+    content: "Name: ";
+    font-weight: bold;
+    width: 70%;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)::before {
+    content: "Experience: ";
+    font-weight: bold;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(3) {
+    display: none;
+  }
+
+  .student-attendance
+    .student-attendance-section
+    .table-list
+    table
+    tbody
+    tr
+    td:last-child {
+    border: 0 !important;
+  }
+
+  .student-attendance .activities-schedule-section .swiper-slide .check-button,
+  .student-attendance .student-attendance-section .table-list .check-button,
+  .student-attendance .student-attendance-section .tool-action .check-button {
+    font-size: 12px;
+    padding: 5px;
+  }
+
+  .student-attendance
+    .activities-schedule-section
+    .swiper-slide
+    .check-button
+    img,
+  .student-attendance .student-attendance-section .table-list .check-button img,
+  .student-attendance
+    .student-attendance-section
+    .tool-action
+    .check-button
+    img {
+    width: 20px;
+    height: auto;
+  }
+
+  .student-attendance .student-attendance-section .tool-action .check-button {
+    margin-left: 0;
+  }
+
+  .student-attendance .search-text {
+    width: 170px;
+  }
+}
+
+/* end dashboard attendance styles */
+
+/* dashboard styling */
+.dashboard-layout .b-layout-sider {
+  background-color: #f3f6fc;
+  transition: left 0.5s ease-in-out;
+  min-width: 270px;
+}
+
+/* For Tablet View */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .dashboard-layout .b-layout-sider {
+    background-color: #f3f6fc;
+    transition: left 0.5s ease-in-out;
+    min-width: 210px;
+  }
+}
+
+.dashboard-layout .b-layout-sider-content {
+  width: 100%;
+}
+
+.dashboard-layout #toggle:checked ~ .b-layout-sider {
+  left: 0;
+}
+
+/* circular progress bar styling */
+.progress {
+  background: none;
+  position: relative;
+}
+
+.progress::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 6px solid #eee;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress > span {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  z-index: 1;
+}
+
+.progress .progress-left {
+  left: 0;
+}
+
+.progress .progress-bar {
+  width: 100%;
+  height: 100%;
+  background: none;
+  border-width: 6px;
+  border-style: solid;
+  position: absolute;
+  top: 0;
+}
+
+.progress .progress-left .progress-bar {
+  left: 100%;
+  border-top-right-radius: 80px;
+  border-bottom-right-radius: 80px;
+  border-left: 0;
+  -webkit-transform-origin: center left;
+  transform-origin: center left;
+}
+
+.progress .progress-right {
+  right: 0;
+}
+
+.progress .progress-right .progress-bar {
+  left: -100%;
+  border-top-left-radius: 80px;
+  border-bottom-left-radius: 80px;
+  border-right: 0;
+  -webkit-transform-origin: center right;
+  transform-origin: center right;
+}
+
+.progress .progress-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress .progress-value {
+  font-size: 10px;
+}
+
+.progress .progress-bar {
+  border: 6px solid #4bb749;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .dashboard-layout .b-layout-sider {
+    position: absolute;
+    z-index: 9999999;
+    height: 130vh;
+    left: -380px;
+    width: 100%;
+    background-color: transparent;
+  }
+
+  .dashboard-layout .b-layout-sider .b-layout-sider-content {
+    width: 300px;
+    background-color: #f3f6fc;
+    box-shadow: 0px 0px 5px;
+  }
+}
+
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+
+/* payment card details */
+.booking-total-container .card {
+  border: 1px solid #343d4c;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0px #343d4c;
+}
+
+.booking-total-container .card .activity-img {
+  width: 123px;
+}
+
+.booking-total-container .card .activity-img img {
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+
+.booking-total-container .card .activity-details {
+  width: 100%;
+  margin-left: 20px;
+}
+
+.booking-total-container .card .activity-details .activity-title {
+  font-size: 16px;
+  color: #343d4c;
+  font-weight: 700;
+}
+
+.booking-total-container .card .activity-details .activity-schedule {
+  font-size: 12px;
+  color: #717171;
+}
+
+.booking-total-container .card .price-details .price-title {
+  font-size: 16px;
+  color: #343d4c;
+}
+
+.booking-total-container .card .price-details .price-per-head {
+  font-size: 14px;
+  color: #717171;
+}
+
+.booking-total-container .card .price-details .apply-credits {
+  color: #ffa942;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.booking-total-container .card .price-details .total-payments {
+  font-size: 16px;
+  font-weight: 700;
+  color: #343d4c;
+}
+
+.booking-total-container .card .protected-footer {
+  font-size: 12px;
+  color: #717171;
+}
+
+.booking-total-container .card .activity-owner .image-src img {
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+}
+
+.booking-total-container .card .activity-owner .experience-by {
+  font-size: 16px;
+  color: #343d4c;
+  margin-bottom: 0;
+  line-height: 1.3;
+}
+
+.booking-total-container .card .activity-owner .owner {
+  font-size: 16px;
+  font-weight: 700;
+  color: #343d4c;
+  margin-bottom: 0;
+  line-height: 1.3;
+}
+
+.booking-total-container .card .activity-owner .verified-logo img {
+  width: 30px;
+  height: auto;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .booking-total-container .card:nth-child(1) {
+    border: 0;
+    box-shadow: none;
+  }
+
+  .booking-total-container .card:nth-child(1) .card-body {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .m-purchase-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+}
+
+/* profile request refund */
+.request-refund-wrapper thead tr {
+  font-size: 18px;
+  font-weight: 400;
+}
+
+.request-refund-wrapper .modal-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #343d4c;
+}
+
+.request-refund-wrapper .modal-header {
+  border: 0;
+}
+
+.request-refund-wrapper .modal-body .div-warning {
+  background-color: #f3f6fc;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.request-refund-wrapper .modal-body .warning {
+  font-size: 12px;
+  color: #343d4c;
+}
+
+.request-refund-wrapper .modal-body .col-form-label {
+  font-size: 20px;
+  font-weight: 700;
+  color: #343d4c;
+}
+
+.request-refund-wrapper table tbody tr,
+.cinnamon-credit-wrapper table tbody tr {
+  color: #717171;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .request-refund-wrapper table tbody tr,
+  .cinnamon-credit-wrapper table tbody tr {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .request-refund-wrapper table tbody tr td:first-child::before {
+    content: "Refund No.: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .request-refund-wrapper table tbody tr td:nth-child(2)::before {
+    content: "Experience Title: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .request-refund-wrapper table tbody tr td:nth-child(3)::before {
+    content: "Status: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:first-child::before {
+    content: "Refund No.: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:nth-child(2):before {
+    content: "Experience Title: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:nth-child(3):before {
+    content: "Status: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .cinnamon-credit-wrapper table tbody tr td:nth-child(4):before {
+    content: "Credits: ";
+    font-size: 16px;
+    color: #000000;
+  }
+
+  .request-refund-wrapper table tbody tr,
+  .cinnamon-credit-wrapper table tbody tr {
+    border-bottom: 1px solid #d9d9d9;
+  }
+
+  .request-refund-wrapper table tbody tr td {
+    padding: 5px;
+  }
+}
+
+/* general css */
+.checkbox-round {
+  width: 1.1em;
+  height: 1.1em;
+  background-color: white;
+  border-radius: 50%;
+  vertical-align: middle;
+  border: 2px solid #bbbbbb;
+  appearance: none;
+  -webkit-appearance: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.checkbox-round:checked {
+  border-color: #ffa942;
+  border-width: 5px;
+}
+
+.font-10 {
+  font-size: 10px;
+}
+
+.font-14 {
+  font-size: 14px;
+}
+
+.font-20 {
+  font-size: 20px;
+}
+
+.font-16 {
+  font-size: 16px;
+}
+
+.font-weight-700 {
+  font-weight: 700;
+}
+
+.color-grey-100 {
+  color: #717171;
+}
+
+.color-black-000 {
+  color: #000;
+}
+
+.color-black-100 {
+  color: #343d4c;
+}
+
+.width-150 {
+  width: 150px;
+}
+
+.width-70 {
+  width: 70px;
+}
+
+.h-auto {
+  height: auto;
+}
+
+.border-radius-5 {
+  border-radius: 5px;
+}
+
+.border-1-solid {
+  border-width: 1px;
+  border-style: solid;
+}
+
+.border-color-grey-200 {
+  border-color: #d9d9d9;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.hover-color-primary:hover {
+  color: var(--primary);
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .m-d-none {
+    display: none;
+  }
+
+  .m-padding-x-0 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+
+  .m-width-100 {
+    width: 100% !important;
+  }
+}
+
+.dropdown-menu li.dropdown-item button {
+  width: 120%;
+  text-align: left;
 }
