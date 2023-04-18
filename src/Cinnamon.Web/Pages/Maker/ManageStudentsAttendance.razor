@@ -416,6 +416,7 @@
                             {
                                 Id = studentAttendance.Id,
                                 SessionsAttended = studentAttendance.SessionsAttended + 1,
+                                NumberOfBacktracking = studentAttendance.NumberOfBacktracking - 1
                             });
                     await OnInitializedAsync();
                     StateHasChanged();
@@ -449,11 +450,6 @@
                     }
                 }*@
             await loadingIndicator.Hide();
-            var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                {
-                    Id = Id,
-                    NumberOfBacktracking = studentAttendance.NumberOfBacktracking - 1,
-                });
             }
             else
             {
