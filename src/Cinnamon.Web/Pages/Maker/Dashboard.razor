@@ -17,19 +17,18 @@
 
 @if (Model != null)
 {
+    <div class="announcement">
+        <img src="images/bulb.svg" class="me-4" alt="icon">
+        <p class="m-0">
+            <span>Announcement! </span>
+            We would like to remind you to check the attendance of your students on attendance tab. 
+            This will help you keep track of your students progress and ensure that everyone is attending classes regularly. 
+        </p>
+    </div>
     <div class="header">
         <p class="title">Experiences</p>
         <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
     </div>
-    @if(activities.Count > 0)
-    {
-        <div class="announcement">
-            <Alert Color="Color.Success" Visible>
-                <AlertMessage>Note!</AlertMessage>
-                <AlertDescription>Please check your attendance section</AlertDescription>
-            </Alert>
-        </div>
-    }
     @foreach (var item in activities)
     {
         <div class="experience-container">
