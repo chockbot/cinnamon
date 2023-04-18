@@ -89,20 +89,23 @@
                         <TableRow>
                             <TableRowCell class="name-body">@item.Name</TableRowCell>
                                 <TableRowCell class="completion-date-body">
-                                    @if(item.SessionsAttended >= item.NumberOfSessions)
-                                    {
-                                        var result = Attendances.item.Where(s=> s.StudentId == item.Id && s.IsPresent == true).ToList();
-                                        var attendance = result.OrderBy(a => a.Date).LastOrDefault();
-                                        if (attendance != null)
+                                    <center>
+                                        @if(item.SessionsAttended >= item.NumberOfSessions)
                                         {
-                                            @attendance.Date.ToString("MMMM dd, yyyy");
+                                            var result = Attendances.item.Where(s=> s.StudentId == item.Id && s.IsPresent == true).ToList();
+                                            var attendance = result.OrderBy(a => a.Date).LastOrDefault();
+                                            if (attendance != null)
+                                            {
+                                                @attendance.Date.ToString("MMMM dd, yyyy");
+                                            }
                                         }
-                                    }
-                                    else
-                                    {
-                                        string ongoing = "N/A";
-                                        @ongoing
-                                    }
+                                        else
+                                        {
+                                            string ongoing = "Ongoing";
+                                            @ongoing
+                                        }
+                                    </center>
+                                   
                                 </TableRowCell>
                             <TableRowCell class="progress-body">
                                 <center>

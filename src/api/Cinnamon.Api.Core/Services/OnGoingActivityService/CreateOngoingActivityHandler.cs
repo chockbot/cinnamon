@@ -90,15 +90,15 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                     new ApplicationException(createOngoingActivityRes.Result.ErrorInfo?.Message), "An error occured in CreateOngoingActivityHandler");
             }
             //Get Number of Backtracking
-            decimal numberOfBackTracking = 0;
-            if (schedule.PerUnit2 % 2 == 0)
+            double quotient = (double)schedule.PerUnit2 / 2;
+            int numberOfBackTracking = 0;
+            if (quotient % 2 == 0)
             {
-                numberOfBackTracking = schedule.PerUnit2 / 2;
+                numberOfBackTracking = (int)quotient;
             }
             else
             {
-                decimal value = schedule.PerUnit2 / 2;
-                numberOfBackTracking = Math.Ceiling(value);
+                numberOfBackTracking = (int)Math.Ceiling(quotient);
             }
             // enroll the students
             var createStudentRes = await studentData.CreateManyStudent(new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs {
@@ -107,7 +107,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 ScheduleId = schedule.Id,
                 NumberOfSessions = schedule.PerUnit2,
                 SessionsAttended = 0,
-                NumberOfBacktracking = Convert.ToInt32(numberOfBackTracking),
+                NumberOfBacktracking = numberOfBackTracking,
                 ExpirationEndDate = DateTime.Now,
                 ExpirationStartDate = DateTime.Now,
                 Students = args.Students.Select(s => {
