@@ -21,13 +21,6 @@
         <button class="back-button" @onclick="@(() => NavigateToManageStudent())"><img src="images/calender icon left.png"></button>
         <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students - Attendance </h3>
     </div>
-    @if (IsShowErrorMessage== true)
-    {
-        <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-            <strong>Reminder: </strong> @ErrorMessage
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
     @*<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
         <AlertMessage>
             @ErrorMessage
@@ -146,10 +139,33 @@
             </section>
         </div>
     </LoadingIndicator>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered>
+            <ModalHeader>
+                <h6 class="col-11 modal-title text-center" style="font-weight:bold">Error</h6>
+                <button type="button" class="btn-close" @onclick="() => HideModal()" />
+            </ModalHeader>
+            <ModalBody>
+                <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
+                    <Card class="badges-column" Border="Border.Is0">
+                        <CardBody Display="Display.Flex" class="card-body" Border="Border.Is0" Padding="Padding.Is0">
+                            <img class="icon-home" src="images/Dashboard Icon/Remider.png">
+                            <span><strong>Reminder:</strong> @ErrorMessage</span>
+                        </CardBody>
+                    </Card>
+                </Div>
+            <button class="btn-save" @onclick="() => HideModal()">
+                Close
+            </button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 }
 @code {
     [Parameter]
     public int Id { get; set; }
+    public Modal modalRef;
     private Students                student             = new Students();
     private List<StudentAttendance> studentAttendances  = new List<StudentAttendance>();
     private StudentAttendance       studentAttendance   = new StudentAttendance();
@@ -164,12 +180,12 @@
     public int                      year                = 2023;
     public int                      month               = 0;
     public string                   Token;
-    public DateTime passDates = new DateTime();
-    public bool IsShowErrorMessage { get; set; }
-    public string ErrorMessage { get; set; }
-    public bool disableButtonRight { get; set; } = false;
-    public bool disableButtonLeft { get; set; } = false;
-    LoadingIndicator loadingIndicator;
+    public DateTime                 passDates           = new DateTime();
+    public bool                     IsShowErrorMessage  { get; set; }
+    public string                   ErrorMessage        { get; set; }
+    public bool                     disableButtonRight  { get; set; } = false;
+    public bool                     disableButtonLeft   { get; set; } = false;
+    LoadingIndicator                loadingIndicator;
 
     @functions {
         string[] CalendarDays = { "SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT" };
@@ -416,6 +432,7 @@
                             {
                                 Id = studentAttendance.Id,
                                 SessionsAttended = studentAttendance.SessionsAttended + 1,
+                                NumberOfBacktracking = studentAttendance.NumberOfBacktracking - 1
                             });
                     await OnInitializedAsync();
                     StateHasChanged();
@@ -449,24 +466,28 @@
                     }
                 }*@
             await loadingIndicator.Hide();
-            var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                {
-                    Id = Id,
-                    NumberOfBacktracking = studentAttendance.NumberOfBacktracking - 1,
-                });
             }
             else
             {
                 IsShowErrorMessage = true;
                 ErrorMessage = "You can only adjust attendance up to half of the total offered sessions.";
+                await ShowModal();
                 await loadingIndicator.Hide();
             }
-    }
+        }
         catch (Exception ex)
         {
-            IsShowErrorMessage = true;
-            ErrorMessage = "An error occured. Please try again later.";
-            await loadingIndicator.Hide();
+                IsShowErrorMessage = true;
+                ErrorMessage = "An error occured. Please try again later.";
+                await loadingIndicator.Hide();
         }
+    }
+    private Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+    private Task ShowModal()
+    {
+        return modalRef.Show();
     }
 }
