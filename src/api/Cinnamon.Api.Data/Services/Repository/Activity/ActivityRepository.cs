@@ -71,7 +71,8 @@ public class ActivityRepository : IActivityRepository
                 Handler = handler,
                 IsNew = true,
                 IsSetSession = IsSetSession,
-                SessionName = SessionName
+                SessionName = SessionName,
+                Guid = Guid.NewGuid().ToString()
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
