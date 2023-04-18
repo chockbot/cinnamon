@@ -28,7 +28,11 @@ jobs:
           files: "src/api/Cinnamon.Api.Data/appsettings.json"
         env:
           ConnectionStrings.CinnamonDB: ${{ secrets.PROD_DB_CONNECTION }}
-
+          KeyVault.KeyVaultUri: ${{ secrets.PROD_KVAULT_URL }}
+          KeyVault.CinnamonDbConnectionString: ${{ secrets.PROD_KVAULT_DB }}
+          AzureAd.ClientId: ${{ secrets.SHARED_AZUREAD_CLIENTID }}
+          AzureAd.TenantId: ${{ secrets.SHARED_AZUREAD_TENANTID }}
+          AzureAd.ClientSecret: ${{ secrets.PROD_AZUREAD_SECRET }}
       # copy sitemaps
       - name: Copy sitemap
         run: cp output/sitemap.xml src/Cinnamon.Web/wwwroot/sitemap.xml
