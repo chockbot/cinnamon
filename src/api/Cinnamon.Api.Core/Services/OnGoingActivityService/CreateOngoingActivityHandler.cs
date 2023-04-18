@@ -90,7 +90,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                     new ApplicationException(createOngoingActivityRes.Result.ErrorInfo?.Message), "An error occured in CreateOngoingActivityHandler");
             }
             //Get Number of Backtracking
-            double quotient = schedule.PerUnit2 / 2;
+            double quotient = (double)schedule.PerUnit2 / 2;
             int numberOfBackTracking = 0;
             if (quotient % 2 == 0)
             {
