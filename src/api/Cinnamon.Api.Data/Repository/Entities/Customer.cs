@@ -15,10 +15,14 @@ public class Customer : BaseEntity
     public DateTime DateJoined {get; set;}
     public bool IsMaker {get; set;}
     public bool ExternalLogin {get; set;}
-    public bool IsVerified {get; set;}
+    public int IsVerifiedBadge { get; set; }
+    public bool IsOG { get; set; }
+    public bool IsOfficialPartner { get; set; }
     public string? FrontIdImagePath {get; set;}
     public string? BackIdImagePath {get; set;}
-
+    public string Handler {get; set;}
+    public decimal TotalCredits {get; set;}
+    public bool HasAcceptedTerms { get; set; }
     public virtual IList<FamilyMember> FamilyMembers {get; set;}
     public virtual IList<OngoingActivity> OngoingActivities { get; set;}
 }

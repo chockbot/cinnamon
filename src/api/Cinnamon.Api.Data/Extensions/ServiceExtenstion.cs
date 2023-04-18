@@ -24,7 +24,12 @@ public static class ServiceExtenstion
         services.AddTransient<IPurchaseOrder, PurchaseOrderEntity>();
         services.AddTransient<IResendEmail, ResendEmailEntity>();
         services.AddTransient<IWaitList, WaitListEntity>();
+        services.AddTransient<IStudent, StudentEntity>();
+        services.AddTransient<IStudentAttendance, StudentAttendanceEntity>();
+        services.AddTransient<IBadgeList, BadgeListEntity>();
+        services.AddTransient<IFailedLogin, FailedLoginEntity>();
         services.AddTransient<IDataStore, DataStore>();
+
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
         services.AddTransient<Services.Repository.Interfaces.IDescriptionRepository, Services.Repository.ActivityDescription.DescriptionRepository>();
@@ -40,6 +45,17 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IExperienceTypeRepository, Services.Repository.ExperienceType.ExperienceTypeRepository>();
         services.AddTransient<Services.Repository.Interfaces.IScheduleRepository, Services.Repository.Schedule.ScheduleRepository>();
         services.AddTransient<Services.Repository.Interfaces.ISearchTagsRepository, Services.Repository.SearchTag.SearchTagRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IExternalLoginTokenRepository, Services.Repository.ExternalLoginToken.ExternalLoginTokenRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IStudentRepository, Services.Repository.Student.StudentRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IStudentAttendanceRepository, Services.Repository.StudentAttendance.StudentAttendanceRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IResetPasswordRepository, Services.Repository.ResetPassword.ResetPasswordRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ILocationRepository, Services.Repository.Location.LocationRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IFailedLoginRepository, Services.Repository.FailedLogin.FailedLoginRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IRequestRefundRepository, Services.Repository.RequestRefund.RequestRefundRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IPayoutAccountRepository, Services.Repository.PayoutAccount.PayoutAccountRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IPayoutLogRepository, Services.Repository.PayoutLog.PayoutLogRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IAdminUserRepository, Services.Repository.AdminUser.AdminUserRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IBadgeListRepository, Services.Repository.BadgeList.BadgeListRepository>();
 
         return services;
     }

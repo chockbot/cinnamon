@@ -70,7 +70,9 @@ public class CustomerData : ICustomerData
                                 new {
                                     countPerPage = args.CountPerPage,
                                     isVerified = args.IsVerified,
-                                    pageIndex = args.PageIndex }).GetJsonAsync<GetAllCustomerResult>();
+                                    pageIndex = args.PageIndex,
+                                    handlerLike = args.HandlerLike
+                                }).GetJsonAsync<GetAllCustomerResult>();
 
             return AppResult<GetAllCustomerResult>.CreateSucceeded(result, "Successfully getting get all customers api");
         }
@@ -101,6 +103,26 @@ public class CustomerData : ICustomerData
         catch (Exception ex)
         {
             return AppResult<GetCustomerResult>.CreateFailed(ex, "An error occured when getting customer by id api");
+        }
+    }
+
+    public async Task<AppResult<GetCustomerResult>> GetCustomerByHandler(string handler)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Customer/GetByHandler/{handler}")
+                            .GetJsonAsync<GetCustomerResult>();
+            
+            return AppResult<GetCustomerResult>.CreateSucceeded(result, "Successfully getting customer by handler api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCustomerResult>.CreateFailed(ex, "An error occured when getting customer by handler api");
         }
     }
 
@@ -185,6 +207,7 @@ public class CustomerData : ICustomerData
             return AppResult<GetGovernmentIdResult>.CreateFailed(ex, "An error occured when getting customer government id api");
         }
     }
+
     public async Task<AppResult<GetProfilePictureResult>> GetProfilePicture(int customerId)
     {
 
@@ -203,6 +226,48 @@ public class CustomerData : ICustomerData
         catch (Exception ex)
         {
             return AppResult<GetProfilePictureResult>.CreateFailed(ex, "An error occured when getting customer profile picture api");
+        }
+    }
+
+    public async Task<AppResult<GenerateResetPasswordTokenResult>> GenerateResetPasswordToken(GenerateResetPasswordTokenArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Customer/GenerateResetPasswordToken")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<GenerateResetPasswordTokenResult>();
+
+            return AppResult<GenerateResetPasswordTokenResult>.CreateSucceeded(result, "Successfully generate reset password token");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GenerateResetPasswordTokenResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GenerateResetPasswordTokenResult>.CreateFailed(ex, "An error occured when generate reset password token");
+        }
+    }
+
+    public async Task<AppResult<ResetPasswordResult>> ResetPassword(ResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Customer/ResetPassword")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<ResetPasswordResult>();
+
+            return AppResult<ResetPasswordResult>.CreateSucceeded(result, "Successfully resetted password");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ResetPasswordResult>.CreateFailed(ex, "An error occured when resetting the password");
         }
     }
 }

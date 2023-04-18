@@ -4,45 +4,56 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
-<div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between" style="font-size:0.9rem" @onmouseenter="OnMouseEnter" @onmouseleave="OnMouseEnter">
-    <span class="fw-bold">@ScheduleModel.Name</span>
-    <br />
-    <div>
-        @ScheduleModel.DateTime
-    </div>
-    <br />
-    <div style="font-size:0.7rem">
-     @ScheduleModel.UnitPrice @ScheduleModel.Price / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
-    </div>
-    <br />
-    @if (AuthState.User.Identity.IsAuthenticated)
-    {
-        if (ButtonType == ScheduleButtonType.Choose)
-        {
-            <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose" style="width:fit-content;padding: 5px 10px">Choose</button>
-        }
-        else{
-            <button class="btn-primary shadow-sm border-0 rounded" style="width:fit-content;padding: 5px 10px" @onclick="OnClickChange">
-                Change
-            </button>
-        }
+@if(ActivityModel != null){
+    @if(ScheduleModel.IsActiveSchedule == true){
+        <div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between">
+            <span class="fw-bold schedule-name">@ScheduleModel.Name</span>
+            @*<br />*@
+            <div class="schedule-date">
+                @ScheduleModel.DateTime
+            </div>
+            @* <br />*@
+            <div class="schedule-text">
+                ₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
+            </div>
+            @if (ActivityModel.IsSetSession == true)
+            {
+                @*<br />*@
+                <div class="schedule-text">
+                    Consume in - @ActivityModel.SessionName
+                </div>
+            }
+            @*<br />*@
+            @if (AuthState.User.Identity.IsAuthenticated)
+            {
+                if (ButtonType == ScheduleButtonType.Choose)
+                {
+                    <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose">Choose</button>
+                }
+                else
+                {
+                    <button class="btn-primary shadow-sm border-0 rounded" @onclick="OnClickChange">
+                        Change
+                    </button>
+                }
+            }
+            else
+            {
+                <button class="btn-primary rounded border-0 shadow-sm" @onclick="() => modalLoginRef?.Show()">Choose</button>
+            }
+        </div>
     }
-    else
-    {
-        <button class="btn-primary rounded border-0 shadow-sm" data-bs-toggle="modal" data-bs-target="#loginModal" style="width:fit-content;padding: 5px 10px">Choose</button>
-    }
-    
-</div>
-
-
-@if (!AuthState.User.Identity.IsAuthenticated && mouseEnter)
-{
-    <ModalLogin ReturnUrl="@($"/Payment/{ScheduleModel.Id}")"></ModalLogin>
 }
+@if (!AuthState.User.Identity.IsAuthenticated)
+{
+    <ModalLogin @ref="modalLoginRef" ReturnUrl="@($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}")"></ModalLogin>
+}
+
 @code {
     [Parameter]
     public ActivitySchedule ScheduleModel { get; set; }
-
+    [Parameter]
+    public Activity ActivityModel { get; set; }
     [Parameter]
     public ScheduleButtonType ButtonType { get; set; } = ScheduleButtonType.Choose;
 
@@ -50,11 +61,14 @@
     public EventCallback<MouseEventArgs> OnClickChange { get; set; } = new EventCallback<MouseEventArgs>();
 
     [Parameter]
+    public EventCallback OnChooseClick { get; set; }
+
+    [Parameter]
     public EventCallback<MouseEventArgs> OnClickLogin { get; set; } = new EventCallback<MouseEventArgs>();
 
     public AuthenticationState AuthState { get; set; }
 
-    private bool mouseEnter { get; set; }
+    private ModalLogin? modalLoginRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -63,11 +77,10 @@
 
     private void OnClickChoose()
     {
-        NavigationManager.NavigateTo($"/Payment/{ScheduleModel.Id}", true);
-    }
-
-    private void OnMouseEnter()
-    {
-        mouseEnter = !mouseEnter;
+        NavigationManager.NavigateTo($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}");
+        if(OnChooseClick.HasDelegate)
+        {
+            OnChooseClick.InvokeAsync();
+        }
     }
 }

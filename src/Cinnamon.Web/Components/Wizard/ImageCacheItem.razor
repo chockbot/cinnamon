@@ -2,10 +2,10 @@
 @inject IJSRuntime JsRuntime
 
 <div class="image-container">
-    <div class="image-delete-icon" @onclick="@DeleteImage" hidden="@ShowDelete()">
+    @* <div class="image-delete-icon" @onclick="@DeleteImage" hidden="@ShowDelete()">
         <i class="fa fa-trash" id="delete-icon"></i>
-    </div>
-    <label for="@InputId" style="cursor: pointer;">
+    </div> *@
+    <label>
         @if(isBlank)
         {
             <img id=@ImageId class="experience-image @RequiredCheck()" src="@blankImageSrc" />
@@ -14,7 +14,7 @@
         {
             <img id=@ImageId class="experience-image @RequiredCheck()"/>
         }
-        <InputFile @ref="inputFile" id="@InputId" accept=".png,.jpg,.jpeg" name="@InputId" style="display: none;" OnChange="@LoadFile" />
+        @* <InputFile @ref="inputFile" id="@InputId" accept=".png,.jpg,.jpeg" name="@InputId" style="display: none;" OnChange="@LoadFile" /> *@
     </label>
 </div>
 
@@ -75,6 +75,8 @@
 
     private InputFile? inputFile;
 
+    private long ImageSize = 0;
+
     private bool ShowDelete() 
     {
         if (isBlank) {
@@ -93,8 +95,9 @@
         return "";
     }
 
-    public async Task LoadFile(InputFileChangeEventArgs e)
+    private async Task LoadFile(InputFileChangeEventArgs e)
     {
+        ImageSize = e.File.Size / 1024 / 1024;
         isBlank = false;
         StateHasChanged();
         await ShowPreview();
@@ -110,4 +113,6 @@
         => await JsRuntime.InvokeVoidAsync("MyLib.previewImage", inputFile!.Element, ImageId);
     
     public bool HaveEmptyImage() => isBlank;
+
+    public long GetSize {get {return ImageSize; }}
 }

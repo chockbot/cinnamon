@@ -1,9 +1,10 @@
-using System.Security.Claims;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Ganss.XSS;
+using System.Security.Claims;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 
@@ -13,6 +14,7 @@ public class CreateActivityHandler : ICreateActivityHandler
     private readonly IActivityData activityData;
     private readonly IScheduleData scheduleData;
     private readonly ICustomerData customerData;
+    private readonly HtmlSanitizer htmlSanitizer;
 
     public CreateActivityHandler(IHttpContextAccessor httpContext, IActivityData activityData, 
         IScheduleData scheduleData, ICustomerData customerData)
@@ -21,6 +23,10 @@ public class CreateActivityHandler : ICreateActivityHandler
         this.activityData = activityData;
         this.scheduleData = scheduleData;
         this.customerData = customerData;
+
+        this.htmlSanitizer = new 
+            HtmlSanitizer(
+                allowedTags: new string[] {"p","strong", "em", "ul", "ol", "li", "br"});
     }
 
     public AppResult<CreateActivityResult> Execute(CreateActivityArgs args)
@@ -48,6 +54,50 @@ public class CreateActivityHandler : ICreateActivityHandler
             }
             int id = Convert.ToInt32(customerId);
 
+            const int maxWords = 80;
+            var customerBringLength = WordsLenght(args.CustomerBringWithThem ?? string.Empty);
+            var specificProvideLength = WordsLenght(args.SpecificsYouWillProvide ?? string.Empty);
+
+            if(customerBringLength > maxWords || specificProvideLength > maxWords)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(
+                    new ApplicationException($"Limit only of {maxWords} for Customer Bring/Specific Provide fields."), 
+                        $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
+            }
+
+            // create activity unique handler
+            // remove special characters for creating handler name
+            char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
+                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>','.'};
+            var removedCharacters = args.Title.Split(separators, StringSplitOptions.RemoveEmptyEntries);
+            var handlerName = string.Join("-",string.Join("",removedCharacters.Where(s => !string.IsNullOrEmpty(s))).Split(" ").Where(s => !string.IsNullOrEmpty(s))).ToLower();
+
+            var queryActivitiesLikeHandlerName = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {
+                LikeHandler = handlerName
+            });
+            if(!queryActivitiesLikeHandlerName.Succeeded || queryActivitiesLikeHandlerName.Result == null || !queryActivitiesLikeHandlerName.Result.IsSuccess)
+            {
+                return AppResult<CreateActivityResult>.CreateFailed(
+                    new ApplicationException(queryActivitiesLikeHandlerName.Result?.ErrorInfo?.Message), queryActivitiesLikeHandlerName.Message);
+            }
+            var activitiesHandlers = queryActivitiesLikeHandlerName.Result.Result.OrderBy(a => a.Handler);
+            if(activitiesHandlers.Count() > 0)
+            {
+                var splittedLastHandler = activitiesHandlers.Last().Handler.Split("-");
+                if(splittedLastHandler.Count() > 0)
+                {
+                    var lastIdentifier = splittedLastHandler.Last();
+                    if(int.TryParse(lastIdentifier, out int intResult))
+                    {
+                        handlerName = $"{handlerName}-{intResult +1}";
+                    }
+                    else 
+                    {
+                        handlerName = $"{handlerName}-1";
+                    }
+                }
+            }
+
             var activityRes = await activityData.CreateActivity(new Framework.ApiCommand.ApiData.Activity.Request.CreateActivityArgs {
                 ActivityLevel = args.ActivityLevel,
                 AdditionalRequirements = args.AdditionalRequirements,
@@ -55,7 +105,11 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Address2 = args.Address2,
                 CanAdultsJoin = args.CanAdultsJoin,
                 City = args.City,
-                CustomerBringWithThem = args.CustomerBringWithThem,
+                Subdivision = args.Subdivision,
+                Region = args.Region,
+                Barangay = args.Barangay,
+                PostalCode= args.PostalCode,
+                CustomerBringWithThem = customerBringLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.CustomerBringWithThem ?? string.Empty),
                 CustomerId = id,
                 Description = args.Description,
                 District = args.District,
@@ -72,9 +126,13 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Searchtag4 = args.SearchTags.Count() >= 4 ? args.SearchTags.ElementAt(3) : null,
                 Searchtag5 = args.SearchTags.Count() >= 5 ? args.SearchTags.ElementAt(4) : null,
                 SkillLevel = args.SkillLevel,
-                SpecificsYouWillProvide = args.SpecificsYouWillProvide,
+                SpecificsYouWillProvide = specificProvideLength == 0 ? string.Empty : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
-                Title = args.Title
+                Title = args.Title,
+                Handler = handlerName,
+                IsSetSession = args.IsSetSession,
+                SessionName = args.SessionName,
+                PinnedLocation = args.PinnedLocation
             });
 
             if(!activityRes.Succeeded || activityRes.Result == null)
@@ -89,9 +147,11 @@ public class CreateActivityHandler : ICreateActivityHandler
             var activity = activityRes.Result.Result;
 
             // create activity schedules
+            int order = 0;
             var createdSchedules = await scheduleData.CreateManySchedules(new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs {
                 ActivityId = activity.Id,
-                Schedules = args.ActivitySchedules.Select(s => {
+                Schedules = args.ActivitySchedules.OrderBy(s => s.Order).Select(s => {
+                    order += 1;
                     return new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.Schedule {
                         DateTime = s.DateTime,
                         Name = s.Name,
@@ -100,7 +160,9 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        Order = order,
+                        IsActiveSchedule = s.IsActiveSchedule,
                     };
                 })
             });
@@ -134,7 +196,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                     CustomerId = id
                 });
                 
-                if((updatedCustomer.Succeeded || updatedCustomer.Result == null) || (updatedCustomer.Succeeded && !updatedCustomer.Result.IsSuccess))
+                if((!updatedCustomer.Succeeded || updatedCustomer.Result == null) || (updatedCustomer.Succeeded && !updatedCustomer.Result.IsSuccess))
                 {
                     return AppResult<CreateActivityResult>.CreateFailed(
                         new ApplicationException("An error occured when trying to update customer to maker"), "An error occured when trying to update customer to maker");
@@ -149,6 +211,10 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Address2 = activity.Address2,
                 CanAdultsJoin = activity.CanAdultsJoin,
                 City = activity.City,
+                Subdivision = activity.Subdivision,
+                Barangay= activity.Barangay,
+                PostalCode= activity.PostalCode,    
+                Region = activity.Region,  
                 CustomerBringWithThem = activity.CustomerBringWithThem,
                 Description = activity.Description,
                 District = activity.District,
@@ -163,6 +229,9 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName,
                 ActivitySchedules = createdSchedules.Result.Result.Select(s => {
                     return new CreateActivityResult.ActivitySchedule {
                         DateTime = s.DateTime,
@@ -172,7 +241,9 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        Order = order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 })
 
@@ -182,5 +253,23 @@ public class CreateActivityHandler : ICreateActivityHandler
         {
             return AppResult<CreateActivityResult>.CreateFailed(ex, "An error occured in CreateActivityHandler");
         }
+    }
+
+    private int WordsLenght(string text)
+    {
+        var words = htmlSanitizer
+                        .Sanitize(text)
+                        .Replace("<br>"," ").Replace("</br>"," ")
+                        .Replace("<p>","").Replace("</p>","")
+                        .Replace("<strong>","").Replace("</strong>","")
+                        .Replace("<em>","").Replace("</em>","")
+                        .Replace("<ul>","").Replace("</ul>","")
+                        .Replace("<ol>","").Replace("</ol>","")
+                        .Replace("<li>","").Replace("</li>","")
+                        .Trim()
+                        .Split(" ")
+                        .Where(t => !string.IsNullOrEmpty(t.Trim()));
+        
+        return words.Count();
     }
 }

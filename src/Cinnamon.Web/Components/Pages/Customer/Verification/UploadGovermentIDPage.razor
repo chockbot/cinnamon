@@ -1,0 +1,160 @@
+﻿@namespace Cinnamon.Web.Components
+@page "/uploadGovermentId"
+@using Cinnamon.Web.Models.Customer;
+@using System.Security.Claims
+@using Cinnamon.Web.Components.Pages.Customer.Profile;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager
+@inject IAccountApiHandler accountApiHandler;
+@inject IJSRuntime JsRuntime
+
+<form id="submit-government-ids" method="post" enctype="multipart/form-data">
+    <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+        <div class="row">
+            <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+                <label class="fw-bold title-description">
+                    Lets upload your Government ID
+                </label>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+                <label class="label-paragraph">
+                    Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.
+                </label>
+            </div>
+        </div>
+        <div class="row mrow justify-content-center">
+            <div class="col-lg-5 col-md-5 col-sm-12 mb-4 label-container-section text-lg-start text-md-start text-sm-center">
+                <ImageUpload Model="frontData" />
+                <label class="label-paragraph">
+                    Upload Front of ID
+                </label>
+                <br />
+                <br />
+                <ImageUpload Model="backData" />
+                <label class="label-paragraph">
+                    Upload Back of ID
+                </label>
+                <br />
+                <br />
+                <div class="button-container" style="overflow:auto;">
+                    <Button Type="ButtonType.Submit" class="btn-primary" Loading="isLoading" Disabled="isLoading">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                            Uploading
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Submit
+                        </ChildContent>
+                    </Button>
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-5 col-sm-12 mb-4 label-container-section text-lg-start text-md-start text-sm-center">
+                <label class="fw-bold title-description">
+                    Take Note
+                </label>
+                <br />
+                <label class="label-paragraph">
+                    Here are the recommended IDs you can submit to
+                    immediately get verified
+                </label>
+                <br />
+                <ul clas>
+                    <li>Drivers's License</li>
+                    <li>Passport</li>
+                    <li>Postal ID</li>
+                    <li>PRC ID</li>
+                    <li>SSS ID</li>
+                    <li>UMID</li>
+                    <li>Voters ID</li>
+                    <li>Phylsys National ID</li>
+                    <li>HDMF ID (Pag-ibig)</li>
+                    <li>TIN ID</li>
+                </ul>
+                <br />
+                <label class="label-paragraph">
+                    We aim to keep the data you share during this process
+                    private, safe, and secure. Learn more in our <a href="/Help/privacy" style="text-decoration:none;color:var(--primary);">Privacy Policy</a>.
+                </label>
+
+            </div>
+        </div>
+    </div>
+    <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="isShowErrorMessage">
+        <AlertMessage>
+            @errorMessage
+        </AlertMessage>
+    </Alert>
+</form>
+
+
+@code {
+    [Parameter]
+    public string Token { get; set; }
+
+    private UploadGovernmenId frontData = new();
+
+    private UploadGovernmenId backData = new();
+
+    private DotNetObjectReference<UploadGovermentIDPage>? obj;
+
+    private bool isLoading = false;
+
+    private bool isShowErrorMessage = false;
+
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var result = await accountApiHandler.GetGovermentIds(token);
+        if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+        {
+            throw new ApplicationException("An error occured when getting government ids");
+        }
+
+        obj = DotNetObjectReference.Create(this);
+
+        frontData.Label = "Front of ID";
+        frontData.ImageName = "FrontId";
+        frontData.ImageFileName = result.Result.Result.FrontIdImagePath;
+        frontData.ImageId = "id-front-image";
+        frontData.ErrorId = "id-front-error";
+
+        backData.Label = "Back of ID";
+        backData.ImageName = "BackId";
+        backData.ImageFileName = result.Result.Result.BackIdImagePath;
+        backData.ImageId = "id-back-image";
+        backData.ErrorId = "id-back-error";
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JsRuntime.InvokeVoidAsync("MyLib.Components.modal.uploadGovenmentId.init", obj);
+        }
+    }
+    [JSInvokable]
+    public Task ShowLoading()
+    {
+        isLoading = true;
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+    [JSInvokable]
+    public void ShowError(string message)
+    {
+        errorMessage = message;
+        isShowErrorMessage = true;
+        StateHasChanged();
+    }
+}

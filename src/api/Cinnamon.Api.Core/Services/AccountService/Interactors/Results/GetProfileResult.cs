@@ -6,9 +6,14 @@ public class GetProfileResult
     public string FirstName {get; set;}
     public string LastName {get; set;}
     public DateTime Birthdate {get; set;}
+    public DateTime DateJoined { get; set; }
     public string Email {get; set;}
     public string About {get; set;}
     public bool IsMaker {get; set;}
-    public bool IsVerified {get; set;}
+    public int IsVerified {get; set;}
+    public bool IsOG { get; set; }
+    public bool IsOfficial { get; set; }
     public string ProfileImagePath {get; set;}
+    public string Handler {get; set;}
+    public decimal TotalCredits {get; set;}
 }

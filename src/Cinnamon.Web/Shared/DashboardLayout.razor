@@ -1,0 +1,212 @@
+﻿@using System.Security.Claims
+@inherits LayoutComponentBase
+@using Cinnamon.Web.Models.Layout;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Components;
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAccountApiHandler accountApiHandler;
+
+<Layout Sider class="dashboard-layout">
+    <input type='checkbox' id='toggle' @bind="IsShowSidebar" />
+    <LayoutSider @onclick="() => IsShowSidebar = !IsShowSidebar">
+        <LayoutSiderContent>
+            
+            @if (Model.IsAuthenticated)
+            {
+                if (Model.Profile != null && Model.Profile.IsMaker)
+                {
+                    <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
+                        <li class="nav-item">
+                            <div class="nav-link item-link sidebar-header">
+                                <label for='toggle' class='close'><img src="images/Dashboard Icon/close.png" class="close-icon"></label>
+                                <a href="Explore" class="d-flex align-items-center  text-white text-decoration-none">
+                                    <span class="app-name" id="angelo">Cinnamon</span>
+                                </a>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="Explore" class="nav-link align-middle item-link">
+                                <img class="icon-home" src="images/Dashboard Icon/Home.png"> <span class="ms-1 d-sm-inline nav-text">Home</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToDashboard">
+                                <img class="icon-home" src="images/Dashboard Icon/dashboard icon.png"> <span class="ms-1 d-sm-inline nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAttendance">
+                                <img class="icon-home" src="images/Dashboard Icon/attendance icon.png"> <span class="ms-1 d-sm-inline nav-text">Attendance</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToManage">
+                                <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToReports">
+                                <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Reports</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToAccount">
+                                <img class="icon-home" src="images/Dashboard Icon/account icon.png"> <span class="ms-1 d-sm-inline nav-text">Account</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToBadges">
+                                <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToPremium">
+                                <img class="icon-home" src="images/Dashboard Icon/premium icon.png"> <span class="ms-1 d-sm-inline nav-text">Premium</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToHelp">
+                                <img class="icon-home" src="images/Dashboard Icon/help.png"> <span class="ms-1 d-sm-inline nav-text">Help</span>
+                            </a>
+                        </li>
+                    </ul>
+                }
+            }
+            <div class="contact">
+                <a href="mailto:support@cinnamon.ph data-bs-toggle="collapse" class="nav-link align-middle contact-box">
+                    <img src="images/Dashboard Icon/phone.png" alt="hugenerd" width="30" class="rounded-circle">
+                    <span class=" d-sm-inline mx-1">Contact Us</span>
+                </a>
+            </div>
+        </LayoutSiderContent>
+    </LayoutSider>
+    <Layout>
+        <LayoutContent>
+            <Container Fluid>
+                <div class="header-mobile">
+                    <div>
+                        <a href="Explore" class="text-white text-decoration-none">
+                            <span class="d-sm-inline app-name-mobile">Cinnamon</span>
+                        </a>
+                    </div>
+                    <div class="mt-3">
+                        <label for='toggle' class='hamburger me-3'>
+                            <img src="images/Dashboard Icon/hamburger.png" class="toggle-icon">
+                        </label>
+                    </div>
+                </div> 
+                <div class="render-body">
+                    @Body
+                </div>
+            </Container>
+        </LayoutContent>
+    </Layout>
+</Layout>
+
+@if (Model.IsAuthenticated && mouseEnter)
+{
+    <ModalLogin @ref="signinModal"/>
+}
+@code
+{
+    private ModalLogin signinModal { get; set; }
+
+    public bool clickButton { get; set; }
+
+    private bool mouseEnter { get; set; }
+
+    private HeaderModel Model { get; set; } = new();
+
+    private bool IsShowSidebar {get; set;} = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        if (user.Identity != null && user.Identity.IsAuthenticated && token != null)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                // map only required field
+                Model.Profile = new Models.Entities.CustomerProfile
+                    {
+                        IsMaker = result.Result.Result.IsMaker
+                    };
+                Model.IsAuthenticated = true;
+            }
+        }
+    }
+
+    private void NavigateToDashboard()
+    {
+        navigationManager.NavigateTo("/maker/dashboard");
+    }
+
+    private void NavigateToAccount()
+    {
+        navigationManager.NavigateTo("/customer/profile");
+    }
+    private void NavigateToManage()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/managestudents");
+    }
+
+    private void NavigateToAttendance()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/attendance");
+    }
+
+    private void NavigateToPremium()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/coming-soon");
+    }
+
+    private void NavigateToBadges()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/badges");
+    }
+
+    private void NavigateToReports()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/coming-soon");
+    }
+
+    private void NavigateToHelp()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/help");
+    }
+
+    private void onClickMenu()
+    {
+        if (clickButton)
+        {
+            clickButton = false;
+        }
+        else
+        {
+            clickButton = true;
+        }
+        StateHasChanged();
+    }
+
+    private string ShowMenu()
+    {
+        return clickButton ? "show" : "";
+    }
+
+    private void OnMouseEnter()
+    {
+        mouseEnter = !mouseEnter;
+    }
+    private void OnClickLogo()
+    {
+        navigationManager.NavigateTo("", true);
+    }
+    private void Logout()
+    {
+        navigationManager.NavigateTo("/api/account/logout", true);
+    }
+}

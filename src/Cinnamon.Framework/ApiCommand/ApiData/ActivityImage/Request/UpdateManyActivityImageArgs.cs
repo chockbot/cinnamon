@@ -13,6 +13,8 @@ public class UpdateManyActivityImageArgs
         [Required]
         public int Id {get; set;}
         [Required]
+        public int Order {get; set;}
+        [Required]
         public int ActivityId {get; set;}
         [Required]
         public string ImageSrc {get; set;}

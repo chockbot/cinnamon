@@ -9,5 +9,7 @@ public class GetOwnedActivitiesArgs
     public bool? IncludeActivityDescription {get; set;}
     public bool? IncludeActivitySearchTags {get; set;}
     public bool? IncludeActivityImages {get; set;}
+    public bool? IncludeCustomer {get; set;}
     public bool? IsActive {get; set;}
+    public bool? IncludeStudents { get; set; }
 }

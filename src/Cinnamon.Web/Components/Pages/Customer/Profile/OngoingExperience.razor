@@ -4,63 +4,23 @@
 <article class="ongoing-experience-wrapper py-3">
     <h3 class="title">Ongoing Experiences</h3>
     <Div class="ongoing-experiences-container activitySwiper" Margin="Margin.Is3.FromTop">
-        <div class="swiper-wrapper">
+        <div class="swiper-wrapper customer-wrapper">
             @if (Activities != null)
             {
                 foreach (var item in Activities)
                 {
-                    <OngoingExperienceItem Activity="item" />
+                    <OngoingExperienceItem ActivityItemType="OngoingExperienceItem.ItemType.Ongoing" Activity="item" Profile="Profile"/>
                 }
             }
         </div>
     </Div>
 </article>
 
-<style scoped>
-.ongoing-experience-wrapper {
-    font-family: "Nunito";
-    overflow: hidden;
-}
-.ongoing-experience-wrapper .title 
-{
-    font-size: 24px;
-    font-weight: 700;
-    color: #343D4C;
-}
-.card-experience-item {
-  width: 100%;
-}
-.card-experience-item .figure-container {
-  border-radius: 10px !important;
-}
-.card-experience-item .name {
-    font-size: 16px;
-    font-weight: 600;
-}
-.card-experience-item .address 
-{
-    font-size: 14px;
-    font-weight: 400;
-}
-.card-experience-item .new-tag-icon 
-{
-    width: 15px;
-    height: auto;
-}
-.card-experience-item .new-tag-label 
-{
-    font-size: 14px;
-    margin-left: 5px;
-}
-.card-experience-item .new-badge 
-{
-    background-color: #F8F8F8;
-    border-radius: 14px;
-}
-</style>
 
-@code 
+@code
 {
     [Parameter]
-    public IList<Activity> Activities { get; set; }
+    public IEnumerable<Activity> Activities { get; set; }
+    [Parameter]
+    public CustomerProfile Profile { get; set; }
 }

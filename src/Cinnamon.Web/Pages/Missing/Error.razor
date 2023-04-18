@@ -1,0 +1,54 @@
+@page "/missing/error"
+@layout EmptyLayout
+@using Cinnamon.Web.Components.Pages;
+@inject NavigationManager navigationManager
+
+<PageTitle>Oops Error Occured | CinnamonPH</PageTitle>
+<SeoMeta Title="Oops Error Occured" Subject="Error" Url="/missing/error" />
+
+<div class="error-pictures">
+
+
+    <div class="error-desktop item">
+        <img class="error-desktop-icon" src="images/Missing/error-desktop.svg" />
+    </div>
+
+
+    <div class="plug">
+        <div class="left-plug item">
+            <img class="left-plug-icon" src="images/Missing/left-plug.svg" />
+        </div>
+
+        <div class="blank-panel"></div>
+
+        <div class="right-plug item">
+            <img class="right-plug-icon" src="images/Missing/right-plug.svg" />
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+
+<div class="error-details">
+    <p class="error-tagline">Sorry, This Page Could Not Be Found.</p>
+
+    <p class="error-subline">The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.</p>
+
+    <button class="error-button" @onclick="NavigateToExplore">Go Home</button>
+</div>
+
+
+@code {
+    private void NavigateToExplore()
+    {
+        navigationManager.NavigateTo("explore");
+    }
+
+}
+
+
+

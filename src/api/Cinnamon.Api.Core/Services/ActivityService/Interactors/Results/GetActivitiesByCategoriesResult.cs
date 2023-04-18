@@ -26,9 +26,12 @@ public class GetActivitiesByCategoriesResult
         public string SkillLevel { get; set; }
         public int MinimumAge { get; set; }
         public bool CanAdultsJoin { get; set; }
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
         public IEnumerable<string> SearchTags { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }
+        public CustomerOwner? Owner {get; set;}
 
 
         public class ActivitySchedule
@@ -42,13 +45,22 @@ public class GetActivitiesByCategoriesResult
             public string PriceUnit1 { get; set; }
             public int PerUnit2 { get; set; }
             public string PriceUnit2 { get; set; }
+            public int Order {get; set;}
+            public bool IsActiveSchedule { get; set; }
         }
 
         public class ActivityImage
         {
             public int Id { get; set; }
+            public int Order {get; set;}
             public string ImageSrc { get; set; }
             public string Name { get; set; }
+        }
+
+        public class CustomerOwner 
+        {
+            public int Id {get; set;}
+            public string Handler {get; set;}
         }
     }
 }

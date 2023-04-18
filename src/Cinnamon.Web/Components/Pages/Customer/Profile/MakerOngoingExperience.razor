@@ -1,0 +1,24 @@
+@using Cinnamon.Web.Models.Entities;
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+
+<article class="ongoing-experience-wrapper py-3">
+    <h3 class="title">Ongoing Experiences</h3>
+    <Div class="ongoing-experiences-container activitySwiper" Margin="Margin.Is3.FromTop">
+        <div class="swiper-wrapper maker-wrapper">
+            @if (Activities != null)
+            {
+                foreach (var item in Activities)
+                {
+                    <MakerOngoingExperienceItem Activity="item" />
+                }
+            }
+        </div>
+    </Div>
+</article>
+
+
+@code 
+{
+    [Parameter]
+    public IEnumerable<Activity> Activities { get; set; }
+}

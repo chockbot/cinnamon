@@ -1,5 +1,7 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Models.Account;
+@using Cinnamon.Web.Models.Entities;
 @inject IAccountApiHandler accountApiHandler;
 
 <article class="personal-info-wrapper p-3">
@@ -62,6 +64,10 @@
                             </Column>
                         </Row>
                         <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SaveBirthDate">Save</Button>
+                        @if (!string.IsNullOrEmpty(errorMessage))
+                        {
+                            <p class="activity-image-photos-error-message text-center">@errorMessage</p>
+                        }
                     }
                 </div>
             </Column>
@@ -104,15 +110,15 @@
                         <p class="title mb-1">Kids Info</p>
                         <span class="edit" @onclick="() => isEditFamilyMember = !isEditFamilyMember">Cancel</span>
                     </Div>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is12.OnMobile">
+                    <Div Margin="Margin.Is2">
                     <p class="details">
                         We do not share your kids information. It will be used when you purchase an experience for attendance monitoring.
                     </p>
-                    @for(int i = 0; i < localStateFamilyMembers.Count; i++)
+                    @for(int i = 0; i < localStateFamilyMembers.Count ; i++)
                     {
-                        <ChildItem @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
+                        <ChildItem ErolleeCount="i + 1" @bind-Model="localStateFamilyMembers[i]" OnDelete="OnDeleteFamily" />
                     }
+                    </Div>
                     <Div Display="Display.Flex">
                         <Button class="me-2" Border="Border.Is0" Margin="Margin.Is3.FromTop" 
                             TextColor="TextColor.White" Color="Color.Primary" @onclick="AddFamilyMember">Add</Button>
@@ -127,7 +133,7 @@
     <div class="p-section ids-section">
         <Row>
             <Column ColumnSize="ColumnSize.Is6.OnDesktop">
-                <p class="title mb-1">Governmend ID</p>
+                <p class="title mb-1">Government ID</p>
                 <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
                     <span>ID no. 1</span>
                     <span class="edit" @onclick="() => OnEditIdClick.InvokeAsync()">Edit</span>
@@ -135,6 +141,33 @@
             </Column>
         </Row>
     </div>
+    @if(Model.CustomerProfile.IsMaker)
+    {
+        <Divider />
+        <div class="p-section payout-account-section">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                    <p class="title mb-1">Payout Information</p>
+                    <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        @if(PayoutAccount == null)
+                        {
+                            <span>No Data Found</span>
+                            <span class="edit">
+                                <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Add</NavLink>
+                            </span>
+                        }
+                        else 
+                        {
+                            <span>@PayoutAccount.AccountNumber</span>
+                            <span class="edit">
+                                <NavLink class="edit text-decoration-none" href="/customer/profile/payout-account">Edit</NavLink>
+                            </span>
+                        }
+                    </Div>
+                </Column>
+            </Row>
+        </div>
+    }
 </article>
 
 <style scoped>
@@ -190,9 +223,27 @@
 
     private string birthDateLocalstate = string.Empty;
 
-    private IList<Models.Entities.FamilyMember> localStateFamilyMembers = new List<Models.Entities.FamilyMember>();
+    private IList<FamilyMember> localStateFamilyMembers = new List<FamilyMember>();
 
     private IList<int> RemovedIds = new List<int>();
+
+    private PayoutAccountModel PayoutAccount {get; set;}
+
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Model.Token);
+        if(fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        {
+            var payoutAccount = fetchPayoutAccount.Result.Result;
+            PayoutAccount = new PayoutAccountModel {
+                AccountHolder = payoutAccount.AccountHolder,
+                AccountNumber = payoutAccount.AccountNumber,
+                Id = payoutAccount.Id
+            };
+        }
+    }
 
     private void EditLegalNameClick()
     {
@@ -309,18 +360,34 @@
     {
         if(isEditBirthDate)
         {
-            var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+            //Check B-Day
+            DateTime birthDate = DateTime.Parse(birthDateLocalstate);
+            DateTime today = DateTime.Now;
+            var age = today.Year - birthDate.Year;
+            if (age < 18)
             {
-                Datebirth = Convert.ToDateTime(birthDateLocalstate)
-            }, Model.Token);
+                errorMessage = "Invalid Birthday";
+            }
+            else
+            {
+                var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                    {
+                        Datebirth = Convert.ToDateTime(birthDateLocalstate)
+                    }, Model.Token);
 
-            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                Model.CustomerProfile.Birthdate = result.Result.Result.Birthdate;
-                await ModelChanged.InvokeAsync(Model);
+                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                {
+                    Model.CustomerProfile.Birthdate = result.Result.Result.Birthdate;
+                    errorMessage = string.Empty;
+                    isEditBirthDate = false;
+                    await ModelChanged.InvokeAsync(Model);
+                }
+                else
+                {
+                    errorMessage = result?.Result?.ErrorInfo?.Message;
+                }
             }
         }
-        isEditBirthDate = false;
     }
 }
 

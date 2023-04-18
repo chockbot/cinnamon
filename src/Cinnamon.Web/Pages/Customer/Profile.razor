@@ -1,5 +1,6 @@
 @page "/customer/profile"
 @using Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Modals;
 @using Cinnamon.Web.Models.Entities;
@@ -9,8 +10,12 @@
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+
+<PageTitle>Your Profile | CinnamonPH</PageTitle>
+<SeoMeta Title="Your Profile" Subject="Profile" Url="/customer/profile" />
 
 @if(Model != null)
 {
@@ -20,37 +25,70 @@
                 <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                     <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
                         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
-                            <Figure Width="Width.Max100" Border="Border.RoundedCircle" Size="FigureSize.Is128x128" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
+                            <Figure class="profile-pic">
                                 <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                             </Figure>
                             <div class="edit-icon">
-                                @if (!Model.CustomerProfile.IsVerified)
-                                {
-                                    <Button Border="Border.Is0" Padding="Padding.Is0" Margin="Margin.Is0" Clicked="EditProfile"> 
-                                        <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
-                                    </Button>
-                                }
+                                <Button @onclick="() => upload.ShowModal()">
+                                    <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" />
+                                </Button>
                             </div>
                         </CardHeader>
                         <CardBody Border="Border.Is0" Padding="Padding.Is1.OnY">
-                            <CardTitle TextAlignment="TextAlignment.Center">
-                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
-                                @if(Model.CustomerProfile.IsVerified)
-                                {
-                                    <p class="text-color-8080 my-1 font-24">
-                                        <Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />
-                                        <span class="text-capitalize">verified user</span>
-                                    </p>
-                                }
-                                <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
-                            </CardTitle>
+                            @switch (Model.CustomerProfile.IsVerified)
+                            {
+                                case 0:
+                                    <CardTitle TextAlignment="TextAlignment.Center">
+                                       <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                       <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
+                                       <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => NavigateToGetVerified()"
+                                           Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">
+                                            Get the badge
+                                       </Button>
+                                    </CardTitle>
+                                    break;
+                                case 1:
+                                    <CardTitle TextAlignment="TextAlignment.Center">
+                                        <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                        <p class="text-color-8080 font-16 mb-1">@Resources.App.pendingVerification</p>
+
+                                        <p class="text-color-8080 my-1 font-24">
+                                            <img class="img-pending" src="images/PendingIcon.png" />
+                                            @*<Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />*@
+                                            <span class="span-pending">Pending Verification</span>
+                                        </p>
+                                        
+                                    </CardTitle>
+                                    break;
+                                case 2:
+                                    <CardTitle TextAlignment="TextAlignment.Center">
+                                        <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
+                                        <p class="text-color-8080 my-1 font-24">
+                                            <img class="img-verified" src="images/Badges/VERIFIED.svg" />
+                                            @*<Icon Name="IconName.ShieldAlt" IconStyle="IconStyle.Solid" />*@
+                                            <span class="span-verified">Verified</span>
+                                        </p>
+                                    </CardTitle>
+                                    break;
+                                default:
+                                    break;
+                            }
                         </CardBody>
                         <CardFooter Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0">
-                            @if(!Model.CustomerProfile.IsVerified)
+                            @if (MakerOngoingStudent != 0)
                             {
-                                <Button TextColor="TextColor.White" Width="Width.Is100" Size="Size.Small" @onclick="() => uploadIdModal.ShowModal()" 
-                                    Color="Color.Primary" Border="Border.Is0.RoundedPill" Block class="font-18">Get the badge</Button>
+                                <div class="ongoing-students">
+                                    <p class="ongoing-students-label">Ongoing Enrollees</p>
+                                    <p class="ongoing-students-number">@MakerOngoingStudent</p>
+                                </div>
                             }
+                            @if (MakerCompletedStudent != 0)
+                            {
+                                <div class="completed-students">
+                                    <p class="completed-students-label">Completed Enrollees</p>
+                                    <p class="completed-students-number">@MakerCompletedStudent</p>
+                                </div>
+                            }  
                         </CardFooter>
                     </Card>
                 </Column>
@@ -58,7 +96,8 @@
                     <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                         <Div>
                             <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@Model.CustomerProfile.FirstName</span></p>
-                            <p class="m-0 text-color-8080 font-14">Joined in 2022</p>
+                            <p class="m-0 text-color-8080 font-14">Email: @Model.CustomerProfile.Email</p>
+                            <p class="m-0 text-color-8080 font-14">Joined in @Model.CustomerProfile.DateJoined.Year</p>
                         </Div>
                         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                             <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
@@ -79,6 +118,54 @@
                         else
                         {
                             <MemoEdit Border="Border.Rounded" @bind-Text="aboutLocalState" Rows="5" />
+                        }
+                        @if(Model.CustomerProfile.IsVerified != 0){
+                        <p class="my-3 fw-bold font-18">Badges</p>
+                        <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
+                            <Card class="badges-column">
+                                <CardBody>
+                                    @if (Model.CustomerProfile.IsVerified == 2)
+                                    {
+                                        <Tooltip Multiline=true Text="For uploading and completing all identification requirements.">
+                                            <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                                        </Tooltip>
+                                    }
+                                    @if (Model.CustomerProfile.IsOG == true)
+                                    {
+                                        <Tooltip Multiline=true Text="For being part of the alpha and beta testing.">
+                                            <img class="verified-logo" src="images/Badges/OG.svg" />
+                                        </Tooltip>
+                                    }
+                                    @if (Model.CustomerProfile.IsOfficial == true)
+                                    {
+                                        <Tooltip Multiline=true Text="Legitimate experience provider in the platform.">
+                                            <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
+                                        </Tooltip>
+                                    }
+                                    @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                    {
+                                        var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                        <Tooltip Multiline=true Text="@rare.Description">
+                                            <img class="verified-logo" src="@rare.ImgScr" />
+                                        </Tooltip>
+                                    }
+                                    @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                    {
+                                        var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
+                                        <Tooltip Multiline=true Text="@epic.Description">
+                                            <img class="verified-logo" src="@epic.ImgScr" />
+                                        </Tooltip>
+                                    }
+                                    @if (MakerCompletedStudent >= 100)
+                                    {
+                                        var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                                        <Tooltip Multiline=true Text="@legendary.Description">
+                                            <img class="verified-logo" src="@legendary.ImgScr" />
+                                        </Tooltip>
+                                    }
+                                </CardBody>
+                            </Card>
+                        </Div>
                         }
                     </Div>
                 </Column>
@@ -111,23 +198,37 @@
                             </div>
                         </div>
                     }
+                    <div class='swiper-slide @(selectedTab == "request-for-refund" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "request-for-refund" ? "active" : "")'
+                            @onclick='() => selectedTab = "request-for-refund"'>
+                            request refund
+                        </div>
+                    </div>
+                    <div class='swiper-slide @(selectedTab == "cinnamon-credit" ? "swiper-slide-active" : "")'>
+                        <div class='tab-item @(selectedTab == "cinnamon-credit" ? "active" : "")'
+                            @onclick='() => selectedTab = "cinnamon-credit"'>
+                            cinnamon credits
+                        </div>
+                    </div>
                 </div>
             </Div>
             <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
                 <Items>
-                    <Tab Name="experiences" TextTransform="TextTransform.Capitalize">experiences</Tab>
+                    <Tab Name="experiences" TextTransform="TextTransform.Capitalize">enrolled experiences</Tab>
                     <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
                     @if(Model.CustomerProfile.IsMaker)
                     {
                         <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
                     }
+                    <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">request refund</Tab>
+                    <Tab Name="cinnamon-credit" TextTransform="TextTransform.Capitalize">cinnamon credits</Tab>
                 </Items>
                 <Content>
                     <TabPanel Name="experiences">
-                        @*<Experiences Activities="OngoingActivities"/>*@
+                        <Experiences Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
                     </TabPanel>
                     <TabPanel Name="personal-info">
-                        <PersonalInfo @bind-Model="Model" OnEditIdClick="() => uploadIdModal.ShowModal()" />
+                        <PersonalInfo @bind-Model="Model" OnEditIdClick="() => NavigateToUploadId()" />
                     </TabPanel>
                     @if(Model.CustomerProfile.IsMaker)
                     {
@@ -135,18 +236,21 @@
                             <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" />
                         </TabPanel>
                     }
+                    <TabPanel Name="request-for-refund">
+                        <RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token"/>
+                    </TabPanel>
+                    <TabPanel Name="cinnamon-credit">
+                        <CinnamonCredits Token="@Model.Token" />
+                    </TabPanel>
                 </Content>
             </Tabs>
         </Container>
     </section>
     <ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
-    <ModalUploadGovernmentId @ref="uploadIdModal" Token="@Model.Token"/>
 }
 
 @code 
 {
-    private ModalUploadGovernmentId uploadIdModal;
-
     private MakerExperiences makerExperiences;
 
     private string selectedTab = "experiences";
@@ -155,11 +259,19 @@
 
     private Models.Customer.Profile Model;
 
-    protected ModalUploadingProfile upload { get; set; }
+    protected ModalUploadingProfile upload;
 
     private bool isEditAbout = false;
 
     private string aboutLocalState = string.Empty;
+
+    public int MakerOngoingStudent { get; set; }
+
+    public int MakerCompletedStudent { get; set; }
+
+    public List<Activity> activities = new List<Activity>();
+
+    public List<BadgeList> badges = new List<BadgeList>();
 
     private Task OnSelectedTabChanged(string name)
     {
@@ -169,6 +281,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        await FetchMakerBadges();
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
@@ -193,7 +306,11 @@
         var ownedActivitiesRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {
             IncludeActivityAddress = true,
             IncludeActivityDescription = true,
-            IncludeActivityImages = true
+            IncludeActivityImages = true,
+            IncludeAtivitySchedules = true,
+            IsActive = true,
+            IncludeStudents = true,
+            IncludeCustomer = true
         }, token);
         if(ownedActivitiesRes.Succeeded && ownedActivitiesRes.Result != null && ownedActivitiesRes.Result.IsSuccess)
         {
@@ -203,6 +320,11 @@
                     ActivityId = a.ActivityId,
                     District = a.District,
                     City = a.City,
+                    CityName = a.CityName,
+                    Region = a.Region,
+                    RegionName = a.RegionName,
+                    Barangay = a.Barangay,
+                    BarangayName = a.BarangayName,
                     Address1 = a.Address1,
                     Address2 = a.Address2,
                     ExperienceTypeId = a.ExperienceTypeId,
@@ -210,13 +332,36 @@
                     IsPublished = a.IsPublished,
                     Price = a.Price,
                     Title = a.Title,
+                    IsSetSession = a.IsSetSession,
+                    SessionName = a.SessionName,
+                    IsNew = a.IsNew,
+                    OngoingStudents = a.OngoingStudents,
+                    CompletedStudents = a.CompletedStudents,
                     Images = a.Images.Select(i => {
                         return new ActivityImage {
                             Id = i.Id,
                             ImageSrc = i.ImageSrc,
                             Name = i.Name
                         };
-                    }).ToList()
+                    }).ToList(),
+                    Owner = new CustomerProfile
+                    {
+                        IsVerified = a.Owner.IsVerified
+                    },
+                    ActivitySchedules = a.ActivitySchedules.Select(e =>
+                    {
+                        return new ActivitySchedule
+                        {
+                            Id = e.Id,
+                            Name = e.Name,
+                            PerUnit1 = e.PerUnit1,
+                            PerUnit2 = e.PerUnit2,
+                            Price = e.Price,
+                            PriceUnit1 = e.PriceUnit1,
+                            PriceUnit2 = e.PriceUnit2,
+                            UnitPrice = e.UnitPrice
+                        };
+                    }).ToList(),
                 };
             }).ToList();
         }
@@ -238,6 +383,56 @@
             }).ToList();
         }
 
+        // get enrolled activities
+        var enrolledActivities = new List<Activity>();
+        var enrolledRes = await activityApiHandler.GetEnrolledActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetEnrolledActivitiesArgs {
+            IncludeActivityAddress = true,
+            IncludeActivityImages = true,
+            IncludeAtivitySchedules = true,
+            IncludeStudents = true
+        }, token);
+        if(enrolledRes.Succeeded && enrolledRes.Result != null && enrolledRes.Result.IsSuccess)
+        {
+            enrolledActivities = enrolledRes.Result.Result.Select(a => {
+                // map only required fields
+                return new Activity {
+                    ActivityId = a.ActivityId,
+                    District = a.District,
+                    City = a.City,
+                    Address1 = a.Address1,
+                    Address2 = a.Address2,
+                    ExperienceTypeId = a.ExperienceTypeId,
+                    Description = a.Description,
+                    IsPublished = a.IsPublished,
+                    Price = a.Price,
+                    Title = a.Title,
+                    IsSetSession = a.IsSetSession,
+                    SessionName = a.SessionName,
+                        OngoingStudents = a.OngoingStudents,
+                        CompletedStudents = a.CompletedStudents,
+                    Images = a.Images.Select(i => {
+                        return new ActivityImage {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList(),
+                    ActivitySchedules = a.ActivitySchedules.Select(s =>
+                    {
+                        return new ActivitySchedule
+                        {
+                            Id = s.Id,
+                        };
+                    }).ToList(),
+                    Owner = a.Owner != null ? new CustomerProfile
+                    {
+                        // map only required fields
+                        Id = a.Owner.Id,
+                        Handler = a.Owner.Handler,
+                    } : null
+                };
+            }).ToList();
+        }
         Model = new Models.Customer.Profile {
             Token = token,
             CustomerProfile = new Models.Entities.CustomerProfile
@@ -250,24 +445,47 @@
                 Id = profile.Id,
                 IsMaker = profile.IsMaker,
                 IsVerified = profile.IsVerified,
+                IsOG = profile.IsOG,
+                IsOfficial = profile.IsOfficial,
                 ProfilePath = profile.ProfileImg,
+                DateJoined = profile.DateJoined
             },
             FamilyMembers = familyMembers,
-            OwnedActivities = ownedActivities
+            OwnedActivities = ownedActivities,
+            EnrolledActivities = enrolledActivities,
         };
 
         ImageSource = Model.CustomerProfile.ProfilePath;
+
+        //Get Ongoing and completed enrollees
+        var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
+            {
+                CustomerId = Model.CustomerProfile.Id,
+                IncludeStudents = true,
+                IsActive = true,
+            });
+        if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
+        {
+            if (ActivityList.Result.Result.Count() > 0)
+            {
+                activities = ActivityList.Result.Result.Select(r =>
+                {
+                    return new Activity
+                        {
+                            Id = r.ActivityId,
+                            OngoingStudents = r.OngoingStudents,
+                            CompletedStudents = r.CompletedStudents,
+                        };
+                }).ToList();
+            }
+        }
+        MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
+        MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
-    }
-
-    private async Task EditProfile()
-    {
-        //Display Modal Upload
-        await upload.OpenModal();
     }
 
     private void OnEditAboutClick()
@@ -300,4 +518,89 @@
 
         isEditAbout = false;
     }
+    private void NavigateToGetVerified()
+    {
+        NavigationManager.NavigateTo("/getverified/");
+    }
+    private void NavigateToUploadId()
+    {
+        NavigationManager.NavigateTo("/uploadGovermentId/");
+    }
+    private async Task FetchMakerBadges()
+    {
+        //Get Badges
+        var badgeList = await dashboardApiHandler.GetAllBadge();
+        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
+        {
+            badges = badgeList.Result.Result.Select(b =>
+            {
+                return new BadgeList
+                    {
+                        Id = b.Id,
+                        Name = b.Name,
+                        Description = b.Description,
+                        NumberOfStudent = b.NumberOfStudent,
+                        NumberOfCompleted = b.NumberOfCompleted,
+                        NumberOfReviews = b.NumberOfReviews,
+                        ImgScr = b.ImgScr
+                    };
+            }).ToList();
+        }
+    }
 }
+
+
+
+
+<style scoped>
+.ongoing-students{
+    display:flex;
+    justify-content:space-between;
+    padding-left:1rem; 
+    padding-right:1rem;
+    margin-top:2rem;
+}
+
+
+.completed-students{
+    display:flex;
+    justify-content:space-between;
+    padding-left:1rem; 
+    padding-right:1rem;
+}
+
+.ongoing-students-label,.completed-students-label{
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 30px;
+    /* identical to box height */
+    text-align: center;
+    color: #343D4C;
+}
+
+
+.ongoing-students-number{
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    color: #34A853;
+}
+
+
+.completed-students-number {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 18px;
+    line-height: 30px;
+    text-align: center;
+    color: #343D4C;
+}
+
+
+</style>

@@ -17,6 +17,10 @@ public class UpdateActivity
     public string? Address2 { get; set; } = string.Empty;
     public string? District { get; set; } = string.Empty;
     public string? City { get; set; } = string.Empty;
+    public string? Subdivision { get; set; } = string.Empty;
+    public string? Region { get; set; } = string.Empty;
+    public string? Barangay { get; set; } = string.Empty;
+    public string? PostalCode { get; set; } = string.Empty;
     public string? SpecificsYouWillProvide { get; set; }
     public string? CustomerBringWithThem { get; set; }
     public string? AdditionalRequirements { get; set; }
@@ -31,4 +35,8 @@ public class UpdateActivity
     public string? Searchtag5 { get; set; }
     public int? ExperienceCategoryId {get; set;}
     public int? SubCategoryId {get; set;}
+    public bool? IsSetSession { get; set; }
+    public string? SessionName { get; set; }
+    public string? PinnedLocation { get; set; }
+    public bool? IsDeactivated { get; set; }
 }

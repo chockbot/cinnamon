@@ -16,6 +16,13 @@ public class GetOwnedActivityResult
     public string Address2 {get; set;}
     public string District {get; set;}
     public string City {get; set;}
+    public string CityName {get; set; }
+    public string Subdivision { get; set; }
+    public string Region { get; set; }
+    public string RegionName { get; set; }
+    public string Barangay { get; set; }
+    public string BarangayName { get; set; }
+    public string PostalCode { get; set; }
     public string SpecificsYouWillProvide {get; set;}
     public string CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}
@@ -23,9 +30,14 @@ public class GetOwnedActivityResult
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
+    public string Handler {get; set;}
+    public bool IsSetSession { get; set; }
+    public string SessionName { get; set; }
+    public string PinnedLocation { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}
+    public CustomerOwner? Owner {get; set;}
         
 
     public class ActivitySchedule 
@@ -39,12 +51,21 @@ public class GetOwnedActivityResult
         public string PriceUnit1 {get; set;}
         public int PerUnit2 {get; set;}
         public string PriceUnit2 {get; set;}
+        public int Order {get; set;}
+        public bool IsActiveSchedule { get; set; }
     }
 
     public class ActivityImage 
     {
         public int Id {get; set;}
+        public int Order {get; set;}
         public string ImageSrc {get; set;}
         public string Name {get; set;}
+    }
+
+    public class CustomerOwner 
+    {
+        public int Id {get; set;}
+        public string Handler {get; set;}
     }
 }

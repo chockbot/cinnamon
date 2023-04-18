@@ -10,10 +10,12 @@ namespace Cinnamon.Web.Modules.ApiAccess.Activity;
 public class ActivityApiHandler : IActivityApiHandler
 {
     private readonly IFlurlClient flurlClient;
+    private readonly ILogger _logger;
 
-    public ActivityApiHandler(IFlurlClientFactory flurlFac, Config.Config config)
+    public ActivityApiHandler(IFlurlClientFactory flurlFac, Config.Config config, ILogger<ActivityApiHandler> logger)
     {
         flurlClient = flurlFac.Get(config.ApiUrl);
+        _logger = logger;
     }
 
     public async Task<AppResult<CreateActivityResult>> CreateActivity(CreateActivityArgs args, string token)
@@ -186,12 +188,55 @@ public class ActivityApiHandler : IActivityApiHandler
         }   
     }
 
+    public async Task<AppResult<GetActivityResult>> GetOwnedActivityByHandler(string handler, string token, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request($"Activity/GetOwnedActivityByHandler/{handler}")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting owned activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting owned activity api");
+        }   
+    }
+
     public async Task<AppResult<GetActivityResult>> GetActivity(int id, GetActivityArgs? args = null)
     {
         try
         {
             var result = await flurlClient
                 .Request($"Activity/GetActivity/{id}")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting activity api");
+        }  
+    }
+
+    public async Task<AppResult<GetActivityResult>> GetActivityByHandler(string handler, GetActivityArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/GetActivityByHandler/{handler}")
                 .SetQueryParams(args)
                 .GetJsonAsync<GetActivityResult>();
 
@@ -240,6 +285,28 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<UploadActivityImageResult>.CreateFailed(ex, "An error occured when uploading activity images api");
+        } 
+    }
+
+    public async Task<AppResult<UpdateActivityImageOrderResult>> UpdateActivityImageOrder(UpdateActivityImageOrderArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateActivityImageOrder")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateActivityImageOrderResult>();
+
+            return AppResult<UpdateActivityImageOrderResult>.CreateSucceeded(result, "Successfully update activity image order api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateActivityImageOrderResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateActivityImageOrderResult>.CreateFailed(ex, "An error occured when updating activity image order api");
         } 
     }
 
@@ -301,6 +368,178 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<GetActivitiesByCategoriesResult>.CreateFailed(ex, "An error occured when getting activities api");
+        }
+    }
+
+    public async Task<AppResult<GetEnrolledActivitiesResult>> GetEnrolledActivities(GetEnrolledActivitiesArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GetEnrolledActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetEnrolledActivitiesResult>();
+
+            return AppResult<GetEnrolledActivitiesResult>.CreateSucceeded(result, "Successfully getting enrolled activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetEnrolledActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetEnrolledActivitiesResult>.CreateFailed(ex, "An error occured when getting enrolled activities api");
+        }
+    }
+
+    public async Task<AppResult<GetAllRegionsResult>> GetAllRegions(GetAllRegionsArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Regions")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllRegionsResult>();
+
+            return AppResult<GetAllRegionsResult>.CreateSucceeded(result, "Successfully getting all regions api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllRegionsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllRegionsResult>.CreateFailed(ex, "An error occured when getting all regions api");
+        }
+    }
+
+    public async Task<AppResult<GetAllCitiesResult>> GetAllCitiesByRegionCode(GetAllCitiesArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Cities")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllCitiesResult>();
+
+            return AppResult<GetAllCitiesResult>.CreateSucceeded(result, "Successfully getting all cities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllCitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllCitiesResult>.CreateFailed(ex, "An error occured when getting all cities api");
+        }
+    }
+
+    public async Task<AppResult<GetAllBarangaysResult>> GetAllBarangaysByCityCode(GetAllBarangaysArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Barangays")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllBarangaysResult>();
+
+            return AppResult<GetAllBarangaysResult>.CreateSucceeded(result, "Successfully getting all barangays api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllBarangaysResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllBarangaysResult>.CreateFailed(ex, "An error occured when getting all barangays api");
+        }
+    }
+
+    public async Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivitiesArgs? args = null)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Popular")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllActivitiesResult>();
+
+            _logger.LogInformation("Cinnamon.Web > GetPopularActivities was called");
+
+            return AppResult<GetAllActivitiesResult>.CreateSucceeded(result, "Successfully getting all activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllActivitiesResult>.CreateFailed(ex, "An error occured when getting all activities api");
+        }
+    }
+
+    public async Task<AppResult<GetRefundableExperienceResult>> GetRefundableExperience(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GetRefundableExperience")
+                .GetJsonAsync<GetRefundableExperienceResult>();
+
+            return AppResult<GetRefundableExperienceResult>.CreateSucceeded(result, "Successfully getting all refundable experience api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetRefundableExperienceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetRefundableExperienceResult>.CreateFailed(ex, "An error occured when getting all refundable experience api");
+        }
+    }
+    public async Task<AppResult<GetMakerActivitiesResult>> GetMakerActivities(GetMakerActivitiesArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/GetMakerActivities")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetMakerActivitiesResult>();
+
+            return AppResult<GetMakerActivitiesResult>.CreateSucceeded(result, "Successfully getting maker activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetMakerActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetMakerActivitiesResult>.CreateFailed(ex, "An error occured when getting maker activities api");
+        }
+    }
+
+    public async Task<AppResult<UpdateScheduleResult>> UpdateActivitySchedule(UpdateScheduleArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/Schedule/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateScheduleResult>();
+
+            return AppResult<UpdateScheduleResult>.CreateSucceeded(result, "Successfully called update schedule api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateScheduleResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateScheduleResult>.CreateFailed(ex, "An error occured when calling update schedule api");
         }
     }
 }

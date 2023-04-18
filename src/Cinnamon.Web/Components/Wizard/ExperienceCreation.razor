@@ -1,6 +1,10 @@
 ﻿@namespace Cinnamon.Web.Components
 @using Cinnamon.Web.Models;
 @inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
 
 <h3 class="fw-bold mb-2">Experience creation</h3>
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
@@ -9,29 +13,69 @@
     </ul>
 </div>
 <div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+
     <div class="row">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 @Resources.App.nameThatExperience
             </label>
-            <p>
-                @Resources.App.nameThatExperienceParagraph
-            </p>
+            <br />
+            <label class="label-paragraph">
+                This is the title of your experience that people will see first! Make it 
+                informative and distinctive so that your customers may understand 
+                what you are offering
+            </label>
         </div>
-        <div class="textarea-container col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="d-flex flex-column">
-                <textarea maxlength="80" @bind="Model.Activity.Title" class="@RequiredCheck(Model.Activity.Title)"></textarea>
-                <label>@Resources.App.textAreaExperienceMax</label>
+                <textarea id="create-activity-title" @bind="Model.Activity.Title" class="@RequiredCheck(Model.Activity.Title)"></textarea>
+                <label id="label-title-editor"></label>
             </div>
         </div>
     </div>
+
+    <div class="row mrow">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                @Resources.App.letsDescribeExperience
+            </label>
+            <br />
+            <label class="label-paragraph">
+                @Resources.App.whatClientsGoingToDo
+            </label>
+            <br />
+            <label class="label-paragraph">
+                - Give detailed plans from beginning to end, not a bunch of ideas or 
+                options.
+             </label>
+             <br />
+             <br/>
+            <label class="label-paragraph">
+                - Describe what makes your experience unique something that 
+                guests wouldn't do on their own.
+             </label>
+        </div>
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="textarea-container col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="d-flex flex-column">
+                <textarea id="create-activity-description" class="@RequiredMin(Model.Activity.Description,20)" @bind="Model.Activity.Description"></textarea>
+                <label id="label-description-editor"></label>
+            </div>
+        </div>
+    </div>
+
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 @Resources.App.typeofExperience
             </label>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             <div class="form-check">
                 <input class="form-check-input" type="radio" name="experience-type" id="in-person" checked @onchange="@(()=>CheckboxChanged(1))">
                 <label class="form-check-label" for="in-person">
@@ -46,91 +90,136 @@
             </div>
         </div>
     </div>
+
     <div class="row mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
                 @Resources.App.experienceLocated
             </label>
         </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+        </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
             @if(Model.Activity.ExperienceTypeId == 2)
             {
-                <input class="form-control" placeholder="Address 1" disabled/>
-                <input class="form-control my-3" placeholder="Address 2" disabled />
-                <input class="form-control my-3" placeholder="District" disabled />
+                <input class="form-control" placeholder="Address" disabled/>
+                <input class="form-control my-3" placeholder="Subdivision/Building" disabled />
+                <input class="form-control my-3" placeholder="Region/State" disabled />
                 <input class="form-control my-3" placeholder="City" disabled />
+                <input class="form-control my-3" placeholder="Barangay" disabled />
+                <input class="form-control my-3" placeholder="Postal Code" disabled />
             }
             else
             {
-                <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Address 1" required @bind="Model.Activity.Address1"/>
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.Address2)" placeholder="Address 2" required @bind="Model.Activity.Address2"/>
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.District)" placeholder="District" required @bind="Model.Activity.District"/>
-                <input class="form-control my-3 @RequiredCheck(Model.Activity.City)" placeholder="City" required @bind="Model.Activity.City"/>
-            }
-        </div>
-    </div>
-    <div class="row mrow">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-               @Resources.App.experienceCategory
-            </label>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            <select @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
-                <option disabled selected>Select Category</option>
-                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
-                {
-                    <option value="@cat.Id">@cat.Category</option>
-                }
-           </select>
-        </div>
-    </div>
-    <div class="row mrow">
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
-            <label class="fw-bold title-description">
-                Sub-category
-            </label>
-        </div>
-        <div class="col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-            @if (Model.Activity.ExperienceCategoryId != 0)
-            {
-                <select @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
-                    <option disabled selected>Select Subcategory</option>
-                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId))
+                <input class="form-control @RequiredCheck(Model.Activity.Address1)" placeholder="Unit No./ House No.*" required @bind="Model.Activity.Address1"/>
+                <input class="form-control my-3 (Model.Activity.Subdivision)" placeholder="Subdivision/Building" required @bind="Model.Activity.Subdivision" />
+
+                <select class="form-control @RequiredCheck(Model.Activity.Region)" @onchange="GetCitiesByRegion">
+                    <option value="">--Select Region/State--</option>
+                    @foreach (var region in regionList)
                     {
-                        <option value="@cat.Id">@cat.Name</option>
+                        <option value="@region.Code">@region.Name</option>
                     }
                 </select>
-            }
-            else 
-            {
-                <select class="form-control @RequiredCheck(Model.Activity.SubCategoryId)" disabled>
-                    <option disabled selected>Select Sub-category</option>
+
+                <div class="divider"></div>
+
+                <select class="form-control @RequiredCheck(Model.Activity.City)" @onchange="GetBarangaysByCity">
+                    <option value="">--Select City--</option>
+                    @foreach (var city in cityList)
+                    {
+                        <option value="@city.Code">@city.Name</option>
+                    }
                 </select>
+
+                <div class="divider"></div>
+
+                <select class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay">
+                    <option value="">--Select Barangay--</option>
+                    @foreach (var barangay in barangayList)
+                    {
+                        <option value="@barangay.Code">@barangay.Name</option>
+                    }
+                </select>
+                <input class="form-control my-3 (Model.Activity.PostalCode)" placeholder="Postal Code" required @bind="Model.Activity.PostalCode" />
+                @*<input class="form-control my-3 (Model.Activity.PinnedLocation)" placeholder="Or click here to pin your location" @bind="Model.Activity.PinnedLocation" />*@
+                <div class="input-group border form-control p-1">
+                    <input type="text" placeholder="Or click here to pin your location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="Model.Activity.PinnedLocation" aria-describedby="button-addon3" class="form-control bg-none border-0">
+                    <div class="input-group-append border-0">
+                        <button id="button-addon3" type="button" @onclick="@(() => ToggleLocationModal(true))" class="btn btn-link text-success"><img src="/images/my-location.png" /></button>
+                    </div>
+                </div>
+
+                <div class="modal show fade remove-modal" tabindex="-1" role="dialog" id="setLocationModal" style="z-index:99999;">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <p class="col-11 modal-title text-center"></p>
+                                <button type="button" class="btn-close" id="btnCloseSetLocationModal" @onclick="@(() => ToggleLocationModal(false))" data-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" style="text-align:center">
+                                <div class="col-12-lg d-flex justify-content-center" style="padding-bottom:20px">
+                                    <div class="input-group border form-control p-1 input-group-search-modal">
+                                        <input type="text" placeholder="Search Your Location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="Model.Activity.PinnedLocation" aria-describedby="button-addon3" class="form-control bg-none border-0 placeholder-search-modal">
+                                        <div class="input-group-append border-0" style="margin-top:7px">
+                                            <button id="button-addon3" type="button" class="btn btn-link text-success"><i class="fa fa-search" style="color:#D9D9D9"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12-lg d-flex justify-content-center">
+                                    @{
+                                        var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + (!string.IsNullOrEmpty(Model.Activity.PinnedLocation) ? Model.Activity.PinnedLocation : "''");
+                                        <iframe id="mapframe" width="400" height="300" frameborder="0" style="border:0" src="@map" allowfullscreen class="iframe-search-modal"></iframe>
+                                    }
+                                </div>
+                                <button class="btn btn-primary" id="btnConfirmLocation" @onclick="@(() => ToggleLocationModal(false))">Confirm Location</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             }
         </div>
     </div>
-    <div class="row mrow">
+
+    @*<div class="row mb-4 mrow">
         <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
             <label class="fw-bold title-description">
-                Sub-category missing? Suggest up to five!
+                Session Expiration
             </label>
         </div>
-        <div class="tagsinputcontainer col-lg-6 col-md-6 col-sm-12 col-12 text-lg-start text-md-start text-sm-center d-flex flex-column">
-            <div class="bootstrap-tagsinput @RequiredCheck(Model.Activity.SearchTags) d-flex flex-row flex-wrap ">
-                @foreach (var tag in Model.Activity.SearchTags)
-                {
-                    <span class="tag label label-info m-1">
-                        @tag
-                        <span data-role="remove" @onclick="(()=>RemoveSearchTag(tag))">
-                        </span>
-                    </span>
-                }
-                <input type="text" placeholder="" size="@SearchTagLength" @bind-value="SearchTag" @bind-value:event="oninput" @onkeydown="Enter">
-            </div>
-            <label>Suggest sub-category for approval (up to 5 suggestions)</label>
+        <div class="col-lg-1 col-md-1 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
         </div>
-    </div>
+        <div class="col-lg-5 col-md-5 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-2 toggle-expiration">
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="Model.Activity.IsSetSession">
+                </div>
+            </div>
+            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1 dropdown-expiration">
+                <label class="set-exp">Set Expiration:</label>
+                @if (Model.Activity.IsSetSession == false)
+                {
+                    <select class="form-control session-period" @bind="Model.Activity.SessionName" disabled="true">
+                        <option disabled selected>Select Period</option>
+                        @foreach (var sessionPeriod in Model.SessionPeriods)
+                        {
+                            <option value="@sessionPeriod">@sessionPeriod</option>
+                        }
+                    </select>
+                }
+                else
+                {
+                    <select class="form-control session-period" @bind="Model.Activity.SessionName">
+                        <option disabled selected>Select Period</option>
+                        @foreach (var sessionPeriod in Model.SessionPeriods)
+                        {
+                            <option value="@sessionPeriod">@sessionPeriod</option>
+                        }
+                    </select>
+                }
+            </div>
+        </div>
+    </div>*@
 </div>
 
 @code 
@@ -138,43 +227,98 @@
     [Parameter]
     public ExperienceCreationModel Model {get; set;}
 
+    private string regionName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model.Activity.ExperienceTypeId = 1;
+        regionList = Model.Regions;
+        cityList = new List<City>();
+        barangayList = new List<Barangay>();
+    }
+
     public string SearchTag { get; set; }
-    
+
     public int SearchTagLength { get; set; } = 0;
+
+    IEnumerable<Region> regionList;
+    IEnumerable<City> cityList;
+    IEnumerable<Barangay> barangayList;
+
+    private async Task GetCitiesByRegion(ChangeEventArgs e)
+    {
+        var regionCode = e.Value.ToString();
+
+        var region = regionList.FirstOrDefault(c => c.Code == regionCode);
+
+        Model.Activity.Region = string.IsNullOrEmpty(regionCode) ? null : regionCode;
+        Model.Activity.City = string.Empty;
+        Model.Activity.CityName = string.Empty;
+        Model.Activity.Barangay = string.Empty;
+        Model.Activity.BarangayName = string.Empty;
+        cityList = new List<City>();
+        barangayList = new List<Barangay>();
+        Model.Activity.RegionName = region != null ? region.Name : string.Empty;
+
+        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode, CountPerPage = 1000 });
+
+        if (result.Succeeded || result == null)
+        {
+            cityList = result.Result.Result.Select(r => new City
+            {
+                Code = r.Code,
+                Name = r.Name,
+                RegionCode = r.RegionCode,
+                IsCity = r.IsCity,
+                IsMunicipality = r.IsMunicipality
+            });
+        }
+    }
+
+    private async Task GetBarangaysByCity(ChangeEventArgs e)
+    {
+        var cityCode = e.Value.ToString();
+        var city = cityList.FirstOrDefault(c => c.Code == cityCode);
+
+        Model.Activity.City = string.IsNullOrEmpty(cityCode) ? null : cityCode;
+        Model.Activity.CityName = city != null ? city.Name : string.Empty;
+
+        if (city != null)
+        {
+            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality, CountPerPage = 1000 });
+
+            if (result.Succeeded || result == null)
+            {
+                barangayList = result.Result.Result.Select(r => new Barangay
+                    {
+                        Code = r.Code,
+                        Name = r.Name,
+                        CityCode = r.CityCode
+                    });
+            }
+        }
+    }
+
+    private async Task SetBarangay(ChangeEventArgs e)
+    {
+        var barangayCode = e.Value.ToString();
+        var barangay = barangayList.FirstOrDefault(c => c.Code == barangayCode);
+
+        Model.Activity.Barangay = string.IsNullOrEmpty(barangayCode) ? null : barangayCode;
+        Model.Activity.BarangayName = barangay != null ? barangay.Name : string.Empty;
+    }
+
+    private async Task ToggleLocationModal(bool isDisplayed)
+    {
+        if (isDisplayed)
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.creation.showLocationModal");
+        else
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.creation.hideLocationModal");
+    }
 
     private void CheckboxChanged(int val)
     {
         Model.Activity.ExperienceTypeId = val;
-    }
-
-    public void Enter(KeyboardEventArgs e)
-    {
-        if (e.Code == "Enter" || e.Code == "NumpadEnter")
-        {
-            bool condition = Model.Activity.SearchTags.Count < 5 && 
-                                (Model.Activity.SearchTags.Where(x => x.ToLower() == SearchTag.ToLower())
-                                    .FirstOrDefault()) == null;
-            if (condition)
-            {
-                Model.Activity.SearchTags.Add(SearchTag);
-            }
-
-            SearchTag = string.Empty;
-        }
-    }
-
-    private string RequiredCheck(IEnumerable<string> searchTags)
-    {
-        if (Model.HasError && Model.Activity.SearchTags.Count == 0)
-        {
-            return "invalid";
-        }
-        return "";
-    }
-
-    private void RemoveSearchTag(string tag)
-    {
-        Model.Activity.SearchTags.Remove(tag);
     }
 
     private string RequiredCheck(String? value) 
@@ -204,23 +348,48 @@
         if (firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
+            
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
         }
     }
 
     public bool IsAllFieldsValidated()
     {
         if(string.IsNullOrEmpty(Model.Activity.Title)) return false;
+        if(string.IsNullOrEmpty(Model.Activity.Description)) return false;
+        if(IsWordsLengthMin(Model.Activity.Description, 20)) return false;
         if(Model.Activity.ExperienceTypeId == 1)
         {
             if(string.IsNullOrEmpty(Model.Activity.Address1) ||
-                string.IsNullOrEmpty(Model.Activity.Address2) ||
-                string.IsNullOrEmpty(Model.Activity.District) ||
+                string.IsNullOrEmpty(Model.Activity.Region) ||
+                string.IsNullOrEmpty(Model.Activity.Barangay) ||
                 string.IsNullOrEmpty(Model.Activity.City)) return false;
         }
-        if(Model.Activity.ExperienceCategoryId <= 0) return false;
-        if(Model.Activity.SearchTags.Count == 0) return false;
+        //if(Model.Activity.ExperienceCategoryId <= 0) return false;
+        //if(Model.Activity.SearchTags.Count == 0) return false;
 
         return true;
+    }
+
+    private string RequiredMin(string text, int min)
+    {
+        if(!Model.HasError && string.IsNullOrEmpty(text)) return "";
+        if(Model.HasError && string.IsNullOrEmpty(text)) return "invalid";
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        if(Model.HasError && length < min) return "invalid";
+        return string.Empty;
+    }
+
+    private bool IsWordsLengthMin(string text, int min)
+    {
+        if(string.IsNullOrEmpty(text)) return true;
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        return length < min;
     }
 }
     

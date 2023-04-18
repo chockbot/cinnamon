@@ -11,6 +11,8 @@ public class CreateManyActivityImageArgs
     public class CreateImage 
     {
         [Required]
+        public int Order {get; set;}
+        [Required]
         public int ActivityId {get; set;}
         [Required]
         public string ImageSrc {get; set;}

@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.File;
 using Newtonsoft.Json.Serialization;
 using Cinnamon.Api.Core.Extensions;
 using Cinnamon.Api.Core.Config;
@@ -9,6 +11,8 @@ using Flurl.Http.Configuration;
 using Flurl.Http;
 using Cinnamon.Api.Core.Providers;
 using Microsoft.AspNetCore.Http.Features;
+using Quartz;
+using Cinnamon.Api.Core.Services.JobService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,8 +30,11 @@ builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>(
 builder.Services.AddHttpContextAccessor();
 
 // logger
-builder.Services.AddLogging(logBuilder =>
-    logBuilder.AddSerilog(dispose: true));
+var logger = new LoggerConfiguration()
+                        .ReadFrom.Configuration(builder.Configuration)
+                        .Enrich.WithProperty("ApplicationContext", "Cinnamon.API.Core")
+                        .CreateLogger();
+builder.Host.UseSerilog(logger);
 
 // register application services
 builder.Services.ExtendServices();
@@ -61,7 +68,34 @@ builder.Services.Configure<FormOptions>(opts => {
     opts.MemoryBufferThreshold = 10000000;
 });
 
+builder.Services.AddQuartz(q => {
+    q.UseMicrosoftDependencyInjectionJobFactory();
+
+    if(applicationConfig.Disbursement.RunDisbursement)
+    {
+        var payoutJobkey = new JobKey("GeneratePayoutHandler");
+        q.AddJob<GeneratePayoutJob>(opts => opts.WithIdentity(payoutJobkey));
+
+        q.AddTrigger(opts => opts
+            .ForJob(payoutJobkey)
+            .WithIdentity("GeneratePayoutHandler-trigger")
+            .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Disbursement.RunPerHour).RepeatForever())
+        );
+    }
+
+    var activityGuidJobKey = new JobKey("UpdateActivityGuidHandler");
+    q.AddJob<UpdateActivityGuidJob>(opts => opts.WithIdentity(activityGuidJobKey));
+
+    q.AddTrigger(opts => opts
+        .ForJob(activityGuidJobKey)
+        .WithIdentity("UpdateActivityGuidHandler-trigger")
+        .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Activity.RunPerHour).RepeatForever())
+    );
+});
+builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+
 var app = builder.Build();
+app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

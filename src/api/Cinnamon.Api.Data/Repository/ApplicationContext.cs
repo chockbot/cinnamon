@@ -39,6 +39,28 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<SearchTags> SearchTags { get; set; }
 
+    public DbSet<ExternalLoginToken> ExternalLoginTokens {get; set;}
+
+    public DbSet<Student> Students {get; set;}
+
+    public DbSet<StudentAttendance> StudentAttendances {get; set;}
+
+    public DbSet<ResetPassword> ResetPasswords {get; set;}
+    public DbSet<Region> Regions {get; set; }
+    public DbSet<City> Cities {get; set; }
+    public DbSet<Barangay> Barangays {get; set; }
+
+    public DbSet<FailedLogin> FailedLogins {get; set;}
+
+    public DbSet<RequestRefund> RequestRefunds {get; set;}
+
+    public DbSet<PayoutAccount> PayoutAccounts {get; set;}
+
+    public DbSet<PayoutLog> PayoutLogs {get; set;}
+    public DbSet<AdminUser> AdminUsers {get; set; }
+
+    public DbSet<BadgeList> BadgeList { get; set; }
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -76,6 +98,18 @@ public class ApplicationContext : IdentityDbContext
             .WithOne(s => s.Activity)
             .HasForeignKey<SearchTags>(s => s.ActivityId);
 
+        modelBuilder.Entity<Activity>()
+            .HasMany<Student>(a => a.Students)
+            .WithOne(i => i.Activity)
+            .HasForeignKey(i => i.ActivityId);
+
+        // add index to handler
+        modelBuilder.Entity<Activity>()
+            .HasIndex(a => a.Handler);
+        
+        modelBuilder.Entity<Activity>()
+            .HasOne<Customer>(a => a.Customer);
+
         // experience type
         modelBuilder.Entity<ExperienceType>()
             .HasMany<Activity>(e => e.Activities)
@@ -88,6 +122,7 @@ public class ApplicationContext : IdentityDbContext
         // customer
         modelBuilder.Entity<Customer>().HasIndex(c => c.UserId);
         modelBuilder.Entity<Customer>().HasIndex(c => c.Email);
+        modelBuilder.Entity<Customer>().HasIndex(c => c.Handler);
 
         modelBuilder.Entity<Customer>()
             .HasMany<FamilyMember>(c => c.FamilyMembers)
@@ -101,10 +136,49 @@ public class ApplicationContext : IdentityDbContext
 
         // ongoingActivity
         modelBuilder.Entity<OngoingActivity>().HasIndex(o => o.PurchaseOrderId);
+        modelBuilder.Entity<OngoingActivity>()
+            .HasOne<ActivitySchedule>(o => o.Schedule);
 
         // resendEmail
         modelBuilder.Entity<ResendEmail>().HasIndex(r => r.Email);
         modelBuilder.Entity<ResendEmail>().HasIndex(new string[] { "Email", "DateResend" });
+
+        // exter login tokens
+        modelBuilder.Entity<ExternalLoginToken>().HasIndex(e => e.Token);
+        modelBuilder.Entity<ExternalLoginToken>().HasIndex(new string[] {"Token", "Guid"});
+
+        // student
+        modelBuilder.Entity<Student>()
+            .HasOne<Customer>(s => s.Customer);
+        
+        modelBuilder.Entity<Student>()
+            .HasOne<Activity>(s => s.Activity);
+        
+        modelBuilder.Entity<Student>()
+            .HasOne<ActivitySchedule>(s => s.Schedule);
+
+        modelBuilder.Entity<Student>()
+            .HasIndex(s => s.FamilyMemberId);
+        modelBuilder.Entity<Student>().HasIndex(s => s.OngoingActivityId);
+
+        // student attendance
+        modelBuilder.Entity<StudentAttendance>()
+            .HasOne<Student>(s => s.Student);
+        
+        // reset password
+        modelBuilder.Entity<ResetPassword>().HasIndex(new string[] {"Guid","Token"});
+
+        // failed login
+        modelBuilder.Entity<FailedLogin>().HasIndex(new string[] {"Email","LoginDate"});
+
+        // payout account
+        modelBuilder.Entity<PayoutAccount>().HasIndex(p => p.CustomerId);
+
+        // purchase order
+        modelBuilder.Entity<PurchaseOrder>().HasIndex(p => p.Status);
+        //badge 
+        modelBuilder.Entity<BadgeList>().HasIndex(c => c.Id);
+
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -114,7 +188,7 @@ public class ApplicationContext : IdentityDbContext
 
         foreach (var entity in addedEntities) 
         {
-            if (entity.HasProperty("CreatedOn")) 
+            if (entity.Properties.Any(p => p.Metadata.Name == "CreatedOn")) 
             {
                 entity.Property("CreatedOn").CurrentValue = currentDate;
             }
@@ -122,8 +196,8 @@ public class ApplicationContext : IdentityDbContext
 
         var updatedEntities = ChangeTracker.Entries().Where(e => e.State == EntityState.Modified);
         foreach (var entity in updatedEntities) 
-        {
-            if (entity.HasProperty("ChangedOn")) 
+        {   
+            if(entity.Properties.Any(p => p.Metadata.Name == "ChangedOn"))
             {
                 entity.Property("ChangedOn").CurrentValue = currentDate;
             }

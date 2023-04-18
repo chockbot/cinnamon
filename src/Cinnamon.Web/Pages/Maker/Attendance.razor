@@ -1,0 +1,472 @@
+@layout DashboardLayout
+@page "/maker/dashboard/attendance"
+@using System.Security.Claims
+@using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Web.Models.Dashboard;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Entities
+@inject IActivityApiHandler activityApiHandler
+@using System.Timers;
+@inject IJSRuntime jsRuntime;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager navigationManager;
+@inject IDashboardApiHandler dashboardApiHandler;
+@inject ISystemApiHandler systemApiHandler;
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler;
+@implements IDisposable;
+@attribute [Authorize]
+
+<PageTitle>Attendance Management | CinnamonPH</PageTitle>
+<SeoMeta Title="Attendance Management" Subject="Attendance Management" Url="/maker/dashboard/attendance" />
+
+<section class="student-attendance mt-5 overflow-hidden">
+    <h3 class="title">Check Attendance for Today - @Model.ServerDate.ToString("MMMM dd, yyyy")</h3>
+    <div class="activities-schedule-section schedule-swiper">
+        <div class="swiper-wrapper">
+            @foreach (var schedule in Model.Schedules)
+            {
+                @if (schedule.IsActiveSchedule == true)
+                {
+                    <div class="swiper-slide shadow">
+                        <p class="schedule-title">@schedule.ActivityTitle</p>
+                        <p class="schedule-title">@schedule.ScheduleTitle</p>
+                        <p class="schedule-time">@schedule.ScheduleDescription</p>
+                        <p class="schedule-toggle">
+                            <div class="form-check form-switch">
+                                <span class="active-label">Set Inactive/Active:</span>
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(schedule.IsActiveSchedule == true)" @onchange="((e) => UpdateSchedule(e, schedule))">
+                             </div>
+                        </p>
+                        <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
+                            <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                            Select
+                        </Button>
+                    </div>
+                }
+            }
+        </div>
+        <div class="swiper-scrollbar"></div>
+    </div>
+    <div class="student-attendance-section">
+        <div class="tool-action">
+            <Button class="check-button" Type="ButtonType.Button" Clicked="CheckUnCheckAllStudent">
+                <img class="me-1" src='@(Model.IsCheckAllStudent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                Select All
+            </Button>
+            <TextEdit TextChanged="TextSearchChanged" class="search-text" Size="Size.Small" Placeholder="Search" Role="TextRole.Text" />
+        </div>
+        <div class="table-list">
+            <Table Shadow="Shadow.Default">
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByName">
+                                Name
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <label class="sotring-column" @onclick="SortByActivity">
+                                Experience
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell class="sessions-attended-header col-lg-2">
+                            <label class="sotring-column">
+                                Sessions Attended
+                            </label>
+                        </TableHeaderCell>
+                        <TableHeaderCell class="present-header col-lg-2">
+                            <label class="sotring-column" @onclick="SortByPresent">
+                                Present
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </label>
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @foreach (var item in Model.FilteredAttendance)
+                    {
+                        <TableRow>
+                            <TableRowCell>
+                            <span class="std-name">@item.Name</span>
+                                @if(item.SessionsAttended > item.NumberOfSessions)
+                                {
+                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="red"
+                                              Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                        @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                }
+                                else
+                                {
+                                    <CircularProgress Id='@($"progress-mobile-{item.StudentId}")' Size="40" PieColor="#4bb749"
+                                              Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                    @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                }
+                                
+                            </TableRowCell>
+                            <TableRowCell>@item.ActivityName</TableRowCell>
+                            <TableRowCell class="sessions-attended-body">
+                                <center>
+                                @if (item.SessionsAttended > item.NumberOfSessions)
+                                {
+                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="red"
+                                          Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                    @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                }
+                                else
+                                {
+                                        <CircularProgress Id='@($"progress-{item.StudentId}")' Size="50" PieColor="#4bb749"
+                                              Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                        @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                    </CircularProgress>
+                                } 
+                                </center>
+                            </TableRowCell>
+                            <TableRowCell class="present-body">
+                                <center>
+                                    <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckAttendance(item)">
+                                        <img class="me-1" src='@(item.IsPresent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                        Present
+                                    </Button>
+                                </center>
+                            </TableRowCell>
+                        </TableRow>
+                    }
+                </TableBody>
+            </Table>
+            @if(IsHaveCheckedSchedule && Model.FilteredAttendance.Count == 0)
+            {
+                <p>Nothing follows</p>
+            }
+        </div>
+    </div>
+</section>
+
+<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="Model.IsShowErrorMessage" >
+    <AlertMessage>
+        @Model.ErrorMessage
+    </AlertMessage>
+</Alert>
+
+@code
+{
+    private AttendanceModel Model {get; set;} = new();
+    public Activity activity = new Activity();
+
+    // 2 seconds delay
+    private Timer checkUncheckAllTimer = new Timer(2000);
+
+    protected async override Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+            var token = user.FindFirstValue("Token");
+            if(token == null)
+            {
+                // don't have current user login
+                navigationManager.NavigateTo("explore");
+                return;
+            }
+            Model.Token = token;
+
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+            {
+                // an error occured
+                navigationManager.NavigateTo("explore");
+                return;
+            }
+            if(!result.Result.Result.IsMaker)
+            {
+                // should not able to access the page
+                navigationManager.NavigateTo("explore");
+                return;
+            }
+
+            var schedules = await dashboardApiHandler.GetActivitySchedules(token);
+            if(!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
+            {
+                Model.IsShowErrorMessage = true;
+                Model.ErrorMessage = "An error occured. Can't find activity schedules. Please try again later.";
+                return;
+            }
+
+            Model.Schedules.AddRange(schedules.Result.Result.Select(s => {
+                return new AttendanceModel.Schedule {
+                    ActivityDescription = s.Description,
+                    ActivityTitle = s.Title,
+                    ActivityId = s.ActivityId,
+                    IsSelected = false,
+                    ScheduleDescription = s.ScheduleDescription,
+                    ScheduleId = s.ScheduleId,
+                    ScheduleTitle = s.ScheduleTitle,
+                    IsActiveSchedule = s.IsActiveSchedule
+                };
+            }));
+
+            checkUncheckAllTimer.Elapsed += ProcessCheckUncheckAll;
+
+            // get server date
+            var dateResult = await systemApiHandler.GetServerDate();
+            if(dateResult.Succeeded && dateResult.Result != null && dateResult.Result.IsSuccess)
+            {
+                Model.ServerDate = dateResult.Result.Result;
+            }
+        }
+        catch
+        {
+            Model.IsShowErrorMessage = true;
+            Model.ErrorMessage = "An error occured. Please try again later.";
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper",".swiper-scrollbar");
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Check Attendance Page Loaded");
+        }
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initProgressBars", Model.FilteredAttendance.Select(s => $"#progress-{s.StudentId}"));
+    }
+
+    private async void ProcessCheckUncheckAll(object? sender, ElapsedEventArgs e)
+    {
+        checkUncheckAllTimer.Stop();
+        // call update attendance api without waiting
+        await dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
+            Students = Model.FilteredAttendance.Select(s => {
+                return new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate {
+                    ActivityId = s.ActivityId,
+                    IsPresent = s.IsPresent,
+                    ScheduleId = s.ScheduleId,
+                    StudentId = s.StudentId
+                };
+            })
+        }, Model.Token);
+        //Un-comment to activate Session Expiration
+        //foreach (var item in Model.FilteredAttendance)
+        //{
+        //    //Get Activity Details
+        //    var activityResult = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
+        //    if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+        //    {
+        //        var result = activityResult.Result.Result;
+        //        activity = new Activity
+        //            {
+        //                IsSetSession = result.IsSetSession,
+        //                SessionName = result.SessionName,
+        //                ActivityId = result.ActivityId
+        //            };
+        //    }
+        //    //Set Session Expiration
+        //    if (activity != null && activity.IsSetSession == true)
+        //    {
+        //        //Check if first attendance
+        //        if (item.SessionsAttended == 1)
+        //        {
+        //            await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+        //                {
+        //                    Id = item.StudentId,
+        //                    ScheduleId = item.ScheduleId,
+        //                    SessionName = activity.SessionName,
+        //                    ExpirationStartDate = DateTime.UtcNow,
+        //                    ExpirationEndDate = item.ExpirationDateEnd
+        //                });
+        //        }
+        //    }
+        //}
+    }
+
+    private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
+    {
+        schedule.IsSelected = !schedule.IsSelected;
+        if(schedule.IsSelected)
+        {
+            var result = await dashboardApiHandler.GetCurrentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCurrentAttendanceArgs {
+                ActivityId = schedule.ActivityId,
+                ScheduleId = schedule.ScheduleId
+            }, Model.Token);
+            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                Model.Attendances.AddRange(result.Result.Result.Select(s => {
+                    return new AttendanceModel.StudentAttendance {
+                        ActivityName = schedule.ActivityTitle,
+                        IsPresent = s.IsPresent,
+                        Name = s.Name,
+                        StudentId = s.StudentId,
+                        ActivityId = schedule.ActivityId,
+                        ScheduleId = schedule.ScheduleId,
+                        NumberOfSessions = s.NumberOfSessions,
+                        SessionsAttended = s.SessionsAttended
+                    };
+                }));
+            }
+        }
+        else 
+        {
+            Model.Attendances.RemoveAll(s => s.ActivityId == schedule.ActivityId && s.ScheduleId == schedule.ScheduleId);
+        }
+        Model.FilteredAttendance = Model.Attendances;
+    }
+
+    private void CheckUnCheckAllStudent()
+    {
+        Model.IsCheckAllStudent = !Model.IsCheckAllStudent;
+        int addedSession = Model.IsCheckAllStudent ? 1 : -1;
+
+        Model.FilteredAttendance.ForEach(std => {
+            if(Model.IsCheckAllStudent != std.IsPresent)
+            {
+                std.IsPresent = Model.IsCheckAllStudent;
+                std.SessionsAttended += addedSession;
+            }
+        });
+
+        // add delay to process checkUncheckAll to avoid spamming
+        // will cause to heavy processing
+        checkUncheckAllTimer.Stop();
+        checkUncheckAllTimer.Start();
+    }
+
+    private async void CheckUnCheckAttendance(AttendanceModel.StudentAttendance studentAttendance)
+    {
+        studentAttendance.IsPresent = !studentAttendance.IsPresent;
+        if(studentAttendance.IsPresent)
+        {
+            studentAttendance.SessionsAttended += 1;
+        } 
+        else 
+        {
+            studentAttendance.SessionsAttended -= 1;
+        }
+
+        // call update attendance api without waiting
+        await dashboardApiHandler.UpdateStudentAttendances(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs {
+            Students = new List<Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate> {
+                new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateStudentAttendnaceArgs.StudentToUpdate {
+                    ActivityId = studentAttendance.ActivityId,
+                    IsPresent = studentAttendance.IsPresent,
+                    ScheduleId = studentAttendance.ScheduleId,
+                    StudentId = studentAttendance.StudentId
+                },
+            }
+        }, Model.Token);
+        //Un-comment to activate Session Expiration
+        ////Check if Session is not null
+        //var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+        //    {
+        //        IncludeAtivitySchedules = true,
+        //    });
+        //if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
+        //{
+        //    var result = activityResult.Result.Result;
+        //    activity = new Activity
+        //        {
+        //            IsSetSession = result.IsSetSession,
+        //            SessionName = result.SessionName,
+        //            ActivityId = result.ActivityId
+        //        };
+        //}
+        //if (activity != null && activity.IsSetSession == true)
+        //{
+        //    //Check if first attendance
+        //    if (studentAttendance.SessionsAttended == 1)
+        //    {
+        //        await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+        //            {
+        //                Id = studentAttendance.StudentId,
+        //                ScheduleId = studentAttendance.ScheduleId,
+        //                SessionName = activity.SessionName,
+        //                ExpirationStartDate = DateTime.UtcNow,
+        //                ExpirationEndDate = studentAttendance.ExpirationDateEnd
+        //            });
+        //    }
+        //}
+    }
+    private void SortByName()
+    {
+        if(!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.Name).ToList();
+            Model.IsSortNameAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.Name).ToList();
+            Model.IsSortNameAsc = true;
+        }
+    }
+
+    private void SortByActivity()
+    {
+        if(!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.ActivityName).ToList();
+            Model.IsSortExperienceAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.ActivityName).ToList();
+            Model.IsSortExperienceAsc = true;
+        }
+    }
+
+    private void SortByPresent()
+    {
+        if(!Model.IsSortPresentAsc.HasValue || Model.IsSortPresentAsc.Value)
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderBy(s => s.IsPresent).ToList();
+            Model.IsSortPresentAsc = false;
+        }
+        else 
+        {
+            Model.FilteredAttendance = Model.Attendances.OrderByDescending(s => s.IsPresent).ToList();
+            Model.IsSortPresentAsc = true;
+        }
+    }
+
+    private void TextSearchChanged(string search)
+    {
+        Model.FilteredAttendance = Model.Attendances.FindAll(s => s.Name.ToLower().Contains(search.ToLower()));
+    }
+
+    private int GetSessionPercentage(double numberSessions, double sessionsAttended)
+    {
+        return (int)((sessionsAttended / numberSessions) * 100);
+    }
+
+    public void Dispose()
+    {
+        checkUncheckAllTimer?.Dispose();
+    }
+
+    public async Task UpdateSchedule(ChangeEventArgs e, AttendanceModel.Schedule schedule)
+    {
+        bool isChecked = (bool)e.Value;
+
+        var result = await activityApiHandler.UpdateActivitySchedule(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateScheduleArgs
+        {
+            Id = schedule.ScheduleId,
+            IsActiveSchedule = isChecked
+        }, Model.Token);
+    }
+
+    private bool IsHaveCheckedSchedule
+    {
+        get
+        {
+            return Model.Schedules.Any(s => s.IsSelected);
+        }
+    }
+}

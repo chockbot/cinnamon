@@ -7,6 +7,7 @@ using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Customer;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Waitlist;
 using Microsoft.AspNetCore.Authorization;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.FamilyMember;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.RequestRefund;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -15,6 +16,9 @@ namespace Cinnamon.Api.Core.Controllers;
 [Authorize]
 public class AccountController : ControllerBase 
 {
+
+    #region dependencies declaration
+
     private readonly ISubmitRegisterHandler submitRegisterHandler;
     private readonly ISubmitWaitlistHandler submitWaitlistHandler;
     private readonly ISubmitVerifyEmailHandler submitVerifyEmailHandler;
@@ -32,7 +36,26 @@ public class AccountController : ControllerBase
     private readonly IUploadGovernmentIdHandler uploadGovernmentIdHandler;
     private readonly IUploadProfilePictureHandler uploadProfilePictureHandler;
     private readonly IGetCustomerByEmailHandler getCustomerByEmailHandler;
+    private readonly IGetCustomerByIdHandler getCustomerByIdHandler;
     private readonly IGetWaitListByGuidHandler getWaitListByGuidHandler;
+    private readonly IExternalLoginHandler externalLoginHandler;
+    private readonly IExternalRegisterHandler externalRegisterHandler;
+    private readonly IGetExternalLoginDetailHandler getExternalLoginDetailHandler;
+    private readonly IGetCustomerByHandler getCustomerByHandler;
+    private readonly IResetPasswordHandler resetPasswordHandler;
+    private readonly IVerifyResetPasswordHandler verifyResetPasswordHandler;
+    private readonly IRequestRefundHandler requestRefundHandler;
+    private readonly IGetRequestRefundHandler getRequestRefundHandler;
+    private readonly IDeleteProfilePictureHandler deleteProfilePictureHandler;
+    private readonly IGetPayoutAccountHandler getPayoutAccountHandler;
+    private readonly ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler;
+    private readonly IGetAllCustomersHandler getAllCustomersHandler;
+    private readonly IUpdateCustomerProfileHandler updateCustomerProfileHandler;
+    private readonly IUpdateRequestRefundHandler updateRequestRefundHandler;
+
+    #endregion
+
+    #region constructor
 
     public AccountController(ISubmitRegisterHandler submitRegisterHandler, ISubmitWaitlistHandler submitWaitlistHandler,
         ISubmitVerifyEmailHandler submitVerifyEmailHandler, ISubmitLoginHandler submitLoginHandler,
@@ -40,8 +63,13 @@ public class AccountController : ControllerBase
         IGetFamilyMembersHandler getFamilyMembersHandler, IUpdateFamilyMembersHandler updateFamilyMembersHandler,
         ICreateFamilyMembersHandler createFamilyMembersHandler, IDeleteFamilyMembersHandler deleteFamilyMembersHandler,
         ISubmitUpdateProfileHandler updateProfileHandler, IGetGovernmentIdsHandler getGovernmentIdsHandler,
-        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler,IGetProfilePictureHandler getProfilePictureHandler, 
-        IGetWaitListHandler getWaitListHandler,IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler)
+        IUploadGovernmentIdHandler uploadGovernmentIdHandler, IUploadProfilePictureHandler uploadProfilePictureHandler, IGetProfilePictureHandler getProfilePictureHandler,
+        IGetWaitListHandler getWaitListHandler, IGetCustomerByEmailHandler getCustomerByEmailHandler, IGetWaitListByGuidHandler getWaitListByGuidHandler,
+        IGetCustomerByIdHandler getCustomerByIdHandler, IExternalLoginHandler externalLoginHandler, IExternalRegisterHandler externalRegisterHandler,
+        IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
+        IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
+        IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
+        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, IUpdateRequestRefundHandler updateRequestRefundHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -57,11 +85,28 @@ public class AccountController : ControllerBase
         this.getGovernmentIdsHandler = getGovernmentIdsHandler;
         this.uploadGovernmentIdHandler = uploadGovernmentIdHandler;
         this.uploadProfilePictureHandler = uploadProfilePictureHandler;
-        this.getProfilePictureHandler = getProfilePictureHandler;   
+        this.getProfilePictureHandler = getProfilePictureHandler;
         this.getWaitListHandler = getWaitListHandler;
-        this.getCustomerByEmailHandler = getCustomerByEmailHandler; 
-        this.getWaitListByGuidHandler= getWaitListByGuidHandler;
+        this.getCustomerByEmailHandler = getCustomerByEmailHandler;
+        this.getWaitListByGuidHandler = getWaitListByGuidHandler;
+        this.getCustomerByIdHandler = getCustomerByIdHandler;
+        this.externalLoginHandler = externalLoginHandler;
+        this.externalRegisterHandler = externalRegisterHandler;
+        this.getExternalLoginDetailHandler = getExternalLoginDetailHandler;
+        this.getCustomerByHandler = getCustomerByHandler;
+        this.resetPasswordHandler = resetPasswordHandler;
+        this.verifyResetPasswordHandler = verifyResetPasswordHandler;
+        this.requestRefundHandler = requestRefundHandler;
+        this.getRequestRefundHandler = getRequestRefundHandler;
+        this.deleteProfilePictureHandler = deleteProfilePictureHandler;
+        this.getPayoutAccountHandler = getPayoutAccountHandler;
+        this.createUpdatePayoutAccountHandler = createUpdatePayoutAccountHandler;
+        this.getAllCustomersHandler = getAllCustomersHandler;
+        this.updateCustomerProfileHandler = updateCustomerProfileHandler;
+        this.updateRequestRefundHandler = updateRequestRefundHandler;
     }
+
+    #endregion
 
     [Route("Register")]
     [HttpPost]
@@ -78,7 +123,8 @@ public class AccountController : ControllerBase
                 FirstName = args.FirstName,
                 LastName = args.LastName,
                 Password = args.Password,
-                ProfilePath = args.ProfilePath
+                ProfilePath = args.ProfilePath,
+                HasAcceptedTerms = args.HasAcceptedTerms
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -95,7 +141,54 @@ public class AccountController : ControllerBase
                     FirstName = objResult.FirstName,
                     LastName = objResult.LastName,
                     ProfileImg = objResult.ProfileImg,
-                    Id = objResult.Id
+                    Id = objResult.Id,
+                    Handler = objResult.Handler
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SubmitRegisterResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("ExternalRegister")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SubmitRegisterResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> ExternalRegister([FromBody] SubmitExternalRegisterArgs args)
+    {
+        try
+        {
+            var result = await externalRegisterHandler.ExecuteAsync(new Services.AccountService.Interactors.ExternalRegisterArgs {
+                Birthdate = args.Birthdate,
+                Email = args.Email,
+                FirstName = args.FirstName,
+                Guid = args.Guid,
+                LastName = args.LastName,
+                Password = args.Password,
+                ProfilePath = args.ProfilePath,
+                Token = args.Token,
+                HasAcceptedTerms = args.HasAcceptedTerms
+            });
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SubmitRegisterResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new SubmitRegisterResult {
+                Result = new CustomerDTO {
+                    Birthdate = objResult.Birthdate,
+                    Email = objResult.Email,
+                    ExternalLogin = objResult.ExternalLogin,
+                    FirstName = objResult.FirstName,
+                    LastName = objResult.LastName,
+                    ProfileImg = objResult.ProfileImg,
+                    Id = objResult.Id,
+                    Handler = objResult.Handler
                 },
                 IsSuccess = true,
             });
@@ -275,8 +368,13 @@ public class AccountController : ControllerBase
                     Id = profile.Id,
                     About = profile.About,
                     Birthdate = profile.Birthdate,
+                    DateJoined = profile.DateJoined,
                     IsVerified = profile.IsVerified,
-                    ProfileImg = profile.ProfileImagePath
+                    IsOfficial = profile.IsOfficial,
+                    IsOG = profile.IsOG,
+                    ProfileImg = profile.ProfileImagePath,
+                    Handler = profile.Handler,
+                    TotalCredits = profile.TotalCredits
                 },
                 IsSuccess = true
             });
@@ -318,86 +416,6 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetFamilyMemberResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
-        }
-    }
-
-    [Route("GetCustomerByEmail")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetCustomerByEmailResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetCustomerByEmail([FromQuery] GetCustomerByEmailArgs args)
-    {
-        try
-        {
-            var result = await getCustomerByEmailHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByEmailArgs
-            {
-                Email = args.Email
-            });
-
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-            var objResult = result.Result;
-
-            return new JsonResult(new GetCustomerByEmailResult
-            {
-                Result = new CustomerDTO
-                {
-                   IsVerified= objResult.IsVerified,
-                   Id= objResult.Id,    
-                   Email= objResult.Email,  
-                   FirstName= objResult.FirstName,
-                   About = objResult.About,
-                   Birthdate =objResult.Birthdate,
-                   DateJoined= objResult.DateJoined,
-                   ExternalLogin= objResult.ExternalLogin,
-                   IsMaker= objResult.IsMaker,
-                   LastName= objResult.LastName,
-                   ProfileImg = objResult.ProfileImg
-                },
-                IsSuccess = true,
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
-        }
-    }
-
-    [Route("GetWaitListByGuid")]
-    [HttpGet]
-    [ProducesResponseType(typeof(GetWaitListByGuidResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetWaitListByGuid([FromQuery] GetWaitListByGuidArgs args)
-    {
-        try
-        {
-            var result = await getWaitListByGuidHandler.ExecuteAsync(new Services.AccountService.Interactors.GetWaitListByGuidArgs
-            {
-                Guid = args.Guid
-            });
-
-            if (!result.Succeeded || result.Result == null)
-            {
-                return new JsonResult(new GetWaitListByGuidResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
-            }
-            var objResult = result.Result;
-
-            return new JsonResult(new GetWaitListByGuidResult
-            {
-                Result = new WaitlistDTO
-                {
-                    Email = result.Result.Email,
-                    Guid = result.Result.Guid,
-                    Id = result.Result.Id,
-                    IsVerified = result.Result.IsVerified,
-                    Token = result.Result.Token 
-                },
-                IsSuccess = true,
-            });
-        }
-        catch (Exception ex)
-        {
-            return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 
@@ -564,6 +582,7 @@ public class AccountController : ControllerBase
                 Birthdate = args.Datebirth,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
+                VerifiedBadge = args.VerifiedBadge
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -614,6 +633,7 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetGovernmentIdsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
         }
     }
+
     [Route("GetProfilePicture")]
     [HttpGet]
     [ProducesResponseType(typeof(GetProfilePictureResult), StatusCodes.Status200OK)]
@@ -640,6 +660,7 @@ public class AccountController : ControllerBase
             return new JsonResult(new GetProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("UploadGovernmentIds")]
     [HttpPost]
     [ProducesResponseType(typeof(UploadGovernmentIdsResult), StatusCodes.Status201Created)]
@@ -700,6 +721,607 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UploadProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetCustomerById/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomerByIdResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetMakerDetail(int id)
+    {
+        try
+        {
+            var result = await getCustomerByIdHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByIdArgs{
+                Id = id
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetCustomerByIdResult
+            {
+                Result = new CustomerDTO
+                {
+                    Id = objResult.Id,
+                    FirstName = objResult.FirstName,
+                    IsMaker = objResult.IsMaker,
+                    LastName = objResult.LastName,
+                    IsVerified = objResult.IsVerified,
+                    ProfileImg = objResult.ProfileImg,
+                    About = objResult.About,
+                    IsOG = objResult.IsOG,
+                    IsOfficial = objResult.IsOfficial,
+                    DateJoined = objResult.DateJoined,
+                    Email = objResult.Email,
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetCustomerByHandler/{handler}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomerByIdResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetMakerDetailByHandler(string handler)
+    {
+        try
+        {
+            var result = await getCustomerByHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByHandlerArgs {
+                Handler = handler
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetCustomerByIdResult
+            {
+                Result = new CustomerDTO
+                {
+                    Id = objResult.Id,
+                    FirstName = objResult.FirstName,
+                    IsMaker = objResult.IsMaker,
+                    IsVerified = objResult.IsVerified,
+                    LastName = objResult.LastName,
+                    ProfileImg = objResult.ProfileImg,
+                    About = objResult.About,
+                    IsOG = objResult.IsOG,
+                    IsOfficial = objResult.IsOfficial,
+                    DateJoined = objResult.DateJoined,
+                    Email = objResult.Email
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetCustomerByEmail/{email}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCustomerByEmailResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCustomerByEmail(string email)
+    {
+        try
+        {
+            var result = await getCustomerByEmailHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByEmailArgs
+            {
+                Email = email
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetCustomerByEmailResult
+            {
+                Result = new CustomerDTO
+                {
+                    IsVerified = objResult.IsVerified,
+                    Id = objResult.Id,
+                    Email = objResult.Email,
+                    FirstName = objResult.FirstName,
+                    About = objResult.About,
+                    Birthdate = objResult.Birthdate,
+                    DateJoined = objResult.DateJoined,
+                    ExternalLogin = objResult.ExternalLogin,
+                    IsMaker = objResult.IsMaker,
+                    LastName = objResult.LastName,
+                    ProfileImg = objResult.ProfileImg,
+                    IsOfficial = objResult.IsOfficial,
+                    IsOG = objResult.IsOG,
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCustomerByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetWaitListByGuid/{guid}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetWaitListByGuidResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetWaitListByGuid(string guid)
+    {
+        try
+        {
+            var result = await getWaitListByGuidHandler.ExecuteAsync(new Services.AccountService.Interactors.GetWaitListByGuidArgs
+            {
+                Guid = guid
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetWaitListByGuidResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetWaitListByGuidResult
+            {
+                Result = new WaitlistDTO
+                {
+                    Email = result.Result.Email,
+                    Guid = result.Result.Guid,
+                    Id = result.Result.Id,
+                    IsVerified = result.Result.IsVerified,
+                    Token = result.Result.Token
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetWaitListByGuidResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("tMSSMcKhx9YpmcYCAfCkGnSfau8SE8")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ExternalLoginResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> HiddenExternalLogin([FromBody] ExternalLoginArgs args)
+    {
+        try
+        {
+            var result = await externalLoginHandler.ExecuteAsync(new Services.AccountService.Interactors.ExternalLoginArgs {
+                Email = args.Email,
+                FirstName = args.FirstName ?? string.Empty,
+                LastName = args.LastName ?? string.Empty
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ExternalLoginResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new ExternalLoginResult
+            {
+                Result = new VerifiedLoginDTO {
+                    Email = objResult.Email,
+                    ExternalLogin = objResult.ExternalLogin,
+                    FirstName = objResult.FirstName,
+                    GeneratedToken = objResult.GeneratedToken,
+                    Id = objResult.Id,
+                    IsMaker = objResult.IsMaker,
+                    LastName = objResult.LastName,
+                    IsNew = objResult.IsNew,
+                    GeneratedNewToken = objResult.GeneratedNewToken,
+                    GeneratedNewUid = objResult.GeneratedNewGuid
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ExternalLoginResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetExternalLoginDetail/{token}/{guid}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetExternalLoginDetailResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetExternalLoginDetail(string token, string guid)
+    {
+        try
+        {
+            var result = await getExternalLoginDetailHandler.ExecuteAsync(new Services.AccountService.Interactors.GetExternalLoginDetailArgs {
+                Guid = guid,
+                Token = token
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetExternalLoginDetailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var objResult = result.Result;
+
+            return new JsonResult(new GetExternalLoginDetailResult
+            {
+                Result = new ExternalLoginDetailDTO {
+                    Email = result.Result.Email,
+                    FirstName = result.Result.FirstName,
+                    LastName = result.Result.LastName
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetExternalLoginDetailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ResetPassword")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ResetPasswordResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await resetPasswordHandler.ExecuteAsync(new Services.AccountService.Interactors.ResetPasswordArgs {
+                Email = args.Email,
+                ValidationRoute = args.ValidationRoute
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ResetPasswordResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new ResetPasswordResult {
+                Result = new Framework.ApiCommand.ApiCore.DTO.ResetPassword.ResetVerificationLinkDto {
+                    Email = created.Email,
+                    Id = created.Id,
+                    VerificationLink = created.VerificationLink
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("VerifyResetPassword")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifyResetPasswordResult), StatusCodes.Status201Created)]
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyResetPassword([FromBody] VerifyResetPasswordArgs args)
+    {
+        try
+        {
+            var result = await verifyResetPasswordHandler.ExecuteAsync(new Services.AccountService.Interactors.VerifyResetPasswordArgs {
+                Guid = args.Guid,
+                NewPassword = args.NewPassword,
+                Token = args.Token
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifyResetPasswordResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new VerifyResetPasswordResult {
+                Result = new Framework.ApiCommand.ApiCore.DTO.ResetPassword.VerifyResetPaswordDto {
+                    Success = true
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifyResetPasswordResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("RequestRefund")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RequestRefundResult), StatusCodes.Status201Created)]
+    public async Task<IActionResult> RequestRefund([FromBody] RequestRefundArgs args)
+    {
+        try
+        {
+            var result = await requestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.RequestRefundArgs {
+                PurchaseOrderId = args.PurchaseOrderId,
+                Reason = args.Reason
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RequestRefundResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            var created = result.Result;
+
+            return new JsonResult(new RequestRefundResult {
+                Result = true,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RequestRefundResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("GetRequestedRefunds")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetRequestedRefundsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetRequestedRefunds([FromQuery] GetRequestedRefundsArgs args)
+    {
+        try
+        {
+            var result = await getRequestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.GetRequestRefundArgs {
+                Status = args.Status,
+                CountPerPage= args.CountPerPage,
+                PageIndex= args.PageIndex,
+                IsAdmin = args.IsAdmin,
+                IncludeCustomer = args.IncludeCustomer,
+                IncludePurchaseOrder= args.IncludePurchaseOrder
+            });
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetRequestedRefundsResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+
+            return new JsonResult(new GetRequestedRefundsResult {
+                Result = result.Result.RequestedRefunds.Select(r => {
+                    return new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.RequestedRefundDTO {
+                        Id            = r.Id,
+                        ActivityTitle = r.ExperienceTitle,
+                        ReferenceNo   = r.ReferenceNumber,
+                        Status        = r.Status,
+                        Email         = r.Email,
+                        FirstName     = r.FirstName,
+                        LastName      = r.LastName,
+                        Reason        = r.Reason,
+                        OverAllTotal  = r.OverAllTotal,
+                        RefundAmountGiven = r.RefundAmountGiven
+                    };
+                }),
+                Pagination = result.Result.Pagination,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetRequestedRefundsResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("DeleteProfilePicture")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteProfilePictureResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteProfilePicture([FromBody] DeleteProfilePictureArgs args)
+    {
+        try
+        {
+            var result = await deleteProfilePictureHandler.ExecuteAsync(new Services.AccountService.Interactors.DeleteProfilePictureArgs
+            {
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new DeleteProfilePictureResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new DeleteProfilePictureResult
+            {
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteProfilePictureResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdatePayoutAccount")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdatePayoutAccountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdatePayoutAccount([FromBody] UpdatePayoutAccountArgs args)
+    {
+        try
+        {
+            var result = await createUpdatePayoutAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.CreateUpdatePayoutAccountArgs {
+                AccountHolder = args.AccountHolder,
+                AccountNumber = args.AccountNumber,
+                BankChannel = args.BankChannel
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdatePayoutAccountResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new UpdatePayoutAccountResult
+            {
+                Result = new PayoutAccountDTO {
+                    AccountHolder = result.Result.AccountHolder,
+                    AccountNumber = result.Result.AccountNumber,
+                    Id = result.Result.Id,
+                    BankChannel = result.Result.BankChannel
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdatePayoutAccountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetPayoutAccount")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetPayoutAccountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetPayoutAccount()
+    {
+        try
+        {
+            var result = await getPayoutAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.GetPayoutAccountArgs {});
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetPayoutAccountResult {ErrorInfo = new ErrorInfo {Message = result.Message, Code = result.Error.Code}});
+            }
+            
+            var accountNumber = result.Result.AccountNumber;
+            var maskedCount = accountNumber.Length < 5 ? accountNumber.Length : 5;
+
+            var maskedAccount = new String('*', accountNumber.Length - maskedCount) + accountNumber.Substring(accountNumber.Length - maskedCount);
+
+            return new JsonResult(new GetPayoutAccountResult {
+                Result = new PayoutAccountDTO {
+                    AccountHolder = result.Result.AccountHolder,
+                    // masked the account number
+                    AccountNumber = maskedAccount,
+                    Id = result.Result.Id,
+                    BankChannel = result.Result.BankChannel
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetPayoutAccountResult {ErrorInfo = new ErrorInfo {Message = ex.Message}});
+        }
+    }
+
+    [Route("Customers")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllCustomerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllCustomers([FromQuery] GetAllCustomersArgs args)
+    {
+        try
+        {
+            var result = await getAllCustomersHandler.ExecuteAsync(new Services.AccountService.Interactors.GetAllCustomersArgs
+            {
+                CountPerPage = args.CountPerPage,
+                PageIndex = args.PageIndex
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message, Code = result.Error.Code } });
+            }
+
+            return new JsonResult(new GetAllCustomerResult
+            {
+                Result = result.Result.Customers.Select(c => {
+                    return new CustomerDTO
+                    {
+                        About            = c.About,
+                        Birthdate        = c.Birthdate,
+                        Email            = c.Email,
+                        ExternalLogin    = c.ExternalLogin,
+                        FirstName        = c.FirstName,
+                        LastName         = c.LastName,
+                        Id               = c.Id,
+                        IsMaker          = c.IsMaker,
+                        Handler          = c.Handler,
+                        FrontIdImagePath = c.FrontIdImagePath,
+                        BackIdImagePath  = c.BackIdImagePath,
+                        IsVerified       = c.IsVerified
+                    };
+                }),
+                IsSuccess = true,
+                Pagination = result.Result.Pagination
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Customer/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateProfileDetailsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateCustomerProfile([FromBody] UpdateProfileDetailsArgs args)
+    {
+        try
+        {
+            var result = await updateCustomerProfileHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateCustomerProfileArgs
+            {
+                VerifiedBadge = args.VerifiedBadge,
+                CustomerId = args.CustomerId,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateProfileDetailsResult
+            {
+                Result = new CustomerDTO
+                {
+                    FirstName = result.Result.FirstName,
+                    LastName = result.Result.LastName,
+                    IsVerified = result.Result.VerifiedBadge,
+                    Id = result.Result.Id
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Refund/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateRequestRefundResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateRefundRequest([FromBody] UpdateRequestRefundArgs args)
+    {
+        try
+        {
+            var result = await updateRequestRefundHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateRequestRefundArgs
+            {
+                RefundAmountGiven = args.RefundAmountGiven,
+                RefundId          = args.RefundId,
+                Status            = args.Status,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateRequestRefundResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateRequestRefundResult
+            {
+               IsSuccess= true,
+               Result = new RequestRefundDTO
+               {
+                   Status          = result.Result.Status,
+                   CustomerId      = result.Result.CustomerId,
+                   ExperienceTitle = result.Result.ExperienceTitle,
+                   Id              = result.Result.Id,
+                   PurchaseOrderId = result.Result.PurchaseOrderId,
+                   Reason          = result.Result.Reason
+               }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

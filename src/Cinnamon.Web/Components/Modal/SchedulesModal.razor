@@ -8,11 +8,11 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="()=>Close()"></button>
             </div>
             <div class="modal-body">
-                <div class="row col-lg-12 col-md-12 col-sm-12 d-flex flex-row flex-wrap">
-                    @foreach (var item in ScheduleModel)
+                <div class="row col-lg-12 col-md-12 col-sm-12 d-flex flex-row flex-wrap justify-content-evenly">
+                    @foreach (var item in ScheduleModel.Where(s => s.IsActiveSchedule))
                     {
                         <div class="col-md-4 mb-2">
-                            <CarouselItemSchedule ScheduleModel="item" />
+                            <CarouselItemSchedule ScheduleModel="item" ActivityModel="ActivityModel" OnChooseClick="OnScheduleChooseChanged" />
                         </div>
                     }
                 </div>
@@ -30,6 +30,8 @@
 {
     [Parameter]
     public IList<ActivitySchedule> ScheduleModel { get; set; }
+    [Parameter]
+    public Activity ActivityModel { get; set; }
 
     public string ModalDisplay = "none;";
 
@@ -51,5 +53,11 @@
         ModalClass = "hide";
         ShowBackdrop = false;
         StateHasChanged();
+    }
+
+    public Task OnScheduleChooseChanged()
+    {
+        Close();
+        return Task.CompletedTask;
     }
 }

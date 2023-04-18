@@ -1,0 +1,58 @@
+@namespace Cinnamon.Web.Components.Pages
+@inject IJSRuntime jsRuntime;
+
+<div id="@Id" class="progress @Id" data-value='@Percentage' style="@GetStyle">
+  <span class="progress-left">
+        <span class="progress-bar"></span>
+  </span>
+  <span class="progress-right">
+        <span class="progress-bar"></span>
+  </span>
+  <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+    <div class="progress-content">
+      @ChildContent
+    </div>
+  </div>
+</div>
+
+<style scoped>
+    .@Id .progress-bar{
+        border:6px solid @PieColor;
+    }
+</style>
+
+@code
+{
+    [Parameter]
+    public string Label {get; set;} = string.Empty;
+
+    [Parameter]
+    public int Percentage {get; set;}
+
+    [Parameter]
+    public int Size {get; set;} = 100; // width and height default to 100
+
+    [Parameter]
+    public RenderFragment? ChildContent {get; set;}
+
+    [Parameter]
+    public string Id {get; set;}
+
+    [Parameter]
+    public string PieColor { get; set; } = "#4bb749";
+
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initCircularProgress", $"#{Id}", Percentage);   
+  }
+
+  private string GetStyle 
+  {
+    get {
+      return $@"
+        width: {Size}px;
+        height: {Size}px;
+      ";
+    }
+  }
+}

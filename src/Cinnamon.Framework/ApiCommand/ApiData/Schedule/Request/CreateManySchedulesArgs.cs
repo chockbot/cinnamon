@@ -22,5 +22,8 @@ public class CreateManySchedulesArgs
         public string PriceUnit1 { get; set; } = "Head";
         public int PerUnit2 { get; set; } = 1;
         public string PriceUnit2 { get; set; } = "Session";
+        [Required]
+        public int Order {get; set;}
+        public bool IsActiveSchedule { get; set; }
     }    
 }

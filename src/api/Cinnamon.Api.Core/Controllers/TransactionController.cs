@@ -33,7 +33,22 @@ public class TransactionController : ControllerBase
                 ActivityId = args.ActivityId,
                 CouponCode = args.CouponCode,
                 NumberOfHeads = args.NumberOfHeads,
-                ScheduleId = args.ScheduleId
+                ScheduleId = args.ScheduleId,
+                Students = args.Students.Select(s => {
+                    return new Services.TransactionService.Interactors.PurchaseOrderArgs.Enrollee {
+                        FamilyMemberId = s.FamilyMemberId,
+                        Name = s.Name
+                    };
+                }),
+                PaymentChannel = args.PaymentChannel,
+                PaymentMethod = args.PaymentMethod,
+                CardInformation = args.CardInformation != null ? new Services.TransactionService.Interactors.PurchaseOrderArgs.CardDetails {
+                    AccountHolder = args.CardInformation.AccountHolder,
+                    CardNumber = args.CardInformation.CardNumber,
+                    CVV = args.CardInformation.CVV,
+                    ExpireMonthYear = args.CardInformation.ExpireMonthYear
+                } : null,
+                IsCreditsApplied = args.IsCreditsApplied
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -44,7 +59,13 @@ public class TransactionController : ControllerBase
             return new JsonResult(new SubmitPurchaseOrderResult 
                 {
                     IsSuccess = true, 
-                    Result = new Framework.ApiCommand.ApiCore.DTO.PurchaseOrder.PurchaseOrderDTO {Id = result.Result.Id}} );
+                    Result = new PaymentOrderDTO {
+                        Action = result.Result.Action,
+                        Id = result.Result.Id,
+                        Url = result.Result.Url
+                    }
+                }
+            );
         }
         catch (Exception ex)
         {

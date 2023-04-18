@@ -1,16 +1,21 @@
 ﻿let cropper;
 let cropperModalId = "#cropperModal";
-let $jsPhotoUploadInput = $(".js-photo-upload");
+let $jsPhotoUploadInput = $("input[data-input-id='js-photo-upload']");
 let imageData;
+const allowedFileTypes = ["jpeg", "jpg", "png"];
 
 $jsPhotoUploadInput.on("change", function (e) {
   var files = this.files;
   if (files.length > 0) {
     var photo = files[0];
-
+      let extension = photo.name
+          .substr(photo.name.lastIndexOf(".") + 1)
+          .toLowerCase();
       if (photo.size > 10000000) {
-
-          alert("Please upload image less than 10MB.");
+          return;
+      }
+      else if (!allowedFileTypes.includes(extension)) {
+          return;
       }
       else
       {
@@ -57,7 +62,7 @@ $(".js-save-cropped-avatar").on("click", function (event) {
     //Check image Size
     const size = roundedcanvas.size;
     //Show
-    const base64encodedImage = roundedcanvas.toDataURL();
+    const base64encodedImage = roundedcanvas.toDataURL("image/jpeg",0.9);
 
     imageData = base64encodedImage;
 
@@ -69,6 +74,14 @@ $(".js-save-cropped-avatar").on("click", function (event) {
 
     cropper.destroy();
     cropper = null;
+});
+
+$(".btn-delete").on("click", function (event) {
+    event.preventDefault();
+
+    imageData = null;
+
+    $("#avatar-crop").attr("src", $('#originalImage').val());
 });
 
 function getRoundedCanvas(sourceCanvas) {

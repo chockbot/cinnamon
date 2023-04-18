@@ -20,4 +20,9 @@ public class CreatePurchaseOrderArgs
     public decimal CouponAmount {get; set;}
     [Required]
     public decimal OverallTotal {get; set;}
+    [Required]
+    [Range(0,2)]
+    public int Status {get; set;}
+    public string? Payload {get; set;}
+    public decimal CreditAmount {get; set;}
 }

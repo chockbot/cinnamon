@@ -22,7 +22,6 @@
     font-size: 1.6vw;
     text-decoration: none;
 }
-
 .become {
     font-weight: 900;
     text-align: center;
@@ -32,6 +31,10 @@
     .become:hover {
         color: var(--primary);
     }
+button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
 /* For Desktop View */
 @media screen and (min-width: 1024px) {
     .top-row {
@@ -43,7 +46,6 @@
         display: flex;
         align-items: center;
     }
-
         .top-row ::deep a {
             white-space: nowrap;
             margin-left: 1.5rem;
@@ -62,16 +64,16 @@
         position: relative;
         height: 32%;
     }
-
     .dropdown {
         font-family: 'Nunito';
         font-size: 0.5vw;
     }
-
     a.dropdown-item {
         margin-left: auto;
     }
-
+    .dropdown-mobile {
+        display: none;
+    }
     .menu img {
         aspect-ratio: 1;
         width: 25%;
@@ -141,7 +143,9 @@
     a.dropdown-item {
         margin-left: auto;
     }
-
+    .dropdown-mobile {
+        display: none;
+    }
     .menu img {
         aspect-ratio: 1;
         width: 20%;
@@ -203,5 +207,13 @@
         .top-row a {
             margin-left: 0;
         }
+    .dropdown-mobile {
+        font-family: 'Nunito';
+        font-size: 0.5vw;
+    }
+    .dropdown{
+        display: none;
+    }
+
 }
  

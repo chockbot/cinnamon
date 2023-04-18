@@ -3,6 +3,7 @@ using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
+using System.Linq.Expressions;
 
 namespace Cinnamon.Api.Data.Services.Repository.PurchaseOrder;
 
@@ -15,7 +16,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal)
+    public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, 
+        decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal, 
+        int status, string payload, decimal creditAmount)
     {
         try
         {
@@ -56,6 +59,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 OverallTotal = overallTotal,
                 ScheduleId = scheduleId,
                 Total = total,
+                Status = status,
+                Payload = payload,
+                CreditAmount = creditAmount
             };
 
             var createdPurchaseOrder = await dataStore.PurchaseOrder.Add(purchaseOrder);
@@ -63,6 +69,17 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             {
                 return AppResult<PurchaseOrderDTO>.CreateFailed(
                     new ApplicationException("An error occured when saving purchase order"), "An error occured when saving purchase order");
+            }
+
+            var activity = activityRes.Result;
+            activity.IsNew = false;
+            activity.PurchaseOrderCount = activity.PurchaseOrderCount + 1;
+
+            var updateActivityResult = await dataStore.Activity.Update(activity);
+            if (!updateActivityResult.Succeeded || updateActivityResult.Result == null)
+            {
+                return AppResult<PurchaseOrderDTO>.CreateFailed(
+                    new ApplicationException("An error occured when updating activity IsNew/PurchaseOrderCount field"), "An error occured when updating activity IsNew/PurchaseOrderCount field");
             }
 
             return AppResult<PurchaseOrderDTO>.CreateSucceeded(new PurchaseOrderDTO {
@@ -74,7 +91,10 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CustomerId = customerId,
                 OverallTotal = overallTotal,
                 ScheduleId = scheduleId,
-                Total = total
+                Total = total,
+                Status = status,
+                Payload = payload,
+                CreditAmount = creditAmount
             }, "Successfully created purchase order");
         }
         catch (Exception ex)
@@ -83,18 +103,27 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync(int? count, int? skip)
+    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllAsync(int? count, int? skip, 
+        bool? includeActivity, bool? includeSchedule, int? customerId, int? status)
     {
         try
         {
-            var result = await dataStore.PurchaseOrder.FindAsync(p => true, count, skip);
+            var includes = new List<Expression<Func<Entities.PurchaseOrder, object>>>();
+            if(includeActivity.HasValue && includeActivity.Value) includes.Add(p => p.Activity);
+            if(includeSchedule.HasValue && includeSchedule.Value) includes.Add(p => p.Schedule);
+
+            Expression<Func<Entities.PurchaseOrder, bool>> filter = 
+                p => (customerId.HasValue ? p.CustomerId == customerId.Value : true) &&
+                    (status.HasValue ? p.Status == status.Value : true);
+            
+            var result = await dataStore.PurchaseOrder.FindAsync(filter, count, skip, includes);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(result.Error.Exception, result.Message);
             }
 
             var purchaseOrders = result.Result.Select(p => {
-                return new PurchaseOrderDTO {
+                var dto = new PurchaseOrderDTO {
                     ActivityId = p.ActivityId,
                     ConvinienceFee = p.ConvinienceFee,
                     Coupon = p.Coupon,
@@ -103,8 +132,33 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Id = p.Id,
                     OverallTotal = p.OverallTotal,
                     ScheduleId = p.ScheduleId,
-                    Total = p.Total
+                    Total = p.Total,
+                    Status = p.Status,
+                    Payload = p.Payload,
+                    CreditAmount = p.CreditAmount
                 };
+
+                // include activity details
+                if(includeActivity.HasValue && includeActivity.Value)
+                {
+                    dto.Activity = new PurchaseOrderDTO.AssociatedActivity {
+                        Description = p.Activity.Description,
+                        Id = p.Activity.Id,
+                        Title = p.Activity.Title
+                    };
+                }
+
+                // include schedule details
+                if(includeSchedule.HasValue && includeSchedule.Value)
+                {
+                    dto.Schedule = new PurchaseOrderDTO.AssociatedSchedule {
+                        DateTime = p.Schedule.DateTime,
+                        Id = p.Schedule.Id,
+                        Name = p.Schedule.Name
+                    };
+                }
+
+                return dto;
             });
 
             return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateSucceeded(purchaseOrders, "Successfully getting purchase orders");
@@ -135,7 +189,10 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Id = p.Id,
                     OverallTotal = p.OverallTotal,
                     ScheduleId = p.ScheduleId,
-                    Total = p.Total
+                    Total = p.Total,
+                    Status = p.Status,
+                    Payload = p.Payload,
+                    CreditAmount = p.CreditAmount
                 };
             });
 
@@ -166,7 +223,10 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Id = result.Result.Id,
                 OverallTotal = result.Result.OverallTotal,
                 ScheduleId = result.Result.ScheduleId,
-                Total = result.Result.Total
+                Total = result.Result.Total,
+                Status = result.Result.Status,
+                Payload = result.Result.Payload,
+                CreditAmount = result.Result.CreditAmount
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -176,7 +236,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
     }
 
     public async Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, 
-        decimal? convinienceFee, string? coupon, decimal? couponAmount, decimal? overallTotal)
+        decimal? convinienceFee, string? coupon, decimal? couponAmount, decimal? overallTotal, int? status, decimal? creditAmount)
     {
         try
         {
@@ -213,6 +273,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             purchaseOrder.Coupon = coupon ?? purchaseOrder.Coupon;
             purchaseOrder.CouponAmount = couponAmount ?? purchaseOrder.CouponAmount;
             purchaseOrder.OverallTotal = overallTotal ?? purchaseOrder.OverallTotal;
+            purchaseOrder.Status = status ?? purchaseOrder.Status;
+            purchaseOrder.CreditAmount = creditAmount ?? purchaseOrder.CreditAmount;
 
             var updatedPurchaseOrder = await dataStore.PurchaseOrder.Update(purchaseOrder);
             if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null)
@@ -231,12 +293,80 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CustomerId = updated.CustomerId,
                 OverallTotal = updated.OverallTotal,
                 ScheduleId = updated.ScheduleId,
-                Total = updated.Total
+                Total = updated.Total,
+                Status = updated.Status,
+                Payload = updated.Payload,
+                CreditAmount = updated.CreditAmount
             }, "Successfully updated purchase order");
         }
         catch (Exception ex)
         {
             return AppResult<PurchaseOrderDTO>.CreateFailed(ex, "An error occured when updating purchase order");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> GetAllPurchaseOrderNeedToPayout()
+    {
+        try
+        {
+            var result = await dataStore.PurchaseOrder.GetAllPurchaseOrdersNeedPayout();
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var purchaseOrders = result.Result.Select(p => {
+                return new PurchaseOrderDTO {
+                    ActivityId = p.ActivityId,
+                    ConvinienceFee = p.ConvinienceFee,
+                    Coupon = p.Coupon,
+                    CouponAmount = p.CouponAmount,
+                    CustomerId = p.CustomerId,
+                    Id = p.Id,
+                    OverallTotal = p.OverallTotal,
+                    ScheduleId = p.ScheduleId,
+                    Total = p.Total,
+                    Status = p.Status,
+                    Payload = p.Payload,
+                    CreditAmount = p.CreditAmount
+                };
+            });
+
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateSucceeded(purchaseOrders, "Successfully getting purchase orders");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting purchase order");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<PurchaseOrderDTO>>> UpdatePurchaseOrdersStatus(IEnumerable<int> ids, int status)
+    {
+        try
+        {
+            var entities = ids.Select(i => {
+                return new Entities.PurchaseOrder {
+                    Id = i,
+                    Status = status
+                };
+            });
+
+            var updateStatusResult = await dataStore.PurchaseOrder.UpdatePurchaseOrdersByStatus(entities);
+            if(!updateStatusResult.Succeeded || updateStatusResult.Result == null)
+            {
+                return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(new ApplicationException(updateStatusResult.Message), updateStatusResult.Message);
+            }
+
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateSucceeded(updateStatusResult.Result.Select(p => {
+                return new PurchaseOrderDTO {
+                    Id = p.Id,
+                    Status = p.Status
+                };
+            }), "Successfully update purchase orders");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when updating purchase orders");
         }
     }
 }

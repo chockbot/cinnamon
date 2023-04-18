@@ -13,24 +13,6 @@ input {
   margin-left: 3px;
 }
 
-.checkbox-round {
-  width: 1.1em;
-  height: 1.1em;
-  background-color: white;
-  border-radius: 50%;
-  vertical-align: middle;
-  border: 2px solid #bbbbbb;
-  appearance: none;
-  -webkit-appearance: none;
-  outline: none;
-  cursor: pointer;
-}
-
-.checkbox-round:checked {
-  border-color: #ffa942;
-  border-width: 5px;
-}
-
 .payment-container label {
   font-size: 0.8rem;
 }
@@ -46,29 +28,50 @@ input {
 }
 
 .btn-primary {
-    color: #fff;
-    background-color: var(--primary);
-    border-color: var(--primary);
-    height: auto;
-    padding: 5px;
-    width:fit-content;
-    font-size: 1.2vw;
-    font-family: 'Nunito-Bold';
-    border-width: 0px;
-    margin:0 auto;
-    border-radius:8px !important;
+  color: #fff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+  height: auto;
+  padding: 5px;
+  width: fit-content;
+  font-size: 1.2vw;
+  font-family: "Nunito-Bold";
+  border-width: 0px;
+  margin: 0 auto;
+  border-radius: 8px !important;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 }
 
 .btn-primary:hover {
-    color: #fff;
-    background-color: var(--primary);
-    border-color: var(--primary);
+  color: #fff;
+  background-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .btn-primary:focus {
-    color: #fff;
-    background-color: var(--primary);
-    border-color: var(--primary);
+  color: #fff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+.verified-logo img {
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.modal-title {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 41px;
+  color: #343d4c;
+  text-align: center;
+}
+
+.btn-close {
+  position: absolute;
+  top: 30px;
+  right: 30px;
 }
 
 @media (max-width: 767px) {
@@ -81,17 +84,20 @@ input {
     box-shadow: none !important;
   }
 
-    .btn-primary {
-        width: 80% !important;
-        font-size: 0.9rem;
-    }
+  .btn-primary {
+    font-size: 0.9rem;
+  }
 }
-
-
 
 @media screen and (min-width: 767px) {
-    .btn-primary {
-        font-size: 1.3vw;
-    }
+  .btn-primary {
+    font-size: 1.3vw;
+  }
 }
 
+@media only screen and (max-width: 500px) {
+  .ewallet-icon {
+    width: 95%;
+    height: auto;
+  }
+}

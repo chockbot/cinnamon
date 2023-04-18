@@ -4,6 +4,9 @@ using Entities = Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Framework.Common;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Activity;
 using System.Linq.Expressions;
+using System.Globalization;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
+using Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Activity;
 
@@ -17,10 +20,10 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price, 
-        string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, 
+        string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel, 
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId)
+        int experienceCategoryId, int subCategoryId, string handler, bool IsSetSession, string SessionName, string pinnedLocation)
     {
         try
         {
@@ -64,7 +67,12 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = customerId,
                 ExperienceCategoryId = experienceCategoryId,
                 ExperienceTypeId = experienceTypeId,
-                SubCategoryId = subCategoryId
+                SubCategoryId = subCategoryId,
+                Handler = handler,
+                IsNew = true,
+                IsSetSession = IsSetSession,
+                SessionName = SessionName,
+                Guid = Guid.NewGuid().ToString()
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -91,6 +99,31 @@ public class ActivityRepository : IActivityRepository
                 return AppResult<ActivityDTO>.CreateFailed(createdActivityDescription.Error.Exception, createdActivityDescription.Message);
             }
 
+            var regionResult = new AppResult<Region>();
+            var cityResult = new AppResult<City>();
+            var barangayResult = new AppResult<Barangay>();
+
+            if (experienceTypeId == 1)
+            {
+                regionResult = await dataStore.Region.FindFirstAsync(r => r.Code == region);
+                if (!regionResult.Succeeded || regionResult == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find region"), "Can't find region");
+                }
+
+                cityResult = await dataStore.City.FindFirstAsync(r => r.Code == city);
+                if (!cityResult.Succeeded || cityResult == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find city"), "Can't find city");
+                }
+
+                barangayResult = await dataStore.Barangay.FindFirstAsync(r => r.Code == barangay);
+                if (!barangayResult.Succeeded || barangayResult == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find barangay"), "Can't find barangay");
+                }
+            }
+
             // save activity address
             var activityAddress = new Entities.ActivityAddress
             {
@@ -98,7 +131,15 @@ public class ActivityRepository : IActivityRepository
                 Address1 = address1,
                 Address2 = address2,
                 City = city,
+                CityName = cityResult.Result != null ? cityResult.Result.Name : string.Empty,
                 District = district,
+                Subdivision = subdivision,
+                Region = region,
+                RegionName = regionResult.Result != null ? regionResult.Result.Name : string.Empty,
+                Barangay = barangay,
+                BarangayName = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty,
+                PostalCode = postalcode,
+                PinnedLocation = pinnedLocation
             };
             var createdActivityAddress = await dataStore.ActivityAddress.Add(activityAddress);
             if (!createdActivityAddress.Succeeded)
@@ -132,6 +173,10 @@ public class ActivityRepository : IActivityRepository
                 Address2 = address2,
                 CanAdultsJoin = canAdultsJoin,
                 City = city,
+                Subdivision = subdivision,
+                Region = region,
+                Barangay = barangay,
+                PostalCode = postalcode,
                 CustomerBringWithThem = customerBringWithThem,
                 Description = description,
                 District = district,
@@ -142,6 +187,9 @@ public class ActivityRepository : IActivityRepository
                 SkillLevel = skillLevel,
                 SpecificsYouWillProvide = specificsYouWillProvide,
                 Title = title,
+                Handler = handler,
+                IsSetSession = IsSetSession,
+                SessionName = SessionName
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(createdActivityDTO, "Activity successfully created");
@@ -154,7 +202,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetActivitieByCategoriesAsync(int experienceCategoryId, int? customerId = null, 
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false, 
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
     {
         try
         {
@@ -164,6 +212,7 @@ public class ActivityRepository : IActivityRepository
             if (includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
             if (includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if (includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+            if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.ExperienceCategoryId == experienceCategoryId) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -188,6 +237,9 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             };
 
             // address fields
@@ -197,6 +249,10 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.Address2 = activity.Address.Address2;
                 activityDTO.City = activity.Address.City;
                 activityDTO.District = activity.Address.District;
+                activityDTO.Subdivision = activity.Address.Subdivision;
+                activityDTO.Region = activity.Address.Region;
+                activityDTO.Barangay = activity.Address.Barangay;
+                activityDTO.PostalCode =activity.Address.PostalCode;
             }
 
             // description fields
@@ -227,7 +283,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }).ToList();
             }
@@ -259,6 +317,26 @@ public class ActivityRepository : IActivityRepository
                 }).ToList();
             }
 
+            // owner
+            if(includeCustomer.HasValue && includeCustomer.Value && activity.Customer != null)
+            {
+                var customer = activity.Customer;
+                activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    DateJoined = customer.DateJoined,
+                    Email = customer.Email,
+                    ExternalLogin = customer.ExternalLogin,
+                    FirstName = customer.FirstName,
+                    Handler = customer.Handler,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerifiedBadge,
+                    LastName = customer.LastName,
+                    ProfileImg = customer.ProfilePath
+                };
+            }
+
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
         }
         catch (Exception ex)
@@ -267,24 +345,36 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip, 
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync(int? customerId, bool? isActive, int? count, int? skip,
+        int experienceCategoryId, string searchValue, bool? isDeactivated,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
-        bool includeSchedules = false, bool includeImages = false)
+        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
+        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
     {
         try
         {
             var includes = new List<Expression<Func<Entities.Activity, object>>>();
-            if(includeAddres) includes.Add(a => a.Address);
-            if(includeDescription) includes.Add(a => a.ActivityDescription);
-            if(includeSearchTags) includes.Add(a => a.SearchTag);
-            if(includeSchedules) includes.Add(a => a.Schedules);
-            if(includeImages) includes.Add(a => a.Images);
+            if (includeAddres) includes.Add(a => a.Address);
+            if (includeDescription) includes.Add(a => a.ActivityDescription);
+            if (includeSearchTags) includes.Add(a => a.SearchTag);
+            if (includeSchedules) includes.Add(a => a.Schedules);
+            if (includeImages) includes.Add(a => a.Images);
+            if (includeCustomer) includes.Add(a => a.Customer);
+            if (includeExperienceTypes) includes.Add(a => a.ExperienceType);
+            if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
+            if (includeSubCategories) includes.Add(a => a.SubCategory);
+            if (includeStudents) includes.Add(a => a.Students);
 
-            Expression<Func<Entities.Activity,bool>> filter = 
-                a => (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
-                        (customerId.HasValue ? a.CreatedBy == customerId.Value : true);
+            Expression<Func<Entities.Activity, bool>> filter =
+                a => (ids != null ? ids.Contains(a.Id) : true) &&
+                        (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                        (customerId.HasValue ? a.CreatedBy == customerId.Value : true) &&
+                        (string.IsNullOrEmpty(likeHandler) ? true : a.Handler.ToLower().Contains(likeHandler.ToLower())) &&
+                        (experienceCategoryId != 0 ? experienceCategoryId == 1 ? (DateTime.UtcNow - a.CreatedOn).Days <= 30 : a.ExperienceCategoryId == experienceCategoryId : true) &&
+                        (isDeactivated.HasValue ? a.IsDeactivated == isDeactivated.Value : true);
 
-            var result = await dataStore.Activity.FindAsync(filter, count, skip, includes);
+
+            var result = await dataStore.Activity.FindActivitiesAsync(filter, searchValue, count, skip, includes);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -294,29 +384,46 @@ public class ActivityRepository : IActivityRepository
             {
                 var activityDTO = new ActivityDTO
                 {
-                    Id = a.Id,
-                    SubTitle = a.Subtitle,
-                    Title = a.Title,
-                    Description = a.Description,
-                    Price = a.Price,
-                    Remarks = a.Remarks,
-                    IsPublished = a.IsPublished,
+                    Id                   = a.Id,
+                    SubTitle             = a.Subtitle,
+                    Title                = a.Title,
+                    Description          = a.Description,
+                    Price                = a.Price,
+                    Remarks              = a.Remarks,
+                    IsPublished          = a.IsPublished,
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
-                    SubCategoryId = a.SubCategoryId ?? 0,
-                    CreatedBy = a.CreatedBy,
+                    SubCategoryId        = a.SubCategoryId ?? 0,
+                    CreatedBy            = a.CreatedBy,
+                    CreatedOn            = a.CreatedOn,
+                    ExperienceTypeId     = a.ExperienceTypeId,
+                    Handler              = a.Handler,
+                    ExperienceType       = a.ExperienceType?.Name,
+                    ExperienceCategory   = a.ExperienceCategory?.Category,
+                    SubCategory          = a.SubCategory?.SubCatergory,
+                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsSetSession         = a.IsSetSession,
+                    SessionName          = a.SessionName,
+                    IsDeactivated        = a.IsDeactivated
                 };
 
                 // address fields
-                if(includeAddres && a.Address != null)
+                if (includeAddres && a.Address != null)
                 {
                     activityDTO.Address1 = a.Address.Address1;
                     activityDTO.Address2 = a.Address.Address2;
                     activityDTO.City = a.Address.City;
                     activityDTO.District = a.Address.District;
+                    activityDTO.Subdivision = a.Address.Subdivision;
+                    activityDTO.Region = a.Address.Region;
+                    activityDTO.Barangay = a.Address.Barangay;
+                    activityDTO.PostalCode = a.Address.PostalCode;
+                    activityDTO.CityName = a.Address.CityName;
+                    activityDTO.RegionName = a.Address.RegionName;
+                    activityDTO.BarangayName = a.Address.BarangayName;
                 }
 
                 // description fields
-                if(includeDescription && a.ActivityDescription != null)
+                if (includeDescription && a.ActivityDescription != null)
                 {
                     var description = a.ActivityDescription;
                     activityDTO.ActivityLevel = description.ActivityLevel;
@@ -330,10 +437,12 @@ public class ActivityRepository : IActivityRepository
                 }
 
                 // schedules
-                if(includeSchedules && a.Schedules != null)
+                if (includeSchedules && a.Schedules != null)
                 {
-                    activityDTO.Schedules = a.Schedules.Select(s => {
-                        return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
+                    activityDTO.Schedules = a.Schedules.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
+                        {
                             DateTime = s.DateTime,
                             Id = s.Id,
                             Name = s.Name,
@@ -342,35 +451,71 @@ public class ActivityRepository : IActivityRepository
                             PriceUnit1 = s.PriceUnit1,
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
-                            PerUnit2 = s.PerUnit2
+                            PerUnit2 = s.PerUnit2,
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
                         };
                     }).ToList();
                 }
 
                 // search tags
-                if(includeSearchTags && a.SearchTag != null)
+                if (includeSearchTags && a.SearchTag != null)
                 {
                     var tags = new List<string>();
-                    if(a.SearchTag.SearchTag1 != null) tags.Add(a.SearchTag.SearchTag1);
-                    if(a.SearchTag.SearchTag2 != null) tags.Add(a.SearchTag.SearchTag2);
-                    if(a.SearchTag.SearchTag3 != null) tags.Add(a.SearchTag.SearchTag3);
-                    if(a.SearchTag.SearchTag4 != null) tags.Add(a.SearchTag.SearchTag4);
-                    if(a.SearchTag.SearchTag5 != null) tags.Add(a.SearchTag.SearchTag5);
+                    if (a.SearchTag.SearchTag1 != null) tags.Add(a.SearchTag.SearchTag1);
+                    if (a.SearchTag.SearchTag2 != null) tags.Add(a.SearchTag.SearchTag2);
+                    if (a.SearchTag.SearchTag3 != null) tags.Add(a.SearchTag.SearchTag3);
+                    if (a.SearchTag.SearchTag4 != null) tags.Add(a.SearchTag.SearchTag4);
+                    if (a.SearchTag.SearchTag5 != null) tags.Add(a.SearchTag.SearchTag5);
 
                     activityDTO.SearchTags = tags;
                 }
 
                 // activity images
-                if(includeImages && a.Images != null)
+                if (includeImages && a.Images != null)
                 {
-                    activityDTO.Images = a.Images.Select(s => {
-                        return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                    activityDTO.Images = a.Images.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
+                        {
                             ActivityId = s.ActivityId,
                             Id = s.Id,
                             ImageLocation = s.ImageLocation,
-                            ImageName = s.ImageName
+                            ImageName = s.ImageName,
+                            Order = s.Order
                         };
                     }).ToList();
+                }
+
+                // customer
+                if (includeCustomer && a.Customer != null)
+                {
+                    var customer = a.Customer;
+                    activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO
+                    {
+                        About = customer.About,
+                        Birthdate = customer.Birthdate,
+                        DateJoined = customer.DateJoined,
+                        Email = customer.Email,
+                        ExternalLogin = customer.ExternalLogin,
+                        FirstName = customer.FirstName,
+                        Handler = customer.Handler,
+                        Id = customer.Id,
+                        IsMaker = customer.IsMaker,
+                        IsVerified = customer.IsVerifiedBadge,
+                        IsOG = customer.IsOG,
+                        IsOfficial = customer.IsOfficialPartner,
+                        LastName = customer.LastName,
+                        ProfileImg = customer.ProfilePath
+                    };
+                }
+
+                // student
+                if (includeStudents && a.Students != null)
+                {
+                    var students = a.Students;
+                    activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
                 }
 
                 return activityDTO;
@@ -408,6 +553,11 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
                     SubCategoryId = a.SubCategoryId ?? 0,
                     CreatedBy = a.CreatedBy,
+                    ExperienceTypeId = a.ExperienceTypeId,
+                    MapDetails = a.MapDetails,
+                    Handler = a.Handler,
+                    IsSetSession = a.IsSetSession,
+                    SessionName = a.SessionName
                 };
             });
 
@@ -421,7 +571,7 @@ public class ActivityRepository : IActivityRepository
 
     public async Task<AppResult<ActivityDTO>> GetByIdAsync(int id, int? customerId = null,
         bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
-        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false)
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
     {
         try
         {
@@ -431,6 +581,7 @@ public class ActivityRepository : IActivityRepository
             if(includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
             if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
             if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+            if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
 
             Expression<Func<Entities.Activity, bool>> filter = a => (a.Id == id) &&
                 (customerId.HasValue ? a.CreatedBy == customerId : true) &&
@@ -455,6 +606,11 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
+                CreatedBy = activity.CreatedBy,
+                MapDetails = activity.MapDetails,
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             };
 
             // address fields
@@ -463,7 +619,15 @@ public class ActivityRepository : IActivityRepository
                 activityDTO.Address1 = activity.Address.Address1;
                 activityDTO.Address2 = activity.Address.Address2;
                 activityDTO.City = activity.Address.City;
+                activityDTO.CityName = activity.Address.CityName;
                 activityDTO.District = activity.Address.District;
+                activityDTO.Subdivision = activity.Address.Subdivision;
+                activityDTO.Region = activity.Address.Region;
+                activityDTO.RegionName = activity.Address.RegionName;
+                activityDTO.Barangay = activity.Address.Barangay;
+                activityDTO.BarangayName = activity.Address.BarangayName;
+                activityDTO.PostalCode = activity.Address.PostalCode;
+                activityDTO.PinnedLocation = activity.Address.PinnedLocation;
             }
 
             // description fields
@@ -493,7 +657,9 @@ public class ActivityRepository : IActivityRepository
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2
+                        PerUnit2 = s.PerUnit2,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }).ToList();
             }
@@ -519,9 +685,184 @@ public class ActivityRepository : IActivityRepository
                         ActivityId = s.ActivityId,
                         Id = s.Id,
                         ImageLocation = s.ImageLocation,
-                        ImageName = s.ImageName
+                        ImageName = s.ImageName,
+                        Order = s.Order,
                     };
                 }).ToList();
+            }
+
+            // customer
+            if(includeCustomer.HasValue && includeCustomer.Value && activity.Customer != null)
+            {
+                var customer = activity.Customer;
+                activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    DateJoined = customer.DateJoined,
+                    Email = customer.Email,
+                    ExternalLogin = customer.ExternalLogin,
+                    FirstName = customer.FirstName,
+                    Handler = customer.Handler,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerifiedBadge,
+                    IsOG = customer.IsOG,
+                    IsOfficial = customer.IsOfficialPartner,
+                    LastName = customer.LastName,
+                    ProfileImg = customer.ProfilePath
+                };
+            }
+
+            return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when getting activity by id");
+        }
+    }
+
+    public async Task<AppResult<ActivityDTO>> GetByHandlerAsync(string handler, int? customerId = null,
+        bool? includeAddres = false, bool? includeDescription = false, bool? includeSearchTags = false,
+        bool? includeSchedules = false, bool? includeImages = false, bool? isActive = false, bool? includeCustomer = false)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            if(includeAddres.HasValue && includeAddres.Value) includes.Add(a => a.Address);
+            if(includeDescription.HasValue && includeDescription.Value) includes.Add(a => a.ActivityDescription);
+            if(includeSearchTags.HasValue && includeSearchTags.Value) includes.Add(a => a.SearchTag);
+            if(includeSchedules.HasValue && includeSchedules.Value) includes.Add(a => a.Schedules);
+            if(includeImages.HasValue && includeImages.Value) includes.Add(a => a.Images);
+            if(includeCustomer.HasValue && includeCustomer.Value) includes.Add(a => a.Customer);
+
+            Expression<Func<Entities.Activity, bool>> filter = a => (a.Handler == handler) &&
+                (customerId.HasValue ? a.CreatedBy == customerId : true) &&
+                (isActive.HasValue ? a.IsPublished == isActive : true);
+
+            var result = await dataStore.Activity.FindFirstAsync(filter, includes);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<ActivityDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var activity = result.Result;
+
+            var activityDTO = new ActivityDTO
+            {
+                Id = activity.Id,
+                SubTitle = activity.Subtitle,
+                Title = activity.Title,
+                Description = activity.Description,
+                Price = activity.Price,
+                Remarks = activity.Remarks,
+                IsPublished = activity.IsPublished,
+                ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
+                ExperienceTypeId = activity.ExperienceTypeId,
+                SubCategoryId = activity.SubCategoryId ?? 0,
+                CreatedBy = activity.CreatedBy,
+                MapDetails = activity.MapDetails,
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
+            };
+
+            // address fields
+            if(includeAddres.HasValue && includeAddres.Value && activity.Address != null)
+            {
+                activityDTO.Address1 = activity.Address.Address1;
+                activityDTO.Address2 = activity.Address.Address2;
+                activityDTO.City = activity.Address.City;
+                activityDTO.CityName = activity.Address.CityName;
+                activityDTO.District = activity.Address.District;
+                activityDTO.Subdivision = activity.Address.Subdivision;
+                activityDTO.Region = activity.Address.Region;
+                activityDTO.RegionName = activity.Address.RegionName;
+                activityDTO.Barangay = activity.Address.Barangay;
+                activityDTO.BarangayName = activity.Address.BarangayName;
+                activityDTO.PostalCode = activity.Address.PostalCode;
+                activityDTO.PinnedLocation = activity.Address.PinnedLocation;
+            }
+
+            // description fields
+            if(includeDescription.HasValue && includeDescription.Value && activity.ActivityDescription != null)
+            {
+                var description = activity.ActivityDescription;
+                activityDTO.ActivityLevel = description.ActivityLevel;
+                activityDTO.AdditionalRequirements = description.AdditionalRequirements;
+                activityDTO.CanAdultsJoin = description.CanAdultsJoin;
+                activityDTO.CustomerBringWithThem = description.CustomerBringWithThem;
+                activityDTO.Description = description.Description;
+                activityDTO.MinimumAge = description.MinimumAge;
+                activityDTO.SkillLevel = description.SkillLevel;
+                activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+            }
+
+            // schedules
+            if(includeSchedules.HasValue && includeSchedules.Value && activity.Schedules != null)
+            {
+                activityDTO.Schedules = activity.Schedules.Select(s => {
+                    return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
+                        DateTime = s.DateTime,
+                        Id = s.Id,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        PerUnit2 = s.PerUnit2,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
+                    };
+                }).ToList();
+            }
+
+            // search tags
+            if(includeSearchTags.HasValue && includeSearchTags.Value && activity.SearchTag != null)
+            {
+                var tags = new List<string>();
+                if(activity.SearchTag.SearchTag1 != null) tags.Add(activity.SearchTag.SearchTag1);
+                if(activity.SearchTag.SearchTag2 != null) tags.Add(activity.SearchTag.SearchTag2);
+                if(activity.SearchTag.SearchTag3 != null) tags.Add(activity.SearchTag.SearchTag3);
+                if(activity.SearchTag.SearchTag4 != null) tags.Add(activity.SearchTag.SearchTag4);
+                if(activity.SearchTag.SearchTag5 != null) tags.Add(activity.SearchTag.SearchTag5);
+
+                activityDTO.SearchTags = tags;
+            }
+
+            // activity images
+            if(includeImages.HasValue && includeImages.Value && activity.Images != null)
+            {
+                activityDTO.Images = activity.Images.Select(s => {
+                    return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO {
+                        ActivityId = s.ActivityId,
+                        Id = s.Id,
+                        ImageLocation = s.ImageLocation,
+                        ImageName = s.ImageName,
+                        Order = s.Order
+                    };
+                }).ToList();
+            }
+
+            // customer
+            if(includeCustomer.HasValue && includeCustomer.Value && activity.Customer != null)
+            {
+                var customer = activity.Customer;
+                activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO {
+                    About = customer.About,
+                    Birthdate = customer.Birthdate,
+                    DateJoined = customer.DateJoined,
+                    Email = customer.Email,
+                    ExternalLogin = customer.ExternalLogin,
+                    FirstName = customer.FirstName,
+                    Handler = customer.Handler,
+                    Id = customer.Id,
+                    IsMaker = customer.IsMaker,
+                    IsVerified = customer.IsVerifiedBadge,
+                    IsOG = customer.IsOG,
+                    IsOfficial = customer.IsOfficialPartner,
+                    LastName = customer.LastName,
+                    ProfileImg = customer.ProfilePath
+                };
             }
 
             return AppResult<ActivityDTO>.CreateSucceeded(activityDTO, "Successfully getting activity by id");
@@ -533,10 +874,10 @@ public class ActivityRepository : IActivityRepository
     }
 
     public async Task<AppResult<ActivityDTO>> UpdateActivityAsync(int activityId,int? experienceTypeId, string? title, string? description, string? price, 
-        string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, 
-        string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
+        string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, string? subdivision, string? region,
+        string? barangay, string? postalcode,string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
         string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4, 
-        string? searchtag5, int? experienceCategoryId, int? subCategoryId)
+        string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName, string pinnedLocation, bool? isDeactivated)
     {
         try
         {
@@ -593,6 +934,9 @@ public class ActivityRepository : IActivityRepository
             activity.ScheduleIndicator = scheduleIndicator ?? activity.ScheduleIndicator;
             activity.Remarks = remarks ?? activity.Remarks;
             activity.IsPublished = isPublished ?? activity.IsPublished;
+            activity.SessionName = SessionName ?? activity.SessionName;
+            activity.IsSetSession = IsSetSession ?? activity.IsSetSession;
+            activity.IsDeactivated = isDeactivated ?? activity.IsDeactivated;
 
             var updatedActivity = await dataStore.Activity.Update(activity);
             if (!updatedActivity.Succeeded)
@@ -608,10 +952,45 @@ public class ActivityRepository : IActivityRepository
             }
             var activityAddress = activityAddressRes.Result;
 
-            activityAddress.Address1 = address1 ?? activityAddress.Address1;
-            activityAddress.Address2 = address2 ?? activityAddress.Address2;
-            activityAddress.District = district ?? activityAddress.District;
-            activityAddress.City = city ?? activityAddress.City;
+            var regionResult = new AppResult<Region>();
+            var cityResult = new AppResult<City>();
+            var barangayResult = new AppResult<Barangay>();
+
+            if (experienceTypeId == 1)
+            {
+                regionResult = await dataStore.Region.FindFirstAsync(r => r.Code == (region ?? activityAddress.Region));
+                if (!regionResult.Succeeded || regionResult == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find region"), "Can't find region");
+                }
+
+                cityResult = await dataStore.City.FindFirstAsync(r => r.Code == (city ?? activityAddress.City));
+                if (!cityResult.Succeeded || cityResult == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find city"), "Can't find city");
+                }
+
+                barangayResult = await dataStore.Barangay.FindFirstAsync(r => r.Code == (barangay ?? activityAddress.Barangay));
+                if (!barangayResult.Succeeded || barangayResult == null)
+                {
+                    return AppResult<ActivityDTO>.CreateFailed(new ApplicationException("Can't find barangay"), "Can't find barangay");
+                }
+
+                activityAddress.CityName = cityResult.Result != null ? cityResult.Result.Name : string.Empty;
+                activityAddress.RegionName = regionResult.Result != null ? regionResult.Result.Name : string.Empty;
+                activityAddress.BarangayName = barangayResult.Result != null ? barangayResult.Result.Name : string.Empty;
+            }
+
+
+            activityAddress.Address1       = address1 ?? activityAddress.Address1;
+            activityAddress.Address2       = address2 ?? activityAddress.Address2;
+            activityAddress.District       = district ?? activityAddress.District;
+            activityAddress.City           = city ?? activityAddress.City;
+            activityAddress.Subdivision    = subdivision?? activityAddress.Subdivision;    
+            activityAddress.Region         = region?? activityAddress.Region;
+            activityAddress.Barangay       = barangay?? activityAddress.Barangay; 
+            activityAddress.PostalCode     = postalcode?? activityAddress.PostalCode;
+            activityAddress.PinnedLocation = pinnedLocation?? activityAddress.PinnedLocation;
 
             var updatedActivityAddress = await dataStore.ActivityAddress.Update(activityAddress);
             if (!updatedActivityAddress.Succeeded)
@@ -671,6 +1050,10 @@ public class ActivityRepository : IActivityRepository
                 Address2 = activityAddress.Address2,
                 CanAdultsJoin = activityDescription.CanAdultsJoin,
                 City = activityAddress.City,
+                Subdivision = activityAddress.Subdivision,
+                Region = activityAddress.Region,
+                Barangay = activityAddress.Barangay,
+                PostalCode = activityAddress.PostalCode,    
                 CustomerBringWithThem = activityDescription.CustomerBringWithThem,
                 Description = activityDescription.Description,
                 District = activityAddress.District,
@@ -683,13 +1066,230 @@ public class ActivityRepository : IActivityRepository
                 Title = activity.Title,
                 SubTitle = activity.Subtitle,
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
-                SubCategoryId = activity.SubCategoryId ?? 0
+                SubCategoryId = activity.SubCategoryId ?? 0,
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName
             }, "Successfully updated activity details");
 
         }
         catch (Exception ex)
         {
             return AppResult<ActivityDTO>.CreateFailed(ex, "An error occured when updating activity");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            if (includeAddres) includes.Add(a => a.Address);
+            if (includeDescription) includes.Add(a => a.ActivityDescription);
+            if (includeSearchTags) includes.Add(a => a.SearchTag);
+            if (includeSchedules) includes.Add(a => a.Schedules);
+            if (includeImages) includes.Add(a => a.Images);
+            if (includeCustomer) includes.Add(a => a.Customer);
+            if (includeExperienceTypes) includes.Add(a => a.ExperienceType);
+            if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
+            if (includeSubCategories) includes.Add(a => a.SubCategory);
+            if (includeStudents) includes.Add(a => a.Students);
+
+            Expression<Func<Entities.Activity, bool>> filter =
+                a => (ids != null ? ids.Contains(a.Id) : true) &&
+                        (isActive.HasValue ? a.IsPublished == isActive.Value : true) &&
+                        (customerId.HasValue ? a.CreatedBy == customerId.Value : true) && a.PurchaseOrderCount > 0 && !a.IsNew &&
+                        (isDeactivated.HasValue ? a.IsDeactivated == isDeactivated.Value : true);
+
+
+            var result = await dataStore.Activity.GetPopularActivities(filter, count, skip, includes);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            var activities = result.Result.Select(a =>
+            {
+                var activityDTO = new ActivityDTO
+                {
+                    Id                   = a.Id,
+                    SubTitle             = a.Subtitle,
+                    Title                = a.Title,
+                    Description          = a.Description,
+                    Price                = a.Price,
+                    Remarks              = a.Remarks,
+                    IsPublished          = a.IsPublished,
+                    ExperienceCategoryId = a.ExperienceCategoryId ?? 0,
+                    SubCategoryId        = a.SubCategoryId ?? 0,
+                    CreatedBy            = a.CreatedBy,
+                    ExperienceTypeId     = a.ExperienceTypeId,
+                    Handler              = a.Handler,
+                    ExperienceType       = a.ExperienceType?.Name,
+                    ExperienceCategory   = a.ExperienceCategory?.Category,
+                    SubCategory          = a.SubCategory?.SubCatergory,
+                    IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
+                    IsSetSession         = a.IsSetSession,
+                    SessionName          = a.SessionName
+                };
+
+                // address fields
+                if (includeAddres && a.Address != null)
+                {
+                    activityDTO.Address1 = a.Address.Address1;
+                    activityDTO.Address2 = a.Address.Address2;
+                    activityDTO.City = a.Address.City;
+                    activityDTO.District = a.Address.District;
+                    activityDTO.Subdivision = a.Address.Subdivision;
+                    activityDTO.Region = a.Address.Region;
+                    activityDTO.Barangay = a.Address.Barangay;
+                    activityDTO.PostalCode = a.Address.PostalCode;
+                    activityDTO.CityName = a.Address.CityName;
+                    activityDTO.RegionName = a.Address.RegionName;
+                    activityDTO.BarangayName = a.Address.BarangayName;
+                }
+
+                // description fields
+                if (includeDescription && a.ActivityDescription != null)
+                {
+                    var description = a.ActivityDescription;
+                    activityDTO.ActivityLevel = description.ActivityLevel;
+                    activityDTO.AdditionalRequirements = description.AdditionalRequirements;
+                    activityDTO.CanAdultsJoin = description.CanAdultsJoin;
+                    activityDTO.CustomerBringWithThem = description.CustomerBringWithThem;
+                    activityDTO.Description = description.Description;
+                    activityDTO.MinimumAge = description.MinimumAge;
+                    activityDTO.SkillLevel = description.SkillLevel;
+                    activityDTO.SpecificsYouWillProvide = description.SpecificsYouWillProvide;
+                }
+
+                // schedules
+                if (includeSchedules && a.Schedules != null)
+                {
+                    activityDTO.Schedules = a.Schedules.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
+                        {
+                            DateTime = s.DateTime,
+                            Id = s.Id,
+                            Name = s.Name,
+                            PerUnit1 = s.PerUnit1,
+                            Price = s.Price,
+                            PriceUnit1 = s.PriceUnit1,
+                            PriceUnit2 = s.PriceUnit2,
+                            UnitPrice = s.UnitPrice,
+                            PerUnit2 = s.PerUnit2,
+                            Order = s.Order,
+                            IsActiveSchedule = s.IsActiveSchedule
+                        };
+                    }).ToList();
+                }
+
+                // search tags
+                if (includeSearchTags && a.SearchTag != null)
+                {
+                    var tags = new List<string>();
+                    if (a.SearchTag.SearchTag1 != null) tags.Add(a.SearchTag.SearchTag1);
+                    if (a.SearchTag.SearchTag2 != null) tags.Add(a.SearchTag.SearchTag2);
+                    if (a.SearchTag.SearchTag3 != null) tags.Add(a.SearchTag.SearchTag3);
+                    if (a.SearchTag.SearchTag4 != null) tags.Add(a.SearchTag.SearchTag4);
+                    if (a.SearchTag.SearchTag5 != null) tags.Add(a.SearchTag.SearchTag5);
+
+                    activityDTO.SearchTags = tags;
+                }
+
+                // activity images
+                if (includeImages && a.Images != null)
+                {
+                    activityDTO.Images = a.Images.Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
+                        {
+                            ActivityId = s.ActivityId,
+                            Id = s.Id,
+                            ImageLocation = s.ImageLocation,
+                            ImageName = s.ImageName,
+                            Order = s.Order
+                        };
+                    }).ToList();
+                }
+
+                // customer
+                if (includeCustomer && a.Customer != null)
+                {
+                    var customer = a.Customer;
+                    activityDTO.Owner = new Framework.ApiCommand.ApiData.DTO.Customer.CustomerDTO
+                    {
+                        About = customer.About,
+                        Birthdate = customer.Birthdate,
+                        DateJoined = customer.DateJoined,
+                        Email = customer.Email,
+                        ExternalLogin = customer.ExternalLogin,
+                        FirstName = customer.FirstName,
+                        Handler = customer.Handler,
+                        Id = customer.Id,
+                        IsMaker = customer.IsMaker,
+                        IsVerified = customer.IsVerifiedBadge,
+                        IsOG = customer.IsOG,
+                        IsOfficial = customer.IsOfficialPartner,
+                        LastName = customer.LastName,
+                        ProfileImg = customer.ProfilePath
+                    };
+                }
+
+                // student
+                if (includeStudents && a.Students != null)
+                {
+                    var students = a.Students;
+                    activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
+                    activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                }
+
+                return activityDTO;
+            });
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(activities, "Successfully get activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured in getting activities");
+        }
+    }
+
+    public async Task<AppResult<bool>> UpdateActivityGuid()
+    {
+        try
+        {
+            bool isSuccess = false;
+
+            var includes = new List<Expression<Func<Entities.Activity, object>>>();
+            Expression<Func<Entities.Activity, bool>> filter = a => (true);
+
+            var result = await dataStore.Activity.FindActivitiesAsync(filter, string.Empty, int.MaxValue, 0, includes);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            if (result != null)
+            {
+                var activities = result.Result.ToList();
+
+                foreach (var item in activities)
+                {
+                    item.Guid = Guid.NewGuid().ToString();
+                }
+
+                await dataStore.Activity.UpdateRange(activities);
+
+                isSuccess = true;
+            }
+
+            return AppResult<bool>.CreateSucceeded(isSuccess, "Successfully updated activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured in updating activities");
         }
     }
 }

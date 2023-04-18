@@ -1,0 +1,421 @@
+﻿.student-attendance-section{
+    margin-top:1rem;
+    margin-left:40px;
+    margin-right:40px;
+
+}
+
+.header-title {
+    margin: 0px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-left: 40px;
+    margin-right: 40px;
+}
+.modal-title {
+    font-family: "Nunito";
+    font-size: 16px;
+    font-weight: 600;
+    margin-left: 0.5rem;
+}
+.btn-close{
+    margin-right: 1.5rem;
+}
+.form-control {
+    width: 80%;
+    height: 50px;
+    font-size: 18px;
+    font-family: "Nunito";
+    border: 0.5px solid gray;
+    margin-bottom: 20px;
+    margin-left: 30px;
+}
+.btn-save {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    padding: 10px 25px 10px 25px;
+    background-color: var(--primary);
+    border: none;
+    color: white;
+    display: block;
+    margin-left: auto;
+    margin-right :auto;
+}
+.header-title{
+    margin:0px;
+}
+
+.header-filters{
+    display:flex;
+
+}
+::deep .search-bar {
+    width: 250px;
+    height: 40px;
+    background-color: #F3F6FC;
+    border-radius: 5px;
+    font-size: 18px;
+    font-family: 'Nunito';
+    margin-right: 10px;
+    border-style:none;
+}
+
+::deep .dropdown-select {
+    width: 300px;
+    height: 40px;
+    border-radius: 5px;
+    background-color: #F3F6FC;
+    color: #717171;
+    font-size: 18px;
+    font-family: 'Nunito';
+    border-style: none;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 10px;
+}
+
+/*TABLE COMPONENTS CSS*/
+::deep th {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    background-color: #343D4C;
+    color: #FFFFFF;
+    height: 60px;
+    padding:10px 20px 10px 20px;
+}
+
+
+
+::deep th.sessions-attended-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep th.student-no-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep th.attendance-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep tr {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 20px;
+    color: #343D4C;
+    height: 80px;
+    
+    vertical-align: middle;
+}
+
+
+::deep td {
+    padding: 10px 20px 10px 20px;
+}
+
+    ::deep td.update {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    ::deep td.student-no {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+::deep .btn-update {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 5px;
+    padding: 10px 25px 10px 25px;
+}
+
+::deep .btn-update:hover {
+    transform: scale(1.1);
+}
+
+/*TABLE BORDER CSS*/
+::deep table {
+    margin: auto;
+    padding: 0px;
+    border-collapse: separate;
+    border-spacing: 0;
+    padding: 0px;
+    outline: 1px solid #000000;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+::deep th.name-header {
+    border-top-left-radius: 5px;
+}
+
+::deep th.attendance-header{
+    border-top-right-radius: 5px;
+}
+
+::deep tr:last-child td:first-child {
+    border-bottom-left-radius: 0px;
+}
+
+::deep tr:last-child td:last-child {
+    border-bottom-right-radius: 0px;
+}
+
+/* For Mobile Portrait View */
+@media screen and (max-width: 767px) and (orientation: portrait) {
+
+.student-attendance-section {
+    margin-top: 1rem;
+    margin-left: 12px;
+    margin-right: 12px;
+}
+.header-title {
+    margin: 0px;
+}
+
+
+    .header {
+        display: flex;
+        align-items: flex-start;
+        flex-direction: column;
+        margin-left: 12px;
+        margin-right: 12px;
+    }
+
+    .header-filters {
+        display: flex;
+        flex-direction: column;
+        width:100%;
+
+    }
+
+
+    ::deep input.search-bar {
+        width: 100%;
+        height: 40px;
+        background-color: #F3F6FC;
+        border-radius: 5px;
+        font-size: 18px;
+        font-family: 'Nunito';
+        margin-right: 10px;
+        border-style: none;
+
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    ::deep .dropdown-select {
+        width: 100%;
+        height: 40px;
+        border-radius: 5px;
+        background-color: #F3F6FC;
+        color: #717171;
+        font-size: 18px;
+        font-family: 'Nunito';
+        border-style: none;
+        padding-left: 5px;
+        padding-right: 5px;
+        margin-bottom: 10px;
+    }
+    /*TABLE COMPONENTS CSS*/
+::deep thead {
+    display:none;
+}
+
+
+    ::deep td {
+        display: block;
+        width: 100%;
+    }
+
+
+    ::deep tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 30px;
+
+
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 400;
+        font-size: 20px;
+        color: #343D4C;
+        height: 100%;
+        vertical-align: middle;
+    }
+    ::deep td.name-body {
+        background-color: #343D4C;
+        color: #FFFFFF;
+        font-size: 16px;
+    }
+
+    ::deep td.name-body::before {
+        content: "Name:";
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #FFFFFF;
+        padding-right: 10px;
+
+    }
+    ::deep td.completion-date-body {
+        font-size: 16px;
+    }
+
+    ::deep td.completion-date-body::before {
+        content: "Completion Date:";
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #343D4C;
+        padding-right: 5px;
+    }
+
+    ::deep td.progress-body {
+        display:flex;
+        align-items:center;
+        justify-content:flex-start;
+
+    }
+
+    ::deep td.progress-body::before {
+        content: "Sessions Attended:";
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #343D4C;
+        padding-right: 10px;
+    }
+
+
+    ::deep td.experience-body {
+        font-size: 16px;
+    }
+
+    ::deep td.experience-body::before {
+        content: "Experience:";
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #343D4C;
+        padding-right: 10px;
+    }
+
+    ::deep td.student-no {
+        font-size: 16px;
+    }
+
+    ::deep td.student-no::before {
+        content: "Student No:";
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 16px;
+        color: #343D4C;
+        padding-right: 10px;
+    }
+    ::deep td.update {
+        text-align: start;
+        vertical-align: middle;
+    }
+
+
+    ::deep td.student-no {
+        text-align: start;
+        vertical-align: middle;
+    }
+
+
+    ::deep .btn-update {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+        border-radius: 10px;
+        padding: 10px 25px 10px 25px;
+        width: 100%;
+    }
+
+        ::deep .btn-update:hover {
+            transform: scale(1.1);
+        }
+    .modal-title {
+        font-family: "Nunito";
+        font-size: 16px;
+        font-weight: 700;
+        margin-left: 1.4rem;
+        margin-left: 1rem;
+    }
+    /*TABLE BORDER CSS*/
+    ::deep table {
+        margin: auto;
+        padding: 0px;
+        border-collapse: separate;
+        border-spacing: 0;
+        padding: 0px;
+        outline: 0px solid red;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    ::deep tr {
+        
+        padding: 0px;
+        border-collapse: separate;
+        border-spacing: 0;
+        padding: 0px;
+        outline: 1px solid black;
+        border-top-right-radius: 5px;
+        border-top-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    ::deep th.name-header {
+        border-top-left-radius: 5px;
+    }
+
+    ::deep th.attendance-header {
+        border-top-right-radius: 5px;
+    }
+
+    ::deep tr:last-child td:first-child {
+        border-bottom-left-radius: 0px;
+    }
+
+    ::deep tr:last-child td:last-child {
+        border-bottom-right-radius: 0px;
+    }
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary);
+    border: none;
+}

@@ -1,0 +1,93 @@
+﻿@using Cinnamon.Web.Models.Entities;
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+
+<div class="maker-swiper-slide">
+    <Div ElementId="#b-animate">
+        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+            <div class="card">
+                <a class="button" href="/explore/@Activity.ActivityId" style="text-decoration:none;">
+                    <img src="@GetImage()" class="image-header card-img">
+                    <div class="card-img-overlay">
+                        @if (Activity.OngoingStudents > 0)
+                        {
+                            <div class="rounded-pill ongoing-section">
+                                <div class="active-badge" style="text-align:center">
+                                    <span class="pulse"></span>
+                                    <span class="active-tag-label">@Activity.OngoingStudents</span>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </a>
+                <div class="card-container">
+                    <div class="row text-start star-pulse-section">
+                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                            @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
+                            <span>
+                                @if (Activity.IsNew)
+                                {
+                                    <i> New Experience</i>
+                                }
+                                else
+                                {
+                                }
+                            </span>
+
+                        </div>
+                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                        </div>
+                    </div>
+                    <div class="row text-start">
+                        <div class="title-section">
+                            <div>
+                                <h4 class="card-title1 mb-0">@Activity.Title</h4>
+                                @if (@Activity.ExperienceTypeId == 1)
+                                {
+                                    <p class="card-title2 mb-0 in-person">@Activity.CityName, @Activity.RegionName</p>
+                                }
+                                else
+                                {
+                                    <p class="card-title2 mb-0 online">@(Activity.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row price-badge-section">
+                        <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(Activity)</p></div>
+                        <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </Animate>
+    </Div>
+
+
+</div>
+
+@code
+{
+    [Parameter]
+    public Activity Activity { get; set; }
+
+    private string GetImage()
+    {
+        if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
+        return string.Empty;
+    }
+
+    private string GetPriceLabel(Activity activity)
+    {
+        var schedules = activity.ActivitySchedules.OrderBy(s => s.Price).ToList();
+        if (schedules.Count > 1)
+        {
+            return $"₱ {(long)schedules[0].Price} - {(long)schedules[schedules.Count - 1].Price}";
+        }
+        if (schedules.Count == 1)
+        {
+            return $"₱ {(long)schedules[0].Price}";
+        }
+        return string.Empty;
+    }
+}
+

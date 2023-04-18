@@ -39,7 +39,8 @@ public class GetActivityHandler : IGetActivityHandler
                     IncludeSchedules = args.IncludeAtivitySchedules,
                     IncludeSearchTags = args.IncludeActivitySearchTags,
                     IsActive = args.IsActive,
-                    CustomerId = args.CustomerId
+                    CustomerId = args.CustomerId,
+                    IncludeCustomer = args.IncludeCustomer,
                 }
             );
 
@@ -62,6 +63,13 @@ public class GetActivityHandler : IGetActivityHandler
                 Address2 = activity.Address2,
                 CanAdultsJoin = activity.CanAdultsJoin,
                 City = activity.City,
+                CityName = activity.CityName,
+                Subdivision = activity.Subdivision,
+                Region= activity.Region,
+                RegionName = activity.RegionName,
+                PostalCode = activity.PostalCode,   
+                Barangay= activity.Barangay,
+                BarangayName = activity.BarangayName,
                 CustomerBringWithThem = activity.CustomerBringWithThem,
                 Description = activity.Description,
                 District = activity.District,
@@ -77,6 +85,12 @@ public class GetActivityHandler : IGetActivityHandler
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
+                CreatedBy = activity.CreatedBy,
+                MarDetails = activity.MapDetails,
+                Handler = activity.Handler,
+                IsSetSession = activity.IsSetSession,
+                SessionName = activity.SessionName,
+                PinnedLocation= activity.PinnedLocation,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,
@@ -87,16 +101,30 @@ public class GetActivityHandler : IGetActivityHandler
                         Price = s.Price,
                         PriceUnit1 = s.PriceUnit1,
                         PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),
-                Images = activity.Images != null ? activity.Images.Select(i => {
+                Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
                     return new GetActivityResult.ActivityImage {
                         Id = i.Id,
                         ImageSrc = i.ImageLocation,
-                        Name = i.ImageName
+                        Name = i.ImageName,
+                        Order = i.Order
                     };
-                }) : Enumerable.Empty<GetActivityResult.ActivityImage>()
+                }) : Enumerable.Empty<GetActivityResult.ActivityImage>(),
+                Owner = activity.Owner != null ? new GetActivityResult.CustomerOwner {
+                    Handler = activity.Owner.Handler,
+                    Id = activity.Owner.Id,
+                    FirstName = activity.Owner.FirstName,
+                    LastName = activity.Owner.LastName,
+                    Email = activity.Owner.Email,
+                    ImageSrc = activity.Owner.ProfileImg ?? string.Empty,
+                    IsVerified = activity.Owner.IsVerified,
+                    IsOG = activity.Owner.IsOG,
+                    IsOfficial = activity.Owner.IsOfficial,
+                } : null
             };
 
             return AppResult<GetActivityResult>.CreateSucceeded(activityEntity, "Successfully get activity");

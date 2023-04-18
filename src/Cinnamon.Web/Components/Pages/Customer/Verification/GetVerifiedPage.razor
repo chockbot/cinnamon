@@ -1,0 +1,68 @@
+﻿@namespace Cinnamon.Web.Components
+@page "/getverified"
+@using System.Security.Claims
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager
+
+<div class="content-creation col-lg-10 col-md-10 col-sm-12 col-12 mx-auto">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="fw-bold title-description">
+                Get Verified
+            </label>
+        </div>
+        <div class="col-lg-12 col-md-12 col-sm-12 col-12 label-container-section text-lg-start text-md-start text-sm-center">
+            <label class="label-paragraph">
+                Lets get you verified, prove your identity to others. Here are some reminders for you.
+            </label>
+        </div>
+    </div>
+    
+    <div class="row mrow justify-content-center">
+            <div class="col-lg-4 col-md-4 col-sm-12 mb-4 label-container-section text-lg-start text-md-start text-sm-center">
+                <img src="images/GetVerified1.png" class="img-instruction">
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 mb-4 label-container-section text-lg-start text-md-start text-sm-center">
+                <img src="images/GetVerified2.png" class="img-instruction">
+            </div>
+    </div>
+
+    <div class="row mrow justify-content-center">
+        <div class="col-lg-4 col-md-4 col-sm-12 mb-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <img src="images/GetVerified4.png" class="img-instruction">
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-12 mb-4 label-container-section text-lg-start text-md-start text-sm-center">
+            <img src="images/GetVerified3.png" class="img-instruction">
+        </div>
+    </div>
+
+    <div class="row mb-4 mrow">
+        <div class="button-container" style="overflow:auto;">
+            <div style="float:right;">
+                <Button Border="Border.Is0" class="btn-primary" Type="ButtonType.Button" id="nextBtn" Clicked="NavigateToUploading">
+                    Continue
+                </Button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+    }
+    private void NavigateToUploading()
+    {
+        NavigationManager.NavigateTo("/uploadGovermentId");
+    }
+}

@@ -6,6 +6,7 @@ public class UpdateActivityImageArgs
 {
     [Required]
     public int ActivityImageId {get; set;}
+    public int? Order {get; set;}
     public string? ImageName {get; set;}
     public string? ImagePath {get; set;}
 }

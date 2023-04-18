@@ -24,10 +24,13 @@ public class CreateActivityArgs
     public string? Address2 {get; set;}
     public string? District {get; set;}
     public string? City {get; set;}
-    [Required]
-    public string SpecificsYouWillProvide {get; set;}
-    [Required]
-    public string CustomerBringWithThem {get; set;}
+    public string? Subdivision { get; set; }
+    public string? Region { get; set; }
+    public string? Barangay { get; set; }
+    public string? PostalCode { get; set; }
+    public string? PinnedLocation { get; set; }
+    public string? SpecificsYouWillProvide {get; set;}
+    public string? CustomerBringWithThem {get; set;}
     public string? AdditionalRequirements {get; set;}
     [Required]
     public string ActivityLevel {get; set;}
@@ -37,6 +40,9 @@ public class CreateActivityArgs
     public int MinimumAge {get; set;}
     [Required]
     public bool CanAdultsJoin {get; set;}
+    [Required]
+    public bool IsSetSession { get; set; }
+    public string? SessionName { get; set; }
     [Required]
     public IEnumerable<string> SearchTags {get; set;}
     [Required]
@@ -61,5 +67,9 @@ public class CreateActivityArgs
         public int PerUnit2 {get; set;}
         [Required]
         public string PriceUnit2 {get; set;}
+        [Required]
+        public int Order {get; set;}
+        [Required]
+        public bool IsActiveSchedule { get; set; }
     }
 }

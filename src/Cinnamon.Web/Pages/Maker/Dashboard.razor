@@ -1,116 +1,164 @@
+@layout DashboardLayout
 @page "/maker/dashboard"
 @using System.Security.Claims
 @using Cinnamon.Web.Components.Pages.Maker.Dashboard
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
+@using Cinnamon.Web.Components.Pages;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler;
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-@if(Model != null)
+<PageTitle>Dashboard | CinnamonPH</PageTitle>
+<SeoMeta Title="Dashboard" Subject="Dashboard" Url="/maker/dashboard" />
+
+@if (Model != null)
 {
-    <section class="mt-5 maker-dashboard">
-        <div class="container">
-            <Row>
-                <Column>
-                    <h3 class="text-capitalize fw-bold">experiences</h3>
-                </Column>
-                <Column>
-                </Column>
-            </Row>
-            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-                <Items>
-                    <Tab Display="Display.Flex" Flex="Flex.AlignItems.Center" Name="active" TextTransform="TextTransform.Capitalize" TextColor="TextColor.Black50">
-                        active
-                        <Badge style="background-color: #ffa942;" TextColor="TextColor.White" Border="Border.RoundedCircle" Color="Color.Primary">@Model.ActiveActivityCount</Badge>
-                    </Tab>
-                    <Tab Name="attendance-monitoring" TextTransform="TextTransform.Capitalize">attendance monitoring</Tab>
-                    <Tab Name="chat-room" TextTransform="TextTransform.Capitalize">chat room</Tab>
-                </Items>
-                <Content>
-                    <TabPanel Name="active">
-                        <ExperienceList OnPublishChanged="ActiveCountChanged" Activities="Model.Activities" Token="@Model.Token" />
-                    </TabPanel>
-                    <TabPanel Name="attendance-monitoring">
-                        Content for attendance monitoring
-                    </TabPanel>
-                    <TabPanel Name="chat-room">
-                        Content for chat-room
-                    </TabPanel>
-                </Content>
-            </Tabs>
+    <div class="announcement">
+        <img src="images/bulb.svg" class="me-4" alt="icon">
+        <p class="m-0">
+            <span>Announcement! </span>
+            We would like to remind you to check the attendance of your students on attendance tab. 
+            This will help you keep track of your students progress and ensure that everyone is attending classes regularly. 
+        </p>
+    </div>
+    <div class="header">
+        <p class="title">Experiences</p>
+        <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
+    </div>
+    @foreach (var item in activities)
+    {
+        <div class="experience-container">
+            <div class="xp-content">
+                <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
+                <div class="xp-context">
+                    <p class="xp-title">@item.Title</p>
+                    <p class="xp-description">@item.Description</p>
+                    <div class="xp-category">
+                        @if (item.ExperienceTypeId==1)
+                        {
+                            <img src="images/activity-summary/location.png">
+                            <span>Face to Face</span>
+                        }
+                        else
+                        {
+                            <img src="images/activity-summary/laptop-icon.png">
+                            <span>Online</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div class="xp-actions">
+                <div class="active">
+                    <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                        <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                    </button>
+                    <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                </div>
+                <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+            </div>
         </div>
-    </section>
+    }
 }
+
 
 @code
 {
-    private DashboardModel Model;
+    private DashboardModel Model {get; set;} = new();
+
+    public List<Activity> activities = new List<Activity>();
+
+    public Activity activity = new Activity();
 
     protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var token = user.FindFirstValue("Token");
-        if(token == null)
+        try
         {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-        if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
-        {
-            // an error occured
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        var customer = result.Result.Result;
+            var token = user.FindFirstValue("Token");
+            if (token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
 
-        // check if customer is maker
-        if(!customer.IsMaker)
-        {
-            // account is not maker redirect to explore page
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
+            {
+                // an error occured
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            var customer = result.Result.Result;
 
-        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {}, token);
-        var activities = new List<Activity>();
+            // check if customer is maker
+            if (!customer.IsMaker)
+            {
+                // account is not maker redirect to explore page
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
 
-        if(activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-        {
-            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a => {
-                // map only required fields
-                return new Activity {
-                    ActivityId = a.ActivityId,
-                    IsPublished = a.IsPublished,
-                    Title = a.Title
+            var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+                {
+                    IncludeActivityImages = true,
+                }, token);
+
+            if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+            {
+                activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                {
+                    // map only required fields
+                    return new Activity
+                        {
+                            ActivityId = a.ActivityId,
+                            IsPublished = a.IsPublished,
+                            Title = a.Title,
+                            Description = a.Description,
+                            ExperienceTypeId = a.ExperienceTypeId,
+                            Images = a.Images.Select(i =>
+                            {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
+                        };
+                }).ToList();
+            }
+            Model = new DashboardModel
+                {
+                    Activities = activities,
+                    ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
+                    Token = token
                 };
-            }).ToList();
         }
-
-        Model = new DashboardModel {
-            Activities = activities,
-            ActiveActivityCount = activities.Where(a => a.IsPublished == true).Count(),
-            Token = token
-        };
+        catch (Exception e)
+        {
+            throw e;
+        }
     }
 
-    private void ActiveCountChanged(int count)
+    private void NavigateToCreation()
     {
-        Model.ActiveActivityCount-= count;
+        NavigationManager.NavigateTo("creation", true);
     }
 
-    string selectedTab = "active";
-
-    private Task OnSelectedTabChanged(string name)
+    private void CheckUnCheckAllStudent(Activity activity)
     {
-        selectedTab = name;
-        return Task.CompletedTask;
+        activity.IsPublished = !activity.IsPublished;
+        var res =  activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
+            {
+                IsPublished = activity.IsPublished,
+                ActivityId = activity.ActivityId
+            }, Model.Token);
     }
 }
