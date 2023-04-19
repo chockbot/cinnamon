@@ -5,7 +5,7 @@ using Cinnamon.Framework.Common;
 namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 public interface IExternalLoginTokenData
 {
-    Task<AppResult<GetExternalLoginTokenResult>> GetLoginToken(string token, string guid);
+    Task<AppResult<GetExternalLoginTokenResult>> GetLoginToken(GetLoginTokenArgs args);
     Task<AppResult<CreateExternalLoginTokenResult>> CreateToken(CreateExterLoginTokenArgs args);
     Task<AppResult<UpdateExternalLoginTokenResult>> UpdateToken(UpdateExternalLoginTokenArgs args);
 }
