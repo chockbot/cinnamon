@@ -46,6 +46,7 @@ jobs:
         env:
           Applicationconfig.Payment.Accounts.0.Settings.0.Value: ${{ secrets.ZENDIT_TOKEN }}
           Applicationconfig.Payment.Accounts.0.Settings.1.Value: ${{ secrets.ZENDIT_CALLBACK_TOKEN }}
+          Applicationconfig.FrontendUrl: "https://dev.cinnamon.ph/"
 
       # substitute web blazor server environemnt variables
       - name: App Settings Variables Substitution for Web Blazor
