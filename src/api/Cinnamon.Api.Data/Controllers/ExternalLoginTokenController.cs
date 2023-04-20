@@ -17,14 +17,14 @@ public class ExternalLoginTokenController : ControllerBase
         this.externalLoginTokenRepository = externalLoginTokenRepository;
     }
 
-    [Route("GetLoginToken/{token}/{guid}")]
-    [HttpGet]
+    [Route("GetLoginToken")]
+    [HttpPost]
     [ProducesResponseType(typeof(GetExternalLoginTokenResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetLoginToken(string token, string guid)
+    public async Task<IActionResult> GetLoginToken([FromBody] GetLoginTokenArgs args)
     {
         try
         {
-            var result = await externalLoginTokenRepository.GetByTokenAsync(token, guid);
+            var result = await externalLoginTokenRepository.GetByTokenAsync(args.Token, args.Guid);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetExternalLoginTokenResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

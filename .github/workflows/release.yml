@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+env:
+  FLAG_ENV: Production
+  BASE_URL: "https://cinnamon.ph"
+
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -21,26 +25,54 @@ jobs:
         with:
           dotnet-version: "6.0.x"
 
-      # substitute database connection string
+      # substitute api data environment variables
       - name: App Settings Variable Substitution
         uses: microsoft/variable-substitution@v1
         with:
           files: "src/api/Cinnamon.Api.Data/appsettings.json"
         env:
-          ConnectionStrings.CinnamonDB: ${{ secrets.PROD_DB_CONNECTION }}
+          KeyVault.KeyVaultUri: ${{ secrets.PROD_KVAULT_URL }}
+          KeyVault.CinnamonDbConnectionString: ${{ secrets.PROD_KVAULT_DB }}
+          AzureAd.ClientId: ${{ secrets.SHARED_AZUREAD_CLIENTID }}
+          AzureAd.TenantId: ${{ secrets.SHARED_AZUREAD_TENANTID }}
+          AzureAd.ClientSecret: ${{ secrets.PROD_AZUREAD_SECRET }}
+
+      # substitute api core environment variables
+      - name: App Settings Variable Substitution for Api Core
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/api/Cinnamon.Api.Core/appsettings.json"
+        env:
+          Applicationconfig.Payment.Accounts.0.Settings.0.Value: ${{ secrets.PROD_ZENDIT_TOKEN }}
+          Applicationconfig.Payment.Accounts.0.Settings.1.Value: ${{ secrets.PROD_ZENDIT_CALLBACK_TOKEN }}
+          Applicationconfig.Disbursement.RunDisbursement: true
+          Applicationconfig.Disbursement.RunPerHour: 48
+          Applicationconfig.FrontendUrl: "https://cinnamon.ph/"
+
+      # substitute web blazor server environemnt variables
+      - name: App Settings Variables Substitution for Web Blazor
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: "src/Cinnamon.Web/appsettings.json"
+        env:
+          AppConfig.Environment: ${{ env.FLAG_ENV }}
+          AppConfig.BaseUrl: ${{ env.BASE_URL }}
 
       # copy sitemaps
       - name: Copy sitemap
         run: cp output/sitemap.xml src/Cinnamon.Web/wwwroot/sitemap.xml
 
+      - name: Restore Framework
+        run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
+
+      - name: Restore Api Data
+        run: dotnet restore src/api/Cinnamon.Api.Data/Cinnamon.Api.Data.csproj
+
+      - name: Restore Api Core
+        run: dotnet restore src/api/Cinnamon.Api.Core/Cinnamon.Api.Core.csproj
+
       - name: Restore Web
         run: dotnet restore src/Cinnamon.Web/Cinnamon.Web.csproj
-
-      - name: Restore Core
-        run: dotnet restore src/Cinnamon.Core/Cinnamon.Core.csproj
-
-      - name: Restore Data
-        run: dotnet restore src/Cinnamon.Data/Cinnamon.Data.csproj
 
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -54,11 +86,14 @@ jobs:
           npm install
           npm run build
 
-      - name: Build Project
-        run: dotnet build src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/build
+      - name: Publish Cinnamon.Api.Data Project
+        run: dotnet publish src/api/Cinnamon.Api.Data/Cinnamon.Api.Data.csproj -c Release -o output/publish-data
 
-      - name: Publish Project
-        run: dotnet publish src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish
+      - name: Publish Cinnamon.Api.Core Project
+        run: dotnet publish src/api/Cinnamon.Api.Core/Cinnamon.Api.Core.csproj -c Release -o output/publish-core
+
+      - name: Publish Cinnamon.Web Project
+        run: dotnet publish src/Cinnamon.Web/Cinnamon.Web.csproj -c Release -o output/publish-web
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
@@ -72,17 +107,29 @@ jobs:
       - name: Add Environment Variables
         run: echo "${{ secrets.ENV_PROD }}" >> .env.prod
 
-      - name: Copy Artifacts to DEV Server
-        run: rsync -avz output/publish/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src
+      - name: Copy Cinnamon.Api.Data Artifacts to PROD Server
+        run: rsync -avz output/publish-data/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src-data
+
+      - name: Copy Cinnamon.Api.Core Artifacts to PROD Server
+        run: rsync -avz output/publish-core/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src-core
+
+      - name: Copy Cinnamon.Web Artifacts to PROD Server
+        run: rsync -avz output/publish-web/ cinnamon@${{ secrets.SERVER_IP }}:build-prd/src-web
 
       - name: Copy Environment File
-        run: rsync -avz .env.prod cinnamon@${{ secrets.SERVER_IP }}:build-prd/.env.prod
+        run: rsync -avz .env.prod cinnamon@${{ secrets.SERVER_IP }}:build-prd/.env
 
       - name: Copy docker-compose
         run: rsync -avz output/docker-compose.prod.yml cinnamon@${{ secrets.SERVER_IP }}:build-prd/docker-compose.yml
 
-      - name: Copy Dockerfile
-        run: rsync -avz output/Dockerfile cinnamon@${{ secrets.SERVER_IP }}:build-prd/Dockerfile
+      - name: Copy Cinnamon.Api.Data Dockerfile
+        run: rsync -avz output/Dockerfile.Data cinnamon@${{ secrets.SERVER_IP }}:build-prd/Dockerfile.Data
+
+      - name: Copy Cinnamon.Api.Core Dockerfile
+        run: rsync -avz output/Dockerfile.Core cinnamon@${{ secrets.SERVER_IP }}:build-prd/Dockerfile.Core
+
+      - name: Copy Cinnamon.Web Dockerfile
+        run: rsync -avz output/Dockerfile.Web cinnamon@${{ secrets.SERVER_IP }}:build-prd/Dockerfile.Web
 
       - name: Run Server Script
-        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker-compose down && sudo docker-compose --env-file .env.prod up -d'
+        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker compose down && sudo docker compose --env-file .env up -d'
