@@ -38,7 +38,7 @@ public class CustomerPayedNotificationHandler : ICustomerPayedNotificationHandle
         try
         {
             var emailBody = helper.GetTemplate(args.CustomerName, args.ExperienceName, 
-                args.CoachName, args.PurchaseDate, args.PayerName, args.Amount, 
+                args.CoachName, args.PurchaseDate, args.PayerName, args.Amount, args.ServiceFee,
                 config.FrontendUrl, args.Members, args.ReferenceNumber, args.PaymentMethod, args.MakerEmail);
             
             var sendMailResponse = await sendMailHandler
