@@ -267,7 +267,8 @@
             var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
                 {
                     FirstName = firstNameLocalState,
-                    LastName = lastNameLocalState
+                    LastName = lastNameLocalState,
+                    Datebirth = Model.CustomerProfile.Birthdate
                 }, Model.Token);
 
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)

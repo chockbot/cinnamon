@@ -17,13 +17,14 @@ public class ExternalLoginTokenData: IExternalLoginTokenData
         flurlClient = flurlFac.Get(config.ApiDataUrl);
     }
 
-    public async Task<AppResult<GetExternalLoginTokenResult>> GetLoginToken(string token, string guid)
+    public async Task<AppResult<GetExternalLoginTokenResult>> GetLoginToken(GetLoginTokenArgs args)
     {
         try
         {
             var result = await flurlClient
-                .Request($"ExternalLoginToken/GetLoginToken/{token}/{guid}")
-                .GetJsonAsync<GetExternalLoginTokenResult>();
+                .Request($"ExternalLoginToken/GetLoginToken")
+                .PostJsonAsync(args)
+                .ReceiveJson<GetExternalLoginTokenResult>();
 
             return AppResult<GetExternalLoginTokenResult>.CreateSucceeded(result, "Successfully get external login token api");
         }
