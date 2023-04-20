@@ -6,7 +6,7 @@ namespace Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers
 public class MakerEnrolledNotificationHelper 
 {
     public string GetTemplate(string makerName, string experienceName,
-        DateTime purchaseDate, string payerName, decimal amount, string host, 
+        DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
         string payerEmail)
     {
@@ -37,6 +37,7 @@ public class MakerEnrolledNotificationHelper
                         margin-top: 3rem;
                         border: 1px solid #343d4c;
                         position: relative;
+                        background-color: #fffcf9;
                     '
                     >
                     <div class='img-logo' style='padding-top: 1rem'>
@@ -68,17 +69,31 @@ public class MakerEnrolledNotificationHelper
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Enrollees: </span>
                         <span style='color: #343d4c; text-transform: capitalize'
-                            >{enrolleesString}</span
+                            >{enrolleesString} ({students.Count()})</span
                         >
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Payment Reference Number: </span>
-                        <span style='color: #343d4c; text-transform: uppercase'>{referenceNumber}</span>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{referenceNumber}</span
+                        >
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Amount: </span>
                         <span style='color: #343d4c; text-transform: uppercase'
-                            ><b>PHP {amount.ToString("#,##0.00")}</b></span
+                            >PHP {amount.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Service Fee: </span>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >PHP {serviceFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <b style='color: #343d4c'>Total Purchase: </b>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            ><b>PHP {(amount + serviceFee).ToString("#,##0.00")}</b></span
                         >
                         </p>
                     </div>
@@ -99,12 +114,12 @@ public class MakerEnrolledNotificationHelper
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Contact Info: </span>
                         <span style='color: #000'
-                            ><u style='text-transform: uppercase'>{payerEmail.ToLower()}</u></span
+                            ><u style=''>{payerEmail}</u></span
                         >
                         </p>
-                        <br>
+                        <br />
                         <p style='margin: 0; font-size: 16px; color: #717171'>
-                            Note: Please check your attendance section
+                        Note: Please check your attendance section
                         </p>
                     </div>
                 </div>
