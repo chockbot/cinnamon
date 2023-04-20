@@ -1191,6 +1191,7 @@ public class AccountController : ControllerBase
                     AccountHolder = result.Result.AccountHolder,
                     // masked the account number
                     AccountNumber = maskedAccount,
+                    UnMaskAccountNumber = accountNumber,
                     Id = result.Result.Id,
                     BankChannel = result.Result.BankChannel
                 },

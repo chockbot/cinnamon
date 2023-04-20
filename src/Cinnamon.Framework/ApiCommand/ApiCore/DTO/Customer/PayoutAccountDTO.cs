@@ -6,4 +6,5 @@ public class PayoutAccountDTO
     public string AccountHolder {get; set;}
     public string AccountNumber {get; set;}
     public string BankChannel {get; set;}
+    public string UnMaskAccountNumber {get; set;}
 }
