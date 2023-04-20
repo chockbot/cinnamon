@@ -109,6 +109,15 @@
                 };
             });
         }
+
+        var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Token);
+        if(fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        {
+            var payoutAccount = fetchPayoutAccount.Result.Result;
+            Model.AccountHolder = payoutAccount.AccountHolder;
+            Model.AccountNumber = payoutAccount.UnMaskAccountNumber;
+            SelectedPayment = payoutAccount.BankChannel;
+        }
     }
 
     private async Task SubmitPayoutAccount()
