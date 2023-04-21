@@ -16,28 +16,46 @@
 
 @if(Model != null)
 {
-    <section class="container order-banner text-center">
-        <h1 class="order-banner-h1">
+    <section class="container order-banner">
+        <h1 class="order-banner-h1 text-center">
             Thank you for choosing
-            <br>
+            <br class="d-none m-d-block">
             <span class="text-capitalize cinnamon-banner-text">cinnamon</span>
         </h1>
-        <Divider />
-        <div class="order-details text-start text-center">
-            <h3 class="text-capitalize mt-5">payment confirmed!</h3>
-            <p class="text-capitalize mt-5 mb-0">purchase details:</p>
-            <p class="text-capitalize">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
-            <div class="schedule-ordered text-center">
-                <p>@Model.SelectedSchedule.Name</p>
-                <p>@Model.SelectedSchedule.DateTime</p>
-                <p>@Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
-                <p>Total: @((long)Model.PurchaseOrder.Total)</p>
+        <div class="order-details font-16 color-grey-100">
+            <div class="text-center">
+                <h3 class="text-capitalize font-24 font-weight-700 my-4 color-black-100">payment confirmed!</h3>
             </div>
-            <p class="text-center">Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph</p>
-            <div class="text-center mt-5 mb-5">
-                <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
-            </div> 
+            <Divider class="m-0" />
+            <div class="ps-4">
+                <p class="text-capitalize my-3">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
+            </div>
+            <Divider class="m-0" />
+            <div class="ps-4">
+                <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">@Model.PurchaseOrder.ActivityName</p>
+                <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.Name</p>
+                <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.DateTime</p>
+                <p class="text-capitalize mt-2 mb-3">
+                    @Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2
+                </p>
+            </div>
+            <Divider class="m-0" />
+            <div class="ps-4">
+                <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">Purchase Details</p>
+                <p class="text-capitalize mb-0 mt-2">No. of Enrolees: @Model.PurchaseOrder.EnrolleeCount</p>
+                <p class="text-capitalize mb-0 mt-2">Payment Method: 
+                    <span class="text-uppercase text-decoration-underline">@Model.PurchaseOrder.PaymentMethod</span>
+                </p>
+                <p class="text-capitalize mb-0 mt-2">Amount: PHP @Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
+                <p class="text-capitalize mb-0 mt-2">Service Fee: PHP @Model.PurchaseOrder.ConvinienceFee.ToString("#,##0.00")</p>
+                <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
+                    Total Purchase: PHP @((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee).ToString("#,##0.00"))
+                </p>
+            </div>
         </div>
+        <div class="text-center mt-5 mb-5">
+            <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
+        </div> 
     </section>
 }
 
@@ -110,7 +128,10 @@
                 Id = purchaseOrder.Id,
                 OverallTotal = purchaseOrder.OverallTotal,
                 ScheduleId = purchaseOrder.ScheduleId,
-                Total = purchaseOrder.Total
+                Total = purchaseOrder.Total,
+                ActivityName = activityRes.Result.Result.Title,
+                EnrolleeCount = purchaseOrder.EnrolleeCount,
+                PaymentMethod = purchaseOrder.PaymentMethod
             },
             SelectedSchedule = new Models.Entities.ActivitySchedule {
                 DateTime = schedule.DateTime,
