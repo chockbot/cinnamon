@@ -11,6 +11,7 @@ public class CustomerPayedNotificationArgs : IInteractor
     public DateTime PurchaseDate {get; set;}
     public string PayerName {get; set;}
     public decimal Amount {get; set;}
+    public decimal ServiceFee {get; set;}
     public IEnumerable<IncludedMembers> Members {get; set;}
     public string PaymentMethod {get; set;}
     public string ReferenceNumber {get; set;}

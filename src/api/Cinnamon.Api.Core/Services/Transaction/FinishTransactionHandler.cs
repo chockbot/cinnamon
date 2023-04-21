@@ -137,7 +137,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 }),
                 PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
                 ReferenceNumber = referenceId,
-                MakerEmail = $"{activity.Owner?.Email}"
+                MakerEmail = $"{activity.Owner?.Email}",
+                ServiceFee = purchaseOrder.ConvinienceFee
             });
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
@@ -159,7 +160,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 }),
                 PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
                 ReferenceNumber = referenceId,
-                PayerEmail = customer.Email
+                PayerEmail = customer.Email,
+                ServiceFee = purchaseOrder.ConvinienceFee
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {

@@ -11,4 +11,6 @@ public class PurchaseOrderDTO
     public string? Coupon {get; set;}
     public decimal? CouponAmount {get; set;}
     public decimal OverallTotal {get; set;}
+    public int EnrolleeCount {get; set;}
+    public string PaymentMethod {get; set;}
 }

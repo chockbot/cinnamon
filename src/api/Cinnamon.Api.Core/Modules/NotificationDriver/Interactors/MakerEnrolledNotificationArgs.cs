@@ -6,6 +6,7 @@ public class MakerEnrolledNotificationArgs : IInteractor
 {
     public string ExperienceName {get; set;}
     public decimal Amount {get; set;}
+    public decimal ServiceFee {get; set;}
     public DateTime PurchaseDate {get; set;}
     public string Email {get; set;}
     public string MakerName {get; set;}
