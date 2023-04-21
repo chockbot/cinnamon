@@ -103,7 +103,9 @@ public class TransactionController : ControllerBase
                     CustomerId = purchseOrder.CustomerId,
                     OverallTotal = purchseOrder.OverallTotal,
                     ScheduleId = purchseOrder.ScheduleId,
-                    Total = purchseOrder.Total
+                    Total = purchseOrder.Total,
+                    EnrolleeCount = purchseOrder.EnrolleeCount,
+                    PaymentMethod = purchseOrder.PaymentMethod
                 }
             });
         }
