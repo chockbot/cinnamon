@@ -6,7 +6,7 @@ namespace Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers
 public class CustomerPayedNotificationHelper 
 {
     public string GetTemplate(string customerName, string experienceName, string coachName, 
-        DateTime purchaseDate, string payerName, decimal amount, string host, 
+        DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedMembers> members, string referenceNumber, string paymentMethod,
         string makerEmail)
     {
@@ -37,6 +37,7 @@ public class CustomerPayedNotificationHelper
                         margin-top: 3rem;
                         border: 1px solid #343d4c;
                         position: relative;
+                        background-color: #fffcf9;
                     '
                     >
                     <div class='img-logo' style='padding-top: 1rem'>
@@ -68,7 +69,7 @@ public class CustomerPayedNotificationHelper
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Enrollees: </span>
                         <span style='color: #343d4c; text-transform: capitalize'
-                            >{enrolleesString}</span
+                            >{enrolleesString} ({members.Count()})</span
                         >
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
@@ -79,27 +80,32 @@ public class CustomerPayedNotificationHelper
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Payment Reference Number: </span>
-                        <span style='color: #343d4c; text-transform: uppercase'>{referenceNumber}</span>
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Amount: </span>
                         <span style='color: #343d4c; text-transform: uppercase'
-                            ><b>PHP {amount.ToString("#,##0.00")}</b></span
-                        >
-                        </p>
-                    </div>
-                    <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
-                    <div class='payer-details' style='padding: 2rem 2rem'>
-                        <p style='font-size: 16px; margin: 0'>
-                        <span style='color: #717171'>Payer Name: </span>
-                        <span style='color: #000'
-                            ><u style='text-transform: capitalize'>{payerName}</u></span
+                            >{referenceNumber}</span
                         >
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Payment Method: </span>
-                        <span style='color: #000'
-                            ><u style='text-transform: uppercase'>{paymentMethod}</u></span
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{paymentMethod}</span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Amount: </span>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{amount.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Service Fee: </span>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{serviceFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <b style='color: #343d4c'>Total Purchase: </b>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            ><b>PHP {(amount + serviceFee).ToString("#,##0.00")}</b></span
                         >
                         </p>
                     </div>
@@ -114,12 +120,11 @@ public class CustomerPayedNotificationHelper
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Email: </span>
                         <span style='color: #000'
-                            ><u style='text-transform: uppercase'>{makerEmail.ToLower()}</u></span
+                            ><u>{makerEmail}</u></span
                         >
                         </p>
                     </div>
                 </div>
-
             ";
     }
 }
