@@ -14,6 +14,8 @@ public class PurchaseOrder : BaseEntity
     // 0 = pending, 1 = succeed, 2 failed, 3 = cancelled/refunded, 5 = disbursement
     public int Status {get; set;}
     public string Payload {get; set;}
+    public decimal UnitPrice {get; set;}
+    public int UnitCount {get; set;}
 
     public Activity Activity {get; set;}
     public ActivitySchedule Schedule {get; set;}

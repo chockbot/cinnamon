@@ -25,4 +25,8 @@ public class CreatePurchaseOrderArgs
     public int Status {get; set;}
     public string? Payload {get; set;}
     public decimal CreditAmount {get; set;}
+    [Required]
+    public decimal UnitPrice {get; set;}
+    [Required]
+    public int UnitCount {get; set;}
 }
