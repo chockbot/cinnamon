@@ -55,12 +55,12 @@
 }
 @*<ModalAttendance @ref="modalRef"></ModalAttendance>*@
 <Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
-    <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Fixed">
+    <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Fixed" Centered>
         <ModalHeader>
             <h6 class="col-11 modal-title text-center" style="font-weight:bold">View Attendance</h6>
             <button type="button" class="btn-close" @onclick="() => HideModal()" />
         </ModalHeader>
-        <ModalBody MaxHeight="1500">
+        <ModalBody MaxHeight="70">
             <div class="student-details-container">
                 <div class="student-details">
                     @if (studentAttendances.Count != 0)
