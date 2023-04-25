@@ -47,6 +47,7 @@ jobs:
           Applicationconfig.Payment.Accounts.0.Settings.1.Value: ${{ secrets.PROD_ZENDIT_CALLBACK_TOKEN }}
           Applicationconfig.Disbursement.RunDisbursement: true
           Applicationconfig.Disbursement.RunPerHour: 48
+          Applicationconfig.Disbursement.CronString: "0 1 0 ? * TUE,FRI"
           Applicationconfig.FrontendUrl: "https://cinnamon.ph/"
 
       # substitute web blazor server environemnt variables
