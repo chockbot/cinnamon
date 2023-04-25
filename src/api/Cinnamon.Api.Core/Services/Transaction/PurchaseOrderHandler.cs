@@ -131,6 +131,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Status = overallTotal == 0 ? (int)TransactionStatus.Success : (int)TransactionStatus.Pending,
                 Payload = serializedPayload,
                 CreditAmount = creditAmount,
+                UnitCount = args.Students.Count(),
+                UnitPrice = activitySchedule.Price
             });
 
             if(!result.Succeeded || result.Result == null)

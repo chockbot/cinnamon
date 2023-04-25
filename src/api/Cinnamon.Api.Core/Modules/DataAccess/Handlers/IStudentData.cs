@@ -13,4 +13,6 @@ public interface IStudentData
     Task<AppResult<CreateStudentResult>> CreateStudent(CreateStudentArgs args);
     Task<AppResult<CreateManyStudentResult>> CreateManyStudent(CreateManyStudentArgs args);
     Task<AppResult<UpdateStudentResult>> UpdateStudent(UpdateStudentArgs args);
+    Task<AppResult<GetStudentsToDisburseResult>> GetStudentsToDisburse();
+    Task<AppResult<UpdateStudentDisbursementStatusResult>> UpdateStudentsDisbursementStatus(UpdateStudentDisbursementArgs args);
 }
