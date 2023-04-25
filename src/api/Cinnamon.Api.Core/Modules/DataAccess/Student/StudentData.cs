@@ -141,4 +141,45 @@ public class StudentData: IStudentData
             return AppResult<GetEnrolledStudentsResult>.CreateFailed(ex, "An error occured when getting student by id api");
         }
     }
+
+    public async Task<AppResult<GetStudentsToDisburseResult>> GetStudentsToDisburse()
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Student/GetStudentsToDisburse")
+                            .GetJsonAsync<GetStudentsToDisburseResult>();
+
+            return AppResult<GetStudentsToDisburseResult>.CreateSucceeded(result, "Successfully getting get all students api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetStudentsToDisburseResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetStudentsToDisburseResult>.CreateFailed(ex, "An error occured when getting all students api");
+        }
+    }
+
+    public async Task<AppResult<UpdateStudentDisbursementStatusResult>> UpdateStudentsDisbursementStatus(UpdateStudentDisbursementArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Student/UpdateStudentsDisbursementStatus")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<UpdateStudentDisbursementStatusResult>();
+
+            return AppResult<UpdateStudentDisbursementStatusResult>.CreateSucceeded(result, "Successfully posting update student disbursement status");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateStudentDisbursementStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateStudentDisbursementStatusResult>.CreateFailed(ex, "An error occured when posting update student disbursement status");
+        }
+    }
 }

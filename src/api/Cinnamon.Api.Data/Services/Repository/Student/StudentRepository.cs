@@ -355,4 +355,52 @@ public class StudentRepository: IStudentRepository
             return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when getting students");
         }
     }
+
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse()
+    {
+        try
+        {
+            var result = await dataStore.Student.GetAllStudentsToDisburse();
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+
+            return AppResult<IEnumerable<DisburseStudentDTO>>.CreateSucceeded(result.Result, "Successfully get all students need to disburse");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when getting students to disburse");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<StudentDTO>>> UpdateStudentsDisbursementStatus(IEnumerable<int> ids, bool isDisbursement)
+    {
+        try
+        {
+            var entities = ids.Select(i => {
+                return new Entities.Student {
+                    Id = i,
+                    IsDisbursement = isDisbursement
+                };
+            });
+
+            var updateStatusResult = await dataStore.Student.UpdateStudentsDisbursementStatus(entities);
+            if(!updateStatusResult.Succeeded || updateStatusResult.Result == null)
+            {
+                return AppResult<IEnumerable<StudentDTO>>.CreateFailed(new ApplicationException(updateStatusResult.Message), updateStatusResult.Message);
+            }
+
+            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(updateStatusResult.Result.Select(p => {
+                return new StudentDTO {
+                    Id = p.Id,
+                    IsDisbursement = p.IsDisbursement
+                };
+            }), "Successfully update students disbursement status");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when updating students disbursement status");
+        }
+    }
 }

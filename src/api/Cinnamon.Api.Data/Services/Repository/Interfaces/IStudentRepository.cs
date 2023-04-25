@@ -17,4 +17,6 @@ public interface IStudentRepository
     Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
         int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? expirationStartDate, DateTime? ExpirationEndDate);
     Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudent(int ActivityId);
+    Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse();
+    Task<AppResult<IEnumerable<StudentDTO>>> UpdateStudentsDisbursementStatus(IEnumerable<int> ids, bool isDisbursement);
 }

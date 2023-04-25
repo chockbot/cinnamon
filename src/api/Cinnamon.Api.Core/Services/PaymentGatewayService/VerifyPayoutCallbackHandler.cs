@@ -14,14 +14,17 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
     private readonly IPurchaseOrderData purchaseOrderData;
     private readonly ApplicationConfig applicationConfig;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IStudentData studentData;
 
     public VerifyPayoutCallbackHandler(IPayoutLogData payoutLogData, IPurchaseOrderData purchaseOrderData,
-        ApplicationConfig applicationConfig, IJsonSerializationProvider jsonSerializationProvider)
+        ApplicationConfig applicationConfig, IJsonSerializationProvider jsonSerializationProvider,
+        IStudentData studentData)
     {
         this.payoutLogData = payoutLogData;
         this.purchaseOrderData = purchaseOrderData;
         this.applicationConfig = applicationConfig;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.studentData = studentData;
     }
 
     public AppResult<VerifyPayoutCallbackResult> Execute(VerifyPayoutCallbackArgs args)
@@ -60,20 +63,6 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
             }
             var payoutLog = getPayoutLogRes.Result.Result;
 
-            // get purchase order data
-            // var getPurchaseOrderRes = await purchaseOrderData.GetPurchaseOrderById(getPayoutLogRes.Result.Result.PurchaseOrderId);
-            // if(!getPurchaseOrderRes.Succeeded || getPurchaseOrderRes.Result == null || !getPurchaseOrderRes.Result.IsSuccess)
-            // {
-            //     return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
-            // }
-            // var transaction = getPurchaseOrderRes.Result.Result;
-
-            // // can only update if transaction status is succeed
-            // if(transaction.Status != 1)
-            // {
-            //     return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("Invalid Request"), "Invalid Request");
-            // }
-
             int status = args.Status switch 
             {
                 "PENDING" => 0,
@@ -104,13 +93,28 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
             // update only purchase order if callback status = 1
             if(status == 1 && deserializedPayload != null)
             {
-                var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrdersStatus(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrdersStatusArgs {
-                    Ids = deserializedPayload.PurchaseOrderIds,
-                    Status = 5
-                });
-                if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
+                if(deserializedPayload.PurchaseOrderIds != null && deserializedPayload.PurchaseOrderIds.Count() > 0)
                 {
-                    return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
+                    var updatedPurchaseOrder = await purchaseOrderData.UpdatePurchaseOrdersStatus(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.UpdatePurchaseOrdersStatusArgs {
+                        Ids = deserializedPayload.PurchaseOrderIds,
+                        Status = 5
+                    });
+                    if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null || !updatedPurchaseOrder.Result.IsSuccess)
+                    {
+                        return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
+                    }
+                }
+
+                if(deserializedPayload.StudentIds != null && deserializedPayload.StudentIds.Count() > 0)
+                {
+                    var updateStudent = await studentData.UpdateStudentsDisbursementStatus(new Framework.ApiCommand.ApiData.Student.Request.UpdateStudentDisbursementArgs {
+                        Ids = deserializedPayload.StudentIds,
+                        IsDisbursement = true
+                    });
+                    if(!updateStudent.Succeeded || updateStudent.Result == null || !updateStudent.Result.IsSuccess)
+                    {
+                        return AppResult<VerifyPayoutCallbackResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
+                    }
                 }
             }
 
@@ -125,5 +129,6 @@ public class VerifyPayoutCallbackHandler : IVerifyPayoutCallbackHandler
     class PayloadData 
     {
         public IEnumerable<int> PurchaseOrderIds {get; set;}
+        public IEnumerable<int> StudentIds {get; set;}
     }
 }   

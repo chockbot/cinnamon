@@ -287,7 +287,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             purchaseOrder.Status = status ?? purchaseOrder.Status;
             purchaseOrder.CreditAmount = creditAmount ?? purchaseOrder.CreditAmount;
             purchaseOrder.UnitCount = unitCount ?? purchaseOrder.UnitCount;
-            purchaseOrder.UnitPrice = unitPrice ?? purchaseOrder.UnitCount;
+            purchaseOrder.UnitPrice = unitPrice ?? purchaseOrder.UnitPrice;
 
             var updatedPurchaseOrder = await dataStore.PurchaseOrder.Update(purchaseOrder);
             if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null)
