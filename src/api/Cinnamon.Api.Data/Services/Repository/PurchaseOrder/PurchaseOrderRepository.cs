@@ -18,7 +18,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
 
     public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, 
         decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal, 
-        int status, string payload, decimal creditAmount)
+        int status, string payload, decimal creditAmount, decimal unitPrice, int unitCount)
     {
         try
         {
@@ -61,7 +61,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Total = total,
                 Status = status,
                 Payload = payload,
-                CreditAmount = creditAmount
+                CreditAmount = creditAmount,
+                UnitCount = unitCount,
+                UnitPrice = unitPrice
             };
 
             var createdPurchaseOrder = await dataStore.PurchaseOrder.Add(purchaseOrder);
@@ -94,7 +96,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Total = total,
                 Status = status,
                 Payload = payload,
-                CreditAmount = creditAmount
+                CreditAmount = creditAmount,
+                UnitCount = unitCount,
+                UnitPrice = unitPrice
             }, "Successfully created purchase order");
         }
         catch (Exception ex)
@@ -135,7 +139,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Total = p.Total,
                     Status = p.Status,
                     Payload = p.Payload,
-                    CreditAmount = p.CreditAmount
+                    CreditAmount = p.CreditAmount,
+                    UnitCount = p.UnitCount,
+                    UnitPrice = p.UnitPrice
                 };
 
                 // include activity details
@@ -192,7 +198,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Total = p.Total,
                     Status = p.Status,
                     Payload = p.Payload,
-                    CreditAmount = p.CreditAmount
+                    CreditAmount = p.CreditAmount,
+                    UnitCount = p.UnitCount,
+                    UnitPrice = p.UnitPrice
                 };
             });
 
@@ -226,7 +234,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Total = result.Result.Total,
                 Status = result.Result.Status,
                 Payload = result.Result.Payload,
-                CreditAmount = result.Result.CreditAmount
+                CreditAmount = result.Result.CreditAmount,
+                UnitCount = result.Result.UnitCount,
+                UnitPrice = result.Result.UnitPrice
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -236,7 +246,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
     }
 
     public async Task<AppResult<PurchaseOrderDTO>> Update(int purchaseOrderId, int? scheduleId, decimal? total, 
-        decimal? convinienceFee, string? coupon, decimal? couponAmount, decimal? overallTotal, int? status, decimal? creditAmount)
+        decimal? convinienceFee, string? coupon, decimal? couponAmount, decimal? overallTotal, int? status, decimal? creditAmount,
+        decimal? unitPrice, int? unitCount)
     {
         try
         {
@@ -275,6 +286,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             purchaseOrder.OverallTotal = overallTotal ?? purchaseOrder.OverallTotal;
             purchaseOrder.Status = status ?? purchaseOrder.Status;
             purchaseOrder.CreditAmount = creditAmount ?? purchaseOrder.CreditAmount;
+            purchaseOrder.UnitCount = unitCount ?? purchaseOrder.UnitCount;
+            purchaseOrder.UnitPrice = unitPrice ?? purchaseOrder.UnitCount;
 
             var updatedPurchaseOrder = await dataStore.PurchaseOrder.Update(purchaseOrder);
             if(!updatedPurchaseOrder.Succeeded || updatedPurchaseOrder.Result == null)
@@ -296,7 +309,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Total = updated.Total,
                 Status = updated.Status,
                 Payload = updated.Payload,
-                CreditAmount = updated.CreditAmount
+                CreditAmount = updated.CreditAmount,
+                UnitCount = updated.UnitCount,
+                UnitPrice = updated.UnitPrice
             }, "Successfully updated purchase order");
         }
         catch (Exception ex)

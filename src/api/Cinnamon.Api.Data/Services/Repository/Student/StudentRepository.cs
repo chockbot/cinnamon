@@ -19,7 +19,7 @@ public class StudentRepository: IStudentRepository
 
     public async Task<AppResult<StudentDTO>> Create(int customerId, int familyMemberId, int activityId, int scheduleId, 
         string name, string studentNo, int numberOfSessions, int sessionsAttended, int numberOfBacktracking, DateTime ExpirationStartDate, DateTime ExpirationEndDate, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE")
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false)
     {
         try
         {
@@ -40,7 +40,8 @@ public class StudentRepository: IStudentRepository
                 Status = status,
                 ExpirationDateStart = ExpirationStartDate,
                 ExpirationDateEnd = ExpirationEndDate,
-                OngoingActivityId = ongoingActivityId
+                OngoingActivityId = ongoingActivityId,
+                IsDisbursement = isDisbursement
             };
 
             var createdStudent = await dataStore.Student.Add(student);
@@ -64,6 +65,7 @@ public class StudentRepository: IStudentRepository
                 StudentNo = newStudent.StudentNo,
                 ExpirationStartDate = newStudent.ExpirationDateStart,
                 ExpirationEndDate = newStudent.ExpirationDateEnd,
+                IsDisbursement = newStudent.IsDisbursement
             }, "Successfully creation student");
         }
         catch (Exception ex)
@@ -102,6 +104,7 @@ public class StudentRepository: IStudentRepository
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
                     ExpirationEndDate = s.ExpirationDateEnd,
+                    IsDisbursement = s.IsDisbursement
                 };
 
                 return studentDto;
@@ -139,7 +142,8 @@ public class StudentRepository: IStudentRepository
                     Status = s.Status,
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
-                    ExpirationEndDate = s.ExpirationDateEnd     
+                    ExpirationEndDate = s.ExpirationDateEnd,
+                    IsDisbursement = s.IsDisbursement
                 };
 
                 return studentDto;
@@ -177,7 +181,8 @@ public class StudentRepository: IStudentRepository
                 Status = student.Status,
                 StudentNo = student.StudentNo,
                 ExpirationStartDate = student.ExpirationDateStart,
-                ExpirationEndDate = student.ExpirationDateEnd   
+                ExpirationEndDate = student.ExpirationDateEnd,
+                IsDisbursement = student.IsDisbursement
             };
 
             return AppResult<StudentDTO>.CreateSucceeded(studentDto, "Successfully get student");
@@ -243,7 +248,7 @@ public class StudentRepository: IStudentRepository
 
     public async Task<AppResult<IEnumerable<StudentDTO>>> Create(int customerId, int activityId, int scheduleId,int numberOfSessions, 
         int sessionsAttended, int numberOfBacktracking, DateTime ExpirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE")
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false)
     {
         try
         {
@@ -273,7 +278,8 @@ public class StudentRepository: IStudentRepository
                     Status = status,
                     ExpirationDateStart = ExpirationStartDate,
                     ExpirationDateEnd = ExpirationEndDate,
-                    OngoingActivityId = ongoingActivityId
+                    OngoingActivityId = ongoingActivityId,
+                    IsDisbursement = isDisbursement
                 };
             });
 
@@ -297,8 +303,8 @@ public class StudentRepository: IStudentRepository
                     Status = s.Status,
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
-                    ExpirationEndDate = s.ExpirationDateEnd
-
+                    ExpirationEndDate = s.ExpirationDateEnd,
+                    IsDisbursement = s.IsDisbursement
                 };
             });
 
@@ -335,7 +341,8 @@ public class StudentRepository: IStudentRepository
                     Status = s.Status,
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
-                    ExpirationEndDate = s.ExpirationDateEnd
+                    ExpirationEndDate = s.ExpirationDateEnd,
+                    IsDisbursement = s.IsDisbursement
                 };
 
                 return studentDto;

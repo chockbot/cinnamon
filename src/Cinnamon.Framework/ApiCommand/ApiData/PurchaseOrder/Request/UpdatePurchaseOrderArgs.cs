@@ -14,4 +14,6 @@ public class UpdatePurchaseOrderArgs
     public decimal? OverallTotal {get; set;}
     public int? Status {get; set;}
     public decimal? CreditAmount {get; set;}
+    public decimal? UnitPrice {get; set;}
+    public int? UnitCount {get; set;}
 }
