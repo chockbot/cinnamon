@@ -185,4 +185,58 @@ public class StudentController : ControllerBase
         }
     }
 
+    [Route("GetStudentsToDisburse")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStudentsToDisburseResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetStudentsToDisburse()
+    {
+        try
+        {
+            var result = await studentRepository.GetStudentsToDisburse();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetStudentsToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetStudentsToDisburseResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetStudentsToDisburseResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new()
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetStudentsToDisburseResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateStudentsDisbursementStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateStudentDisbursementStatusResult), StatusCodes.Status202Accepted)]
+    public async Task<IActionResult> UpdateStudentsDisbursementStatus([FromBody] UpdateStudentDisbursementArgs args)
+    {
+        try
+        {
+            var result = await studentRepository.UpdateStudentsDisbursementStatus(args.Ids, args.IsDisbursement);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateStudentDisbursementStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateStudentDisbursementStatusResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateStudentDisbursementStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
 }

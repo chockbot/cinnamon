@@ -10,11 +10,13 @@ public interface IStudentRepository
     Task<AppResult<IEnumerable<StudentDTO>>> GetAllAsync();
     Task<AppResult<StudentDTO>> Create(int customerId, int familyMemberId, int activityId, int scheduleId, string name, string studentNo, 
         int numberOfSessions, int sessionsAttended, int numberOfBacktracking, DateTime expirationStartDate, DateTime ExpirationEndDate, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE");
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false);
     Task<AppResult<IEnumerable<StudentDTO>>> Create(int customerId, int activityId, int scheduleId,int numberOfSessions, 
         int sessionsAttended, int numberOfBacktracking, DateTime expirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE");
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false);
     Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
         int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? expirationStartDate, DateTime? ExpirationEndDate);
     Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudent(int ActivityId);
+    Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse();
+    Task<AppResult<IEnumerable<StudentDTO>>> UpdateStudentsDisbursementStatus(IEnumerable<int> ids, bool isDisbursement);
 }

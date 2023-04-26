@@ -97,7 +97,7 @@ public class PurchaseOrderController : ControllerBase
         {
             var result = await purchaseOrderRepository.Create(args.ActivityId, args.ScheduleId, args.CustomerId,
                 args.Total, args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, 
-                args.Status, args.Payload ?? string.Empty, args.CreditAmount);
+                args.Status, args.Payload ?? string.Empty, args.CreditAmount, args.UnitPrice, args.UnitCount);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -120,7 +120,8 @@ public class PurchaseOrderController : ControllerBase
         try
         {
             var result = await purchaseOrderRepository.Update(args.PurchaseOrderId, args.ScheduleId, args.Total,
-                args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, args.Status, args.CreditAmount);
+                args.ConvinienceFee, args.Coupon, args.CouponAmount, args.OverallTotal, args.Status, args.CreditAmount,
+                args.UnitPrice, args.UnitCount);
 
             if (!result.Succeeded || result.Result == null)
             {

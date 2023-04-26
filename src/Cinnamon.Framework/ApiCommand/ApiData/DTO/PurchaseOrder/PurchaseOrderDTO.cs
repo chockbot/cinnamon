@@ -14,6 +14,8 @@ public class PurchaseOrderDTO
     public int Status {get; set;}
     public string Payload {get; set;}
     public decimal CreditAmount {get; set;}
+    public int UnitCount {get; set;}
+    public decimal UnitPrice {get; set;}
 
     public AssociatedActivity Activity {get; set;}
     public AssociatedSchedule Schedule {get; set;}

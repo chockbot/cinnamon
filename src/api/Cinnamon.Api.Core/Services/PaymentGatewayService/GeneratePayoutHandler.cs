@@ -23,10 +23,11 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
     private readonly ApplicationConfig applicationConfig;
     private readonly GeneratePayoutHelper generatePayoutHelper;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
+    private readonly IStudentData studentData;
 
     public GeneratePayoutHandler(IPurchaseOrderData purchaseOrderData, IPayoutLogData payoutLogData, 
         ApplicationConfig applicationConfig, IFlurlClientFactory flurlFac, IPayoutAccountData payoutAccountData,
-        IActivityData activityData, IJsonSerializationProvider jsonSerializationProvider)
+        IActivityData activityData, IJsonSerializationProvider jsonSerializationProvider, IStudentData studentData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.payoutLogData = payoutLogData;
@@ -34,6 +35,7 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
         this.activityData = activityData;
         this.applicationConfig = applicationConfig;
         this.jsonSerializationProvider = jsonSerializationProvider;
+        this.studentData = studentData;
 
         var paymentUrl = applicationConfig.Payment.Accounts.First().Settings.First(s => s.Name == "DisbursementUrl").Value;
         flurlClient = flurlFac.Get(paymentUrl);
@@ -57,7 +59,7 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
     {
         try
         {
-            var transactions = await purchaseOrderData.GetAllPurchaseOrderNeedToPayout();
+            var transactions = await studentData.GetStudentsToDisburse();
             if(!transactions.Succeeded || transactions.Result == null || !transactions.Result.IsSuccess)
             {
                 return AppResult<GeneratePayoutResult>.CreateFailed(new ApplicationException(transactions.Result?.ErrorInfo?.Message), transactions.Message);
@@ -76,24 +78,16 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                 var transaction = transactions.Result.Result.ElementAt(i);
                 if(transaction != null)
                 {
-                    // get activity
-                    var activityRes = await activityData.GetActivityById(transaction.ActivityId);
-                    if(!activityRes.Succeeded || activityRes.Result == null || !activityRes.Result.IsSuccess)
-                    {
-                        continue;
-                    }
-                    var activity = activityRes.Result.Result;
-
                     // get maker bank account
-                    var accountRes = await payoutAccountData.GetPayoutAccountByCustomerId(activity.CreatedBy);
+                    var accountRes = await payoutAccountData.GetPayoutAccountByCustomerId(transaction.MakerId);
                     if(!accountRes.Succeeded || accountRes.Result == null || !accountRes.Result.IsSuccess)
                     {
                         continue;
                     }
                     var account = accountRes.Result.Result;
 
-                    generatePayoutHelper.AddCustomerSummary(activity.CreatedBy, transaction.Total, transaction.Id, 
-                        account.BankChannel, account.AccountHolder, account.AccountNumber);
+                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, transaction.UnitPrice, transaction.TransactionId, 
+                        account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
                 }
             }
 
@@ -101,7 +95,8 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
             foreach(var summary in generatePayoutHelper.GetCustomerPayoutSummaries)
             {
                 var objPayload = new {
-                    PurchaseOrderIds = summary.PurchaseOrderIds
+                    PurchaseOrderIds = summary.PurchaseOrderIds.Distinct(),
+                    StudentIds = summary.StudentIds.Distinct()
                 };
                 var serializePayload = jsonSerializationProvider.Serialize(objPayload);
 
