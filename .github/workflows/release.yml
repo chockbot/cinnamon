@@ -59,9 +59,10 @@ jobs:
           AppConfig.Environment: ${{ env.FLAG_ENV }}
           AppConfig.BaseUrl: ${{ env.BASE_URL }}
 
-      # copy sitemaps
+      # copy sitemaps and robots.txt
       - name: Copy sitemap
         run: cp output/sitemap.xml src/Cinnamon.Web/wwwroot/sitemap.xml
+        run: cp output/robots.txt src/Cinnamon.Web/wwwroot/robots.txt
 
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj
