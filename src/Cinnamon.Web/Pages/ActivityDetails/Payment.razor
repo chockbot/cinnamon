@@ -172,7 +172,7 @@
                         <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                         <br />
                         <br />
-                        <button class="btn-primary rounded border-0 py-2 px-3 m-width-100" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled>
+                        <button class="btn-primary rounded border-0 py-2 px-3 m-width-100" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
                             @if (isLoading)
                             {
                                 <i class="fa fa-spinner fa-spin"></i>
@@ -788,7 +788,7 @@
     private string payErrorMessage = string.Empty;
     private bool isShowPayErrorMessage = false;
     private bool isLoading = false;
-    private string payButtonStyle = "font-weight:700;opacity: .5;";
+    private string payButtonStyle = "font-weight:700;";
 
     private async Task OnPayConfirmedClicked()
     {
