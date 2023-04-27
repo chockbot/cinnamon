@@ -121,6 +121,10 @@
     [SupplyParameterFromQuery]
     public string? Uid { get; set; }
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Redirect { get; set; }
+
     private bool IsAcceptPrivacyPolicy {get; set;}
 
     private bool IsShowCheckboxError {get; set;}
@@ -190,7 +194,14 @@
                     return;
                 }
 
-                NavigationManager.NavigateTo("/explore", true);
+                if(string.IsNullOrEmpty(Redirect))
+                {
+                    NavigationManager.NavigateTo("/explore", true);
+                }
+                else 
+                {
+                    NavigationManager.NavigateTo(Redirect, true);
+                }
             }
         }
         catch
