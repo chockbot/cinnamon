@@ -27,16 +27,21 @@
         <div class="btn-cinnamon btn-cinnamon-section1">
             @if (IsAuthenticated)
             {
-                <a class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker"
-                   style="width: fit-content;display:flex;align-items:center;" @onclick="NavigateToCreation">
+                <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker"
+                   style="width: fit-content;" @onclick="NavigateToCreation">
                     Try Cinnamon Making
-                </a>
+                </button>
             }
             else
             {
                 <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker"
                         style="width: fit-content;" @onclick="() => signinModal.Show()">
                     Try Cinnamon Making
+                </button>
+                <button class="btn-google rounded-pill shadow-sm mt-2" @onclick="GoogleSignInClick">
+                    <div class="btn-google-content">
+                        Continue with Google
+                    </div>
                 </button>
             }
         </div>
@@ -308,6 +313,11 @@
     {
         NavigationManager.NavigateTo("Creation");
         return Task.CompletedTask;
+    }
+
+    private void GoogleSignInClick()
+    {
+        NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=/creation", true);
     }
 
     int year = DateTime.Now.Year;

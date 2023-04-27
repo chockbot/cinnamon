@@ -29,5 +29,9 @@
             set { _isChecked = value; }
         }
 
+        public string HasVerificationRequest
+        {
+            get { return !string.IsNullOrEmpty(FrontIdImagePath) && !string.IsNullOrEmpty(BackIdImagePath) ? "Yes" : "No"; }
+        }
     }
 }
