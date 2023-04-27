@@ -364,7 +364,7 @@ public class AccountController : Controller
             if(result.Result.Result.IsNew)
             {
                 await HttpContext.SignOutAsync();
-                return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}&redirect={redirect}");
+                return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}&Redirect={redirect}");
             }
 
             // sign out and sign again to save the cookie login

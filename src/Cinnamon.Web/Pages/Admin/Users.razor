@@ -52,6 +52,9 @@
                         Last Name
                     </TableHeaderCell>
                     <TableHeaderCell>
+                        Has Verification Request
+                    </TableHeaderCell>
+                    <TableHeaderCell>
                         ID Uploaded
                     </TableHeaderCell>
                     <TableHeaderCell>
@@ -66,6 +69,7 @@
                         <TableRowCell class="name-body">@item.Email</TableRowCell>
                         <TableRowCell class="name-body">@item.FirstName</TableRowCell>
                         <TableRowCell class="name-body">@item.LastName</TableRowCell>
+                        <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">@item.HasVerificationRequest</TableRowCell>
                         <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">
                             <button type="button" class="btn btn-primary border-0" @onclick="(() => viewImageModal.ShowModal(item.BackIdImagePath, item.FrontIdImagePath))">Show ID</button>
                         </TableRowCell>
@@ -118,7 +122,7 @@
     {
         var result = await accountApiHandler.GetAllCustomer(new Framework.ApiCommand.ApiCore.Account.Request.GetAllCustomersArgs
             {
-                CountPerPage = 5,
+                CountPerPage = 20,
                 PageIndex = pageIndex
             }, token);
 
