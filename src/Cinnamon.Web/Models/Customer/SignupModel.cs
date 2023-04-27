@@ -29,6 +29,7 @@ public class SignupModel
     [DateAgeRange(MinAge = 18, MaxAge = 120, ErrorMessage = "Please provide valid birthdate. Age must between 18 to 120 yrs old")]
     public DateTime Birthdate {get; set;}
     [Required]
+    [RegularExpression("^(09|\\+639)\\d{9}$", ErrorMessage = "Please provide valid phone number.")]
     public string PhoneNumber { get; set; }
     [Required]
     public string Email {get; set;}
