@@ -29,6 +29,8 @@ public class SignupModel
     [DateAgeRange(MinAge = 18, MaxAge = 120, ErrorMessage = "Please provide valid birthdate. Age must between 18 to 120 yrs old")]
     public DateTime Birthdate {get; set;}
     [Required]
+    public string PhoneNumber { get; set; }
+    [Required]
     public string Email {get; set;}
     [Required(ErrorMessage = "Password required")]
     public string Password {get; set;}
