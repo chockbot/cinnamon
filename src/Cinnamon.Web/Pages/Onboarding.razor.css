@@ -90,10 +90,6 @@
   text-align: center;
 }
 
-
-
-
-
 @media screen and (max-width: 767px) {
   .onboarding-sm {
     display: block;
@@ -129,9 +125,11 @@
   }
   .section-1 .btn-cinnamon {
     top: 16rem;
+    margin-top: 5rem;
   }
-  .section-1 .btn-cinnamon .btn-primary {
-    font-size: 4vw;
+  .section-1 .btn-cinnamon .btn-primary,
+  .section-1 .btn-cinnamon .btn-google {
+    font-size: 3vw;
     font-display: "Nunito";
     width: 100%;
   }
@@ -157,18 +155,6 @@
     background-color: #ffa942;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 @media screen and (min-width: 768px) and (max-width: 1023px) {
   .onboarding-sm {
@@ -201,6 +187,7 @@
     top: 23%;
     left: 50%;
     transform: translate(-50%, -50%);
+    margin-top: 2rem;
   }
   .section-2 .onboarding-cards {
     text-align: center;
@@ -220,19 +207,6 @@
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 @media (min-width: 1200px) {
   .onboarding-sm {
     display: none;
@@ -249,13 +223,6 @@
     aspect-ratio: 1602/552;
   }
 }
-
-
-
-
-
-
-
 
 .card-profile {
   margin-top: 12rem;
@@ -320,23 +287,6 @@ h6,
   font-weight: 500;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @media screen and (max-width: 767px) {
   .card {
     width: 330px;
@@ -353,10 +303,6 @@ h6,
     text-align: justify;
   }
 }
-
-
-
-
 
 .btn-primary {
   color: #fff;
@@ -383,64 +329,52 @@ h6,
 }
 
 @media screen and (max-width: 767px) {
-  .btn-primary {
+  .btn-primary,
+  .btn-google {
     width: 100% !important;
-    height: 12vw !important;
+    height: 7vw !important;
     font-size: 0.9rem;
   }
 }
 
 @media screen and (min-width: 767px) {
-  .btn-primary {
+  .btn-primary,
+  .btn-google {
     height: 3.8vw !important;
     font-size: 1.3vw;
   }
 }
 
 .footer {
-    height: 128px;
-    width: 100%;
-    margin-top: 60px;
-    margin-bottom: 60px;
-    background-color: white;
-    position: relative;
+  height: 128px;
+  width: 100%;
+  margin-top: 60px;
+  margin-bottom: 60px;
+  background-color: white;
+  position: relative;
 }
 
-
-
 .footer-appname {
-    font-family: 'Backline';
-    font-style: normal;
-    font-weight: 400;
-    font-size: 1.8rem;
-    color: #FFA942;
+  font-family: "Backline";
+  font-style: normal;
+  font-weight: 400;
+  font-size: 1.8rem;
+  color: #ffa942;
 }
 
 .footer-text {
-    font-family: 'Inter';
-    font-size: 1.1rem;
-    color: #000000;
+  font-family: "Inter";
+  font-size: 1.1rem;
+  color: #000000;
 }
 
 a {
-    text-decoration: none;
-    color: var(--primary);
+  text-decoration: none;
+  color: var(--primary);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 @media screen and (max-width: 767px) and (orientation: portrait) {
-/*    .footer-appname {
+  /*    .footer-appname {
         font-family: 'Backline';
         font-size: 5vw;
     }
@@ -452,7 +386,7 @@ a {
 }
 
 @media screen and (min-width: 768px) and (max-width: 1023px) {
-/*    .footer-appname {
+  /*    .footer-appname {
         font-family: 'Backline';
         font-size: 4vw;
     }
@@ -463,25 +397,15 @@ a {
     }*/
 }
 
-
 .social-section {
-    margin: 10px 0;
+  margin: 10px 0;
 }
-
 
 .btn-fb {
-    border-color: var(--primary);
-    background-color: var(--primary);
-    color: white;
+  border-color: var(--primary);
+  background-color: var(--primary);
+  color: white;
 }
-
-
-
-
-
-
-
-
 
 /* modal login */
 
@@ -690,25 +614,48 @@ h6 {
     width: 30%;
   }
 
-    .footer {
-        margin-top: 20px;
-        margin-bottom: 50px;
-    }
+  .footer {
+    margin-top: 20px;
+    margin-bottom: 50px;
+  }
 
-    .footer-content {
-        text-align: center;
-        position: absolute;
-        width: 100%;
-        top: 10%;
-    }
+  .footer-content {
+    text-align: center;
+    position: absolute;
+    width: 100%;
+    top: 10%;
+  }
 
-    .footer-appname {
-        font-family: 'Backline';
-        font-size: 5vw;
-    }
+  .footer-appname {
+    font-family: "Backline";
+    font-size: 5vw;
+  }
 
-    .footer-text {
-        font-family: 'Inter';
-        font-size: 2vw;
-    }
+  .footer-text {
+    font-family: "Inter";
+    font-size: 2vw;
+  }
+}
+
+@media screen and (max-width: 1486px) {
+  .onboarding-image-container {
+    margin-bottom: 6rem;
+  }
+}
+
+@media screen and (max-width: 1023px) {
+  .btn-cinnamon .btn-cinnamon-section1 {
+    margin-top: 2rem;
+  }
+}
+
+@media only screen and (max-width: 450px) {
+  .btn-cinnamon.btn-cinnamon-section1 {
+    width: 80%;
+  }
+  .section-1 .btn-cinnamon .btn-primary,
+  .section-1 .btn-cinnamon .btn-google {
+    font-size: 1rem;
+    height: 3rem !important;
+  }
 }
