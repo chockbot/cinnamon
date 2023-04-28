@@ -120,6 +120,7 @@ public class AccountController : ControllerBase
                 Birthdate = args.Birthdate,
                 Email = args.Email,
                 ExternalLogin = args.ExternalLogin,
+                PhoneNumber = args.PhoneNumber,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
                 Password = args.Password,
@@ -137,6 +138,7 @@ public class AccountController : ControllerBase
                 Result = new CustomerDTO {
                     Birthdate = objResult.Birthdate,
                     Email = objResult.Email,
+                    PhoneNumber = objResult.PhoneNumber,
                     ExternalLogin = objResult.ExternalLogin,
                     FirstName = objResult.FirstName,
                     LastName = objResult.LastName,
@@ -165,6 +167,7 @@ public class AccountController : ControllerBase
                 Birthdate = args.Birthdate,
                 Email = args.Email,
                 FirstName = args.FirstName,
+                PhoneNumber = args.PhoneNumber,
                 Guid = args.Guid,
                 LastName = args.LastName,
                 Password = args.Password,
@@ -183,6 +186,7 @@ public class AccountController : ControllerBase
                 Result = new CustomerDTO {
                     Birthdate = objResult.Birthdate,
                     Email = objResult.Email,
+                    PhoneNumber = objResult.PhoneNumber,
                     ExternalLogin = objResult.ExternalLogin,
                     FirstName = objResult.FirstName,
                     LastName = objResult.LastName,

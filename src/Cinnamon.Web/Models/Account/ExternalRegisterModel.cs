@@ -31,6 +31,10 @@ public class ExternalRegisterModel
         public DateTime Birthdate { get; set; }
 
         [Required]
+        [RegularExpression("^(09|\\+639)\\d{9}$", ErrorMessage = "Please provide valid phone number.")]
+        public string PhoneNumber { get; set; }
+
+        [Required]
         public string Password { get; set; }
     }
 }

@@ -7,6 +7,7 @@ public class SubmitRegisterResult
     public string LastName {get; set;}
     public string Email {get; set;}
     public DateTime Birthdate {get; set;}
+    public string PhoneNumber { get; set; }
     public string ProfileImg {get; set;}
     public bool ExternalLogin {get; set;}
     public string Handler {get; set;}

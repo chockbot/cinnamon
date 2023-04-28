@@ -18,6 +18,9 @@ public class ExternaRegisterAutoLogin
     public DateTime Birthdate { get; set; }
 
     [Required]
+    public string PhoneNumber { get; set; }
+
+    [Required]
     public string Password { get; set; }
 
     [Required]

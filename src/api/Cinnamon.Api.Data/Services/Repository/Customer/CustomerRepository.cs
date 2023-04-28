@@ -122,7 +122,7 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, 
+    public async Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, string phoneNumber,
         string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms)
     {
         try
@@ -143,6 +143,7 @@ public class CustomerRepository : ICustomerRepository
                 ProfilePath = profilePath,
                 Email = email,
                 Birthdate = birthdate,
+                PhoneNumber = phoneNumber,
                 ExternalLogin = externalLogin,
                 IsMaker = ismaker,
                 FirstName = firstname,
@@ -164,6 +165,7 @@ public class CustomerRepository : ICustomerRepository
             {
                 About = createdCustomer.About,
                 Birthdate = createdCustomer.Birthdate,
+                PhoneNumber = createdCustomer.PhoneNumber,
                 DateJoined = createdCustomer.CreatedOn,
                 Email = createdCustomer.Email,
                 FirstName = createdCustomer.FirstName,
@@ -184,7 +186,7 @@ public class CustomerRepository : ICustomerRepository
     }
 
     public async Task<AppResult<CustomerDTO>> CreateWithPassword(string firstname, string lastname, string email, 
-        DateTime birthdate, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms)
+        DateTime birthdate, string phoneNumber, string? about, string profilePath, bool isMaker, bool externalLogin, string pasword, string handler, bool hasAcceptedTerms)
     {
         try
         {
@@ -208,7 +210,7 @@ public class CustomerRepository : ICustomerRepository
 
             var userId = await userManager.GetUserIdAsync(user);
 
-            return await Create(userId, firstname, lastname, email, birthdate, about, profilePath, isMaker, externalLogin, handler, hasAcceptedTerms);
+            return await Create(userId, firstname, lastname, email, birthdate, phoneNumber, about, profilePath, isMaker, externalLogin, handler, hasAcceptedTerms);
         }
         catch (Exception ex)
         {
@@ -237,6 +239,7 @@ public class CustomerRepository : ICustomerRepository
                     About = c.About,
                     Birthdate = c.Birthdate,
                     DateJoined = c.CreatedOn,
+                    PhoneNumber = c.PhoneNumber,
                     Email = c.Email,
                     ExternalLogin = c.ExternalLogin,
                     FirstName = c.FirstName,
@@ -279,6 +282,7 @@ public class CustomerRepository : ICustomerRepository
                     About = c.About,
                     Birthdate = c.Birthdate,
                     DateJoined = c.CreatedOn,
+                    PhoneNumber = c.PhoneNumber,
                     Email = c.Email,
                     ExternalLogin = c.ExternalLogin,
                     FirstName = c.FirstName,
@@ -316,6 +320,7 @@ public class CustomerRepository : ICustomerRepository
                 About = result.Result.About,
                 Birthdate = result.Result.Birthdate,
                 DateJoined = result.Result.CreatedOn,
+                PhoneNumber = result.Result.PhoneNumber,
                 Email = result.Result.Email,
                 ExternalLogin = result.Result.ExternalLogin,
                 FirstName = result.Result.FirstName,
@@ -453,7 +458,7 @@ public class CustomerRepository : ICustomerRepository
             return AppResult<ProfilePictureDTO>.CreateFailed(ex, "An error occured when getting customer profile picture");
         }
     }
-    public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, 
+    public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, string? frontIdImagePath, string? backIdImageParh,
         decimal? totalCredits)
     {

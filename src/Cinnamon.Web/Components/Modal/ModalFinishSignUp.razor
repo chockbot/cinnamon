@@ -47,6 +47,17 @@
                     <p class="sub-info">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
                     <Validation>
                         <Field>
+                            <FieldLabel>Phone Number</FieldLabel>
+                            <TextEdit Placeholder="your phone number" @bind-Text="viewModel.PhoneNumber">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </Field>
+                    </Validation>
+                    <p></p>
+                    <Validation>
+                        <Field>
                             <FieldLabel>Email Address</FieldLabel>
                             <TextEdit Disabled Role="TextRole.Email" Placeholder="your email" @bind-Text="viewModel.Email">
                                 <Feedback>
@@ -169,6 +180,7 @@
                             lastname = viewModel.LastName,
                             email = viewModel.Email,
                             birthdate = viewModel.Birthdate,
+                            phoneNumber = viewModel.PhoneNumber,
                             password = viewModel.Password,
                             hasAcceptedTerms = IsAcceptPrivacyPolicy
                         });
