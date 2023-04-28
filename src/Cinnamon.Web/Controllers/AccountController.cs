@@ -224,6 +224,7 @@ public class AccountController : Controller
                 Birthdate = model.Birthdate,
                 Email = model.Email,
                 FirstName = model.FirstName,
+                PhoneNumber = model.PhoneNumber,
                 Guid = model.Guid,
                 LastName = model.LastName,
                 Password = model.Password,
