@@ -4,6 +4,7 @@ using Cinnamon.Web.Models.Forms;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -323,6 +324,14 @@ public class AccountController : Controller
     {
         var querystring = Request.QueryString.ToString();
         await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, 
+            new AuthenticationProperties { RedirectUri = "/api/account/GoogleRedirection" + querystring });
+    }
+
+    [HttpGet("FacebookSignIn")]
+    public async Task FacebookSignIn()
+    {
+        var querystring = Request.QueryString.ToString();
+        await HttpContext.ChallengeAsync(FacebookDefaults.AuthenticationScheme,
             new AuthenticationProperties { RedirectUri = "/api/account/GoogleRedirection" + querystring });
     }
 
