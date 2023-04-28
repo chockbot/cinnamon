@@ -6,6 +6,7 @@ public class ExternalLoginResult
     public string FirstName {get; set;}
     public string LastName {get; set;}
     public string Email {get; set;}
+    public string PhoneNumber { get; set; }
     public bool ExternalLogin {get; set;}
     public bool IsMaker {get; set;}
     public string GeneratedToken {get; set;}

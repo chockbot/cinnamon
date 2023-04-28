@@ -9,6 +9,7 @@ externalRegister.init = async (obj) => {
             lastname: obj.lastname,
             email: obj.email,
             birthdate: obj.birthdate,
+            phonenumber: obj.phonenumber,
             password: obj.password,
             token: obj.token,
             guid: obj.guid,

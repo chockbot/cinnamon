@@ -16,6 +16,8 @@ public class SubmitRegisterArgs
     [Required]
     public DateTime Birthdate { get; set; }
     [Required]
+    public string PhoneNumber { get; set; }
+    [Required]
     public string ProfilePath { get; set; }
     public bool IsMaker { get; set; } = false;
     public bool ExternalLogin { get; set; } = false;

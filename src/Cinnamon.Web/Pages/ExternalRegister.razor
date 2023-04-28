@@ -54,6 +54,17 @@
             <br />
             <Validation>
                 <Field>
+                    <FieldLabel>Phone Number</FieldLabel>
+                    <TextEdit Placeholder="your phone number" @bind-Text="Model.Model.PhoneNumber">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+            <br />
+            <Validation>
+                <Field>
                     <FieldLabel>Email Address</FieldLabel>
                     <TextEdit Disabled Role="TextRole.Email" Placeholder="your email" @bind-Text="Model.Model.Email">
                         <Feedback>
@@ -180,6 +191,7 @@
                                 email = Model.Model.Email,
                                 birthdate = Model.Model.Birthdate,
                                 password = Model.Model.Password,
+                                phonenumber = Model.Model.PhoneNumber,
                                 token = Token,
                                 guid = Uid,
                                 hasAcceptedTerms = IsAcceptPrivacyPolicy

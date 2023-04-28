@@ -116,6 +116,7 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 ExternalLogin = args.ExternalLogin,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
+                PhoneNumber = args.PhoneNumber,
                 ProfilePath = args.ProfilePath,
                 Password = args.Password,
                 Handler = handlerName,
@@ -140,6 +141,7 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                 Email = created.Email,
                 FirstName = created.FirstName,
                 Id = created.Id,
+                PhoneNumber = created.PhoneNumber,
                 LastName = created.LastName,
                 ProfileImg = created.ProfileImg,
                 Handler = created.Handler
