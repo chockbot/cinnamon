@@ -52,6 +52,12 @@ builder.Services.AddAuthentication().AddGoogle(o =>
     };
 });
 
+builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
+{
+    facebookOptions.AppId = builder.Configuration["AppConfig:Authentication:Facebook:AppId"];
+    facebookOptions.AppSecret = builder.Configuration["AppConfig:Authentication:Facebook:AppSecret"];
+});
+
 // add config
 Cinnamon.Web.Config.Config  config = new Cinnamon.Web.Config.Config();
 builder.Configuration.GetSection("AppConfig").Bind(config);
