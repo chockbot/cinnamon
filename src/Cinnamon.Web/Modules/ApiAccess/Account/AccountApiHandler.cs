@@ -478,6 +478,7 @@ public class AccountApiHandler : IAccountApiHandler
         try
         {
             var result = await flurlClient
+
                 .Request($"Account/GetCustomerById/{id}")
                 .GetJsonAsync<GetCustomerByIdResult>();
 

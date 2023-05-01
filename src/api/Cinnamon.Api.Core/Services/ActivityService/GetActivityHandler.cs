@@ -124,6 +124,7 @@ public class GetActivityHandler : IGetActivityHandler
                     IsVerified = activity.Owner.IsVerified,
                     IsOG = activity.Owner.IsOG,
                     IsOfficial = activity.Owner.IsOfficial,
+                    PhoneNumber = activity.Owner.PhoneNumber,
                 } : null
             };
 

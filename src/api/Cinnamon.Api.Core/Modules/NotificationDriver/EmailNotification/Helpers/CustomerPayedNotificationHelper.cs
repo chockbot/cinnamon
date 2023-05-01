@@ -113,19 +113,18 @@ public class CustomerPayedNotificationHelper
                     <div class='maker-details' style='padding: 2rem 2rem'>
                         <p style='font-size: 16px; margin: 0'>
                         <span style='color: #717171'>Experience By: </span>
-                        <span style='color: #000'
-                            ><u style='text-transform: capitalize'>{coachName}</u></span>
+                        <span style='color: #000'>
+                        <u style='text-transform: capitalize'>{coachName}</u></span>
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Email: </span>
-                        <span style='color: #000'
-                            ><u>{makerEmail}</u></span>
+                        <span style='color: #000'>
+                        <u>{makerEmail}</u></span>
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Contact No: </span>
-                        <span style='color: #000'
-                            ><u>{coachNumber}</u></span
-                        >
+                        <span style='color: #000'>
+                        <u>{coachNumber}</u></span>
                         </p>
                     </div>
                 </div>
