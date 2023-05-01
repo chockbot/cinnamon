@@ -369,7 +369,8 @@ public class CustomerRepository : ICustomerRepository
                 IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler,
-                TotalCredits = result.Result.TotalCredits
+                TotalCredits = result.Result.TotalCredits,
+                PhoneNumber = result.Result.PhoneNumber
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by id");

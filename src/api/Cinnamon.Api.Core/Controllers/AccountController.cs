@@ -761,6 +761,7 @@ public class AccountController : ControllerBase
                     IsOfficial = objResult.IsOfficial,
                     DateJoined = objResult.DateJoined,
                     Email = objResult.Email,
+                    PhoneNumber = objResult.PhoneNumber,
                 },
                 IsSuccess = true,
             });
