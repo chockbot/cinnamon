@@ -12,7 +12,7 @@
     </ul>
 </div>
 
-<div class="location-section col-lg-12 col-md-12 col-sm-12 col-12">
+<div class="location-section col-lg-12 col-md-12 col-sm-12 col-6">
     <div class="row">
         <div class="form-group">
             <label for="title" class="form-control-label">Type of experience</label>
@@ -32,11 +32,11 @@
         <div class="form-group">
             <label for="description" class="form-control-label label-top-margin">Where is your experience located?</label><small class="form-text text-muted sub-details pull-right">*(required if in-person)</small>
             <div class="row">
-                <div class="col col-lg-4">
+                <div class="col col-lg-12">
                     <label for="title" class="form-control-label label-top-margin">House No.</label>
                     <input type="text" id="house-number" @bind="Model.Activity.Address1" class="form-control @RequiredCheck(Model.Activity.Address1)" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
                 </div>
-                <div class="col col-lg-8">
+                <div class="col col-lg-12">
                     <label for="title" class="form-control-label label-top-margin">Barangay</label>
                     <select id="barangay" class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
                         <option value="">--Select Barangay--</option>
@@ -91,6 +91,7 @@
                 </div>
             </div>
         </div>
+        <div class="dashed-border d-xl-none d-lg-none d-md-none d-sm-none d-block"></div>
     </div>
 </div>
 

@@ -12,108 +12,111 @@
     </ul>
 </div>
 
-<div class="accordion" id="activitySchedules">
-    @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
-    {
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="collapse-@scheduleModel.Id">
-                <div class="accordion-button d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-@scheduleModel.Id" aria-expanded="true" aria-controls="collapse-@scheduleModel.Id">
-                    <span class="accordion-title">
-                        @if (string.IsNullOrEmpty(scheduleModel.Name))
-                        {
-                            <span>N/A</span>
-                        }
-                        else
-                        {
-                            <span>@scheduleModel.Name</span>
-                        }
-                    </span>
-                    <div class="ms-auto">
-                        <span class="span-price">P @Math.Truncate(scheduleModel.Price)</span>
+<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-6">
+    <div class="accordion" id="activitySchedules">
+        @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
+        {
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="collapse-@scheduleModel.Id">
+                    <div class="accordion-button d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-@scheduleModel.Id" aria-expanded="true" aria-controls="collapse-@scheduleModel.Id">
+                        <span class="accordion-title">
+                            @if (string.IsNullOrEmpty(scheduleModel.Name))
+                            {
+                                <span>N/A</span>
+                            }
+                            else
+                            {
+                                <span>@scheduleModel.Name</span>
+                            }
+                        </span>
+                        <div class="ms-auto">
+                            <span class="span-price">P @Math.Truncate(scheduleModel.Price)</span>
+                        </div>
                     </div>
-                </div>
-            </h2>
-            <div id="collapse-@scheduleModel.Id" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#activitySchedules">
-                <div class="accordion-body">
-                    <div class="row">
-                        <div class="form-group">
-                            <div class="form-check form-switch">
-                                <div class="row">
-                                    <div class="col-lg-4">
-                                        <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                </h2>
+                <div id="collapse-@scheduleModel.Id" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#activitySchedules">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="form-check form-switch">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-8">
+                                            <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                                        </div>
+                                        <div class="col-lg-8 col-4">
+                                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
+                                        </div>
+                                        <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
                                     </div>
-                                    <div class="col-lg-8">
-                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
-                                    </div>
-                                    <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
                                 </div>
                             </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
-                            <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
-                            <small class="form-text text-muted sub-details">e.g. Beginner lessons for 5-9 y/o</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
-                            <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
-                            <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday - 9am-5pm</small>
-                        </div>
-                        <div class="col col-lg-3">
-                            <label for="title" class="form-control-label label-top-margin">Price</label>
-                            <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
-                        </div>
-                        <div class="col col-lg-3">
-                            <label for="title" class="form-control-label label-top-margin">Session/s</label>
-                            <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                            <div class="form-group">
+                                <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
+                                <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
+                                <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
+                                <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
+                                <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday - 9am-5pm</small>
+                            </div>
+                            <div class="col col-lg-3">
+                                <label for="title" class="form-control-label label-top-margin">Price</label>
+                                <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
+                            </div>
+                            <div class="col col-lg-3">
+                                <label for="title" class="form-control-label label-top-margin">Session/s</label>
+                                <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    }
-</div>
-
-<div class="pricing-schedule col-lg-12 col-md-12 col-sm-12 col-12">
-    <div class="row">
-        @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
-        {
-            <div class="form-group">
-                <div class="form-check form-switch">
-                    <div class="row">
-                        <div class="col-lg-4">
-                            <label for="title" class="form-control-label">Set Inactive/Active:</label>
-                        </div>
-                        <div class="col-lg-8">
-                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
-                        </div>
-                        <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
-                <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
-                <small class="form-text text-muted sub-details">e.g. Beginner lessons for 5-9 y/o</small>
-            </div>
-            <div class="form-group">
-                <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
-                <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
-                <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday - 9am-5pm</small>
-            </div>
-            <div class="col col-lg-3">
-                <label for="title" class="form-control-label label-top-margin">Price</label>
-                <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
-            </div>
-            <div class="col col-lg-3">
-                <label for="title" class="form-control-label label-top-margin">Session/s</label>
-                <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
             </div>
         }
-        <div class="form-group">
-            <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
+    </div>
+
+    <div class="pricing-schedule">
+        <div class="row">
+            @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
+            {
+                <div class="form-group">
+                    <div class="form-check form-switch">
+                        <div class="row">
+                            <div class="col-lg-4 col-8">
+                                <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                            </div>
+                            <div class="col-lg-8 col-4">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
+                            </div>
+                            <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
+                    <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
+                    <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
+                </div>
+                <div class="form-group">
+                    <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
+                    <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
+                    <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday - 9am-5pm</small>
+                </div>
+                <div class="col col-lg-3">
+                    <label for="title" class="form-control-label label-top-margin">Price</label>
+                    <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
+                </div>
+                <div class="col col-lg-3">
+                    <label for="title" class="form-control-label label-top-margin">Session/s</label>
+                    <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                </div>
+            }
+            <div class="form-group">
+                <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
+            </div>
         </div>
     </div>
+
 </div>
 
 @code {
