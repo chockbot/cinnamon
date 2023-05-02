@@ -51,6 +51,12 @@
                     <TableHeaderCell>
                         Last Name
                     </TableHeaderCell>
+                     <TableHeaderCell>
+                        OG Badge 
+                    </TableHeaderCell>
+                    <TableHeaderCell>
+                        Official Partner Badge
+                    </TableHeaderCell>
                     <TableHeaderCell>
                         Has Verification Request
                     </TableHeaderCell>
@@ -69,6 +75,16 @@
                         <TableRowCell class="name-body">@item.Email</TableRowCell>
                         <TableRowCell class="name-body">@item.FirstName</TableRowCell>
                         <TableRowCell class="name-body">@item.LastName</TableRowCell>
+                        <TableRowCell class="name-body">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsOG" @onchange="((e) => HandleOGChanged(e, item))">
+                            </div>
+                        </TableRowCell>
+                        <TableRowCell class="name-body">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsOfficial" @onchange="((e) => HandleOFChanged(e, item))">
+                            </div>
+                        </TableRowCell>
                         <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">@item.HasVerificationRequest</TableRowCell>
                         <TableRowCell class="name-body" TextAlignment="TextAlignment.Center">
                             <button type="button" class="btn btn-primary border-0" @onclick="(() => viewImageModal.ShowModal(item.BackIdImagePath, item.FrontIdImagePath))">Show ID</button>
@@ -135,7 +151,9 @@
                 FrontIdImagePath = r.FrontIdImagePath,
                 BackIdImagePath = r.BackIdImagePath,
                 IsVerified = r.IsVerified,
-                IsChecked = r.IsVerified == 2
+                IsChecked = r.IsVerified == 2,
+                IsOG = r.IsOG,
+                IsOfficial = r.IsOfficial,
             }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
         Pagination = result.Result.Pagination;
@@ -189,15 +207,78 @@
         var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
             {
                 VerifiedBadge = verifiedBadge,
-                CustomerId = customer.Id
+                CustomerId = customer.Id,
+                IsOG = customer.IsOG,
+                IsOF = customer.IsOfficial
             }, token);
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
             StateHasChanged();
+            await OnInitializedAsync();
         }
     }
 
+    private async Task HandleOGChanged(ChangeEventArgs e, CustomerProfile customer)
+    {
+        bool isChecked = (bool)e.Value;
+
+        bool OGBadge = false;
+
+        if (isChecked)
+        {
+            OGBadge = true;
+        }
+        else
+        {
+            OGBadge = false;
+        }
+
+        var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+            {
+                IsOG = OGBadge,
+                CustomerId = customer.Id,
+                IsOF = customer.IsOfficial,
+                VerifiedBadge = customer.IsVerified
+            }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            StateHasChanged();
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task HandleOFChanged(ChangeEventArgs e, CustomerProfile customer)
+    {
+        bool isChecked = (bool)e.Value;
+
+        bool OFBadge = false;
+
+        if (isChecked)
+        {
+            OFBadge = true;
+        }
+        else
+        {
+            OFBadge = false;
+            
+        }
+
+        var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+            {
+                IsOF = OFBadge,
+                CustomerId = customer.Id,
+                IsOG = customer.IsOG,
+                VerifiedBadge = customer.IsVerified
+            }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            StateHasChanged();
+            await OnInitializedAsync();
+        }
+    }
     private bool IsActive(string page)
         => currentPage == page;
 

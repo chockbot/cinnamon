@@ -125,6 +125,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
             var emailNotifyRes = await customerPayedNotificationHandler.ExecuteAsync(new Modules.NotificationDriver.Interactors.CustomerPayedNotificationArgs {
                 Amount = purchaseOrder.Total,
                 CoachName = $"{activity.Owner?.FirstName} {activity.Owner?.LastName}",
+                CoachNumber = activity.Owner.PhoneNumber,
                 CustomerName = $"{customer.FirstName} {customer.LastName}",
                 Email = customer.Email,
                 ExperienceName = activity.Title,
