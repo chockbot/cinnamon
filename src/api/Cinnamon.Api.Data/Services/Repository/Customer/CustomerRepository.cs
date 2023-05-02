@@ -461,7 +461,7 @@ public class CustomerRepository : ICustomerRepository
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, string? frontIdImagePath, string? backIdImageParh,
-        decimal? totalCredits)
+        decimal? totalCredits, bool? isOG, bool? isOF)
     {
         try
         {
@@ -485,6 +485,8 @@ public class CustomerRepository : ICustomerRepository
             customer.FrontIdImagePath = frontIdImagePath ?? customer.FrontIdImagePath;
             customer.BackIdImagePath = backIdImageParh ?? customer.BackIdImagePath;
             customer.TotalCredits = totalCredits ?? customer.TotalCredits;
+            customer.IsOG = isOG ?? customer.IsOG;
+            customer.IsOfficialPartner = isOF ?? customer.IsOfficialPartner;
 
             var updatedCustomerRes = await dataStore.Customer.Update(customer);
             if (!updatedCustomerRes.Succeeded)
@@ -506,7 +508,9 @@ public class CustomerRepository : ICustomerRepository
                 IsVerified = customer.IsVerifiedBadge,
                 ProfileImg = customer.ProfilePath,
                 Handler = customer.Handler,
-                TotalCredits = customer.TotalCredits
+                TotalCredits = customer.TotalCredits,
+                IsOG = customer.IsOG,
+                IsOfficial = customer.IsOfficialPartner,
             }, "Successfully updated customer data");
         }
         catch (Exception ex)

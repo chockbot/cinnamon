@@ -1243,7 +1243,9 @@ public class AccountController : ControllerBase
                         Handler          = c.Handler,
                         FrontIdImagePath = c.FrontIdImagePath,
                         BackIdImagePath  = c.BackIdImagePath,
-                        IsVerified       = c.IsVerified
+                        IsVerified       = c.IsVerified,
+                        IsOG             = c.IsOG,
+                        IsOfficial       = c.IsOF
                     };
                 }),
                 IsSuccess = true,
@@ -1267,6 +1269,8 @@ public class AccountController : ControllerBase
             {
                 VerifiedBadge = args.VerifiedBadge,
                 CustomerId = args.CustomerId,
+                IsOG = args.IsOG,
+                IsOF = args.IsOF,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -1281,7 +1285,9 @@ public class AccountController : ControllerBase
                     FirstName = result.Result.FirstName,
                     LastName = result.Result.LastName,
                     IsVerified = result.Result.VerifiedBadge,
-                    Id = result.Result.Id
+                    Id = result.Result.Id,
+                    IsOG = result.Result.IsOG,
+                    IsOfficial = result.Result.IsOF
                 },
                 IsSuccess = true
             });

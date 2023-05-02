@@ -34,7 +34,9 @@ public class UpdateCustomerProfileHandler : IUpdateCustomerProfileHandler
             var result = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs
             {
                 CustomerId = args.CustomerId,
-                IsVerified = args.VerifiedBadge
+                IsVerified = args.VerifiedBadge,
+                IsOG = args.IsOG,
+                IsOF = args.IsOF,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -52,7 +54,9 @@ public class UpdateCustomerProfileHandler : IUpdateCustomerProfileHandler
                 FirstName = result.Result.Result.FirstName,
                 LastName = result.Result.Result.LastName,
                 Id = result.Result.Result.Id,
-                VerifiedBadge = result.Result.Result.IsVerified
+                VerifiedBadge = result.Result.Result.IsVerified,
+                IsOG = result.Result.Result.IsOG,
+                IsOF = result.Result.Result.IsOfficial
             }, "Successfully updated profile details");
         }
         catch (Exception ex)
