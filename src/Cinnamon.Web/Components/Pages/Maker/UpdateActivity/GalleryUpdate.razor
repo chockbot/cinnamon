@@ -32,7 +32,10 @@
                     <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
                 </label>
             </div>
-
+            @if (!string.IsNullOrEmpty(imagesErrorMessage))
+            {
+                <p class="activity-image-photos-error-message">@imagesErrorMessage</p>
+            }
             <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperCoverPhotoModal" style="z-index:99999;">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
