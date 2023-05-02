@@ -111,29 +111,28 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
                 //imgPreview.src = event.target.result;
 
                 if (photoModal == cropperCoverPhotoModal) {
-                    cropperCoverPhoto = initializeCropper($(imgPreview)[0]);
+                    cropperCoverPhoto = initializeCropper($(imgPreview)[0], photoModal);
                     coverPhotoFileName = fileName;
                 }
                 else if (photoModal == cropperFirstSupportPhotoModal) {
-                    cropperFirstPhoto = initializeCropper($(imgPreview)[0]);
+                    cropperFirstPhoto = initializeCropper($(imgPreview)[0], photoModal);
                     firstPhotoFileName = fileName;
                 }
 
                 else if (photoModal == cropperSecondSupportPhotoModal) {
-                    cropperSecondPhoto = initializeCropper($(imgPreview)[0]);
+                    cropperSecondPhoto = initializeCropper($(imgPreview)[0], photoModal);
                     secondPhotoFileName = fileName;
                 }
                     
 
-                $(photoModal).modal({ backdrop: "static", keyboard: false });
-                $(photoModal).modal('show');
+                
             };
             reader.readAsDataURL(photo);
         }
     }
 }
 
-function initializeCropper(imgPreview) {
+function initializeCropper(imgPreview, photoModal) {
     return new Cropper(imgPreview, {
         viewMode: 1,
         aspectRatio: 4/5,
@@ -143,6 +142,8 @@ function initializeCropper(imgPreview) {
         minCropBoxHeight: 271,
         movable: true,
         ready: function () {
+            $(photoModal).modal({ backdrop: "static", keyboard: false });
+            $(photoModal).modal('show');
         },
     });
 }
