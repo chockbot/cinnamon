@@ -26,12 +26,71 @@
             </div>
         </div>
 
-        <p class="experience-heading">
+        <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
             LET’S CREATE YOUR EXPERIENCE!
         </p>
 
+        <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            <div class="row">
+                <div class="col-1 prev-button-section">
+                    @if (currentIndex > 1)
+                    {
+                        <button class="carousel-control-prev" type="button" @onclick="() => OnBackClick()">
+                            <div class="triangle-reverse"></div>
+                        </button>
+                    }
+                </div>
+                <div class="col-10 text-center">
+                    @if (currentIndex == 1)
+                    {
+                        <label class="experience-progress-label">
+                            Overview
+                        </label>
+                    }
+                    else if (currentIndex == 2)
+                    {
+                        <label class="experience-progress-label">
+                            Location
+                        </label>
+                    }
+                    else if (currentIndex == 3)
+                    {
+                        <label class="experience-progress-label">
+                            Pricing & Schedule
+                        </label>
+                    }
+                    else if (currentIndex == 4)
+                    {
+                        <label class="experience-progress-label">
+                            Requirements
+                        </label>
+                    }
+                    else if (currentIndex == 5)
+                    {
+                        <label class="experience-progress-label">
+                            Gallery
+                        </label>
+                    }
+                    else if (currentIndex == 6)
+                    {
+                        <label class="experience-progress-label">
+                            Publish
+                        </label>
+                    }
+                </div>
+                <div class="col-1 next-button-section">
+                    @if (currentIndex < 6)
+                    {
+                        <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
+                            <div class="triangle"></div>
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+
         <div class="row">
-            <div class="col-lg-4">
+            <div class="col-lg-4 d-none d-sm-block d-md-block d-lg-block d-xl-block">
                 <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                     <a class="nav-link @(currentIndex == 1 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(1)">
                         Overview
@@ -127,7 +186,7 @@
                             <PricingAndSchedule @ref="pricingAndScheduleComponent" Model="Model" />
                         </div>
 
-                         <div class='tab @(currentIndex == 4 ? "show" : "")'>
+                        <div class='tab @(currentIndex == 4 ? "show" : "")'>
                             <OptionalDetails @ref="optionalDetailsComponent" Model="Model" />
                         </div>
 
@@ -140,20 +199,37 @@
                         </div>
                     </EditForm>
                 </div>
-                <div class="button-container" style="overflow:auto;">
-                    <div style="float:right;">
+                <div class="button-container">
+                    <div class="row">
                         @if (currentIndex > 1)
                         {
-                            <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
+                            <div class="col-lg-6 col-6">
+                                <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
+                            </div>
+                            <div class="col-lg-6 col-6">
+                                <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                    <LoadingTemplate>
+                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                    </LoadingTemplate>
+                                    <ChildContent>
+                                        @(currentIndex == 6 ? "Publish" : "Next")
+                                    </ChildContent>
+                                </Button>
+                            </div>
                         }
-                        <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                            <LoadingTemplate>
-                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                            </LoadingTemplate>
-                            <ChildContent>
-                                @(currentIndex == 6 ? "Publish" : "Next")
-                            </ChildContent>
-                        </Button>
+                        else
+                        {
+                            <div class="col-lg-12 col-12">
+                                <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                    <LoadingTemplate>
+                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                    </LoadingTemplate>
+                                    <ChildContent>
+                                        @(currentIndex == 6 ? "Publish" : "Next")
+                                    </ChildContent>
+                                </Button>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
