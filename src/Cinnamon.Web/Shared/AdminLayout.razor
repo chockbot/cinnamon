@@ -35,6 +35,11 @@
                             <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Refunds</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToBadges">
+                            <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
+                        </a>
+                    </li>
                 </ul>
             }
         </LayoutSiderContent>
@@ -78,5 +83,9 @@
     private void NavigateToRefunds()
     {
         navigationManager.NavigateTo("/admin/refunds");
+    }
+    private void NavigateToBadges()
+    {
+        navigationManager.NavigateTo("/admin/badges");
     }
 }

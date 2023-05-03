@@ -66,13 +66,8 @@ public class CustomerData : ICustomerData
         {
             var result = await flurlClient
                             .Request("Customer/GetAllCustomers")
-                            .SetQueryParams(
-                                new {
-                                    countPerPage = args.CountPerPage,
-                                    isVerified = args.IsVerified,
-                                    pageIndex = args.PageIndex,
-                                    handlerLike = args.HandlerLike
-                                }).GetJsonAsync<GetAllCustomerResult>();
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetAllCustomerResult>();
 
             return AppResult<GetAllCustomerResult>.CreateSucceeded(result, "Successfully getting get all customers api");
         }

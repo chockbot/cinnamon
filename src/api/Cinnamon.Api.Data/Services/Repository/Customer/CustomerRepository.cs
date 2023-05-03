@@ -218,15 +218,15 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified, int? count, int? skip, string? handlerLike = null)
+    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified,string searchValue, int? count, int? skip, string? handlerLike = null)
     {
         try
         {
             Expression<Func<Entities.Customer,bool>> filter = 
-                a => /*(isVerified.HasValue ? a.IsVerified == isVerified.Value : true) &&*/
+                a => /*(isVerified.HasValue ? a.IsVerifiedBadge == 2 : true) &&*/
                     (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower()));
 
-            var result = await dataStore.Customer.FindAsync(filter,count, skip);
+            var result = await dataStore.Customer.FindCustomerAsync(filter,searchValue,count, skip);
             if (!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<CustomerDTO>>.CreateFailed(result.Error.Exception, result.Message);

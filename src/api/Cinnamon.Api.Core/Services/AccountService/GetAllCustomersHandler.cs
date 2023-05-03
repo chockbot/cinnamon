@@ -31,8 +31,9 @@ namespace Cinnamon.Api.Core.Services.AccountService
         {
             var result = await customerData.GetAllCustomers(new Framework.ApiCommand.ApiData.Customer.Request.GetAllCustomersArgs
             {
+                SearchValue = args.SearchValue,
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex,
+                PageIndex = args.PageIndex
             });
             if (!result.Succeeded || result.Result == null)
             {
