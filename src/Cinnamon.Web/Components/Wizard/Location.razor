@@ -37,12 +37,12 @@
                     <input type="text" id="house-number" @bind="Model.Activity.Address1" class="form-control @RequiredCheck(Model.Activity.Address1)" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
                 </div>
                 <div class="col col-lg-12">
-                    <label for="title" class="form-control-label label-top-margin">Barangay</label>
-                    <select id="barangay" class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
-                        <option value="">--Select Barangay--</option>
-                        @foreach (var barangay in barangayList)
+                    <label for="title" class="form-control-label label-top-margin">Region</label>
+                    <select id="region" class="form-control @RequiredCheck(Model.Activity.Region)" @onchange="GetCitiesByRegion" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
+                        <option value="">--Select Region/State--</option>
+                        @foreach (var region in regionList)
                         {
-                            <option value="@barangay.Code">@barangay.Name</option>
+                            <option value="@region.Code">@region.Name</option>
                         }
                     </select>
                 </div>
@@ -59,12 +59,12 @@
             </select>
         </div>
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin">Region</label>
-            <select id="region" class="form-control @RequiredCheck(Model.Activity.Region)" @onchange="GetCitiesByRegion" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
-                <option value="">--Select Region/State--</option>
-                @foreach (var region in regionList)
+            <label for="title" class="form-control-label label-top-margin">Barangay</label>
+            <select id="barangay" class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
+                <option value="">--Select Barangay--</option>
+                @foreach (var barangay in barangayList)
                 {
-                    <option value="@region.Code">@region.Name</option>
+                    <option value="@barangay.Code">@barangay.Name</option>
                 }
             </select>
         </div>
@@ -83,7 +83,7 @@
 
             <div class="row">
                 <div class="col-lg-8">
-                    <input type="text" placeholder="Search Your Location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="Model.Activity.PinnedLocation" aria-describedby="button-addon3" class="form-control bg-none border-0 pinned-location" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
+                    <input type="text" placeholder="Search Your Location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="Model.Activity.PinnedLocation" aria-describedby="button-addon3" class="form-control pinned-location" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
 
                 </div>
                 <div class="col-lg-4">
