@@ -147,6 +147,15 @@
 
     private bool isShowErrorMessage { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        if (Activity.ActivityId == 0)
+        {
+            Activity.IsPublished = true;
+        }
+
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
