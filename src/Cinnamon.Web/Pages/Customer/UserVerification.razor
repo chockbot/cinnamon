@@ -1,0 +1,56 @@
+@page "/customer/user-verification"
+@layout EmptyLayout
+@using Cinnamon.Web.Components.Pages.Customer.UserVerification
+
+<PageTitle>Account Verification | CinnamonPH</PageTitle>
+<SeoMeta Title="Account Verification" Subject="Profile" Url="/customer/user-verification" />
+
+<div class="user-verification-wrapper">
+    <div class="container py-3">
+        <Breadcrumb Mode="BreadcrumbMode.Auto" class="mb-0 font-20">
+            <BreadcrumbItem class="text-capitalize">
+                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                        1
+                    </span>
+                    <span>
+                        overview
+                    </span>
+                </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem class="text-capitalize active-tab-link">
+                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                        2
+                    </span>
+                    personal information
+                </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem class="text-capitalize">
+                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                        3
+                    </span>
+                    verification
+                </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbItem class="text-capitalize">
+                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                        4
+                    </span>
+                    payout information
+                </BreadcrumbLink>
+            </BreadcrumbItem>
+        </Breadcrumb>
+    </div>
+    <Divider class="m-0" />
+    <div class="container pt-5 pb-5">
+        @* <div class="section-item">
+            <Overview />
+        </div> *@
+        <div class="section-item">
+            <PersonalInformation />
+        </div>
+    </div>
+</div>
