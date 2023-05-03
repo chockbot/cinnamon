@@ -35,7 +35,7 @@
             else
             {
                 <button class="btn-primary rounded-pill shadow-sm" id="cinnamon-maker"
-                        style="width: fit-content;" @onclick="() => signinModal.Show()">
+                    style="width: fit-content;" @onclick="ShowLoginModal">
                     Continue Using Email
                 </button>
                 <button class="btn-google rounded-pill shadow-sm mt-2" @onclick="GoogleSignInClick">
@@ -318,6 +318,12 @@
     private void GoogleSignInClick()
     {
         NavigationManager.NavigateTo("/api/account/GoogleSignIn/?redirect=/creation", true);
+    }
+
+    private void ShowLoginModal()
+    {
+        signinModal.ReturnUrl = "/creation";
+        signinModal.Show();
     }
 
     int year = DateTime.Now.Year;
