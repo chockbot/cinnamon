@@ -403,6 +403,7 @@
             activitySchedules = Model.activitySchedules.Where(a => a.ActivityId == activityId).ToList();
         }
     }
+
     private void TextSearchChanged(string search)
     {
         Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();

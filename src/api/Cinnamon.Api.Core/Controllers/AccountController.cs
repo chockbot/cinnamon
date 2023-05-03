@@ -1218,6 +1218,7 @@ public class AccountController : ControllerBase
         {
             var result = await getAllCustomersHandler.ExecuteAsync(new Services.AccountService.Interactors.GetAllCustomersArgs
             {
+                SearchValue = string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 CountPerPage = args.CountPerPage,
                 PageIndex = args.PageIndex
             });
