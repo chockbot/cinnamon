@@ -16,9 +16,12 @@
     <div class="accordion" id="activitySchedules">
         @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
         {
+            var accordionId = $"panel-section{scheduleModel.Id}";
+            var accordionHeaderId = $"header-section{scheduleModel.Id}";
+
             <div class="accordion-item">
-                <h2 class="accordion-header" id="collapse-@scheduleModel.Id">
-                    <div class="accordion-button d-flex collapsed" data-bs-toggle="collapse" data-bs-target="#collapse-@scheduleModel.Id" aria-expanded="true" aria-controls="collapse-@scheduleModel.Id">
+                <h2 class="accordion-header" id="@accordionHeaderId">
+                    <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
                         <span class="accordion-title">
                             @if (string.IsNullOrEmpty(scheduleModel.Name))
                             {
@@ -30,11 +33,11 @@
                             }
                         </span>
                         <div class="ms-auto">
-                            <span class="span-price">P @scheduleModel.Price</span>
+                            <span class="span-price">P @Math.Truncate(scheduleModel.Price)</span>
                         </div>
                     </div>
                 </h2>
-                <div id="collapse-@scheduleModel.Id" class="accordion-collapse collapse" aria-labelledby="headingOne" data-bs-parent="#activitySchedules">
+                <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
                     <div class="accordion-body">
                         <div class="row">
                             <div class="form-group">
@@ -73,6 +76,7 @@
                 </div>
             </div>
         }
+
     </div>
 
     <div class="pricing-schedule">
