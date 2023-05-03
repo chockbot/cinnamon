@@ -37,23 +37,27 @@ let photoModals = [cropperCoverPhotoModal, cropperFirstSupportPhotoModal, croppe
 $(document).on('change', multiplePhotoUploadInput, function () {
     const inputElement = document.querySelector(multiplePhotoUploadInput);
     let totalFileSize = 0;
-    
-    for (let i = 0; i < 3; i++) {
-        if (inputElement.files[i]) {
-            totalFileSize += inputElement.files[i].size / 1024 / 1024;
-        }
-    }
-    if (totalFileSize > 10) {
+
+    if (inputElement.files.length > 3) {
         return;
     }
     else {
         for (let i = 0; i < 3; i++) {
             if (inputElement.files[i]) {
-                handlePhoto(this, coverPhotos[i], photoModals[i], [inputElement.files[i]]);
+                totalFileSize += inputElement.files[i].size / 1024 / 1024;
+            }
+        }
+        if (totalFileSize > 10) {
+            return;
+        }
+        else {
+            for (let i = 0; i < 3; i++) {
+                if (inputElement.files[i]) {
+                    handlePhoto(this, coverPhotos[i], photoModals[i], [inputElement.files[i]]);
+                }
             }
         }
     }
-
 });
 
 
