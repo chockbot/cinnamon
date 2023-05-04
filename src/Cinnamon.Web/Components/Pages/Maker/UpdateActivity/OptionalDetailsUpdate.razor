@@ -27,7 +27,7 @@
                                       PlaceHolder="Type your post here..."
                                       SubmitOnEnter="false"
                                       ToolbarPosition="Placement.Start">
-                            <Editor>@((MarkupString)Model.Activity.CustomerBringWithThem)</Editor>
+                            <Editor>@((MarkupString)defaultContent)</Editor>
                             <Toolbar>
                                 <RichTextEditToolbarGroup>
                                     <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
@@ -53,6 +53,8 @@
     private RichTextEdit EditCustomerBring;
     IJSObjectReference module;
 
+    private string defaultContent = string.Empty;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -65,6 +67,8 @@
                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-customer-requirement-provide .ql-container", "#label-customer-requirement-editor", maxEditorWordLimit);
 
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+
+            defaultContent = Model.Activity.CustomerBringWithThem;
         }
     }
 
