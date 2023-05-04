@@ -19,9 +19,23 @@
             </Row>
         </div>
         <div class="text-center mt-5">
-            <Button Type="ButtonType.Button" class="btn-primary min-width-130 font-20" Border="Border.Is0">
+            <Button Clicked="NextPage" Type="ButtonType.Button" class="btn-primary min-width-130 font-20" Border="Border.Is0">
                 Continue
             </Button>
         </div>
     </div>
 </section>
+
+@code 
+{
+    [Parameter]
+    public EventCallback OnNextPageClick {get; set;}
+
+    private async Task NextPage()
+    {
+        if(OnNextPageClick.HasDelegate) 
+        {
+            await OnNextPageClick.InvokeAsync();
+        }
+    }
+}

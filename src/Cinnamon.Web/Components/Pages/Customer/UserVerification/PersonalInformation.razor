@@ -75,6 +75,10 @@
             </div>
         </div>
         <div class="text-center mt-5">
+            <Button Type="ButtonType.Button" Clicked="BackPage"
+                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
+                Back
+            </Button>
             <Button Clicked="SaveChanges" Type="ButtonType.Button" class="btn-primary font-20 min-width-130" Border="Border.Is0"
                 Disabled="Model.IsSubmitting" Loading="Model.IsSubmitting">
                 <LoadingTemplate>
@@ -103,6 +107,12 @@
     private Validations refValidation {get; set;}
 
     private PersonalInfoModel Model {get; set;} = new();
+
+    [Parameter]
+    public EventCallback OnNextPageClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnBackPageClick {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
@@ -156,6 +166,11 @@
                 }, Model.Token);
 
             Model.IsSubmitting = false;
+
+            if(OnNextPageClick.HasDelegate)
+            {
+                await OnNextPageClick.InvokeAsync();
+            }
         }
         else 
         {
@@ -167,6 +182,14 @@
     {
         Model.ProfileImageSrc = imageSrc;
         return Task.CompletedTask;
+    }
+
+    private async Task BackPage()
+    {
+        if(OnBackPageClick.HasDelegate)
+        {
+            await OnBackPageClick.InvokeAsync(); 
+        }
     }
 
     class PersonalInfoModel 

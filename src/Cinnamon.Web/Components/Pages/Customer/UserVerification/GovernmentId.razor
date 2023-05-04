@@ -84,7 +84,8 @@
             </Row>
         </div>
         <div class="text-center mt-5">
-            <Button Type="ButtonType.Button" class="font-20 min-width-130 me-1 bg-grey-200 color-white-100" Border="Border.Is0">
+            <Button Type="ButtonType.Button" Clicked="BackPage"
+                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
                 Back
             </Button>
             <Button Clicked="SaveChanges" Disabled="IsSavingChanges" Loading="IsSavingChanges" Type="ButtonType.Button" 
@@ -118,6 +119,12 @@
 
     private bool IsSavingChanges {get; set;}
     private string ErrorMessage {get; set;}
+
+    [Parameter]
+    public EventCallback OnNextPageClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnBackPageClick {get; set;}
 
     protected override void OnInitialized()
     {
@@ -204,13 +211,19 @@
         IsSavingChanges = true;
 
         var result = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Pages.customer.upload.execute");
-        
+
+        IsSavingChanges = false;
+
         if(!result.Success)
         {
             ErrorMessage = result.Message;
+            return;
         }
 
-        IsSavingChanges = false;
+        if(OnNextPageClick.HasDelegate)
+        {
+            await OnNextPageClick.InvokeAsync();
+        }
     }
 
     private Task RemoveImage(ImageModel model)
@@ -220,6 +233,14 @@
         model.ErrorMessage = string.Empty;
         model.ImgSrcUrl = string.Empty;
         return Task.CompletedTask;
+    }
+
+    private async Task BackPage()
+    {
+        if(OnBackPageClick.HasDelegate)
+        {
+            await OnBackPageClick.InvokeAsync(); 
+        }
     }
 
     class ImageModel 

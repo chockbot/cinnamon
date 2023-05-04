@@ -105,10 +105,11 @@
         }
         
         <div class="text-center mt-5">
-            <Button Type="ButtonType.Button" class="font-20 min-width-130 me-1 bg-grey-200 color-white-100" Border="Border.Is0">
+            <Button Type="ButtonType.Button" Clicked="BackPage" 
+                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
                 Back
             </Button>
-            <Button Type="ButtonType.Button" 
+            <Button Type="ButtonType.Button" Clicked="NextPage"
                 class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0">
                 <LoadingTemplate>
                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
@@ -139,6 +140,12 @@
     private bool IsAcceptPrivacyPolicy {get; set;}
 
     private bool IsExpandPayemntInfo {get; set;} = true;
+
+    [Parameter]
+    public EventCallback OnNextPageClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnBackPageClick {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
@@ -209,6 +216,22 @@
         {
             Message = "Please accept the website Tems of Use and Privacy Policy";
             IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task NextPage()
+    {
+        if(OnNextPageClick.HasDelegate) 
+        {
+            await OnNextPageClick.InvokeAsync();
+        }
+    }
+
+    private async Task BackPage()
+    {
+        if(OnBackPageClick.HasDelegate)
+        {
+            await OnBackPageClick.InvokeAsync(); 
         }
     }
 

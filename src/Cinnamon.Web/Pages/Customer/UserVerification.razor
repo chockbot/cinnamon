@@ -1,14 +1,19 @@
 @page "/customer/user-verification"
 @layout EmptyLayout
 @using Cinnamon.Web.Components.Pages.Customer.UserVerification
+@using Cinnamon.Web.Components.Pages;
+@inject NavigationManager NavigationManager;
 
 <PageTitle>Account Verification | CinnamonPH</PageTitle>
 <SeoMeta Title="Account Verification" Subject="Profile" Url="/customer/user-verification" />
 
 <div class="user-verification-wrapper">
+    <header class="container">
+        <a href="/explore" class="app-name">@Resources.App.appName</a>
+    </header>
     <div class="container py-3">
         <Breadcrumb Mode="BreadcrumbMode.Auto" class="mb-0 font-20">
-            <BreadcrumbItem class="text-capitalize">
+            <BreadcrumbItem class="@GetTabClass(0)">
                 <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
                     <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
                         1
@@ -18,7 +23,7 @@
                     </span>
                 </BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbItem class="text-capitalize active-tab-link">
+            <BreadcrumbItem class="@GetTabClass(1)">
                 <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
                     <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
                         2
@@ -26,7 +31,7 @@
                     personal information
                 </BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbItem class="text-capitalize">
+            <BreadcrumbItem class="@GetTabClass(2)">
                 <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
                     <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
                         3
@@ -34,7 +39,7 @@
                     verification
                 </BreadcrumbLink>
             </BreadcrumbItem>
-            <BreadcrumbItem class="text-capitalize">
+            <BreadcrumbItem class="@GetTabClass(3)">
                 <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
                     <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
                         4
@@ -46,17 +51,70 @@
     </div>
     <Divider class="m-0" />
     <div class="container pt-5 pb-5">
-        @* <div class="section-item">
-            <Overview />
-        </div> *@
-        @* <div class="section-item">
-            <PersonalInformation />
-        </div> *@
-        @* <div class="section-item">
-            <GovernmentId />
-        </div> *@
-        <div class="section-item">
-            <PayoutInformation />
+        <div class="@GetClass(0)">
+            <Overview OnNextPageClick="OnNextPage" />
+        </div>
+        <div class="@GetClass(1)">
+            <PersonalInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
+        </div>
+        <div class="@GetClass(2)">
+            <GovernmentId OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
+        </div>
+        <div class="@GetClass(3)">
+            <PayoutInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
         </div>
     </div>
 </div>
+
+@code 
+{
+    private int PageCount {get; set;} = 0;
+
+    private Task OnNextPage()
+    {
+        PageCount++;
+        if(PageCount == 4)
+        {
+            NavigationManager.NavigateTo("/customer/profile");
+        }
+        return Task.CompletedTask;
+    }
+
+    private Task OnBackPage()
+    {
+        PageCount--;
+        return Task.CompletedTask;
+    }
+
+    private string GetClass(int count)
+    {
+        string result = "section-item";
+
+        if(PageCount == count)
+        {
+            result += " d-block";
+        }
+        else
+        {
+            result += " d-none";
+        }
+
+        return result;
+    }
+
+    private string GetTabClass(int pageCount)
+    {
+        string result = "text-capitalize";
+
+        if(PageCount == pageCount)
+        {
+            result += " active-tab-link";
+        }
+        else 
+        {
+            result += "";
+        }
+
+        return result;
+    }
+}
