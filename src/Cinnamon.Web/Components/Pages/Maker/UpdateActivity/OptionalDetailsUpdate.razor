@@ -67,6 +67,8 @@
                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-customer-requirement-provide .ql-container", "#label-customer-requirement-editor", maxEditorWordLimit);
 
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+
+            defaultContent = Model.Activity.CustomerBringWithThem;
         }
     }
 
