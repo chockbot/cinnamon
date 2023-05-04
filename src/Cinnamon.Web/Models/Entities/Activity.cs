@@ -1,3 +1,7 @@
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using System.Security;
+using System.Text.RegularExpressions;
+
 namespace Cinnamon.Web.Models.Entities;
 
 public class Activity 
@@ -6,13 +10,70 @@ public class Activity
     public int ExperienceTypeId {get; set;}
     public int ExperienceCategoryId {get; set;}
     public int SubCategoryId {get; set;}
-    public string Title {get; set;}
-    public string Description {get; set;}
+
+    private string _title;
+
+    public string Title
+    {
+        get
+        {
+            if (!string.IsNullOrEmpty(_title))
+            {
+                string input = _title;
+                string result = MaskEmail(input);
+
+                result = MaskPhone(result);
+
+                return result;
+            }
+
+            return _title;
+        }
+        set { _title = value; }
+    }
+    private string _description;
+
+    public string Description
+    {
+        get {
+            if (!string.IsNullOrEmpty(_description))
+            {
+                string input = _description;
+                string result = MaskEmail(input);
+
+                result = MaskPhone(result);
+
+                return result;
+            }
+
+            return _description;
+        }
+        set { _description = value; }
+    }
+
     public string Price {get; set;}
     public string ScheduleIndicator {get; set;} = " ";
     public string Remarks {get; set;} = " ";
     public bool IsPublished {get; set;}
-    public string Address1 {get; set;} = string.Empty;
+    private string _address1;
+
+    public string Address1
+    {
+        get {
+            if (!string.IsNullOrEmpty(_address1))
+            {
+                string input = _address1;
+                string result = MaskEmail(input);
+
+                result = MaskPhone(result);
+
+                return result;
+            }
+            return _address1;
+        }
+        set { _address1 = value; }
+    }
+
     public string Address2 {get; set;} = string.Empty;
     public string District {get; set;} = string.Empty;
     public string City {get; set;} = string.Empty;
@@ -39,9 +100,47 @@ public class Activity
         get { return string.IsNullOrEmpty(_barangayName) ? "" : _barangayName; }
         set { _barangayName = value; }
     }
-    public string PostalCode { get; set; } = string.Empty;
+    private string _postalCode;
+
+    public string PostalCode
+    {
+        get {
+            if (!string.IsNullOrEmpty(_postalCode))
+            {
+                string input = _postalCode;
+                string result = MaskEmail(input);
+
+                result = MaskPhone(result);
+
+                return result;
+            }
+
+            return _postalCode;
+        }
+        set { _postalCode = value; }
+    }
+
     public string SpecificsYouWillProvide {get; set;}
-    public string CustomerBringWithThem {get; set;}
+    private string _customerBringWithThem;
+
+    public string CustomerBringWithThem
+    {
+        get {
+            if (!string.IsNullOrEmpty(_customerBringWithThem))
+            {
+                string input = _customerBringWithThem;
+                string result = MaskEmail(input);
+
+                result = MaskPhone(result);
+
+                return result;
+            }
+
+            return _customerBringWithThem; 
+        }
+        set { _customerBringWithThem = value; }
+    }
+
     public string? AdditionalRequirements {get; set;}
     public string ActivityLevel {get; set;}
     public string SkillLevel {get; set;}
@@ -66,4 +165,17 @@ public class Activity
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
     public bool IsDeactivated { get; set; }
+
+    string MaskEmail(string input)
+    {
+        string pattern = @"(?<=[\w]{1})[\w\-._\+%]*(?=[\w]{1}@)";
+        return Regex.Replace(input, pattern, m => new string('*', m.Length));
+    }
+
+    string MaskPhone(string input)
+    {
+        string pattern = @"(?<!\()\d(?!\d?$)";
+        return Regex.Replace(input, pattern, m => new string('*', m.Length));
+    }
 }
+
