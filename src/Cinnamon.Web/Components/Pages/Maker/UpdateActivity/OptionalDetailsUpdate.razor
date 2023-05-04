@@ -27,7 +27,7 @@
                                       PlaceHolder="Type your post here..."
                                       SubmitOnEnter="false"
                                       ToolbarPosition="Placement.Start">
-                            <Editor></Editor>
+                            <Editor>@((MarkupString)defaultContent)</Editor>
                             <Toolbar>
                                 <RichTextEditToolbarGroup>
                                     <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
@@ -52,6 +52,8 @@
     private int maxEditorWordLimit = 80;
     private RichTextEdit EditCustomerBring;
     IJSObjectReference module;
+
+    private string defaultContent = string.Empty;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
