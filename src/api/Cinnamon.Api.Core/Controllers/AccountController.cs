@@ -761,6 +761,7 @@ public class AccountController : ControllerBase
                     IsOfficial = objResult.IsOfficial,
                     DateJoined = objResult.DateJoined,
                     Email = objResult.Email,
+                    PhoneNumber = objResult.PhoneNumber,
                 },
                 IsSuccess = true,
             });
@@ -1217,6 +1218,7 @@ public class AccountController : ControllerBase
         {
             var result = await getAllCustomersHandler.ExecuteAsync(new Services.AccountService.Interactors.GetAllCustomersArgs
             {
+                SearchValue = string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 CountPerPage = args.CountPerPage,
                 PageIndex = args.PageIndex
             });
@@ -1242,7 +1244,9 @@ public class AccountController : ControllerBase
                         Handler          = c.Handler,
                         FrontIdImagePath = c.FrontIdImagePath,
                         BackIdImagePath  = c.BackIdImagePath,
-                        IsVerified       = c.IsVerified
+                        IsVerified       = c.IsVerified,
+                        IsOG             = c.IsOG,
+                        IsOfficial       = c.IsOF
                     };
                 }),
                 IsSuccess = true,
@@ -1266,6 +1270,8 @@ public class AccountController : ControllerBase
             {
                 VerifiedBadge = args.VerifiedBadge,
                 CustomerId = args.CustomerId,
+                IsOG = args.IsOG,
+                IsOF = args.IsOF,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -1280,7 +1286,9 @@ public class AccountController : ControllerBase
                     FirstName = result.Result.FirstName,
                     LastName = result.Result.LastName,
                     IsVerified = result.Result.VerifiedBadge,
-                    Id = result.Result.Id
+                    Id = result.Result.Id,
+                    IsOG = result.Result.IsOG,
+                    IsOfficial = result.Result.IsOF
                 },
                 IsSuccess = true
             });

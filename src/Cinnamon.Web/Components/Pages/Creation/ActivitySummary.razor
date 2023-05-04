@@ -1,26 +1,18 @@
 @namespace Cinnamon.Web.Components.Pages.Creation
 @using Cinnamon.Web.Models.Entities;
+@inject IJSRuntime jsRuntime;
 
-<Div class="activity-summary-wrapper">
-    <div class="summary-header margin-botton-3rem margin-top-3rem m-margin-0">
-        <img class="img-human-left" src="images/activity-summary/human-standing.png" alt="image">
-        <img class="img-human-right" src="images/activity-summary/human-sitting.png" alt="image">
-        <Div>
-            <h1 class="font-size-64 font-weight-900 font-family-nunito text-black-100 m-font-size-32 ">You're all set</h1>
-            <p class="text-black-100 font-size-16 font-family-nunito m-font-size-12">Live your passion, share your knowledge and leave a mark in people's lives!</p>
-        </Div>
-    </div>
-    <Divider class="m-margin-5" />
-    <h3 class="font-weight-700 font-size-40 text-orange-100 text-center font-family-nunito margin-top-50 m-font-size-24 m-margin-top-10">Experience Summary</h3>
+<div class="activity-summary-wrapper col-lg-12 col-6">
+    <label for="title" class="form-control-label label-top-margin">Review Your Experience</label>
     <Div class="experience-title" Margin="Margin.Is4.OnY">
-        <Div Display="Display.Flex" Flex="Flex.AlignItems.Center" class="location-category" style="display: flex; align-items: center; justify-content: center;">
+        <Div Display="Display.Flex" Flex="Flex.AlignItems.Center" class="location-category" style="display: flex; align-items: center; justify-content: left;">
             @if (Activity.ExperienceTypeId == 1)
             {
                 <span>
                     <img class="m-laptop-icon" src="images/activity-summary/location.png" alt="icon">
                 </span>
                 <span class="background-black-100 font-size-10 text-white-100
-                    font-family-nunito experience-type-button rounded-pill m-font-size-6">
+                    font-family-nunito in-person-button rounded-pill m-font-size-6">
                     Face to Face
                 </span>
             }
@@ -30,146 +22,119 @@
                     <img class="m-laptop-icon" src="images/activity-summary/laptop-icon.png" alt="icon">
                 </span>
                 <span class="background-black-100 font-size-10 text-white-100
-                    font-family-nunito experience-type-button rounded-pill m-font-size-6">
+                    font-family-nunito online-button rounded-pill m-font-size-6">
                     Online
                 </span>
             }
         </Div>
-        <h3 class="font-size-32 font-family-nunito font-weight-700 text-orange-100 text-center my-3 m-font-size-18">@Activity.Title</h3>
-        <p class="font-size-20 text-center font-family-nunito m-font-size-12">@Activity.Description</p>
+        <h3 class="font-size-32 font-family-nunito font-weight-700 text-orange-100 my-3 m-font-size-18 experience-title">@Activity.Title</h3>
+        <p class="font-size-20 font-family-nunito m-font-size-12 experience-description">@Activity.Description</p>
     </Div>
-    <Divider />
-    <div class="experience-schedules margin-botton-3rem m-margin-bottom-10">
-        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
-            Schedule
-        </h3>
-        <Row HorizontalGutter="20" VerticalGutter="20" TextAlignment="TextAlignment.Center" style="display:flex; justify-content:center;">
-            @foreach (var schedule in Activity.ActivitySchedules.Where(a => !string.IsNullOrEmpty(a.Name) && 
-                                                                            !string.IsNullOrEmpty(a.DateTime) && 
-                                                                            !string.IsNullOrEmpty(a.UnitPrice) && 
-                                                                            !string.IsNullOrEmpty(a.PriceUnit1) &&
-                                                                            !string.IsNullOrEmpty(a.PriceUnit2)))
-            {
-                <Column class="background-black-100" ColumnSize="ColumnSize.Is6.OnMobile.Is4.OnTablet.Is3.OnDesktop">
-                    <div class="background-gray-100 border-radius-20 font-family-nunito p-4 m-padding-10 m-border-radius-10">
-                        <p class="font-size-20 mb-2 m-font-size-10">@schedule.Name</p>
-                        <p class="font-size-16 mb-4 m-font-size-10">@schedule.DateTime</p>
-                        <p class="font-size-16 mb-0 m-font-size-10">@schedule.UnitPrice @Math.Truncate(schedule.Price) / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
-                    </div>
-                </Column>
-            }
-        </Row>
-    </div>
     @if (Activity.ExperienceTypeId == 1)
     {
         <Divider />
         <div class="experience-location margin-botton-3rem m-margin-bottom-10">
-            <h3 class="text-capitalize text-orange-100 text-center font-family-nunito
+            <h3 class="text-capitalize text-orange-100 font-family-nunito
                 font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
                 Location
             </h3>
-            <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
+            <p class="font-size-20 font-family-nunito font-weight-400 mb-1 m-font-size-12">
                 Place: @Activity.Address1, @Activity.Subdivision, @Activity.BarangayName, @Activity.CityName, @Activity.RegionName
             </p>
             @* <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Remarks: Near Uno Gas Station, left side going north</p> *@
         </div>
     }
     <Divider />
-    <div class="experience-provide">
-        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
-            What you will provide
+    <div class="experience-schedules margin-botton-3rem m-margin-bottom-10">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700 margin-botton-1rem m-font-size-16 m-margin-bottom-10">
+            Pricing & Schedule
         </h3>
-        <p>
-            @if (string.IsNullOrEmpty(Activity.SpecificsYouWillProvide))
-            {
-                @("N/A");
-            }
-            else if (Activity.SpecificsYouWillProvide?.ToLower()?.Trim() == "<p><br></p>")
-            {
-                @("N/A");
-            }
-            else
-            {
-                @((MarkupString)Activity.SpecificsYouWillProvide);
-            }
-        </p>
+        <div class="row">
 
+
+            <div class="schedule-swiper overflow-hidden">
+                <div class="swiper-wrapper">
+                    @foreach (var schedule in Activity.ActivitySchedules
+                    .Where(a => !string.IsNullOrEmpty(a.Name) &&
+                    !string.IsNullOrEmpty(a.DateTime) &&
+                    !string.IsNullOrEmpty(a.UnitPrice) &&
+                    !string.IsNullOrEmpty(a.PriceUnit1) &&
+                    !string.IsNullOrEmpty(a.PriceUnit2)))
+                    {
+                        <div class="swiper-slide schedule">
+                            <div class="activity-schedule-box text-center">
+                                <p class="font-size-20 mb-2 m-font-size-10">@schedule.Name</p>
+                                <p class="font-size-16 mb-4 m-font-size-10">@schedule.DateTime</p>
+                                <p class="font-size-16 mb-0 m-font-size-10">@schedule.UnitPrice @Math.Truncate(schedule.Price) / @schedule.PerUnit1 @schedule.PriceUnit1 / @schedule.PerUnit2 @schedule.PriceUnit2</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="swiper-scrollbar"></div>
+            </div>
+        </div>
     </div>
     <Divider />
-    <div class="experience-requirements">
-        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
+
+    <div class="experience-provide">
+        <h3 class="text-capitalize text-orange-100 font-family-nunito font-size-24 font-weight-700
             margin-botton-1rem m-font-size-16 m-margin-bottom-10">
             Customer Requirements
         </h3>
         <p>
             @if (string.IsNullOrEmpty(Activity.CustomerBringWithThem))
             {
-                @("N/A");
+                @("N/A")
+                ;
             }
             else if (Activity.CustomerBringWithThem?.ToLower()?.Trim() == "<p><br></p>")
-            {
-                @("N/A");
-            }
-            else
-            {
-                @((MarkupString)Activity.CustomerBringWithThem);
-            }
-        </p>
-    </div>
-    <Divider />
-    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
-        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
-            Requirements
-        </h3>
-        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Minimum Age: @Activity.MinimumAge</p>
-        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Levels of Activity: @Activity.ActivityLevel</p>
-        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">Skill Level: @Activity.SkillLevel </p>
-    </div>
-    <Divider />
-    <div class="experience-what-you-will-provide margin-botton-3rem m-margin-bottom-10">
-        <h3 class="text-capitalize text-orange-100 text-center font-family-nunito font-size-24 font-weight-700
-            margin-botton-1rem m-font-size-16 m-margin-bottom-10">
-            Additional Requirements
-        </h3>
-        <p class="font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12">
-            @if (!string.IsNullOrEmpty(Activity.AdditionalRequirements))
-            {
-                @((MarkupString)@Activity.AdditionalRequirements)
-            }
-            else
             {
                 @("N/A")
                 ;
             }
+            else
+            {
+                @((MarkupString)Activity.CustomerBringWithThem)
+                ;
+            }
         </p>
-
     </div>
     <Divider />
-    <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 text-center m-font-size-12">
-        <button class="check-button" type="button">
+    <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 m-font-size-12">
+        <button class="check-button" type="button" @onclick=TogglePublishActivity>
             <img class="me-1" src='@(Activity.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
             <span>Active</span>
         </button>
     </div>
     <Divider />
     <div class="experience-confirmation-checkbox margin-botton-3rem m-margin-bottom-10">
-        <div class="d-flex align-items-center justify-content-center flex-column">
-            <p class="ms-3 font-size-20 text-center font-family-nunito font-weight-400 mb-1 m-font-size-12" style="line-height: 1.2;">
-                I understand that I need that to check and complete the attendance of my customers 
-                in the CHECK ATTENDANCE section so that I can receive the payment.
-            </p>
-            <div class="form-check form-switch">
-                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="CheckboxConfirmation">
-            </div>
+        <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
+            <button class="check-button" type="button" @onclick=ToggleConfirmationCheck>
+                <img class="me-1" src='@(CheckboxConfirmation ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                <span>
+                    I understand that I need that to check and complete the attendance of my customers
+                    in the CHECK ATTENDANCE section so that I can receive the payment.
+                </span>
+            </button>
         </div>
-        @if(isShowErrorMessage && !CheckboxConfirmation)
+        <div class="d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            <span class="confirmation-description">
+                I understand that I need that to check and complete the attendance of my customers
+                in the CHECK ATTENDANCE section so that I can receive the payment.
+            </span>
+               <button class="check-button" type="button" @onclick=ToggleConfirmationCheck>
+                 <img class="me-1" src='@(CheckboxConfirmation ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                <span>
+                    Yes, I understand
+                </span>
+            </button>
+       </div>
+        @if (isShowErrorMessage && !CheckboxConfirmation)
         {
             <p style="color: red; font-size: 13px; text-align: center; margin-top: 5px;">Please accept and confirm</p>
         }
     </div>
-</Div>
+</div>
 
 @code
 {
@@ -178,9 +143,23 @@
 
     private bool isPublished { get; set; } = true;
 
-    private bool CheckboxConfirmation {get; set;}
+    private bool CheckboxConfirmation { get; set; }
 
-    private bool isShowErrorMessage {get; set;}
+    private bool isShowErrorMessage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Activity.ActivityId == 0)
+        {
+            Activity.IsPublished = true;
+        }
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
+    }
 
     private void CheckChange(bool value)
     {
@@ -193,9 +172,21 @@
         return Task.CompletedTask;
     }
 
+    private Task ToggleConfirmationCheck()
+    {
+        CheckboxConfirmation = !CheckboxConfirmation;
+        return Task.CompletedTask;
+    }
+
+    private Task TogglePublishActivity()
+    {
+        Activity.IsPublished = !Activity.IsPublished;
+        return Task.CompletedTask;
+    }
+
     public bool Validate()
     {
-        if(!CheckboxConfirmation)
+        if (!CheckboxConfirmation)
         {
             isShowErrorMessage = true;
         }

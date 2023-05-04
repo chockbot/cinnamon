@@ -27,9 +27,18 @@
                 } 
                 else
                 {
-                    <div class="become">
-                        <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
-                    </div>
+                    @if(Model.IsAuthenticated)
+                    {
+                        <div class="become">
+                            <a href="/Creation" class="btn border-0">@Resources.App.Become</a>
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="become">
+                            <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
+                        </div>
+                    }
                 }
                 @*DESKTOP*@
                 <div class="dropdown">
@@ -116,7 +125,7 @@
                                 </Button>
                             </li>
                             <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                                <NavButton OnClick="NavigateToOnboarding" Text="Become a Cinnamon Maker" />
                             </li>
                             <li class="dropdown-item">
                                 <NavButton OnClick="NavigateToHelp" Text="Help" />
@@ -177,9 +186,15 @@
     {
         NavigationManager.NavigateTo("/Help");
     }
+
     private void NavigateToCreation()
     {
-        NavigationManager.NavigateTo("/Onboarding", true);
+        NavigationManager.NavigateTo("/Creation");
+    }
+
+    private void NavigateToOnboarding()
+    {
+        NavigationManager.NavigateTo("/Onboarding");
     }
     
     private void onClickMenu()

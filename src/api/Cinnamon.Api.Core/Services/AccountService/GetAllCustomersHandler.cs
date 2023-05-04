@@ -31,8 +31,9 @@ namespace Cinnamon.Api.Core.Services.AccountService
         {
             var result = await customerData.GetAllCustomers(new Framework.ApiCommand.ApiData.Customer.Request.GetAllCustomersArgs
             {
+                SearchValue = args.SearchValue,
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex,
+                PageIndex = args.PageIndex
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -61,6 +62,8 @@ namespace Cinnamon.Api.Core.Services.AccountService
                     FrontIdImagePath = c.FrontIdImagePath,
                     BackIdImagePath  = c.BackIdImagePath,
                     IsVerified       = c.IsVerified,
+                    IsOG             = c.IsOG,
+                    IsOF             = c.IsOfficial
                 }),
                 Pagination = new Framework.ApiCommand.ApiCore.Pagination
                 {

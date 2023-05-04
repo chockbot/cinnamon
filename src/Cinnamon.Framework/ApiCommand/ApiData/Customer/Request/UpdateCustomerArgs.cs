@@ -20,4 +20,6 @@ public class UpdateCustomerArgs
     public string? FrontIdImagePath { get; set; }
     public string? BackIdImagePath { get; set; }
     public decimal? TotalCredits {get; set;}
+    public bool? IsOG { get; set; }
+    public bool? IsOF { get; set; }
 }

@@ -6,4 +6,6 @@ public class UpdateCustomerProfileResult
     public string FirstName {get; set;}
     public string LastName {get; set;}
     public int VerifiedBadge {get; set;}
+    public bool IsOG { get; set; }
+    public bool IsOF { get; set; }
 }

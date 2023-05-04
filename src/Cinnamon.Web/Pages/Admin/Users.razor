@@ -135,7 +135,9 @@
                 FrontIdImagePath = r.FrontIdImagePath,
                 BackIdImagePath = r.BackIdImagePath,
                 IsVerified = r.IsVerified,
-                IsChecked = r.IsVerified == 2
+                IsChecked = r.IsVerified == 2,
+                IsOG = r.IsOG,
+                IsOfficial = r.IsOfficial,
             }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
         Pagination = result.Result.Pagination;
@@ -189,7 +191,9 @@
         var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
             {
                 VerifiedBadge = verifiedBadge,
-                CustomerId = customer.Id
+                CustomerId = customer.Id,
+                IsOG = customer.IsOG,
+                IsOF = customer.IsOfficial
             }, token);
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
@@ -197,7 +201,6 @@
             StateHasChanged();
         }
     }
-
     private bool IsActive(string page)
         => currentPage == page;
 

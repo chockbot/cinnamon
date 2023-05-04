@@ -8,7 +8,7 @@ public interface ICustomerRepository
 {
     Task<AppResult<CustomerDTO>> GetByIdAsync(int id);
     Task<AppResult<CustomerDTO>> GetByEmailAsync(string email);
-    Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isActive, int? count, int? skip, string? handlerLike = null);
+    Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isActive, string searchValue, int? count, int? skip, string? handlerLike = null);
     Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync();
     Task<AppResult<CustomerDTO>> Create(string userId, string firstname, string lastname, string email, DateTime birthdate, string phoneNumber,
         string? about, string profilePath, bool ismaker, bool externalLogin, string handler, bool hasAcceptedTerms);
@@ -17,7 +17,7 @@ public interface ICustomerRepository
     Task<AppResult<CustomerDTO>> CheckLogin(string email, string password);
     Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, 
-        string? frontIdImagePath, string? backIdImageParh, decimal? totalCredits);
+        string? frontIdImagePath, string? backIdImageParh, decimal? totalCredits, bool? isOG, bool? isOF);
     Task<AppResult<GovernmentIDsDTO>> GetGovermentId(int customerID);
     Task<AppResult<ProfilePictureDTO>> GetProfilePicture(int customerID);
     Task<AppResult<CustomerDTO>> GetByHandlerAsync(string handler);

@@ -21,10 +21,12 @@
     margin-bottom: 2rem;
     font-size: 4vw;
 }
+
 .button-container {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     margin-top: 40px;
+    overflow: auto;
 }
 
 ::deep .button-container .btn-primary {
@@ -54,9 +56,11 @@
     border-radius: 5px;
     margin-right: 20px;
 }
+
 .fa-spin {
     font-size: 15px;
 }
+
 #regForm {
     width: 80%;
     padding: 30px;
@@ -66,11 +70,13 @@
     background-color: white;
     border-radius: 10px;
 }
-a{
+
+a {
     text-decoration: none;
     font-family: 'Nunito';
     color: #000000;
 }
+
 .breadcrumb-item + .breadcrumb-item::before {
     content: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxwYXRoIGQ9Ik0yLjUgMEwxIDEuNSAzLjUgNCAxIDYuNSAyLjUgOGw0LTQtNC00eiIgZmlsbD0iY3VycmVudENvbG9yIi8+PC9zdmc+);
 }
@@ -107,11 +113,11 @@ input.invalid {
     font-size: 1rem;
     margin-left: 10px;
 }
-/* Mark the active step: */
-.icon-step.active {
-    opacity: 1;
-    background-color: #FFA942;
-}
+    /* Mark the active step: */
+    .icon-step.active {
+        opacity: 1;
+        background-color: #FFA942;
+    }
 
 .step.active {
     opacity: 1;
@@ -137,7 +143,7 @@ input.invalid {
     position: absolute;
     top: 70px;
     border-bottom: 1px solid rgba(0,0,0,0.2);
-    z-index:9999;
+    z-index: 9999;
 }
 
 .breadcrumb {
@@ -154,11 +160,189 @@ input.invalid {
 
 .button-container {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     margin-top: 40px;
 }
 
-@media screen and (max-width: 767px) {
+.progress {
+    background-color: rgba(255, 169, 66, 0.3);
+    height: 0.5rem;
+}
+
+    .progress .progress-bar {
+        border: none;
+        background-color: #FFA942;
+    }
+
+    .progress::after {
+        border: 1px solid #fff;
+        border-radius: 0%;
+    }
+
+.progress-bar-section {
+    margin-bottom: 80px;
+}
+
+.progress-details {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 22px;
+    color: #343D4C;
+}
+
+.experience-heading {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 44px;
+    color: #343D4C;
+    margin-bottom: 45px;
+}
+
+.nav-pills .nav-link.active {
+    background: #FFA942;
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+    color: #FFFFFF;
+}
+
+.nav-pills .nav-link {
+    padding: 15px 20px;
+    border-bottom: 0.5px solid #D9D9D9;
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 22px;
+    color: #2C3642;
+}
+
+#v-pills-tab {
+    width: 285px;
+    background: #F3F6FC;
+    border-radius: 10px;
+}
+
+.menu-badge {
+    background: white;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+}
+
+.menu-badge-icon {
+    color: #FFA942;
+    margin-top: 3px;
+}
+
+.tab-content-section {
+    border-radius: 10px;
+    width: 793px;
+}
+
+.carousel-control-prev, .carousel-control-next {
+    width: 20px;
+    height: 20px;
+    background: #FFA942;
+    padding: 15px;
+    border-radius: 50%;
+    opacity: 1;
+    position: relative;
+    z-index: 0;
+}
+
+.carousel-control-prev {
+    -moz-transform: scaleX(-1);
+    -o-transform: scaleX(-1);
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
+    filter: FlipH;
+    -ms-filter: "FlipH";
+}
+
+.experience-progress-wrapper {
+    background: #F3F6FC;
+    border-radius: 3px;
+    padding: 15px 27px;
+    margin-bottom: 20px;
+}
+
+.triangle, .triangle-reverse {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-left: 10px solid #ffffff;
+    border-bottom: 5px solid transparent;
+}
+
+.experience-progress-label {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-weight: 600;
+    font-size: 24px;
+    line-height: 33px;
+    color: #343D4C;
+}
+
+.next-button-section {
+    display: flex;
+    justify-content: end;
+}
+
+@media (min-width: 0px) and (max-width: 575.98px) {
+    .carousel-control-prev, .carousel-control-next {
+        width: 20px;
+        height: 20px;
+        background: #FFA942;
+    }
+
+    #experience-progress .carousel-item {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 600;
+        font-size: 24px;
+        line-height: 33px;
+        color: #343D4C;
+    }
+
+    .progress-bar-section {
+        margin: 24px;
+    }
+
+    #regForm {
+        padding: 5px 0 0 0;
+        width: 100%;
+        margin-top: 60px;
+    }
+
+    .button-container {
+        display: flex;
+        justify-content: center;
+        margin: 40px;
+        overflow: visible;
+    }
+
+        .button-container .row div {
+            padding: 0px;
+        }
+
+        ::deep .button-container .btn-primary {
+            width: 165px;
+            border-radius: 5px;
+        }
+
+    ::deep .button-container .btn-back {
+        width: 160px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
     .landing-sm {
         display: block;
     }
@@ -192,19 +376,23 @@ input.invalid {
         font-size: 0.8rem;
         margin: 0px;
     }
+
     .publish-container {
         font-family: 'Nunito';
         width: 100%;
         margin-left: 0px;
     }
+
     .progress {
-        height: 2rem;
+        height: 10px;
         border-radius: 20px;
     }
+
         .progress:after {
             border: 2px solid #f5f5f5;
             border-radius: 20px;
         }
+
     .progress-container {
         width: 100%;
         font-size: 1.3rem;
@@ -214,13 +402,14 @@ input.invalid {
         position: absolute;
         top: 50px;
     }
+
     .progress-bar {
         background-color: #00875a;
         border-radius: 20px;
     }
 }
 
-@media screen and (min-width: 767px) {
+@media (min-width: 768px) and (max-width: 991.98px) {
     .landing-sm {
         display: none;
     }
@@ -234,9 +423,13 @@ input.invalid {
         background-size: 100% 100%;
         background-repeat: no-repeat;
     }
+
     #publish-image {
         display: none;
     }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
 }
 
 @media (min-width: 1200px) {

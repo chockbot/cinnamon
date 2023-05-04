@@ -105,6 +105,7 @@ public class ActivityDTO
         public string ImageSrc {get; set;}
         public string FirstName {get; set;}
         public string LastName {get; set;}
+        public string PhoneNumber { get; set; }
         public int IsVerified { get; set; }
         public bool IsOG { get; set; }
         public bool IsOfficial { get; set; }

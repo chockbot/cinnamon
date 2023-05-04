@@ -1,0 +1,214 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>Fill in required field</li>
+    </ul>
+</div>
+
+<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-6">
+    <div class="accordion" id="activitySchedules">
+        @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
+        {
+            var accordionId = $"panel-section{scheduleModel.Id}";
+            var accordionHeaderId = $"header-section{scheduleModel.Id}";
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="@accordionHeaderId">
+                    <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
+                        <span class="accordion-title">
+                            @if (string.IsNullOrEmpty(scheduleModel.Name))
+                            {
+                                <span>N/A</span>
+                            }
+                            else
+                            {
+                                <span>@scheduleModel.Name</span>
+                            }
+                        </span>
+                        <div class="ms-auto">
+                            <span class="span-price">P @Math.Truncate(scheduleModel.Price)</span>
+                        </div>
+                    </div>
+                </h2>
+                <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <div class="form-check form-switch">
+                                    <div class="row">
+                                        <div class="col-lg-4 col-8">
+                                            <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                                        </div>
+                                        <div class="col-lg-8 col-4">
+                                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
+                                        </div>
+                                        <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
+                                <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
+                                <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
+                                <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
+                                <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday - 9am-5pm</small>
+                            </div>
+                            <div class="col col-lg-3">
+                                <label for="title" class="form-control-label label-top-margin">Price</label>
+                                <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
+                            </div>
+                            <div class="col col-lg-3">
+                                <label for="title" class="form-control-label label-top-margin">Session/s</label>
+                                <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+
+    <div class="pricing-schedule">
+        <div class="row">
+            @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
+            {
+                <div class="form-group">
+                    <div class="form-check form-switch">
+                        <div class="row">
+                            <div class="col-lg-4 col-8">
+                                <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                            </div>
+                            <div class="col-lg-8 col-4">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
+                            </div>
+                            <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
+                    <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
+                    <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
+                </div>
+                <div class="form-group">
+                    <label for="title" class="form-control-label label-top-margin">Schedule Day & Time</label>
+                    <input class="form-control @RequiredCheck(scheduleModel.DateTime)" id="schedule-time" required @bind="scheduleModel.DateTime" />
+                    <small class="form-text text-muted sub-details">Example: Monday, Tuesday and Friday - 9am-5pm</small>
+                </div>
+                <div class="col col-lg-3">
+                    <label for="title" class="form-control-label label-top-margin">Price</label>
+                    <input class="form-control unit-input @RequiredCheck(scheduleModel.Price)" id="price-input" placeholder="Price" required @bind="scheduleModel.Price" />
+                </div>
+                <div class="col col-lg-3">
+                    <label for="title" class="form-control-label label-top-margin">Session/s</label>
+                    <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
+                </div>
+            }
+            <div class="form-group">
+                <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Models.ExperienceCreationModel Model { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        AddSchedule();
+    }
+
+    private string ShowErrorMessage()
+    {
+        return Model.HasError ? "block" : "none";
+    }
+
+    private string RequiredCheck(String? value)
+    {
+        if (Model.HasError && String.IsNullOrEmpty(value))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (Model.HasError && (value == null || value.Value == 0))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(Decimal? value)
+    {
+        if (Model.HasError && (value == null || value == 0))
+        {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    public bool IsAllFieldsValidated()
+    {
+        if (!IsAllSchedulesValid()) return false;
+        return true;
+    }
+
+    private bool IsAllSchedulesValid()
+    {
+        bool isSingle = Model.Activity.ActivitySchedules.Count == 1;
+
+        foreach (var schedule in Model.Activity.ActivitySchedules)
+        {
+            if ((string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle)) return false;
+        }
+        return true;
+    }
+
+    private void AddSchedule()
+    {
+        foreach (var item in Model.Activity.ActivitySchedules)
+        {
+            item.IsNew = false;
+        }
+
+        var maxIdItem = Model.Activity.ActivitySchedules.MaxBy(x => x.Id);
+        var MaxOrder = Model.Activity.ActivitySchedules.MaxBy(s => s.Order);
+        var maxId = 0;
+        int order = 0;
+
+        if (maxIdItem != null)
+        {
+            maxId = maxIdItem.Id;
+        }
+        if (MaxOrder != null)
+        {
+            order = maxIdItem.Order;
+        }
+
+        Model.Activity.ActivitySchedules.Add(new ActivitySchedule { Id = maxId + 1, PerUnit1 = 1, PerUnit2 = 1, Order = order + 1, IsNew = true });
+    }
+}

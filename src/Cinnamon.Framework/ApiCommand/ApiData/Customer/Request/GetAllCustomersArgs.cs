@@ -2,6 +2,7 @@
 
 public class GetAllCustomersArgs
 {
+    public string? SearchValue { get; set; }
     public bool? IsVerified { get; set; }
     public int? PageIndex { get; set; }
     public int? CountPerPage { get; set; }
