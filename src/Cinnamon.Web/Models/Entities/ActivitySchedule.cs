@@ -69,7 +69,7 @@ public class ActivitySchedule
 
     string MaskEmail(string input)
     {
-        string pattern = @"(?<=[\w]{1})[\w\-._\+%]*(?=[\w]{1}@)";
+        string pattern = @"([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})|((?i)\b((?:https?://|www\d{0,3}[.]|[a-z0-9.\-]+[.][a-z]{2,4}/)(?:[^\s()<>]+|\(([^\s()<>]+|(\([^\s()<>]+\)))*\))+(?:\(([^\s()<>]+|(\([^\s()<>]+\)))*\)|[^\s`!()\[\]{};:'\""\.,<>?«»“”‘’]))\b)";
         return Regex.Replace(input, pattern, m => new string('*', m.Length));
     }
 
