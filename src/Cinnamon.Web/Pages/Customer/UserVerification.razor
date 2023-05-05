@@ -2,81 +2,118 @@
 @layout EmptyLayout
 @using Cinnamon.Web.Components.Pages.Customer.UserVerification
 @using Cinnamon.Web.Components.Pages;
+@using System.Security.Claims;
 @inject NavigationManager NavigationManager;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IAccountApiHandler accountApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
 
-<PageTitle>Account Verification | CinnamonPH</PageTitle>
-<SeoMeta Title="Account Verification" Subject="Profile" Url="/customer/user-verification" />
+@if(IsFullyLoaded)
+{
+    <PageTitle>Account Verification | CinnamonPH</PageTitle>
+    <SeoMeta Title="Account Verification" Subject="Profile" Url="/customer/user-verification" />
 
-<div class="user-verification-wrapper">
-    <header class="container">
-        <a href="/explore" class="app-name">@Resources.App.appName</a>
-    </header>
-    <div class="container py-3 breadcrumb-progress">
-        <Breadcrumb Mode="BreadcrumbMode.Auto" class="mb-0 font-20 user-verification-breadcrumb">
-            <BreadcrumbItem class="@GetTabClass(0)">
-                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
-                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
-                        1
-                    </span>
-                    <span>
-                        overview
-                    </span>
-                </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem class="@GetTabClass(1)">
-                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
-                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
-                        2
-                    </span>
-                    personal information
-                </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem class="@GetTabClass(2)">
-                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
-                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
-                        3
-                    </span>
-                    verification
-                </BreadcrumbLink>
-            </BreadcrumbItem>
-            <BreadcrumbItem class="@GetTabClass(3)">
-                <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
-                    <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
-                        4
-                    </span>
-                    payout information
-                </BreadcrumbLink>
-            </BreadcrumbItem>
-        </Breadcrumb>
-    </div>
-    <Divider class="m-0" />
-    <div class="mt-3 mobile-progress-bar">
-        <div class="progress mx-4">
-            <div id="myBar" class="progress-bar" role="progressbar" style='width: @(GetPerentCompletion)%;'
-             aria-valuemin="0" aria-valuemax="100">
+    <div class="user-verification-wrapper">
+        <header class="container">
+            <a href="/explore" class="app-name">@Resources.App.appName</a>
+        </header>
+        <div class="container py-3 breadcrumb-progress">
+            <Breadcrumb Mode="BreadcrumbMode.Auto" class="mb-0 font-20 user-verification-breadcrumb">
+                <BreadcrumbItem class="@GetTabClass(0)">
+                    <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                        <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                            1
+                        </span>
+                        <span>
+                            overview
+                        </span>
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem class="@GetTabClass(1)">
+                    <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                        <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                            2
+                        </span>
+                        personal information
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem class="@GetTabClass(2)">
+                    <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                        <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                            3
+                        </span>
+                        verification
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+                <BreadcrumbItem class="@GetTabClass(3)">
+                    <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
+                        <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
+                            4
+                        </span>
+                        payout information
+                    </BreadcrumbLink>
+                </BreadcrumbItem>
+            </Breadcrumb>
+        </div>
+        <Divider class="m-0" />
+        <div class="mt-3 mobile-progress-bar">
+            <div class="progress mx-4">
+                <div id="myBar" class="progress-bar" role="progressbar" style='width: @(GetPerentCompletion)%;'
+                aria-valuemin="0" aria-valuemax="100">
+                </div>
+            </div>
+            <Divider class="mt-3" />
+        </div>
+        <div class="container pt-5 pb-5">
+            <div class="@GetClass(0)">
+                <Overview OnNextPageClick="OnNextPage" />
+            </div>
+            <div class="@GetClass(1)">
+                <PersonalInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
+            </div>
+            <div class="@GetClass(2)">
+                <GovernmentId OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
+            </div>
+            <div class="@GetClass(3)">
+                <PayoutInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
             </div>
         </div>
-        <Divider class="mt-3" />
     </div>
-    <div class="container pt-5 pb-5">
-        <div class="@GetClass(0)">
-            <Overview OnNextPageClick="OnNextPage" />
-        </div>
-        <div class="@GetClass(1)">
-            <PersonalInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
-        </div>
-        <div class="@GetClass(2)">
-            <GovernmentId OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
-        </div>
-        <div class="@GetClass(3)">
-            <PayoutInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
-        </div>
-    </div>
-</div>
+}
 
 @code 
 {
     private int PageCount {get; set;} = 0;
+
+    private bool IsFullyLoaded {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+
+        if(!user.Identity.IsAuthenticated)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        var account = result.Result.Result;
+        if(account.IsVerified != 0)
+        {
+            NavigationManager.NavigateTo("/explore");
+            return;
+        }
+
+        IsFullyLoaded = true;
+    }
 
     private Task OnNextPage()
     {
@@ -133,4 +170,5 @@
             return Math.Round((PageCount + 1) * 25.0);
         }
     }
+
 }
