@@ -571,8 +571,11 @@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 
+<WelcomeModal @ref=WelcomeModalRef Token="@CustomerModel.Token"/>
+
 @code
 {
+    private WelcomeModal WelcomeModalRef {get; set;}
     private ModalLogin signinModal;
     public ExploreModel Model = new ExploreModel();
     public Profile CustomerModel = new Profile();
@@ -662,7 +665,13 @@
                         IsMaker = args.IsMaker,
                         IsVerified = args.IsVerified,
                     };
+
+                if(CustomerModel.CustomerProfile.IsVerified == 0)
+                {
+                    WelcomeModalRef.Show();
+                }
             }
+
         }
     }
 
