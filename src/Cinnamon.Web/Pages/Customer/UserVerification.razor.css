@@ -16,6 +16,26 @@
   text-decoration: none;
 }
 
+.progress {
+  height: 25px;
+  border-radius: 30px;
+  background-color: #d9d9d9;
+}
+.progress:after {
+  border: 2px solid #f5f5f5;
+  border-radius: 20px;
+}
+
+.progress-bar {
+  background-color: #00875a;
+  border-radius: 30px;
+  border: 0;
+}
+
+.mobile-progress-bar {
+  display: none;
+}
+
 @media screen and (min-width: 1024px) {
   .app-name {
     font-size: 3vw;
@@ -32,5 +52,13 @@
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .app-name {
     font-size: 2.5rem;
+  }
+
+  .breadcrumb-progress {
+    display: none;
+  }
+
+  .mobile-progress-bar {
+    display: block;
   }
 }

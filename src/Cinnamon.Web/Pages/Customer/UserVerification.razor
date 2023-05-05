@@ -11,8 +11,8 @@
     <header class="container">
         <a href="/explore" class="app-name">@Resources.App.appName</a>
     </header>
-    <div class="container py-3">
-        <Breadcrumb Mode="BreadcrumbMode.Auto" class="mb-0 font-20">
+    <div class="container py-3 breadcrumb-progress">
+        <Breadcrumb Mode="BreadcrumbMode.Auto" class="mb-0 font-20 user-verification-breadcrumb">
             <BreadcrumbItem class="@GetTabClass(0)">
                 <BreadcrumbLink To="#" class="text-decoration-none color-grey-100 font-weight-700 d-flex align-items-center">
                     <span class="rounded-circle bg-grey-200 font-13 breadcrumb-circle">
@@ -50,6 +50,14 @@
         </Breadcrumb>
     </div>
     <Divider class="m-0" />
+    <div class="mt-3 mobile-progress-bar">
+        <div class="progress mx-4">
+            <div id="myBar" class="progress-bar" role="progressbar" style='width: @(GetPerentCompletion)%;'
+             aria-valuemin="0" aria-valuemax="100">
+            </div>
+        </div>
+        <Divider class="mt-3" />
+    </div>
     <div class="container pt-5 pb-5">
         <div class="@GetClass(0)">
             <Overview OnNextPageClick="OnNextPage" />
@@ -116,5 +124,13 @@
         }
 
         return result;
+    }
+
+    private double GetPerentCompletion
+    {
+        get
+        {
+            return Math.Round((PageCount + 1) * 25.0);
+        }
     }
 }

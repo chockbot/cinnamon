@@ -17,12 +17,12 @@
             <div class="personal-details-fullname">
                 <Validations @ref="refValidation" Mode="IsManualValidation ? ValidationMode.Manual : ValidationMode.Auto" Model="Model">
                     <Row>
-                        <Column ColumnSize="ColumnSize.Is3">
+                        <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is4.OnTablet">
                             <label class="color-black-100 font-weight-700 font-24 text-capitalize">full name</label>
                         </Column>
-                        <Column ColumnSize="ColumnSize.Is9">
-                            <Row HorizontalGutter="10">
-                                <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is4.OnTablet">
+                        <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is8.OnTablet">
+                            <Row HorizontalGutter="10" VerticalGutter="10">
+                                <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is6.OnTablet">
                                     <Validation>
                                         <TextEdit class="text-capitalize" Placeholder="First Name" @bind-Text="Model.FirstName">
                                             <Feedback>
@@ -31,7 +31,7 @@
                                         </TextEdit>
                                     </Validation>
                                 </Column>
-                                <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is4.OnTablet">
+                                <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is6.OnTablet">
                                     <Validation>
                                         <TextEdit class="text-capitalize" Placeholder="Last Name" @bind-Text="Model.LastName">
                                             <Feedback>
@@ -45,12 +45,12 @@
                     </Row>
                 </Validations>
             </div>
-            <div class="peronal-details-profile-image mt-5">
+            <div class="peronal-details-profile-image mt-3 mt-sm-5">
                 <Row>
-                    <Column ColumnSize="ColumnSize.Is3" Padding="Padding.Is3.FromTop">
+                    <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is4.OnTablet" Padding="Padding.Is3.FromTop">
                         <label class="color-black-100 font-weight-700 font-24 text-capitalize">profile picture</label>
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is9">
+                    <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is8.OnTablet" class="mt-2 mt-sm-0 text-center text-sm-start">
                         <Figure class="profile-pic" Position="Position.Relative">
                             <CardImage Source=@Model.ProfileImageSrc Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White" />
                             <Button class="edit-profile-icon" Clicked="() => modalUploadProfile.ShowModal()">
@@ -62,10 +62,10 @@
             </div>
             <div class="personal-detail-about mt-4">
                 <Row>
-                    <Column ColumnSize="ColumnSize.Is3">
+                    <Column ColumnSize="ColumnSize.Is3.OnDesktop.Is4.OnTablet">
                         <label class="color-black-100 font-weight-700 font-24 text-capitalize">about you</label>
                     </Column>
-                    <Column ColumnSize="ColumnSize.Is9">
+                    <Column ColumnSize="ColumnSize.Is9.OnDesktop.Is8.OnTablet">
                         <div>
                             <MemoEdit id="bio-editor" Border="Border.Rounded" Rows="5" @bind-Text="Model.Bio" />
                             <p id="label-editor" class="text-end color-grey-100 m-0 font-14">Max of 80 words (0/80)</p>
