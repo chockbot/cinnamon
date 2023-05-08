@@ -639,10 +639,15 @@
                 ExperienceCategories = categories,
                 ExperienceTypes = experiencesType
             };
+    }
+
+    private async Task LoadSigninUser()
+    {
         // get user login
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
         AuthState = user;
+
         if (user != null && user.Identity.IsAuthenticated)
         {
             var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
@@ -651,17 +656,16 @@
                 var args = result.Result.Result;
                 CustomerModel.Token = token;
                 CustomerModel.CustomerProfile = new CustomerProfile
-                    {
-                        Birthdate = args.Birthdate,
-                        Email = args.Email,
-                        FirstName = args.FirstName,
-                        LastName = args.LastName,
-                        Id = args.Id,
-                        IsMaker = args.IsMaker,
-                        IsVerified = args.IsVerified,
-                    };
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
             }
-
         }
     }
 
@@ -691,6 +695,7 @@
     {
         if (firstRender)
         {
+            await LoadSigninUser();
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await InitializeSwiper();
