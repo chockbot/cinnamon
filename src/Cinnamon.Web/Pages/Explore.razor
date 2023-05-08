@@ -562,7 +562,7 @@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 
-<WelcomeModal @ref=WelcomeModalRef Token="@CustomerModel.Token"/>
+<WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker"/>
 
 @code
 {
@@ -595,6 +595,10 @@
     private bool showOverlayPopularActivities = false;
     private bool hasNoMoreRecords = false;
     private int itemsPerPage = 20;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsNewRegistered {get; set;}
 
     private IAnimation selectedAnimation = Animations.FadeIn;
 
@@ -656,13 +660,30 @@
                         IsMaker = args.IsMaker,
                         IsVerified = args.IsVerified,
                     };
-
-                if(CustomerModel.CustomerProfile.IsVerified == 0)
-                {
-                    WelcomeModalRef.Show();
-                }
             }
 
+        }
+    }
+
+    private async Task LoadWelcomeDialog()
+    {
+        if(IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
+        {
+            var customerId = CustomerModel.CustomerProfile.Id;
+            var result = await jsRuntime.InvokeAsync<Models.ResponseModel>("MyLib.Utils.cookieManager.getCookie",$"wel_dia_{customerId}");
+            if(string.IsNullOrEmpty(result.Message))
+            {
+                await WelcomeModalRef.Show();
+            }
+        }
+    }
+
+    private async Task OnSkipMaker()
+    {
+        if(IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
+        {
+            var customerId = CustomerModel.CustomerProfile.Id;
+            await jsRuntime.InvokeVoidAsync("MyLib.Utils.cookieManager.setCookie",$"wel_dia_{customerId}","1");
         }
     }
 
@@ -674,6 +695,8 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await InitializeSwiper();
             await InitializeCarouselSwipe();
+
+            await LoadWelcomeDialog();
         }
         else
         {

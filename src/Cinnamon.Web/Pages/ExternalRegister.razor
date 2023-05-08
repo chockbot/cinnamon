@@ -208,11 +208,18 @@
 
                 if(string.IsNullOrEmpty(Redirect))
                 {
-                    NavigationManager.NavigateTo("/explore", true);
+                    NavigationManager.NavigateTo("/explore?IsNewRegistered=true", true);
                 }
                 else 
                 {
-                    NavigationManager.NavigateTo(Redirect, true);
+                    if(Redirect.Contains("?"))
+                    {
+                        NavigationManager.NavigateTo($"{Redirect}&IsNewRegistered=true", true);
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo($"{Redirect}?IsNewRegistered=true", true);
+                    }
                 }
             }
         }

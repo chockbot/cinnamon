@@ -1,6 +1,4 @@
 @namespace Cinnamon.Web.Components
-@using Cinnamon.Web.Modules.ApiAccess.Handlers;
-@inject IAccountApiHandler accountApiHandler;
 @inject NavigationManager NavigationManager;
 
 <Modal @ref=ModalRef class="welcome-modal">
@@ -17,7 +15,7 @@
                 <p class="font-16 color-grey-100">Joining as an Activity Partner?</p>
                 <Button Clicked="VerifiedMaker" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;" 
                     Border="Border.Is0">Yes, I want to be a Cinnamon maker</Button>
-                <a class="d-block mt-2 color-grey-100 hover-color-grey-100 cursor-pointer" @onclick="() => ModalRef.Close(CloseReason.None)">No, I am a Customer</a>
+                <a class="d-block mt-2 color-grey-100 hover-color-grey-100 cursor-pointer" @onclick="() => SkipMaker()">No, I am a Customer</a>
             </div>
         </ModalBody>
     </ModalContent>
@@ -28,7 +26,7 @@
     private Modal ModalRef {get; set;}
 
     [Parameter]
-    public string Token {get; set;}
+    public EventCallback UserTriggered {get; set;}
 
     public Task Show()
     {
@@ -37,18 +35,19 @@
 
     private async Task VerifiedMaker()
     {
-        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
-        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        if(UserTriggered.HasDelegate)
         {
-            var account = result.Result.Result;
-            if(account.IsVerified == 0)
-            {
-                NavigationManager.NavigateTo("/customer/user-verification");
-            }
-            else 
-            {
-                ModalRef.Close(CloseReason.None);
-            }
+            await UserTriggered.InvokeAsync();
         }
+        NavigationManager.NavigateTo("/customer/user-verification");
+    }
+
+    private async Task SkipMaker()
+    {
+        if(UserTriggered.HasDelegate)
+        {
+            await UserTriggered.InvokeAsync();
+        }
+        await ModalRef.Close(CloseReason.None);
     }
 }
