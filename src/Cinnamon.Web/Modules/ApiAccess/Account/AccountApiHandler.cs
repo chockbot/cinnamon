@@ -729,4 +729,26 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<UpdateRequestRefundResult>.CreateFailed(ex, "An error occured when calling update refund request api");
         }
     }
+
+    public async Task<AppResult<SubmitAccountVerifiedResult>> SubmitAccountVerified(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/SubmitAccountVerified")
+                .PostAsync()
+                .ReceiveJson<SubmitAccountVerifiedResult>();
+
+            return AppResult<SubmitAccountVerifiedResult>.CreateSucceeded(result, "Successfully called submit account verification api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SubmitAccountVerifiedResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubmitAccountVerifiedResult>.CreateFailed(ex, "An error occured when calling submit account verification api");
+        }
+    }
 }
