@@ -171,6 +171,14 @@
                 @if (customerDetail != null && customerDetail.IsMaker == true)
                 {
                     <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first profile-container">
+                        <div class="w-100 shadow d-flex justify-content-center share-link-section" style="background:#F3F6FC">
+                            <div class="d-flex share-link">
+                                <p>Share this experience with your friends</p>
+                                <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                    <img src="images/copytoclipboard.png">
+                                </button>
+                            </div>
+                        </div>
                         <div class="w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
                             <div class="maker-pic">
                             <img class="rounded-2 rounded-circle m-3" src="@customerDetail.ProfilePath"/>
@@ -610,6 +618,7 @@
     {
         if(firstRender)
         {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             await InitializeCarouselSwipe();
         }
@@ -621,6 +630,10 @@
     private async Task InitializeCarouselSwipe()
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
+    }
+    private async Task CopyToClipboard()
+    {
+        await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));
     }
 
 }
