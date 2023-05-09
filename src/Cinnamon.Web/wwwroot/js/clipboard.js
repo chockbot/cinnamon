@@ -1,5 +1,5 @@
 ﻿export function copyToClipboard(text) {
-    navigator.clipboard.writeText(text)
+     navigator.clipboard.writeText(text)
         .then(function () {
             var alertContainer = document.getElementById("alertContainer");
             alertContainer.classList.add("showAlert");
