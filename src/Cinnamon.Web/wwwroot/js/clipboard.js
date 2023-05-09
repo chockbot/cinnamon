@@ -1,11 +1,15 @@
-﻿window.copyToClipboard = (text) => {
-    var element = document.getElementById(text);
-    var clipboard = new ClipboardJS(element);
-    clipboard.on('success', function (e) {
-        console.log('Copied to clipboard: ' + e.text);
-        e.clearSelection();
-    });
-    clipboard.on('error', function (e) {
-        console.error('Error copying to clipboard: ' + e.text);
-    });
+﻿export function copyToClipboard(text) {
+    navigator.clipboard.writeText(text)
+        .then(function () {
+            var alertContainer = document.getElementById("alertContainer");
+            alertContainer.classList.add("showAlert");
+
+            // Hide the alert message after 3 seconds
+            setTimeout(function () {
+                alertContainer.classList.remove("showAlert");
+            }, 1000);
+        })
+        .catch(function (error) {
+            console.error("Copy to clipboard failed: " + error);
+        });
 }
