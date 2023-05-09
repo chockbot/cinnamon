@@ -31,37 +31,75 @@
     </div>
     @foreach (var item in activities)
     {
-        <div class="experience-container">
-            <div class="xp-content">
-                <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
-                <div class="xp-context">
-                    <p class="xp-title">@item.Title</p>
-                    <p class="xp-description">@item.Description</p>
-                    <div class="xp-category">
-                        @if (item.ExperienceTypeId==1)
-                        {
-                            <img src="images/activity-summary/location.png">
-                            <span>Face to Face</span>
-                        }
-                        else
-                        {
-                            <img src="images/activity-summary/laptop-icon.png">
-                            <span>Online</span>
-                        }
+        if (item.IsPublished == true)
+        {
+            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #60996D;">
+                <div class="xp-content">
+                    <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
+                    <div class="xp-context">
+                        <p class="xp-title">@item.Title</p>
+                        <p class="xp-description">@item.Description</p>
+                        <div class="xp-category">
+                            @if (item.ExperienceTypeId == 1)
+                            {
+                                <img src="images/activity-summary/location.png">
+                                <span>Face to Face</span>
+                            }
+                            else
+                            {
+                                <img src="images/activity-summary/laptop-icon.png">
+                                <span>Online</span>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
-            <hr>
-            <div class="xp-actions">
-                <div class="active">
-                    <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
-                        <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                    </button>
-                    <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                <hr>
+                <div class="xp-actions">
+                    <div class="active">
+                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                        </button>
+                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                    </div>
+                    <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
                 </div>
-                <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
             </div>
-        </div>
+        }
+        else
+        {
+            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #717171;">
+                <div class="xp-content">
+                    <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
+                    <div class="xp-context">
+                        <p class="xp-title">@item.Title</p>
+                        <p class="xp-description">@item.Description</p>
+                        <div class="xp-category">
+                            @if (item.ExperienceTypeId == 1)
+                            {
+                                <img src="images/activity-summary/location.png">
+                                <span>Face to Face</span>
+                            }
+                            else
+                            {
+                                <img src="images/activity-summary/laptop-icon.png">
+                                <span>Online</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="xp-actions">
+                    <div class="active">
+                        <button class="check-button" type="button" @onclick="() => CheckUnCheckAllStudent(item)">
+                            <img class="me-1" src='@(item.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                        </button>
+                        <span>@(item.IsPublished ? "Active" : "Inactive")</span>
+                    </div>
+                    <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                </div>
+            </div>
+        }
+
     }
 }
 
