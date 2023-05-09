@@ -35,11 +35,9 @@
                 <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                     <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
                         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
-                            <Tooltip Text="@TooltipText">
-                                <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
-                                    <img src="images/copytoclipboard.png">
-                                </button>
-                            </Tooltip>
+                            <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                <img src="images/copytoclipboard.png">
+                            </button>
                             <Figure>
                                 <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                             </Figure>
@@ -128,8 +126,6 @@
     public CustomerProfile customerDetail = new CustomerProfile();
 
     public int MakerId { get; set; }
-
-    public string TooltipText = "Copy To Clipboard";
 
     //public CustomerModel Customer { get; set; }
 
