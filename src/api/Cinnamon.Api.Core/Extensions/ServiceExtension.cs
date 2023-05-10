@@ -88,6 +88,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IUpdateCustomerProfileHandler, Services.AccountService.UpdateCustomerProfileHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateRequestRefundHandler, Services.AccountService.UpdateRequestRefundHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateCreditBalanceHandler, Services.AccountService.UpdateCreditBalanceHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IAccountSubmitVerifiedHandler, Services.AccountService.AccountSubmitVerifiedHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();

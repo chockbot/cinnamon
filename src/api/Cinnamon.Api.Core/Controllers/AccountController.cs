@@ -52,6 +52,7 @@ public class AccountController : ControllerBase
     private readonly IGetAllCustomersHandler getAllCustomersHandler;
     private readonly IUpdateCustomerProfileHandler updateCustomerProfileHandler;
     private readonly IUpdateRequestRefundHandler updateRequestRefundHandler;
+    private readonly IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler;
 
     #endregion
 
@@ -69,7 +70,9 @@ public class AccountController : ControllerBase
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
         IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
-        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, IUpdateRequestRefundHandler updateRequestRefundHandler)
+        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, 
+        IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, 
+        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -104,6 +107,7 @@ public class AccountController : ControllerBase
         this.getAllCustomersHandler = getAllCustomersHandler;
         this.updateCustomerProfileHandler = updateCustomerProfileHandler;
         this.updateRequestRefundHandler = updateRequestRefundHandler;
+        this.accountSubmitVerifiedHandler = accountSubmitVerifiedHandler;
     }
 
     #endregion
@@ -1335,6 +1339,32 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("SubmitAccountVerified")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SubmitAccountVerifiedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SubmitAccountVerified()
+    {
+        try
+        {
+            var result = await accountSubmitVerifiedHandler.ExecuteAsync(new Services.AccountService.Interactors.AccountSubmitVerifiedArgs {});
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SubmitAccountVerifiedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new SubmitAccountVerifiedResult
+            {
+               IsSuccess= true,
+               Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SubmitAccountVerifiedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
