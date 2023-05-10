@@ -110,7 +110,8 @@
                 Back
             </Button>
             <Button Type="ButtonType.Button" Clicked="NextPage"
-                class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0">
+                class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0"
+                Disabled="IsFinalSubmitting" Loading="IsFinalSubmitting">
                 <LoadingTemplate>
                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                     Saving Changes
@@ -146,6 +147,8 @@
 
     [Parameter]
     public EventCallback OnBackPageClick {get; set;}
+
+    private bool IsFinalSubmitting {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
@@ -221,9 +224,15 @@
 
     private async Task NextPage()
     {
-        if(OnNextPageClick.HasDelegate) 
+        IsFinalSubmitting = true;
+        var result = await accountApiHandler.SubmitAccountVerified(Token);
+        IsFinalSubmitting = false;
+        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
-            await OnNextPageClick.InvokeAsync();
+            if(OnNextPageClick.HasDelegate) 
+            {
+                await OnNextPageClick.InvokeAsync();
+            }
         }
     }
 

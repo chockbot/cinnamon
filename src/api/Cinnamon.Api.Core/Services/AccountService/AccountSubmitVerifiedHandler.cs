@@ -10,11 +10,14 @@ public class AccountSubmitVerifiedHandler : IAccountSubmitVerifiedHandler
 {
     private readonly IGetProfileHandler getProfileHandler;
     private readonly ICustomerData customerData;
+    private readonly IGetGovernmentIdsHandler governmentIdsHandler;
 
-    public AccountSubmitVerifiedHandler(IGetProfileHandler getProfileHandler, ICustomerData customerData)
+    public AccountSubmitVerifiedHandler(IGetProfileHandler getProfileHandler, ICustomerData customerData,
+        IGetGovernmentIdsHandler governmentIdsHandler)
     {
         this.getProfileHandler = getProfileHandler;
         this.customerData = customerData;
+        this.governmentIdsHandler = governmentIdsHandler;
     }
 
     public AppResult<AccountSubmitVerifiedResult> Execute(AccountSubmitVerifiedArgs args)
@@ -33,12 +36,31 @@ public class AccountSubmitVerifiedHandler : IAccountSubmitVerifiedHandler
     {
         try
         {
-            var profileResult = await getProfileHandler.ExecuteAsync(new GetProfileArgs {});
-            if(!profileResult.Succeeded || profileResult.Result == null)
+            // get profile details
+            var profileResult = getProfileHandler.ExecuteAsync(new GetProfileArgs {});
+
+            // get government ids
+            var governmentIds = governmentIdsHandler.ExecuteAsync(new GetGovernmentIdsArgs {});
+
+            await Task.WhenAll(profileResult, governmentIds);
+
+            if(!profileResult.Result.Succeeded || profileResult.Result.Result == null)
             {
-                return AppResult<AccountSubmitVerifiedResult>.CreateFailed(new ApplicationException(profileResult.Message), profileResult.Message);
+                return AppResult<AccountSubmitVerifiedResult>.CreateFailed(new ApplicationException(profileResult.Result.Message), profileResult.Result.Message);
             }
-            var profile = profileResult.Result;
+
+            if(!governmentIds.Result.Succeeded || governmentIds.Result.Result == null)
+            {
+                return AppResult<AccountSubmitVerifiedResult>.CreateFailed(new ApplicationException(governmentIds.Result.Message), governmentIds.Result.Message);
+            }
+
+            var profile = profileResult.Result.Result;
+            var ids = governmentIds.Result.Result;
+
+            if(string.IsNullOrEmpty(ids.FrontImageSrc) || string.IsNullOrEmpty(ids.BackImageSrc))
+            {
+                return AppResult<AccountSubmitVerifiedResult>.CreateFailed(new ApplicationException("Invalid Request. Must provide valid ids."), "Invalid Request. Must provide valid ids.");
+            }
 
             if(profile.IsVerified != 0)
             {
@@ -47,7 +69,6 @@ public class AccountSubmitVerifiedHandler : IAccountSubmitVerifiedHandler
 
             var updateResult = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
                 IsVerified = 1,
-                IsMaker = true,
                 CustomerId = profile.Id
             });
             if(!updateResult.Succeeded || updateResult.Result == null || !updateResult.Result.IsSuccess)
