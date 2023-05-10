@@ -205,6 +205,7 @@
         // no image changes
         if(FrontImage.ImageSize == 0 && BackImage.ImageSize == 0)
         {
+            await OnNextPageClick.InvokeAsync();
             return;
         }
 

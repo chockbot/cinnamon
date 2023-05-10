@@ -17,14 +17,31 @@
 
 @if (Model != null)
 {
-    <div class="announcement">
-        <img src="images/bulb.svg" class="me-4" alt="icon">
-        <p class="m-0">
-            <span>Announcement! </span>
-            We would like to remind you to check the attendance of your students on the ATTENDANCE tab. 
-            This will help you keep track of your students progress and ensure that everyone is attending classes regularly. 
-        </p>
-    </div>
+    @if(IsNotVerified)
+    {
+        <div class="announcement">
+            <img src="images/user-verification/warning.png" class="me-4" alt="icon">
+            <p class="mb-0 me-3 w-100">
+                <span>Account Verification!</span> <br>
+                Your account is not yet verified. Please check your account for the complete process of setting it up.
+            </p>
+            <Button class="btn-primary width-150 m-margin-top-10" 
+                Border="Border.Is0" Clicked="NavigateToUserVerification">
+                Get Started
+            </Button>
+        </div>
+    }
+    else 
+    {
+        <div class="announcement">
+            <img src="images/bulb.svg" class="me-4" alt="icon">
+            <p class="m-0">
+                <span>Announcement! </span>
+                We would like to remind you to check the attendance of your students on the ATTENDANCE tab. 
+                This will help you keep track of your students progress and ensure that everyone is attending classes regularly. 
+            </p>
+        </div>
+    }
     <div class="header">
         <p class="title">Experiences</p>
         <button class="create-button" @onclick="NavigateToCreation">Create New Experience</button>
@@ -112,6 +129,8 @@
 
     public Activity activity = new Activity();
 
+    private bool IsNotVerified {get; set;}
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -142,6 +161,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
+            IsNotVerified = customer.IsVerified == 0;
 
             var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
                 {
@@ -188,6 +208,11 @@
     private void NavigateToCreation()
     {
         NavigationManager.NavigateTo("creation", true);
+    }
+
+    private void NavigateToUserVerification()
+    {
+        NavigationManager.NavigateTo("customer/user-verification");
     }
 
     private void CheckUnCheckAllStudent(Activity activity)
