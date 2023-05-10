@@ -10,4 +10,6 @@ public class UpdateProfileDetailsArgs
     public string? About {get; set;}
     public int VerifiedBadge { get; set; }
     public int CustomerId { get; set; }
+    public bool IsOG { get; set; }
+    public bool IsOF { get; set; }
 }

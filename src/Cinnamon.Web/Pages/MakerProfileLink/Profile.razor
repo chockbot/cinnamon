@@ -9,6 +9,9 @@
 @using System.Security.Claims
 @using System.Text.RegularExpressions
 @using Cinnamon.Web.Components.Pages;
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using System.Threading.Tasks
 @inject IModalService modal
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -23,12 +26,18 @@
 
 @if (activities!=null)
 {
+    <div id="alertContainer" class="alertContainer">
+        <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
+    </div>
     <section class="py-3 mt-5 profile-content">
         <Container>
             <Row>
                 <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                     <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
                         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
+                            <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                <img src="images/copytoclipboard.png">
+                            </button>
                             <Figure>
                                 <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                             </Figure>
@@ -101,6 +110,8 @@
 
 @code 
 {
+    IJSObjectReference module;
+
     [Parameter]
     public string Id { get; set; }
 
@@ -243,6 +254,15 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
+        }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
+    private async Task CopyToClipboard()
+    {
+        await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));
+    }
+    
 }

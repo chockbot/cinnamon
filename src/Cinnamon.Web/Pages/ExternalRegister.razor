@@ -54,17 +54,6 @@
             <br />
             <Validation>
                 <Field>
-                    <FieldLabel>Phone Number</FieldLabel>
-                    <TextEdit Placeholder="your phone number" @bind-Text="Model.Model.PhoneNumber">
-                        <Feedback>
-                            <ValidationError />
-                        </Feedback>
-                    </TextEdit>
-                </Field>
-            </Validation>
-            <br />
-            <Validation>
-                <Field>
                     <FieldLabel>Email Address</FieldLabel>
                     <TextEdit Disabled Role="TextRole.Email" Placeholder="your email" @bind-Text="Model.Model.Email">
                         <Feedback>
@@ -74,6 +63,17 @@
                 </Field>
             </Validation>
             <span class="font-11">For email confirmations and receipts.</span>
+            <br />
+            <Validation>
+                <Field>
+                    <FieldLabel>Mobile Number</FieldLabel>
+                    <TextEdit Placeholder="your phone number" @bind-Text="Model.Model.PhoneNumber">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
             <br />
             <Validation>
                 <Field Style="@flexItemStyle">

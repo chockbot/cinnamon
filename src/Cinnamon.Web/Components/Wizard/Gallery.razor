@@ -1,0 +1,331 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+@using Blazorise.RichTextEdit;
+
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>Fill in required field</li>
+    </ul>
+</div>
+
+<div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-6">
+    <div class="row">
+        <div class="form-group">
+            <label for="title" class="form-control-label label-top-margin">Post Pictures</label>
+            <p class="form-text text-muted label-top-margin">Pictures must have:</p>
+            <ul>
+                <li>Different angles and details, including photos of people at work.</li>
+                <li>Innocent, yet illuminating, snippets from the experience.</li>
+                <li>Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks.</li>
+            </ul>
+
+            <div class="photo-upload-section">
+                <label for="photo-upload" style="cursor: pointer;">
+                    <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                        Upload 3 photos (10MB)
+                    </Button>
+                    <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
+                </label>
+            </div>
+            @if (!string.IsNullOrEmpty(imagesErrorMessage))
+            {
+                <p class="activity-image-photos-error-message">@imagesErrorMessage</p>
+            }
+            <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperCoverPhotoModal" style="z-index:99999;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="col-11 modal-title text-center">Edit Cover Photo</p>
+                            <button type="button" class="btn-close" id="btnCloseCropperCoverPhotoModal" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="text-align:center">
+                            <div class="col-12-lg d-flex justify-content-center">
+                                <img id="imgCoverPhotoPreview" src="">
+                            </div>
+                            <button class="btn btn-primary border-0" id="btnSaveCropCoverPhoto">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="coverPhotoData" />
+            <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperFirstSupportPhotoModal" style="z-index:99999;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="col-11 modal-title text-center">Edit First Supporting Photo</p>
+                            <button type="button" class="btn-close" id="btnCloseCropperFirstSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="text-align:center">
+                            <div class="col-12-lg d-flex justify-content-center">
+                                <img id="imgFirstSupportPhotoPreview" src="">
+                            </div>
+                            <button class="btn btn-primary border-0" id="btnSaveCropFirstPhoto">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="firstPhotoData" />
+            <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="cropperSecondSupportPhotoModal" style="z-index:99999;">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <p class="col-11 modal-title text-center">Edit Second Supporting Photo</p>
+                            <button type="button" class="btn-close" id="btnCloseCropperSecondSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body" style="text-align:center">
+                            <div class="col-12-lg d-flex justify-content-center">
+                                <img id="imgSecondSupportPhotoPreview" src="">
+                            </div>
+                            <button class="btn btn-primary border-0" id="btnSaveCropSecondPhoto">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" id="secondPhotoData" />
+            <div class="row">
+                @foreach (var imageItem in imageItems)
+                {
+                    <div class="col-lg-6">
+                        <p class="photo-label">@imageItem.Caption</p>
+                        <div class="img-card">
+                            <img id="@imageItem.Id" name="@imageItem.Id" class='experience-image img-banner' src="@imageItem.Src" data-name="" style="@imageItem.Size" />
+                        </div>
+                        <div class="img-control-section">
+                            <label for="@imageItem.FileControlId" class="label-edit">
+                                <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
+                                    <i class="fa fa-edit"></i>
+                                </Button>
+                                <InputFile id="@imageItem.FileControlId" accept=".png,.jpg,.jpeg" name="@imageItem.FileControlId" style="display: none;" OnChange="@((InputFileChangeEventArgs args) => LoadFile(args, imageItem.Index))" />
+                            </label>
+                            <label style="cursor: pointer;">
+                                <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-danger" @onclick="(() => RemoveFile(imageItem.Index))">
+                                    <i class="fa fa-trash"></i>
+                                </Button>
+                            </label>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Models.ExperienceCreationModel Model { get; set; }
+
+    private int maxEditorWordLimit = 80;
+    private RichTextEdit EditCustomerBring;
+    IJSObjectReference module;
+    private decimal totalImageSizeMB = 0;
+    private int selectedImageCount = 0;
+    private string imagesErrorMessage = string.Empty;
+    private int validImages = 0;
+    private string emptyImageSrc = "images/placeholder-image-detail.PNG";
+    private string imageSize = "width: 320px;height: 395px;";
+
+    List<FileDetails> fileDetails = new List<FileDetails>()
+        {
+            new FileDetails{ Id = 0, ImageId = "#imgSrc1", FileControlId = "#cover-photo"},
+            new FileDetails{ Id = 1, ImageId = "#imgSrc2", FileControlId = "#first-support-photo"},
+            new FileDetails{ Id = 2, ImageId = "#imgSrc3", FileControlId = "#second-support-photo"}
+        };
+
+    private IList<ImageItem> imageItems = new List<ImageItem>();
+
+    private bool isShowImageErrorMessage = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(3000);
+
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        imageItems.Add(new ImageItem { Name = "Image1", Id = "imgSrc1", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Cover Photo", FileControlId = "cover-photo", Index = 0, Size = "" });
+        imageItems.Add(new ImageItem { Name = "Image2", Id = "imgSrc2", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Supporting Photo", FileControlId = "first-support-photo", Index = 1, Size = "" });
+        imageItems.Add(new ImageItem { Name = "Image3", Id = "imgSrc3", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Supporting Photo", FileControlId = "second-support-photo", Index = 2, Size = "" });
+    }
+
+    private async Task LoadFiles(InputFileChangeEventArgs e)
+    {
+        selectedImageCount = e.FileCount;
+        totalImageSizeMB = 0;
+        imagesErrorMessage = string.Empty;
+
+        if (selectedImageCount > 3)
+        {
+            imagesErrorMessage = "Must only select 3 images only";
+            return;
+        }
+
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
+        }
+
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 10mb";
+        }
+        else
+        {
+            var images = await jsRuntime
+                       .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", "#photo-upload", new string[] { "#imgSrc1", "#imgSrc2", "#imgSrc3" });
+
+            // update image src state
+            for (int i = 0; i < imageItems.Count; i++)
+            {
+                if (images.Count > i)
+                {
+                    imageItems[i].Src = images[i].Url;
+                    imageItems[i].DataName = images[i].FileName;
+                    imageItems[i].Size = imageSize;
+                    imageItems[i].IsValid = true;
+                }
+                else
+                {
+                    imageItems[i].IsValid = false;
+                }
+            }
+
+            validImages = imageItems.Count(i => i.IsValid);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task LoadFile(InputFileChangeEventArgs e, int index)
+    {
+        totalImageSizeMB = 0;
+        imagesErrorMessage = string.Empty;
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var files = e.GetMultipleFiles();
+        foreach (var file in files)
+        {
+            totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
+        }
+
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 10mb";
+        }
+        else
+        {
+            var images = await jsRuntime
+            .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
+
+            if (imageItems.Count > 0)
+            {
+                imageItems[index].Src = images.FirstOrDefault()?.Url;
+                imageItems[index].DataName = images.FirstOrDefault()?.FileName;
+                imageItems[index].Size = imageSize;
+                imageItems[index].IsValid = true;
+            }
+
+            validImages = imageItems.Count(i => i.IsValid);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task RemoveFile(int index)
+    {
+        var imageDetails = fileDetails.FirstOrDefault(f => f.Id == index);
+
+        var images = await jsRuntime
+        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.imageHelper.loadEmptySrc", imageDetails?.ImageId);
+
+        if (imageItems.Count > 0)
+        {
+            imageItems[index].Src = emptyImageSrc;
+            imageItems[index].Size = "";
+            imageItems[index].IsValid = false;
+        }
+
+        validImages = imageItems.Count(i => i.IsValid);
+
+        StateHasChanged();
+    }
+
+    private string ShowErrorMessage()
+    {
+        return Model.HasError ? "block" : "none";
+    }
+
+
+
+    public bool IsAllFieldsValidated()
+    {
+        if (!IsAllImageSizeAccepted()) return false;
+        if (IsImagesInvalid) return false;
+
+        return true;
+    }
+
+    private bool IsImagesOverLimit
+    {
+        get
+        {
+            return totalImageSizeMB > 10;
+        }
+    }
+
+    private bool IsImagesInvalid
+    {
+        get
+        {
+            return IsImagesOverLimit || (validImages != 3);
+        }
+    }
+
+    private bool IsAllImageSizeAccepted()
+    {
+        var totalSize = totalImageSizeMB;
+
+        bool isReachLimit = totalSize > 10;
+
+        isShowImageErrorMessage = isReachLimit;
+
+        return !isReachLimit;
+    }
+
+    private class FileDetails
+    {
+        public int Id { get; set; }
+        public string ImageId { get; set; }
+        public string FileControlId { get; set; }
+    }
+
+    private class ImageUrl
+    {
+        public string Url { get; set; }
+        public string FileName { get; set; }
+    }
+
+    private class ImageItem
+    {
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public string Group { get; set; }
+        public string DataName { get; set; }
+        public string Src { get; set; }
+        public bool IsValid { get; set; }
+        public string Caption { get; set; }
+        public string FileControlId { get; set; }
+        public int Index { get; set; }
+        public string Size { get; set; }
+    }
+}

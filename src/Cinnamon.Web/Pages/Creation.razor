@@ -16,79 +16,224 @@
 
 @if (Model != null)
 {
-    <nav class="nav-breadcrumbs landing-md" aria-label="breadcrumb">
-        <ol class='breadcrumb @(currentIndex == 0 ? "active" : "")'>
-            <li class='step breadcrumb-item" @(currentIndex == 0 ? "active" : "") ' aria-current="page">
-                <a class="button" @onclick="() => currentIndex = 0">
-                    <span class='icon-step @(currentIndex == 0 ? "active" : "")'>1</span>
-                    <span class="step-yellow">Overview</span>
-                </a>
-            </li>
-            <li class='step breadcrumb-item @(currentIndex == 1 ? "active" : "")' aria-current="page">
-                <a class="button" @onclick="() => OnNextClick(1)">
-                    <span class='icon-step @(currentIndex == 1 ? "active" : "")'>2</span>
-                    <span class="step-yellow">Experience creation</span>
-                </a>
-            </li>
-            <li class='step breadcrumb-item @(currentIndex == 2 ? "active" : "")' aria-current="page">
-                <a class="button" @onclick="() => OnNextClick(2)">
-                    <span class='icon-step @(currentIndex == 2 ? "active" : "")'>3</span>
-                    <span class="step-yellow">Setup</span>
-                </a>
-            </li>
-            <li class='step breadcrumb-item @(currentIndex == 3 ? "active" : "")' aria-current="page">
-                <a class="button" @onclick="() => OnNextClick(3)">
-                    <span class='icon-step @(currentIndex == 3 ? "active" : "")'>4</span>
-                    <span class="step-yellow">Publish</span>
-                </a>
-            </li>
-        </ol>
-    </nav>
-
-    <div class="progress-container landing-sm shadow-sm">
-        <div class="progress mx-4">
-            <div id="myBar" class="progress-bar" role="progressbar" style='width: @(GetPerentCompletion)%;'
-             aria-valuemin="0" aria-valuemax="100">
-                @GetPerentCompletion%
+    <div id="regForm" class="shadow-lg">
+        <div class="progress-bar-section">
+            <p class="progress-details">
+                IN PROGRESS: Step @currentIndex of 6
+            </p>
+            <div class="progress">
+                <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
         </div>
-    </div>
 
-    <div id="regForm" class="shadow-lg">
-        <EditForm Model="Model.Activity" id="form-cretion">
-            <div class='tab @(currentIndex == 0 ? "show" : "")'>
-                <Overview></Overview>
-            </div>
+        <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
+            LET’S CREATE YOUR EXPERIENCE!
+        </p>
 
-            <div class='tab @(currentIndex == 1 ? "show" : "")'>
-                <ExperienceCreation @ref="experienceCreationComponent" Model="Model" />
-            </div>
-
-            <div class='tab @(currentIndex == 2 ? "show" : "")'>
-                <ExperienceSetup @ref="experienceSetupComponent" Model="Model" />
-            </div>
-
-            <div class='tab @(currentIndex == 3 ? "show" : "")'>
-                <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
-            </div>
-
-            <div class="button-container" style="overflow:auto;">
-                <div style="float:right;">
-                    @if (currentIndex > 0)
+        <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            <div class="row">
+                <div class="col-1 prev-button-section">
+                    @if (currentIndex > 1)
                     {
-                        <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
+                        <button class="carousel-control-prev" type="button" @onclick="() => OnBackClick()">
+                            <div class="triangle-reverse"></div>
+                        </button>
                     }
-                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                        <LoadingTemplate>
-                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                        </LoadingTemplate>
-                        <ChildContent>
-                            @(currentIndex == 3 ? "Publish" : "Continue")
-                        </ChildContent>
-                    </Button>
+                </div>
+                <div class="col-10 text-center">
+                    @if (currentIndex == 1)
+                    {
+                        <label class="experience-progress-label">
+                            Overview
+                        </label>
+                    }
+                    else if (currentIndex == 2)
+                    {
+                        <label class="experience-progress-label">
+                            Location
+                        </label>
+                    }
+                    else if (currentIndex == 3)
+                    {
+                        <label class="experience-progress-label">
+                            Pricing & Schedule
+                        </label>
+                    }
+                    else if (currentIndex == 4)
+                    {
+                        <label class="experience-progress-label">
+                            Requirements
+                        </label>
+                    }
+                    else if (currentIndex == 5)
+                    {
+                        <label class="experience-progress-label">
+                            Gallery
+                        </label>
+                    }
+                    else if (currentIndex == 6)
+                    {
+                        <label class="experience-progress-label">
+                            Publish
+                        </label>
+                    }
+                </div>
+                <div class="col-1 next-button-section">
+                    @if (currentIndex < 6)
+                    {
+                        <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
+                            <div class="triangle"></div>
+                        </button>
+                    }
                 </div>
             </div>
-        </EditForm>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-4 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                    <a class="nav-link @(currentIndex == 1 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(1)">
+                        Overview
+                        @if (currentIndex == 1)
+                        {
+                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                        }
+                        else
+                        {
+                            if (isCreationOverviewComponentValid)
+                            {
+                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                            }
+                        }
+                    </a>
+                    <a class="nav-link @(currentIndex == 2 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(2)">
+                        Location
+                        @if (currentIndex == 2)
+                        {
+                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                        }
+                        else
+                        {
+                            if (isLocationComponentValid)
+                            {
+                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                            }
+                        }
+                    </a>
+                    <a class="nav-link @(currentIndex == 3 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(3)">
+                        Pricing & Schedule
+                        @if (currentIndex == 3)
+                        {
+                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                        }
+                        else
+                        {
+                            if (isPricingAndScheduleComponentValid)
+                            {
+                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                            }
+                        }
+                    </a>
+                    <a class="nav-link @(currentIndex == 4 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(4)">
+                        Requirements
+                        @if (currentIndex == 4)
+                        {
+                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                        }
+                        else
+                        {
+                            if (isOptionalDetailsComponentValid)
+                            {
+                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                            }
+                        }
+                    </a>
+                    <a class="nav-link @(currentIndex == 5 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(5)">
+                        Gallery
+                        @if (currentIndex == 5)
+                        {
+                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                        }
+                        else
+                        {
+                            if (isGalleryComponentValid)
+                            {
+                                <img class="pull-right" src="images/Dashboard/rounded-check.png" alt="check-icon" />
+                            }
+                        }
+                    </a>
+                    <a class="nav-link @(currentIndex == 6 ? "active" : "")" data-toggle="pill" role="tab" @onclick="() => OnNextClick(6)">
+                        Publish
+                        @if (currentIndex == 6)
+                        {
+                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                        }
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-8">
+                <div class="tab-content-section">
+                    <EditForm Model="Model.Activity" id="form-cretion">
+                        <div class='tab @(currentIndex == 1 ? "show" : "")'>
+                            <CreationOverview @ref="creationOverviewComponent" Model="Model"></CreationOverview>
+                        </div>
+
+                        <div class='tab @(currentIndex == 2 ? "show" : "")'>
+                            <Location @ref="locationComponent" Model="Model" />
+                        </div>
+
+                        <div class='tab @(currentIndex == 3 ? "show" : "")'>
+                            <PricingAndSchedule @ref="pricingAndScheduleComponent" Model="Model" />
+                        </div>
+
+                        <div class='tab @(currentIndex == 4 ? "show" : "")'>
+                            <OptionalDetails @ref="optionalDetailsComponent" Model="Model" />
+                        </div>
+
+                        <div class='tab @(currentIndex == 5 ? "show" : "")'>
+                            <Gallery @ref="galleryComponent" Model="Model" />
+                        </div>
+
+                        <div class='tab @(currentIndex == 6 ? "show" : "")'>
+                            <ActivitySummary @ref="ActivitySummary" Activity="Model.Activity" />
+                        </div>
+                    </EditForm>
+                </div>
+                <div class="button-container">
+                    <div class="row">
+                        @if (currentIndex > 1)
+                        {
+                            <div class="col-lg-6 col-6">
+                                <button type="button" class="btn-back" id="prevBtn" @onclick="() => OnBackClick()">Back</button>
+                            </div>
+                            <div class="col-lg-6 col-6">
+                                <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                    <LoadingTemplate>
+                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                    </LoadingTemplate>
+                                    <ChildContent>
+                                        @(currentIndex == 6 ? "Publish" : "Next")
+                                    </ChildContent>
+                                </Button>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="col-lg-12 col-12">
+                                <Button Border="Border.Is0" class="btn-primary" @onclick="() => OnNextClick()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                                    <LoadingTemplate>
+                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                                    </LoadingTemplate>
+                                    <ChildContent>
+                                        @(currentIndex == 6 ? "Publish" : "Next")
+                                    </ChildContent>
+                                </Button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 }
 
@@ -118,9 +263,17 @@
 
     public bool ShowSuccessMessage { get; set; }
 
-    private int currentIndex = 0;
+    private int currentIndex = 1;
 
-    private ExperienceCreation experienceCreationComponent { get; set; }
+    private CreationOverview creationOverviewComponent { get; set; }
+
+    private Location locationComponent { get; set; }
+
+    private PricingAndSchedule pricingAndScheduleComponent { get; set; }
+
+    private OptionalDetails optionalDetailsComponent { get; set; }
+
+    private Gallery galleryComponent { get; set; }
 
     private ExperienceSetup experienceSetupComponent { get; set; }
 
@@ -130,7 +283,13 @@
 
     private string errorMessage = "There was a problem publishing the experience creation. Please refresh the page and try again.";
 
-    private ActivitySummary ActivitySummary {get; set;}
+    private ActivitySummary ActivitySummary { get; set; }
+
+    public bool isCreationOverviewComponentValid { get; set; }
+    public bool isLocationComponentValid { get; set; }
+    public bool isPricingAndScheduleComponentValid { get; set; }
+    public bool isOptionalDetailsComponentValid { get; set; }
+    public bool isGalleryComponentValid { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -230,14 +389,14 @@
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
         }
-            await Task.Run(() =>  module.InvokeVoidAsync("confirmation"));
+        await Task.Run(() => module.InvokeVoidAsync("confirmation"));
     }
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
-        if (index == 0 && currentIndex == 3)
+        if (index == 0 && currentIndex == 6)
         {
-            if(!ActivitySummary.Validate()) return;
+            if (!ActivitySummary.Validate()) return;
 
             isLoading = true;
             Model.Activity.ActivitySchedules = GetActivitySchedules(Model.Activity.ActivitySchedules);
@@ -257,7 +416,7 @@
 
             var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
                 {
-                    ActivityLevel = Model.Activity.ActivityLevel,
+                    ActivityLevel = "Beginner",
                     ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
                     {
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
@@ -294,7 +453,7 @@
                     Remarks = Model.Activity.Remarks,
                     ScheduleIndicator = Model.Activity.ScheduleIndicator,
                     SearchTags = Model.Activity.SearchTags,
-                    SkillLevel = Model.Activity.SkillLevel,
+                    SkillLevel = "No experience",
                     SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
                     SubCategoryId = Model.Activity.SubCategoryId,
                     Title = Model.Activity.Title,
@@ -323,28 +482,54 @@
 
         if (index != 0)
         {
-            switch (index)
+            switch (currentIndex)
             {
                 case 1:
-                    if (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
+                    if (Model.HasError = !creationOverviewComponent.IsAllFieldsValidated())
                     {
                         await module.InvokeVoidAsync("onScrollUp");
                         return;
                     };
-                    currentIndex = 1;
+
+                    isCreationOverviewComponentValid = true;
+                    currentIndex = index;
                     break;
                 case 2:
-                    if (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated())
+                    if (Model.HasError = !locationComponent.IsAllFieldsValidated())
                     {
                         await module.InvokeVoidAsync("onScrollUp");
                         return;
                     };
-                    if (Model.HasError = !experienceSetupComponent.IsAllFieldsValidated())
+
+                    isLocationComponentValid = true;
+                    currentIndex = index;
+                    break;
+                case 3:
+                    if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
                     {
                         await module.InvokeVoidAsync("onScrollUp");
                         return;
                     };
-                    currentIndex = 2;
+
+                    isPricingAndScheduleComponentValid = true;
+                    currentIndex = index;
+                    break;
+                case 4:
+                    isOptionalDetailsComponentValid = true;
+                    currentIndex = index;
+                    break;
+                case 5:
+                    if (Model.HasError = !galleryComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("onScrollUp");
+                        return;
+                    };
+
+                    isGalleryComponentValid = true;
+                    currentIndex = index;
+                    break;
+                case 6:
+                    currentIndex = index;
                     break;
             }
 
@@ -352,18 +537,65 @@
             await module.InvokeVoidAsync("onScrollUp");
             return;
         }
-        if (currentIndex == 1 && (Model.HasError = !experienceCreationComponent.IsAllFieldsValidated()))
+        else
         {
-            await module.InvokeVoidAsync("onScrollUp");
-            return;
-        };
-        if (currentIndex == 2 && (Model.HasError = !experienceSetupComponent.IsAllFieldsValidated()))
-        {
-            await module.InvokeVoidAsync("onScrollUp");
-            return;
-        };
+            if (currentIndex == 1)
+            {
+                if (Model.HasError = !creationOverviewComponent.IsAllFieldsValidated())
+                {
+                    await module.InvokeVoidAsync("onScrollUp");
+                    return;
+                }
+                else
+                {
+                    isCreationOverviewComponentValid = true;
 
-        currentIndex++;
+                }
+            }
+            else if (currentIndex == 2)
+            {
+                if (Model.HasError = !locationComponent.IsAllFieldsValidated())
+                {
+                    await module.InvokeVoidAsync("onScrollUp");
+                    return;
+                }
+                else
+                {
+                    isLocationComponentValid = true;
+                }
+            }
+            else if (currentIndex == 3)
+            {
+                if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                {
+                    await module.InvokeVoidAsync("onScrollUp");
+                    return;
+                }
+                else
+                {
+                    isPricingAndScheduleComponentValid = true;
+
+                }
+            }
+            else if (currentIndex == 4)
+            {
+                isOptionalDetailsComponentValid = true;
+            }
+            else if (currentIndex == 5)
+            {
+                if (Model.HasError = !galleryComponent.IsAllFieldsValidated())
+                {
+                    await module.InvokeVoidAsync("onScrollUp");
+                    return;
+                }
+                else
+                {
+                    isGalleryComponentValid = true;
+                }
+            }
+
+            currentIndex += 1;
+        }
 
         await Task.Delay(100);
         await module.InvokeVoidAsync("onScrollUp");
@@ -382,7 +614,7 @@
     {
         get
         {
-            return Math.Round(currentIndex * 33.33);
+            return Math.Round(currentIndex * 16.67);
         }
     }
 

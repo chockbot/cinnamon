@@ -24,6 +24,8 @@ namespace Cinnamon.Api.Core.Services.AccountService.Interactors.Results
             public string Handler { get; set; }
             public string FrontIdImagePath { get; set; }
             public string BackIdImagePath { get; set; }
+            public bool IsOG { get; set; }
+            public bool IsOF { get; set; }
         }
     }
 }

@@ -1,0 +1,130 @@
+﻿@namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+@using Blazorise.RichTextEdit;
+
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>Fill in required field</li>
+    </ul>
+</div>
+<div class="editor-customer-requirement-provide-wrapper">
+    <div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-6">
+        <div class="row">
+            <div class="form-group">
+                <label for="title" class="form-control-label label-top-margin">What should your students bring with them and what materials you will provide? (optional)</label>
+                <small class="form-text text-muted sub-details">Should your customer have their own tablet or computer for their online experience? How about their own water bottle for their face to face experience? Describe the things that they need to prepare and bring for the best experience possible.</small>
+
+                <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                    <div class="d-flex flex-column">
+                        <RichTextEdit @ref="EditCustomerBring"
+                                      Theme="RichTextEditTheme.Snow"
+                                      ContentChanged="@EditCustomerRequirement"
+                                      PlaceHolder="Type your post here..."
+                                      SubmitOnEnter="false"
+                                      ToolbarPosition="Placement.Start">
+                            <Editor>@((MarkupString)defaultContent)</Editor>
+                            <Toolbar>
+                                <RichTextEditToolbarGroup>
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.Bold" />
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.Italic" />
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="ordered" />
+                                    <RichTextEditToolbarButton Action="RichTextEditAction.List" Value="bullet" />
+                                </RichTextEditToolbarGroup>
+                            </Toolbar>
+                        </RichTextEdit>
+                        <label id="label-customer-requirement-editor"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Models.ExperienceUpdateModel Model { get; set; }
+
+    private int maxEditorWordLimit = 80;
+    private RichTextEdit EditCustomerBring;
+    IJSObjectReference module;
+
+    private string defaultContent = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(3000);
+            await jsRuntime
+                 .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-specific-will-provide .ql-container", "#label-specific-editor", maxEditorWordLimit);
+
+            await jsRuntime
+                .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-customer-requirement-provide .ql-container", "#label-customer-requirement-editor", maxEditorWordLimit);
+
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+
+            defaultContent = Model.Activity.CustomerBringWithThem;
+        }
+    }
+
+    private string ShowErrorMessage()
+    {
+        return Model.ExperienceHasError ? "block" : "none";
+    }
+
+    private string RequiredCheck(String? value)
+    {
+        if (Model.ExperienceHasError && String.IsNullOrEmpty(value))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (Model.ExperienceHasError && (value == null || value.Value == 0))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredMin(string text, int min)
+    {
+        if (!Model.ExperienceHasError && string.IsNullOrEmpty(text)) return "";
+        if (Model.ExperienceHasError && string.IsNullOrEmpty(text)) return "invalid";
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        if (Model.ExperienceHasError && length < min) return "invalid";
+        return string.Empty;
+    }
+
+    public bool IsAllFieldsValidated()
+    {
+        if (string.IsNullOrEmpty(Model.Activity.Title)) return false;
+        if (string.IsNullOrEmpty(Model.Activity.Description)) return false;
+        if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
+        if (Model.Activity.ExperienceCategoryId <= 0) return false;
+
+        return true;
+    }
+
+    private bool IsWordsLengthMin(string text, int min)
+    {
+        if (string.IsNullOrEmpty(text)) return true;
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        return length < min;
+    }
+
+    private async Task EditCustomerRequirement()
+    {
+        Model.Activity.CustomerBringWithThem = await EditCustomerBring.GetHtmlAsync();
+    }
+}

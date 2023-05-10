@@ -22,6 +22,10 @@
     Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
 
 @if (Model.Customer != null){
+<!-- Alert message container -->
+<div id="alertContainer" class="alertContainer">
+    <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
+</div>
 <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
         <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 justify-content-center col-md-10 justify-content-center col-sm-12 justify-content-center col-12 justify-content-center">
         <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
@@ -171,6 +175,14 @@
                 @if (customerDetail != null && customerDetail.IsMaker == true)
                 {
                     <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first profile-container">
+                        <div class="w-100 shadow d-flex justify-content-center share-link-section" style="background:#F3F6FC">
+                            <div class="d-flex share-link">
+                                <p>Share this experience with your friends</p>
+                                <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                    <img src="images/copytoclipboard.png">
+                                </button>
+                            </div>
+                        </div>
                         <div class="w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
                             <div class="maker-pic">
                             <img class="rounded-2 rounded-circle m-3" src="@customerDetail.ProfilePath"/>
@@ -610,6 +622,7 @@
     {
         if(firstRender)
         {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             await InitializeCarouselSwipe();
         }
@@ -621,6 +634,10 @@
     private async Task InitializeCarouselSwipe()
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
+    }
+    private async Task CopyToClipboard()
+    {
+        await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));
     }
 
 }
