@@ -97,36 +97,69 @@ creation.uploadImages = async (activityId) => {
 creationInProgress.uploadImages = async (activityId) => {
     const formData = new FormData();
     let counter = 0;
-
-    const response = await fetch('/images/placeholder-image.png');
-    if (!response.ok) {
-        dotnetObj.invokeMethodAsync("ShowError", response);
-    }
-
-    const blob = await response.blob();
-
-    const file = new File([blob], 'placeholder-image.png', { type: blob.type });
-
-    $(".img-banner").each(function (e) {
-        formData.append(`Image${counter + 1}`, file);
-        counter++;
-    });
+    var hasUploadedFile = false;
+    var imageFile = null;
 
     formData.append("ActivityId", activityId);
 
-    try {
-        const uploadResult = await axios.postForm(
-            "api/activity/UploadActivityImage",
-            formData
-        );
+    $(".img-banner").each(function (e) {
+        const name = $(this).attr("data-name");
+        if (name) {
+            imageFile = dataUrlToFile($(imageData[counter]).val(), name);
 
-        if (!uploadResult.data.success) {
-            dotnetObj.invokeMethodAsync("ShowError", uploadResult.message);
+            if (imageFile) {
+                formData.append(`Image${counter + 1}`, imageFile);
+                counter++;
+                hasUploadedFile = true;
+            }
+        }
+    });
+
+    if (hasUploadedFile) {
+        try {
+            const uploadResult = await axios.postForm(
+                "api/activity/UploadActivityImage",
+                formData
+            );
+
+            if (!uploadResult.data.success) {
+                dotnetObj.invokeMethodAsync("ShowError", uploadResult.message);
+            }
+
+            return uploadResult.data.success;
+        } catch (uploadImageError) {
+            dotnetObj.invokeMethodAsync("ShowError", uploadImageError.message);
+        }
+    }
+    else {
+        const response = await fetch('/images/placeholder-image.png');
+        if (!response.ok) {
+            dotnetObj.invokeMethodAsync("ShowError", response);
         }
 
-        return uploadResult.data.success;
-    } catch (uploadImageError) {
-        dotnetObj.invokeMethodAsync("ShowError", uploadImageError.message);
+        const blob = await response.blob();
+
+        const file = new File([blob], 'placeholder-image.png', { type: blob.type });
+
+        $(".img-banner").each(function (e) {
+            formData.append(`Image${counter + 1}`, file);
+            counter++;
+        });
+
+        try {
+            const uploadResult = await axios.postForm(
+                "api/activity/UploadActivityImage",
+                formData
+            );
+
+            if (!uploadResult.data.success) {
+                dotnetObj.invokeMethodAsync("ShowError", uploadResult.message);
+            }
+
+            return uploadResult.data.success;
+        } catch (uploadImageError) {
+            dotnetObj.invokeMethodAsync("ShowError", uploadImageError.message);
+        }
     }
 };
 

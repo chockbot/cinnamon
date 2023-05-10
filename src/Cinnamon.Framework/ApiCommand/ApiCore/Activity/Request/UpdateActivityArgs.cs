@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
@@ -56,4 +57,8 @@ public class UpdateActivityArgs
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
     }
+
+    public IFormFile? Image1 { get; set; }
+    public IFormFile? Image2 { get; set; }
+    public IFormFile? Image3 { get; set; }
 }

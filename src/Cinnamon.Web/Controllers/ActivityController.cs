@@ -113,10 +113,18 @@ public class ActivityController : Controller
     [Route("Update")]
     [HttpPost]
     [Authorize]
-    public async Task<IActionResult> UpdateActivity([FromBody] UpdateActivityArgs args)
+    public async Task<IActionResult> UpdateActivity([FromForm] UpdateActivityArgs args)
     {
         try
         {
+            var image1 = args.Image1;
+            var image2 = args.Image2;
+            var image3 = args.Image3;
+
+            args.Image1 = null;
+            args.Image2 = null;
+            args.Image3 = null;
+
             var token = User.FindFirstValue("Token");
             if (token == null)
             {
@@ -134,6 +142,14 @@ public class ActivityController : Controller
             {
                 return Json(new { success = false, message = result.Result.ErrorInfo?.Message });
             }
+
+            var uploadResult = await activityApiHandler.UploadActivityImages(new Framework.ApiCommand.ApiCore.Activity.Request.UploadActivityImageArgs
+            {
+                ActivityId = result.Result.Result.ActivityId,
+                Image1 = image1,
+                Image2 = image2,
+                Image3 = image3
+            }, token);
 
             return Json(new { success = true, message = "Successfully updated activity" });
         }
