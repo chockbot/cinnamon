@@ -5,6 +5,8 @@
 @using Cinnamon.Web.Components.Pages.Creation;
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.Enums;
+
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -17,9 +19,19 @@
 @if (Model != null)
 {
     <div id="regForm" class="shadow-lg">
+        <div class="save-later-section">
+            <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                <LoadingTemplate>
+                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                </LoadingTemplate>
+                <ChildContent>
+                    Save for Later
+                </ChildContent>
+            </Button>
+        </div>
         <div class="progress-bar-section">
             <p class="progress-details">
-                IN PROGRESS: Step @currentIndex of 6
+                IN PROGRESS: Step @currentIndex of 6 <span id="loader" class=""></span>
             </p>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
@@ -291,6 +303,9 @@
     public bool isOptionalDetailsComponentValid { get; set; }
     public bool isGalleryComponentValid { get; set; }
 
+    public const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
+
+
     protected override async Task OnInitializedAsync()
     {
         // get user token
@@ -391,6 +406,77 @@
         }
         await Task.Run(() => module.InvokeVoidAsync("confirmation"));
     }
+
+    private async Task SaveForLater()
+    {
+        Model.Activity.ActivitySchedules = ValidateSchedules(Model.Activity.ActivitySchedules);
+
+        var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
+            {
+                Title                   = ReplaceEmptyValue(Model.Activity.Title, NOTHING_PROVIDED),
+                Description             = ReplaceEmptyValue(Model.Activity.Description, NOTHING_PROVIDED),
+                ExperienceCategoryId    = Model.Activity.ExperienceCategoryId != 0 ? Model.Activity.ExperienceCategoryId : 2,
+                SubCategoryId           = Model.Activity.SubCategoryId != 0 ? Model.Activity.SubCategoryId : 51,
+                ActivityLevel           = "Beginner",
+                AdditionalRequirements  = ReplaceEmptyValue(Model.Activity.AdditionalRequirements, NOTHING_PROVIDED),
+                Address1                = ReplaceEmptyValue(Model.Activity.Address1, NOTHING_PROVIDED),
+                Address2                = ReplaceEmptyValue(Model.Activity.Address2, NOTHING_PROVIDED),
+                CanAdultsJoin           = Model.Activity.CanAdultsJoin,
+                City                    = ReplaceEmptyValue(Model.Activity.City, ""),
+                Subdivision             = ReplaceEmptyValue(Model.Activity.Subdivision, NOTHING_PROVIDED),
+                Region                  = ReplaceEmptyValue(Model.Activity.Region, ""),
+                Barangay                = ReplaceEmptyValue(Model.Activity.Barangay, ""),
+                PostalCode              = ReplaceEmptyValue(Model.Activity.PostalCode, NOTHING_PROVIDED),
+                CustomerBringWithThem   = ReplaceEmptyValue(Model.Activity.CustomerBringWithThem, NOTHING_PROVIDED),
+                District                = ReplaceEmptyValue(Model.Activity.District, NOTHING_PROVIDED),
+                ExperienceTypeId        = Model.Activity.ExperienceTypeId != 0 ? Model.Activity.ExperienceTypeId : 1,
+                IsPublished             = Model.Activity.IsPublished,
+                MinimumAge              = Model.Activity.MinimumAge,
+                Price                   = ReplaceEmptyValue(Model.Activity.Price, NOTHING_PROVIDED),
+                Remarks                 = ReplaceEmptyValue(Model.Activity.Remarks, NOTHING_PROVIDED),
+                ScheduleIndicator       = ReplaceEmptyValue(Model.Activity.ScheduleIndicator, NOTHING_PROVIDED),
+                SearchTags              = Model.Activity.SearchTags,
+                SkillLevel              = "No experience",
+                SpecificsYouWillProvide = ReplaceEmptyValue(Model.Activity.SpecificsYouWillProvide, NOTHING_PROVIDED),
+                IsSetSession            = Model.Activity.IsSetSession,
+                SessionName             = ReplaceEmptyValue(Model.Activity.SessionName, NOTHING_PROVIDED),
+                PinnedLocation          = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
+                Status                  = Enums.ActivityStatus.InProgress,
+                ActivitySchedules       = Model.Activity.ActivitySchedules.Select(s =>
+               {
+                   return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
+                   {
+                       DateTime = s.DateTime,
+                       Name = s.Name,
+                       PerUnit1 = s.PerUnit1,
+                       PerUnit2 = s.PerUnit2,
+                       Price = s.Price,
+                       PriceUnit1 = s.PriceUnit1,
+                       PriceUnit2 = s.PriceUnit2,
+                       UnitPrice = s.UnitPrice,
+                       Order = s.Order,
+                       IsActiveSchedule = s.IsActiveSchedule
+                   };
+               }),
+            }, Model.Token);
+
+        if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+        {
+            errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
+            ShowErrorMessage = true;
+            StateHasChanged();
+            return;
+        }
+
+        // upload image without checking if there is an error so that can't re update another activity
+        bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.initCreationInProgress", obj, submit.Result.Result.ActivityId);
+        isLoading = false;  
+
+        navigationManager.NavigateTo("/maker/dashboard");
+
+        await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
+        return;
+    }
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
@@ -459,7 +545,8 @@
                     Title = Model.Activity.Title,
                     IsSetSession = Model.Activity.IsSetSession,
                     SessionName = Model.Activity.SessionName,
-                    PinnedLocation = Model.Activity.PinnedLocation
+                    PinnedLocation = Model.Activity.PinnedLocation,
+                    Status = Enums.ActivityStatus.Submitted
                 }, Model.Token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -471,7 +558,7 @@
             }
 
             // upload image without checking if there is an error so that can't re update another activity
-            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.init", obj, submit.Result.Result.ActivityId);
+            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.initCreation", obj, submit.Result.Result.ActivityId);
             isLoading = false;
 
             navigationManager.NavigateTo("/maker/dashboard");
@@ -648,5 +735,41 @@
         }
 
         return result;
+    }
+
+    private string ReplaceEmptyValue(string value, string replacement)
+    {
+        return string.IsNullOrEmpty(value) ? replacement : value;
+    }
+
+    private IList<Models.Entities.ActivitySchedule> ValidateSchedules(IList<Models.Entities.ActivitySchedule> activitySchedules)
+    {
+        bool isSingle = activitySchedules.Count == 1;
+        bool isValid = false;
+
+        foreach (var schedule in activitySchedules)
+        {
+            if ((string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle))
+                isValid = false;
+
+            if (!isValid)
+            {
+                schedule.Name       = ReplaceEmptyValue(schedule.Name, NOTHING_PROVIDED);
+                schedule.DateTime   = ReplaceEmptyValue(schedule.DateTime, NOTHING_PROVIDED);
+                schedule.UnitPrice  = ReplaceEmptyValue(schedule.UnitPrice, NOTHING_PROVIDED);
+                schedule.PriceUnit1 = ReplaceEmptyValue(schedule.PriceUnit1, NOTHING_PROVIDED);
+                schedule.PriceUnit2 = ReplaceEmptyValue(schedule.PriceUnit2, NOTHING_PROVIDED);
+            }
+
+        }
+
+        return activitySchedules;
     }
 }

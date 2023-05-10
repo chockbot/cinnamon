@@ -78,7 +78,14 @@
                         </button>
                         <span>@(item.IsPublished ? "Active" : "Inactive")</span>
                     </div>
-                    <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                    <div class="button-section">
+                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                        {
+                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                        }
+                    </div>
+
                 </div>
             </div>
         }
@@ -112,7 +119,14 @@
                         </button>
                         <span>@(item.IsPublished ? "Active" : "Inactive")</span>
                     </div>
-                    <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                    <div class="button-section">
+                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                        {
+                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                        }
+                    </div>
+
                 </div>
             </div>
         }
@@ -123,11 +137,12 @@
 
 @code
 {
-    private DashboardModel Model {get; set;} = new();
+    private DashboardModel Model { get; set; } = new();
 
     public List<Activity> activities = new List<Activity>();
 
     public Activity activity = new Activity();
+    string token = string.Empty;
 
     private bool IsNotVerified {get; set;}
 
@@ -137,7 +152,7 @@
         {
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-            var token = user.FindFirstValue("Token");
+            token = user.FindFirstValue("Token");
             if (token == null)
             {
                 // don't have current user login
@@ -163,35 +178,8 @@
             }
             IsNotVerified = customer.IsVerified == 0;
 
-            var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-                {
-                    IncludeActivityImages = true,
-                }, token);
+            await GetOwnedActivities(token);
 
-            if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-            {
-                activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
-                {
-                    // map only required fields
-                    return new Activity
-                        {
-                            ActivityId = a.ActivityId,
-                            IsPublished = a.IsPublished,
-                            Title = a.Title,
-                            Description = a.Description,
-                            ExperienceTypeId = a.ExperienceTypeId,
-                            Images = a.Images.Select(i =>
-                            {
-                                return new ActivityImage
-                                {
-                                    Id = i.Id,
-                                    ImageSrc = i.ImageSrc,
-                                    Name = i.Name
-                                };
-                            }).ToList(),
-                        };
-                }).ToList();
-            }
             Model = new DashboardModel
                 {
                     Activities = activities,
@@ -210,18 +198,65 @@
         NavigationManager.NavigateTo("creation", true);
     }
 
-    private void NavigateToUserVerification()
-    {
-        NavigationManager.NavigateTo("customer/user-verification");
-    }
-
     private void CheckUnCheckAllStudent(Activity activity)
     {
         activity.IsPublished = !activity.IsPublished;
-        var res =  activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
+        var res = activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
             {
                 IsPublished = activity.IsPublished,
                 ActivityId = activity.ActivityId
             }, Model.Token);
+    }
+
+    private async Task DeleteActivity(int activityId)
+    {
+        var res = await activityApiHandler.DeleteActivityById(new Framework.ApiCommand.ApiCore.Activity.Request.DeleteActivityArgs
+            {
+                ActivityId = activityId
+            }, Model.Token);
+
+        if (res.Result.IsSuccess)
+        {
+            await GetOwnedActivities(token);
+        }
+    }
+
+    private async Task GetOwnedActivities(string token)
+    {
+        var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+            {
+                IncludeActivityImages = true,
+            }, token);
+
+        if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
+        {
+            activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                // map only required fields
+                return new Activity
+                    {
+                        ActivityId = a.ActivityId,
+                        IsPublished = a.IsPublished,
+                        Title = a.Title,
+                        Description = a.Description,
+                        ExperienceTypeId = a.ExperienceTypeId,
+                        Images = a.Images.Select(i =>
+                    {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
+                        Status = a.Status
+                    };
+            }).ToList();
+        }
+    }
+
+    private void NavigateToUserVerification()
+    {
+        NavigationManager.NavigateTo("customer/user-verification");
     }
 }
