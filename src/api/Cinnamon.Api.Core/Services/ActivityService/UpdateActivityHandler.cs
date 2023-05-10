@@ -154,7 +154,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 IsSetSession = args.IsSetSession,
                 SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
-                IsDeactivated = args.IsDeactivated
+                IsDeactivated = args.IsDeactivated,
+                Status = args.Status,
             };
 
             if(args.SearchTags != null)

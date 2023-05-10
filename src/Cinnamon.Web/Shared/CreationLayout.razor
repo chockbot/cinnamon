@@ -6,7 +6,7 @@
     <main>
         <div class="top-row px-3">
             <div class="app-name col-lg-3 col-md-2">
-                <a class="app-name" @onclick="()=>OnClickLogo()">@Resources.App.appName</a>
+                <a class="app-name" id="app-logo-creation" @onclick="()=>OnClickLogo()">@Resources.App.appName</a>
             </div>
         </div>
         <article class="content">
@@ -17,6 +17,6 @@
 
 @code{
     private void OnClickLogo(){
-        navigationManager.NavigateTo("/explore", true);
+        //navigationManager.NavigateTo("/explore", true);
     } 
 }

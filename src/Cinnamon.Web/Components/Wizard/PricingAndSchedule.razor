@@ -12,6 +12,8 @@
     </ul>
 </div>
 
+@*<input type="hidden" @bind="Model.Activity.ActivitySchedules.ToList()" id="activity-schedule-list-create" />*@
+
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-6">
     <div class="accordion" id="activitySchedules">
         @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
@@ -125,7 +127,6 @@
 @code {
     [Parameter]
     public Models.ExperienceCreationModel Model { get; set; }
-
     protected override async Task OnInitializedAsync()
     {
         AddSchedule();
