@@ -55,6 +55,12 @@ public class Activity
     public string ScheduleIndicator {get; set;} = " ";
     public string Remarks {get; set;} = " ";
     public bool IsPublished {get; set;}
+
+    public string IsPublishedDescription
+    {
+        get { return IsPublished ? "true" : "false"; }
+    }
+
     private string _address1;
 
     public string Address1
@@ -155,6 +161,8 @@ public class Activity
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
+    public Cinnamon.Framework.Enums.Enums.ActivityStatus Status { get; set; }
+    public int ActivityStatus { get { return (int)Status; } }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
     public IList<ActivityImage> Images {get; set;}

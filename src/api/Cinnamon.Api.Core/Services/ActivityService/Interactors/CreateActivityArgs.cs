@@ -1,4 +1,6 @@
 using Cinnamon.Framework.Interactor;
+using System;
+using Cinnamon.Framework.Enums;
 
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
 
@@ -31,6 +33,8 @@ public class CreateActivityArgs : IInteractor
     public bool CanAdultsJoin {get; set;}
     public bool IsSetSession { get; set; } = false;
     public string SessionName { get; set; } = string.Empty;
+    public Enums.ActivityStatus Status { get; set; }
+
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     

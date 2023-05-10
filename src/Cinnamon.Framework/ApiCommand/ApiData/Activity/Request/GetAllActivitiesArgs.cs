@@ -21,5 +21,5 @@ public class GetAllActivities
     public string? SearchValue { get; set; }
     public bool? IncludeStudents { get; set; }
     public bool? IsDeactivated { get; set; }
-
+    public Enums.Enums.ActivityStatus? Status { get; set; }
 }
