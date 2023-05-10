@@ -2,6 +2,7 @@ import axios from "axios";
 import { Buffer } from 'buffer';
 
 const creation = {};
+const creationInProgress = {};
 let dotnetObj = undefined;
 const controls = ["#photo-upload", "#cover-photo", "#first-support-photo", "#second-support-photo"];
 const imageData = ["#coverPhotoData", "#firstPhotoData", "#secondPhotoData"];
@@ -13,11 +14,6 @@ creation.showLocationModal = () => {
 
 creation.hideLocationModal = () => {
     $(locationModal).modal('hide');
-};
-
-creation.init = async (obj, activityId) => {
-    dotnetObj = obj;
-    return await creation.uploadImages(activityId);
 };
 
 creation.uploadImages = async (activityId) => {
@@ -98,6 +94,42 @@ creation.uploadImages = async (activityId) => {
     }
 };
 
+creationInProgress.uploadImages = async (activityId) => {
+    const formData = new FormData();
+    let counter = 0;
+
+    const response = await fetch('/images/placeholder-image.png');
+    if (!response.ok) {
+        dotnetObj.invokeMethodAsync("ShowError", response);
+    }
+
+    const blob = await response.blob();
+
+    const file = new File([blob], 'placeholder-image.png', { type: blob.type });
+
+    $(".img-banner").each(function (e) {
+        formData.append(`Image${counter + 1}`, file);
+        counter++;
+    });
+
+    formData.append("ActivityId", activityId);
+
+    try {
+        const uploadResult = await axios.postForm(
+            "api/activity/UploadActivityImage",
+            formData
+        );
+
+        if (!uploadResult.data.success) {
+            dotnetObj.invokeMethodAsync("ShowError", uploadResult.message);
+        }
+
+        return uploadResult.data.success;
+    } catch (uploadImageError) {
+        dotnetObj.invokeMethodAsync("ShowError", uploadImageError.message);
+    }
+};
+
 function dataUrlToFile(dataUrl, filename) {
     const arr = dataUrl.split(',');
     if (arr.length < 2) { return undefined; }
@@ -108,4 +140,17 @@ function dataUrlToFile(dataUrl, filename) {
     return new File([buff], filename, { type: mime });
 }
 
-export default creation;
+export async function initCreation(obj, activityId) {
+    dotnetObj = obj;
+    return await creation.uploadImages(activityId);
+}
+
+export async function initCreationInProgress(obj, activityId) {
+    dotnetObj = obj;
+    return await creationInProgress.uploadImages(activityId);
+}
+
+export default {
+    initCreation,
+    initCreationInProgress
+};

@@ -3,6 +3,7 @@ using System.Security.Claims;
 using Cinnamon.Web.Models.Forms;
 using Microsoft.AspNetCore.Authorization;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
+using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 
 namespace Cinnamon.Web.Controllers;
 
@@ -53,6 +54,88 @@ public class ActivityController : Controller
             }
 
             return Json(new { success = true, message = "Successfully uploaded" });
+        }
+        catch
+        {
+            return Json(new { success = false, message = "An error occured please try again later" });
+        }
+    }
+
+    [Route("Create")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> CreateActivity([FromForm] CreateActivityArgs args)
+    {
+        try
+        {
+            var image1 = args.Image1;
+            var image2 = args.Image2;
+            var image3 = args.Image3;
+
+            args.Image1 = null;
+            args.Image2 = null;
+            args.Image3 = null;
+
+            var token = User.FindFirstValue("Token");
+            if (token == null)
+            {
+                return Json(new { success = false, message = "Unable to identify current user" });
+            }
+
+            var result = await activityApiHandler.CreateActivity(args, token);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+
+            if (result.Succeeded && !result.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = result.Result.ErrorInfo?.Message });
+            }
+
+            var uploadResult = await activityApiHandler.UploadActivityImages(new Framework.ApiCommand.ApiCore.Activity.Request.UploadActivityImageArgs
+            {
+                ActivityId = result.Result.Result.ActivityId,
+                Image1 = image1,
+                Image2 = image2,
+                Image3 = image3
+            }, token);
+
+            return Json(new { success = true, message = "Successfully created activity" });
+        }
+        catch
+        {
+            return Json(new { success = false, message = "An error occured please try again later" });
+        }
+    }
+
+    [Route("Update")]
+    [HttpPost]
+    [Authorize]
+    public async Task<IActionResult> UpdateActivity([FromBody] UpdateActivityArgs args)
+    {
+        try
+        {
+            var token = User.FindFirstValue("Token");
+            if (token == null)
+            {
+                return Json(new { success = false, message = "Unable to identify current user" });
+            }
+
+            var result = await activityApiHandler.UpdateActivity(args, token);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return Json(new { success = false, message = result.Message });
+            }
+
+            if (result.Succeeded && !result.Result.IsSuccess)
+            {
+                return Json(new { success = false, message = result.Result.ErrorInfo?.Message });
+            }
+
+            return Json(new { success = true, message = "Successfully updated activity" });
         }
         catch
         {
