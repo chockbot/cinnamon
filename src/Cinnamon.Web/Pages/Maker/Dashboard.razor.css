@@ -206,6 +206,11 @@ a {
 .announcement span {
   color: var(--primary);
 }
+.img-inprogress {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
+}
 
 /* For Tablet View */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
@@ -377,12 +382,13 @@ a {
     margin-bottom: 0px;
   }
 
-  .active {
-    display: flex;
-    position: relative;
-    align-items: center;
-    text-decoration: none;
-  }
+    .active {
+        display: flex;
+        position: relative;
+        align-items: center;
+        text-decoration: none;
+        padding: 6px;
+    }
 
   .active img {
     width: 25px;
@@ -393,25 +399,33 @@ a {
     font-family: "Nunito";
     font-style: normal;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 15px;
     color: #343d4c;
   }
-
-  .update-button {
-    width: 100px;
-    height: 35px;
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 500;
-    font-size: 14px;
-    color: #ffffff;
-    background: var(--primary);
-    border-radius: 5px;
-    border-style: none;
-    text-align: center;
+  .img-inprogress {
+      margin-right: 4px;
+      width:20px;
+      height: 20px;
   }
+    .update-button {
+        width: 70px;
+        height: 35px;
+        font-family: "Nunito";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        color: #ffffff;
+        background: var(--primary);
+        border-radius: 5px;
+        border-style: none;
+        text-align: center;
+    }
+    .delete-button {
+        width: 90px;
+        height: 35px;
+    }
 
-  a {
-    line-height: 35px;
-  }
+    a {
+        line-height: 35px;
+    }
 }
