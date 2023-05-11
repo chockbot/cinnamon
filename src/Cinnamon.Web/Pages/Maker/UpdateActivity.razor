@@ -26,19 +26,6 @@
         <input type="hidden" @bind="Model.Activity.ActivityId" id="activity-id" />
         <input type="hidden" value="@Model.Activity.ActivityStatus" id="activity-status" />
 
-        <div class="save-later-section">
-            @if (Model.Activity.Status == ActivityStatus.InProgress)
-            {
-                <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
-                    <LoadingTemplate>
-                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
-                    </LoadingTemplate>
-                    <ChildContent>
-                        Save for Later
-                    </ChildContent>
-                </Button>
-            }
-        </div>
         <div class="progress-bar-section">
             <p class="progress-details">
                 IN PROGRESS: Step @currentIndex of 6 <span id="loader" class=""></span>
@@ -48,9 +35,28 @@
             </div>
         </div>
 
-        <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
-            UPDATE YOUR EXPERIENCE!
-        </p>
+        <div class="experience-heading-section row">
+            <div class="col-lg-9">
+                <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    UPDATE YOUR EXPERIENCE!
+                </p>
+            </div>
+            <div class="col-lg-3 save-later-button-section">
+                <div class="save-later-section d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    @if (Model.Activity.Status == ActivityStatus.InProgress)
+                    {
+                        <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Save for Later
+                            </ChildContent>
+                        </Button>
+                    }
+                </div>
+            </div>
+        </div>
 
         <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
             <div class="row">
@@ -109,6 +115,20 @@
                     }
                 </div>
             </div>
+        </div>
+
+         <div class="save-later-section-mobile d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            @if (Model.Activity.Status == ActivityStatus.InProgress)
+            {
+                <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Save for Later
+                    </ChildContent>
+                </Button>
+            }
         </div>
 
         <div class="row">
