@@ -8,8 +8,13 @@
 
 <section class="user-verification-government-id-section">
     <div class="container">
-        <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Lets upload your Government ID</p>
-        <p class="font-16 color-grey-100">Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.</p>
+        <div class="d-flex justify-content-between align-items-center cn-title-btn">
+            <div class="gr-1">
+                <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Lets upload your Government ID</p>
+                <p class="font-16 color-grey-100">Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.</p>
+            </div>
+            <Button Clicked="SaveForLater" class="bg-green-100 color-white-100 hover-color-white">Save for later</Button>
+        </div>
 
         <div class="government-id mt-5">
             <Row>
@@ -88,7 +93,7 @@
                 class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
                 Back
             </Button>
-            <Button Clicked="SaveChanges" Disabled="IsSavingChanges" Loading="IsSavingChanges" Type="ButtonType.Button" 
+            <Button Clicked="Submit" Disabled="IsSavingChanges" Loading="IsSavingChanges" Type="ButtonType.Button" 
                 class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0">
                 <LoadingTemplate>
                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
@@ -190,7 +195,7 @@
         await JsRuntime.InvokeVoidAsync("MyLib.previewImage", model.File.Element, model.ImgSrcId);
     }
 
-    private async Task SaveChanges()
+    private bool IsSubmitValid()
     {
         if(FrontImage.IsEmptyImage)
         {
@@ -200,8 +205,12 @@
         {
             BackImage.ErrorMessage = "Please provide image to upload";
         }
-        if(FrontImage.IsEmptyImage || BackImage.IsEmptyImage) return;
 
+        return !(FrontImage.IsEmptyImage || BackImage.IsEmptyImage);
+    }
+
+    private async Task SaveChanges()
+    {
         // no image changes
         if(FrontImage.ImageSize == 0 && BackImage.ImageSize == 0)
         {
@@ -225,6 +234,25 @@
         {
             await OnNextPageClick.InvokeAsync();
         }
+    }
+
+    private Task Submit()
+    {
+        if(IsSubmitValid())
+        {
+            return SaveChanges();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveForLater()
+    {
+        if(IsSubmitValid())
+        {
+            SaveChanges();
+        }
+        NavigationManager.NavigateTo("maker/dashboard");
     }
 
     private Task RemoveImage(ImageModel model)

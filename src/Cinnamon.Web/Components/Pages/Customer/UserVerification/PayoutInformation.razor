@@ -10,8 +10,16 @@
 
 <section class="user-verification-payout-information-section">
     <div class="container">
-        <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Payout Information</p>
-        <p class="font-16 color-grey-100">Please provide your bank details. This will let you receive funds to your bank account.</p>
+        <div class="d-flex justify-content-between align-items-center cn-title-btn">
+            <div class="gr-1">
+                <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Payout Information</p>
+                <p class="font-16 color-grey-100">Please provide your bank details. This will let you receive funds to your bank account.</p>
+            </div>
+            @if(IsExpandPayemntInfo)
+            {
+                <Button Clicked="SaveForLater" class="bg-green-100 color-white-100 hover-color-white">Save for later</Button>
+            }
+        </div>
 
         @if(IsExpandPayemntInfo)
         {
@@ -220,6 +228,13 @@
             Message = "Please accept the website Tems of Use and Privacy Policy";
             IsShowErrorMessage = true;
         }
+    }
+
+    private Task SaveForLater()
+    {
+        SubmitPayoutAccount();
+        NavigationManager.NavigateTo("maker/dashboard");
+        return Task.CompletedTask;
     }
 
     private async Task NextPage()
