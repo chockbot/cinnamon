@@ -287,7 +287,8 @@ public class ActivityController : ControllerBase
                 Title = activity.Title,
                 Handler = activity.Handler,
                 IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
+                SessionName = activity.SessionName,
+                Status = activity.Status
             }});
         }
         catch (Exception ex)
