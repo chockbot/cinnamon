@@ -76,6 +76,14 @@ builder.Services.AppExtendServices();
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 
+app.Use((context,next) => {
+    if (context.Request.Headers["x-forwarded-proto"] == "https")
+    {
+        context.Request.Scheme = "https";
+    }
+    return next();
+});
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
