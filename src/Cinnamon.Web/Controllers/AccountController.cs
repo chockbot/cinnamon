@@ -350,11 +350,6 @@ public class AccountController : Controller
             var firstName = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
             var lastName = HttpContext.User.FindFirstValue(ClaimTypes.Surname);
 
-            logger.LogInformation("--- debugging facebook authentication");
-            logger.LogInformation($"email: {email}");
-            logger.LogInformation($"firstname: {firstName}");
-            logger.LogInformation($"lastname: {lastName}");
-
             string redirect = "/explore";
 
             if(Request.Query.Keys.Any(a => a == "redirect") && !string.IsNullOrEmpty(Request.Query["redirect"]))
@@ -362,14 +357,12 @@ public class AccountController : Controller
                 redirect = Request.Query["redirect"];
             }
 
-            logger.LogInformation("Checking email..");
             if(string.IsNullOrEmpty(email))
             {
                 await HttpContext.SignOutAsync();
                 return Redirect("/explore");
             }
 
-            logger.LogInformation("Getting external login token");
             var result = await accountApiHandler.ExternalLogin(new Framework.ApiCommand.ApiCore.Account.Request.ExternalLoginArgs {
                 Email = email,
                 FirstName = firstName,
@@ -378,14 +371,12 @@ public class AccountController : Controller
 
             if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
             {
-                logger.LogInformation("Error when getting external login token");
                 await HttpContext.SignOutAsync();
                 return Redirect("/explore");
             }
 
             if(result.Result.Result.IsNew)
             {
-                logger.LogInformation("Account is new, redirect to external register page");
                 await HttpContext.SignOutAsync();
                 return Redirect($"/external-register/?Token={result.Result.Result.GeneratedNewToken}&Uid={result.Result.Result.GeneratedNewUid}&Redirect={redirect}");
             }
