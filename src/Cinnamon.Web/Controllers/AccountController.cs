@@ -345,6 +345,8 @@ public class AccountController : Controller
             var firstName = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
             var lastName = HttpContext.User.FindFirstValue(ClaimTypes.Surname);
 
+            Console.WriteLine(email + " --- debugging email");
+
             string redirect = "/explore";
 
             if(Request.Query.Keys.Any(a => a == "redirect") && !string.IsNullOrEmpty(Request.Query["redirect"]))
