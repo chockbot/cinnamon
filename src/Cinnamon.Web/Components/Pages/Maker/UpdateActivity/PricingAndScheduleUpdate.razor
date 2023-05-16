@@ -137,6 +137,14 @@
         AddSchedule();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Price");
+        }
+    }
+
     private string ShowErrorMessage()
     {
         return Model.ExperienceHasError ? "block" : "none";

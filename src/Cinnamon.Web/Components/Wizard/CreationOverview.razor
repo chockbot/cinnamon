@@ -117,6 +117,8 @@
     {
         if (firstRender)
         {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Overview Page");
+
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
 

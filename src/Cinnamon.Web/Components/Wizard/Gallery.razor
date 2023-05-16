@@ -146,6 +146,8 @@
         {
             await Task.Delay(3000);
 
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Photos");
+
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
         }
     }

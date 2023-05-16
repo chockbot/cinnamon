@@ -796,7 +796,10 @@
             bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
             isLoading = false;
 
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
+
             NavigationManager.NavigateTo("/maker/dashboard");
+
             return;
         }
 
