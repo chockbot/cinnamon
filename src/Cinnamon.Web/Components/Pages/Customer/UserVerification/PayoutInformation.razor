@@ -21,96 +21,54 @@
             }
         </div>
 
-        @if(IsExpandPayemntInfo)
-        {
-            <div class="mt-5">
-                <Row>
-                    <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
-                        <div class="payout-information-details">
-                            <Validations @ref="FormValidation" Model="Model" Mode="ValidationMode.Manual">
+        <div class="mt-5">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+                    <div class="payout-information-details">
+                        <Validations @ref="FormValidation" Model="Model" Mode="ValidationMode.Manual">
+                            <Field class="mb-3">
+                                <FieldLabel class="font-20 color-grey-100">Bank Type</FieldLabel>
+                                <Select class="form-control" TValue="string" @bind-SelectedValue="SelectedPayment">
+                                    <SelectItem selected Disabled>Select Payout Account</SelectItem>
+                                    @if(PaymentChannels != null)
+                                    {
+                                        @foreach (var item in PaymentChannels)
+                                            {
+                                                <SelectItem Value="item.Code">@item.Name</SelectItem>
+                                            }
+                                    }
+                                </Select>
+                            </Field>
+                            <Validation>
                                 <Field class="mb-3">
-                                    <FieldLabel class="font-20 color-grey-100">Bank Type</FieldLabel>
-                                    <Select class="form-control" TValue="string" @bind-SelectedValue="SelectedPayment">
-                                        <SelectItem selected Disabled>Select Payout Account</SelectItem>
-                                        @if(PaymentChannels != null)
-                                        {
-                                            @foreach (var item in PaymentChannels)
-                                                {
-                                                    <SelectItem Value="item.Code">@item.Name</SelectItem>
-                                                }
-                                        }
-                                    </Select>
+                                    <FieldLabel class="font-20 color-grey-100">Account Name</FieldLabel>
+                                    <TextEdit class="text-capitalize" Placeholder="Enter your account name" @bind-Text="Model.AccountHolder">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
                                 </Field>
-                                <Validation>
-                                    <Field class="mb-3">
-                                        <FieldLabel class="font-20 color-grey-100">Account Name</FieldLabel>
-                                        <TextEdit class="text-capitalize" Placeholder="Enter your account name" @bind-Text="Model.AccountHolder">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Field>
-                                </Validation>
-                                <Validation>
-                                    <Field class="mb-3">
-                                        <FieldLabel class="font-20 color-grey-100">Account Number</FieldLabel>
-                                        <TextEdit Placeholder="Enter your account number" @bind-Text="Model.AccountNumber">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Field>
-                                </Validation>
-                                <div class="mt-4">
-                                    <div>
-                                        <label for="accept-terms">
-                                            <InputCheckbox id="accept-terms" name="accept-terms" @bind-Value="IsAcceptPrivacyPolicy"/>
-                                            <span class="font-12 color-grey-100">
-                                                I agree to the website 
-                                                <a class="color-primary hover-color-primary" href="/help/terms" target="_blank">Terms of Use</a> and 
-                                                <a class="color-primary hover-color-primary" href="/help/privacy">Privacy Policy</a>. 
-                                            </span>
-                                        </label>
-                                    </div>
-                                    <Button Clicked="SubmitPayoutAccount"
-                                        Loading="IsSubmitting" Disabled="IsSubmitting"
-                                        class="btn-primary width-150 border-radius-5 mt-2 m-width-100" Border="Border.Is0">
-                                        <LoadingTemplate>
-                                            <i class="fa fa-spinner fa-spin"></i> Please Wait
-                                        </LoadingTemplate>
-                                        <ChildContent>
-                                            Submit
-                                        </ChildContent>
-                                    </Button>
-                                </div>
-                                <div class="error-success-messages">
-                                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="IsShowErrorMessage">
-                                        <AlertDescription>@Message</AlertDescription>
-                                    </Alert>
-                                </div>
-                            </Validations>
-                        </div>
-                    </Column>
-                </Row>
-            </div>
-        }
-        else 
-        {
-            <div class="mt-5">
-                <p class="font-20 font-weight-700 color-black-100">Direct debits</p>
-                <div class="d-flex align-items-center justify-content-between width-260">
-                    <label class="font-16 font-weight-700 color-black-100">@Model.AccountNumber</label>
-                    <span class="expand-arrow-icon" @onclick="() => IsExpandPayemntInfo = true">
-                        <img src="images/user-verification/arrow.png" alt="arrow icon">
-                    </span>
-                </div>
-                <Divider class="mb-0 mt-4" />
-                <p class="font-16 color-grey-100 mt-3">
-                    *You will receive payment once a session is completed. Please allow 2 
-                    banking days for clearing. Payout schedule is Tuesday and Friday every week.
-                </p>
-            </div>
-        }
+                            </Validation>
+                            <Validation>
+                                <Field class="mb-3">
+                                    <FieldLabel class="font-20 color-grey-100">Account Number</FieldLabel>
+                                    <TextEdit Placeholder="Enter your account number" @bind-Text="Model.AccountNumber">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <div class="error-success-messages">
+                                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="IsShowErrorMessage">
+                                    <AlertDescription>@Message</AlertDescription>
+                                </Alert>
+                            </div>
+                        </Validations>
+                    </div>
+                </Column>
+            </Row>
+        </div>
         
         <div class="text-center mt-5">
             <Button Type="ButtonType.Button" Clicked="BackPage" 
@@ -239,15 +197,43 @@
 
     private async Task NextPage()
     {
-        IsFinalSubmitting = true;
-        var result = await accountApiHandler.SubmitAccountVerified(Token);
-        IsFinalSubmitting = false;
-        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        if (await FormValidation.ValidateAll() && !string.IsNullOrEmpty(SelectedPayment))
         {
-            if(OnNextPageClick.HasDelegate) 
+            IsFinalSubmitting = true;
+
+            var result = await accountApiHandler.UpdatePayoutAccount(new Framework.ApiCommand.ApiCore.Account.Request.UpdatePayoutAccountArgs {
+                AccountHolder = Model.AccountHolder,
+                AccountNumber = Model.AccountNumber,
+                BankChannel = SelectedPayment
+            }, Token);
+
+            if(!result.Succeeded || result.Result == null ||  !result.Result.IsSuccess)
             {
-                await OnNextPageClick.InvokeAsync();
+                IsFinalSubmitting = false;
+                Message = "An error occured. Please try again later";
+                IsShowErrorMessage = true;
+                return;
             }
+
+            var submitResult = await accountApiHandler.SubmitAccountVerified(Token);
+            if(submitResult.Succeeded && submitResult.Result != null && submitResult.Result.IsSuccess)
+            {
+                if(OnNextPageClick.HasDelegate) 
+                {
+                    await OnNextPageClick.InvokeAsync();
+                }
+            }
+
+            Message = string.Empty;
+            IsShowErrorMessage = false;
+
+            IsFinalSubmitting = false;
+        }
+
+        if(string.IsNullOrEmpty(SelectedPayment))
+        {
+            Message = "Please select Payout Account.";
+            IsShowErrorMessage = true;
         }
     }
 
