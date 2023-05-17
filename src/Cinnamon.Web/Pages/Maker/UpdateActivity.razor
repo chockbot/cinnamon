@@ -649,6 +649,8 @@
 
     private async Task SaveForLater()
     {
+        isLoading = true;
+
         Model.Activity.ActivitySchedules = ValidateSchedules(Model.Activity.ActivitySchedules);
 
         var submit = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
@@ -733,9 +735,10 @@
 
         // upload image without checking if there is error so that can't re update another activity
         bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
-        isLoading = false;
 
         NavigationManager.NavigateTo("/maker/dashboard");
+        isLoading = false;
+
         return;
     }
 
