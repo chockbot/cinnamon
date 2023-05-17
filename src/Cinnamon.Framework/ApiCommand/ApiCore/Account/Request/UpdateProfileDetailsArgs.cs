@@ -9,7 +9,10 @@ public class UpdateProfileDetailsArgs
     public DateTime? Datebirth {get; set;}
     public string? About {get; set;}
     public int VerifiedBadge { get; set; }
+    public DateTime? VerifiedBadgeDate { get; set; }
     public int CustomerId { get; set; }
     public bool IsOG { get; set; }
+    public DateTime? IsOGDate { get; set; }
     public bool IsOF { get; set; }
+    public DateTime? IsOFDate { get; set; }
 }
