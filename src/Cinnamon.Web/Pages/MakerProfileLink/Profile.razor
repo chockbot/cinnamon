@@ -20,95 +20,99 @@
 @inject IActivityApiHandler activityApiHandler;
 
 <PageTitle>Cinnamon Maker Profile - @MakerFullname | CinnamonPH</PageTitle>
-<SeoMeta Subject="Cinnamon Maker Profile" Title="Cinnamon Maker Profile" 
-    Url='@($"/maker/profile/{Id}")' Description="@(customerDetail?.About ?? string.Empty)"
-    Image="@(customerDetail?.ProfilePath ?? string.Empty)" />
+<SeoMeta Subject="Cinnamon Maker Profile" Title="Cinnamon Maker Profile"
+         Url='@($"/maker/profile/{Id}")' Description="@(customerDetail?.About ?? string.Empty)"
+         Image="@(customerDetail?.ProfilePath ?? string.Empty)" />
 
-@if (activities!=null)
+@if (activities != null)
 {
-    <div id="alertContainer" class="alertContainer">
-        <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
-    </div>
-    <section class="py-3 mt-5 profile-content">
-        <Container>
-            <Row>
-                <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
-                    <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
-                        <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
-                            <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
-                                <img src="images/copytoclipboard.png">
-                            </button>
-                            <Figure>
-                                <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
-                            </Figure>
-                        </CardHeader>
-                        <CardBody Border="Border.Is0" Padding="Padding.Is3.OnY">
-                            <CardTitle TextAlignment="TextAlignment.Center">
-                                <p class="text-capitalize fw-bold m-0 mb-1 font-30">@customerDetail.FirstName @customerDetail.LastName</p>
-                                <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
-                                @switch (customerDetail.IsVerified)
-                                {
-                                    case 0:
-                                        <p class="text-color-8080 my-1 font-24">
-                                            <img class="img-not" src="images/not-icon.png" />
-                                            <span class="span-not">Not Verified</span>
-                                        </p>
-                                        break;
-                                    case 1:
-                                        <p class="text-color-8080 my-1 font-24">
-                                            <img class="img-pending" src="images/PendingIcon.png" />
-                                            <span class="span-pending">Pending Verification</span>
-                                        </p>
-                                        break;
-                                    case 2:
-                                        <p class="text-color-8080 my-1 font-24">
-                                            <img class="img-verified" src="images/Badges/VERIFIED.svg" />
-                                            <span class="span-verified">Verified</span>
-                                        </p>
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            </CardTitle>
-                        </CardBody>
-                    </Card>
-                </Column>
-                <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile">
-                    <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
-                        <Div>
-                            <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@customerDetail.FirstName</span></p>
-                            <p class="m-0 text-color-8080 font-14">Joined in @customerDetail.DateJoined.Year</p>
-                        </Div>
-                        <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
-                            <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
-                                <p class="my-3 fw-bold font-18">About you</p>
+    <Div ElementId="#b-animate">
+        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+            <div id="alertContainer" class="alertContainer">
+                <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
+            </div>
+            <section class="py-3 mt-5 profile-content">
+                <Container>
+                    <Row>
+                        <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
+                            <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
+                                <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
+                                    <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                        <img src="images/copytoclipboard.png">
+                                    </button>
+                                    <Figure>
+                                        <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
+                                    </Figure>
+                                </CardHeader>
+                                <CardBody Border="Border.Is0" Padding="Padding.Is3.OnY">
+                                    <CardTitle TextAlignment="TextAlignment.Center">
+                                        <p class="text-capitalize fw-bold m-0 mb-1 font-30">@customerDetail.FirstName @customerDetail.LastName</p>
+                                        <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
+                                        @switch (customerDetail.IsVerified)
+                                        {
+                                            case 0:
+                                                <p class="text-color-8080 my-1 font-24">
+                                                    <img class="img-not" src="images/not-icon.png" />
+                                                    <span class="span-not">Not Verified</span>
+                                                </p>
+                                                break;
+                                            case 1:
+                                                <p class="text-color-8080 my-1 font-24">
+                                                    <img class="img-pending" src="images/PendingIcon.png" />
+                                                    <span class="span-pending">Pending Verification</span>
+                                                </p>
+                                                break;
+                                            case 2:
+                                                <p class="text-color-8080 my-1 font-24">
+                                                    <img class="img-verified" src="images/Badges/VERIFIED.svg" />
+                                                    <span class="span-verified">Verified</span>
+                                                </p>
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    </CardTitle>
+                                </CardBody>
+                            </Card>
+                        </Column>
+                        <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile">
+                            <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
+                                <Div>
+                                    <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@customerDetail.FirstName</span></p>
+                                    <p class="m-0 text-color-8080 font-14">Joined in @customerDetail.DateJoined.Year</p>
+                                </Div>
+                                <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
+                                    <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
+                                        <p class="my-3 fw-bold font-18">About you</p>
+                                    </Div>
+                                </Div>
+                                <p class="m-0 text-color-8080 font-16">@customerDetail.About</p>
                             </Div>
-                        </Div>
-                        <p class="m-0 text-color-8080 font-16">@customerDetail.About</p>
-                    </Div>
-                </Column>
-            </Row>
-        </Container>
-    </section>
+                        </Column>
+                    </Row>
+                </Container>
+            </section>
 
-    <section class="mt-5 customer-profile-details">
-        <Container>
-            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-                <Items>
-                    <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
-                </Items>
-                <Content>
-                    <TabPanel Name="maker-experience">
-                        <MakerExperiences Activities="activities" />
-                    </TabPanel>
-                </Content>
-            </Tabs>
-        </Container>
-    </section>
+            <section class="mt-5 customer-profile-details">
+                <Container>
+                    <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                        <Items>
+                            <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
+                        </Items>
+                        <Content>
+                            <TabPanel Name="maker-experience">
+                                <MakerExperiences Activities="activities" />
+                            </TabPanel>
+                        </Content>
+                    </Tabs>
+                </Container>
+            </section>
+        </Animate>
+    </Div>
 }
 
 
-@code 
+@code
 {
     IJSObjectReference module;
 
@@ -204,32 +208,32 @@
                                 OngoingStudents = a.OngoingStudents,
                                 CompletedStudents = a.CompletedStudents,
                                 Images = a.Images.Select(i =>
-                        {
-                                        return new ActivityImage
-                                        {
-                                            Id = i.Id,
-                                            ImageSrc = i.ImageSrc,
-                                            Name = i.Name
-                                        };
-                                    }).ToList(),
+                    {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
                                 Owner = new CustomerProfile
                                 {
                                     IsVerified = a.Owner.IsVerified
                                 },
                                 ActivitySchedules = a.ActivitySchedules.Select(e =>
-                    {
-                                    return new ActivitySchedule
-                                    {
-                                        Id = e.Id,
-                                        Name = e.Name,
-                                        PerUnit1 = e.PerUnit1,
-                                        PerUnit2 = e.PerUnit2,
-                                        Price = e.Price,
-                                        PriceUnit1 = e.PriceUnit1,
-                                        PriceUnit2 = e.PriceUnit2,
-                                        UnitPrice = e.UnitPrice
-                                    };
-                                }).ToList(),
+                {
+                            return new ActivitySchedule
+                            {
+                                Id = e.Id,
+                                Name = e.Name,
+                                PerUnit1 = e.PerUnit1,
+                                PerUnit2 = e.PerUnit2,
+                                Price = e.Price,
+                                PriceUnit1 = e.PriceUnit1,
+                                PriceUnit2 = e.PriceUnit2,
+                                UnitPrice = e.UnitPrice
+                            };
+                        }).ToList(),
                             };
                     }).ToList();
                 }
@@ -244,9 +248,9 @@
 
     private string MakerFullname
     {
-        get 
+        get
         {
-            if(customerDetail == null) return string.Empty;
+            if (customerDetail == null) return string.Empty;
 
             return customerDetail.FirstName?.ToUpper() + " " + customerDetail.LastName?.ToUpper();
         }
@@ -264,5 +268,5 @@
     {
         await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));
     }
-    
+
 }
