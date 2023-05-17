@@ -64,7 +64,7 @@
                     @if (currentIndex > 1)
                     {
                         <button class="carousel-control-prev" type="button" @onclick="() => OnBackClick()">
-                            <div class="triangle-reverse"></div>
+                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
                         </button>
                     }
                 </div>
@@ -109,8 +109,8 @@
                 <div class="col-1 next-button-section">
                     @if (currentIndex < 6)
                     {
-                        <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
-                            <div class="triangle"></div>
+                       <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
+                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
                         </button>
                     }
                 </div>
@@ -138,7 +138,7 @@
                         Overview
                         @if (currentIndex == 1)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -152,7 +152,7 @@
                         Location
                         @if (currentIndex == 2)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -166,7 +166,7 @@
                         Pricing & Schedule
                         @if (currentIndex == 3)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -180,7 +180,7 @@
                         Requirements
                         @if (currentIndex == 4)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -194,7 +194,7 @@
                         Gallery
                         @if (currentIndex == 5)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -208,9 +208,56 @@
                         Publish
                         @if (currentIndex == 6)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                     </a>
+                </div>
+                   <div class="dashed-divider col-lg-7"></div>
+                <div class="guide-section col-lg-7 text-center">
+                    <label class="guide-title @(currentIndex != 6 ? "d-block" : "d-none")">
+                        How it will look like
+                    </label>
+                    <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-1 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-1.png" alt="check-icon" />
+                            </div>
+                            <div class="creation-guide-step-2 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-2.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-3 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-3.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-4 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-4.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-5 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-5.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-6 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-6.png" alt="check-icon" />
+                            </div>
+                            <div class="creation-guide-step-7 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-7.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-8">
