@@ -139,9 +139,12 @@
                 FrontIdImagePath = r.FrontIdImagePath,
                 BackIdImagePath = r.BackIdImagePath,
                 IsVerified = r.IsVerified,
+                IsVerifiedDate = r.IsVerifiedDate,
                 IsChecked = r.IsVerified == 2,
                 IsOG = r.IsOG,
+                IsOGDate = r.IsOGDate,
                 IsOfficial = r.IsOfficial,
+                IsOfficialDate = r.IsOfficialDate,
             }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
         Pagination = result.Result.Pagination;
@@ -187,9 +190,12 @@
         var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
             {
                 IsOG = OGBadge,
+                IsOGDate = DateTime.UtcNow,
                 CustomerId = customer.Id,
                 IsOF = customer.IsOfficial,
-                VerifiedBadge = customer.IsVerified
+                IsOFDate = customer.IsOfficialDate,
+                VerifiedBadge = customer.IsVerified,
+                VerifiedBadgeDate = customer.IsVerifiedDate
             }, token);
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
@@ -217,9 +223,12 @@
         var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
             {
                 IsOF = OFBadge,
+                IsOFDate = DateTime.UtcNow,
                 CustomerId = customer.Id,
                 IsOG = customer.IsOG,
-                VerifiedBadge = customer.IsVerified
+                IsOGDate = customer.IsOGDate,
+                VerifiedBadge = customer.IsVerified,
+                VerifiedBadgeDate = customer.IsVerifiedDate
             }, token);
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
