@@ -130,9 +130,12 @@
                         @if(Model.CustomerProfile.IsVerified != 0){
                         int cnt = 0;
                         <p class="my-3 fw-bold font-18">Badges</p>
-                        <Div Display="Display.Flex" Flex="Flex.AlignContent.Center">
+                        <div class="@displayBadge justify-content-center">
                             <Card class="badges-column">
                                 <CardBody Flex="Flex.AlignContent.Center">
+                                    @if(cnt == 0){
+                                        displayBadge = "d-none";
+                                    }
                                     @if (Model.CustomerProfile.IsVerified == 2)
                                     {
                                         cnt++;
@@ -149,6 +152,9 @@
                                                     }
                                                 </div>
                                         </Tooltip>
+                                    }
+                                    @if(cnt == 0){
+                                        displayBadge = "d-none";
                                     }
                                     @if (Model.CustomerProfile.IsOG == true)
                                     {
@@ -167,6 +173,9 @@
                                                 </div>
                                         </Tooltip>
                                     }
+                                    @if(cnt == 0){
+                                        displayBadge = "d-none";
+                                    }
                                     @if (Model.CustomerProfile.IsOfficial == true)
                                     {
                                         cnt++;
@@ -183,6 +192,9 @@
                                                     }
                                                 </div>
                                         </Tooltip>
+                                    }
+                                    @if(cnt == 0){
+                                        displayBadge = "d-none";
                                     }
                                     @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
                                     {
@@ -202,6 +214,9 @@
                                             </div>
                                         </Tooltip>
                                     }
+                                    @if(cnt == 0){
+                                        displayBadge = "d-none";
+                                    }
                                     @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
                                     {
                                         cnt++;
@@ -219,6 +234,9 @@
                                                 }
                                             </div>
                                         </Tooltip>
+                                    }
+                                    @if(cnt == 0){
+                                        displayBadge = "d-none";
                                     }
                                     @if (MakerCompletedStudent >= 100)
                                     {
@@ -240,7 +258,7 @@
                                     }
                                 </CardBody>
                             </Card>
-                        </Div>
+                        </div>
                         }
                     </Div>
                 </Column>
@@ -345,6 +363,8 @@
     public int MakerOngoingStudent { get; set; }
 
     public int MakerCompletedStudent { get; set; }
+
+    public string displayBadge = "d-flex";
 
     public List<Activity> activities = new List<Activity>();
 

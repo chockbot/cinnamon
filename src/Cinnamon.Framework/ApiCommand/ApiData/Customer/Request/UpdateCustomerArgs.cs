@@ -17,9 +17,12 @@ public class UpdateCustomerArgs
     public bool? IsMaker { get; set; }
     public bool? ExternalLogin { get; set; }
     public int? IsVerified { get; set; }
+    public DateTime? IsVerifiedDate { get; set; }
     public string? FrontIdImagePath { get; set; }
     public string? BackIdImagePath { get; set; }
     public decimal? TotalCredits {get; set;}
     public bool? IsOG { get; set; }
+    public DateTime? IsOGDate { get; set; }
     public bool? IsOF { get; set; }
+    public DateTime? IsOFDate { get; set; }
 }
