@@ -6,6 +6,8 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IActivityApiHandler activityApiHandler;
 
+<ExperienceCreationGuideModal @ref="experienceCreationGuideModal"></ExperienceCreationGuideModal>
+
 <div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
     <ul id="error-list" class="fw-bold">
         <li>Fill in required field</li>
@@ -80,7 +82,6 @@
             }
         </div>
     </div>
-    <ExperienceCreationGuideModal @ref="experienceCreationGuideModal"></ExperienceCreationGuideModal>
 </div>
 
 @code {
