@@ -4,12 +4,9 @@
 @using Cinnamon.Web.Models.Customer;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 
-<Modal @ref="modalReference" Class="view-image-modal">
-    <div class="modal-dialog modal-lg">
+<div class="modal @ModalClass" tabindex="-1" role="dialog" style="display:@ModalDisplay">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="btn-close" @onclick="() => modalReference.Hide()"></button>
-            </div>
             <div class="modal-body text-center">
                 <label class="guide-title">
                     How it will look like
@@ -23,25 +20,46 @@
                     }
                 </div>
             </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" @onclick="() => HideModal()">Close</button>
+            </div>
         </div>
     </div>
-</Modal>
+</div>
+
+
+@if (ShowBackdrop)
+{
+    <div class="modal-backdrop fade show"></div>
+}
 
 @code {
+
+
+    public string ModalDisplay = "none;";
+    public string ModalClass = "";
+    public bool ShowBackdrop = false;
     public string ImagePath { get; set; }
     private List<string> imagePathsSplitted = new List<string>();
 
     private Blazorise.Modal modalReference = new Modal();
 
-    public Task ShowModal(string imagePath)
+    public void ShowModal(string imagePath)
     {
         ImagePath = imagePath;
         imagePathsSplitted = imagePath.Split("|").ToList();
-        return modalReference.Show();
+
+        ModalDisplay = "block;";
+        ModalClass = "Show";
+        ShowBackdrop = true;
+        StateHasChanged();
     }
-    public Task HideModal()
+    public void HideModal()
     {
-        return modalReference.Hide();
+        ModalDisplay = "none";
+        ModalClass = "";
+        ShowBackdrop = false;
+        StateHasChanged();
     }
 
 }
