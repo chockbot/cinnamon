@@ -30,9 +30,12 @@
                 <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                     <Card class="customer-profile-card" Border="Border.Is0" Padding="Padding.Is3">
                         <CardHeader Border="Border.Is0" Background="Background.Transparent" Padding="Padding.Is0.FromTop">
-                            <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
-                                <img src="images/copytoclipboard.png">
-                            </button>
+                            @if(Model.CustomerProfile.IsMaker == true)
+                            {
+                                <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                    <img src="images/copytoclipboard.png">
+                                </button>
+                            }
                             <Figure class="profile-pic">
                                 <CardImage Source=@ImageSource Alt="Profile" Class="card-image-full" Border="Border.RoundedCircle.Is2.White"></CardImage>
                             </Figure>
@@ -133,9 +136,6 @@
                         <div class="@displayBadge justify-content-center">
                             <Card class="badges-column">
                                 <CardBody Flex="Flex.AlignContent.Center">
-                                    @if(cnt == 0){
-                                        displayBadge = "d-none";
-                                    }
                                     @if (Model.CustomerProfile.IsVerified == 2)
                                     {
                                         cnt++;
@@ -152,9 +152,6 @@
                                                     }
                                                 </div>
                                         </Tooltip>
-                                    }
-                                    @if(cnt == 0){
-                                        displayBadge = "d-none";
                                     }
                                     @if (Model.CustomerProfile.IsOG == true)
                                     {
@@ -173,9 +170,6 @@
                                                 </div>
                                         </Tooltip>
                                     }
-                                    @if(cnt == 0){
-                                        displayBadge = "d-none";
-                                    }
                                     @if (Model.CustomerProfile.IsOfficial == true)
                                     {
                                         cnt++;
@@ -192,9 +186,6 @@
                                                     }
                                                 </div>
                                         </Tooltip>
-                                    }
-                                    @if(cnt == 0){
-                                        displayBadge = "d-none";
                                     }
                                     @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
                                     {
@@ -214,9 +205,6 @@
                                             </div>
                                         </Tooltip>
                                     }
-                                    @if(cnt == 0){
-                                        displayBadge = "d-none";
-                                    }
                                     @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
                                     {
                                         cnt++;
@@ -235,9 +223,6 @@
                                             </div>
                                         </Tooltip>
                                     }
-                                    @if(cnt == 0){
-                                        displayBadge = "d-none";
-                                    }
                                     @if (MakerCompletedStudent >= 100)
                                     {
                                         cnt++;
@@ -255,6 +240,9 @@
                                                 }
                                             </div>
                                         </Tooltip>
+                                    }
+                                    @if(cnt == 0){
+                                        displayBadge = "d-none";
                                     }
                                 </CardBody>
                             </Card>
@@ -547,7 +535,8 @@
                 IsOG = profile.IsOG,
                 IsOfficial = profile.IsOfficial,
                 ProfilePath = profile.ProfileImg,
-                DateJoined = profile.DateJoined
+                DateJoined = profile.DateJoined,
+                Handler = profile.Handler
             },
             FamilyMembers = familyMembers,
             OwnedActivities = ownedActivities,
@@ -656,7 +645,7 @@
     }
     private async Task CopyToClipboard()
     {
-        await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));
+        await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.BaseUri + "maker/profile/" + Model.CustomerProfile.Handler));
     }
 }
 
