@@ -154,7 +154,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 IsSetSession = args.IsSetSession,
                 SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
-                IsDeactivated = args.IsDeactivated
+                IsDeactivated = args.IsDeactivated,
+                Status = args.Status,
             };
 
             if(args.SearchTags != null)
@@ -305,7 +306,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Title = updated.Title,
                 Handler = updated.Handler,
                 IsSetSession = updated.IsSetSession,
-                SessionName = updated.SessionName
+                SessionName = updated.SessionName,
+                Status = updated.Status
             }, "Successfully update activity details");
         }
         catch (Exception ex)

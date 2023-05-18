@@ -247,8 +247,11 @@ public class CustomerRepository : ICustomerRepository
                     Id = c.Id,
                     IsMaker = c.IsMaker,
                     IsVerified = c.IsVerifiedBadge,
+                    IsVerifiedObtainedDate = c.IsVerifiedDate,
                     IsOG = c.IsOG,
+                    IsOGObtainedDate = c.IsOGDate,
                     IsOfficial = c.IsOfficialPartner,
+                    IsOfficialObtainedDate = c.IsOfficialDate,
                     ProfileImg = c.ProfilePath,
                     Handler = c.Handler,
                     BackIdImagePath = c.BackIdImagePath,
@@ -290,8 +293,11 @@ public class CustomerRepository : ICustomerRepository
                     Id = c.Id,
                     IsMaker = c.IsMaker,
                     IsVerified = c.IsVerifiedBadge,
+                    IsVerifiedObtainedDate = c.IsVerifiedDate,
                     IsOG = c.IsOG,
+                    IsOGObtainedDate = c.IsOGDate,
                     IsOfficial = c.IsOfficialPartner,
+                    IsOfficialObtainedDate = c.IsOfficialDate,
                     ProfileImg = c.ProfilePath,
                     Handler =c.Handler,
                     TotalCredits = c.TotalCredits
@@ -365,8 +371,11 @@ public class CustomerRepository : ICustomerRepository
                 Id = result.Result.Id,
                 IsMaker = result.Result.IsMaker,
                 IsVerified = result.Result.IsVerifiedBadge,
+                IsVerifiedObtainedDate = result.Result.IsVerifiedDate,
                 IsOG = result.Result.IsOG,
+                IsOGObtainedDate = result.Result.IsOGDate, 
                 IsOfficial = result.Result.IsOfficialPartner,
+                IsOfficialObtainedDate = result.Result.IsOfficialDate,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler,
                 TotalCredits = result.Result.TotalCredits,
@@ -460,8 +469,8 @@ public class CustomerRepository : ICustomerRepository
         }
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
-        string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, string? frontIdImagePath, string? backIdImageParh,
-        decimal? totalCredits, bool? isOG, bool? isOF)
+        string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified,DateTime? isVerifiedDate, string? frontIdImagePath, string? backIdImageParh,
+        decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate)
     {
         try
         {
@@ -482,11 +491,14 @@ public class CustomerRepository : ICustomerRepository
             customer.IsMaker = ismaker ?? customer.IsMaker;
             customer.ExternalLogin = externalLogin ?? customer.ExternalLogin;
             customer.IsVerifiedBadge = isVerified ?? customer.IsVerifiedBadge;
+            customer.IsVerifiedDate = isVerifiedDate ?? customer.IsVerifiedDate;
             customer.FrontIdImagePath = frontIdImagePath ?? customer.FrontIdImagePath;
             customer.BackIdImagePath = backIdImageParh ?? customer.BackIdImagePath;
             customer.TotalCredits = totalCredits ?? customer.TotalCredits;
             customer.IsOG = isOG ?? customer.IsOG;
+            customer.IsOGDate = isOGDate ?? customer.IsOGDate;
             customer.IsOfficialPartner = isOF ?? customer.IsOfficialPartner;
+            customer.IsOfficialDate = isOfficialDate ?? customer.IsOfficialDate;    
 
             var updatedCustomerRes = await dataStore.Customer.Update(customer);
             if (!updatedCustomerRes.Succeeded)
@@ -506,11 +518,14 @@ public class CustomerRepository : ICustomerRepository
                 Id = customer.Id,
                 IsMaker = customer.IsMaker,
                 IsVerified = customer.IsVerifiedBadge,
+                IsVerifiedObtainedDate = customer.IsVerifiedDate,
                 ProfileImg = customer.ProfilePath,
                 Handler = customer.Handler,
                 TotalCredits = customer.TotalCredits,
                 IsOG = customer.IsOG,
+                IsOGObtainedDate = customer.IsOGDate,
                 IsOfficial = customer.IsOfficialPartner,
+                IsOfficialObtainedDate = customer.IsOGDate,
             }, "Successfully updated customer data");
         }
         catch (Exception ex)

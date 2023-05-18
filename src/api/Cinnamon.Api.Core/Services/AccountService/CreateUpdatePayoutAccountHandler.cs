@@ -42,10 +42,10 @@ public class CreateUpdatePayoutAccountHandler : ICreateUpdatePayoutAccountHandle
             var account = profileRes.Result;
 
             // can only create payout account if maker
-            if(!account.IsMaker)
-            {
-                return AppResult<CreateUpdatePayoutAccountResult>.CreateFailed(new ApplicationException("Invalid request"), "Invalid request");
-            }
+            // if(!account.IsMaker)
+            // {
+            //     return AppResult<CreateUpdatePayoutAccountResult>.CreateFailed(new ApplicationException("Invalid request"), "Invalid request");
+            // }
 
             if(string.IsNullOrEmpty(args.AccountHolder) || string.IsNullOrEmpty(args.AccountNumber))
             {

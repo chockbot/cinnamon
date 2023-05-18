@@ -45,7 +45,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 ExperienceCategoryId  = args.ExperienceCategoryId,
                 SearchValue = args.SearchValue,
                 IncludeStudents = args.IncludeStudents,
-                IsDeactivated = args.IsDeactivated
+                IsDeactivated = args.IsDeactivated,
+                Status = args.Status
             });
             if (!result.Succeeded || result.Result == null)
             {

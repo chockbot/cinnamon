@@ -1,0 +1,285 @@
+@namespace Cinnamon.Web.Components.Pages.Customer.UserVerification
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@inject IAccountApiHandler accountApiHandler;
+@inject IJSRuntime JsRuntime;
+@inject NavigationManager NavigationManager;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+
+<section class="user-verification-government-id-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center cn-title-btn">
+            <div class="gr-1">
+                <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Lets upload your Government ID</p>
+                <p class="font-16 color-grey-100">Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.</p>
+            </div>
+            <Button Clicked="SaveForLater" class="bg-green-100 color-white-100 hover-color-white">Save for later</Button>
+        </div>
+
+        <div class="government-id mt-5">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+                    <div class="images-boxes">
+                        <form id="form-upload-ids">
+                            <div class="image-box">
+                                <label class="image-container d-block" for="FrontId">
+                                    <img id="front-goverment-id" class="w-100 h-auto" 
+                                        src='@(FrontImage.IsEmptyImage ? emptyFrontImage : FrontImage.ImgSrcUrl )' alt="front image">
+                                    <InputFile @ref="FrontImage.File" id="FrontId" name="FrontId" 
+                                        class="d-none" hidden="true" accept=".png,.jpg,.jpeg" OnChange="(e) => ShowPreview(e,FrontImage)" />
+                                </label>
+                                <div class="mt-1 d-flex align-items-center justify-content-between">
+                                    <label class="font-20 color-grey-100 font-weight-700">Upload Front of ID</label>
+                                    <span class="icon-img-delete" @onclick="() => RemoveImage(FrontImage)">
+                                        <img src="images/user-verification/delete.png" alt="delete icon">
+                                    </span>
+                                </div>
+                                @if(!string.IsNullOrEmpty(FrontImage.ErrorMessage))
+                                {
+                                    <Alert Color="Color.Danger" Margin="Margin.Is1.FromTop" Visible>
+                                        <AlertDescription>@FrontImage.ErrorMessage</AlertDescription>
+                                    </Alert>
+                                }
+                            </div>
+                            <div class="image-box mt-4">
+                                <label class="image-container d-block" for="BackId">
+                                    <img id="back-government-id" class="w-100 h-auto" 
+                                        src='@(BackImage.IsEmptyImage ? emptyBackImage : BackImage.ImgSrcUrl )' alt="back image">
+                                    <InputFile @ref="BackImage.File" id="BackId" name="BackId" 
+                                        class="d-none" hidden="true" accept=".png,.jpg,.jpeg" OnChange="(e) => ShowPreview(e,BackImage)" />
+                                </label>
+                                <div class="mt-1 d-flex align-items-center justify-content-between">
+                                    <label class="font-20 color-grey-100 font-weight-700">Upload Front of ID</label>
+                                    <span class="icon-img-delete" @onclick="() => RemoveImage(BackImage)">
+                                        <img src="images/user-verification/delete.png" alt="delete icon">
+                                    </span>
+                                </div>
+                                @if(!string.IsNullOrEmpty(BackImage.ErrorMessage))
+                                {
+                                    <Alert Color="Color.Danger" Margin="Margin.Is1.FromTop" Visible>
+                                        <AlertDescription>@BackImage.ErrorMessage</AlertDescription>
+                                    </Alert>
+                                }
+                            </div>
+                        </form>
+                    </div>
+                </Column>
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12" class="m-margin-top-75">
+                    <div>
+                        <p class="text-capitalize font-20 color-black-000 font-weight-700">take note</p>
+                        <p class="font-20 color-grey-100">Here are the recommended IDs you can submit to immediately get verified</p>
+                        <ul class="text-capitalize font-20 color-black-100 ps-3">
+                            <li>driver's licencse</li>
+                            <li>passport</li>
+                            <li>postal ID</li>
+                            <li>PRC ID</li>
+                            <li>SSS ID</li>
+                            <li>UMID</li>
+                            <li>voters ID</li>
+                            <li>philsys national ID</li>
+                            <li>HDMF ID (Pag-ibig)</li>
+                            <li>TIN ID</li>
+                        </ul>
+                        <p class="font-20 color-grey-100">
+                            We aim to keep the data you share during this process private, safe, and secure. Learn more in our 
+                            <a class="color-primary" href="/help/privacy">Privacy Policy.</a>
+                        </p>
+                    </div>
+                </Column>
+            </Row>
+        </div>
+        <div class="text-center mt-5">
+            <Button Type="ButtonType.Button" Clicked="BackPage"
+                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
+                Back
+            </Button>
+            <Button Clicked="Submit" Disabled="IsSavingChanges" Loading="IsSavingChanges" Type="ButtonType.Button" 
+                class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0">
+                <LoadingTemplate>
+                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                    Saving Changes
+                </LoadingTemplate>
+                <ChildContent>
+                    Continue
+                </ChildContent>
+            </Button>
+        </div>
+        @if(!string.IsNullOrEmpty(ErrorMessage))
+        {
+            <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible>
+                <AlertDescription>@ErrorMessage</AlertDescription>
+            </Alert>
+        }
+    </div>
+</section>
+
+@code 
+{
+    private ImageModel FrontImage {get; set;} = new();
+    private ImageModel BackImage {get; set;} = new();
+    private IList<string> allowedFileTypes = new List<string> { ".png", ".jpg", ".jpeg" };
+
+    private string emptyFrontImage = "images/user-verification/front-img.svg";
+    private string emptyBackImage = "images/user-verification/back-img.svg";
+
+    private bool IsSavingChanges {get; set;}
+    private string ErrorMessage {get; set;}
+
+    [Parameter]
+    public EventCallback OnNextPageClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnBackPageClick {get; set;}
+
+    protected override void OnInitialized()
+    {
+        FrontImage.ImgSrcId = "front-goverment-id";
+        BackImage.ImgSrcId = "back-government-id";
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+
+        if(string.IsNullOrEmpty(token))
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var accountResult = await accountApiHandler.GetGovermentIds(token);
+        if((!accountResult.Succeeded || accountResult.Result == null) || (accountResult.Succeeded && !accountResult.Result.IsSuccess))
+        {
+            // an error occured
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        var accountImages = accountResult.Result.Result;
+
+        if(!string.IsNullOrEmpty(accountImages.FrontIdImagePath))
+        {
+            FrontImage.ImgSrcUrl = accountImages.FrontIdImagePath;
+            FrontImage.IsEmptyImage = false;
+        }
+        if(!string.IsNullOrEmpty(accountImages.BackIdImagePath))
+        {
+            BackImage.ImgSrcUrl = accountImages.BackIdImagePath;
+            BackImage.IsEmptyImage = false;
+        }
+    }
+
+    private async Task ShowPreview(InputFileChangeEventArgs e, ImageModel model)
+    {
+        var file = e.File;
+        model.ImageSize = 0;
+        model.ImageSize = (decimal)file.Size / 1024 / 1024;
+        model.ErrorMessage = string.Empty;
+
+        if(model.ImageSize > 10)
+        {
+            model.ErrorMessage = "Please upload image less than 10MB.";
+            return;
+        }
+
+        if(!allowedFileTypes.Contains(Path.GetExtension(file.Name.ToLower())))
+        {
+            model.ErrorMessage = "Only JPEG or PNG files are accepted. Please try again.";
+            return;
+        }
+
+        model.IsEmptyImage = false;
+        StateHasChanged();
+
+        await JsRuntime.InvokeVoidAsync("MyLib.previewImage", model.File.Element, model.ImgSrcId);
+    }
+
+    private bool IsSubmitValid()
+    {
+        if(FrontImage.IsEmptyImage)
+        {
+            FrontImage.ErrorMessage = "Please provide image to upload";
+        }
+        if(BackImage.IsEmptyImage)
+        {
+            BackImage.ErrorMessage = "Please provide image to upload";
+        }
+
+        return !(FrontImage.IsEmptyImage || BackImage.IsEmptyImage);
+    }
+
+    private async Task SaveChanges()
+    {
+        // no image changes
+        if(FrontImage.ImageSize == 0 && BackImage.ImageSize == 0)
+        {
+            await OnNextPageClick.InvokeAsync();
+            return;
+        }
+
+        IsSavingChanges = true;
+
+        var result = await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Pages.customer.upload.execute");
+
+        IsSavingChanges = false;
+
+        if(!result.Success)
+        {
+            ErrorMessage = result.Message;
+            return;
+        }
+
+        if(OnNextPageClick.HasDelegate)
+        {
+            await OnNextPageClick.InvokeAsync();
+        }
+    }
+
+    private Task Submit()
+    {
+        if(IsSubmitValid())
+        {
+            return SaveChanges();
+        }
+
+        return Task.CompletedTask;
+    }
+
+    private async Task SaveForLater()
+    {
+        if(IsSubmitValid())
+        {
+            SaveChanges();
+        }
+        NavigationManager.NavigateTo("maker/dashboard");
+    }
+
+    private Task RemoveImage(ImageModel model)
+    {
+        model.IsEmptyImage = true;
+        model.ImageSize = 0;
+        model.ErrorMessage = string.Empty;
+        model.ImgSrcUrl = string.Empty;
+        return Task.CompletedTask;
+    }
+
+    private async Task BackPage()
+    {
+        if(OnBackPageClick.HasDelegate)
+        {
+            await OnBackPageClick.InvokeAsync(); 
+        }
+    }
+
+    class ImageModel 
+    {
+        public InputFile File {get; set;}
+        public string ImgSrcId {get; set;}
+        public decimal ImageSize {get; set;}
+
+        public string ErrorMessage {get; set;}
+        public bool IsEmptyImage {get; set;} = true;
+        public string ImgSrcUrl {get; set;}
+    }
+}

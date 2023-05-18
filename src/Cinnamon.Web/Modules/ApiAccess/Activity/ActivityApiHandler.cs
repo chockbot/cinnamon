@@ -542,4 +542,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateScheduleResult>.CreateFailed(ex, "An error occured when calling update schedule api");
         }
     }
+
+    public async Task<AppResult<DeleteActivityResult>> DeleteActivityById(DeleteActivityArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/Remove")
+                .PostJsonAsync(args)
+                .ReceiveJson<DeleteActivityResult>();
+
+            return AppResult<DeleteActivityResult>.CreateSucceeded(result, "Successfully called delete activity api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<DeleteActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteActivityResult>.CreateFailed(ex, "An error occured when calling delete activity api");
+        }
+    }
 }
