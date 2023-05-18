@@ -88,7 +88,8 @@
 </form>
 
 
-@code {
+@code 
+{
     [Parameter]
     public string Token { get; set; }
 
@@ -114,6 +115,7 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+        Token = token;
 
         var result = await accountApiHandler.GetGovermentIds(token);
         if ((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))
@@ -143,6 +145,7 @@
             await JsRuntime.InvokeVoidAsync("MyLib.Components.modal.uploadGovenmentId.init", obj);
         }
     }
+
     [JSInvokable]
     public Task ShowLoading()
     {
@@ -150,11 +153,22 @@
         StateHasChanged();
         return Task.CompletedTask;
     }
+
     [JSInvokable]
     public void ShowError(string message)
     {
         errorMessage = message;
         isShowErrorMessage = true;
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task SubmitAccountVerified()
+    {
+        var submitResult = await accountApiHandler.SubmitAccountVerified(Token);
+        if(!submitResult.Succeeded || submitResult.Result == null || !submitResult.Result.IsSuccess)
+        {
+            ShowError("An error occured. Please try again later");
+        }
     }
 }
