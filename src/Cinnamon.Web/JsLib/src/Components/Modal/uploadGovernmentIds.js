@@ -7,8 +7,6 @@ uploadGovernmentIds._initForm = (dotnetObj) => {
   $("#submit-government-ids").submit(async function (e) {
     e.preventDefault();
 
-    debugger;
-
     const front = $("#FrontId").val();
     const back = $("#BackId").val();
 
