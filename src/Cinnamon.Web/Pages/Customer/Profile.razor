@@ -605,7 +605,14 @@
 
     private void NavigateToGetVerified()
     {
-        NavigationManager.NavigateTo("/customer/user-verification");
+        if(Model.CustomerProfile.IsMaker)
+        {
+            NavigationManager.NavigateTo("/customer/user-verification");
+        }
+        else 
+        {
+            NavigationManager.NavigateTo("/uploadGovermentId/");
+        }
     }
 
     private void NavigateToUploadId()
