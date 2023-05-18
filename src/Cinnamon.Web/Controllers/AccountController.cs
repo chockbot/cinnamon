@@ -348,6 +348,11 @@ public class AccountController : Controller
             var firstName = HttpContext.User.FindFirstValue(ClaimTypes.GivenName);
             var lastName = HttpContext.User.FindFirstValue(ClaimTypes.Surname);
 
+            logger.LogInformation("---- Debugging facebook email provided ------");
+            logger.LogInformation("--- Email: " + email);
+            logger.LogInformation("--- firstname: " + firstName);
+            logger.LogInformation("--- lastname: " + lastName);
+
             string redirect = "/explore";
 
             if(Request.Query.Keys.Any(a => a == "redirect") && !string.IsNullOrEmpty(Request.Query["redirect"]))
@@ -357,6 +362,7 @@ public class AccountController : Controller
 
             if(string.IsNullOrEmpty(email))
             {
+                logger.LogInformation("--- email is empty ---");
                 await HttpContext.SignOutAsync();
                 return Redirect("/explore");
             }
