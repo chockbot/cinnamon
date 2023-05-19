@@ -93,9 +93,16 @@ public class ActivityController : ControllerBase
             
             var includeAddress = args.IncludeAddress ?? false;
 
-            if (args.PageIndex > 1)
+            if (args.IsAdmin.GetValueOrDefault())
             {
-                skip = ((args.PageIndex - 2) * args.CountPerPage) + 20;
+                skip = (args.PageIndex - 1) * args.CountPerPage;
+            }
+            else
+            {
+                if (args.PageIndex > 1)
+                {
+                    skip = ((args.PageIndex - 2) * args.CountPerPage) + 20;
+                }
             }
 
             var result =
