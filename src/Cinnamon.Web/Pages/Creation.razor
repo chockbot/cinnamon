@@ -475,6 +475,8 @@
 
     private async Task SaveForLater()
     {
+        isLoading = true;
+
         Model.Activity.ActivitySchedules = ValidateSchedules(Model.Activity.ActivitySchedules);
 
         var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
@@ -536,9 +538,9 @@
 
         // upload image without checking if there is an error so that can't re update another activity
         bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.initCreationInProgress", obj, submit.Result.Result.ActivityId);
-        isLoading = false;
 
         navigationManager.NavigateTo("/maker/dashboard");
+        isLoading = false;
 
         return;
     }
