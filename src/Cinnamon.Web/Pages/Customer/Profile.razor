@@ -127,9 +127,10 @@
                         {
                             <MemoEdit Border="Border.Rounded" @bind-Text="aboutLocalState" Rows="5" />
                         }
-                        @if(Model.CustomerProfile.IsVerified != 0){
+                        @if(Model.CustomerProfile.IsVerified == 2)
+                        {
                         int cnt = 0;
-                        <p class="my-3 fw-bold font-18">Badges</p>
+                        <p class="@displayBadge my-3 fw-bold font-18">Badges</p>
                         <div class="@displayBadge justify-content-center">
                             <Card class="badges-column">
                                 <CardBody Flex="Flex.AlignContent.Center">
@@ -259,6 +260,10 @@
                                 </CardBody>
                             </Card>
                         </div>
+                        }
+                        else
+                        {
+                            displayBadge = "d-none";
                         }
                     </Div>
                 </Column>
