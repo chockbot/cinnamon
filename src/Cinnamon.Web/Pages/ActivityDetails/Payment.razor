@@ -224,10 +224,29 @@
                                         </div>
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div>
-                                                Service Fee - 15%
+                                                Payment provider fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
                                             </div>
                                             <div>
                                                 @GetConvinienceFee
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div class="d-flex align-items-center">
+                                                <CustomTooltip MarginLeft="-100">
+                                                    <TextContent>
+                                                        <span class="rounded-circle service-fee-info">i</span>
+                                                    </TextContent>
+                                                    <TooltipContent>
+                                                        <span class="color-grey-100">
+                                                            This helps Cinnamon run its services and protects your payment in case the experience provider does 
+                                                            something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                        </span>
+                                                    </TooltipContent>
+                                                </CustomTooltip> 
+                                                <span class="ms-1">Service Fee</span>
+                                            </div>
+                                            <div>
+                                                PHP 50.00
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between py-1 price-per-head">
@@ -916,7 +935,7 @@
             {
                 return "PHP 0.00";
             }
-            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m).ToString("#,##0.00");
+            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .05m).ToString("#,##0.00");
         }
     }
 
@@ -930,9 +949,10 @@
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal fee = subTotal * .15m;
+            decimal paymentProviderFee = subTotal * .05m;
             decimal discount = 0;
-            decimal overallTotal = subTotal + fee;
+            decimal serviceFee = 50;
+            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
 
             if (Model.IsCreditApplied && Model.Customer.TotalCredits > 0)
             {
@@ -954,9 +974,10 @@
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal fee = subTotal * .15m;
+            decimal paymentProviderFee = subTotal * .05m;
             decimal discount = 0;
-            decimal overallTotal = subTotal + fee;
+            decimal serviceFee = 50;
+            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
             var creditsBalance = Model.Customer.TotalCredits;

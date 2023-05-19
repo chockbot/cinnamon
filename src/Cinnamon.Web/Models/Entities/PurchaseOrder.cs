@@ -14,4 +14,6 @@ public class PurchaseOrder
     public decimal OverallTotal {get; set;}
     public int EnrolleeCount {get; set;}
     public string PaymentMethod {get; set;}
+    public decimal ServiceFee {get; set;}
+    public decimal PaymentProviderFee {get; set;}
 }

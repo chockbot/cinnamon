@@ -47,7 +47,8 @@
                     <span class="text-uppercase text-decoration-underline">@Model.PurchaseOrder.PaymentMethod</span>
                 </p>
                 <p class="text-capitalize mb-0 mt-2">Amount: PHP @Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
-                <p class="text-capitalize mb-0 mt-2">Service Fee: PHP @Model.PurchaseOrder.ConvinienceFee.ToString("#,##0.00")</p>
+                <p class="text-capitalize mb-0 mt-2">Payment Provider Fee: PHP @Model.PurchaseOrder.PaymentProviderFee.ToString("#,##0.00")</p>
+                <p class="text-capitalize mb-0 mt-2">Service Fee: PHP @Model.PurchaseOrder.ServiceFee.ToString("#,##0.00")</p>
                 <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
                     Total Purchase: PHP @((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee).ToString("#,##0.00"))
                 </p>
@@ -131,7 +132,9 @@
                 Total = purchaseOrder.Total,
                 ActivityName = activityRes.Result.Result.Title,
                 EnrolleeCount = purchaseOrder.EnrolleeCount,
-                PaymentMethod = purchaseOrder.PaymentMethod
+                PaymentMethod = purchaseOrder.PaymentMethod,
+                ServiceFee = purchaseOrder.ServiceFee,
+                PaymentProviderFee = purchaseOrder.PaymentProviderFee
             },
             SelectedSchedule = new Models.Entities.ActivitySchedule {
                 DateTime = schedule.DateTime,
