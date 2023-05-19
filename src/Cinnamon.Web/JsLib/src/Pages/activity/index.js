@@ -6,11 +6,10 @@ import maxMinWords from "./maxMinWords";
 import previewImage from "./previewImage";
 import imageHelper from './imageHelper'
 import moveImage from "./moveImage";
-import carouselSwipe from "./carouselSwipe"; 
-import explore from "./explore"; 
+import carouselSwipe from "./carouselSwipe";
+import explore from "./explore";
 
 export default {
-    creation,
     creation,
     update,
     validateFileSize,

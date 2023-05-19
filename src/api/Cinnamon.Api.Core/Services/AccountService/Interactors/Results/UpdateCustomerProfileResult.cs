@@ -8,4 +8,7 @@ public class UpdateCustomerProfileResult
     public int VerifiedBadge {get; set;}
     public bool IsOG { get; set; }
     public bool IsOF { get; set; }
+    public DateTime IsOGDate { get; set; }
+    public DateTime IsOFDate { get; set; }
+    public DateTime IsVerifiedDate { get; set; }
 }

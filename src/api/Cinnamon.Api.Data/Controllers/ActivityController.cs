@@ -93,15 +93,22 @@ public class ActivityController : ControllerBase
             
             var includeAddress = args.IncludeAddress ?? false;
 
-            if (args.PageIndex > 1)
+            if (args.IsAdmin.GetValueOrDefault())
             {
-                skip = ((args.PageIndex - 2) * args.CountPerPage) + 20;
+                skip = (args.PageIndex - 1) * args.CountPerPage;
+            }
+            else
+            {
+                if (args.PageIndex > 1)
+                {
+                    skip = ((args.PageIndex - 2) * args.CountPerPage) + 20;
+                }
             }
 
             var result =
                 isUsedFilters ?
                     await activityRepository
-                        .GetAllAsync(args.CustomerId, args.IsActive, take, skip, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated,
+                        .GetAllAsync(args.CustomerId, args.IsActive, take, skip, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated, args.Status,
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
                             args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false) :
@@ -114,7 +121,7 @@ public class ActivityController : ControllerBase
 
             // get all without pagination to get all rows
             var all = isUsedFilters ?
-                        await activityRepository.GetAllAsync(args.CustomerId,args.IsActive, null, null, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated) :
+                        await activityRepository.GetAllAsync(args.CustomerId,args.IsActive, null, null, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated, args.Status) :
                         await activityRepository.GetAllAsync();
 
             if(!all.Succeeded || all.Result == null)
@@ -154,7 +161,7 @@ public class ActivityController : ControllerBase
                 args.Description, args.Price, args.ScheduleIndicator, args.Remarks, args.IsPublished, args.Address1,
                 args.Address2, args.District, args.City,args.Subdivision,args.Region,args.Barangay,args.PostalCode, args.SpecificsYouWillProvide, args.CustomerBringWithThem, args.AdditionalRequirements,
                 args.ActivityLevel, args.SkillLevel, args.MinimumAge, args.CanAdultsJoin, args.Searchtag1, args.Searhtag2,
-                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId, args.Handler, args.IsSetSession, args.SessionName, args.PinnedLocation);
+                args.Searhtag3, args.Searchtag4, args.Searchtag5, args.ExperienceCategoryId, args.SubCategoryId, args.Handler, args.IsSetSession, args.SessionName, args.PinnedLocation, args.Status);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -180,7 +187,7 @@ public class ActivityController : ControllerBase
                 args.Price, args.ScheduleIndicator, args.Remarks, args.IsPublished, args.Address1, args.Address2, args.District,
                 args.City, args.Subdivision, args.Region, args.Barangay, args.PostalCode, args.SpecificsYouWillProvide, args.CustomerBringWithThem,args.AdditionalRequirements, args.ActivityLevel, args.SkillLevel,
                 args.MinimumAge, args.CanAdultsJoin, args.Searchtag1, args.Searhtag2, args.Searhtag3, args.Searchtag4, args.Searchtag5,
-                args.ExperienceCategoryId, args.SubCategoryId,args.IsSetSession, args.SessionName, args.PinnedLocation, args.IsDeactivated);
+                args.ExperienceCategoryId, args.SubCategoryId,args.IsSetSession, args.SessionName, args.PinnedLocation, args.IsDeactivated, args.Status);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -298,6 +305,27 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdatedActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Remove")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteActivityResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteActivityById([FromBody] DeleteActivityArgs args)
+    {
+        try
+        {
+            var result = await activityRepository.RemoveActivityAsync(args.ActivityId);
+            if (!result.Succeeded || !result.Result)
+            {
+                return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new DeleteActivityResult { IsSuccess = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

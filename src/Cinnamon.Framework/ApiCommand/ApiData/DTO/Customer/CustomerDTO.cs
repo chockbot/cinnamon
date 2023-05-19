@@ -12,8 +12,11 @@ public class CustomerDTO
     public string? ProfileImg { get; set; }
     public bool IsMaker { get; set; }
     public int IsVerified { get; set; }
+    public DateTime IsVerifiedObtainedDate { get; set; }
     public bool IsOG { get; set; }
+    public DateTime IsOGObtainedDate { get; set; }
     public bool IsOfficial { get; set; }
+    public DateTime IsOfficialObtainedDate { get; set; }
     public bool ExternalLogin { get; set; }
     public DateTime DateJoined { get; set; }
     public string Handler {get; set;}

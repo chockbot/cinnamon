@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Cinnamon.Framework.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 
@@ -48,4 +49,6 @@ public class CreateActivityArgs
     public string Handler {get; set;}
     public bool IsSetSession { get; set; } = false;
     public string SessionName { get; set; } = string.Empty;
+    public Enums.Enums.ActivityStatus Status { get; set; }
+
 }
