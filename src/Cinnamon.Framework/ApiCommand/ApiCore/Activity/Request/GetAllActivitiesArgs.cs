@@ -21,4 +21,5 @@ public class GetAllActivitiesArgs
     public bool? IncludeStudents { get; set; }
     public bool? IsDeactivated { get; set; }
     public Enums.Enums.ActivityStatus? Status { get; set; }
+    public bool? IsAdmin { get; set; }
 }

@@ -779,7 +779,8 @@ public class ActivityController : ControllerBase
                 ExperienceCategoryId = args.ExperienceCategoryId.GetValueOrDefault(),
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
-                Status = args.Status
+                Status = args.Status,
+                IsAdmin = args.IsAdmin
             });
             if (!result.Succeeded || result.Result == null)
             {

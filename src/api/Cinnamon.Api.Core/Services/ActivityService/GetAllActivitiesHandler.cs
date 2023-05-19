@@ -46,7 +46,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 SearchValue = args.SearchValue,
                 IncludeStudents = args.IncludeStudents,
                 IsDeactivated = args.IsDeactivated,
-                Status = args.Status
+                Status = args.Status,
+                IsAdmin= args.IsAdmin
             });
             if (!result.Succeeded || result.Result == null)
             {
