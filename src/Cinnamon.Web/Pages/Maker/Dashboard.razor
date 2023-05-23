@@ -6,6 +6,7 @@
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Maker;
 @using Cinnamon.Web.Components.Pages;
+@using Cinnamon.Framework.Enums
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IAccountApiHandler accountApiHandler;
@@ -48,11 +49,11 @@
     </div>
     @foreach (var item in activities)
     {
-        if (item.IsPublished == true)
+        if (item.IsPublished == true && item.Status == Enums.ActivityStatus.Submitted)
         {
             <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #60996D;">
                 <div class="xp-content">
-                    <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
+                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
                     <div class="xp-context">
                         <p class="xp-title">@item.Title</p>
                         <p class="xp-description">@item.Description</p>
@@ -89,11 +90,11 @@
                 </div>
             </div>
         }
-        else
+        else if (item.IsPublished == false && item.Status == Enums.ActivityStatus.Submitted)
         {
             <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #717171;">
                 <div class="xp-content">
-                    <img class="xp-image" src="@item.Images.ElementAt(0).ImageSrc">
+                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
                     <div class="xp-context">
                         <p class="xp-title">@item.Title</p>
                         <p class="xp-description">@item.Description</p>
@@ -121,7 +122,46 @@
                     </div>
                     <div class="button-section">
                         <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
-                        @if (item.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
+                        @if (item.Status == Enums.ActivityStatus.InProgress)
+                        {
+                            <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="experience-container" style="box-shadow: 0px 4px 10px 0px #B4A163;">
+                <div class="xp-content">
+                    <img class="xp-image" src="@(item.Images.Count > 0 ? item.Images.ElementAt(0).ImageSrc : string.Empty)">
+                    <div class="xp-context">
+                        <p class="xp-title">@item.Title</p>
+                        <p class="xp-description">@item.Description</p>
+                        <div class="xp-category">
+                            @if (item.ExperienceTypeId == 1)
+                            {
+                                <img src="images/activity-summary/location.png">
+                                <span>Face to Face</span>
+                            }
+                            else
+                            {
+                                <img src="images/activity-summary/laptop-icon.png">
+                                <span>Online</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="xp-actions">
+                    <div class="active">
+                        <img class="img-inprogress" src="images/Dashboard/Inprogress.png" alt="check-icon">
+                        <span> In progress</span>
+                    </div>
+                    <div class="button-section">
+                        <a button class="update-button" href="maker/update-activity?activityId=@item.ActivityId">Update</a>
+                        @if (item.Status == Enums.ActivityStatus.InProgress)
                         {
                             <button class="delete-button" @onclick="() => DeleteActivity(item.ActivityId)">Delete</button>
                         }
@@ -204,7 +244,8 @@
         var res = activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
             {
                 IsPublished = activity.IsPublished,
-                ActivityId = activity.ActivityId
+                ActivityId = activity.ActivityId,
+                Status = Enums.ActivityStatus.Submitted
             }, Model.Token);
     }
 
@@ -241,7 +282,7 @@
                         Description = a.Description,
                         ExperienceTypeId = a.ExperienceTypeId,
                         Images = a.Images.Select(i =>
-                    {
+                        {
                                 return new ActivityImage
                                 {
                                     Id = i.Id,

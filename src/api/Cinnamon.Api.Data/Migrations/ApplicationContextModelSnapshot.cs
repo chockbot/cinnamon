@@ -601,11 +601,20 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<bool>("IsOG")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTime>("IsOGDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("IsOfficialDate")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("IsOfficialPartner")
                         .HasColumnType("boolean");
 
                     b.Property<int>("IsVerifiedBadge")
                         .HasColumnType("integer");
+
+                    b.Property<DateTime>("IsVerifiedDate")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("LastName")
                         .IsRequired()

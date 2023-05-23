@@ -287,7 +287,8 @@ public class ActivityController : ControllerBase
                 Title = activity.Title,
                 Handler = activity.Handler,
                 IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
+                SessionName = activity.SessionName,
+                Status = activity.Status
             }});
         }
         catch (Exception ex)
@@ -778,7 +779,8 @@ public class ActivityController : ControllerBase
                 ExperienceCategoryId = args.ExperienceCategoryId.GetValueOrDefault(),
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
-                Status = args.Status
+                Status = args.Status,
+                IsAdmin = args.IsAdmin
             });
             if (!result.Succeeded || result.Result == null)
             {

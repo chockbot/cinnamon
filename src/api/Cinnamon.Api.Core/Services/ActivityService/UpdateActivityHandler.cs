@@ -306,7 +306,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 Title = updated.Title,
                 Handler = updated.Handler,
                 IsSetSession = updated.IsSetSession,
-                SessionName = updated.SessionName
+                SessionName = updated.SessionName,
+                Status = updated.Status
             }, "Successfully update activity details");
         }
         catch (Exception ex)
