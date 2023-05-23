@@ -69,13 +69,13 @@
                 <Overview OnNextPageClick="OnNextPage" />
             </div>
             <div class="@GetClass(1)">
-                <PersonalInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
+                <PersonalInformation RedirectTo="@redirectTo" OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
             </div>
             <div class="@GetClass(2)">
-                <GovernmentId OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
+                <GovernmentId RedirectTo="@redirectTo" OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
             </div>
             <div class="@GetClass(3)">
-                <PayoutInformation OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
+                <PayoutInformation RedirectTo="@redirectTo" OnNextPageClick="OnNextPage" OnBackPageClick="OnBackPage" />
             </div>
         </div>
     </div>
@@ -87,28 +87,44 @@
 
     private bool IsFullyLoaded {get; set;}
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string Redirect {get; set;} = string.Empty;
+
+    private IDictionary<string,string> registeredRedirects = new Dictionary<string,string> {
+        {"redirect_explore","/explore"},
+        {"redirect_account","/customer/profile"},
+        {"redirect_dashboard","/maker/dashboard"}
+    };
+
+    private string redirectTo = "/explore";
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
 
+        if(Redirect != null && registeredRedirects.TryGetValue(Redirect.ToLower(), out string value)){
+            redirectTo = value;
+        }
+
         if(!user.Identity.IsAuthenticated)
         {
-            NavigationManager.NavigateTo("/explore");
+            NavigationManager.NavigateTo(redirectTo);
             return;
         }
 
         var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
         if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)
         {
-            NavigationManager.NavigateTo("/explore");
+            NavigationManager.NavigateTo(redirectTo);
             return;
         }
 
         var account = result.Result.Result;
         if(account.IsVerified != 0)
         {
-            NavigationManager.NavigateTo("/explore");
+            NavigationManager.NavigateTo(redirectTo);
             return;
         }
 
@@ -120,7 +136,7 @@
         PageCount++;
         if(PageCount == 4)
         {
-            NavigationManager.NavigateTo("/customer/profile");
+            NavigationManager.NavigateTo(redirectTo);
         }
         return Task.CompletedTask;
     }
@@ -170,5 +186,4 @@
             return Math.Round((PageCount + 1) * 25.0);
         }
     }
-
 }

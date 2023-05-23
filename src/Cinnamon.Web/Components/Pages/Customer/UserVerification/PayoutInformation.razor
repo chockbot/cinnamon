@@ -116,6 +116,9 @@
 
     private bool IsFinalSubmitting {get; set;}
 
+    [Parameter]
+    public string RedirectTo {get; set;}
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -124,7 +127,7 @@
         if(Token == null)
         {
             // don't have current user login
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
 
@@ -191,7 +194,7 @@
     private Task SaveForLater()
     {
         SubmitPayoutAccount();
-        NavigationManager.NavigateTo("maker/dashboard");
+        NavigationManager.NavigateTo(RedirectTo);
         return Task.CompletedTask;
     }
 
