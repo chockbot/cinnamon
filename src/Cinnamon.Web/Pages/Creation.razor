@@ -18,22 +18,6 @@
 
 @if (Model != null)
 {
-    <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="experienceCreationGuideModal" style="z-index:99999;">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <p class="col-11 modal-title text-center">How it will look like</p>
-                    <button type="button" class="btn-close" id="btnCloseExperienceCreationGuideModal" data-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="col-12-lg d-flex justify-content-center">
-                        <img id="imgExperienceCreationGuidePreview" src="">
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <div id="regForm" class="shadow-lg">
 
         <div class="progress-bar-section">
@@ -324,6 +308,25 @@
                                 </Button>
                             </div>
                         }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="experienceCreationGuideModal" style="z-index:99999;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label class="guide-title text-center">
+                        How it will look like
+                    </label>
+                    <button type="button" class="btn-close" id="btnCloseExperienceCreationGuideModal" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="col-12-lg d-flex justify-content-center">
+                        <div class="row" id="image-section">
+                        </div>
                     </div>
                 </div>
             </div>

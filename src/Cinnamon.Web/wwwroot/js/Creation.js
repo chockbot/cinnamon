@@ -28,7 +28,7 @@ export function confirmation() {
 
                             $("#regForm *").attr('readonly', 'readonly');
 
-                            setTimeout(redirectToDashboard, 3000);
+                            setTimeout(redirectToDashboard, 2000);
                         }
 
                     } else {
@@ -50,7 +50,7 @@ export function confirmation() {
 
                             $("#regForm *").attr('readonly', 'readonly');
 
-                            setTimeout(redirectToExplore, 3000);
+                            setTimeout(redirectToExplore, 2000);
                         }
 
                     } else {
