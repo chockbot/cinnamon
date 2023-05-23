@@ -36,6 +36,12 @@ let btnCloseCropperSecondSupportPhotoModal =
   "#btnCloseCropperSecondSupportPhotoModal";
 let secondPhotoFileName = "";
 
+let experienceCreationGuideModal = "#experienceCreationGuideModal";
+let infoTitle = "#info-title";
+let infoDescription = "#info-description";
+let imgExperienceCreationGuidePreview = "#imgExperienceCreationGuidePreview";
+let btnCloseExperienceCreationGuideModal = "#btnCloseExperienceCreationGuideModal";
+
 let coverPhotos = [
   imageCoverPhoto,
   imageFirstSupportPhoto,
@@ -145,6 +151,18 @@ $(document).on("click", btnCloseCropperFirstSupportPhotoModal, function () {
 $(document).on("click", btnCloseCropperSecondSupportPhotoModal, function () {
   closeModal(cropperSecondSupportPhotoModal, cropperSecondPhoto);
 });
+
+$(document).on("click", `${infoTitle}, ${infoDescription}`, function () {
+    let fileName = $(this).attr("data-image-url");
+    displayExperienceCreationGuideModal(fileName);
+});
+
+$(document).on("click", btnCloseExperienceCreationGuideModal, function () {
+    closeExperienceCreationGuideModal();
+});
+
+
+
 
 function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
   var files = multipleFileObject ? multipleFileObject : that.files;
@@ -267,4 +285,14 @@ function closeModal(cropperModalId, cropper) {
   $(cropperModalId).modal("hide");
   cropper.destroy();
   cropper = null;
+}
+
+function displayExperienceCreationGuideModal(fileName) {
+    $(experienceCreationGuideModal).modal("show");
+    $(imgExperienceCreationGuidePreview).attr("src", fileName);
+}
+
+function closeExperienceCreationGuideModal() {
+    $(experienceCreationGuideModal).modal("hide");
+    $(imgExperienceCreationGuidePreview).attr("src", "");
 }
