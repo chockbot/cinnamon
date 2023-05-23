@@ -72,10 +72,18 @@
                         </tr>
                         <tr>
                             <td>
+                                <p class="text-capitalize mb-0 mt-2">Payment Provider Fee: </p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.PaymentProviderFee.ToString("#,##0.00")</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <p class="text-capitalize mb-0 mt-2">Service Fee: </p>
                             </td>
                             <td class="text-end">
-                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.ConvinienceFee.ToString("#,##0.00")</p>
+                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.ServiceFee.ToString("#,##0.00")</p>
                             </td>
                         </tr>
                         <tr>
@@ -170,7 +178,9 @@
                 Total = purchaseOrder.Total,
                 ActivityName = activityRes.Result.Result.Title,
                 EnrolleeCount = purchaseOrder.EnrolleeCount,
-                PaymentMethod = purchaseOrder.PaymentMethod
+                PaymentMethod = purchaseOrder.PaymentMethod,
+                ServiceFee = purchaseOrder.ServiceFee,
+                PaymentProviderFee = purchaseOrder.PaymentProviderFee
             },
             SelectedSchedule = new Models.Entities.ActivitySchedule {
                 DateTime = schedule.DateTime,

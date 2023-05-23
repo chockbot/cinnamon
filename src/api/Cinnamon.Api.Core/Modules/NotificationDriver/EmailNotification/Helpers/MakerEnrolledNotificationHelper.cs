@@ -8,7 +8,7 @@ public class MakerEnrolledNotificationHelper
     public string GetTemplate(string makerName, string experienceName,
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
-        string payerEmail)
+        string payerEmail, decimal providerFee)
     {
         string imgSrc = host.AppendPathSegment("images/cinnamon-logo.png");
         string enrolleesString = string.Empty;
@@ -85,6 +85,12 @@ public class MakerEnrolledNotificationHelper
                         >
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Payment Provider Fee: </span>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >PHP {providerFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Service Fee: </span>
                         <span style='color: #343d4c; text-transform: uppercase'
                             >PHP {serviceFee.ToString("#,##0.00")}</span
@@ -93,7 +99,7 @@ public class MakerEnrolledNotificationHelper
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <b style='color: #343d4c'>Total Purchase: </b>
                         <span style='color: #343d4c; text-transform: uppercase'
-                            ><b>PHP {(amount + serviceFee).ToString("#,##0.00")}</b></span
+                            ><b>PHP {(amount + serviceFee + providerFee).ToString("#,##0.00")}</b></span
                         >
                         </p>
                     </div>
