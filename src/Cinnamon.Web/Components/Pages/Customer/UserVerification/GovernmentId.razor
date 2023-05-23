@@ -131,6 +131,9 @@
     [Parameter]
     public EventCallback OnBackPageClick {get; set;}
 
+    [Parameter]
+    public string RedirectTo {get; set;}
+
     protected override void OnInitialized()
     {
         FrontImage.ImgSrcId = "front-goverment-id";
@@ -145,7 +148,7 @@
         if(string.IsNullOrEmpty(token))
         {
             // don't have current user login
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
 
@@ -153,7 +156,7 @@
         if((!accountResult.Succeeded || accountResult.Result == null) || (accountResult.Succeeded && !accountResult.Result.IsSuccess))
         {
             // an error occured
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
         var accountImages = accountResult.Result.Result;
@@ -246,13 +249,14 @@
         return Task.CompletedTask;
     }
 
-    private async Task SaveForLater()
+    private Task SaveForLater()
     {
         if(IsSubmitValid())
         {
             SaveChanges();
         }
-        NavigationManager.NavigateTo("maker/dashboard");
+        NavigationManager.NavigateTo(RedirectTo);
+        return Task.CompletedTask;
     }
 
     private Task RemoveImage(ImageModel model)

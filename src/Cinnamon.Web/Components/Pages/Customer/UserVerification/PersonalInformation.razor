@@ -119,6 +119,9 @@
     [Parameter]
     public EventCallback OnBackPageClick {get; set;}
 
+    [Parameter]
+    public string RedirectTo {get; set;}
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -127,7 +130,7 @@
         if(string.IsNullOrEmpty(Model.Token))
         {
             // don't have current user login
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
 
@@ -135,7 +138,7 @@
         if((!accountResult.Succeeded || accountResult.Result == null) || (accountResult.Succeeded && !accountResult.Result.IsSuccess))
         {
             // an error occured
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
         var account = accountResult.Result.Result;
@@ -185,7 +188,7 @@
     private Task SaveForLater()
     {
         SaveChanges();
-        NavigationManager.NavigateTo("maker/dashboard");
+        NavigationManager.NavigateTo(RedirectTo);
         return Task.CompletedTask; 
     }
 
