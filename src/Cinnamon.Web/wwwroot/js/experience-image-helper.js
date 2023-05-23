@@ -39,7 +39,11 @@ let secondPhotoFileName = "";
 let experienceCreationGuideModal = "#experienceCreationGuideModal";
 let infoTitle = "#info-title";
 let infoDescription = "#info-description";
-let imgExperienceCreationGuidePreview = "#imgExperienceCreationGuidePreview";
+let infoExperienceType = "#info-experience-type";
+let infoSchedule = "#info-schedule";
+let infoOptionalDetails = "#info-optional-details";
+let infoGallery = "#info-gallery";
+let imageSection = "#image-section";
 let btnCloseExperienceCreationGuideModal = "#btnCloseExperienceCreationGuideModal";
 
 let coverPhotos = [
@@ -152,7 +156,7 @@ $(document).on("click", btnCloseCropperSecondSupportPhotoModal, function () {
   closeModal(cropperSecondSupportPhotoModal, cropperSecondPhoto);
 });
 
-$(document).on("click", `${infoTitle}, ${infoDescription}`, function () {
+$(document).on("click", `${infoTitle}, ${infoDescription}, ${infoExperienceType}, ${infoSchedule}, ${infoOptionalDetails}, ${infoGallery}`, function () {
     let fileName = $(this).attr("data-image-url");
     displayExperienceCreationGuideModal(fileName);
 });
@@ -288,11 +292,15 @@ function closeModal(cropperModalId, cropper) {
 }
 
 function displayExperienceCreationGuideModal(fileName) {
+    var imageList = fileName.split('|');
     $(experienceCreationGuideModal).modal("show");
-    $(imgExperienceCreationGuidePreview).attr("src", fileName);
+    $(imageSection).html("");
+    imageList.forEach(item => {
+        $(`<div class="col-lg-12 mb-4"><img src='${item}' class="guide-image" /></div>`).appendTo(imageSection);
+    });
 }
 
 function closeExperienceCreationGuideModal() {
     $(experienceCreationGuideModal).modal("hide");
-    $(imgExperienceCreationGuidePreview).attr("src", "");
+    $(imageSection).html("");
 }

@@ -106,7 +106,7 @@
                                 <label for="title" class="form-control-label label-top-margin right-margin">Schedule Name</label>
                             </td>
                             <td>
-                                <img src="images/experience-creation/info-icon.svg" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" @onclick='(() => experienceCreationGuideModal.ShowModal("images/experience-creation/creation-guide-step-4.png"))' />
+                                <img src="images/experience-creation/info-icon.svg" id="info-schedule" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-4.png" />
                             </td>
                         </tr>
                     </table>
@@ -132,7 +132,6 @@
             </div>
         </div>
     </div>
-    <ExperienceCreationGuideModal @ref="experienceCreationGuideModal"></ExperienceCreationGuideModal>
 </div>
 
 @code {
