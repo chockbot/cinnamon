@@ -12,6 +12,7 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAccountApiHandler accountApiHandler
 @inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 
 <PageTitle>Badges | CinnamonPH</PageTitle>
 <SeoMeta Title="Badges" Subject="Badges" Url="/maker/dashboard/badges" />
@@ -175,8 +176,8 @@
                                     }
                                     else
                                     {
-                                        string data1 = "10/10";
-                                        @data1
+                                        string Raredate = "Obtained " + RareBadgeDate;
+                                        @Raredate
                                     }
                                 </p>
                             </div>
@@ -204,8 +205,8 @@
                                     }
                                     else
                                     {
-                                        string data1 = "25/25";
-                                        @data1
+                                        string epicDate = "Obtained " + EpicBadgeDate;
+                                        @epicDate
                                     }
                                 </p>
                             </div>
@@ -233,8 +234,8 @@
                                     }
                                     else
                                     {
-                                        string data1 = "100/100";
-                                        @data1
+                                        string legendaryDate = "Obtained " + LegendaryBadgeDate;
+                                        @legendaryDate
                                     }
                                 </p>
                             </div>
@@ -255,6 +256,12 @@
     public int MakerCompletedStudent { get; set; }
     public CustomerProfile customerProfile = new CustomerProfile();
     public List<Activity> activities = new List<Activity>();
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    private GetStudentAttendance Attendances = new GetStudentAttendance();
+    private string RareBadgeDate { get; set; }
+    private string EpicBadgeDate { get; set; }
+    private string LegendaryBadgeDate { get; set; }
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -295,6 +302,7 @@
             {
                 CustomerId = customerProfile.Id,
                 IncludeStudents = true,
+                IncludeAtivitySchedules = true,
                 IsActive = true,
             });
         if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
@@ -305,37 +313,72 @@
                        {
                            Id = r.ActivityId,
                            OngoingStudents = r.OngoingStudents,
-                           CompletedStudents = r.CompletedStudents,
-                       };
+                           CompletedStudents = r.CompletedStudents
+                   };
                }).ToList();
         }
         MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
         MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
 
-        //Get Badges Percentege
+        //Get Student Attendance 
+        foreach (var item in activities)
+        {
+            var attendance = await dashboardApiHandler.GetAllStudentsAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceArgs
+                {
+                    ActivityId = item.Id,
+                }, token);
+            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+            {
+                studentAttendances = attendance.Result.Result.Select(a =>
+                {
+                    return new StudentAttendance
+                        {
+                            Id = a.Id,
+                            Date = a.Date,
+                            IsPresent = a.IsPresent,
+                            NumberOfSessions = a.NumberOfSessions,
+                            SessionsAttended = a.SessionsAttended,
+                            StudentId = a.StudentId
+                        };
+                }).Where(s => s.IsPresent == true && s.SessionsAttended == s.NumberOfSessions)
+                .GroupBy(p => p.StudentId).Select(a => a.Last())
+                .OrderBy(a => a.Date).ToList();
+
+                Attendances.item.AddRange(studentAttendances);
+            }
+        }
+        //Get Badges Percentage AND Date Obtained
         if (customerProfile.IsVerified == 2)
         {
             cnt++;
         }
-
         if (MakerCompletedStudent >= 10)
         {
             cnt++;
-
+            var attendance = Attendances.item.OrderBy(p=> p.Date).Take(10).LastOrDefault();
+            RareBadgeDate = attendance.Date.ToString("MM-dd-yyyy");
             if (MakerCompletedStudent >= 25)
             {
                 cnt++;
+                var attendance1 = Attendances.item.OrderBy(p=> p.Date).Take(25).LastOrDefault();
+                EpicBadgeDate = attendance1.Date.ToString("MM-dd-yyyy");
 
                 if (MakerCompletedStudent >= 100)
                 {
                     cnt++;
+                    var attendance2 = Attendances.item.OrderBy(p=> p.Date).Take(100).LastOrDefault();
+                    LegendaryBadgeDate = attendance2.Date.ToString("MM-dd-yyyy");
                 }
             }
         }
-
+        
     }
     public double GetPercentage()
     {
         return Math.Round(cnt / 4 * 100);
+    }
+    public class GetStudentAttendance
+    {
+        public List<StudentAttendance> item = new List<StudentAttendance>();
     }
 }
