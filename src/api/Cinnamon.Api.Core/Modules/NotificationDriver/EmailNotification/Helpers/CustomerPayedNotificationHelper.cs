@@ -10,7 +10,7 @@ public class CustomerPayedNotificationHelper
         IEnumerable<IncludedMembers> members, string referenceNumber, string paymentMethod,
         string makerEmail, string coachNumber, decimal providerFee)
     {
-        string imgSrc = host.AppendPathSegment("images/cinnamon-logo.png");
+        string imgSrc = host.AppendPathSegment("https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png");
         string enrolleesString = string.Empty;
 
         foreach(var item in members)
