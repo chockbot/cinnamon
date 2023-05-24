@@ -14,5 +14,6 @@ public interface IDashboardApiHandler
     Task<AppResult<CreateStudentAttendanceResult>> CreateStudentAttendance(CreateStudentAttendanceArgs args, string token);
     Task<AppResult<UpdateAttendanceResult>> UpdateAttendance(UpdateAttendanceArgs args, string token);
     Task<AppResult<GetAllBadgesResult>> GetAllBadge();
+    Task<AppResult<GetAllStudentAttendanceResult>> GetAllStudentsAttendance(GetAllStudentAttendanceArgs args, string token);
 
 } 
