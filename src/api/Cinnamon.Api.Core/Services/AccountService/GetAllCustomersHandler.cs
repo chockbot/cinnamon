@@ -62,8 +62,11 @@ namespace Cinnamon.Api.Core.Services.AccountService
                     FrontIdImagePath = c.FrontIdImagePath,
                     BackIdImagePath  = c.BackIdImagePath,
                     IsVerified       = c.IsVerified,
+                    IsVerifiedDate   = c.IsVerifiedObtainedDate,
                     IsOG             = c.IsOG,
-                    IsOF             = c.IsOfficial
+                    IsOGDate         = c.IsOGObtainedDate,
+                    IsOF             = c.IsOfficial,
+                    IsOFDate         = c.IsOfficialObtainedDate
                 }),
                 Pagination = new Framework.ApiCommand.ApiCore.Pagination
                 {

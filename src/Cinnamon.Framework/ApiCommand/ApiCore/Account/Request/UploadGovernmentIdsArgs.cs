@@ -5,8 +5,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
 
 public class UploadGovernmentIdsArgs 
 {
-    [Required]
-    public IFormFile FrontImageId {get; set;}
-    [Required]
-    public IFormFile BackImageId {get; set;}
+    public IFormFile? FrontImageId {get; set;}
+    public IFormFile? BackImageId {get; set;}
 }

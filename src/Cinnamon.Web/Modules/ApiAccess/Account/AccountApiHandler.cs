@@ -345,10 +345,16 @@ public class AccountApiHandler : IAccountApiHandler
                 .Request("Account/UploadGovernmentIds")
                 .PostMultipartAsync(mp => 
                     {
-                        mp.AddFile("FrontImageId", args.FrontImageId.OpenReadStream(), 
-                            args.FrontImageId.FileName, args.FrontImageId.ContentType)
-                        .AddFile("BackImageId", args.BackImageId.OpenReadStream(), 
-                            args.BackImageId.FileName, args.BackImageId.ContentType);
+                        if(args.FrontImageId != null)
+                        {
+                            mp.AddFile("FrontImageId", args.FrontImageId.OpenReadStream(), 
+                                args.FrontImageId.FileName, args.FrontImageId.ContentType);
+                        }
+                        if(args.BackImageId != null)
+                        {
+                            mp.AddFile("BackImageId", args.BackImageId.OpenReadStream(), 
+                                args.BackImageId.FileName, args.BackImageId.ContentType);
+                        }
                     })
                 .ReceiveJson<UploadGovernmentIdsResult>();
 
@@ -728,6 +734,28 @@ public class AccountApiHandler : IAccountApiHandler
         catch (Exception ex)
         {
             return AppResult<UpdateRequestRefundResult>.CreateFailed(ex, "An error occured when calling update refund request api");
+        }
+    }
+
+    public async Task<AppResult<SubmitAccountVerifiedResult>> SubmitAccountVerified(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/SubmitAccountVerified")
+                .PostAsync()
+                .ReceiveJson<SubmitAccountVerifiedResult>();
+
+            return AppResult<SubmitAccountVerifiedResult>.CreateSucceeded(result, "Successfully called submit account verification api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<SubmitAccountVerifiedResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<SubmitAccountVerifiedResult>.CreateFailed(ex, "An error occured when calling submit account verification api");
         }
     }
 }

@@ -1,0 +1,256 @@
+@namespace Cinnamon.Web.Components.Pages.Customer.UserVerification
+@using System.ComponentModel.DataAnnotations;
+@using System.Security.Claims;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Web.Models.Entities;
+@inject IAccountApiHandler accountApiHandler;
+@inject IPaymentApiHandler paymentApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager;
+
+<section class="user-verification-payout-information-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center cn-title-btn">
+            <div class="gr-1">
+                <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Payout Information</p>
+                <p class="font-16 color-grey-100">Please provide your bank details. This will let you receive funds to your bank account.</p>
+            </div>
+            @if(IsExpandPayemntInfo)
+            {
+                <Button Clicked="SaveForLater" class="bg-green-100 color-white-100 hover-color-white">Save for later</Button>
+            }
+        </div>
+
+        <div class="mt-5">
+            <Row>
+                <Column ColumnSize="ColumnSize.Is6.OnDesktop.Is12">
+                    <div class="payout-information-details">
+                        <Validations @ref="FormValidation" Model="Model" Mode="ValidationMode.Manual">
+                            <Field class="mb-3">
+                                <FieldLabel class="font-20 color-grey-100">Bank Type</FieldLabel>
+                                <Select class="form-control" TValue="string" @bind-SelectedValue="SelectedPayment">
+                                    <SelectItem selected Disabled>Select Payout Account</SelectItem>
+                                    @if(PaymentChannels != null)
+                                    {
+                                        @foreach (var item in PaymentChannels)
+                                            {
+                                                <SelectItem Value="item.Code">@item.Name</SelectItem>
+                                            }
+                                    }
+                                </Select>
+                            </Field>
+                            <Validation>
+                                <Field class="mb-3">
+                                    <FieldLabel class="font-20 color-grey-100">Account Name</FieldLabel>
+                                    <TextEdit class="text-capitalize" Placeholder="Enter your account name" @bind-Text="Model.AccountHolder">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <Validation>
+                                <Field class="mb-3">
+                                    <FieldLabel class="font-20 color-grey-100">Account Number</FieldLabel>
+                                    <TextEdit Placeholder="Enter your account number" @bind-Text="Model.AccountNumber">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </TextEdit>
+                                </Field>
+                            </Validation>
+                            <div class="error-success-messages">
+                                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="IsShowErrorMessage">
+                                    <AlertDescription>@Message</AlertDescription>
+                                </Alert>
+                            </div>
+                        </Validations>
+                    </div>
+                </Column>
+            </Row>
+        </div>
+        
+        <div class="text-center mt-5">
+            <Button Type="ButtonType.Button" Clicked="BackPage" 
+                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
+                Back
+            </Button>
+            <Button Type="ButtonType.Button" Clicked="NextPage"
+                class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0"
+                Disabled="IsFinalSubmitting" Loading="IsFinalSubmitting">
+                <LoadingTemplate>
+                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                    Saving Changes
+                </LoadingTemplate>
+                <ChildContent>
+                    Continue
+                </ChildContent>
+            </Button>
+        </div>
+    </div>
+</section>
+
+@code 
+{
+    private FormModel Model {get; set;} = new();
+    private Validations FormValidation {get; set;}
+    private IEnumerable<PaymentChannel> PaymentChannels {get; set;}
+    private string SelectedPayment {get; set;}
+
+    private string Token {get; set;}
+
+    private string Message {get; set;}
+    private bool IsSubmitting {get; set;}
+    private bool IsShowErrorMessage {get; set;}
+    private bool IsShowSuccessMessage {get; set;}
+
+    private bool IsAcceptPrivacyPolicy {get; set;}
+
+    private bool IsExpandPayemntInfo {get; set;} = true;
+
+    [Parameter]
+    public EventCallback OnNextPageClick {get; set;}
+
+    [Parameter]
+    public EventCallback OnBackPageClick {get; set;}
+
+    private bool IsFinalSubmitting {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        Token = user.FindFirstValue("Token");
+        if(Token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+
+        var getPaymentChannels = await paymentApiHandler.GetPaymentChannels();
+        if(getPaymentChannels.Succeeded && getPaymentChannels.Result != null && getPaymentChannels.Result.IsSuccess)
+        {
+            PaymentChannels = getPaymentChannels.Result.Result.Select(c => {
+                return new PaymentChannel {
+                    Code = c.Code,
+                    Name = c.Name
+                };
+            });
+        }
+
+        var fetchPayoutAccount = await accountApiHandler.GetPayoutAccount(Token);
+        if(fetchPayoutAccount.Succeeded && fetchPayoutAccount.Result != null && fetchPayoutAccount.Result.IsSuccess)
+        {
+            var payoutAccount = fetchPayoutAccount.Result.Result;
+            Model.AccountHolder = payoutAccount.AccountHolder;
+            Model.AccountNumber = payoutAccount.UnMaskAccountNumber;
+            SelectedPayment = payoutAccount.BankChannel;
+        }
+    }
+
+    private async Task SubmitPayoutAccount()
+    {
+        if (await FormValidation.ValidateAll() && !string.IsNullOrEmpty(SelectedPayment) && IsAcceptPrivacyPolicy)
+        {
+            IsSubmitting = true;
+
+            var result = await accountApiHandler.UpdatePayoutAccount(new Framework.ApiCommand.ApiCore.Account.Request.UpdatePayoutAccountArgs {
+                AccountHolder = Model.AccountHolder,
+                AccountNumber = Model.AccountNumber,
+                BankChannel = SelectedPayment
+            }, Token);
+
+            IsSubmitting = false;
+
+            if(!result.Succeeded || result.Result == null ||  !result.Result.IsSuccess)
+            {
+                Message = "An error occured. Please try again later";
+                IsShowErrorMessage = true;
+                return;
+            }
+
+            Message = string.Empty;
+            IsShowErrorMessage = false;
+            IsExpandPayemntInfo = false;
+        }
+
+        if(string.IsNullOrEmpty(SelectedPayment))
+        {
+            Message = "Please select Payout Account.";
+            IsShowErrorMessage = true;
+        }
+
+        if(!IsAcceptPrivacyPolicy)
+        {
+            Message = "Please accept the website Tems of Use and Privacy Policy";
+            IsShowErrorMessage = true;
+        }
+    }
+
+    private Task SaveForLater()
+    {
+        SubmitPayoutAccount();
+        NavigationManager.NavigateTo("maker/dashboard");
+        return Task.CompletedTask;
+    }
+
+    private async Task NextPage()
+    {
+        if (await FormValidation.ValidateAll() && !string.IsNullOrEmpty(SelectedPayment))
+        {
+            IsFinalSubmitting = true;
+
+            var result = await accountApiHandler.UpdatePayoutAccount(new Framework.ApiCommand.ApiCore.Account.Request.UpdatePayoutAccountArgs {
+                AccountHolder = Model.AccountHolder,
+                AccountNumber = Model.AccountNumber,
+                BankChannel = SelectedPayment
+            }, Token);
+
+            if(!result.Succeeded || result.Result == null ||  !result.Result.IsSuccess)
+            {
+                IsFinalSubmitting = false;
+                Message = "An error occured. Please try again later";
+                IsShowErrorMessage = true;
+                return;
+            }
+
+            var submitResult = await accountApiHandler.SubmitAccountVerified(Token);
+            if(submitResult.Succeeded && submitResult.Result != null && submitResult.Result.IsSuccess)
+            {
+                if(OnNextPageClick.HasDelegate) 
+                {
+                    await OnNextPageClick.InvokeAsync();
+                }
+            }
+
+            Message = string.Empty;
+            IsShowErrorMessage = false;
+
+            IsFinalSubmitting = false;
+        }
+
+        if(string.IsNullOrEmpty(SelectedPayment))
+        {
+            Message = "Please select Payout Account.";
+            IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task BackPage()
+    {
+        if(OnBackPageClick.HasDelegate)
+        {
+            await OnBackPageClick.InvokeAsync(); 
+        }
+    }
+
+    class FormModel 
+    {
+        [Required(ErrorMessage = "Account holder field required")]
+        public string AccountHolder {get; set;}
+        [Required(ErrorMessage = "Account number field required")]
+        [StringLength(30, MinimumLength = 10, ErrorMessage = "Account Number must be a minimum length of 10 and a maximum length of 30.")]
+        public string AccountNumber {get; set;}
+    }
+}

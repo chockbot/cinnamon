@@ -1,3 +1,6 @@
+using System;
+using Cinnamon.Framework.Enums;
+
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 public class UpdateActivityResult 
@@ -30,6 +33,7 @@ public class UpdateActivityResult
     public string Handler {get; set;}
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
+    public Enums.ActivityStatus Status { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     
