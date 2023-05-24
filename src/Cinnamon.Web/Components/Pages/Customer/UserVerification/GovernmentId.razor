@@ -13,7 +13,16 @@
                 <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Lets upload your Government ID</p>
                 <p class="font-16 color-grey-100">Your ID will be handled according to our Privacy Policy and won’t be shared with a Cinnamon Maker.</p>
             </div>
-            <Button Clicked="SaveForLater" class="bg-green-100 color-white-100 hover-color-white">Save for later</Button>
+            <Button Clicked="SaveForLater"  Loading="IsSaveforLaterSubmitting" Disabled="IsSaveforLaterSubmitting" 
+                class="bg-green-100 color-white-100 hover-color-white">
+                <LoadingTemplate>
+                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                    Saving Changes
+                </LoadingTemplate>
+                <ChildContent>
+                    Save for later
+                </ChildContent>
+            </Button>
         </div>
 
         <div class="government-id mt-5">
@@ -131,6 +140,8 @@
     [Parameter]
     public EventCallback OnBackPageClick {get; set;}
 
+    private bool IsSaveforLaterSubmitting {get; set;}
+
     [Parameter]
     public string RedirectTo {get; set;}
 
@@ -233,7 +244,7 @@
             return;
         }
 
-        if(OnNextPageClick.HasDelegate)
+        if(OnNextPageClick.HasDelegate && !IsSaveforLaterSubmitting)
         {
             await OnNextPageClick.InvokeAsync();
         }
@@ -249,14 +260,15 @@
         return Task.CompletedTask;
     }
 
-    private Task SaveForLater()
+    private async Task SaveForLater()
     {
         if(IsSubmitValid())
         {
-            SaveChanges();
+            IsSaveforLaterSubmitting = true;
+            await SaveChanges();
+            IsSaveforLaterSubmitting = false;
         }
         NavigationManager.NavigateTo(RedirectTo);
-        return Task.CompletedTask;
     }
 
     private Task RemoveImage(ImageModel model)
