@@ -3,6 +3,7 @@ using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors;
 using Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Cinnamon.Framework.Enums;
 
 namespace Cinnamon.Api.Core.Services.ActivityService;
 public class GetMakerActivitiesHandler: IGetMakerActivitiesHandler
@@ -56,7 +57,7 @@ public class GetMakerActivitiesHandler: IGetMakerActivitiesHandler
 
             return AppResult<GetMakerActivitiesResult>.CreateSucceeded(new GetMakerActivitiesResult
             {
-                Activities = result.Result.Result.Select(a => {
+                Activities = result.Result.Result.Where(a => a.Status != Enums.ActivityStatus.InProgress && a.IsPublished).Select(a => {
                     return new GetMakerActivitiesResult.Activity
                     {
                         ActivityLevel = a.ActivityLevel,
