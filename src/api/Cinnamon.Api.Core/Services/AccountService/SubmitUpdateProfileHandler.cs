@@ -42,11 +42,14 @@ public class SubmitUpdateProfileHandler : ISubmitUpdateProfileHandler
             var profile = profileRes.Result;
 
             // validate birthdate, age between 18 to 120
-            var age = DateTime.Today.Year - args.Birthdate.GetValueOrDefault().Year;
-            if (age < 18 || age > 120)
+            if(args.Birthdate.HasValue)
             {
-                return AppResult<SubmitUpdateProfileResult>.CreateFailed(
-                    new ApplicationException("Please provide valid birth year. Age between 18 and 120"), "Please provide valid birth year. Age between 18 and 120");
+                var age = DateTime.Today.Year - args.Birthdate.GetValueOrDefault().Year;
+                if (age < 18 || age > 120)
+                {
+                    return AppResult<SubmitUpdateProfileResult>.CreateFailed(
+                        new ApplicationException("Please provide valid birth year. Age between 18 and 120"), "Please provide valid birth year. Age between 18 and 120");
+                }
             }
 
             var result = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {

@@ -36,6 +36,16 @@ let btnCloseCropperSecondSupportPhotoModal =
   "#btnCloseCropperSecondSupportPhotoModal";
 let secondPhotoFileName = "";
 
+let experienceCreationGuideModal = "#experienceCreationGuideModal";
+let infoTitle = "#info-title";
+let infoDescription = "#info-description";
+let infoExperienceType = "#info-experience-type";
+let infoSchedule = "#info-schedule";
+let infoOptionalDetails = "#info-optional-details";
+let infoGallery = "#info-gallery";
+let imageSection = "#image-section";
+let btnCloseExperienceCreationGuideModal = "#btnCloseExperienceCreationGuideModal";
+
 let coverPhotos = [
   imageCoverPhoto,
   imageFirstSupportPhoto,
@@ -145,6 +155,18 @@ $(document).on("click", btnCloseCropperFirstSupportPhotoModal, function () {
 $(document).on("click", btnCloseCropperSecondSupportPhotoModal, function () {
   closeModal(cropperSecondSupportPhotoModal, cropperSecondPhoto);
 });
+
+$(document).on("click", `${infoTitle}, ${infoDescription}, ${infoExperienceType}, ${infoSchedule}, ${infoOptionalDetails}, ${infoGallery}`, function () {
+    let fileName = $(this).attr("data-image-url");
+    displayExperienceCreationGuideModal(fileName);
+});
+
+$(document).on("click", btnCloseExperienceCreationGuideModal, function () {
+    closeExperienceCreationGuideModal();
+});
+
+
+
 
 function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
   var files = multipleFileObject ? multipleFileObject : that.files;
@@ -267,4 +289,18 @@ function closeModal(cropperModalId, cropper) {
   $(cropperModalId).modal("hide");
   cropper.destroy();
   cropper = null;
+}
+
+function displayExperienceCreationGuideModal(fileName) {
+    var imageList = fileName.split('|');
+    $(experienceCreationGuideModal).modal("show");
+    $(imageSection).html("");
+    imageList.forEach(item => {
+        $(`<div class="col-lg-12 mb-4"><img src='${item}' class="guide-image" /></div>`).appendTo(imageSection);
+    });
+}
+
+function closeExperienceCreationGuideModal() {
+    $(experienceCreationGuideModal).modal("hide");
+    $(imageSection).html("");
 }

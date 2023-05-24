@@ -15,7 +15,16 @@
                 <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">personal information</p>
                 <p class="font-16 color-grey-100">Tell us a little bit about yourself. This information will appear on your public profile.</p>
             </div>
-            <Button Clicked="SaveForLater" class="bg-green-100 color-white-100 hover-color-white">Save for later</Button>
+            <Button Clicked="SaveForLater" Loading="IsSaveforLaterSubmitting" Disabled="IsSaveforLaterSubmitting" 
+                class="bg-green-100 color-white-100 hover-color-white">
+                <LoadingTemplate>
+                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                    Saving Changes
+                </LoadingTemplate>
+                <ChildContent>
+                    Save for later
+                </ChildContent>
+            </Button>
         </div>
 
         <div class="persinal-details mt-5">
@@ -119,6 +128,11 @@
     [Parameter]
     public EventCallback OnBackPageClick {get; set;}
 
+    private bool IsSaveforLaterSubmitting {get; set;}
+
+    [Parameter]
+    public string RedirectTo {get; set;}
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -127,7 +141,7 @@
         if(string.IsNullOrEmpty(Model.Token))
         {
             // don't have current user login
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
 
@@ -135,7 +149,7 @@
         if((!accountResult.Succeeded || accountResult.Result == null) || (accountResult.Succeeded && !accountResult.Result.IsSuccess))
         {
             // an error occured
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
         var account = accountResult.Result.Result;
@@ -166,13 +180,12 @@
                 {
                     FirstName = Model.FirstName,
                     LastName = Model.LastName,
-                    About = Model.Bio,
-                    Datebirth = Model.Birthdate
+                    About = Model.Bio
                 }, Model.Token);
 
             Model.IsSubmitting = false;
 
-            if(OnNextPageClick.HasDelegate)
+            if(OnNextPageClick.HasDelegate && !IsSaveforLaterSubmitting)
             {
                 await OnNextPageClick.InvokeAsync();
             }
@@ -183,11 +196,12 @@
         }
     }
 
-    private Task SaveForLater()
+    private async Task SaveForLater()
     {
-        SaveChanges();
-        NavigationManager.NavigateTo("maker/dashboard");
-        return Task.CompletedTask; 
+        IsSaveforLaterSubmitting = true;
+        await SaveChanges();
+        IsSaveforLaterSubmitting = false;
+        NavigationManager.NavigateTo(RedirectTo);
     }
 
     private Task OnProfileImageSaved(string imageSrc)

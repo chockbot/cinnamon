@@ -605,7 +605,6 @@
             var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
             {
                 About = aboutLocalState,
-                Datebirth = Model.CustomerProfile.Birthdate
             }, Model.Token);
 
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
@@ -621,7 +620,7 @@
     {
         if(Model.CustomerProfile.IsMaker)
         {
-            NavigationManager.NavigateTo("/customer/user-verification");
+            NavigationManager.NavigateTo("/customer/user-verification/?redirect=redirect_account");
         }
         else 
         {

@@ -327,6 +327,25 @@
     }
 </div>
 
+<div class="modal fade remove-modal" tabindex="-1" role="dialog" id="experienceCreationGuideModal" style="z-index:99999;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="guide-title text-center">
+                    How it will look like
+                </label>
+                <button type="button" class="btn-close" id="btnCloseExperienceCreationGuideModal" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="col-12-lg d-flex justify-content-center">
+                    <div class="row" id="image-section">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @if(showErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
@@ -633,6 +652,7 @@
         if(firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
+            await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
         }
         await Task.Run(() => module.InvokeVoidAsync("confirmation"));
 

@@ -17,7 +17,16 @@
             </div>
             @if(IsExpandPayemntInfo)
             {
-                <Button Clicked="SaveForLater" class="bg-green-100 color-white-100 hover-color-white">Save for later</Button>
+                <Button Clicked="SaveForLater" Loading="IsSaveforLaterSubmitting" Disabled="IsSaveforLaterSubmitting" 
+                    class="bg-green-100 color-white-100 hover-color-white">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        Saving Changes
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Save for later
+                    </ChildContent>
+                </Button>
             }
         </div>
 
@@ -116,6 +125,11 @@
 
     private bool IsFinalSubmitting {get; set;}
 
+    private bool IsSaveforLaterSubmitting {get; set;}
+
+    [Parameter]
+    public string RedirectTo {get; set;}
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -124,7 +138,7 @@
         if(Token == null)
         {
             // don't have current user login
-            NavigationManager.NavigateTo("explore");
+            NavigationManager.NavigateTo(RedirectTo);
             return;
         }
 
@@ -151,7 +165,7 @@
 
     private async Task SubmitPayoutAccount()
     {
-        if (await FormValidation.ValidateAll() && !string.IsNullOrEmpty(SelectedPayment) && IsAcceptPrivacyPolicy)
+        if (await FormValidation.ValidateAll() && !string.IsNullOrEmpty(SelectedPayment))
         {
             IsSubmitting = true;
 
@@ -180,19 +194,14 @@
             Message = "Please select Payout Account.";
             IsShowErrorMessage = true;
         }
-
-        if(!IsAcceptPrivacyPolicy)
-        {
-            Message = "Please accept the website Tems of Use and Privacy Policy";
-            IsShowErrorMessage = true;
-        }
     }
 
-    private Task SaveForLater()
+    private async Task SaveForLater()
     {
-        SubmitPayoutAccount();
-        NavigationManager.NavigateTo("maker/dashboard");
-        return Task.CompletedTask;
+        IsSaveforLaterSubmitting = true;
+        await SubmitPayoutAccount();
+        IsSaveforLaterSubmitting = false;
+        NavigationManager.NavigateTo(RedirectTo);
     }
 
     private async Task NextPage()
