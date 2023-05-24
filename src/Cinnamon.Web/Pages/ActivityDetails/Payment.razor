@@ -19,407 +19,436 @@
 <PageTitle>Checkout Payment | CinnamonPH</PageTitle>
 <SeoMeta Title="Checkout Payment" Subject="Checkout Payment" />
 
-@if(IsFullyLoaded)
+@if (IsFullyLoaded)
 {
-    <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
-        <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
-            <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0">
-                <a class="text-decoration-none text-reset" href="/Explore/@Model.Activity.ActivityId"><img src="/images/previous.svg" style="width:20px;" /></a>
-                <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
-            </div>
-        </div>
-    </div>
+    <Div ElementId="#b-animate">
+        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
 
-    <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
-        <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3 m-purchase-container">
-            <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
-                <div class="col-lg-5 col-md-5 col-sm-12 col-12">
-                    <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
-                    <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange" ActivityModel="Model.Activity"></CarouselItemSchedule>
+            <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
+                <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
+                    <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0">
+                        <a class="text-decoration-none text-reset" href="/Explore/@Model.Activity.ActivityId"><img src="/images/previous.svg" style="width:20px;" /></a>
+                        <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
+                    </div>
                 </div>
-                <hr />
-                <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                    <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
-                    <Column ColumnSize="ColumnSize.Is12.OnDesktop">
-                        <Div class="details overflow-auto" Display="Display.Flex">
-                            <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
-                                @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
-                                {
-                                    <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                        <Check TValue="bool" id="@item.Id" @bind-Checked="item.IsSelected" class="mx-2 checkbox-round"/> <label for="@item.Id">@item.Name</label> 
-                                    </div>
-                                }
+            </div>
+
+            <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
+                <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3 m-purchase-container">
+                    <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
+                        <div class="col-lg-5 col-md-5 col-sm-12 col-12">
+                            <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
+                            <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange" ActivityModel="Model.Activity"></CarouselItemSchedule>
+                        </div>
+                        <hr />
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                            <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                            <Column ColumnSize="ColumnSize.Is12.OnDesktop">
+                                <Div class="details overflow-auto" Display="Display.Flex">
+                                    <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
+                                        @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
+                                        {
+                                            <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
+                                                <Check TValue="bool" id="@item.Id" @bind-Checked="item.IsSelected" class="mx-2 checkbox-round" /> <label for="@item.Id">@item.Name</label>
+                                            </div>
+                                        }
+                                    </Column>
+                                </Div>
                             </Column>
-                        </Div>
-                    </Column>
-                    <button class="btn-primary rounded border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
-                </div>
-                <hr />
-                <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
-                    <h5 class="fw-bold font-20">Pay with</h5>
-                    <div class="card-payment-method mt-3">
-                        <label class="font-16">Cards</label>
-                        <div @onclick="() => CardModal.Show()" class="d-flex justify-content-between border-radius-5 border-1-solid border-color-grey-200 p-3 cursor-pointer">
-                            <div class="card-label d-flex align-items-center">
-                                @if(SelectedPaymentCode != "CARD")
-                                {
-                                    <img class="me-4 h-auto" src="images/payment/credit-card.svg" alt="icon">
-                                    <span class="font-16">Credit or Debit Card</span>
-                                }
-                                else
-                                {
-                                    if(CardPaymentModel.CardNumber[0] == '2' || CardPaymentModel.CardNumber[0] == '5')
-                                    {
-                                        <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
-                                        <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
-                                    }
-                                    else if(CardPaymentModel.CardNumber[0] == '4')
-                                    {
-                                        <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
-                                        <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
-                                    }
-                                    else 
-                                    {
-                                        <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
-                                    }
-                                }
+                            <button class="btn-primary rounded border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
+                        </div>
+                        <hr />
+                        <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
+                            <h5 class="fw-bold font-20">Pay with</h5>
+                            <div class="card-payment-method mt-3">
+                                <label class="font-16">Cards</label>
+                                <div @onclick="() => CardModal.Show()" class="d-flex justify-content-between border-radius-5 border-1-solid border-color-grey-200 p-3 cursor-pointer">
+                                    <div class="card-label d-flex align-items-center">
+                                        @if (SelectedPaymentCode != "CARD")
+                                        {
+                                            <img class="me-4 h-auto" src="images/payment/credit-card.svg" alt="icon">
+                                            <span class="font-16">Credit or Debit Card</span>
+                                        }
+                                        else
+                                        {
+                                            if (CardPaymentModel.CardNumber[0] == '2' || CardPaymentModel.CardNumber[0] == '5')
+                                            {
+                                                <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
+                                                <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
+                                            }
+                                            else if (CardPaymentModel.CardNumber[0] == '4')
+                                            {
+                                                <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
+                                                <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="font-16">@MaskedString(CardPaymentModel.CardNumber, 4)</span>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="card-icon d-flex align-items-center">
+                                        @if (SelectedPaymentCode != "CARD")
+                                        {
+                                            <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
+                                            <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
+                                        }
+                                        <img class="h-auto" style="width: 8px;" src="images/payment/credit-card-arrow.svg" alt="icon">
+                                    </div>
+                                </div>
                             </div>
-                            <div class="card-icon d-flex align-items-center">
-                                @if(SelectedPaymentCode != "CARD")
-                                {
-                                    <img class="me-4 h-auto" style="width: 36px;" src="images/payment/visa-card.svg" alt="icon">
-                                    <img class="me-4 h-auto" style="width: 26px;" src="images/payment/master-card.svg" alt="icon">
-                                }
-                                <img class="h-auto" style="width: 8px;" src="images/payment/credit-card-arrow.svg" alt="icon">
+                            <div class="ewallet-payment-method mt-3">
+                                <label class="font-16">E-wallets</label>
+                                <fieldset class="border-radius-5 border-1-solid border-color-grey-200 p-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="col-1">
+                                            <input type="radio"
+                                               checked='@(SelectedPaymentCode == "GCASH")'
+                                               @onchange='() => SelectedPaymentCode = "GCASH"'
+                                               id="ewallet-gcash" name="ewallet" value="GCASH" class="me-3 checkbox-round" />
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="ewallet-icon" src="images/payment/gcash.svg" alt="icon">
+                                        </div>
+                                        <div class="col d-flex flex-column ps-2">
+                                            <p class="mb-0 font-16 color-black-100">Gcash</p>
+                                            <p class="font-10 color-grey-100">
+                                                Payment should be completed within 30 mins. Accessible 24/7.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="col-1">
+                                            <input type="radio"
+                                               checked='@(SelectedPaymentCode == "GRABPAY")'
+                                               @onchange='() => SelectedPaymentCode = "GRABPAY"'
+                                               class="me-3 checkbox-round" id="ewallet-grabpay" name="ewallet" value="GRABPAY" />
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="ewallet-icon" src="images/payment/grabpay.svg" alt="icon">
+                                        </div>
+                                        <div class="col d-flex flex-column ps-2">
+                                            <p class="mb-0 font-16 color-black-100">Grab Pay</p>
+                                            <p class="font-10 color-grey-100">
+                                                Payment should be completed within 30 mins. Accessible 24/7.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="col-1">
+                                            <input type="radio"
+                                               checked='@(SelectedPaymentCode == "SHOPEEPAY")'
+                                               @onchange='() => SelectedPaymentCode = "SHOPEEPAY"'
+                                               class="me-3 checkbox-round" id="ewallet-shopeepay" name="ewallet" value="SHOPEEPAY" />
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="ewallet-icon" src="images/payment/shoppepay.svg" alt="icon">
+                                        </div>
+                                        <div class="col d-flex flex-column ps-2">
+                                            <p class="mb-0 font-16 color-black-100">Shopee Pay</p>
+                                            <p class="font-10 color-grey-100">
+                                                Payment should be completed within 30 mins. Accessible 24/7.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="col-1">
+                                            <input type="radio"
+                                               checked='@(SelectedPaymentCode == "PAYMAYA")'
+                                               @onchange='() => SelectedPaymentCode = "PAYMAYA"'
+                                               class="me-3 checkbox-round" id="ewallet-maya" name="ewallet" value="PAYMAYA" />
+                                        </div>
+                                        <div class="col-2">
+                                            <img class="ewallet-icon" src="images/payment/maya.svg" alt="icon">
+                                        </div>
+                                        <div class="col d-flex flex-column ps-2">
+                                            <p class="mb-0 font-16 color-black-100">Maya</p>
+                                            <p class="font-10 color-grey-100">
+                                                Payment should be completed within 30 mins. Accessible 24/7.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </fieldset>
+                            </div>
+                            <hr />
+                            <div class="form-outline">
+                                <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
+                                <br />
+                                <br />
+                                <button class="btn-primary rounded border-0 py-2 px-3 m-width-100" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
+                                    @if (isLoading)
+                                    {
+                                        <i class="fa fa-spinner fa-spin"></i>
+                                        <span>Please wait</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Pay and confirm</span>
+
+                                    }
+                                </button>
+                                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="isShowPayErrorMessage">
+                                    <AlertDescription>@payErrorMessage</AlertDescription>
+                                </Alert>
                             </div>
                         </div>
                     </div>
-                    <div class="ewallet-payment-method mt-3">
-                        <label class="font-16">E-wallets</label>
-                        <fieldset class="border-radius-5 border-1-solid border-color-grey-200 p-3">
-                            <div class="d-flex align-items-center">
-                                <div class="col-1">
-                                    <input type="radio" 
-                                        checked='@(SelectedPaymentCode == "GCASH")' 
-                                        @onchange='() => SelectedPaymentCode = "GCASH"'
-                                        id="ewallet-gcash" name="ewallet" value="GCASH" class="me-3 checkbox-round"/>
-                                </div>
-                                <div class="col-2">
-                                    <img class="ewallet-icon" src="images/payment/gcash.svg" alt="icon">
-                                </div>
-                                <div class="col d-flex flex-column ps-2">
-                                    <p class="mb-0 font-16 color-black-100">Gcash</p>
-                                    <p class="font-10 color-grey-100">
-                                        Payment should be completed within 30 mins. Accessible 24/7.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div class="col-1">
-                                    <input type="radio" 
-                                        checked='@(SelectedPaymentCode == "GRABPAY")' 
-                                        @onchange='() => SelectedPaymentCode = "GRABPAY"'
-                                        class="me-3 checkbox-round" id="ewallet-grabpay" name="ewallet" value="GRABPAY"/>
-                                </div>
-                                <div class="col-2">
-                                    <img class="ewallet-icon" src="images/payment/grabpay.svg" alt="icon">
-                                </div>
-                                <div class="col d-flex flex-column ps-2">
-                                    <p class="mb-0 font-16 color-black-100">Grab Pay</p>
-                                    <p class="font-10 color-grey-100">
-                                        Payment should be completed within 30 mins. Accessible 24/7.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div class="col-1">
-                                    <input type="radio" 
-                                        checked='@(SelectedPaymentCode == "SHOPEEPAY")' 
-                                        @onchange='() => SelectedPaymentCode = "SHOPEEPAY"'
-                                        class="me-3 checkbox-round" id="ewallet-shopeepay" name="ewallet" value="SHOPEEPAY"/>
-                                </div>
-                                <div class="col-2">
-                                    <img class="ewallet-icon" src="images/payment/shoppepay.svg" alt="icon">
-                                </div>
-                                <div class="col d-flex flex-column ps-2">
-                                    <p class="mb-0 font-16 color-black-100">Shopee Pay</p>
-                                    <p class="font-10 color-grey-100">
-                                        Payment should be completed within 30 mins. Accessible 24/7.
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div class="col-1">
-                                    <input type="radio" 
-                                        checked='@(SelectedPaymentCode == "PAYMAYA")'
-                                        @onchange='() => SelectedPaymentCode = "PAYMAYA"' 
-                                        class="me-3 checkbox-round" id="ewallet-maya" name="ewallet" value="PAYMAYA"/>
-                                </div>
-                                <div class="col-2">
-                                    <img class="ewallet-icon" src="images/payment/maya.svg" alt="icon">
-                                </div>
-                                <div class="col d-flex flex-column ps-2">
-                                    <p class="mb-0 font-16 color-black-100">Maya</p>
-                                    <p class="font-10 color-grey-100">
-                                        Payment should be completed within 30 mins. Accessible 24/7.
-                                    </p>
-                                </div>
-                            </div>
-                        </fieldset>
-                    </div>
-                    <hr />
-                    <div class="form-outline">
-                        <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Cinnamon Maker’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
-                        <br />
-                        <br />
-                        <button class="btn-primary rounded border-0 py-2 px-3 m-width-100" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
-                            @if (isLoading)
-                            {
-                                <i class="fa fa-spinner fa-spin"></i>
-                                <span>Please wait</span>
-                            }
-                            else
-                            {
-                                <span>Pay and confirm</span>
-
-                            }
-                        </button>
-                        <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="isShowPayErrorMessage">
-                            <AlertDescription>@payErrorMessage</AlertDescription>
-                        </Alert>
+                    <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
+                        <div class="sticky-top mb-3" style="top:80px;">
+                            <Card>
+                                <CardBody>
+                                    <div class="d-flex" style="font-size:1.125rem">
+                                        <div class="activity-img">
+                                            <img src="@GetActivityFirstImage" alt="Activity Image">
+                                        </div>
+                                        <div class="activity-details">
+                                            <span class="fw-bold activity-title">@Model.Activity.Title</span>
+                                            <div class="activity-schedule">
+                                                @Model.SelectedSchedule.Name
+                                            </div>
+                                            <div class="activity-schedule">
+                                                @Model.SelectedSchedule.DateTime
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="price-details">
+                                        <span class="fw-bold price-title">Price Details</span>
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount head
+                                            </div>
+                                            <div>
+                                                @GetTotalPerHeadPrice
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                Payment provider fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
+                                            </div>
+                                            <div>
+                                                @GetConvinienceFee
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div class="d-flex align-items-center">
+                                                <CustomTooltip MarginLeft="-100">
+                                                    <TextContent>
+                                                        <span class="rounded-circle service-fee-info">i</span>
+                                                    </TextContent>
+                                                    <TooltipContent>
+                                                        <span class="color-grey-100">
+                                                            This helps Cinnamon run its services and protects your payment in case the experience provider does 
+                                                            something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                        </span>
+                                                    </TooltipContent>
+                                                </CustomTooltip> 
+                                                <span class="ms-1">Service Fee</span>
+                                            </div>
+                                            <div>
+                                                PHP 50.00
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div>
+                                                <TextEdit style="background-color: #F3F6FC;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
+                                            </div>
+                                            <div>
+                                                PHP 0.00
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 price-per-head">
+                                            <div class="apply-credits" @onclick="() => Model.IsCreditApplied = !Model.IsCreditApplied">
+                                                @if (!Model.IsCreditApplied)
+                                                {
+                                                    <span>Apply credits</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>Remove credits</span>
+                                                }
+                                            </div>
+                                            <div>
+                                                @GetTotalCredit
+                                            </div>
+                                        </div>
+                                        <hr>
+                                        <div class="d-flex justify-content-between py-1 total-payments">
+                                            <div>
+                                                Total Payments
+                                            </div>
+                                            <div>
+                                                @GetTotalPrice
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr />
+                                    <div class="d-flex align-items-center justify-content-center protected-footer">
+                                        <CustomTooltip MarginLeft="-100">
+                                            <TextContent>
+                                                <span class="color-grey-100">
+                                                    Your booking is protected by
+                                                </span>
+                                            </TextContent>
+                                            <TooltipContent>
+                                                <span class="color-grey-100">
+                                                    Your transaction is secured! Your purchase is supported by our Terms of Use.
+                                                    Any concerns about your purchase, you can reach us by sending an email to support@cinnamon.ph
+                                                </span>
+                                            </TooltipContent>
+                                        </CustomTooltip>
+                                        <div class="app-name">
+                                            @Resources.App.appName
+                                        </div>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                            <Card class="mt-3">
+                                <CardBody class="activity-owner">
+                                    <div class="w-100 d-flex">
+                                        <div class="image-src">
+                                            <img src="@GetActivityOwnerProfileSrc" alt="owner-profile">
+                                        </div>
+                                        <div class="m-2 maker-profile-details">
+                                            <p class="experience-by text-capitalize">Experience by</p>
+                                            <p class="owner text-capitalize">@($"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}")</p>
+                                        </div>
+                                        <div class="verified-logo">
+                                            @if (Model.Activity.Owner.IsVerified == 2)
+                                            {
+                                                <Tooltip Multiline=true Text="For uploading and completing all identification requirements.">
+                                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                                                </Tooltip>
+                                            }
+                                            @if (Model.Activity.Owner.IsOG == true)
+                                            {
+                                                <Tooltip Multiline=true Text="For being part of the alpha and beta testing.">
+                                                    <img class="verified-logo" src="images/Badges/OG.svg" />
+                                                </Tooltip>
+                                            }
+                                            @if (Model.Activity.Owner.IsOfficial == true)
+                                            {
+                                                <Tooltip Multiline=true Text="Legitimate experience provider in the platform.">
+                                                    <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
+                                                </Tooltip>
+                                            }
+                                            @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                            {
+                                                var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                                <Tooltip Multiline=true Text="@rare.Description">
+                                                    <img class="verified-logo" src="@rare.ImgScr" />
+                                                </Tooltip>
+                                            }
+                                            @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                            {
+                                                var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
+                                                <Tooltip Multiline=true Text="@epic.Description">
+                                                    <img class="verified-logo" src="@epic.ImgScr" />
+                                                </Tooltip>
+                                            }
+                                            @if (MakerCompletedStudent >= 100)
+                                            {
+                                                var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                                                <Tooltip Multiline=true Text="@legendary.Description">
+                                                    <img class="verified-logo" src="@legendary.ImgScr" />
+                                                </Tooltip>
+                                            }
+                                        </div>
+                                    </div>
+                                </CardBody>
+                            </Card>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
-                <div class="sticky-top mb-3" style="top:80px;">
-                    <Card>
-                        <CardBody>
-                            <div class="d-flex" style="font-size:1.125rem">
-                                <div class="activity-img">
-                                    <img src="@GetActivityFirstImage" alt="Activity Image">
-                                </div>
-                                <div class="activity-details">
-                                    <span class="fw-bold activity-title">@Model.Activity.Title</span>
-                                    <div class="activity-schedule">
-                                        @Model.SelectedSchedule.Name
-                                    </div>
-                                    <div class="activity-schedule">
-                                        @Model.SelectedSchedule.DateTime
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                            <div class="price-details">
-                                <span class="fw-bold price-title">Price Details</span>
-                                <div class="d-flex justify-content-between py-1 price-per-head">
-                                    <div>
-                                        @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount head
-                                    </div>
-                                    <div>
-                                        @GetTotalPerHeadPrice
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between py-1 price-per-head">
-                                    <div>
-                                        Service Fee - 15%
-                                    </div>
-                                    <div>
-                                        @GetConvinienceFee
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between py-1 price-per-head">
-                                    <div>
-                                        <TextEdit style="background-color: #F3F6FC;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
-                                    </div>
-                                    <div>
-                                        PHP 0.00
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between py-1 price-per-head">
-                                    <div class="apply-credits" @onclick="() => Model.IsCreditApplied = !Model.IsCreditApplied">
-                                        @if(!Model.IsCreditApplied)
-                                        {
-                                            <span>Apply credits</span>
-                                        }
-                                        else 
-                                        {
-                                            <span>Remove credits</span>
-                                        }
-                                    </div>
-                                    <div>
-                                        @GetTotalCredit
-                                    </div>
-                                </div>
-                                <hr>
-                                <div class="d-flex justify-content-between py-1 total-payments">
-                                    <div>
-                                        Total Payments
-                                    </div>
-                                    <div>
-                                        @GetTotalPrice
-                                    </div>
-                                </div>
-                            </div>
-                            <hr />
-                            <div class="d-flex align-items-center justify-content-center protected-footer">
-                                <CustomTooltip MarginLeft="-100">
-                                    <TextContent>
-                                        <span class="color-grey-100">
-                                            Your booking is protected by
-                                        </span>
-                                    </TextContent>
-                                    <TooltipContent>
-                                        <span class="color-grey-100">
-                                            Your transaction is secured! Your purchase is supported by our Terms of Use. 
-                                            Any concerns about your purchase, you can reach us by sending an email to support@cinnamon.ph
-                                        </span>
-                                    </TooltipContent>
-                                </CustomTooltip> 
-                                <div class="app-name">
-                                    @Resources.App.appName
-                                </div>
-                            </div>
-                        </CardBody>
-                    </Card>
-                    <Card class="mt-3">
-                        <CardBody class="activity-owner">
+
+            <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember"
+                          Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
+            <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
+
+            <Modal @ref="CardModal">
+                <ModalContent Centered>
+                    <ModalHeader Border="Border.Is0">
+                        <p class="col-12 modal-title">Add Card Details</p>
+                        <button type="button" class="btn-close" @onclick='() => CardModal.Hide()' />
+                    </ModalHeader>
+                    <ModalBody Padding="Padding.Is0.FromTop">
+                        <Divider Margin="Margin.Is0.FromTop.Is2.FromBottom" />
+                        <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
-                                <div class="image-src">
-                                    <img src="@GetActivityOwnerProfileSrc" alt="owner-profile">
-                                </div>
-                                <div class="ms-2">
-                                    <p class="experience-by text-capitalize">Experience by</p>
-                                    <p class="owner text-capitalize">@($"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}")</p>
-                                </div>
-                                <div class="d-flex ms-5 verified-logo">
-                                    @if(Model.Activity.Owner.IsVerified == 2){
-                                        <Tooltip Multiline=true Text="For uploading and completing all identification requirements.">
-                                            <img class="verified-logo" src="images/Badges/VERIFIED.svg"/>
-                                        </Tooltip> 
-                                    }
-                                    @if(Model.Activity.Owner.IsOG == true){
-                                        <Tooltip Multiline=true Text="For being part of the alpha and beta testing.">
-                                            <img class="verified-logo" src="images/Badges/OG.svg" />
-                                        </Tooltip>
-                                    }
-                                    @if (Model.Activity.Owner.IsOfficial == true)
-                                    {
-                                        <Tooltip Multiline=true Text="Legitimate experience provider in the platform.">
-                                            <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
-                                        </Tooltip>
-                                    }
-                                    @if(MakerCompletedStudent >= 10 && MakerCompletedStudent < 25){
-                                        var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
-                                        <Tooltip Multiline=true Text="@rare.Description">
-                                            <img class="verified-logo" src="@rare.ImgScr" />
-                                        </Tooltip>
-                                    }
-                                    @if(MakerCompletedStudent >= 25 && MakerCompletedStudent < 100){
-                                        var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
-                                        <Tooltip Multiline=true Text="@epic.Description">
-                                            <img class="verified-logo" src="@epic.ImgScr" />
-                                        </Tooltip>
-                                    }
-                                    @if(MakerCompletedStudent >= 100){
-                                        var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
-                                        <Tooltip Multiline=true Text="@legendary.Description">
-                                            <img class="verified-logo" src="@legendary.ImgScr" />
-                                        </Tooltip>
-                                    }
-                                </div>
+                                <img class="me-3" src="images/payment/visa-card.svg" alt="icon">
+                                <img src="images/payment/master-card.svg" alt="icon">
                             </div>
-                        </CardBody>
-                    </Card>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember" 
-        Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
-    <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
-
-    <Modal @ref="CardModal">
-        <ModalContent Centered>
-            <ModalHeader Border="Border.Is0">
-                <p class="col-12 modal-title">Add Card Details</p>
-                <button type="button" class="btn-close" @onclick='() => CardModal.Hide()' />
-            </ModalHeader>
-            <ModalBody Padding="Padding.Is0.FromTop">
-                <Divider Margin="Margin.Is0.FromTop.Is2.FromBottom" />
-                <div class="d-flex align-items-center justify-content-between">
-                    <div class="d-flex align-items-center">
-                        <img class="me-3" src="images/payment/visa-card.svg" alt="icon">
-                        <img src="images/payment/master-card.svg" alt="icon">
-                    </div>
-                    <img src="images/payment/security-guranteed.png" alt="icon">
-                </div>
-                <div class="mt-2">
-                    <Validations @ref="PaymentCardValidation" Model="CardPaymentModel" Mode="ValidationMode.Manual">
-                        <Validation>
-                            <Field class="mb-3">
-                                <FieldLabel class="font-16 color-grey-100">Card Number</FieldLabel>
-                                <TextEdit @bind-Text="CardPaymentModel.CardNumber">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <Validation>
-                            <Field class="mb-3">
-                                <FieldLabel class="font-16 color-grey-100">Name on Card</FieldLabel>
-                                <TextEdit @bind-Text="CardPaymentModel.CardHolder">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </TextEdit>
-                            </Field>
-                        </Validation>
-                        <div class="row">
-                            <div class="col">
+                            <img src="images/payment/security-guranteed.png" alt="icon">
+                        </div>
+                        <div class="mt-2">
+                            <Validations @ref="PaymentCardValidation" Model="CardPaymentModel" Mode="ValidationMode.Manual">
                                 <Validation>
                                     <Field class="mb-3">
-                                        <FieldLabel class="font-16 color-grey-100">Expiration</FieldLabel>
-                                        <TextEdit @bind-Text="CardPaymentModel.Expiration" Placeholder="Ex. 03/28">
+                                        <FieldLabel class="font-16 color-grey-100">Card Number</FieldLabel>
+                                        <TextEdit @bind-Text="CardPaymentModel.CardNumber">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
                                         </TextEdit>
                                     </Field>
                                 </Validation>
-                            </div>
-                            <div class="col">
                                 <Validation>
                                     <Field class="mb-3">
-                                        <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
-                                        <TextEdit @bind-Text="CardPaymentModel.CVV" Placeholder="123">
+                                        <FieldLabel class="font-16 color-grey-100">Name on Card</FieldLabel>
+                                        <TextEdit @bind-Text="CardPaymentModel.CardHolder">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
                                         </TextEdit>
                                     </Field>
                                 </Validation>
-                            </div>
+                                <div class="row">
+                                    <div class="col">
+                                        <Validation>
+                                            <Field class="mb-3">
+                                                <FieldLabel class="font-16 color-grey-100">Expiration</FieldLabel>
+                                                <TextEdit @bind-Text="CardPaymentModel.Expiration" Placeholder="Ex. 03/28">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </div>
+                                    <div class="col">
+                                        <Validation>
+                                            <Field class="mb-3">
+                                                <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
+                                                <TextEdit @bind-Text="CardPaymentModel.CVV" Placeholder="123">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </Field>
+                                        </Validation>
+                                    </div>
+                                </div>
+                                <div>
+                                    <Button Clicked="SelectCardPayment" class="btn-primary w-100 border-radius-5" Border="Border.Is0">
+                                        <LoadingTemplate>
+                                            <i class="fa fa-spinner fa-spin"></i> Please Wait
+                                        </LoadingTemplate>
+                                        <ChildContent>
+                                            Submit
+                                        </ChildContent>
+                                    </Button>
+                                </div>
+                            </Validations>
                         </div>
-                        <div>
-                            <Button Clicked="SelectCardPayment" class="btn-primary w-100 border-radius-5" Border="Border.Is0">
-                                <LoadingTemplate>
-                                    <i class="fa fa-spinner fa-spin"></i> Please Wait
-                                </LoadingTemplate>
-                                <ChildContent>
-                                    Submit
-                                </ChildContent>
-                            </Button>
-                        </div>
-                    </Validations>
-                </div>
-            </ModalBody>
-        </ModalContent>
-    </Modal>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
+        </Animate>
+    </Div>
 }
 
-@code 
+@code
 {
     [Parameter]
     public int ActivityId { get; set; }
@@ -427,7 +456,7 @@
     [Parameter]
     public int ScheduleId { get; set; }
 
-    private PurchaseModel Model {get; set;}
+    private PurchaseModel Model { get; set; }
 
     private SchedulesModal ModalSched { get; set; }
 
@@ -439,19 +468,20 @@
 
     public int MakerCompletedStudent { get; set; }
 
-    private bool IsFullyLoaded {get; set;} = false;
+    private bool IsFullyLoaded { get; set; } = false;
 
-    private IEnumerable<PaymentOption> Payments {get; set;} = new List<PaymentOption>();
-    
+    private IEnumerable<PaymentOption> Payments { get; set; } = new List<PaymentOption>();
+
     private string SelectedPaymentCode = string.Empty;
 
-    private Modal CardModal {get; set;}
-    
-    private Validations PaymentCardValidation {get; set;}
+    private Modal CardModal { get; set; }
 
-    private Models.Forms.CardPaymentModel CardPaymentModel {get; set;} = new();
+    private Validations PaymentCardValidation { get; set; }
 
-    private enum CouponAction {
+    private Models.Forms.CardPaymentModel CardPaymentModel { get; set; } = new();
+
+    private enum CouponAction
+    {
         NoCoupon = 0,
         EnteringCoupon = 1,
         AppliedCoupon = 2
@@ -461,7 +491,7 @@
 
     private decimal couponAmount = 50;
 
-    private string Token {get; set;}
+    private string Token { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -470,7 +500,7 @@
         await FetchSelectedAcivityAndSchedule();
 
         await FetchMakerBadges();
-        
+
         // payment options
         Payments = new List<PaymentOption> {
             { new PaymentOption {DisplayName = "SHOPEEPAY", PaymentChannel = "SHOPEEPAY", PaymentMethod = "EWALLET", Code = "SHOPEEPAY"} },
@@ -492,7 +522,7 @@
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
-        if(token == null)
+        if (token == null)
         {
             // don't have current user login
             NavigationManager.NavigateTo("explore");
@@ -501,7 +531,7 @@
 
         // get profile details
         var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-        if((!profileResult.Succeeded || profileResult.Result == null) || (profileResult.Succeeded && !profileResult.Result.IsSuccess))
+        if ((!profileResult.Succeeded || profileResult.Result == null) || (profileResult.Succeeded && !profileResult.Result.IsSuccess))
         {
             // an error occured
             NavigationManager.NavigateTo("explore");
@@ -513,49 +543,54 @@
         var familyMembers = new List<Models.Entities.FamilyMember>();
         var members = await accountApiHandler.GetFamilyMembers(token);
 
-        if(members.Succeeded && members.Result != null && members.Succeeded)
+        if (members.Succeeded && members.Result != null && members.Succeeded)
         {
-            familyMembers = members.Result.Result.Select(m => {
-                return new Models.Entities.FamilyMember {
-                    BirthMonth = m.BirthMonth,
-                    BirthYear = m.BirthYear,
-                    Gender = m.Gender,
-                    Name = m.Name,
-                    Id = m.Id
-                };
+            familyMembers = members.Result.Result.Select(m =>
+            {
+                return new Models.Entities.FamilyMember
+                    {
+                        BirthMonth = m.BirthMonth,
+                        BirthYear = m.BirthYear,
+                        Gender = m.Gender,
+                        Name = m.Name,
+                        Id = m.Id
+                    };
             }).ToList();
         }
 
-        Model = new PurchaseModel {
-            // map only required fields
-            Customer = new CustomerProfile {
-                About = profile.About,
-                Birthdate = profile.Birthdate,
-                Email = profile.Email,
-                FamilyMembers = familyMembers,
-                FirstName = profile.FirstName,
-                IsMaker = profile.IsMaker,
-                LastName = profile.LastName,
-                IsVerified = profile.IsVerified,
-                ProfilePath = profile.ProfileImg,
-                TotalCredits = profile.TotalCredits
-            },
-            Token = token
-        };
+        Model = new PurchaseModel
+            {
+                // map only required fields
+                Customer = new CustomerProfile
+                {
+                    About = profile.About,
+                    Birthdate = profile.Birthdate,
+                    Email = profile.Email,
+                    FamilyMembers = familyMembers,
+                    FirstName = profile.FirstName,
+                    IsMaker = profile.IsMaker,
+                    LastName = profile.LastName,
+                    IsVerified = profile.IsVerified,
+                    ProfilePath = profile.ProfileImg,
+                    TotalCredits = profile.TotalCredits
+                },
+                Token = token
+            };
     }
 
     private async Task FetchSelectedAcivityAndSchedule()
     {
         // get activity
-        var activityRes = await activityApiHandler.GetActivity(ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
-            IncludeActivityAddress = true,
-            IncludeActivityDescription = true,
-            IncludeAtivitySchedules = true,
-            IsActive = true,
-            IncludeCustomer = true,
-            IncludeActivityImages = true
-        });
-        if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
+        var activityRes = await activityApiHandler.GetActivity(ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeAtivitySchedules = true,
+                IsActive = true,
+                IncludeCustomer = true,
+                IncludeActivityImages = true
+            });
+        if ((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
             // error when getting activity
             NavigationManager.NavigateTo("explore");
@@ -564,80 +599,80 @@
 
         var result = activityRes.Result.Result;
         var activity = new Activity
-        {
-            Id = result.ActivityId,
-            ActivityId = result.ActivityId,
-            ExperienceTypeId = result.ExperienceTypeId,
-            ExperienceCategoryId = result.ExperienceCategoryId,
-            SubCategoryId = result.SubCategoryId,
-            Title = result.Title,
-            Description = result.Description,
-            Price = result.Price,
-            ScheduleIndicator = result.ScheduleIndicator,
-            Remarks = result.Remarks,
-            IsPublished = result.IsPublished,
-            Address1 = result.Address1,
-            Address2 = result.Address2,
-            District = result.District,
-            City = result.City,
-            CityName = result.CityName,
-            Subdivision = result.Subdivision,
-            Barangay = result.Barangay,
-            BarangayName = result.BarangayName,
-            Region = result.Region,
-            RegionName = result.RegionName,
-            PostalCode = result.PostalCode,
-            SpecificsYouWillProvide = result.SpecificsYouWillProvide,
-            CustomerBringWithThem = result.CustomerBringWithThem,
-            AdditionalRequirements = result.AdditionalRequirements,
-            ActivityLevel = result.ActivityLevel,
-            SkillLevel = result.SkillLevel,
-            MinimumAge = result.MinimumAge,
-            CanAdultsJoin = result.CanAdultsJoin,
-            CreatedBy = result.CreatedBy,
-            MapDetails = result.MapDetails,
-            IsSetSession = result.IsSetSession,
-            SessionName = result.SessionName,
-            ActivitySchedules = result.ActivitySchedules.Select(e =>
             {
-                return new ActivitySchedule
+                Id = result.ActivityId,
+                ActivityId = result.ActivityId,
+                ExperienceTypeId = result.ExperienceTypeId,
+                ExperienceCategoryId = result.ExperienceCategoryId,
+                SubCategoryId = result.SubCategoryId,
+                Title = result.Title,
+                Description = result.Description,
+                Price = result.Price,
+                ScheduleIndicator = result.ScheduleIndicator,
+                Remarks = result.Remarks,
+                IsPublished = result.IsPublished,
+                Address1 = result.Address1,
+                Address2 = result.Address2,
+                District = result.District,
+                City = result.City,
+                CityName = result.CityName,
+                Subdivision = result.Subdivision,
+                Barangay = result.Barangay,
+                BarangayName = result.BarangayName,
+                Region = result.Region,
+                RegionName = result.RegionName,
+                PostalCode = result.PostalCode,
+                SpecificsYouWillProvide = result.SpecificsYouWillProvide,
+                CustomerBringWithThem = result.CustomerBringWithThem,
+                AdditionalRequirements = result.AdditionalRequirements,
+                ActivityLevel = result.ActivityLevel,
+                SkillLevel = result.SkillLevel,
+                MinimumAge = result.MinimumAge,
+                CanAdultsJoin = result.CanAdultsJoin,
+                CreatedBy = result.CreatedBy,
+                MapDetails = result.MapDetails,
+                IsSetSession = result.IsSetSession,
+                SessionName = result.SessionName,
+                ActivitySchedules = result.ActivitySchedules.Select(e =>
                 {
-                    Id = e.Id,
-                    Name = e.Name,
-                    DateTime = e.DateTime,
-                    PerUnit1 = e.PerUnit1,
-                    PerUnit2 = e.PerUnit2,
-                    Price = e.Price,
-                    PriceUnit1 = e.PriceUnit1,
-                    PriceUnit2 = e.PriceUnit2,
-                    UnitPrice = e.UnitPrice,
-                    Order = e.Order,
-                    IsActiveSchedule = e.IsActiveSchedule
-                };
-            }).ToList(),
-            Images = result.Images.Select(i =>
-            {
-                return new ActivityImage
+                    return new ActivitySchedule
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        DateTime = e.DateTime,
+                        PerUnit1 = e.PerUnit1,
+                        PerUnit2 = e.PerUnit2,
+                        Price = e.Price,
+                        PriceUnit1 = e.PriceUnit1,
+                        PriceUnit2 = e.PriceUnit2,
+                        UnitPrice = e.UnitPrice,
+                        Order = e.Order,
+                        IsActiveSchedule = e.IsActiveSchedule
+                    };
+                }).ToList(),
+                Images = result.Images.Select(i =>
                 {
-                    Id = i.Id,
-                    ImageSrc = i.ImageSrc,
-                    Name = i.Name,
-                    Order = i.Order
-                };
-            }).ToList(),
-            Owner = result.Owner != null ? new CustomerProfile
-            {
-                // map only required fields
-                Id = result.Owner.Id,
-                Handler = result.Owner.Handler,
-                ProfilePath = result.Owner.ImageSrc,
-                FirstName = result.Owner.FirstName,   
-                LastName = result.Owner.LastName,
-                IsVerified = result.Owner.IsVerified,
-                IsOG = result.Owner.IsOG,
-                IsOfficial = result.Owner.IsOfficial
-            } : null
-        };
+                    return new ActivityImage
+                    {
+                        Id = i.Id,
+                        ImageSrc = i.ImageSrc,
+                        Name = i.Name,
+                        Order = i.Order
+                    };
+                }).ToList(),
+                Owner = result.Owner != null ? new CustomerProfile
+                {
+                    // map only required fields
+                    Id = result.Owner.Id,
+                    Handler = result.Owner.Handler,
+                    ProfilePath = result.Owner.ImageSrc,
+                    FirstName = result.Owner.FirstName,
+                    LastName = result.Owner.LastName,
+                    IsVerified = result.Owner.IsVerified,
+                    IsOG = result.Owner.IsOG,
+                    IsOfficial = result.Owner.IsOfficial
+                } : null
+            };
         Model.Activity = activity;
     }
 
@@ -664,11 +699,11 @@
 
         //Get Maker Activity
         var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
-        {
-            CustomerId = Model.Activity.CreatedBy,
-            IncludeStudents = true,
-            IsActive = true,
-        });
+            {
+                CustomerId = Model.Activity.CreatedBy,
+                IncludeStudents = true,
+                IsActive = true,
+            });
 
         var activities = new List<Activity>();
         if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
@@ -693,23 +728,24 @@
     private void SelectedScheduleChanged()
     {
         var selectedSchedule = Model.Activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
-        if(selectedSchedule == null)
+        if (selectedSchedule == null)
         {
             // schedule id not associated to activity
             NavigationManager.NavigateTo("explore");
             return;
         }
-        Model.SelectedSchedule = new ActivitySchedule {
-            DateTime = selectedSchedule.DateTime,
-            Id = selectedSchedule.Id,
-            Name = selectedSchedule.Name,
-            PerUnit1 = selectedSchedule.PerUnit1,
-            PerUnit2 = selectedSchedule.PerUnit2,
-            Price = selectedSchedule.Price,
-            PriceUnit1 = selectedSchedule.PriceUnit1,
-            PriceUnit2 = selectedSchedule.PriceUnit2,
-            UnitPrice = selectedSchedule.UnitPrice,
-        };
+        Model.SelectedSchedule = new ActivitySchedule
+            {
+                DateTime = selectedSchedule.DateTime,
+                Id = selectedSchedule.Id,
+                Name = selectedSchedule.Name,
+                PerUnit1 = selectedSchedule.PerUnit1,
+                PerUnit2 = selectedSchedule.PerUnit2,
+                Price = selectedSchedule.Price,
+                PriceUnit1 = selectedSchedule.PriceUnit1,
+                PriceUnit2 = selectedSchedule.PriceUnit2,
+                UnitPrice = selectedSchedule.UnitPrice,
+            };
     }
 
     private void OnClickChange()
@@ -720,67 +756,76 @@
     private async Task SaveEditedFamilyMember(IList<FamilyMember> familyMembers)
     {
         // add members
-        var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs {
+        var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs
+            {
                 FamilyMembers = familyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
-                                .Select(m => {
-                                    return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
-                                        BirthMonth = m.BirthMonth,
-                                        BirthYear = m.BirthYear,
-                                        Gender = m.Gender,
-                                        Id = m.Id,
-                                        Name = m.Name
-                                    };
-                                }),
-        }, Model.Token);
+                                    .Select(m =>
+                                    {
+                                        return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
+                                        {
+                                            BirthMonth = m.BirthMonth,
+                                            BirthYear = m.BirthYear,
+                                            Gender = m.Gender,
+                                            Id = m.Id,
+                                            Name = m.Name
+                                        };
+                                    }),
+            }, Model.Token);
 
         // update members
-        var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs {
+        var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs
+            {
                 FamilyMembers = familyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
-                                .Select(m => {
-                                    return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO {
-                                        BirthMonth = m.BirthMonth,
-                                        BirthYear = m.BirthYear,
-                                        Gender = m.Gender,
-                                        Id = m.Id,
-                                        Name = m.Name
-                                    };
-                                })
-        }, Model.Token);
+                                    .Select(m =>
+                                    {
+                                        return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
+                                        {
+                                            BirthMonth = m.BirthMonth,
+                                            BirthYear = m.BirthYear,
+                                            Gender = m.Gender,
+                                            Id = m.Id,
+                                            Name = m.Name
+                                        };
+                                    })
+            }, Model.Token);
 
         var deletedMembers = Model.Customer.FamilyMembers.Where(f => !familyMembers.Any(s => s.Id == f.Id));
 
-        var deletedResult = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs {
-            Ids = deletedMembers.Select(f => f.Id),
-        }, Model.Token);
+        var deletedResult = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs
+            {
+                Ids = deletedMembers.Select(f => f.Id),
+            }, Model.Token);
 
 
         // fetch again the updated family members
         var updatedMembers = await accountApiHandler.GetFamilyMembers(Model.Token);
         IDictionary<int, FamilyMember> tmpSelected = Model.Customer.FamilyMembers.Where(f => f.IsSelected).ToDictionary(f => f.Id);
 
-        if(updatedMembers.Succeeded && updatedMembers.Result != null && updatedMembers.Result.IsSuccess)
+        if (updatedMembers.Succeeded && updatedMembers.Result != null && updatedMembers.Result.IsSuccess)
         {
-            Model.Customer.FamilyMembers = updatedMembers.Result.Result.Select(f => {
+            Model.Customer.FamilyMembers = updatedMembers.Result.Result.Select(f =>
+            {
                 bool isSelected = tmpSelected.ContainsKey(f.Id);
-                return new FamilyMember {
-                    BirthMonth = f.BirthMonth,
-                    BirthYear = f.BirthYear,
-                    Gender = f.Gender,
-                    Id = f.Id,
-                    Name = f.Name,
-                    IsSelected = isSelected
-                };
+                return new FamilyMember
+                    {
+                        BirthMonth = f.BirthMonth,
+                        BirthYear = f.BirthYear,
+                        Gender = f.Gender,
+                        Id = f.Id,
+                        Name = f.Name,
+                        IsSelected = isSelected
+                    };
             }).ToList();
         }
 
         AddChildrenModal.Close();
     }
 
-    private int SelectedAttendeesCount 
+    private int SelectedAttendeesCount
     {
-        get 
+        get
         {
-            if(Model == null || Model.Customer == null || Model.Customer.FamilyMembers == null) return 0;
+            if (Model == null || Model.Customer == null || Model.Customer.FamilyMembers == null) return 0;
             return Model.Customer.FamilyMembers.Where(f => f.IsSelected).Count();
         }
     }
@@ -792,7 +837,7 @@
 
     private async Task OnPayConfirmedClicked()
     {
-        if(string.IsNullOrEmpty(SelectedPaymentCode))
+        if (string.IsNullOrEmpty(SelectedPaymentCode))
         {
             payErrorMessage = "Please select payment method";
             isShowPayErrorMessage = true;
@@ -801,62 +846,68 @@
 
         var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
 
-        if(SelectedAttendeesCount > 0)
+        if (SelectedAttendeesCount > 0)
         {
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
 
-            var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs {
-                ActivityId = Model.Activity.ActivityId,
-                CouponCode = "temporary coupon code",
-                NumberOfHeads = SelectedAttendeesCount,
-                ScheduleId = Model.SelectedSchedule.Id,
-                Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s => {
-                    return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.Enrollee {
-                        FamilyMemberId = s.Id,
-                        Name = s.Name
-                    };
-                }),
-                PaymentChannel = selectedPaymentMethod.Code,
-                PaymentMethod = selectedPaymentMethod.PaymentMethod,
-                CardInformation = selectedPaymentMethod.Code == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.CardDetails {
-                    AccountHolder = CardPaymentModel.CardHolder ?? string.Empty,
-                    CardNumber = CardPaymentModel.CardNumber ?? string.Empty,
-                    CVV = CardPaymentModel.CVV ?? string.Empty,
-                    ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
-                } : null,
-                IsCreditsApplied = Model.IsCreditApplied
-            }, Model.Token);
+            var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs
+                {
+                    ActivityId = Model.Activity.ActivityId,
+                    CouponCode = "temporary coupon code",
+                    NumberOfHeads = SelectedAttendeesCount,
+                    ScheduleId = Model.SelectedSchedule.Id,
+                    Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.Enrollee
+                        {
+                            FamilyMemberId = s.Id,
+                            Name = s.Name
+                        };
+                    }),
+                    PaymentChannel = selectedPaymentMethod.Code,
+                    PaymentMethod = selectedPaymentMethod.PaymentMethod,
+                    CardInformation = selectedPaymentMethod.Code == "CARD" ? new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs.CardDetails
+                    {
+                        AccountHolder = CardPaymentModel.CardHolder ?? string.Empty,
+                        CardNumber = CardPaymentModel.CardNumber ?? string.Empty,
+                        CVV = CardPaymentModel.CVV ?? string.Empty,
+                        ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
+                    } : null,
+                    IsCreditsApplied = Model.IsCreditApplied
+                }, Model.Token);
 
-            if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+            if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
                 payErrorMessage = submit.Result?.ErrorInfo?.Message ?? $"An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
                 isLoading = false;
             }
-            else 
+            else
             {
                 isLoading = false;
-                if(submit.Result.Result.Action == 1)
+                if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
                 }
-                else 
+                else
                 {
                     NavigationManager.NavigateTo($"/purchase/order/?purchaseid={submit.Result.Result.Id}");
                 }
             }
         }
-        else 
+        else
         {
             payErrorMessage = "Please include family to register";
             isShowPayErrorMessage = true;
         }
     }
 
-    private string GetActivityFirstImage {
-        get {
-            if(Model.Activity.Images.Count > 0 )
+    private string GetActivityFirstImage
+    {
+        get
+        {
+            if (Model.Activity.Images.Count > 0)
             {
                 return Model.Activity.Images.OrderBy(i => i.Order).First().ImageSrc;
             }
@@ -864,11 +915,11 @@
         }
     }
 
-    private string GetTotalPerHeadPrice 
+    private string GetTotalPerHeadPrice
     {
-        get 
+        get
         {
-            if(SelectedAttendeesCount == 0)
+            if (SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
@@ -876,31 +927,34 @@
         }
     }
 
-    private string GetConvinienceFee 
+    private string GetConvinienceFee
     {
-        get {
-            if(SelectedAttendeesCount == 0)
+        get
+        {
+            if (SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
-            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .15m).ToString("#,##0.00");
+            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .05m).ToString("#,##0.00");
         }
     }
 
-    private string GetTotalPrice 
+    private string GetTotalPrice
     {
-        get {
-            if(SelectedAttendeesCount == 0)
+        get
+        {
+            if (SelectedAttendeesCount == 0)
             {
                 return "PHP 0.00";
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal fee = subTotal * .15m;
+            decimal paymentProviderFee = subTotal * .05m;
             decimal discount = 0;
-            decimal overallTotal = subTotal + fee;
+            decimal serviceFee = 50;
+            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
 
-            if(Model.IsCreditApplied && Model.Customer.TotalCredits > 0)
+            if (Model.IsCreditApplied && Model.Customer.TotalCredits > 0)
             {
                 var creditsBalance = Model.Customer.TotalCredits;
                 overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
@@ -912,16 +966,18 @@
 
     private string GetTotalCredit
     {
-        get {
-            if(!(Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
+        get
+        {
+            if (!(Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
             {
                 return "PHP 0.00";
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal fee = subTotal * .15m;
+            decimal paymentProviderFee = subTotal * .05m;
             decimal discount = 0;
-            decimal overallTotal = subTotal + fee;
+            decimal serviceFee = 50;
+            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
             var creditsBalance = Model.Customer.TotalCredits;
@@ -933,8 +989,9 @@
 
     private string GetActivityOwnerProfileSrc
     {
-        get {
-            if(Model.Activity.Owner == null || string.IsNullOrEmpty(Model.Activity.Owner.ProfilePath))
+        get
+        {
+            if (Model.Activity.Owner == null || string.IsNullOrEmpty(Model.Activity.Owner.ProfilePath))
             {
                 return "images/profile/user.png";
             }
@@ -944,7 +1001,7 @@
 
     private async Task SelectCardPayment()
     {
-        if(await PaymentCardValidation.ValidateAll())
+        if (await PaymentCardValidation.ValidateAll())
         {
             CardModal.Close(CloseReason.UserClosing);
             SelectedPaymentCode = "CARD";
@@ -956,11 +1013,11 @@
         return new String('*', value.Length - count) + value.Substring(value.Length - count);
     }
 
-    class PaymentOption 
+    class PaymentOption
     {
-        public string PaymentMethod {get; set;}
-        public string PaymentChannel {get; set;}
-        public string DisplayName {get; set;}
-        public string Code {get; set;}
+        public string PaymentMethod { get; set; }
+        public string PaymentChannel { get; set; }
+        public string DisplayName { get; set; }
+        public string Code { get; set; }
     }
 }

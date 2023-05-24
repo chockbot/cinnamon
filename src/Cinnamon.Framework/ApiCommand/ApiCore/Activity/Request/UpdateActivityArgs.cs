@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
@@ -35,6 +36,7 @@ public class UpdateActivityArgs
     public string? PinnedLocation { get; set; }
     public bool? IsDeactivated { get; set; }
     public bool? IsAdmin { get; set; }
+    public Enums.Enums.ActivityStatus Status { get; set; }
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<UpdatedSchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int>? DeletedScheduleIds {get; set;}
@@ -55,4 +57,8 @@ public class UpdateActivityArgs
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
     }
+
+    public IFormFile? Image1 { get; set; }
+    public IFormFile? Image2 { get; set; }
+    public IFormFile? Image3 { get; set; }
 }

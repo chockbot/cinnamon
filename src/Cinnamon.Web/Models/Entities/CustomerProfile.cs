@@ -11,8 +11,11 @@
         public DateTime DateJoined { get; set; }
         public string ProfilePath { get; set; }
         public int IsVerified { get; set; }
+        public DateTime IsVerifiedDate { get; set; }
         public bool IsOG { get; set; }
+        public DateTime IsOGDate { get; set; }
         public bool IsOfficial { get; set; }
+        public DateTime IsOfficialDate { get; set; }
         public string About { get; set; }
         public string Handler {get; set;}
         public string FrontIdImagePath { get; set; }

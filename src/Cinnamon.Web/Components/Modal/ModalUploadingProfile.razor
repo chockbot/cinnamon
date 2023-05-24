@@ -92,6 +92,12 @@
     [Parameter]
     public string Token { get; set; }
 
+    [Parameter]
+    public bool IsReload {get; set;} = true;
+
+    [Parameter]
+    public EventCallback<string> OnProfileSubmit {get; set;}
+
     private Modal modalRef;
 
     private UploadProfilePicture profilePicture = new();
@@ -205,7 +211,17 @@
             //Hide Modal
             await HideModal();
             //Load Customer Profile Page
-            NavigationManager.NavigateTo("/customer/profile", true);
+            if(IsReload)
+            {
+                NavigationManager.NavigateTo("/customer/profile", true);
+            }
+            else 
+            {
+                if(OnProfileSubmit.HasDelegate)
+                {
+                    OnProfileSubmit.InvokeAsync(upload.Result.Result.ProfileImagePath);
+                }
+            }
         }
         else
         {
@@ -243,17 +259,19 @@
     {
         return modalRef.Show();
     }
+
     public Task HideModal()
     {
-        NavigationManager.NavigateTo("/customer/profile", true);
         return modalRef.Hide();
     }
+
     public Task ShowLoading()
     {
         isLoading = true;
         StateHasChanged();
         return Task.CompletedTask;
     }
+
     public Task HideLoading()
     {
         isLoading = false;

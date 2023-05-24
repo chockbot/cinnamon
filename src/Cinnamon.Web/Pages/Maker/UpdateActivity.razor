@@ -9,11 +9,13 @@
 @using Cinnamon.Web.Components.Pages.Creation;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Components.Pages;
+@using static Cinnamon.Framework.Enums.Enums;
 @inject NavigationManager NavigationManager;
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IActivityApiHandler activityApiHandler;
 @inject IAccountApiHandler accountApiHandler;
+@using Cinnamon.Framework.Enums;
 
 <PageTitle>Update Experience | CinnamonPH</PageTitle>
 <SeoMeta Title="Update Experience" Subject="Update Experience" Url="/maker/update-activity" />
@@ -21,18 +23,40 @@
 <div id="regForm" class="shadow-lg">
     @if(Model != null)
     {
+        <input type="hidden" @bind="Model.Activity.ActivityId" id="activity-id" />
+        <input type="hidden" value="@Model.Activity.ActivityStatus" id="activity-status" />
+
         <div class="progress-bar-section">
             <p class="progress-details">
-                IN PROGRESS: Step @currentIndex of 6
+                IN PROGRESS: Step @currentIndex of 6 <span id="loader" class=""></span>
             </p>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
         </div>
 
-        <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
-            UPDATE YOUR EXPERIENCE!
-        </p>
+        <div class="experience-heading-section row">
+            <div class="col-lg-9">
+                <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    UPDATE YOUR EXPERIENCE!
+                </p>
+            </div>
+            <div class="col-lg-3 save-later-button-section">
+                <div class="save-later-section d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    @if (Model.Activity.Status == ActivityStatus.InProgress)
+                    {
+                        <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                            <LoadingTemplate>
+                                <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                            </LoadingTemplate>
+                            <ChildContent>
+                                Save for Later
+                            </ChildContent>
+                        </Button>
+                    }
+                </div>
+            </div>
+        </div>
 
         <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
             <div class="row">
@@ -40,7 +64,7 @@
                     @if (currentIndex > 1)
                     {
                         <button class="carousel-control-prev" type="button" @onclick="() => OnBackClick()">
-                            <div class="triangle-reverse"></div>
+                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
                         </button>
                     }
                 </div>
@@ -85,12 +109,26 @@
                 <div class="col-1 next-button-section">
                     @if (currentIndex < 6)
                     {
-                        <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
-                            <div class="triangle"></div>
+                       <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
+                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
                         </button>
                     }
                 </div>
             </div>
+        </div>
+
+         <div class="save-later-section-mobile d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            @if (Model.Activity.Status == ActivityStatus.InProgress)
+            {
+                <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Save for Later
+                    </ChildContent>
+                </Button>
+            }
         </div>
 
         <div class="row">
@@ -100,7 +138,7 @@
                         Overview
                         @if (currentIndex == 1)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -114,7 +152,7 @@
                         Location
                         @if (currentIndex == 2)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -128,7 +166,7 @@
                         Pricing & Schedule
                         @if (currentIndex == 3)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -142,7 +180,7 @@
                         Requirements
                         @if (currentIndex == 4)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -156,7 +194,7 @@
                         Gallery
                         @if (currentIndex == 5)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -170,9 +208,56 @@
                         Publish
                         @if (currentIndex == 6)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                             <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                     </a>
+                </div>
+                   <div class="dashed-divider col-lg-7"></div>
+                <div class="guide-section col-lg-7 text-center">
+                    <label class="guide-title @(currentIndex != 6 ? "d-block" : "d-none")">
+                        How it will look like
+                    </label>
+                    <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-1 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-1.png" alt="check-icon" />
+                            </div>
+                            <div class="creation-guide-step-2 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-2.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-3 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-3.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-4 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-4.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-5 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-5.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-6 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-6.png" alt="check-icon" />
+                            </div>
+                            <div class="creation-guide-step-7 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-7.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-8">
@@ -242,6 +327,25 @@
     }
 </div>
 
+<div class="modal fade remove-modal" tabindex="-1" role="dialog" id="experienceCreationGuideModal" style="z-index:99999;">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <label class="guide-title text-center">
+                    How it will look like
+                </label>
+                <button type="button" class="btn-close" id="btnCloseExperienceCreationGuideModal" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="col-12-lg d-flex justify-content-center">
+                    <div class="row" id="image-section">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 @if(showErrorMessage)
 {
     <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
@@ -295,6 +399,7 @@
     public bool isOptionalDetailsComponentValid { get; set; }
     public bool isGalleryComponentValid { get; set; }
 
+    public const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
 
     protected override async Task OnInitializedAsync()
     {
@@ -349,6 +454,8 @@
         }
         var activity = activityRes.Result.Result;
 
+        activity = ReplaceActivityTemporaryValues(activity);
+
         // get experience types
         var experienceTypes = await activityApiHandler.GetExperienceTypes();
         if((!experienceTypes.Succeeded || experienceTypes.Result == null) || (experienceTypes.Succeeded && !experienceTypes.Result.IsSuccess))
@@ -388,23 +495,50 @@
 
         if (activity.ExperienceTypeId == 1)
         {
-            cities = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = activity.Region });
-            if ((!cities.Succeeded || cities.Result == null) || (cities.Succeeded && !cities.Result.IsSuccess))
+            if (activity.Status == ActivityStatus.Submitted)
             {
-                NavigationManager.NavigateTo("explore");
-                return;
+                cities = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = activity.Region });
+                if ((!cities.Succeeded || cities.Result == null) || (cities.Succeeded && !cities.Result.IsSuccess))
+                {
+                    NavigationManager.NavigateTo("explore");
+                    return;
+                }
+
+                var city = cities.Result.Result.FirstOrDefault(c => c.Code == activity.City);
+
+                barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality });
+                if ((!barangays.Succeeded || barangays.Result == null) || (barangays.Succeeded && !barangays.Result.IsSuccess))
+                {
+                    NavigationManager.NavigateTo("explore");
+                    return;
+                }
             }
-
-            var city = cities.Result.Result.FirstOrDefault(c => c.Code == activity.City);
-
-            barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality });
-            if ((!barangays.Succeeded || barangays.Result == null) || (barangays.Succeeded && !barangays.Result.IsSuccess))
+            else
             {
-                NavigationManager.NavigateTo("explore");
-                return;
+                if (!string.IsNullOrEmpty(activity.Region))
+                {
+                    cities = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = activity.Region });
+                    if ((!cities.Succeeded || cities.Result == null) || (cities.Succeeded && !cities.Result.IsSuccess))
+                    {
+                        NavigationManager.NavigateTo("explore");
+                        return;
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(activity.City))
+                {
+                    var city = cities.Result.Result.FirstOrDefault(c => c.Code == activity.City);
+
+                    barangays = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = activity.City, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality });
+                    if ((!barangays.Succeeded || barangays.Result == null) || (barangays.Succeeded && !barangays.Result.IsSuccess))
+                    {
+                        NavigationManager.NavigateTo("explore");
+                        return;
+                    }
+                }
             }
         }
-       
+
         Model = new ExperienceUpdateModel {
             Activity = new Models.Entities.Activity {
                 ActivityId = activity.ActivityId,
@@ -461,7 +595,8 @@
                 Title = activity.Title,
                 IsSetSession = activity.IsSetSession,
                 SessionName = activity.SessionName,
-                PinnedLocation = activity.PinnedLocation
+                PinnedLocation = activity.PinnedLocation,
+                Status = activity.Status
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -492,20 +627,20 @@
                     RegionName = r.RegionName
                 };
             }),
-            Cities = activity.ExperienceTypeId == 1 ? cities.Result.Result.Select(r => new Models.Entities.City
+                Cities = activity.ExperienceTypeId == 1 ? cities.Result != null ? cities.Result.Result.Select(r => new Models.Entities.City
             {
                 Code = r.Code,
                 Name = r.Name,
                 RegionCode = r.RegionCode,
                 IsCity = r.IsCity,
                 IsMunicipality = r.IsMunicipality
-            }) : new List<Models.Entities.City>(),
-            Barangays = activity.ExperienceTypeId == 1 ? barangays.Result.Result.Select(r => new Models.Entities.Barangay
+                }) : new List<Models.Entities.City>() : new List<Models.Entities.City>(),
+            Barangays = activity.ExperienceTypeId == 1 ? barangays.Result != null ? barangays.Result.Result.Select(r => new Models.Entities.Barangay
             {
                 Code = r.Code,
                 Name = r.Name,
                 CityCode = r.CityCode
-            }) : new List<Models.Entities.Barangay>(),
+                }) : new List<Models.Entities.Barangay>() : new List<Models.Entities.Barangay>(),
             Token = token
         };
 
@@ -517,7 +652,10 @@
         if(firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
+            await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
         }
+        await Task.Run(() => module.InvokeVoidAsync("confirmation"));
+
     }
 
     private async Task OnBackClick(int index = 0) 
@@ -528,6 +666,102 @@
         await Task.Delay(100);
         await module.InvokeVoidAsync("onScrollUp");
     }
+
+    private async Task SaveForLater()
+    {
+        isLoading = true;
+
+        Model.Activity.ActivitySchedules = ValidateSchedules(Model.Activity.ActivitySchedules);
+
+        var submit = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs
+            {
+                ActivityLevel = Model.Activity.ActivityLevel,
+                ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
+                {
+                    return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule
+                    {
+                        Id = s.Id,
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule
+                    };
+                }),
+                AdditionalRequirements  = ReplaceEmptyValue(Model.Activity.AdditionalRequirements, NOTHING_PROVIDED),
+                Address1                = ReplaceEmptyValue(Model.Activity.Address1, NOTHING_PROVIDED),
+                Address2                = ReplaceEmptyValue(Model.Activity.Address2, NOTHING_PROVIDED),
+                CanAdultsJoin           = Model.Activity.CanAdultsJoin,
+                City                    = ReplaceEmptyValue(Model.Activity.City, ""),
+                Subdivision             = ReplaceEmptyValue(Model.Activity.Subdivision, NOTHING_PROVIDED),
+                Region                  = ReplaceEmptyValue(Model.Activity.Region, ""),
+                Barangay                = ReplaceEmptyValue(Model.Activity.Barangay, ""),
+                PostalCode              = ReplaceEmptyValue(Model.Activity.PostalCode, NOTHING_PROVIDED),
+                CustomerBringWithThem   = ReplaceEmptyValue(Model.Activity.CustomerBringWithThem, NOTHING_PROVIDED),
+                Description             = ReplaceEmptyValue(Model.Activity.Description, NOTHING_PROVIDED),
+                District                = ReplaceEmptyValue(Model.Activity.District, NOTHING_PROVIDED),
+                ExperienceCategoryId    = Model.Activity.ExperienceCategoryId != 0 ? Model.Activity.ExperienceCategoryId : 2,
+                ExperienceTypeId        = Model.Activity.ExperienceTypeId != 0 ? Model.Activity.ExperienceTypeId : 1,
+                IsPublished             = Model.Activity.IsPublished,
+                MinimumAge              = Model.Activity.MinimumAge,
+                Price                   = ReplaceEmptyValue(Model.Activity.Price, NOTHING_PROVIDED),
+                Remarks                 = ReplaceEmptyValue(Model.Activity.Remarks, NOTHING_PROVIDED),
+                ScheduleIndicator       = ReplaceEmptyValue(Model.Activity.ScheduleIndicator, NOTHING_PROVIDED),
+                SearchTags              = Model.Activity.SearchTags,
+                SkillLevel              = Model.Activity.SkillLevel,
+                SpecificsYouWillProvide = ReplaceEmptyValue(Model.Activity.SpecificsYouWillProvide, NOTHING_PROVIDED),
+                SubCategoryId           = Model.Activity.SubCategoryId != 0 ? Model.Activity.SubCategoryId : 51,
+                Title                   = ReplaceEmptyValue(Model.Activity.Title, NOTHING_PROVIDED),
+                ActivityId              = Model.Activity.ActivityId,
+                DeletedScheduleIds      = Model.DeletedScheduleIds,
+                IsSetSession            = Model.Activity.IsSetSession,
+                SessionName             = ReplaceEmptyValue(Model.Activity.SessionName, NOTHING_PROVIDED),
+                PinnedLocation          = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
+                Status                  = Enums.ActivityStatus.InProgress,
+            }, Model.Token);
+
+        if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+        {
+            errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
+            showErrorMessage = true;
+            StateHasChanged();
+            return;
+        }
+
+        // update only the image order, not re uploading the image
+        if (!galleryComponent.IsImagesUpdated)
+        {
+            var updateImageOrderRes = await activityApiHandler.UpdateActivityImageOrder(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityImageOrderArgs
+                {
+                    ActivityId = Model.Activity.ActivityId,
+                    ImageOrders = galleryComponent.ImageItems.Select(i =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityImageOrderArgs.ImageOrder
+                        {
+                            NewOrder = i.NewOrder,
+                            OldOrder = i.Order
+                        };
+                    }).ToList()
+                }, Model.Token);
+
+            NavigationManager.NavigateTo("/maker/dashboard");
+            return;
+        }
+
+        // upload image without checking if there is error so that can't re update another activity
+        bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
+
+        NavigationManager.NavigateTo("/maker/dashboard");
+        isLoading = false;
+
+        return;
+    }
+
 
     private async Task OnNextClick(int index = 0)
     {
@@ -598,9 +832,10 @@
                 DeletedScheduleIds = Model.DeletedScheduleIds,
                 IsSetSession = Model.Activity.IsSetSession,
                 SessionName = Model.Activity.SessionName,
-                PinnedLocation = Model.Activity.PinnedLocation
+                PinnedLocation = Model.Activity.PinnedLocation,
+                Status = Enums.ActivityStatus.Submitted
             }, Model.Token);
-            
+
             if((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
                 errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
@@ -631,7 +866,10 @@
             bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.update.init", obj, submit.Result.Result.ActivityId);
             isLoading = false;
 
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Creation Published");
+
             NavigationManager.NavigateTo("/maker/dashboard");
+
             return;
         }
 
@@ -786,5 +1024,111 @@
         }
 
         return result;
+    }
+
+    private Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO ReplaceActivityTemporaryValues(Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO activity)
+    {
+        activity.ActivitySchedules = ReplaceTemporarySchedules(activity.ActivitySchedules.ToList());
+
+        activity.Title                   = ReplaceTemporaryValues(activity.Title);
+        activity.Description             = ReplaceTemporaryValues(activity.Description);
+        activity.AdditionalRequirements  = ReplaceTemporaryValues(activity.AdditionalRequirements);
+        activity.Address1                = ReplaceTemporaryValues(activity.Address1);
+        activity.Address2                = ReplaceTemporaryValues(activity.Address2);
+        activity.City                    = ReplaceTemporaryValues(activity.City);
+        activity.Subdivision             = ReplaceTemporaryValues(activity.Subdivision);
+        activity.Region                  = ReplaceTemporaryValues(activity.Region);
+        activity.Barangay                = ReplaceTemporaryValues(activity.Barangay);
+        activity.PostalCode              = ReplaceTemporaryValues(activity.PostalCode);
+        activity.CustomerBringWithThem   = ReplaceTemporaryValues(activity.CustomerBringWithThem);
+        activity.District                = ReplaceTemporaryValues(activity.District);
+        activity.Price                   = ReplaceTemporaryValues(activity.Price);
+        activity.Remarks                 = ReplaceTemporaryValues(activity.Remarks);
+        activity.ScheduleIndicator       = ReplaceTemporaryValues(activity.ScheduleIndicator);
+        activity.SpecificsYouWillProvide = ReplaceTemporaryValues(activity.SpecificsYouWillProvide);
+        activity.SessionName             = ReplaceTemporaryValues(activity.SessionName);
+        activity.PinnedLocation          = ReplaceTemporaryValues(activity.PinnedLocation);
+
+        return activity;
+    }
+
+    private IList<Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule> ReplaceTemporarySchedules(IList<Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule> activitySchedules)
+    {
+        bool isSingle = activitySchedules.Count == 1;
+        bool isValid = false;
+
+        foreach (var schedule in activitySchedules)
+        {
+            if ((string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle))
+                isValid = false;
+
+            if (!isValid)
+            {
+                schedule.Name       = ReplaceTemporaryValues(schedule.Name);
+                schedule.DateTime   = ReplaceTemporaryValues(schedule.DateTime);
+                schedule.UnitPrice  = ReplaceTemporaryValues(schedule.UnitPrice);
+                schedule.PriceUnit1 = ReplaceTemporaryValues(schedule.PriceUnit1);
+                schedule.PriceUnit2 = ReplaceTemporaryValues(schedule.PriceUnit2);
+            }
+
+        }
+
+        return activitySchedules;
+    }
+
+    private string ReplaceTemporaryValues(string value)
+    {
+        return value == NOTHING_PROVIDED ? null : value;
+    }
+
+    private string ReplaceEmptyValue(string value, string replacement)
+    {
+        return string.IsNullOrEmpty(value) ? replacement : value;
+    }
+
+    private IList<Models.Entities.ActivitySchedule> ValidateSchedules(IList<Models.Entities.ActivitySchedule> activitySchedules)
+    {
+        var newSchedules = GetActivitySchedules(activitySchedules.Where(a => a.Id == 0).ToList());
+        var listSchedule = new List<Models.Entities.ActivitySchedule>();
+        listSchedule.AddRange(activitySchedules.Where(a => a.Id != 0).ToList());
+
+        foreach (var item in newSchedules)        {
+            listSchedule.Add(item);
+        }
+
+        bool isSingle = listSchedule.Count == 1;
+        bool isValid = false;
+
+        foreach (var schedule in listSchedule)
+        {
+            if ((string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle))
+                isValid = false;
+
+            if (!isValid)
+            {
+                schedule.Name = ReplaceEmptyValue(schedule.Name, NOTHING_PROVIDED);
+                schedule.DateTime = ReplaceEmptyValue(schedule.DateTime, NOTHING_PROVIDED);
+                schedule.UnitPrice = ReplaceEmptyValue(schedule.UnitPrice, NOTHING_PROVIDED);
+                schedule.PriceUnit1 = ReplaceEmptyValue(schedule.PriceUnit1, NOTHING_PROVIDED);
+                schedule.PriceUnit2 = ReplaceEmptyValue(schedule.PriceUnit2, NOTHING_PROVIDED);
+            }
+
+        }
+
+        return listSchedule;
     }
 }

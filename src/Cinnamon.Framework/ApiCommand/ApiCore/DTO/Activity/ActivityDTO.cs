@@ -38,6 +38,7 @@ public class ActivityDTO
     public string PinnedLocation { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
+    public Enums.Enums.ActivityStatus Status{ get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}

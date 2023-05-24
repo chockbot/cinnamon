@@ -1,3 +1,4 @@
+using Cinnamon.Framework.Enums;
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 public class GetOwnedActivitiesResult 
@@ -38,6 +39,7 @@ public class GetOwnedActivitiesResult
         public string BarangayName { get; set; }
         public int OngoingStudents { get; set; }
         public int CompletedStudents { get; set; }
+        public Enums.ActivityStatus Status { get; set; }
         public IEnumerable<string> SearchTags {get; set;}
         public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
         public IEnumerable<ActivityImage> Images {get; set;}
