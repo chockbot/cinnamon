@@ -1149,7 +1149,9 @@ public class ActivityController : ControllerBase
                             LastName = activity.Owner.LastName,
                             IsVerified = activity.Owner.IsVerified,
                             IsOG = activity.Owner.IsOG,
-                            IsOfficial = activity.Owner.IsOfficial
+                            IsOfficial = activity.Owner.IsOfficial,
+                            Email = activity.Owner.Email,
+                            PhoneNumber = activity.Owner.PhoneNumber
                         } : null
                 }
             });

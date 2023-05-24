@@ -14,4 +14,7 @@ public class PurchaseOrder
     public decimal OverallTotal {get; set;}
     public int EnrolleeCount {get; set;}
     public string PaymentMethod {get; set;}
+    public string ExperienceBy {get; set;}
+    public string ExperienceByContactEmail {get; set;}
+    public string ExperienceByContactNo {get; set;}
 }
