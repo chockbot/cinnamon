@@ -484,7 +484,7 @@ public class DataStore : IDataStore
             applicationContext.BadgeList.Add(new Entities.BadgeList
             {
                 Id = 1,
-                Name = "Rare Cinnamon Maker",
+                Name = "Rare Activity Provider",
                 Description = "Completed \"10\" number of students.",
                 NumberOfCompletedStudent = 10,
                 NumberOfEnrolledStudent = 0,
@@ -494,7 +494,7 @@ public class DataStore : IDataStore
             applicationContext.BadgeList.Add(new Entities.BadgeList
             {
                 Id = 2,
-                Name = "Epic Cinnamon Maker",
+                Name = "Epic Activity Provider",
                 Description = "Completed \"25\" number of students and receive \"10\" reviews.",
                 NumberOfCompletedStudent = 25,
                 NumberOfEnrolledStudent = 0,
@@ -504,7 +504,7 @@ public class DataStore : IDataStore
             applicationContext.BadgeList.Add(new Entities.BadgeList
             {
                 Id = 3,
-                Name = "Legendary Cinnamon Maker",
+                Name = "Legendary Activity Provider",
                 Description = "Completed \"100\" number of students and receive \"25\" reviews or more.",
                 NumberOfCompletedStudent = 100,
                 NumberOfEnrolledStudent = 0,
