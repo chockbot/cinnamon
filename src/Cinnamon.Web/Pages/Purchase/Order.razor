@@ -99,6 +99,12 @@
                     </tbody>
                 </table>
             </div>
+            <Divider class="m-0" />
+            <div class="ps-4">
+                <p class="text-capitalize mb-0 mt-2">Experience By: @Model.PurchaseOrder.ExperienceBy</p>
+                <p class="mb-0 mt-2">Email: @Model.PurchaseOrder.ExperienceByContactEmail</p>
+                <p class="text-capitalize mb-0 mt-2 mb-3">Contact No: @(string.IsNullOrEmpty(Model.PurchaseOrder.ExperienceByContactNo) ? "N/A" : Model.PurchaseOrder.ExperienceByContactNo)</p>
+            </div>
         </div>
         <div class="text-center mt-5 mb-5">
             <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
@@ -148,7 +154,8 @@
 
         // get related activity and schedules
         var activityRes = await activityApiHandler.GetActivity(purchaseOrder.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
-            IncludeAtivitySchedules = true
+            IncludeAtivitySchedules = true,
+            IncludeCustomer = true
         });
         if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
@@ -156,8 +163,9 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+        var activity = activityRes.Result.Result;
 
-        var schedule = activityRes.Result.Result.ActivitySchedules.FirstOrDefault(s => s.Id == purchaseOrder.ScheduleId);
+        var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == purchaseOrder.ScheduleId);
         if(schedule == null)
         {
             // can't find schedule associated to activity
@@ -176,11 +184,14 @@
                 OverallTotal = purchaseOrder.OverallTotal,
                 ScheduleId = purchaseOrder.ScheduleId,
                 Total = purchaseOrder.Total,
-                ActivityName = activityRes.Result.Result.Title,
+                ActivityName = activity.Title,
                 EnrolleeCount = purchaseOrder.EnrolleeCount,
                 PaymentMethod = purchaseOrder.PaymentMethod,
                 ServiceFee = purchaseOrder.ServiceFee,
-                PaymentProviderFee = purchaseOrder.PaymentProviderFee
+                PaymentProviderFee = purchaseOrder.PaymentProviderFee,
+                ExperienceBy = $"{activity.Owner.FirstName} {activity.Owner.LastName}",
+                ExperienceByContactEmail = activity.Owner.Email,
+                ExperienceByContactNo = activity.Owner.PhoneNumber
             },
             SelectedSchedule = new Models.Entities.ActivitySchedule {
                 DateTime = schedule.DateTime,

@@ -16,4 +16,7 @@ public class PurchaseOrder
     public string PaymentMethod {get; set;}
     public decimal ServiceFee {get; set;}
     public decimal PaymentProviderFee {get; set;}
+    public string ExperienceBy {get; set;}
+    public string ExperienceByContactEmail {get; set;}
+    public string ExperienceByContactNo {get; set;}
 }
