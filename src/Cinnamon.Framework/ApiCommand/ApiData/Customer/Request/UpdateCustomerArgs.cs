@@ -11,6 +11,7 @@ public class UpdateCustomerArgs
     [EmailAddress]
     public string? Email { get; set; }
     public DateTime? Birthdate { get; set; }
+    public string? PhoneNumber { get; set; }
     public string? About { get; set; }
     public string? ProfilePath { get; set; }
     public bool? IsMaker { get; set; }
@@ -19,4 +20,6 @@ public class UpdateCustomerArgs
     public string? FrontIdImagePath { get; set; }
     public string? BackIdImagePath { get; set; }
     public decimal? TotalCredits {get; set;}
+    public bool? IsOG { get; set; }
+    public bool? IsOF { get; set; }
 }

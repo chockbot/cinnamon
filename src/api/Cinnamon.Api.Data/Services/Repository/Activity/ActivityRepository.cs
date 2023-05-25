@@ -709,7 +709,8 @@ public class ActivityRepository : IActivityRepository
                     IsOG = customer.IsOG,
                     IsOfficial = customer.IsOfficialPartner,
                     LastName = customer.LastName,
-                    ProfileImg = customer.ProfilePath
+                    ProfileImg = customer.ProfilePath,
+                    PhoneNumber = customer.PhoneNumber
                 };
             }
 

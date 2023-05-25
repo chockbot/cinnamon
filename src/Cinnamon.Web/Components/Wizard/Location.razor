@@ -1,0 +1,249 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>Fill in required field</li>
+    </ul>
+</div>
+
+<div class="location-section col-lg-12 col-md-12 col-sm-12 col-6">
+    <div class="row">
+        <div class="form-group">
+            <label for="title" class="form-control-label">Type of experience</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="experience-type" id="online" @onchange="@(()=>CheckboxChanged(2))">
+            <label class="form-check-label" for="online">
+                Online
+            </label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="radio" name="experience-type" id="in-person" checked @onchange="@(()=>CheckboxChanged(1))">
+            <label class="form-check-label" for="in-person">
+                In-person
+            </label>
+        </div>
+        <div class="form-group">
+            <label for="description" class="form-control-label label-top-margin">Where is your experience located?</label><small class="form-text text-muted sub-details pull-right">*(required if in-person)</small>
+            <div class="row">
+                <div class="col col-lg-12">
+                    <label for="title" class="form-control-label label-top-margin">House No.</label>
+                    <input type="text" id="house-number" @bind="Model.Activity.Address1" class="form-control @RequiredCheck(Model.Activity.Address1)" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
+                </div>
+                <div class="col col-lg-12">
+                    <label for="title" class="form-control-label label-top-margin">Region</label>
+                    <select id="region" class="form-control @RequiredCheck(Model.Activity.Region)" @onchange="GetCitiesByRegion" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
+                        <option value="">--Select Region/State--</option>
+                        @foreach (var region in regionList)
+                        {
+                            <option value="@region.Code">@region.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="title" class="form-control-label label-top-margin">Town/City</label>
+            <select id="city" class="form-control @RequiredCheck(Model.Activity.City)" @onchange="GetBarangaysByCity" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
+                <option value="">--Select City--</option>
+                @foreach (var city in cityList)
+                {
+                    <option value="@city.Code">@city.Name</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="title" class="form-control-label label-top-margin">Barangay</label>
+            <select id="barangay" class="form-control @RequiredCheck(Model.Activity.Barangay)" @onchange="SetBarangay" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
+                <option value="">--Select Barangay--</option>
+                @foreach (var barangay in barangayList)
+                {
+                    <option value="@barangay.Code">@barangay.Name</option>
+                }
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="title" class="form-control-label label-top-margin">Postal Code</label>
+            <input type="text" id="postal-code" @bind="Model.Activity.PostalCode" class="form-control" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)" />
+        </div>
+        <div class="form-group">
+            <label for="title" class="form-control-label label-top-margin">
+                Where you’ll be
+            </label>
+            @{
+                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + (!string.IsNullOrEmpty(Model.Activity.PinnedLocation) ? Model.Activity.PinnedLocation : "''");
+                <iframe id="mapframe" width="731" height="373" frameborder="0" style="border:0" src="@map" allowfullscreen class="iframe-search-modal"></iframe>
+            }
+
+            <div class="row">
+                <div class="col-lg-8">
+                    <input type="text" placeholder="Search Your Location" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="Model.Activity.PinnedLocation" aria-describedby="button-addon3" class="form-control pinned-location" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">
+
+                </div>
+                <div class="col-lg-4">
+                    <button id="button-addon3" type="button" class="btn btn-primary border-0" disabled="@(Model.Activity.ExperienceTypeId == 2 ? true : false)">Confirm Location</button>
+                </div>
+            </div>
+        </div>
+        <div class="dashed-border d-xl-none d-lg-none d-md-none d-sm-none d-block"></div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public ExperienceCreationModel Model { get; set; }
+
+    private string regionName = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model.Activity.ExperienceTypeId = 1;
+        regionList = Model.Regions;
+        cityList = new List<City>();
+        barangayList = new List<Barangay>();
+    }
+
+    public string SearchTag { get; set; }
+
+    public int SearchTagLength { get; set; } = 0;
+
+    IEnumerable<Region> regionList;
+    IEnumerable<City> cityList;
+    IEnumerable<Barangay> barangayList;
+
+    private async Task GetCitiesByRegion(ChangeEventArgs e)
+    {
+        var regionCode = e.Value.ToString();
+
+        var region = regionList.FirstOrDefault(c => c.Code == regionCode);
+
+        Model.Activity.Region = string.IsNullOrEmpty(regionCode) ? null : regionCode;
+        Model.Activity.City = string.Empty;
+        Model.Activity.CityName = string.Empty;
+        Model.Activity.Barangay = string.Empty;
+        Model.Activity.BarangayName = string.Empty;
+        cityList = new List<City>();
+        barangayList = new List<Barangay>();
+        Model.Activity.RegionName = region != null ? region.Name : string.Empty;
+
+        var result = await activityApiHandler.GetAllCitiesByRegionCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllCitiesArgs { RegionCode = regionCode, CountPerPage = 1000 });
+
+        if (result.Succeeded || result == null)
+        {
+            cityList = result.Result.Result.Select(r => new City
+                {
+                    Code = r.Code,
+                    Name = r.Name,
+                    RegionCode = r.RegionCode,
+                    IsCity = r.IsCity,
+                    IsMunicipality = r.IsMunicipality
+                });
+        }
+    }
+
+    private async Task GetBarangaysByCity(ChangeEventArgs e)
+    {
+        var cityCode = e.Value.ToString();
+        var city = cityList.FirstOrDefault(c => c.Code == cityCode);
+
+        Model.Activity.City = string.IsNullOrEmpty(cityCode) ? null : cityCode;
+        Model.Activity.CityName = city != null ? city.Name : string.Empty;
+
+        if (city != null)
+        {
+            var result = await activityApiHandler.GetAllBarangaysByCityCode(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllBarangaysArgs { CityCode = cityCode, IsCity = city.IsCity, IsMunicipality = city.IsMunicipality, CountPerPage = 1000 });
+
+            if (result.Succeeded || result == null)
+            {
+                barangayList = result.Result.Result.Select(r => new Barangay
+                    {
+                        Code = r.Code,
+                        Name = r.Name,
+                        CityCode = r.CityCode
+                    });
+            }
+        }
+    }
+
+    private async Task SetBarangay(ChangeEventArgs e)
+    {
+        var barangayCode = e.Value.ToString();
+        var barangay = barangayList.FirstOrDefault(c => c.Code == barangayCode);
+
+        Model.Activity.Barangay = string.IsNullOrEmpty(barangayCode) ? null : barangayCode;
+        Model.Activity.BarangayName = barangay != null ? barangay.Name : string.Empty;
+    }
+
+    private async Task ToggleLocationModal(bool isDisplayed)
+    {
+        if (isDisplayed)
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.creation.showLocationModal");
+        else
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.creation.hideLocationModal");
+    }
+
+    private void CheckboxChanged(int val)
+    {
+        Model.Activity.ExperienceTypeId = val;
+    }
+
+    private string RequiredCheck(String? value)
+    {
+        if (Model.HasError && String.IsNullOrEmpty(value))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (Model.HasError && value == null)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string ShowErrorMessage()
+    {
+        return Model.HasError ? "block" : "none";
+    }
+
+    public bool IsAllFieldsValidated()
+    {
+        if (Model.Activity.ExperienceTypeId == 1)
+        {
+            if (string.IsNullOrEmpty(Model.Activity.Address1) ||
+                string.IsNullOrEmpty(Model.Activity.Region) ||
+                string.IsNullOrEmpty(Model.Activity.Barangay) ||
+                string.IsNullOrEmpty(Model.Activity.City)) return false;
+        }
+
+        return true;
+    }
+
+    private string RequiredMin(string text, int min)
+    {
+        if (!Model.HasError && string.IsNullOrEmpty(text)) return "";
+        if (Model.HasError && string.IsNullOrEmpty(text)) return "invalid";
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        if (Model.HasError && length < min) return "invalid";
+        return string.Empty;
+    }
+
+    private bool IsWordsLengthMin(string text, int min)
+    {
+        if (string.IsNullOrEmpty(text)) return true;
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        return length < min;
+    }
+}

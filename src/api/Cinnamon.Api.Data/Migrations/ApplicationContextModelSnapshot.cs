@@ -608,6 +608,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<string>("ProfilePath")
                         .HasColumnType("text");
 

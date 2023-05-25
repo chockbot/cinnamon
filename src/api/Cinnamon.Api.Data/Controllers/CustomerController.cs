@@ -2,7 +2,6 @@
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cinnamon.Api.Data.Controllers;
@@ -133,7 +132,7 @@ public class CustomerController : ControllerBase
         {
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
-                await customerRepository.GetAllAsync(args.IsVerified, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike) :
+                await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike) :
                 await customerRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -143,7 +142,7 @@ public class CustomerController : ControllerBase
 
             // get all without pagination to get all rows
             var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
-                await customerRepository.GetAllAsync(args.IsVerified, null, null) :
+                await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, null, null) :
                 await customerRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
@@ -179,7 +178,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.Create(args.UserId, args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Handler, args.HasAcceptedTerms);
+                args.PhoneNumber ,args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Handler, args.HasAcceptedTerms);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -202,7 +201,7 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.CreateWithPassword(args.FirstName, args.LastName, args.Email, args.Birthdate,
-                args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password, args.Handler, args.HasAcceptedTerms);
+                args.PhoneNumber ,args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, args.Password, args.Handler, args.HasAcceptedTerms);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -225,8 +224,8 @@ public class CustomerController : ControllerBase
         try
         {
             var result = await customerRepository.Update(args.CustomerId, args.FirstName, args.LastName, args.Email,
-                args.Birthdate, args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, 
-                args.IsVerified, args.FrontIdImagePath, args.BackIdImagePath, args.TotalCredits);
+                args.Birthdate, args.PhoneNumber, args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, 
+                args.IsVerified, args.FrontIdImagePath, args.BackIdImagePath, args.TotalCredits, args.IsOG, args.IsOF);
 
             if (!result.Succeeded || result.Result == null)
             {

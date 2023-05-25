@@ -120,6 +120,7 @@ public class AccountController : ControllerBase
                 Birthdate = args.Birthdate,
                 Email = args.Email,
                 ExternalLogin = args.ExternalLogin,
+                PhoneNumber = args.PhoneNumber,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
                 Password = args.Password,
@@ -137,6 +138,7 @@ public class AccountController : ControllerBase
                 Result = new CustomerDTO {
                     Birthdate = objResult.Birthdate,
                     Email = objResult.Email,
+                    PhoneNumber = objResult.PhoneNumber,
                     ExternalLogin = objResult.ExternalLogin,
                     FirstName = objResult.FirstName,
                     LastName = objResult.LastName,
@@ -165,6 +167,7 @@ public class AccountController : ControllerBase
                 Birthdate = args.Birthdate,
                 Email = args.Email,
                 FirstName = args.FirstName,
+                PhoneNumber = args.PhoneNumber,
                 Guid = args.Guid,
                 LastName = args.LastName,
                 Password = args.Password,
@@ -183,6 +186,7 @@ public class AccountController : ControllerBase
                 Result = new CustomerDTO {
                     Birthdate = objResult.Birthdate,
                     Email = objResult.Email,
+                    PhoneNumber = objResult.PhoneNumber,
                     ExternalLogin = objResult.ExternalLogin,
                     FirstName = objResult.FirstName,
                     LastName = objResult.LastName,
@@ -757,6 +761,7 @@ public class AccountController : ControllerBase
                     IsOfficial = objResult.IsOfficial,
                     DateJoined = objResult.DateJoined,
                     Email = objResult.Email,
+                    PhoneNumber = objResult.PhoneNumber,
                 },
                 IsSuccess = true,
             });
@@ -1216,6 +1221,7 @@ public class AccountController : ControllerBase
         {
             var result = await getAllCustomersHandler.ExecuteAsync(new Services.AccountService.Interactors.GetAllCustomersArgs
             {
+                SearchValue = string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 CountPerPage = args.CountPerPage,
                 PageIndex = args.PageIndex
             });
@@ -1241,7 +1247,9 @@ public class AccountController : ControllerBase
                         Handler          = c.Handler,
                         FrontIdImagePath = c.FrontIdImagePath,
                         BackIdImagePath  = c.BackIdImagePath,
-                        IsVerified       = c.IsVerified
+                        IsVerified       = c.IsVerified,
+                        IsOG             = c.IsOG,
+                        IsOfficial       = c.IsOF
                     };
                 }),
                 IsSuccess = true,
@@ -1265,6 +1273,8 @@ public class AccountController : ControllerBase
             {
                 VerifiedBadge = args.VerifiedBadge,
                 CustomerId = args.CustomerId,
+                IsOG = args.IsOG,
+                IsOF = args.IsOF,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -1279,7 +1289,9 @@ public class AccountController : ControllerBase
                     FirstName = result.Result.FirstName,
                     LastName = result.Result.LastName,
                     IsVerified = result.Result.VerifiedBadge,
-                    Id = result.Result.Id
+                    Id = result.Result.Id,
+                    IsOG = result.Result.IsOG,
+                    IsOfficial = result.Result.IsOF
                 },
                 IsSuccess = true
             });

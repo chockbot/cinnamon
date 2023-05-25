@@ -37,23 +37,27 @@ let photoModals = [cropperCoverPhotoModal, cropperFirstSupportPhotoModal, croppe
 $(document).on('change', multiplePhotoUploadInput, function () {
     const inputElement = document.querySelector(multiplePhotoUploadInput);
     let totalFileSize = 0;
-    
-    for (let i = 0; i < 3; i++) {
-        if (inputElement.files[i]) {
-            totalFileSize += inputElement.files[i].size / 1024 / 1024;
-        }
-    }
-    if (totalFileSize > 10) {
+
+    if (inputElement.files.length > 3) {
         return;
     }
     else {
         for (let i = 0; i < 3; i++) {
             if (inputElement.files[i]) {
-                handlePhoto(this, coverPhotos[i], photoModals[i], [inputElement.files[i]]);
+                totalFileSize += inputElement.files[i].size / 1024 / 1024;
+            }
+        }
+        if (totalFileSize > 10) {
+            return;
+        }
+        else {
+            for (let i = 0; i < 3; i++) {
+                if (inputElement.files[i]) {
+                    handlePhoto(this, coverPhotos[i], photoModals[i], [inputElement.files[i]]);
+                }
             }
         }
     }
-
 });
 
 
@@ -111,29 +115,28 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
                 //imgPreview.src = event.target.result;
 
                 if (photoModal == cropperCoverPhotoModal) {
-                    cropperCoverPhoto = initializeCropper($(imgPreview)[0]);
+                    cropperCoverPhoto = initializeCropper($(imgPreview)[0], photoModal);
                     coverPhotoFileName = fileName;
                 }
                 else if (photoModal == cropperFirstSupportPhotoModal) {
-                    cropperFirstPhoto = initializeCropper($(imgPreview)[0]);
+                    cropperFirstPhoto = initializeCropper($(imgPreview)[0], photoModal);
                     firstPhotoFileName = fileName;
                 }
 
                 else if (photoModal == cropperSecondSupportPhotoModal) {
-                    cropperSecondPhoto = initializeCropper($(imgPreview)[0]);
+                    cropperSecondPhoto = initializeCropper($(imgPreview)[0], photoModal);
                     secondPhotoFileName = fileName;
                 }
                     
 
-                $(photoModal).modal({ backdrop: "static", keyboard: false });
-                $(photoModal).modal('show');
+                
             };
             reader.readAsDataURL(photo);
         }
     }
 }
 
-function initializeCropper(imgPreview) {
+function initializeCropper(imgPreview, photoModal) {
     return new Cropper(imgPreview, {
         viewMode: 1,
         aspectRatio: 4/5,
@@ -143,6 +146,8 @@ function initializeCropper(imgPreview) {
         minCropBoxHeight: 271,
         movable: true,
         ready: function () {
+            $(photoModal).modal({ backdrop: "static", keyboard: false });
+            $(photoModal).modal('show');
         },
     });
 }

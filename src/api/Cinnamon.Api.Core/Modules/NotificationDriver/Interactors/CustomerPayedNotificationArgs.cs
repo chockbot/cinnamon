@@ -8,6 +8,7 @@ public class CustomerPayedNotificationArgs : IInteractor
     public string CustomerName {get; set;}
     public string ExperienceName {get; set;}
     public string CoachName {get; set;}
+    public string CoachNumber { get; set; }
     public DateTime PurchaseDate {get; set;}
     public string PayerName {get; set;}
     public decimal Amount {get; set;}

@@ -1,0 +1,127 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>Fill in required field</li>
+    </ul>
+</div>
+
+<div class="creation-overview col-lg-12 col-md-12 col-sm-12 col-6">
+    <div class="row">
+        <div class="form-group">
+            <label for="title" class="form-control-label">Title</label>
+            <input type="text" id="create-activity-title" @bind="Model.Activity.Title" class="form-control @RequiredCheck(Model.Activity.Title)" />
+            <small class="form-text text-muted sub-details d-none d-sm-block d-md-block d-lg-block d-xl-block">Create a title for your class, activity or experience!</small>
+            <small class="form-text text-muted sub-details pull-right" id="label-title-editor"></small>
+        </div>
+        <div class="form-group">
+            <label for="description" class="form-control-label label-top-margin">Description</label>
+            <textarea id="create-activity-description" @bind="Model.Activity.Description" class="@RequiredMin(Model.Activity.Description,20)"></textarea>
+            <small class="form-text text-muted sub-details d-none d-sm-block d-md-block d-lg-block d-xl-block">Describe what you will offer!</small>
+            <small class="form-text text-muted sub-details pull-right" id="label-description-editor"></small>
+        </div>
+        <div class="col col-12">
+            <label for="category" class="form-control-label label-top-margin">Category</label>
+            <select id="create-activity-category" @bind="Model.Activity.ExperienceCategoryId" class="form-control @RequiredCheck(Model.Activity.ExperienceCategoryId)">
+                <option value="0">--Select Category--</option>
+                @foreach (var cat in Model.ExperienceCategories.Where(e => e.Category.ToLower() != "new"))
+                {
+                        <option value="@cat.Id">@cat.Category</option>
+                }
+            </select>
+        </div>
+        <div class="col col-12">
+            <label for="sub-category" class="form-control-label label-top-margin">Sub Category</label>
+            @if (Model.Activity.ExperienceCategoryId != 0)
+            {
+                <select id="create-activity-sub-category" @bind="Model.Activity.SubCategoryId" class="form-control @RequiredCheck(Model.Activity.SubCategoryId)">
+                    <option value="0">--Select Subcategory--</option>
+                    @foreach (var cat in Model.SubCategories.Where(s => s.CategoryId == Model.Activity.ExperienceCategoryId).OrderBy(s => s.Name))
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </select>
+            }
+            else
+            {
+                <select id="create-activity-sub-category" class="form-control" disabled>
+                    <option disabled selected>Select Sub-category</option>
+                </select>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Models.ExperienceCreationModel Model { get; set; }
+
+    private string ShowErrorMessage()
+    {
+        return Model.HasError ? "block" : "none";
+    }
+
+    private string RequiredCheck(String? value)
+    {
+        if (Model.HasError && String.IsNullOrEmpty(value))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (Model.HasError && (value == null || value.Value == 0))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredMin(string text, int min)
+    {
+        if (!Model.HasError && string.IsNullOrEmpty(text)) return "";
+        if (Model.HasError && string.IsNullOrEmpty(text)) return "invalid";
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        if (Model.HasError && length < min) return "invalid";
+        return string.Empty;
+    }
+
+    public bool IsAllFieldsValidated()
+    {
+        if (string.IsNullOrEmpty(Model.Activity.Title)) return false;
+        if (string.IsNullOrEmpty(Model.Activity.Description)) return false;
+        if (IsWordsLengthMin(Model.Activity.Description, 20)) return false;
+        if (Model.Activity.ExperienceCategoryId <= 0) return false;
+
+        return true;
+    }
+
+    private bool IsWordsLengthMin(string text, int min)
+    {
+        if (string.IsNullOrEmpty(text)) return true;
+
+        var length = text.Trim().Split(" ").Where(t => !string.IsNullOrEmpty(t)).Count();
+        return length < min;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
+        }
+    }
+}

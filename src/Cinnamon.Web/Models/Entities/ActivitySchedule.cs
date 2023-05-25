@@ -25,4 +25,6 @@ public class ActivitySchedule
             Price = value;
         }
     }
+    public bool IsNew { get; set; }
+
 }

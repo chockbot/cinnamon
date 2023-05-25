@@ -161,6 +161,7 @@ public class AccountController : Controller
                 FirstName = model.FirstName,
                 LastName = model.LastName,
                 Password = model.Password,
+                PhoneNumber = model.PhoneNumber,
                 ProfilePath = "/images/Profile/user.png",
                 IsMaker = false,
                 HasAcceptedTerms = model.HasAcceptedTerms
@@ -227,6 +228,7 @@ public class AccountController : Controller
                 Birthdate = model.Birthdate,
                 Email = model.Email,
                 FirstName = model.FirstName,
+                PhoneNumber = model.PhoneNumber,
                 Guid = model.Guid,
                 LastName = model.LastName,
                 Password = model.Password,

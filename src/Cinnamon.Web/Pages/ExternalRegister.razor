@@ -65,6 +65,17 @@
             <span class="font-11">For email confirmations and receipts.</span>
             <br />
             <Validation>
+                <Field>
+                    <FieldLabel>Mobile Number</FieldLabel>
+                    <TextEdit Placeholder="your phone number" @bind-Text="Model.Model.PhoneNumber">
+                        <Feedback>
+                            <ValidationError />
+                        </Feedback>
+                    </TextEdit>
+                </Field>
+            </Validation>
+            <br />
+            <Validation>
                 <Field Style="@flexItemStyle">
                     <FieldLabel>Password</FieldLabel>
                     <div class="password-content">
@@ -181,6 +192,7 @@
                                 email = Model.Model.Email,
                                 birthdate = Model.Model.Birthdate,
                                 password = Model.Model.Password,
+                                phonenumber = Model.Model.PhoneNumber,
                                 token = Token,
                                 guid = Uid,
                                 hasAcceptedTerms = IsAcceptPrivacyPolicy
