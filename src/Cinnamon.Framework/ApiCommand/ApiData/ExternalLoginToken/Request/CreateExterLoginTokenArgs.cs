@@ -8,9 +8,8 @@ public class CreateExterLoginTokenArgs
     public string Token {get; set;}
     [Required]
     public string Guid {get; set;}
-    [Required]
     [EmailAddress]
-    public string Email {get; set;}
+    public string? Email {get; set;}
     public string? FirstName {get; set;}
     public string? LastName {get; set;}
     [Required]

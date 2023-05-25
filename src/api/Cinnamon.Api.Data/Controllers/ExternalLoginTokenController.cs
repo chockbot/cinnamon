@@ -56,7 +56,7 @@ public class ExternalLoginTokenController : ControllerBase
     {
         try
         {
-            var result = await externalLoginTokenRepository.CreateTokenAsync(args.Token, args.Guid, args.Email, 
+            var result = await externalLoginTokenRepository.CreateTokenAsync(args.Token, args.Guid, args.Email ?? string.Empty, 
                 args.DateGenerated, args.FirstName ?? string.Empty, args.LastName ?? string.Empty, args.IsEmptyUsername);
             if(!result.Succeeded || result.Result == null)
             {

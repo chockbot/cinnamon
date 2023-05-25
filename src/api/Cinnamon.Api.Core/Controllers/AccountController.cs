@@ -903,7 +903,8 @@ public class AccountController : ControllerBase
             var result = await externalLoginHandler.ExecuteAsync(new Services.AccountService.Interactors.ExternalLoginArgs {
                 Email = args.Email,
                 FirstName = args.FirstName ?? string.Empty,
-                LastName = args.LastName ?? string.Empty
+                LastName = args.LastName ?? string.Empty,
+                IsEmptyUsername = args.IsEmptyUsername.HasValue ? args.IsEmptyUsername.Value : false
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -924,7 +925,8 @@ public class AccountController : ControllerBase
                     LastName = objResult.LastName,
                     IsNew = objResult.IsNew,
                     GeneratedNewToken = objResult.GeneratedNewToken,
-                    GeneratedNewUid = objResult.GeneratedNewGuid
+                    GeneratedNewUid = objResult.GeneratedNewGuid,
+                    IsEmptyUsername = objResult.IsEmptyUsername
                 },
                 IsSuccess = true,
             });
