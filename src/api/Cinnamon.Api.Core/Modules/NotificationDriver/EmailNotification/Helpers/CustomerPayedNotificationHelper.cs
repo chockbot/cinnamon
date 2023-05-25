@@ -8,7 +8,7 @@ public class CustomerPayedNotificationHelper
     public string GetTemplate(string customerName, string experienceName, string coachName, 
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedMembers> members, string referenceNumber, string paymentMethod,
-        string makerEmail, string coachNumber)
+        string makerEmail, string coachNumber, decimal providerFee)
     {
         string imgSrc = host.AppendPathSegment("images/cinnamon-logo.png");
         string enrolleesString = string.Empty;
@@ -97,6 +97,12 @@ public class CustomerPayedNotificationHelper
                         >
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Payment Provider Fee: </span>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{providerFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Service Fee: </span>
                         <span style='color: #343d4c; text-transform: uppercase'
                             >{serviceFee.ToString("#,##0.00")}</span
@@ -105,7 +111,7 @@ public class CustomerPayedNotificationHelper
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <b style='color: #343d4c'>Total Purchase: </b>
                         <span style='color: #343d4c; text-transform: uppercase'
-                            ><b>PHP {(amount + serviceFee).ToString("#,##0.00")}</b></span
+                            ><b>PHP {(amount + serviceFee + providerFee).ToString("#,##0.00")}</b></span
                         >
                         </p>
                     </div>

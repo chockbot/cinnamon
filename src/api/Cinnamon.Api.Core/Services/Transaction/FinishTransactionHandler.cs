@@ -139,7 +139,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
                 ReferenceNumber = referenceId,
                 MakerEmail = $"{activity.Owner?.Email}",
-                ServiceFee = purchaseOrder.ConvinienceFee
+                ServiceFee = deserializedPayload.Fees.ServiceFee,
+                PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee
             });
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
@@ -162,7 +163,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 PaymentMethod = deserializedPayload.PaymentChannel ?? deserializedPayload.PaymentMethod,
                 ReferenceNumber = referenceId,
                 PayerEmail = customer.Email,
-                ServiceFee = purchaseOrder.ConvinienceFee
+                ServiceFee = deserializedPayload.Fees.ServiceFee,
+                PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {
@@ -180,6 +182,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     class PayloadData 
     {
         public IEnumerable<Student> Students {get; set;}
+        public Fees Fees {get; set;}
         public string PaymentMethod {get; set;}
         public string PaymentChannel {get; set;}
     }
@@ -188,5 +191,10 @@ public class FinishTransactionHandler : IFinishTransactionHandler
     {
         public int Id {get; set;}
         public string Name {get; set;}
+    }
+
+    class Fees {
+        public decimal PaymentProviderFee {get; set;}
+        public decimal ServiceFee {get; set;}
     }
 }
