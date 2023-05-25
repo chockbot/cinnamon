@@ -70,8 +70,9 @@ public class SubmitExternalRegisterHandler : IExternalRegisterHandler
                 return AppResult<ExternalRegisterResult>.CreateFailed(
                     new ApplicationException("Invalid guid and token"), "Invalid guid and token");
             }
+
             // check if email is the same
-            if(chkToken.Result.Result.Email != args.Email.Trim())
+            if(!chkToken.Result.Result.IsEmptyUsername && chkToken.Result.Result.Email != args.Email.Trim())
             {
                 return AppResult<ExternalRegisterResult>.CreateFailed(
                     new ApplicationException("Invalid guid and token"), "Invalid guid and token");

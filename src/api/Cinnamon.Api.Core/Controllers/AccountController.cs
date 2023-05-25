@@ -961,7 +961,8 @@ public class AccountController : ControllerBase
                 Result = new ExternalLoginDetailDTO {
                     Email = result.Result.Email,
                     FirstName = result.Result.FirstName,
-                    LastName = result.Result.LastName
+                    LastName = result.Result.LastName,
+                    IsEmptyUsername = result.Result.IsEmptyUsername
                 },
                 IsSuccess = true,
             });

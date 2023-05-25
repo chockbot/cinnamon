@@ -32,5 +32,7 @@ public class ExternalRegisterModel
 
         [Required]
         public string Password { get; set; }
+
+        public bool IsEmptyUsername {get; set;}
     }
 }
