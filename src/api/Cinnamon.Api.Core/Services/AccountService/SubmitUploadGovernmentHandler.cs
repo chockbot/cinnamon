@@ -47,25 +47,36 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
             // limit to 5mb per image file
             const int maxFilSize = 5000000;
 
-            if(args.FrontImage.Length > maxFilSize || args.BackImage.Length > maxFilSize)
-            {
-                return AppResult<UploadGovernmentIDResult>.CreateFailed(new ApplicationException("Can only upload less than 5mb per file"), "Can only upload less than 5mb per file");
-            }
-
-            var isFronValid = IsValidType(args.FrontImage.ContentType);
-            var isBackValid = IsValidType(args.BackImage.ContentType);
-
-            if(!isFronValid.Succeeded || !isBackValid.Succeeded)
-            {
-                return AppResult<UploadGovernmentIDResult>.CreateFailed(
-                    new ApplicationException("Invalid image file formats. Can only accept png and jpg"), "Invalid image file formats. Can only accept png and jpg");
-            }
-
             // get profile details
             var governmentIds = await governmentIdsHandler.ExecuteAsync(new GetGovernmentIdsArgs {});
             if(!governmentIds.Succeeded || governmentIds.Result == null)
             {
                 return AppResult<UploadGovernmentIDResult>.CreateFailed(new ApplicationException(governmentIds.Message), governmentIds.Message);
+            }
+            var ids = governmentIds.Result;
+
+            if(string.IsNullOrEmpty(ids.FrontImageSrc) && args.FrontImage == null)
+            {
+                return AppResult<UploadGovernmentIDResult>.CreateFailed(new ApplicationException("Invalid Request. Front image required."),"Invalid Request. Front image required.");
+            }
+
+            if(string.IsNullOrEmpty(ids.BackImageSrc) && args.BackImage == null)
+            {
+                return AppResult<UploadGovernmentIDResult>.CreateFailed(new ApplicationException("Invalid Request. Back image required."),"Invalid Request. Back image required.");
+            }
+
+            if(args.FrontImage?.Length > maxFilSize || args.BackImage?.Length > maxFilSize)
+            {
+                return AppResult<UploadGovernmentIDResult>.CreateFailed(new ApplicationException("Can only upload less than 5mb per file"), "Can only upload less than 5mb per file");
+            }
+
+            var isFronValid = args.FrontImage != null ? IsValidType(args.FrontImage.ContentType) : AppResult<string>.CreateSucceeded(string.Empty, string.Empty);
+            var isBackValid = args.BackImage != null ? IsValidType(args.BackImage.ContentType) : AppResult<string>.CreateSucceeded(string.Empty, string.Empty);
+
+            if(!isFronValid.Succeeded || !isBackValid.Succeeded)
+            {
+                return AppResult<UploadGovernmentIDResult>.CreateFailed(
+                    new ApplicationException("Invalid image file formats. Can only accept png and jpg"), "Invalid image file formats. Can only accept png and jpg");
             }
 
             // get customer id saved in claims
@@ -78,13 +89,19 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
             int id = Convert.ToInt32(customerId);
 
             // create unique name
-            var frontUniqueName = $"{Guid.NewGuid().ToString()}-front-id.{isFronValid.Result}";
-            var backUniqueName = $"{Guid.NewGuid().ToString()}-back-id.{isBackValid.Result}";
+            var frontUniqueName = args.FrontImage != null ? $"{Guid.NewGuid().ToString()}-front-id.{isFronValid.Result}" : string.Empty;
+            var backUniqueName = args.BackImage != null ? $"{Guid.NewGuid().ToString()}-back-id.{isBackValid.Result}" : string.Empty;
 
-            var images = new List<AzureUploadArgs.Image> {
-                new AzureUploadArgs.Image {File = args.FrontImage, ImageName = frontUniqueName},
-                new AzureUploadArgs.Image {File = args.BackImage, ImageName = backUniqueName}
-            };
+            var images = new List<AzureUploadArgs.Image>();
+
+            if(args.FrontImage != null)
+            {
+                images.Add(new AzureUploadArgs.Image {File = args.FrontImage, ImageName = frontUniqueName});
+            }
+            if(args.BackImage != null)
+            {
+                images.Add(new AzureUploadArgs.Image {File = args.BackImage, ImageName = backUniqueName});
+            }
 
             var uploadResult = await uploadAzureBlob.ExecuteAsync(new AzureUploadArgs {
                 Container = "upload-container",
@@ -100,13 +117,13 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
             // if have existing front and back ids then delete in azure blob
             // to prevent multiple uplaod causing to blob azure storage full
             var imageNames = new List<string>();
-            if(!string.IsNullOrEmpty(governmentIds.Result.BackImageSrc))
+            if(!string.IsNullOrEmpty(ids.BackImageSrc) && args.BackImage != null)
             {
-                imageNames.Add(governmentIds.Result.BackImageSrc);
+                imageNames.Add(ids.BackImageSrc);
             }
-            if(!string.IsNullOrEmpty(governmentIds.Result.FrontImageSrc))
+            if(!string.IsNullOrEmpty(ids.FrontImageSrc) && args.FrontImage != null)
             {
-                imageNames.Add(governmentIds.Result.FrontImageSrc);
+                imageNames.Add(ids.FrontImageSrc);
             }
 
             var deleteAzureBlobRes = await deleteAzureBlob.ExecuteAsync(new AzureDeleteFilesArgs {
@@ -120,13 +137,16 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
                     new ApplicationException("An error occured when deleting file in azure blob"), "An error occured when deleting file in azure blob");
             }
 
-            // update image government file names
             var paths = uploadResult.Result.FilePaths.ToList();
+            var uploadedFrontImageSrc = args.FrontImage != null ? paths[0].FileSrc : ids.FrontImageSrc;
+            var uploadedBackImageSrc = args.BackImage != null ? (paths.Count > 1 ? paths[1].FileSrc : paths[0].FileSrc) : ids.BackImageSrc;
+
+            // update image government file names
             var updateIds = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs {
-                FrontIdImagePath = paths[0].FileSrc,
-                BackIdImagePath = paths[1].FileSrc,
+                FrontIdImagePath = uploadedFrontImageSrc,
+                BackIdImagePath = uploadedBackImageSrc,
                 CustomerId = id,
-                IsVerified = 1
+                // IsVerified = 1
             });;
 
             if(!updateIds.Succeeded || updateIds.Result == null)
@@ -143,11 +163,11 @@ public class SubmitUploadGovernmentHandler : IUploadGovernmentIdHandler
             return AppResult<UploadGovernmentIDResult>.CreateSucceeded(new UploadGovernmentIDResult {
                 BackImage = new UploadGovernmentIDResult.UploadedFile {
                     FileName = backUniqueName,
-                    UploadedPath = paths[1].FileSrc
+                    UploadedPath = uploadedBackImageSrc
                 },
                 FrontImage = new UploadGovernmentIDResult.UploadedFile {
                     FileName = frontUniqueName,
-                    UploadedPath = paths[0].FileSrc
+                    UploadedPath = uploadedBackImageSrc
                 }
             }, "Successfully upload government ids");
         }

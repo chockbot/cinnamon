@@ -53,19 +53,33 @@ input {
   background-color: var(--primary);
   border-color: var(--primary);
 }
-.verified-logo img {
-  margin-right: 5px;
-  cursor: pointer;
+::deep .verified-logo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    flex-grow: 1;
+    justify-content: center;
 }
-
+.booking-total-container .card .activity-owner .experience-by {
+    font-family: 'Nunito';
+    font-style: normal;
+    font-size: 16px;
+    color: #343D4C;
+}
+.booking-total-container .card .activity-owner .verified-logo img {
+    width: 40px;
+    height: 40px;
+    margin-right: 5px;
+    cursor: pointer
+}
 .modal-title {
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 700;
-  font-size: 20px;
-  line-height: 41px;
-  color: #343d4c;
-  text-align: center;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 41px;
+    color: #343d4c;
+    text-align: center;
 }
 
 .btn-close {
@@ -74,19 +88,45 @@ input {
   right: 30px;
 }
 
-@media (max-width: 767px) {
-  .booking-total-container > .card {
-    border: none !important;
-    padding: 0 !important;
-  }
+.service-fee-info {
+  background-color: #d9d9d9;
+  color: #fff;
+  height: 15px;
+  width: 15px;
+  display: inline-block;
+  text-align: center;
+  line-height: 1;
+  cursor: pointer;
+}
 
-  .booking-total-container > .shadow {
-    box-shadow: none !important;
-  }
+@media screen and (max-width: 767px) {
+    .booking-total-container > .card {
+        border: none !important;
+        padding: 0 !important;
+    }
 
-  .btn-primary {
-    font-size: 0.9rem;
-  }
+    .booking-total-container > .shadow {
+        box-shadow: none !important;
+    }
+
+    .btn-primary {
+        font-size: 0.9rem;
+    }
+    .booking-total-container .card .activity-owner .experience-by {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-size: 13px;
+        color: #343D4C;
+    }
+    .booking-total-container .card .activity-owner .owner {
+        font-family: 'Nunito';
+        font-size: 14px;
+        color: #343D4C;
+    }
+    .booking-total-container .card .activity-owner .verified-logo img {
+        width: 30px;
+        height: 30px;
+    }
 }
 
 @media screen and (min-width: 767px) {

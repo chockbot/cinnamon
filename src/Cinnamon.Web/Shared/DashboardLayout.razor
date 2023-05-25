@@ -74,7 +74,7 @@
                 }
             }
             <div class="contact">
-                <a href="https://docs.google.com/forms/d/e/1FAIpQLSenakLuzzv2bTCy65a2WTy48E3wWAqs6B2reQVcSz3fkHOxkg/viewform" target="_blank" data-bs-toggle="collapse" class="nav-link align-middle contact-box">
+                <a @onclick="NavigateToContact" data-bs-toggle="collapse" class="nav-link align-middle contact-box">
                     <img src="images/Dashboard Icon/phone.png" alt="hugenerd" width="30" class="rounded-circle">
                     <span class=" d-sm-inline mx-1">Contact Us</span>
                 </a>
@@ -171,12 +171,17 @@
 
     private void NavigateToReports()
     {
-        navigationManager.NavigateTo("/maker/dashboard/coming-soon");
+        navigationManager.NavigateTo("/maker/dashboard/reports");
     }
 
     private void NavigateToHelp()
     {
         navigationManager.NavigateTo("/maker/dashboard/help");
+    }
+
+    private void NavigateToContact()
+    {
+        navigationManager.NavigateTo("https://docs.google.com/forms/d/e/1FAIpQLSenakLuzzv2bTCy65a2WTy48E3wWAqs6B2reQVcSz3fkHOxkg/viewform");
     }
 
     private void onClickMenu()
@@ -208,5 +213,14 @@
     private void Logout()
     {
         navigationManager.NavigateTo("/api/account/logout", true);
+    }
+
+    private string GetStyle()
+    {
+        var result = string.Empty;
+        if(!IsShowSidebar){
+            result = "display: none;";
+        }
+        return result;
     }
 }

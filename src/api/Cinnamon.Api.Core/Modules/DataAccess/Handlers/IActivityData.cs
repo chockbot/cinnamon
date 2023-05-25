@@ -14,4 +14,5 @@ public interface IActivityData
     Task<AppResult<GetActivitiesBySubCategoriesResult>> GetActivitiesBySubCategories(int id, GetActivityArgs? args = null);
     Task<AppResult<GetAllActivitiesResult>> GetPopularActivities(GetAllActivities args);
     Task<AppResult<UpdatedActivityResult>> UpdateActivityGuid(UpdateActivity args);
+    Task<AppResult<DeleteActivityResult>> DeleteActivityById(DeleteActivityArgs args);
 }

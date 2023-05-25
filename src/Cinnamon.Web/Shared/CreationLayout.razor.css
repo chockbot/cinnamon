@@ -1,144 +1,142 @@
 body {
-    font-family: 'Varela Round', sans-serif;
+  font-family: "Varela Round", sans-serif;
 }
 
-
 .page {
-    position: relative;
-    display: flex;
-    flex-direction: column;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
 }
 
 main {
-    flex: 1;
+  flex: 1;
 }
 
-article{
-    background-color:white;
-    margin-top:3px;
+article {
+  background-color: white;
+  margin-top: 3px;
 }
 
 .sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+  background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
 }
-
 
 .top-row {
-    background-color: white;
-    border-bottom: 1px solid var(--lineColor);
-    aspect-ratio: 1600/74;
-    width: 100%;
-    align-items: center;
+  background-color: white;
+  border-bottom: 1px solid var(--lineColor);
+  aspect-ratio: 1600/74;
+  width: 100%;
+  align-items: center;
 }
 
-    .top-row ::deep a {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-    }
+.top-row ::deep a {
+  white-space: nowrap;
+  margin-left: 1.5rem;
+}
 
-    .top-row a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
+.top-row a:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .app-name {
-    color: var(--primary);
-    font-family: 'Backline';
-    font-size: 3rem;
-    text-decoration: none;
-    cursor:pointer;
+  color: var(--primary);
+  font-family: "Backline";
+  font-size: 3rem;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 @media screen and (max-width: 767px) {
-        /*    .top-row:not(.auth){
+  /*    .top-row:not(.auth){
         display: none;
     }*/
 
-        .menu {
-        display: none;
-    }
+  .menu {
+    display: none;
+  }
 
-    .menu img {
-        margin-right: 0;
-        width: 20%;
-    }
+  .menu img {
+    margin-right: 0;
+    width: 20%;
+  }
 
-    .app-name {
-        font-size: 2rem;
-    }
+  .app-name {
+    font-size: 2rem;
+  }
 
-    .px-4 {
-        padding-right: 0.5rem !important;
-        padding-left: 0.8rem !important;
-    }
+  .px-4 {
+    padding-right: 0.5rem !important;
+    padding-left: 0.8rem !important;
+  }
 
-    .top-row {
-        padding: 5px 0;
-    }
+  .top-row {
+    padding: 5px 0;
+  }
 
-    .top-row {
-        position: fixed;
-        top: 0;
-        z-index: 1;
-    }
+  .top-row {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+  }
 
-    .top-row.auth {
-        justify-content: space-between;
-    }
+  .top-row.auth {
+    justify-content: space-between;
+  }
 
-    .top-row a{
-        margin-left: 0;
-    }
+  .top-row a {
+    margin-left: 0;
+  }
 }
 
 @media screen and (min-width: 767px) {
-    .app-name {
-        font-size: 2.5rem;
-    }
+  .app-name {
+    font-size: 2.5rem;
+  }
 
-    .top-row {
-        position: fixed;
-        font-size: 3vw;
-    }
+  .top-row {
+    position: fixed;
+    font-size: 3vw;
+  }
 
-    .top-row {
-        top: 0;
-        z-index: 1;
-    }
+  .top-row {
+    top: 0;
+    z-index: 1;
+  }
 
-    .px-4 {
-        padding-right: 0 !important;
-        padding-left: 0 !important;
-    }
+  .px-4 {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
 
-    .top-row {
-        padding: 5px 0;
-    }
+  .top-row {
+    padding: 5px 0;
+  }
 
-    .top-row a {
-        margin-left: 0;
-    }
+  .top-row a {
+    margin-left: 0;
+  }
 
-    .top-row {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
+  .top-row {
+    padding-left: 2rem !important;
+    padding-right: 1.5rem !important;
+  }
 
-    .page {
-        flex-direction: row;
-    }
+  .page {
+    flex-direction: row;
+  }
 
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
+  .sidebar {
+    width: 250px;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+  }
 }
 
 @media (min-width: 1200px) {
-    .app-name {
-        font-size: 2.5rem;
-    }
-
+  .app-name {
+    font-size: 2.5rem;
+  }
 }

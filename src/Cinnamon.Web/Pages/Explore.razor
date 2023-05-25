@@ -62,18 +62,9 @@
             }
             else
             {
-                @if(AuthState != null && AuthState.Identity.IsAuthenticated)
-                {
-                    <div class="become">
-                        <a href="/Creation" class="btn border-0">@Resources.App.Become</a>
-                    </div>
-                }
-                else 
-                {
-                    <div class="become">
-                        <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
-                    </div>
-                }
+                <div class="become">
+                    <a href="/Onboarding" class="btn border-0">Become an Activity Provider</a>
+                </div>
             }
             @*Desktop*@
             <div class="dropdown">
@@ -165,7 +156,7 @@
                             else if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsMaker)
                             {
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                                    <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
                                 </li>
                             }
                             <li class="dropdown-item">
@@ -190,7 +181,7 @@
                                 </Button>
                             </li>
                             <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToOnboarding" Text="Become a Cinnamon Maker" />
+                                <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
                             </li>
                             <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
@@ -571,8 +562,11 @@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 
+<WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker"/>
+
 @code
 {
+    private WelcomeModal WelcomeModalRef {get; set;}
     private ModalLogin signinModal;
     public ExploreModel Model = new ExploreModel();
     public Profile CustomerModel = new Profile();
@@ -601,6 +595,10 @@
     private bool showOverlayPopularActivities = false;
     private bool hasNoMoreRecords = false;
     private int itemsPerPage = 20;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsNewRegistered {get; set;}
 
     private IAnimation selectedAnimation = Animations.FadeIn;
 
@@ -641,10 +639,15 @@
                 ExperienceCategories = categories,
                 ExperienceTypes = experiencesType
             };
+    }
+
+    private async Task LoadSigninUser()
+    {
         // get user login
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
         AuthState = user;
+
         if (user != null && user.Identity.IsAuthenticated)
         {
             var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
@@ -653,16 +656,38 @@
                 var args = result.Result.Result;
                 CustomerModel.Token = token;
                 CustomerModel.CustomerProfile = new CustomerProfile
-                    {
-                        Birthdate = args.Birthdate,
-                        Email = args.Email,
-                        FirstName = args.FirstName,
-                        LastName = args.LastName,
-                        Id = args.Id,
-                        IsMaker = args.IsMaker,
-                        IsVerified = args.IsVerified,
-                    };
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
             }
+        }
+    }
+
+    private async Task LoadWelcomeDialog()
+    {
+        if(IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
+        {
+            var customerId = CustomerModel.CustomerProfile.Id;
+            var result = await jsRuntime.InvokeAsync<Models.ResponseModel>("MyLib.Utils.cookieManager.getCookie",$"wel_dia_{customerId}");
+            if(string.IsNullOrEmpty(result.Message))
+            {
+                await WelcomeModalRef.Show();
+            }
+        }
+    }
+
+    private async Task OnSkipMaker()
+    {
+        if(IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
+        {
+            var customerId = CustomerModel.CustomerProfile.Id;
+            await jsRuntime.InvokeVoidAsync("MyLib.Utils.cookieManager.setCookie",$"wel_dia_{customerId}","1");
         }
     }
 
@@ -670,10 +695,13 @@
     {
         if (firstRender)
         {
+            await LoadSigninUser();
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await InitializeSwiper();
             await InitializeCarouselSwipe();
+
+            await LoadWelcomeDialog();
         }
         else
         {
@@ -753,7 +781,8 @@
                 SearchValue = searchValue,
                 IncludeCustomer = true,
                 IncludeStudents = true,
-                IsDeactivated = false
+                IsDeactivated = false,
+                Status = Framework.Enums.Enums.ActivityStatus.Submitted
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {

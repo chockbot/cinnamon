@@ -13,10 +13,20 @@
     </ul>
 </div>
 
-<div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-6">
+<div class="gallery-section col-lg-12 col-md-12 col-sm-12 col-6">
     <div class="row">
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin">Post Pictures</label>
+            <table class="field-heading-section">
+                <tr>
+                    <td>
+                        <label for="title" class="form-control-label label-top-margin right-margin">Post Pictures</label>
+                    </td>
+                    <td>
+                        <img src="images/experience-creation/info-icon.svg" id="info-gallery" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-6.png|images/experience-creation/creation-guide-step-7.png" />
+                    </td>
+                </tr>
+            </table>
+            
             <p class="form-text text-muted label-top-margin">Pictures must have:</p>
             <ul>
                 <li>Different angles and details, including photos of people at work.</li>
@@ -44,8 +54,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperCoverPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgCoverPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12 d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgCoverPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropCoverPhoto">Save</button>
                         </div>
@@ -61,8 +71,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperFirstSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgFirstSupportPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12 d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgFirstSupportPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropFirstPhoto">Save</button>
                         </div>
@@ -78,8 +88,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperSecondSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgSecondSupportPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12 d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgSecondSupportPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropSecondPhoto">Save</button>
                         </div>
@@ -91,8 +101,18 @@
                 @foreach (var imageItem in imageItems)
                 {
                     <div class="col-lg-6">
-                        <p class="photo-label">@imageItem.Caption</p>
-                        <div class="img-card">
+                        <table class="field-heading-section">
+                            <tr>
+                                <td>
+                                    <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">@imageItem.FieldNumber</label>
+                                </td>
+                                <td>
+                                    <label class="photo-label">@imageItem.Caption</label>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div id="img-card-@imageItem.FileControlId" class="img-card @RequiredCheck(imageItem.IsValid)">
                             <img id="@imageItem.Id" name="@imageItem.Id" class='experience-image img-banner' src="@imageItem.Src" data-name="@imageItem.DataName" data-changed="false" style="@imageItem.Size" />
                         </div>
                         <div class="img-control-section">
@@ -124,6 +144,8 @@
     [Parameter]
     public Models.ExperienceUpdateModel Model { get; set; }
 
+    ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
+
     private int maxEditorWordLimit = 80;
     private RichTextEdit EditCustomerBring;
     IJSObjectReference module;
@@ -136,9 +158,9 @@
 
     List<FileDetails> fileDetails = new List<FileDetails>()
         {
-            new FileDetails{ Id = 0, ImageId = "#imgSrc1", FileControlId = "#cover-photo", LabelForId = "cover-photo", Caption = "Cover Photo"},
-            new FileDetails{ Id = 1, ImageId = "#imgSrc2", FileControlId = "#first-support-photo", LabelForId = "first-support-photo", Caption = "Supporting Photo"},
-            new FileDetails{ Id = 2, ImageId = "#imgSrc3", FileControlId = "#second-support-photo", LabelForId = "second-support-photo", Caption = "Supporting Photo"}
+            new FileDetails{ Id = 0, ImageId = "#imgSrc1", FileControlId = "#cover-photo", LabelForId = "cover-photo", Caption = "Cover Photo", FieldNumber = "6"},
+            new FileDetails{ Id = 1, ImageId = "#imgSrc2", FileControlId = "#first-support-photo", LabelForId = "first-support-photo", Caption = "Supporting Photo", FieldNumber = "7"},
+            new FileDetails{ Id = 2, ImageId = "#imgSrc3", FileControlId = "#second-support-photo", LabelForId = "second-support-photo", Caption = "Supporting Photo", FieldNumber = "7"}
         };
 
     private IList<ImageItem> imageItems = new List<ImageItem>();
@@ -153,7 +175,7 @@
         {
             await Task.Delay(3000);
 
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Photos");
         }
     }
 
@@ -173,7 +195,8 @@
                 Caption = "Cover Photo",
                 FileControlId = "cover-photo",
                 Index = 0,
-                Size = imageSize
+                Size = imageSize,
+                FieldNumber = "6",
             });
         imageItems.Add(new ImageItem
             {
@@ -188,7 +211,8 @@
                 Caption = "Supporting Photo",
                 FileControlId = "first-support-photo",
                 Index = 1,
-                Size = imageSize
+                Size = imageSize,
+                FieldNumber = "7",
             });
         imageItems.Add(new ImageItem
             {
@@ -203,7 +227,8 @@
                 Caption = "Supporting Photo",
                 FileControlId = "second-support-photo",
                 Index = 2,
-                Size = imageSize
+                Size = imageSize,
+                FieldNumber = "7",
             });
     }
 
@@ -225,12 +250,12 @@
             totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
         }
 
-        if (IsImagesOverLimit)
-        {
-            imagesErrorMessage = "All images file size must only 10mb";
-        }
-        else
-        {
+        //if (IsImagesOverLimit)
+        //{
+        //    imagesErrorMessage = "All images file size must only 10mb";
+        //}
+        //else
+        //{
             var images = await jsRuntime
                        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", "#photo-upload", new string[] { "#imgSrc1", "#imgSrc2", "#imgSrc3" });
 
@@ -253,7 +278,7 @@
 
             validImages = imageItems.Count(i => i.IsValid);
             isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
-        }
+        //}
 
         StateHasChanged();
     }
@@ -270,12 +295,12 @@
             totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
         }
 
-        if (IsImagesOverLimit)
-        {
-            imagesErrorMessage = "All images file size must only 10mb";
-        }
-        else
-        {
+        //if (IsImagesOverLimit)
+        //{
+        //    imagesErrorMessage = "All images file size must only 10mb";
+        //}
+        //else
+        //{
             var images = await jsRuntime
             .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
 
@@ -290,7 +315,7 @@
 
             validImages = imageItems.Count(i => i.IsValid);
             isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
-        }
+        //}
 
         StateHasChanged();
     }
@@ -310,19 +335,20 @@
             {
                 imageItems[index] = new ImageItem
                     {
-                        Name = originalImage?.Name,
-                        Id = imageDetails?.ImageId,
-                        Group = "Image",
-                        Order = originalImage.Order,
-                        NewOrder = originalImage.Order,
-                        Src = originalImage.ImageSrc,
-                        DataName = "",
-                        IsValid = true,
-                        HasChanged = false,
-                        Caption = imageDetails?.Caption,
+                        Name          = originalImage?.Name,
+                        Id            = imageDetails?.ImageId,
+                        Group         = "Image",
+                        Order         = originalImage.Order,
+                        NewOrder      = originalImage.Order,
+                        Src           = originalImage.ImageSrc,
+                        DataName      = "",
+                        IsValid       = true,
+                        HasChanged    = false,
+                        Caption       = imageDetails?.Caption,
                         FileControlId = imageDetails?.LabelForId,
-                        Index = index,
-                        Size = imageSize
+                        Index         = index,
+                        Size          = imageSize,
+                        FieldNumber   = imageDetails.FieldNumber
                     };
             }
         }
@@ -401,6 +427,15 @@
         return !isReachLimit;
     }
 
+    private string RequiredCheck(bool isValid)
+    {
+        if (Model.ExperienceHasError && !isValid)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
     public bool IsImagesUpdated => isImageUpdated;
 
     public IEnumerable<ImageItem> ImageItems => imageItems;
@@ -412,6 +447,7 @@
         public string FileControlId { get; set; }
         public string LabelForId { get; set; }
         public string Caption { get; set; }
+        public string FieldNumber { get; set; }
     }
 
     private class ImageUrl
@@ -435,5 +471,6 @@
         public string FileControlId { get; set; }
         public int Index { get; set; }
         public string Size { get; set; }
+        public string FieldNumber { get; set; }
     }
 }

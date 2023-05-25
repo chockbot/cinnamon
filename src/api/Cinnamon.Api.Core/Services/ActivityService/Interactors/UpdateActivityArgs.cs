@@ -1,4 +1,6 @@
 using Cinnamon.Framework.Interactor;
+using Cinnamon.Framework.Enums;
+using System;
 
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
 
@@ -34,6 +36,7 @@ public class UpdateActivityArgs : IInteractor
     public string? PinnedLocation { get; set; }
     public bool? IsDeactivated { get; set; }
     public bool? IsAdmin { get; set; }
+    public Enums.ActivityStatus Status { get; set; }
     public IEnumerable<string>? SearchTags {get; set;}
     public IEnumerable<ActivitySchedule>? ActivitySchedules {get; set;}
     public IEnumerable<int> DeletedScheduleIds {get; set;}

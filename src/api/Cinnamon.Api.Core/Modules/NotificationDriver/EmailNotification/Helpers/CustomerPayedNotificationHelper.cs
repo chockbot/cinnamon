@@ -8,9 +8,9 @@ public class CustomerPayedNotificationHelper
     public string GetTemplate(string customerName, string experienceName, string coachName, 
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedMembers> members, string referenceNumber, string paymentMethod,
-        string makerEmail, string coachNumber)
+        string makerEmail, string coachNumber, decimal providerFee)
     {
-        string imgSrc = host.AppendPathSegment("images/cinnamon-logo.png");
+        string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string enrolleesString = string.Empty;
 
         foreach(var item in members)
@@ -66,65 +66,141 @@ public class CustomerPayedNotificationHelper
                         <p style='font-size: 20px; margin: 0; color: #343d4c'>
                         <b style='text-transform: capitalize'>{experienceName}</b>
                         </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Enrollees: </span>
-                        <span style='color: #343d4c; text-transform: capitalize'
-                            >{enrolleesString} ({members.Count()})</span
-                        >
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Paid To: </span>
-                        <span style='color: #343d4c; text-transform: capitalize'
-                            >{coachName}</span
-                        >
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Payment Reference Number: </span>
-                        <span style='color: #343d4c; text-transform: uppercase'
-                            >{referenceNumber}</span
-                        >
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Payment Method: </span>
-                        <span style='color: #343d4c; text-transform: uppercase'
-                            >{paymentMethod}</span
-                        >
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Amount: </span>
-                        <span style='color: #343d4c; text-transform: uppercase'
-                            >{amount.ToString("#,##0.00")}</span
-                        >
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Service Fee: </span>
-                        <span style='color: #343d4c; text-transform: uppercase'
-                            >{serviceFee.ToString("#,##0.00")}</span
-                        >
-                        </p>
-                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <b style='color: #343d4c'>Total Purchase: </b>
-                        <span style='color: #343d4c; text-transform: uppercase'
-                            ><b>PHP {(amount + serviceFee).ToString("#,##0.00")}</b></span
-                        >
-                        </p>
+                        <table style='width: 100%'>
+                        <tbody>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Enrollees: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: capitalize'
+                                    >{enrolleesString} ({members.Count()})</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Paid To: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: capitalize'
+                                    >{coachName}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Payment Reference Number: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    >{referenceNumber}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Payment Method: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    >{paymentMethod}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Amount: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    >{amount.ToString("#,##0.00")}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Payment Provider Fee: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    >{providerFee.ToString("#,##0.00")}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Service Fee: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    >{serviceFee.ToString("#,##0.00")}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <b style='color: #343d4c'>Total Purchase: </b>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    ><b
+                                    >PHP {(amount + serviceFee +
+                                    providerFee).ToString("#,##0.00")}</b
+                                    ></span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                        </tbody>
+                        </table>
                     </div>
                     <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
                     <div class='maker-details' style='padding: 2rem 2rem'>
                         <p style='font-size: 16px; margin: 0'>
                         <span style='color: #717171'>Experience By: </span>
                         <span style='color: #000'>
-                        <u style='text-transform: capitalize'>{coachName}</u></span>
+                            <u style='text-transform: capitalize'>{coachName}</u></span
+                        >
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Email: </span>
-                        <span style='color: #000'>
-                        <u>{makerEmail}</u></span>
+                        <span style='color: #000'> <u>{makerEmail}</u></span>
                         </p>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                         <span style='color: #717171'>Contact No: </span>
-                        <span style='color: #000'>
-                        <u>{coachNumber}</u></span>
+                        <span style='color: #000'> <u>{coachNumber}</u></span>
                         </p>
                     </div>
                 </div>

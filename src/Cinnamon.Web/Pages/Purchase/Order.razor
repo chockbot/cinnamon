@@ -40,17 +40,70 @@
                 </p>
             </div>
             <Divider class="m-0" />
-            <div class="ps-4">
+            <div class="px-4">
                 <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">Purchase Details</p>
-                <p class="text-capitalize mb-0 mt-2">No. of Enrolees: @Model.PurchaseOrder.EnrolleeCount</p>
-                <p class="text-capitalize mb-0 mt-2">Payment Method: 
-                    <span class="text-uppercase text-decoration-underline">@Model.PurchaseOrder.PaymentMethod</span>
-                </p>
-                <p class="text-capitalize mb-0 mt-2">Amount: PHP @Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
-                <p class="text-capitalize mb-0 mt-2">Service Fee: PHP @Model.PurchaseOrder.ConvinienceFee.ToString("#,##0.00")</p>
-                <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
-                    Total Purchase: PHP @((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee).ToString("#,##0.00"))
-                </p>
+                <table class="w-100">
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p class="text-capitalize mb-0 mt-2">No. of Enrolees:</p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.EnrolleeCount</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="text-capitalize mb-0 mt-2">Payment Method: </p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mb-0 mt-2">
+                                    <span class="text-uppercase text-decoration-underline">@Model.PurchaseOrder.PaymentMethod</span>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="text-capitalize mb-0 mt-2">Amount: </p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="text-capitalize mb-0 mt-2">Payment Provider Fee: </p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.PaymentProviderFee.ToString("#,##0.00")</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="text-capitalize mb-0 mt-2">Service Fee: </p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.ServiceFee.ToString("#,##0.00")</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">Total Purchase: </p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
+                                    PHP @((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee).ToString("#,##0.00"))
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <Divider class="m-0" />
+            <div class="ps-4">
+                <p class="text-capitalize mb-0 mt-2">Experience By: @Model.PurchaseOrder.ExperienceBy</p>
+                <p class="mb-0 mt-2">Email: @Model.PurchaseOrder.ExperienceByContactEmail</p>
+                <p class="text-capitalize mb-0 mt-2 mb-3">Contact No: @(string.IsNullOrEmpty(Model.PurchaseOrder.ExperienceByContactNo) ? "N/A" : Model.PurchaseOrder.ExperienceByContactNo)</p>
             </div>
         </div>
         <div class="text-center mt-5 mb-5">
@@ -101,7 +154,8 @@
 
         // get related activity and schedules
         var activityRes = await activityApiHandler.GetActivity(purchaseOrder.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs {
-            IncludeAtivitySchedules = true
+            IncludeAtivitySchedules = true,
+            IncludeCustomer = true
         });
         if((!activityRes.Succeeded || activityRes.Result == null) || (activityRes.Succeeded && !activityRes.Result.IsSuccess))
         {
@@ -109,8 +163,9 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+        var activity = activityRes.Result.Result;
 
-        var schedule = activityRes.Result.Result.ActivitySchedules.FirstOrDefault(s => s.Id == purchaseOrder.ScheduleId);
+        var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == purchaseOrder.ScheduleId);
         if(schedule == null)
         {
             // can't find schedule associated to activity
@@ -129,9 +184,14 @@
                 OverallTotal = purchaseOrder.OverallTotal,
                 ScheduleId = purchaseOrder.ScheduleId,
                 Total = purchaseOrder.Total,
-                ActivityName = activityRes.Result.Result.Title,
+                ActivityName = activity.Title,
                 EnrolleeCount = purchaseOrder.EnrolleeCount,
-                PaymentMethod = purchaseOrder.PaymentMethod
+                PaymentMethod = purchaseOrder.PaymentMethod,
+                ServiceFee = purchaseOrder.ServiceFee,
+                PaymentProviderFee = purchaseOrder.PaymentProviderFee,
+                ExperienceBy = $"{activity.Owner.FirstName} {activity.Owner.LastName}",
+                ExperienceByContactEmail = activity.Owner.Email,
+                ExperienceByContactNo = activity.Owner.PhoneNumber
             },
             SelectedSchedule = new Models.Entities.ActivitySchedule {
                 DateTime = schedule.DateTime,
