@@ -13,7 +13,7 @@
     </ul>
 </div>
 
-<div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-6">
+<div class="gallery-section col-lg-12 col-md-12 col-sm-12 col-6">
     <div class="row">
         <div class="form-group">
             <table class="field-heading-section">
@@ -110,7 +110,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <div class="img-card">
+                        <div id="img-card-@imageItem.FileControlId" class="img-card @RequiredCheck(imageItem.IsValid)">
                             <img id="@imageItem.Id" name="@imageItem.Id" class='experience-image img-banner' src="@imageItem.Src" data-name="" style="@imageItem.Size" />
                         </div>
                         <div class="img-control-section">
@@ -320,6 +320,15 @@
         isShowImageErrorMessage = isReachLimit;
 
         return !isReachLimit;
+    }
+
+    private string RequiredCheck(bool isValid)
+    {
+        if (Model.HasError && !isValid)
+        {
+            return "invalid";
+        }
+        return "";
     }
 
     private class FileDetails
