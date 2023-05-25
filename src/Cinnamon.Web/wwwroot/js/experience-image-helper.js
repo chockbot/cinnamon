@@ -69,9 +69,9 @@ $(document).on("change", multiplePhotoUploadInput, function () {
         totalFileSize += inputElement.files[i].size / 1024 / 1024;
       }
     }
-    if (totalFileSize > 10) {
-      return;
-    } else {
+    //if (totalFileSize > 10) {
+    //  return;
+    //} else {
       for (let i = 0; i < 3; i++) {
         if (inputElement.files[i]) {
           handlePhoto(this, coverPhotos[i], photoModals[i], [
@@ -79,7 +79,7 @@ $(document).on("change", multiplePhotoUploadInput, function () {
           ]);
         }
       }
-    }
+    /*}*/
   }
 });
 
@@ -173,9 +173,9 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
   if (files.length > 0) {
     var photo = files[0];
     var fileName = photo.name;
-    if (photo.size > 10000000) {
-      return;
-    } else {
+    //if (photo.size > 10000000) {
+    //  return;
+    //} else {
       var reader = new FileReader();
       reader.onload = function (event) {
         $(photoModal).find(imgPreview).attr("src", event.target.result);
@@ -193,7 +193,7 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
         }
       };
       reader.readAsDataURL(photo);
-    }
+    /*}*/
   }
 }
 
