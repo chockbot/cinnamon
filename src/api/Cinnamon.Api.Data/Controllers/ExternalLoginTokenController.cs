@@ -39,7 +39,8 @@ public class ExternalLoginTokenController : ControllerBase
                 Email = result.Result.Email,
                 FirstName = result.Result.FirstName,
                 Guid = result.Result.Guid,
-                LastName = result.Result.LastName
+                LastName = result.Result.LastName,
+                IsEmptyUsername = result.Result.IsEmptyUsername
             }});
         }
         catch (Exception ex)
@@ -56,7 +57,7 @@ public class ExternalLoginTokenController : ControllerBase
         try
         {
             var result = await externalLoginTokenRepository.CreateTokenAsync(args.Token, args.Guid, args.Email, 
-                args.DateGenerated, args.FirstName ?? string.Empty, args.LastName ?? string.Empty);
+                args.DateGenerated, args.FirstName ?? string.Empty, args.LastName ?? string.Empty, args.IsEmptyUsername);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new CreateExternalLoginTokenResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -71,7 +72,8 @@ public class ExternalLoginTokenController : ControllerBase
                 Email = result.Result.Email,
                 Guid = result.Result.Guid,
                 FirstName = result.Result.FirstName,
-                LastName = result.Result.LastName
+                LastName = result.Result.LastName,
+                IsEmptyUsername = result.Result.IsEmptyUsername
             }});
         }
         catch (Exception ex)
@@ -102,7 +104,8 @@ public class ExternalLoginTokenController : ControllerBase
                 Email = result.Result.Email,
                 FirstName = result.Result.FirstName,
                 Guid = result.Result.Guid,
-                LastName = result.Result.LastName
+                LastName = result.Result.LastName,
+                IsEmptyUsername = result.Result.IsEmptyUsername
             }});
         }
         catch (Exception ex)

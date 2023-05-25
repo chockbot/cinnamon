@@ -15,4 +15,5 @@ public class CreateExterLoginTokenArgs
     public string? LastName {get; set;}
     [Required]
     public DateTime DateGenerated {get; set;}
+    public bool IsEmptyUsername {get; set;} = false;
 }
