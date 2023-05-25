@@ -1,4 +1,5 @@
 import axios from "axios";
+import Compressor from "compressorjs";
 
 const uploadGovernmentIds = {};
 
@@ -23,7 +24,21 @@ uploadGovernmentIds._initForm = (dotnetObj) => {
 
     if (!back || !front) return;
 
-    const formData = new FormData(this);
+    const formData = new FormData();
+
+    try {
+      const image1 = await uploadGovernmentIds.compressImage(
+        $("#FrontId")[0].files[0]
+      );
+      const image2 = await uploadGovernmentIds.compressImage(
+        $("#BackId")[0].files[0]
+      );
+
+      formData.append("FrontId", image1, image1.name);
+      formData.append("BackId", image2, image2.name);
+    } catch (error) {
+      return;
+    }
 
     // show loading spinner
     dotnetObj.invokeMethodAsync("ShowLoading");
@@ -37,7 +52,8 @@ uploadGovernmentIds._initForm = (dotnetObj) => {
     dotnetObj.invokeMethodAsync("HideLoading");
 
     if (data.success) {
-        location.href = "/verificationprocess";
+      await dotnetObj.invokeMethodAsync("SubmitAccountVerified");
+      location.href = "/verificationprocess";
     } else {
       dotnetObj.invokeMethodAsync("ShowError", data.message);
     }
@@ -46,6 +62,22 @@ uploadGovernmentIds._initForm = (dotnetObj) => {
 
 uploadGovernmentIds.init = (dotnetObj) => {
   uploadGovernmentIds._initForm(dotnetObj);
+};
+
+uploadGovernmentIds.compressImage = (blob) => {
+  return new Promise((resolve, reject) => {
+    if (!blob) return reject();
+
+    new Compressor(blob, {
+      quality: 0.4,
+      success: (result) => {
+        return resolve(result);
+      },
+      error: (error) => {
+        return reject(error);
+      },
+    });
+  });
 };
 
 export default uploadGovernmentIds;

@@ -41,6 +41,19 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
     {
         try
         {
+            // check if use empty username 
+            if(string.IsNullOrEmpty(args.Email))
+            {
+                if(args.IsEmptyUsername)
+                {
+                    return await NewLogin(args);
+                }
+                else 
+                {
+                    return AppResult<ExternalLoginResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request");
+                }
+            }
+
             // check if already have registered account
             var accountRes = await customerData.GetCustomerByEmail(args.Email);
             if(!accountRes.Succeeded || accountRes.Result == null)
@@ -49,42 +62,9 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
             }
             if(accountRes.Succeeded && !accountRes.Result.IsSuccess)
             {
-                // generate token and guid
-                var guid = Guid.NewGuid();
-                var timestamp = DateTime.UtcNow;
-
-                // generate token
-                byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
-                byte[] guidKey = guid.ToByteArray();
-                var loginToken = Convert.ToBase64String(time.Concat(guidKey).ToArray());
-                var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(loginToken));
-
-                // generate guid token
-                var createToken = await externalLoginTokenData.CreateToken(new Framework.ApiCommand.ApiData.ExternalLoginToken.Request.CreateExterLoginTokenArgs {
-                    DateGenerated = DateTime.Now,
-                    Email = args.Email.Trim(),
-                    Token = loginToken,
-                    Guid = guid.ToString(),
-                    FirstName = args.FirstName,
-                    LastName = args.LastName
-                });
-
-                if(!createToken.Succeeded || createToken.Result == null)
-                {
-                    return AppResult<ExternalLoginResult>.CreateFailed(new ApplicationException(createToken.Message), createToken.Message);
-                }
-                if(createToken.Succeeded && !createToken.Result.IsSuccess)
-                {
-                    return AppResult<ExternalLoginResult>.CreateFailed(
-                        new ApplicationException(createToken.Result.ErrorInfo?.Message), "An error occured in SubmitExternalLoginHandler");
-                }
-
-                return AppResult<ExternalLoginResult>.CreateSucceeded(new ExternalLoginResult {
-                    IsNew = true,
-                    GeneratedNewToken = encodedToken,
-                    GeneratedNewGuid = createToken.Result.Result.Guid,
-                }, "Account not yet registered need to create the account using email");
+                return await NewLogin(args);    
             }
+
             var customerAccount = accountRes.Result.Result;
 
             var claims = new [] {
@@ -111,8 +91,57 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
                 FirstName = customerAccount.FirstName,
                 LastName = customerAccount.LastName,
                 GeneratedToken = generatedToken,
-                Id = customerAccount.Id
+                Id = customerAccount.Id,
+                IsEmptyUsername = args.IsEmptyUsername
             }, "Successfully checked login credentials");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ExternalLoginResult>.CreateFailed(ex, "An error occured in SubmitExternalLoginHandler");
+        }
+    }
+
+    private async Task<AppResult<ExternalLoginResult>> NewLogin(ExternalLoginArgs args)
+    {
+        try
+        {
+            // generate token and guid
+            var guid = Guid.NewGuid();
+            var timestamp = DateTime.UtcNow;
+
+            // generate token
+            byte[] time = BitConverter.GetBytes(timestamp.ToBinary());
+            byte[] guidKey = guid.ToByteArray();
+            var loginToken = Convert.ToBase64String(time.Concat(guidKey).ToArray());
+            var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(loginToken));
+
+            // generate guid token
+            var createToken = await externalLoginTokenData.CreateToken(new Framework.ApiCommand.ApiData.ExternalLoginToken.Request.CreateExterLoginTokenArgs {
+                DateGenerated = DateTime.Now,
+                Email = args.Email,
+                Token = loginToken,
+                Guid = guid.ToString(),
+                FirstName = args.FirstName,
+                LastName = args.LastName,
+                IsEmptyUsername = args.IsEmptyUsername
+            });
+
+            if(!createToken.Succeeded || createToken.Result == null)
+            {
+                return AppResult<ExternalLoginResult>.CreateFailed(new ApplicationException(createToken.Message), createToken.Message);
+            }
+            if(createToken.Succeeded && !createToken.Result.IsSuccess)
+            {
+                return AppResult<ExternalLoginResult>.CreateFailed(
+                    new ApplicationException(createToken.Result.ErrorInfo?.Message), "An error occured in SubmitExternalLoginHandler");
+            }
+
+            return AppResult<ExternalLoginResult>.CreateSucceeded(new ExternalLoginResult {
+                IsNew = true,
+                GeneratedNewToken = encodedToken,
+                GeneratedNewGuid = createToken.Result.Result.Guid,
+                IsEmptyUsername = args.IsEmptyUsername
+            }, "Account not yet registered need to create the account using email");
         }
         catch (Exception ex)
         {

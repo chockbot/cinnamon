@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Framework.Interactor;
+using Cinnamon.Framework.Enums;
 
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors;
 
@@ -20,4 +21,6 @@ public class GetAllActivitiesArgs:IInteractor
     public string SearchValue { get; set; }
     public bool? IncludeStudents { get; set; }
     public bool? IsDeactivated { get; set; }
+    public Enums.ActivityStatus? Status { get; set; }
+    public bool? IsAdmin { get; set; }
 }

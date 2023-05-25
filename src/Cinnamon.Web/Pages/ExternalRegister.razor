@@ -55,7 +55,7 @@
             <Validation>
                 <Field>
                     <FieldLabel>Email Address</FieldLabel>
-                    <TextEdit Disabled Role="TextRole.Email" Placeholder="your email" @bind-Text="Model.Model.Email">
+                    <TextEdit Disabled="!Model.Model.IsEmptyUsername" Role="TextRole.Email" Placeholder="your email" @bind-Text="Model.Model.Email">
                         <Feedback>
                             <ValidationError />
                         </Feedback>
@@ -165,6 +165,7 @@
             Model.Model.Email = result.Result.Result.Email;
             Model.Model.FirstName = result.Result.Result.FirstName;
             Model.Model.LastName = result.Result.Result.LastName;
+            Model.Model.IsEmptyUsername = result.Result.Result.IsEmptyUsername;
         }
         catch
         {
@@ -208,11 +209,18 @@
 
                 if(string.IsNullOrEmpty(Redirect))
                 {
-                    NavigationManager.NavigateTo("/explore", true);
+                    NavigationManager.NavigateTo("/explore?IsNewRegistered=true", true);
                 }
                 else 
                 {
-                    NavigationManager.NavigateTo(Redirect, true);
+                    if(Redirect.Contains("?"))
+                    {
+                        NavigationManager.NavigateTo($"{Redirect}&IsNewRegistered=true", true);
+                    }
+                    else
+                    {
+                        NavigationManager.NavigateTo($"{Redirect}?IsNewRegistered=true", true);
+                    }
                 }
             }
         }

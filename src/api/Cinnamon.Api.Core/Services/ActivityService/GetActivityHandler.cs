@@ -91,6 +91,7 @@ public class GetActivityHandler : IGetActivityHandler
                 IsSetSession = activity.IsSetSession,
                 SessionName = activity.SessionName,
                 PinnedLocation= activity.PinnedLocation,
+                Status = activity.Status,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,

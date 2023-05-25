@@ -7,7 +7,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces
     {
         Task<AppResult<ExternalLoginTokenDTO>> GetByTokenAsync(string token, string guid);
         Task<AppResult<ExternalLoginTokenDTO>> CreateTokenAsync(string token, string guid, string email, 
-            DateTime dateGenerated, string firstName, string lastName);
+            DateTime dateGenerated, string firstName, string lastName, bool isEmptyUsername);
         Task<AppResult<ExternalLoginTokenDTO>> UpdateTokenAsync(int id, bool isUsed);
     }
 }

@@ -10,7 +10,7 @@ public class MakerEnrolledNotificationHelper
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
         string payerEmail, decimal providerFee, decimal appliedCredits)
     {
-        string imgSrc = host.AppendPathSegment("images/cinnamon-logo.png");
+        string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string enrolleesString = string.Empty;
 
         foreach(var item in students)

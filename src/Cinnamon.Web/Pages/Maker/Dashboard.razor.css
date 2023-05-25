@@ -37,7 +37,6 @@
 /*CONTENT*/
 .experience-container {
   background: #ffffff;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
   margin-top: 0px;
   margin-left: 40px;
@@ -131,11 +130,18 @@ hr {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #f0f0f0;
+  padding: 8px;
+  border-radius: 5px;
+  font-family: "Nunito";
+  font-size: 14px;
+  color: #343d4c;
+  font-weight: 500;
 }
 
 .check-button {
   border-style: none;
-  background-color: #ffffff;
+  background-color: none;
   padding: 0px;
 }
 
@@ -149,21 +155,37 @@ hr {
 }
 
 .update-button {
-  width: 100px;
-  height: 40px;
-  font-family: "Nunito";
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  color: #ffffff;
-  background: var(--primary);
-  border-radius: 5px;
-  border-style: none;
-  text-align: center;
+    width: 100px;
+    height: 40px;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    color: #ffffff;
+    background: var(--primary);
+    border-radius: 5px;
+    border-style: none;
+    text-align: center;
+    display: inline-block;
+    margin-right: 10px;
 }
 
-.update-button:hover {
-  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+.delete-button {
+    width: 100px;
+    height: 40px;
+    font-family: "Nunito";
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    color: #ffffff;
+    background: #dc3545;
+    border-radius: 5px;
+    border-style: none;
+    text-align: center;
+}
+
+.update-button:hover, .delete-button:hover {
+    filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
 }
 
 a {
@@ -183,6 +205,11 @@ a {
 
 .announcement span {
   color: var(--primary);
+}
+.img-inprogress {
+    width: 25px;
+    height: 25px;
+    margin-right: 5px;
 }
 
 /* For Tablet View */
@@ -226,6 +253,12 @@ a {
   .announcement {
     margin-top: 1rem;
     padding: 10px;
+    flex-direction: column;
+    align-items: baseline;
+  }
+
+  .announcement button {
+    margin-top: 20px;
   }
 
   .announcement p {
@@ -349,12 +382,13 @@ a {
     margin-bottom: 0px;
   }
 
-  .active {
-    display: flex;
-    position: relative;
-    align-items: center;
-    text-decoration: none;
-  }
+    .active {
+        display: flex;
+        position: relative;
+        align-items: center;
+        text-decoration: none;
+        padding: 6px;
+    }
 
   .active img {
     width: 25px;
@@ -365,7 +399,7 @@ a {
     font-family: "Nunito";
     font-style: normal;
     font-weight: 500;
-    font-size: 16px;
+    font-size: 15px;
     color: #343d4c;
   }
 
@@ -382,6 +416,20 @@ a {
     border-style: none;
     text-align: center;
   }
+
+    .delete-button {
+        width: 90px;
+        height: 35px;
+        font-family: "Nunito";
+        font-style: normal;
+        font-weight: 500;
+        font-size: 14px;
+        color: #ffffff;
+        background: #dc3545;
+        border-radius: 5px;
+        border-style: none;
+        text-align: center;
+    }
 
   a {
     line-height: 35px;

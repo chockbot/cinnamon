@@ -39,4 +39,5 @@ public class UpdateActivity
     public string? SessionName { get; set; }
     public string? PinnedLocation { get; set; }
     public bool? IsDeactivated { get; set; }
+    public Enums.Enums.ActivityStatus? Status { get; set; }
 }

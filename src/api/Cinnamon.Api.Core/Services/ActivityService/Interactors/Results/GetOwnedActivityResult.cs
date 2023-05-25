@@ -1,3 +1,6 @@
+using Cinnamon.Framework.Enums;
+using System;
+
 namespace Cinnamon.Api.Core.Services.ActivityService.Interactors.Results;
 
 public class GetOwnedActivityResult 
@@ -34,6 +37,7 @@ public class GetOwnedActivityResult
     public bool IsSetSession { get; set; }
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
+    public Enums.ActivityStatus Status { get; set; }
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
     public IEnumerable<ActivityImage> Images {get; set;}

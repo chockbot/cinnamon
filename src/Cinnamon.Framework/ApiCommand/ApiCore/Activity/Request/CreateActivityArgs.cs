@@ -1,4 +1,6 @@
 using System.ComponentModel.DataAnnotations;
+using Cinnamon.Framework.Enums;
+using Microsoft.AspNetCore.Http;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 
@@ -23,15 +25,78 @@ public class CreateActivityArgs
     public string? Address1 {get; set;}
     public string? Address2 {get; set;}
     public string? District {get; set;}
-    public string? City {get; set;}
-    public string? Subdivision { get; set; }
-    public string? Region { get; set; }
-    public string? Barangay { get; set; }
-    public string? PostalCode { get; set; }
-    public string? PinnedLocation { get; set; }
-    public string? SpecificsYouWillProvide {get; set;}
-    public string? CustomerBringWithThem {get; set;}
-    public string? AdditionalRequirements {get; set;}
+    private string _city;
+
+    public string City
+    {
+        get { return _city ?? string.Empty; }
+        set { _city = value; }
+    }
+
+    private string _subdivision;
+
+    public string Subdivision
+    {
+        get { return _subdivision ?? string.Empty; }
+        set { _subdivision = value; }
+    }
+
+    private string _region;
+
+    public string Region
+    {
+        get { return _region ?? string.Empty; }
+        set { _region = value; }
+    }
+
+    private string _barangay;
+
+    public string Barangay
+    {
+        get { return _barangay ?? string.Empty; }
+        set { _barangay = value; }
+    }
+
+    private string _postalCode;
+
+    public string PostalCode
+    {
+        get { return _postalCode ?? string.Empty; }
+        set { _postalCode = value; }
+    }
+
+    private string _pinnedLocation;
+
+    public string PinnedLocation
+    {
+        get { return _pinnedLocation ?? string.Empty; }
+        set { _pinnedLocation = value; }
+    }
+
+    private string _specificsYouWillProvide;
+
+    public string SpecificsYouWillProvide
+    {
+        get { return _specificsYouWillProvide ?? string.Empty; }
+        set { _specificsYouWillProvide = value; }
+    }
+
+    private string _customerBringWithThem;
+
+    public string CustomerBringWithThem
+    {
+        get { return _customerBringWithThem ?? string.Empty; }
+        set { _customerBringWithThem = value; }
+    }
+
+    private string _additionalRequirements;
+
+    public string AdditionalRequirements
+    {
+        get { return _additionalRequirements ?? string.Empty; }
+        set { _additionalRequirements = value; }
+    }
+
     [Required]
     public string ActivityLevel {get; set;}
     [Required]
@@ -47,7 +112,8 @@ public class CreateActivityArgs
     public IEnumerable<string> SearchTags {get; set;}
     [Required]
     public IEnumerable<Schedule> ActivitySchedules {get; set;}
-    
+
+    public Enums.Enums.ActivityStatus Status { get; set; }
 
     public class Schedule 
     {
@@ -72,4 +138,8 @@ public class CreateActivityArgs
         [Required]
         public bool IsActiveSchedule { get; set; }
     }
+
+    public IFormFile? Image1 { get; set; }
+    public IFormFile? Image2 { get; set; }
+    public IFormFile? Image3 { get; set; }
 }

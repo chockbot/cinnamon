@@ -65,7 +65,8 @@ public class GetExternalLoginDetailHandler : IGetExternalLoginDetailHandler
             return AppResult<GetExternalLoginDetailResult>.CreateSucceeded(new GetExternalLoginDetailResult {
                 Email = chkToken.Result.Result.Email,
                 FirstName = chkToken.Result.Result.FirstName,
-                LastName = chkToken.Result.Result.LastName
+                LastName = chkToken.Result.Result.LastName,
+                IsEmptyUsername = chkToken.Result.Result.IsEmptyUsername
             }, "Success getting external login details");
         }
         catch (Exception ex)

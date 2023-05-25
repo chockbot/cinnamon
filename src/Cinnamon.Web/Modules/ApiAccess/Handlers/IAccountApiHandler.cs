@@ -39,4 +39,5 @@ public interface IAccountApiHandler
     Task<AppResult<GetAllCustomerResult>> GetAllCustomer(GetAllCustomersArgs args, string token);
     Task<AppResult<UpdateProfileDetailsResult>> UpdateCustomerProfile(UpdateProfileDetailsArgs args, string token);
     Task<AppResult<UpdateRequestRefundResult>> UpdateRefundRequest(UpdateRequestRefundArgs args, string token);
+    Task<AppResult<SubmitAccountVerifiedResult>> SubmitAccountVerified(string token);
 } 
