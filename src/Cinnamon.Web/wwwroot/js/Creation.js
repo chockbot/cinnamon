@@ -89,7 +89,7 @@ export function scrollToRequiredField(container) {
         var field = document.getElementById(fieldId);
         var top = field.offsetTop - 120;
         window.scrollTo(0, top);
-    }, 100);
+    }, 200);
 }
 
 function replaceEmptyvalue(value, replacement) {
