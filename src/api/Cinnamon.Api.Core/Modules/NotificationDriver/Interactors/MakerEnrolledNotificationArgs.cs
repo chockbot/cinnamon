@@ -16,6 +16,7 @@ public class MakerEnrolledNotificationArgs : IInteractor
     public string ReferenceNumber {get; set;}
     public string PayerEmail {get; set;}
     public decimal PaymentProviderFee {get; set;}
+    public decimal AppliedCredits {get; set;}
 
     public class IncludedStudents
     {
