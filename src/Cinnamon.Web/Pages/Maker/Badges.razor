@@ -340,7 +340,7 @@
                             SessionsAttended = a.SessionsAttended,
                             StudentId = a.StudentId
                         };
-                }).Where(s => s.IsPresent == true && s.SessionsAttended == s.NumberOfSessions)
+                }).Where(s => s.IsPresent == true && (s.SessionsAttended == s.NumberOfSessions || s.SessionsAttended >= s.NumberOfSessions))
                 .GroupBy(p => p.StudentId).Select(a => a.Last())
                 .OrderBy(a => a.Date).ToList();
 
