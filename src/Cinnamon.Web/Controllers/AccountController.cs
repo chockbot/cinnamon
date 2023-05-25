@@ -362,17 +362,13 @@ public class AccountController : Controller
                 redirect = Request.Query["redirect"];
             }
 
-            if(string.IsNullOrEmpty(email))
-            {
-                logger.LogInformation("--- email is empty ---");
-                await HttpContext.SignOutAsync();
-                return Redirect("/explore");
-            }
+            bool? isEmptyUsername = string.IsNullOrEmpty(email);
 
             var result = await accountApiHandler.ExternalLogin(new Framework.ApiCommand.ApiCore.Account.Request.ExternalLoginArgs {
                 Email = email,
                 FirstName = firstName,
-                LastName = lastName
+                LastName = lastName,
+                IsEmptyUsername = isEmptyUsername
             });
 
             if(!result.Succeeded || result.Result == null || !result.Result.IsSuccess)

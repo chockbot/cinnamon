@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230525084440_addIsEmptyUsernameExternalLogin")]
+    partial class addIsEmptyUsernameExternalLogin
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -98,9 +100,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<string>("SessionName")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<int?>("SubCategoryId")
                         .HasColumnType("integer");
@@ -601,26 +600,13 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<bool>("IsOG")
                         .HasColumnType("boolean");
 
-                    b.Property<DateTime>("IsOGDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<DateTime>("IsOfficialDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<bool>("IsOfficialPartner")
                         .HasColumnType("boolean");
 
                     b.Property<int>("IsVerifiedBadge")
                         .HasColumnType("integer");
 
-                    b.Property<DateTime>("IsVerifiedDate")
-                        .HasColumnType("timestamp with time zone");
-
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
