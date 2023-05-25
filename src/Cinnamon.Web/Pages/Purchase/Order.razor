@@ -88,11 +88,21 @@
                         </tr>
                         <tr>
                             <td>
+                                <p class="text-capitalize mb-0 mt-2">Applied Credits: </p>
+                            </td>
+                            <td class="text-end">
+                                <p class="text-capitalize mb-0 mt-2">
+                                    @(Model.PurchaseOrder.AppliedCreditAmount > 0 ? "- " + Model.PurchaseOrder.AppliedCreditAmount.ToString("#,##0.00") : "0.00")
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
                                 <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">Total Purchase: </p>
                             </td>
                             <td class="text-end">
                                 <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
-                                    PHP @((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee).ToString("#,##0.00"))
+                                    PHP @((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee - Model.PurchaseOrder.AppliedCreditAmount).ToString("#,##0.00"))
                                 </p>
                             </td>
                         </tr>
@@ -191,7 +201,8 @@
                 PaymentProviderFee = purchaseOrder.PaymentProviderFee,
                 ExperienceBy = $"{activity.Owner.FirstName} {activity.Owner.LastName}",
                 ExperienceByContactEmail = activity.Owner.Email,
-                ExperienceByContactNo = activity.Owner.PhoneNumber
+                ExperienceByContactNo = activity.Owner.PhoneNumber,
+                AppliedCreditAmount = purchaseOrder.AppliedCredit
             },
             SelectedSchedule = new Models.Entities.ActivitySchedule {
                 DateTime = schedule.DateTime,

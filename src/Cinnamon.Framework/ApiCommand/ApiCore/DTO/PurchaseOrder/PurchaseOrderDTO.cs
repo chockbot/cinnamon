@@ -15,4 +15,5 @@ public class PurchaseOrderDTO
     public string PaymentMethod {get; set;}
     public decimal ServiceFee {get; set;}
     public decimal PaymentProviderFee {get; set;}
+    public decimal AppliedCredit {get; set;}
 }

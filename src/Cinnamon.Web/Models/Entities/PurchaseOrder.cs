@@ -19,4 +19,5 @@ public class PurchaseOrder
     public string ExperienceBy {get; set;}
     public string ExperienceByContactEmail {get; set;}
     public string ExperienceByContactNo {get; set;}
+    public decimal AppliedCreditAmount {get; set;}
 }

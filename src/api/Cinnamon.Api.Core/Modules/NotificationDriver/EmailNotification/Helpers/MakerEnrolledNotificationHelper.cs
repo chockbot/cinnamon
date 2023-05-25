@@ -8,7 +8,7 @@ public class MakerEnrolledNotificationHelper
     public string GetTemplate(string makerName, string experienceName,
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
-        string payerEmail, decimal providerFee)
+        string payerEmail, decimal providerFee, decimal appliedCredits)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string enrolleesString = string.Empty;
@@ -105,7 +105,7 @@ public class MakerEnrolledNotificationHelper
                             <td style='text-align: right; width: 50%'>
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
-                                    >PHP {amount.ToString("#,##0.00")}</span
+                                    >{amount.ToString("#,##0.00")}</span
                                 >
                                 </p>
                             </td>
@@ -119,7 +119,7 @@ public class MakerEnrolledNotificationHelper
                             <td style='text-align: right; width: 50%'>
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
-                                    >PHP {providerFee.ToString("#,##0.00")}</span
+                                    >{providerFee.ToString("#,##0.00")}</span
                                 >
                                 </p>
                             </td>
@@ -133,7 +133,21 @@ public class MakerEnrolledNotificationHelper
                             <td style='text-align: right; width: 50%'>
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
-                                    >PHP {serviceFee.ToString("#,##0.00")}</span
+                                    >{serviceFee.ToString("#,##0.00")}</span
+                                >
+                                </p>
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style='width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #717171'>Applied Credits: </span>
+                                </p>
+                            </td>
+                            <td style='text-align: right; width: 50%'>
+                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                                <span style='color: #343d4c; text-transform: uppercase'
+                                    >{GetCreditString(appliedCredits)}</span
                                 >
                                 </p>
                             </td>
@@ -149,7 +163,7 @@ public class MakerEnrolledNotificationHelper
                                 <span style='color: #343d4c; text-transform: uppercase'
                                     ><b
                                     >PHP {(amount + serviceFee +
-                                    providerFee).ToString("#,##0.00")}</b
+                                    providerFee - appliedCredits).ToString("#,##0.00")}</b
                                     ></span
                                 >
                                 </p>
@@ -183,5 +197,10 @@ public class MakerEnrolledNotificationHelper
                     </div>
                 </div>
             ";
+    }
+
+    private string GetCreditString(decimal appliedCredits)
+    {
+        return appliedCredits > 0 ? "- " + appliedCredits.ToString("#,##0.00") : "0.00";
     }
 }
