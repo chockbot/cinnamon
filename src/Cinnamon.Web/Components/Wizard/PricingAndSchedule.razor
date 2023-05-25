@@ -12,6 +12,8 @@
     </ul>
 </div>
 
+@*<input type="hidden" @bind="Model.Activity.ActivitySchedules.ToList()" id="activity-schedule-list-create" />*@
+
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-6">
     <div class="accordion" id="activitySchedules">
         @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
@@ -97,7 +99,19 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="title" class="form-control-label label-top-margin">Schedule Name</label>
+                    <table class="field-heading-section">
+                        <tr>
+                            <td>
+                                <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">4</label>
+                            </td>
+                            <td>
+                                <label for="title" class="form-control-label label-top-margin right-margin">Schedule Name</label>
+                            </td>
+                            <td>
+                                <img src="images/experience-creation/info-icon.svg" id="info-schedule" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-4.png" />
+                            </td>
+                        </tr>
+                    </table>
                     <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
                     <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
                 </div>
@@ -126,9 +140,19 @@
     [Parameter]
     public Models.ExperienceCreationModel Model { get; set; }
 
+    ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
+
     protected override async Task OnInitializedAsync()
     {
         AddSchedule();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Price");
+        }
     }
 
     private string ShowErrorMessage()

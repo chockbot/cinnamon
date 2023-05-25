@@ -27,18 +27,9 @@
                 } 
                 else
                 {
-                    @if(Model.IsAuthenticated)
-                    {
-                        <div class="become">
-                            <a href="/Creation" class="btn border-0">@Resources.App.Become</a>
-                        </div>
-                    }
-                    else 
-                    {
-                        <div class="become">
-                            <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
-                        </div>
-                    }
+                    <div class="become">
+                        <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
+                    </div>
                 }
                 @*DESKTOP*@
                 <div class="dropdown">
@@ -102,7 +93,7 @@
                             else if (Model.Profile != null && !Model.Profile.IsMaker)
                             {
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                                    <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
                                 </li>
                             }
                             <li class="dropdown-item">
@@ -125,7 +116,7 @@
                                 </Button>
                             </li>
                             <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToOnboarding" Text="Become a Cinnamon Maker" />
+                                <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
                             </li>
                             <li class="dropdown-item">
                                 <NavButton OnClick="NavigateToHelp" Text="Help" />

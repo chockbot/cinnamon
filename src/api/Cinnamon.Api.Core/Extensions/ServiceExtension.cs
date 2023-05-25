@@ -88,6 +88,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IUpdateCustomerProfileHandler, Services.AccountService.UpdateCustomerProfileHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateRequestRefundHandler, Services.AccountService.UpdateRequestRefundHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateCreditBalanceHandler, Services.AccountService.UpdateCreditBalanceHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IAccountSubmitVerifiedHandler, Services.AccountService.AccountSubmitVerifiedHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -116,6 +117,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IGetRefundableExperienceHandler, Services.ActivityService.GetRefundableExperienceHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityScheduleHandler, Services.ActivityService.UpdateActivityScheduleHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityGuidHandler, Services.ActivityService.UpdateActivityGuidHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IDeleteActivityHandler, Services.ActivityService.DeleteActivityHandler>();
         
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
@@ -133,6 +135,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.IGetAllStudentAttendanceByIdHandler,Services.DashboardService.GetAllStudentAttendanceByIdHandler>();
         services.AddTransient<Services.DashboardService.Handlers.ICreateStudentAttendanceHandler, Services.DashboardService.CreateStudentAttendanceHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetAllBadgesHandler, Services.DashboardService.GetAllBadgeHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetAllStudentsAttendanceHandler, Services.DashboardService.GetAllStudentsAttendanceHandler>();
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();

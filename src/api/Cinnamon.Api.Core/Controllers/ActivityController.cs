@@ -38,6 +38,7 @@ public class ActivityController : ControllerBase
     private readonly IGetPopularActivitiesHandler getPopularActivitiesHandler;
     private readonly IGetRefundableExperienceHandler getRefundableExperienceHandler;
     private readonly IUpdateActivityScheduleHandler updateActivityScheduleHandler;
+    private readonly IDeleteActivityHandler deleteActivityHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -50,7 +51,7 @@ public class ActivityController : ControllerBase
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler, IGetMakerActivitiesHandler getMakerActivitiesHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
-        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler)
+        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, IDeleteActivityHandler deleteActivityHandler)
     {
         _logger = logger;
 
@@ -79,6 +80,7 @@ public class ActivityController : ControllerBase
         this.getPopularActivitiesHandler = getPopularActivitiesHandler;
         this.getRefundableExperienceHandler = getRefundableExperienceHandler;
         this.updateActivityScheduleHandler = updateActivityScheduleHandler;
+        this.deleteActivityHandler = deleteActivityHandler;
     }
 
     [Route("CreateActivity")]
@@ -131,6 +133,7 @@ public class ActivityController : ControllerBase
                 IsSetSession = args.IsSetSession,
                 SessionName = args.SessionName ?? string.Empty,
                 PinnedLocation = args.PinnedLocation ?? string.Empty,
+                Status = args.Status
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -230,6 +233,7 @@ public class ActivityController : ControllerBase
                 PinnedLocation = args.PinnedLocation,
                 IsDeactivated = args.IsDeactivated,
                 IsAdmin = args.IsAdmin,
+                Status = args.Status,
                 ActivitySchedules = args.ActivitySchedules != null ? 
                     args.ActivitySchedules.Select(s => {
                         return new Services.ActivityService.Interactors.UpdateActivityArgs.ActivitySchedule {
@@ -283,7 +287,8 @@ public class ActivityController : ControllerBase
                 Title = activity.Title,
                 Handler = activity.Handler,
                 IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
+                SessionName = activity.SessionName,
+                Status = activity.Status
             }});
         }
         catch (Exception ex)
@@ -627,6 +632,7 @@ public class ActivityController : ControllerBase
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        Status = a.Status,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
@@ -772,7 +778,9 @@ public class ActivityController : ControllerBase
                 SearchValue= string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 ExperienceCategoryId = args.ExperienceCategoryId.GetValueOrDefault(),
                 IncludeStudents = args.IncludeStudents ?? false,
-                IsDeactivated = args.IsDeactivated
+                IsDeactivated = args.IsDeactivated,
+                Status = args.Status,
+                IsAdmin = args.IsAdmin
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -951,6 +959,7 @@ public class ActivityController : ControllerBase
                     IsSetSession = activity.IsSetSession,
                     SessionName = activity.SessionName,
                     PinnedLocation= activity.PinnedLocation,
+                    Status = activity.Status,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
@@ -1149,7 +1158,9 @@ public class ActivityController : ControllerBase
                             LastName = activity.Owner.LastName,
                             IsVerified = activity.Owner.IsVerified,
                             IsOG = activity.Owner.IsOG,
-                            IsOfficial = activity.Owner.IsOfficial
+                            IsOfficial = activity.Owner.IsOfficial,
+                            Email = activity.Owner.Email,
+                            PhoneNumber = activity.Owner.PhoneNumber
                         } : null
                 }
             });
@@ -1733,6 +1744,36 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Remove")]
+    [HttpPost]
+    [ProducesResponseType(typeof(DeleteActivityResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> DeleteActivityById([FromBody] DeleteActivityArgs args)
+    {
+        try
+        {
+            var deleteResult = await deleteActivityHandler.ExecuteAsync(new Services.ActivityService.Interactors.DeleteActivityArgs
+            {
+                ActivityId = args.ActivityId
+            });
+
+            if (!deleteResult.Succeeded || deleteResult.Result == null)
+            {
+                return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = deleteResult.Message } });
+            }
+
+            var result = deleteResult.Result;
+
+            return new JsonResult(new DeleteActivityResult
+            {
+                IsSuccess = result.IsSuccess
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -4,8 +4,6 @@ namespace Cinnamon.Web.Models.Forms;
 
 public class UploadGovernmentIds 
 {
-    [Required]
-    public IFormFile FrontId {get; set;}
-    [Required]
-    public IFormFile BackId {get; set;}
+    public IFormFile? FrontId {get; set;}
+    public IFormFile? BackId {get; set;}
 }

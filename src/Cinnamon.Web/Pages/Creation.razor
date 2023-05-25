@@ -5,30 +5,50 @@
 @using Cinnamon.Web.Components.Pages.Creation;
 @using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.Enums;
+
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler;
 @attribute [Authorize]
 
-<PageTitle>Create Experience | CinnamonPH</PageTitle>
-<SeoMeta Title="Create Experience" Subject="Create Experience" Url="/creation" />
+<PageTitle>Create an Experience | CinnamonPH</PageTitle>
+<SeoMeta Title="Create an Experience" Subject="Create an Experience" Url="/creation" />
 
 @if (Model != null)
 {
     <div id="regForm" class="shadow-lg">
+
         <div class="progress-bar-section">
             <p class="progress-details">
-                IN PROGRESS: Step @currentIndex of 6
+                IN PROGRESS: Step @currentIndex of 6 <span id="loader" class=""></span>
             </p>
             <div class="progress">
                 <div class="progress-bar" role="progressbar" style="width: @(GetPerentCompletion)%;" aria-valuenow="66" aria-valuemin="0" aria-valuemax="100"></div>
             </div>
         </div>
 
-        <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
-            LET’S CREATE YOUR EXPERIENCE!
-        </p>
+        <div class="experience-heading-section row">
+            <div class="col-lg-9">
+                <p class="experience-heading d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    LET’S CREATE YOUR EXPERIENCE!
+                </p>
+            </div>
+            <div class="col-lg-3 save-later-button-section">
+                <div class="save-later-section d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                    <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Save for Later
+                        </ChildContent>
+                    </Button>
+                </div>
+            </div>
+        </div>
+
 
         <div class="experience-progress-wrapper d-xl-none d-lg-none d-md-none d-sm-none d-block">
             <div class="row">
@@ -36,7 +56,7 @@
                     @if (currentIndex > 1)
                     {
                         <button class="carousel-control-prev" type="button" @onclick="() => OnBackClick()">
-                            <div class="triangle-reverse"></div>
+                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
                         </button>
                     }
                 </div>
@@ -82,11 +102,22 @@
                     @if (currentIndex < 6)
                     {
                         <button class="carousel-control-next" type="button" @onclick="() => OnNextClick()">
-                            <div class="triangle"></div>
+                            <img src="images/experience-creation/play-mobile.png" alt="check-icon" />
                         </button>
                     }
                 </div>
             </div>
+        </div>
+
+        <div class="save-later-section-mobile d-xl-none d-lg-none d-md-none d-sm-none d-block">
+            <Button Border="Border.Is0" class="btn-primary" @onclick="() => SaveForLater()" Type="ButtonType.Button" id="nextBtn" Loading="isLoading" Disabled="isLoading">
+                <LoadingTemplate>
+                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i> Publishing
+                </LoadingTemplate>
+                <ChildContent>
+                    Save for Later
+                </ChildContent>
+            </Button>
         </div>
 
         <div class="row">
@@ -96,7 +127,7 @@
                         Overview
                         @if (currentIndex == 1)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                            <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -110,7 +141,7 @@
                         Location
                         @if (currentIndex == 2)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                            <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -124,7 +155,7 @@
                         Pricing & Schedule
                         @if (currentIndex == 3)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                            <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -138,7 +169,7 @@
                         Requirements
                         @if (currentIndex == 4)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                            <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -152,7 +183,7 @@
                         Gallery
                         @if (currentIndex == 5)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                            <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                         else
                         {
@@ -166,9 +197,56 @@
                         Publish
                         @if (currentIndex == 6)
                         {
-                            <span class="badge badge-light menu-badge pull-right"><i class="fa fa-play menu-badge-icon"></i></span>
+                            <img class="pull-right" src="images/experience-creation/play-desktop.png" alt="check-icon" />
                         }
                     </a>
+                </div>
+                <div class="dashed-divider col-lg-7"></div>
+                <div class="guide-section col-lg-7 text-center">
+                    <label class="guide-title @(currentIndex != 6 ? "d-block" : "d-none")">
+                        How it will look like
+                    </label>
+                    <div class='@(currentIndex == 1 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-1 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-1.png" alt="check-icon" />
+                            </div>
+                            <div class="creation-guide-step-2 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-2.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 2 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-3 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-3.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 3 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-4 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-4.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 4 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-5 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-5.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class='@(currentIndex == 5 ? "d-block" : "d-none")'>
+                        <div class="row">
+                            <div class="creation-guide-step-6 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-6.png" alt="check-icon" />
+                            </div>
+                            <div class="creation-guide-step-7 col-lg-12 d-none d-sm-block d-md-block d-lg-block d-xl-block">
+                                <img src="images/experience-creation/creation-guide-step-7.png" alt="check-icon" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-8">
@@ -235,6 +313,25 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade remove-modal" tabindex="-1" role="dialog" id="experienceCreationGuideModal" style="z-index:99999;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <label class="guide-title text-center">
+                        How it will look like
+                    </label>
+                    <button type="button" class="btn-close" id="btnCloseExperienceCreationGuideModal" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <div class="col-12-lg d-flex justify-content-center">
+                        <div class="row" id="image-section">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 }
 
 @if (ShowErrorMessage)
@@ -290,6 +387,9 @@
     public bool isPricingAndScheduleComponentValid { get; set; }
     public bool isOptionalDetailsComponentValid { get; set; }
     public bool isGalleryComponentValid { get; set; }
+
+    public const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -388,8 +488,81 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/Creation.js");
+            await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
         }
         await Task.Run(() => module.InvokeVoidAsync("confirmation"));
+    }
+
+    private async Task SaveForLater()
+    {
+        isLoading = true;
+
+        Model.Activity.ActivitySchedules = ValidateSchedules(Model.Activity.ActivitySchedules);
+
+        var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
+            {
+                Title = ReplaceEmptyValue(Model.Activity.Title, NOTHING_PROVIDED),
+                Description = ReplaceEmptyValue(Model.Activity.Description, NOTHING_PROVIDED),
+                ExperienceCategoryId = Model.Activity.ExperienceCategoryId != 0 ? Model.Activity.ExperienceCategoryId : 2,
+                SubCategoryId = Model.Activity.SubCategoryId != 0 ? Model.Activity.SubCategoryId : 51,
+                ActivityLevel = "Beginner",
+                AdditionalRequirements = ReplaceEmptyValue(Model.Activity.AdditionalRequirements, NOTHING_PROVIDED),
+                Address1 = ReplaceEmptyValue(Model.Activity.Address1, NOTHING_PROVIDED),
+                Address2 = ReplaceEmptyValue(Model.Activity.Address2, NOTHING_PROVIDED),
+                CanAdultsJoin = Model.Activity.CanAdultsJoin,
+                City = ReplaceEmptyValue(Model.Activity.City, ""),
+                Subdivision = ReplaceEmptyValue(Model.Activity.Subdivision, NOTHING_PROVIDED),
+                Region = ReplaceEmptyValue(Model.Activity.Region, ""),
+                Barangay = ReplaceEmptyValue(Model.Activity.Barangay, ""),
+                PostalCode = ReplaceEmptyValue(Model.Activity.PostalCode, NOTHING_PROVIDED),
+                CustomerBringWithThem = ReplaceEmptyValue(Model.Activity.CustomerBringWithThem, NOTHING_PROVIDED),
+                District = ReplaceEmptyValue(Model.Activity.District, NOTHING_PROVIDED),
+                ExperienceTypeId = Model.Activity.ExperienceTypeId != 0 ? Model.Activity.ExperienceTypeId : 1,
+                IsPublished = Model.Activity.IsPublished,
+                MinimumAge = Model.Activity.MinimumAge,
+                Price = ReplaceEmptyValue(Model.Activity.Price, NOTHING_PROVIDED),
+                Remarks = ReplaceEmptyValue(Model.Activity.Remarks, NOTHING_PROVIDED),
+                ScheduleIndicator = ReplaceEmptyValue(Model.Activity.ScheduleIndicator, NOTHING_PROVIDED),
+                SearchTags = Model.Activity.SearchTags,
+                SkillLevel = "No experience",
+                SpecificsYouWillProvide = ReplaceEmptyValue(Model.Activity.SpecificsYouWillProvide, NOTHING_PROVIDED),
+                IsSetSession = Model.Activity.IsSetSession,
+                SessionName = ReplaceEmptyValue(Model.Activity.SessionName, NOTHING_PROVIDED),
+                PinnedLocation = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
+                Status = Enums.ActivityStatus.InProgress,
+                ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
+               {
+                   return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
+                   {
+                       DateTime = s.DateTime,
+                       Name = s.Name,
+                       PerUnit1 = s.PerUnit1,
+                       PerUnit2 = s.PerUnit2,
+                       Price = s.Price,
+                       PriceUnit1 = s.PriceUnit1,
+                       PriceUnit2 = s.PriceUnit2,
+                       UnitPrice = s.UnitPrice,
+                       Order = s.Order,
+                       IsActiveSchedule = s.IsActiveSchedule
+                   };
+               }),
+            }, Model.Token);
+
+        if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
+        {
+            errorMessage = submit.Result?.ErrorInfo?.Message ?? submit.Message;
+            ShowErrorMessage = true;
+            StateHasChanged();
+            return;
+        }
+
+        // upload image without checking if there is an error so that can't re update another activity
+        bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.initCreationInProgress", obj, submit.Result.Result.ActivityId);
+
+        navigationManager.NavigateTo("/maker/dashboard");
+        isLoading = false;
+
+        return;
     }
     private async Task OnNextClick(int index = 0)
     {
@@ -459,7 +632,8 @@
                     Title = Model.Activity.Title,
                     IsSetSession = Model.Activity.IsSetSession,
                     SessionName = Model.Activity.SessionName,
-                    PinnedLocation = Model.Activity.PinnedLocation
+                    PinnedLocation = Model.Activity.PinnedLocation,
+                    Status = Enums.ActivityStatus.Submitted
                 }, Model.Token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -471,7 +645,7 @@
             }
 
             // upload image without checking if there is an error so that can't re update another activity
-            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.init", obj, submit.Result.Result.ActivityId);
+            bool isSuccess = await jsRuntime.InvokeAsync<bool>("MyLib.Pages.activity.creation.initCreation", obj, submit.Result.Result.ActivityId);
             isLoading = false;
 
             navigationManager.NavigateTo("/maker/dashboard");
@@ -487,7 +661,7 @@
                 case 1:
                     if (Model.HasError = !creationOverviewComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".creation-overview");
                         return;
                     };
 
@@ -497,7 +671,7 @@
                 case 2:
                     if (Model.HasError = !locationComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".location-section");
                         return;
                     };
 
@@ -507,7 +681,7 @@
                 case 3:
                     if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
                         return;
                     };
 
@@ -521,7 +695,7 @@
                 case 5:
                     if (Model.HasError = !galleryComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".gallery-section");
                         return;
                     };
 
@@ -543,7 +717,7 @@
             {
                 if (Model.HasError = !creationOverviewComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".creation-overview");
                     return;
                 }
                 else
@@ -556,7 +730,7 @@
             {
                 if (Model.HasError = !locationComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".location-section");
                     return;
                 }
                 else
@@ -568,7 +742,7 @@
             {
                 if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
                     return;
                 }
                 else
@@ -585,7 +759,7 @@
             {
                 if (Model.HasError = !galleryComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".gallery-section");
                     return;
                 }
                 else
@@ -648,5 +822,41 @@
         }
 
         return result;
+    }
+
+    private string ReplaceEmptyValue(string value, string replacement)
+    {
+        return string.IsNullOrEmpty(value) ? replacement : value;
+    }
+
+    private IList<Models.Entities.ActivitySchedule> ValidateSchedules(IList<Models.Entities.ActivitySchedule> activitySchedules)
+    {
+        bool isSingle = activitySchedules.Count == 1;
+        bool isValid = false;
+
+        foreach (var schedule in activitySchedules)
+        {
+            if ((string.IsNullOrEmpty(schedule.Name) ||
+                string.IsNullOrEmpty(schedule.DateTime) ||
+                schedule.Price <= 0 ||
+                string.IsNullOrEmpty(schedule.UnitPrice) ||
+                schedule.PerUnit1 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                schedule.PerUnit2 <= 0 ||
+                string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle))
+                isValid = false;
+
+            if (!isValid)
+            {
+                schedule.Name = ReplaceEmptyValue(schedule.Name, NOTHING_PROVIDED);
+                schedule.DateTime = ReplaceEmptyValue(schedule.DateTime, NOTHING_PROVIDED);
+                schedule.UnitPrice = ReplaceEmptyValue(schedule.UnitPrice, NOTHING_PROVIDED);
+                schedule.PriceUnit1 = ReplaceEmptyValue(schedule.PriceUnit1, NOTHING_PROVIDED);
+                schedule.PriceUnit2 = ReplaceEmptyValue(schedule.PriceUnit2, NOTHING_PROVIDED);
+            }
+
+        }
+
+        return activitySchedules;
     }
 }
