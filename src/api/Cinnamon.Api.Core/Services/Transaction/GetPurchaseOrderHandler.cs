@@ -88,7 +88,8 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
                 EnrolleeCount = enroleeCount,
                 PaymentMethod = paymentMethod,
                 ServiceFee = deserializedPayload != null ? deserializedPayload.Fees.ServiceFee : 0,
-                PaymentProviderFee = deserializedPayload != null ? deserializedPayload.Fees.PaymentProviderFee : 0
+                PaymentProviderFee = deserializedPayload != null ? deserializedPayload.Fees.PaymentProviderFee : 0,
+                AppliedCredits = purchaseOrder.CreditAmount
             }, "Successfully get purhase order details");
         }
         catch (Exception ex)

@@ -107,7 +107,8 @@ public class TransactionController : ControllerBase
                     EnrolleeCount = purchseOrder.EnrolleeCount,
                     PaymentMethod = purchseOrder.PaymentMethod,
                     ServiceFee = purchseOrder.ServiceFee,
-                    PaymentProviderFee = purchseOrder.PaymentProviderFee
+                    PaymentProviderFee = purchseOrder.PaymentProviderFee,
+                    AppliedCredit = purchseOrder.AppliedCredits
                 }
             });
         }
