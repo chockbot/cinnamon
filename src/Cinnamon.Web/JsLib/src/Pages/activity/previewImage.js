@@ -8,10 +8,10 @@ export default function previewImage(inputSelector, imgIds) {
   }
   //imgIds.forEach((s) => loadEmptySrc(s));
 
-  //if (totalFileSize > 10) {
-  //  inputElem.value = "";
-  //  return;
-  //}
+  if (totalFileSize > 25) {
+    inputElem.value = "";
+    return;
+  }
 
   for (let i = 0; i < 3; i++) {
     if (inputElem.files[i] && imgIds[i]) {

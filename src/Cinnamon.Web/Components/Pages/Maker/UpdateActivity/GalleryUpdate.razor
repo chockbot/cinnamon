@@ -250,12 +250,12 @@
             totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
         }
 
-        //if (IsImagesOverLimit)
-        //{
-        //    imagesErrorMessage = "All images file size must only 10mb";
-        //}
-        //else
-        //{
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 25mb";
+        }
+        else
+        {
             var images = await jsRuntime
                        .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", "#photo-upload", new string[] { "#imgSrc1", "#imgSrc2", "#imgSrc3" });
 
@@ -278,7 +278,7 @@
 
             validImages = imageItems.Count(i => i.IsValid);
             isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
-        //}
+        }
 
         StateHasChanged();
     }
@@ -295,12 +295,12 @@
             totalImageSizeMB += (decimal)file.Size / 1024 / 1024;
         }
 
-        //if (IsImagesOverLimit)
-        //{
-        //    imagesErrorMessage = "All images file size must only 10mb";
-        //}
-        //else
-        //{
+        if (IsImagesOverLimit)
+        {
+            imagesErrorMessage = "All images file size must only 25mb";
+        }
+        else
+        {
             var images = await jsRuntime
             .InvokeAsync<IList<ImageUrl>>("MyLib.Pages.activity.previewImage", imageDetails.FileControlId, new string[] { imageDetails.ImageId });
 
@@ -315,7 +315,7 @@
 
             validImages = imageItems.Count(i => i.IsValid);
             isImageUpdated = imageItems.Count(i => i.HasChanged) > 0;
-        //}
+        }
 
         StateHasChanged();
     }
@@ -404,7 +404,7 @@
     {
         get
         {
-            return totalImageSizeMB > 10;
+            return totalImageSizeMB > 25;
         }
     }
 
@@ -420,7 +420,7 @@
     {
         var totalSize = totalImageSizeMB;
 
-        bool isReachLimit = totalSize > 10;
+        bool isReachLimit = totalSize > 25;
 
         isShowImageErrorMessage = isReachLimit;
 
