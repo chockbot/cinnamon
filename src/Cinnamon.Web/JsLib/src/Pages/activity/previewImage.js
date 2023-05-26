@@ -8,7 +8,7 @@ export default function previewImage(inputSelector, imgIds) {
   }
   //imgIds.forEach((s) => loadEmptySrc(s));
 
-  if (totalFileSize > 10) {
+  if (totalFileSize > 25) {
     inputElem.value = "";
     return;
   }

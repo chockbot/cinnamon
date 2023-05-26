@@ -15,4 +15,5 @@ public class ExternalLoginResult
     public bool IsNew {get; set;}
     public string GeneratedNewToken {get; set;}
     public string GeneratedNewGuid {get; set;}
+    public bool IsEmptyUsername {get; set;}
 }

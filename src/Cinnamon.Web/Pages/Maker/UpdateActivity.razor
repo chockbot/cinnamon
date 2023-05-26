@@ -658,10 +658,65 @@
 
     }
 
-    private async Task OnBackClick(int index = 0) 
+    private async Task OnBackClick(int index = 0)
     {
-        if(currentIndex == 0) return;
-        currentIndex --;
+        if (currentIndex == 0) return;
+
+        if (currentIndex == 1)
+        {
+            if (Model.ExperienceHasError = !creationOverviewComponent.IsAllFieldsValidated())
+            {
+                await module.InvokeVoidAsync("scrollToRequiredField", ".creation-overview");
+                return;
+            }
+            else
+            {
+                isCreationOverviewComponentValid = true;
+            }
+        }
+        else if (currentIndex == 2)
+        {
+            if (Model.ExperienceHasError = !locationComponent.IsAllFieldsValidated())
+            {
+                await module.InvokeVoidAsync("scrollToRequiredField", ".location-section");
+                return;
+            }
+            else
+            {
+                isLocationComponentValid = true;
+            }
+        }
+        else if (currentIndex == 3)
+        {
+            if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+            {
+                await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                return;
+            }
+            else
+            {
+                isPricingAndScheduleComponentValid = true;
+
+            }
+        }
+        else if (currentIndex == 4)
+        {
+            isOptionalDetailsComponentValid = true;
+        }
+        else if (currentIndex == 5)
+        {
+            if (Model.ExperienceHasError = !galleryComponent.IsAllFieldsValidated())
+            {
+                await module.InvokeVoidAsync("scrollToRequiredField", ".gallery-section");
+                return;
+            }
+            else
+            {
+                isGalleryComponentValid = true;
+            }
+        }
+
+        currentIndex--;
 
         await Task.Delay(100);
         await module.InvokeVoidAsync("onScrollUp");
@@ -880,7 +935,7 @@
                 case 1:
                     if (Model.ExperienceHasError = !creationOverviewComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".creation-overview");
                         return;
                     };
 
@@ -890,7 +945,7 @@
                 case 2:
                     if (Model.ExperienceHasError = !locationComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".location-section");
                         return;
                     };
 
@@ -900,7 +955,7 @@
                 case 3:
                     if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
                         return;
                     };
 
@@ -914,7 +969,7 @@
                 case 5:
                     if (Model.ExperienceHasError = !galleryComponent.IsAllFieldsValidated())
                     {
-                        await module.InvokeVoidAsync("onScrollUp");
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".gallery-section");
                         return;
                     };
 
@@ -936,7 +991,7 @@
             {
                 if (Model.ExperienceHasError = !creationOverviewComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".creation-overview");
                     return;
                 }
                 else
@@ -949,7 +1004,7 @@
             {
                 if (Model.ExperienceHasError = !locationComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".location-section");
                     return;
                 }
                 else
@@ -961,7 +1016,7 @@
             {
                 if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
                     return;
                 }
                 else
@@ -978,7 +1033,7 @@
             {
                 if (Model.ExperienceHasError = !galleryComponent.IsAllFieldsValidated())
                 {
-                    await module.InvokeVoidAsync("onScrollUp");
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".gallery-section");
                     return;
                 }
                 else

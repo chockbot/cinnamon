@@ -13,7 +13,7 @@
     </ul>
 </div>
 
-<div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-6">
+<div class="gallery-section col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="row">
         <div class="form-group">
             <table class="field-heading-section">
@@ -36,7 +36,7 @@
             <div class="photo-upload-section">
                 <label for="photo-upload" style="cursor: pointer;">
                     <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
-                        Upload 3 photos (10MB)
+                        Upload 3 photos (25MB)
                     </Button>
                     <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
                 </label>
@@ -53,8 +53,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperCoverPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgCoverPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12 d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgCoverPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropCoverPhoto">Save</button>
                         </div>
@@ -70,8 +70,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperFirstSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgFirstSupportPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12  d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgFirstSupportPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropFirstPhoto">Save</button>
                         </div>
@@ -87,8 +87,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperSecondSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgSecondSupportPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12 d-flex d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgSecondSupportPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropSecondPhoto">Save</button>
                         </div>
@@ -110,7 +110,7 @@
                                 </td>
                             </tr>
                         </table>
-                        <div class="img-card">
+                        <div id="img-card-@imageItem.FileControlId" class="img-card @RequiredCheck(imageItem.IsValid)">
                             <img id="@imageItem.Id" name="@imageItem.Id" class='experience-image img-banner' src="@imageItem.Src" data-name="" style="@imageItem.Size" />
                         </div>
                         <div class="img-control-section">
@@ -197,7 +197,7 @@
 
         if (IsImagesOverLimit)
         {
-            imagesErrorMessage = "All images file size must only 10mb";
+            imagesErrorMessage = "All images file size must only 25mb";
         }
         else
         {
@@ -240,7 +240,7 @@
 
         if (IsImagesOverLimit)
         {
-            imagesErrorMessage = "All images file size must only 10mb";
+            imagesErrorMessage = "All images file size must only 25mb";
         }
         else
         {
@@ -299,7 +299,7 @@
     {
         get
         {
-            return totalImageSizeMB > 10;
+            return totalImageSizeMB > 25;
         }
     }
 
@@ -315,11 +315,20 @@
     {
         var totalSize = totalImageSizeMB;
 
-        bool isReachLimit = totalSize > 10;
+        bool isReachLimit = totalSize > 25;
 
         isShowImageErrorMessage = isReachLimit;
 
         return !isReachLimit;
+    }
+
+    private string RequiredCheck(bool isValid)
+    {
+        if (Model.HasError && !isValid)
+        {
+            return "invalid";
+        }
+        return "";
     }
 
     private class FileDetails

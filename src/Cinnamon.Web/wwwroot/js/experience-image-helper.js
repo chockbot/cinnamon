@@ -69,7 +69,7 @@ $(document).on("change", multiplePhotoUploadInput, function () {
         totalFileSize += inputElement.files[i].size / 1024 / 1024;
       }
     }
-    if (totalFileSize > 10) {
+    if (totalFileSize > 25) {
       return;
     } else {
       for (let i = 0; i < 3; i++) {
@@ -173,7 +173,7 @@ function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
   if (files.length > 0) {
     var photo = files[0];
     var fileName = photo.name;
-    if (photo.size > 10000000) {
+    if (photo.size > 25000000) {
       return;
     } else {
       var reader = new FileReader();

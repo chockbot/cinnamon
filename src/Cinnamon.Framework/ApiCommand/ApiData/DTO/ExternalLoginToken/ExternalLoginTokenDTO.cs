@@ -10,5 +10,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.ExternalLoginToken
         public string FirstName {get; set;}
         public string LastName {get; set;}
         public DateTime DateGenerated {get; set;}
+        public bool IsEmptyUsername {get; set;}
     }
 }

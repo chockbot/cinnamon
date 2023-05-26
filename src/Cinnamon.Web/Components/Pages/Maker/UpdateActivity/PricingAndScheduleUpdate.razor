@@ -12,13 +12,13 @@
     </ul>
 </div>
 
-<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-6">
+<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
     @if (Model.Activity.Status == Framework.Enums.Enums.ActivityStatus.InProgress)
     {
         if (Model.Activity.ActivitySchedules.Count > 1)
         {
             <div class="accordion" id="activitySchedules">
-                @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
+                @foreach (var scheduleModel in existingSchedules)
                 {
                     var accordionId = $"panel-section{scheduleModel.Id}";
                     var accordionHeaderId = $"header-section{scheduleModel.Id}";
@@ -82,10 +82,9 @@
                     </div>
                 }
             </div>
-
             <div class="pricing-schedule">
                 <div class="row">
-                    @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
+                    @foreach (var scheduleModel in newSchedules)
                     {
                         <div class="form-group">
                             <div class="form-check form-switch">
@@ -192,13 +191,12 @@
                     </div>
                 </div>
             </div>
-
         }
     }
     else
     {
         <div class="accordion" id="activitySchedules">
-            @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
+            @foreach (var scheduleModel in existingSchedules)
             {
                 var accordionId = $"panel-section{scheduleModel.Id}";
                 var accordionHeaderId = $"header-section{scheduleModel.Id}";
@@ -262,10 +260,9 @@
                 </div>
             }
         </div>
-
         <div class="pricing-schedule">
             <div class="row">
-                @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
+                @foreach (var scheduleModel in newSchedules)
                 {
                     <div class="form-group">
                         <div class="form-check form-switch">
@@ -326,6 +323,9 @@
 
     ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
 
+    List<ActivitySchedule> existingSchedules = new List<ActivitySchedule>();
+    List<ActivitySchedule> newSchedules = new List<ActivitySchedule>();
+
     protected override async Task OnInitializedAsync()
     {
         foreach (var item in Model.Activity.ActivitySchedules)
@@ -337,7 +337,6 @@
         {
             if (Model.Activity.ActivitySchedules.Count > 1)
             {
-                AddSchedule();
             }
             else
             {
@@ -349,9 +348,9 @@
         }
         else
         {
-            AddSchedule();
         }
 
+        SetSchedules();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -429,5 +428,21 @@
         int maxId = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.TempId) + 1;
         int order = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.Order) + 1;
         Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1, Order = order, IsNew = true, IsActiveSchedule = false });
+
+        SetSchedules();
+    }
+
+    private void SetSchedules()
+    {
+        if (Model.Activity.ActivitySchedules.Count(a => a.IsNew) > 0)
+        {
+            existingSchedules = Model.Activity.ActivitySchedules.Where(a => !a.IsNew).ToList();
+            newSchedules = Model.Activity.ActivitySchedules.Where(a => a.IsNew).ToList();
+        }
+        else
+        {
+            existingSchedules = Model.Activity.ActivitySchedules.Where(a => !a.IsNew).Skip(0).Take(Model.Activity.ActivitySchedules.Count(a => !a.IsNew) - 1).ToList();
+            newSchedules = Model.Activity.ActivitySchedules.Where(a => !a.IsNew).Skip(Model.Activity.ActivitySchedules.Count(a => !a.IsNew) - 1).Take(1).ToList();
+        }
     }
 }

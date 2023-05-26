@@ -83,6 +83,15 @@ export function onScrollUp() {
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
+export function scrollToRequiredField(container) {
+    setTimeout(function () {
+        var fieldId = $(`${container} .invalid`).first().attr("id");
+        var field = document.getElementById(fieldId);
+        var top = field.offsetTop - 120;
+        window.scrollTo(0, top);
+    }, 200);
+}
+
 function replaceEmptyvalue(value, replacement) {
     return value ? value : replacement;
 }
