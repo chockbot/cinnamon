@@ -35,8 +35,11 @@ public class UpdateCustomerProfileHandler : IUpdateCustomerProfileHandler
             {
                 CustomerId = args.CustomerId,
                 IsVerified = args.VerifiedBadge,
+                IsVerifiedDate = args.IsVerifiedDate,
                 IsOG = args.IsOG,
+                IsOGDate = args.IsOGDate,
                 IsOF = args.IsOF,
+                IsOFDate = args.IsOFDate,   
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -55,8 +58,11 @@ public class UpdateCustomerProfileHandler : IUpdateCustomerProfileHandler
                 LastName = result.Result.Result.LastName,
                 Id = result.Result.Result.Id,
                 VerifiedBadge = result.Result.Result.IsVerified,
+                IsVerifiedDate = result.Result.Result.IsVerifiedObtainedDate,
                 IsOG = result.Result.Result.IsOG,
-                IsOF = result.Result.Result.IsOfficial
+                IsOGDate = result.Result.Result.IsOGObtainedDate,
+                IsOF = result.Result.Result.IsOfficial,
+                IsOFDate = result.Result.Result.IsOfficialObtainedDate
             }, "Successfully updated profile details");
         }
         catch (Exception ex)

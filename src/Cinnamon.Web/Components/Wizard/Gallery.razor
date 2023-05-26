@@ -13,10 +13,19 @@
     </ul>
 </div>
 
-<div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-6">
+<div class="gallery-section col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="row">
         <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin">Post Pictures</label>
+            <table class="field-heading-section">
+                <tr>
+                    <td>
+                        <label for="title" class="form-control-label label-top-margin right-margin">Post Pictures</label>
+                    </td>
+                    <td>
+                        <img src="images/experience-creation/info-icon.svg" id="info-gallery" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-6.png|images/experience-creation/creation-guide-step-7.png" />
+                    </td>
+                </tr>
+            </table>
             <p class="form-text text-muted label-top-margin">Pictures must have:</p>
             <ul>
                 <li>Different angles and details, including photos of people at work.</li>
@@ -27,7 +36,7 @@
             <div class="photo-upload-section">
                 <label for="photo-upload" style="cursor: pointer;">
                     <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
-                        Upload 3 photos (10MB)
+                        Upload 3 photos (25MB)
                     </Button>
                     <InputFile multiple id="photo-upload" accept=".png,.jpg,.jpeg" name="photo-upload" style="display: none;" OnChange="@LoadFiles" />
                 </label>
@@ -44,8 +53,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperCoverPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgCoverPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12 d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgCoverPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropCoverPhoto">Save</button>
                         </div>
@@ -61,8 +70,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperFirstSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgFirstSupportPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12  d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgFirstSupportPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropFirstPhoto">Save</button>
                         </div>
@@ -78,8 +87,8 @@
                             <button type="button" class="btn-close" id="btnCloseCropperSecondSupportPhotoModal" data-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body" style="text-align:center">
-                            <div class="col-12-lg d-flex justify-content-center">
-                                <img id="imgSecondSupportPhotoPreview" src="">
+                            <div class="col-12-lg col-12-md col-12-sm col-12 d-flex d-flex justify-content-center" style="max-height:400px; position:relative">
+                                <img id="imgSecondSupportPhotoPreview" src="" style="max-height:400px;">
                             </div>
                             <button class="btn btn-primary border-0" id="btnSaveCropSecondPhoto">Save</button>
                         </div>
@@ -91,8 +100,17 @@
                 @foreach (var imageItem in imageItems)
                 {
                     <div class="col-lg-6">
-                        <p class="photo-label">@imageItem.Caption</p>
-                        <div class="img-card">
+                        <table class="field-heading-section">
+                            <tr>
+                                <td>
+                                    <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">@imageItem.FieldNumber</label>
+                                </td>
+                                <td>
+                                    <label class="photo-label">@imageItem.Caption</label>
+                                </td>
+                            </tr>
+                        </table>
+                        <div id="img-card-@imageItem.FileControlId" class="img-card @RequiredCheck(imageItem.IsValid)">
                             <img id="@imageItem.Id" name="@imageItem.Id" class='experience-image img-banner' src="@imageItem.Src" data-name="" style="@imageItem.Size" />
                         </div>
                         <div class="img-control-section">
@@ -118,6 +136,8 @@
 @code {
     [Parameter]
     public Models.ExperienceCreationModel Model { get; set; }
+
+    ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
 
     private int maxEditorWordLimit = 80;
     private RichTextEdit EditCustomerBring;
@@ -146,15 +166,15 @@
         {
             await Task.Delay(3000);
 
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/experience-image-helper.js");
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Photos");
         }
     }
 
     protected override void OnInitialized()
     {
-        imageItems.Add(new ImageItem { Name = "Image1", Id = "imgSrc1", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Cover Photo", FileControlId = "cover-photo", Index = 0, Size = "" });
-        imageItems.Add(new ImageItem { Name = "Image2", Id = "imgSrc2", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Supporting Photo", FileControlId = "first-support-photo", Index = 1, Size = "" });
-        imageItems.Add(new ImageItem { Name = "Image3", Id = "imgSrc3", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Supporting Photo", FileControlId = "second-support-photo", Index = 2, Size = "" });
+        imageItems.Add(new ImageItem { Name = "Image1", Id = "imgSrc1", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Cover Photo", FileControlId = "cover-photo", Index = 0, Size = "", FieldNumber = "6" });
+        imageItems.Add(new ImageItem { Name = "Image2", Id = "imgSrc2", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Supporting Photo", FileControlId = "first-support-photo", Index = 1, Size = "", FieldNumber = "7" });
+        imageItems.Add(new ImageItem { Name = "Image3", Id = "imgSrc3", Group = "Image", DataName = "", Src = emptyImageSrc, Caption = "Supporting Photo", FileControlId = "second-support-photo", Index = 2, Size = "", FieldNumber = "7" });
     }
 
     private async Task LoadFiles(InputFileChangeEventArgs e)
@@ -177,7 +197,7 @@
 
         if (IsImagesOverLimit)
         {
-            imagesErrorMessage = "All images file size must only 10mb";
+            imagesErrorMessage = "All images file size must only 25mb";
         }
         else
         {
@@ -220,7 +240,7 @@
 
         if (IsImagesOverLimit)
         {
-            imagesErrorMessage = "All images file size must only 10mb";
+            imagesErrorMessage = "All images file size must only 25mb";
         }
         else
         {
@@ -279,7 +299,7 @@
     {
         get
         {
-            return totalImageSizeMB > 10;
+            return totalImageSizeMB > 25;
         }
     }
 
@@ -295,11 +315,20 @@
     {
         var totalSize = totalImageSizeMB;
 
-        bool isReachLimit = totalSize > 10;
+        bool isReachLimit = totalSize > 25;
 
         isShowImageErrorMessage = isReachLimit;
 
         return !isReachLimit;
+    }
+
+    private string RequiredCheck(bool isValid)
+    {
+        if (Model.HasError && !isValid)
+        {
+            return "invalid";
+        }
+        return "";
     }
 
     private class FileDetails
@@ -327,5 +356,6 @@
         public string FileControlId { get; set; }
         public int Index { get; set; }
         public string Size { get; set; }
+        public string FieldNumber { get; set; }
     }
 }

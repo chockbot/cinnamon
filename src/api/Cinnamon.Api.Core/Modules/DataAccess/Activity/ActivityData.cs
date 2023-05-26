@@ -204,4 +204,25 @@ public class ActivityData: IActivityData
             return AppResult<UpdatedActivityResult>.CreateFailed(ex, "An error occured when updating activity guids");
         }
     }
+
+    public async Task<AppResult<DeleteActivityResult>> DeleteActivityById(DeleteActivityArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Activity/Remove")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<DeleteActivityResult>();
+
+            return AppResult<DeleteActivityResult>.CreateSucceeded(result, "Successfully deleted activity");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<DeleteActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<DeleteActivityResult>.CreateFailed(ex, "An error occured when deleting activity");
+        }
+    }
 }

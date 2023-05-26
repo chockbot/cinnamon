@@ -30,4 +30,5 @@ public interface IActivityApiHandler
     Task<AppResult<GetAllBarangaysResult>> GetAllBarangaysByCityCode(GetAllBarangaysArgs? args = null);
     Task<AppResult<GetRefundableExperienceResult>> GetRefundableExperience(string token);
     Task<AppResult<UpdateScheduleResult>> UpdateActivitySchedule(UpdateScheduleArgs args, string token);
+    Task<AppResult<DeleteActivityResult>> DeleteActivityById(DeleteActivityArgs args, string token);
 } 

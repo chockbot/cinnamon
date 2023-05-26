@@ -53,7 +53,7 @@
             </form>
         </div>
         <!--Menu-->
-        <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-1 d-flex justify-content-end col-1 d-flex justify-content-end">
+        <div class="col-lg-4 d-flex justify-content-end col-md-2 d-flex justify-content-end col-sm-1 d-flex justify-content-end col-1 d-flex justify-content-end dropdown-section">
             @if (CustomerModel.CustomerProfile != null && CustomerModel.CustomerProfile.IsMaker)
             {
                 <div class="become">
@@ -62,18 +62,9 @@
             }
             else
             {
-                @if(AuthState != null && AuthState.Identity.IsAuthenticated)
-                {
-                    <div class="become">
-                        <a href="/Creation" class="btn border-0">@Resources.App.Become</a>
-                    </div>
-                }
-                else 
-                {
-                    <div class="become">
-                        <a href="/Onboarding" class="btn border-0">@Resources.App.Become</a>
-                    </div>
-                }
+                <div class="become">
+                    <a href="/Onboarding" class="btn border-0">Become an Activity Provider</a>
+                </div>
             }
             @*Desktop*@
             <div class="dropdown">
@@ -165,7 +156,7 @@
                             else if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsMaker)
                             {
                                 <li class="dropdown-item">
-                                    <NavButton OnClick="NavigateToCreation" Text="Become a Cinnamon Maker" />
+                                    <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
                                 </li>
                             }
                             <li class="dropdown-item">
@@ -190,7 +181,7 @@
                                 </Button>
                             </li>
                             <li class="dropdown-item">
-                                <NavButton OnClick="NavigateToOnboarding" Text="Become a Cinnamon Maker" />
+                                <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
                             </li>
                             <li class="dropdown-item">
                                 <Button Type="ButtonType.Button" Border="Border.Is0" Clicked="NavigateToHelp">
@@ -241,61 +232,61 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
                         </div>
                     </div>
                 </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             @if (string.IsNullOrEmpty(searchValue) && popularActivities.Count > 0)
             {
                 <div class="activity-popular border-bottom" style="@SetActivitiesStyle(showOverlayPopularActivities)">
@@ -382,60 +373,60 @@
         </div>
         <!--Section 2-->
         <div class="section-2-lg row">
-             <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
-                        <div class="card card-placeholder-popular" aria-hidden="true">
-                            <rect width="100%" height="100%" fill="#868e96"></rect>
-                            <div class="card-body">
-                                <p class="card-text placeholder-glow">
-                                    <span class="placeholder col-12 placeholder-image"></span>
-                                    <span class="placeholder col-10"></span>
-                                    <span class="placeholder col-9"></span>
-                                    <span class="placeholder col-7"></span>
-                                </p>
-                            </div>
+            <div class="row" style="@SetPlaceholderStyle(showOverlayPopularActivities)">
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
                         </div>
                     </div>
                 </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-lg-3 col-md-3 col-sm-3 col-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                    <div class="card card-placeholder-popular" aria-hidden="true">
+                        <rect width="100%" height="100%" fill="#868e96"></rect>
+                        <div class="card-body">
+                            <p class="card-text placeholder-glow">
+                                <span class="placeholder col-12 placeholder-image"></span>
+                                <span class="placeholder col-10"></span>
+                                <span class="placeholder col-9"></span>
+                                <span class="placeholder col-7"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="row d-flex justify-content-start" style="@SetActivitiesStyle(showOverlayPopularActivities)">
                 <div style="margin-bottom:20px;">
                     <div class="d-none d-sm-block d-md-block d-lg-block d-xl-block">
@@ -571,8 +562,11 @@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 
+<WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
+
 @code
 {
+    private WelcomeModal WelcomeModalRef { get; set; }
     private ModalLogin signinModal;
     public ExploreModel Model = new ExploreModel();
     public Profile CustomerModel = new Profile();
@@ -601,6 +595,10 @@
     private bool showOverlayPopularActivities = false;
     private bool hasNoMoreRecords = false;
     private int itemsPerPage = 20;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public bool? IsNewRegistered { get; set; }
 
     private IAnimation selectedAnimation = Animations.FadeIn;
 
@@ -641,10 +639,15 @@
                 ExperienceCategories = categories,
                 ExperienceTypes = experiencesType
             };
+    }
+
+    private async Task LoadSigninUser()
+    {
         // get user login
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var token = user.FindFirstValue("Token");
         AuthState = user;
+
         if (user != null && user.Identity.IsAuthenticated)
         {
             var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
@@ -666,14 +669,39 @@
         }
     }
 
+    private async Task LoadWelcomeDialog()
+    {
+        if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
+        {
+            var customerId = CustomerModel.CustomerProfile.Id;
+            var result = await jsRuntime.InvokeAsync<Models.ResponseModel>("MyLib.Utils.cookieManager.getCookie", $"wel_dia_{customerId}");
+            if (string.IsNullOrEmpty(result.Message))
+            {
+                await WelcomeModalRef.Show();
+            }
+        }
+    }
+
+    private async Task OnSkipMaker()
+    {
+        if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
+        {
+            var customerId = CustomerModel.CustomerProfile.Id;
+            await jsRuntime.InvokeVoidAsync("MyLib.Utils.cookieManager.setCookie", $"wel_dia_{customerId}", "1");
+        }
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            await LoadSigninUser();
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await InitializeSwiper();
             await InitializeCarouselSwipe();
+
+            await LoadWelcomeDialog();
         }
         else
         {
@@ -753,7 +781,8 @@
                 SearchValue = searchValue,
                 IncludeCustomer = true,
                 IncludeStudents = true,
-                IsDeactivated = false
+                IsDeactivated = false,
+                Status = Framework.Enums.Enums.ActivityStatus.Submitted
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
@@ -800,19 +829,19 @@
                                    OngoingStudents = r.OngoingStudents,
                                    CompletedStudents = r.CompletedStudents,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
-                {
-                            return new ActivitySchedule
-                            {
-                                Id = e.Id,
-                                Name = e.Name,
-                                PerUnit1 = e.PerUnit1,
-                                PerUnit2 = e.PerUnit2,
-                                Price = e.Price,
-                                PriceUnit1 = e.PriceUnit1,
-                                PriceUnit2 = e.PriceUnit2,
-                                UnitPrice = e.UnitPrice
-                            };
-                        }).ToList(),
+            {
+                        return new ActivitySchedule
+                        {
+                            Id = e.Id,
+                            Name = e.Name,
+                            PerUnit1 = e.PerUnit1,
+                            PerUnit2 = e.PerUnit2,
+                            Price = e.Price,
+                            PriceUnit1 = e.PriceUnit1,
+                            PriceUnit2 = e.PriceUnit2,
+                            UnitPrice = e.UnitPrice
+                        };
+                    }).ToList(),
                                    Images = r.Images.Select(i =>
 {
         return new ActivityImage
@@ -888,70 +917,74 @@
             {
                 var activityResult = popularActivityList.Result.Result.Select(r =>
                 {
-                return new Activity
-                    {
-                        ActivityId = r.ActivityId,
-                        ExperienceTypeId = r.ExperienceTypeId,
-                        ExperienceType = r.ExperienceType,
-                        ExperienceCategoryId = r.ExperienceCategoryId,
-                        SubCategoryId = r.SubCategoryId,
-                        ExperienceCategory = r.ExperienceCategory,
-                        SubCategory = r.SubCategory,
-                        Title = r.Title,
-                        Description = r.Description,
-                        Price = r.Price,
-                        ScheduleIndicator = r.ScheduleIndicator,
-                        Remarks = r.Remarks,
-                        IsPublished = r.IsPublished,
-                        Address1 = r.Address1,
-                        Address2 = r.Address2,
-                        District = r.District,
-                        City = r.City,
-                        CityName = r.CityName,
-                        Subdivision = r.Subdivision,
-                        Region = r.Region,
-                        RegionName = r.RegionName,
-                        Barangay = r.Barangay,
-                        BarangayName = r.BarangayName,
-                        PostalCode = r.PostalCode,
-                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
-                        CustomerBringWithThem = r.CustomerBringWithThem,
-                        AdditionalRequirements = r.AdditionalRequirements,
-                        ActivityLevel = r.ActivityLevel,
-                        SkillLevel = r.SkillLevel,
-                        MinimumAge = r.MinimumAge,
-                        CanAdultsJoin = r.CanAdultsJoin,
-                        CreatedBy = r.CreatedBy,
-                        Handler = r.Handler,
-                        IsNew = r.IsNew,
-                        OngoingStudents = r.OngoingStudents,
-                        CompletedStudents = r.CompletedStudents,
-                        ActivitySchedules = r.ActivitySchedules.Select(e =>{
-                        return new ActivitySchedule
+                    return new Activity
                         {
-                            Id = e.Id,
-                            Name = e.Name,
-                            PerUnit1 = e.PerUnit1,
-                            PerUnit2 = e.PerUnit2,
-                            Price = e.Price,
-                            PriceUnit1 = e.PriceUnit1,
-                            PriceUnit2 = e.PriceUnit2,
-                            UnitPrice = e.UnitPrice
+                            ActivityId = r.ActivityId,
+                            ExperienceTypeId = r.ExperienceTypeId,
+                            ExperienceType = r.ExperienceType,
+                            ExperienceCategoryId = r.ExperienceCategoryId,
+                            SubCategoryId = r.SubCategoryId,
+                            ExperienceCategory = r.ExperienceCategory,
+                            SubCategory = r.SubCategory,
+                            Title = r.Title,
+                            Description = r.Description,
+                            Price = r.Price,
+                            ScheduleIndicator = r.ScheduleIndicator,
+                            Remarks = r.Remarks,
+                            IsPublished = r.IsPublished,
+                            Address1 = r.Address1,
+                            Address2 = r.Address2,
+                            District = r.District,
+                            City = r.City,
+                            CityName = r.CityName,
+                            Subdivision = r.Subdivision,
+                            Region = r.Region,
+                            RegionName = r.RegionName,
+                            Barangay = r.Barangay,
+                            BarangayName = r.BarangayName,
+                            PostalCode = r.PostalCode,
+                            SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                            CustomerBringWithThem = r.CustomerBringWithThem,
+                            AdditionalRequirements = r.AdditionalRequirements,
+                            ActivityLevel = r.ActivityLevel,
+                            SkillLevel = r.SkillLevel,
+                            MinimumAge = r.MinimumAge,
+                            CanAdultsJoin = r.CanAdultsJoin,
+                            CreatedBy = r.CreatedBy,
+                            Handler = r.Handler,
+                            IsNew = r.IsNew,
+                            OngoingStudents = r.OngoingStudents,
+                            CompletedStudents = r.CompletedStudents,
+                            ActivitySchedules = r.ActivitySchedules.Select(e =>
+                            {
+                                return new ActivitySchedule
+                                {
+                                    Id = e.Id,
+                                    Name = e.Name,
+                                    PerUnit1 = e.PerUnit1,
+                                    PerUnit2 = e.PerUnit2,
+                                    Price = e.Price,
+                                    PriceUnit1 = e.PriceUnit1,
+                                    PriceUnit2 = e.PriceUnit2,
+                                    UnitPrice = e.UnitPrice
+                                };
+                            }).ToList(),
+                            Images = r.Images.Select(i =>
+                            {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
+                            Owner = new CustomerProfile
+                            {
+                                IsVerified = r.Owner.IsVerified
+                            }
                         };
-                        }).ToList(),
-                        Images = r.Images.Select(i =>{
-                        return new ActivityImage
-                        {
-                            Id = i.Id,
-                            ImageSrc = i.ImageSrc,
-                            Name = i.Name
-                        };}).ToList(),
-                        Owner = new CustomerProfile
-                        {
-                            IsVerified = r.Owner.IsVerified
-                        }
-                };}).ToList();
-            popularActivities = activityResult;
+                }).ToList();
+                popularActivities = activityResult;
             }
             else
             {
@@ -1084,7 +1117,7 @@
 
     private IList<string> GetKeyWords()
     {
-        IList<string> keywords = new List<string> 
+        IList<string> keywords = new List<string>
         {
             "piano lessons",
             "voice lessons",
@@ -1159,6 +1192,6 @@
             "math tutorial online",
             "fun learning activities online"
         };
-        return keywords;    
+        return keywords;
     }
 }

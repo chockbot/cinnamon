@@ -13,10 +13,20 @@
     </ul>
 </div>
 <div class="editor-customer-requirement-provide-wrapper">
-    <div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-6">
+    <div class="editor-customer-requirement-provide col-lg-12 col-md-12 col-sm-12 col-12">
         <div class="row">
             <div class="form-group">
-                <label for="title" class="form-control-label label-top-margin">What should your students bring with them and what materials you will provide? (optional)</label>
+                <table class="field-heading-section">
+                    <tr>
+                        <td>
+                            <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">5</label>
+                        </td>
+                        <td>
+                            <label for="title" class="form-control-label label-top-margin">What should your students bring with them and what materials you will provide? (optional) <img src="images/experience-creation/info-icon.svg" id="info-optional-details" class="d-xl-none d-lg-none d-md-none d-sm-none d-block info-icon left-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-5.png" /></label>
+                        </td>
+                    </tr>
+                </table>
+
                 <small class="form-text text-muted sub-details">Should your customer have their own tablet or computer for their online experience? How about their own water bottle for their face to face experience? Describe the things that they need to prepare and bring for the best experience possible.</small>
 
                 <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -26,7 +36,7 @@
                                       ContentChanged="@EditCustomerRequirement"
                                       PlaceHolder="Type your post here..."
                                       SubmitOnEnter="false"
-                                      ToolbarPosition="Placement.Start">
+                                      ToolbarPosition="Placement.Start" id="customer-bring-with-them">
                             <Editor>@((MarkupString)defaultContent)</Editor>
                             <Toolbar>
                                 <RichTextEditToolbarGroup>
@@ -49,6 +59,8 @@
     [Parameter]
     public Models.ExperienceUpdateModel Model { get; set; }
 
+    ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
+
     private int maxEditorWordLimit = 80;
     private RichTextEdit EditCustomerBring;
     IJSObjectReference module;
@@ -60,6 +72,9 @@
         if (firstRender)
         {
             await Task.Delay(3000);
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Requirements");
+
             await jsRuntime
                  .InvokeVoidAsync("MyLib.Pages.activity.quillLimitWords.init", ".editor-specific-will-provide .ql-container", "#label-specific-editor", maxEditorWordLimit);
 

@@ -52,6 +52,7 @@ public class AccountController : ControllerBase
     private readonly IGetAllCustomersHandler getAllCustomersHandler;
     private readonly IUpdateCustomerProfileHandler updateCustomerProfileHandler;
     private readonly IUpdateRequestRefundHandler updateRequestRefundHandler;
+    private readonly IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler;
 
     #endregion
 
@@ -69,7 +70,9 @@ public class AccountController : ControllerBase
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
         IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
-        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, IUpdateRequestRefundHandler updateRequestRefundHandler)
+        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, 
+        IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, 
+        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -104,6 +107,7 @@ public class AccountController : ControllerBase
         this.getAllCustomersHandler = getAllCustomersHandler;
         this.updateCustomerProfileHandler = updateCustomerProfileHandler;
         this.updateRequestRefundHandler = updateRequestRefundHandler;
+        this.accountSubmitVerifiedHandler = accountSubmitVerifiedHandler;
     }
 
     #endregion
@@ -374,8 +378,11 @@ public class AccountController : ControllerBase
                     Birthdate = profile.Birthdate,
                     DateJoined = profile.DateJoined,
                     IsVerified = profile.IsVerified,
+                    IsVerifiedDate = profile.IsVerifiedDate,
                     IsOfficial = profile.IsOfficial,
+                    IsOfficialDate = profile.IsOfficialDate,
                     IsOG = profile.IsOG,
+                    IsOGDate = profile.IsOGDate,
                     ProfileImg = profile.ProfileImagePath,
                     Handler = profile.Handler,
                     TotalCredits = profile.TotalCredits
@@ -908,7 +915,8 @@ public class AccountController : ControllerBase
             var result = await externalLoginHandler.ExecuteAsync(new Services.AccountService.Interactors.ExternalLoginArgs {
                 Email = args.Email,
                 FirstName = args.FirstName ?? string.Empty,
-                LastName = args.LastName ?? string.Empty
+                LastName = args.LastName ?? string.Empty,
+                IsEmptyUsername = args.IsEmptyUsername.HasValue ? args.IsEmptyUsername.Value : false
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -929,7 +937,8 @@ public class AccountController : ControllerBase
                     LastName = objResult.LastName,
                     IsNew = objResult.IsNew,
                     GeneratedNewToken = objResult.GeneratedNewToken,
-                    GeneratedNewUid = objResult.GeneratedNewGuid
+                    GeneratedNewUid = objResult.GeneratedNewGuid,
+                    IsEmptyUsername = objResult.IsEmptyUsername
                 },
                 IsSuccess = true,
             });
@@ -964,7 +973,8 @@ public class AccountController : ControllerBase
                 Result = new ExternalLoginDetailDTO {
                     Email = result.Result.Email,
                     FirstName = result.Result.FirstName,
-                    LastName = result.Result.LastName
+                    LastName = result.Result.LastName,
+                    IsEmptyUsername = result.Result.IsEmptyUsername
                 },
                 IsSuccess = true,
             });
@@ -1245,8 +1255,11 @@ public class AccountController : ControllerBase
                         FrontIdImagePath = c.FrontIdImagePath,
                         BackIdImagePath  = c.BackIdImagePath,
                         IsVerified       = c.IsVerified,
+                        IsVerifiedDate   = c.IsVerifiedDate,
                         IsOG             = c.IsOG,
-                        IsOfficial       = c.IsOF
+                        IsOGDate         = c.IsOGDate,
+                        IsOfficial       = c.IsOF,
+                        IsOfficialDate   = c.IsOFDate
                     };
                 }),
                 IsSuccess = true,
@@ -1269,9 +1282,12 @@ public class AccountController : ControllerBase
             var result = await updateCustomerProfileHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateCustomerProfileArgs
             {
                 VerifiedBadge = args.VerifiedBadge,
+                IsVerifiedDate = args.VerifiedBadgeDate,
                 CustomerId = args.CustomerId,
                 IsOG = args.IsOG,
+                IsOFDate = args.IsOFDate,
                 IsOF = args.IsOF,
+                IsOGDate = args.IsOGDate,
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -1286,9 +1302,12 @@ public class AccountController : ControllerBase
                     FirstName = result.Result.FirstName,
                     LastName = result.Result.LastName,
                     IsVerified = result.Result.VerifiedBadge,
+                    IsVerifiedDate = result.Result.IsVerifiedDate,
                     Id = result.Result.Id,
                     IsOG = result.Result.IsOG,
-                    IsOfficial = result.Result.IsOF
+                    IsOGDate = result.Result.IsOGDate,
+                    IsOfficial = result.Result.IsOF,
+                    IsOfficialDate = result.Result.IsOFDate
                 },
                 IsSuccess = true
             });
@@ -1335,6 +1354,32 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateProfileDetailsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("SubmitAccountVerified")]
+    [HttpPost]
+    [ProducesResponseType(typeof(SubmitAccountVerifiedResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> SubmitAccountVerified()
+    {
+        try
+        {
+            var result = await accountSubmitVerifiedHandler.ExecuteAsync(new Services.AccountService.Interactors.AccountSubmitVerifiedArgs {});
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new SubmitAccountVerifiedResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new SubmitAccountVerifiedResult
+            {
+               IsSuccess= true,
+               Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new SubmitAccountVerifiedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -2,6 +2,7 @@
 import pages from "./Pages";
 import components from "./Components";
 import account from "./Account";
+import utils from "./utils";
 
 export function Track(event) {
   return track(event);
@@ -23,3 +24,5 @@ export const Pages = pages;
 export const Components = components;
 
 export const Account = account;
+
+export const Utils = utils;

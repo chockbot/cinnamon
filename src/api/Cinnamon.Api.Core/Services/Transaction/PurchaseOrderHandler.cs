@@ -92,16 +92,17 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             }
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
-            decimal fee = subTotal * .15m;
+            decimal paymentProviderFee = subTotal * .05m;
             var discount = 0;
-            decimal overallTotal = subTotal + fee;
+            decimal serviceFee = 50;
+            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
             
             if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
             {
                 var creditsBalance = customerRes.Result.Result.TotalCredits;
                 overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
-                creditAmount = subTotal + fee >= creditsBalance ? creditsBalance : subTotal + fee;
+                creditAmount = subTotal + paymentProviderFee + serviceFee >= creditsBalance ? creditsBalance : subTotal + paymentProviderFee + serviceFee;
             }
 
             // serialize students data to use later
@@ -113,13 +114,17 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     };
                 }),
                 PaymentMethod = args.PaymentMethod,
-                PaymentChannel = args.PaymentChannel ?? string.Empty
+                PaymentChannel = args.PaymentChannel ?? string.Empty,
+                Fees = new {
+                    PaymentProviderFee = paymentProviderFee,
+                    ServiceFee = serviceFee
+                }
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
             var result = await purchaseOrderData.CreatePurchaseOrder(new Framework.ApiCommand.ApiData.PurchaseOrder.Request.CreatePurchaseOrderArgs {
                 ActivityId = args.ActivityId,
-                ConvinienceFee = fee,
+                ConvinienceFee = paymentProviderFee + serviceFee,
                 Coupon = args.CouponCode ?? string.Empty,
                 CouponAmount = discount,
                 CustomerId = id,
@@ -165,7 +170,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             }
 
             var requestPayment = await requestPaymentHandler.ExecuteAsync(new RequestPaymentArgs {
-                Amount = (subTotal + fee) - creditAmount,
+                Amount = (subTotal + paymentProviderFee + serviceFee) - creditAmount,
                 AmountCurrency = "PHP",
                 CustomerId = id,
                 PaymentChannel = args.PaymentChannel ?? string.Empty,

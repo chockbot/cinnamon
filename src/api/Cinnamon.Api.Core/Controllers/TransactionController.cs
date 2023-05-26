@@ -105,7 +105,10 @@ public class TransactionController : ControllerBase
                     ScheduleId = purchseOrder.ScheduleId,
                     Total = purchseOrder.Total,
                     EnrolleeCount = purchseOrder.EnrolleeCount,
-                    PaymentMethod = purchseOrder.PaymentMethod
+                    PaymentMethod = purchseOrder.PaymentMethod,
+                    ServiceFee = purchseOrder.ServiceFee,
+                    PaymentProviderFee = purchseOrder.PaymentProviderFee,
+                    AppliedCredit = purchseOrder.AppliedCredits
                 }
             });
         }

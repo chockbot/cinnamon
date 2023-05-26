@@ -22,10 +22,11 @@ public class DashboardController : ControllerBase
     private readonly ICreateStudentAttendanceHandler createStudentAttendanceHandler;
     private readonly IUpdateAttendanceHandler updateAttendanceHandler;
     private readonly IGetAllBadgesHandler getAllBadgesHandler;
+    private readonly IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler;
 
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
-        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler)
+        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
@@ -35,6 +36,7 @@ public class DashboardController : ControllerBase
         this.createStudentAttendanceHandler = createStudentAttendanceHandler;
         this.updateAttendanceHandler = updateAttendanceHandler;
         this.getAllBadgesHandler = getAllBadgesHandler;
+        this.getAllStudentsAttendanceHandler = getAllStudentsAttendanceHandler;
     }
 
     [Route("GetActivitySchedules")]
@@ -255,6 +257,7 @@ public class DashboardController : ControllerBase
     [Route("CreateStudentAttendance")]
     [HttpPost]
     [ProducesResponseType(typeof(CreateStudentAttendanceResult), StatusCodes.Status201Created)]
+
     public async Task<IActionResult> CreateStudentAttendance([FromBody] CreateStudentAttendanceArgs args)
     {
         try
@@ -319,10 +322,12 @@ public class DashboardController : ControllerBase
             return new JsonResult(new UpdateAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("GetAllBadges")]
     [HttpGet]
     [ProducesResponseType(typeof(GetAllBadgesResult), StatusCodes.Status200OK)]
     [AllowAnonymous]
+
     public async Task<IActionResult> GetAllBadges()
     {
         try
@@ -355,4 +360,40 @@ public class DashboardController : ControllerBase
         }
     }
 
+    [Route("GetAllStudentsAttendance")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllStudentAttendanceResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllStudentAttendance([FromQuery] GetAllStudentAttendanceArgs args)
+    {
+        try
+        {
+            var result = await getAllStudentsAttendanceHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetAllStudentsAttendanceArgs {
+                ActivityId = args.ActivityId
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetAllStudentAttendanceResult
+            {
+                IsSuccess = true,
+                Result = result.Result.StudentAttendaces.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceDTO
+                    {
+                        Id = s.Id,
+                        Date = s.AttendanceDate,
+                        IsPresent = s.IsPresent,
+                        NumberOfSessions = s.NumberOfSessions,
+                        SessionsAttended = s.SessionsAttended,
+                        StudentId = s.StudentId
+                    };
+                })
+            }
+            );
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

@@ -17,6 +17,8 @@ public class CustomerPayedNotificationArgs : IInteractor
     public string PaymentMethod {get; set;}
     public string ReferenceNumber {get; set;}
     public string MakerEmail {get; set;}
+    public decimal PaymentProviderFee {get; set;}
+    public decimal AppliedCredits {get; set;}
 
     public class IncludedMembers 
     {

@@ -2,7 +2,7 @@
 @using Cinnamon.Web.Models.Entities;
 @inject IJSRuntime jsRuntime;
 
-<div class="activity-summary-wrapper col-lg-12 col-6">
+<div class="activity-summary-wrapper col-lg-12 col-12">
     <label for="title" class="form-control-label label-top-margin">Review Your Experience</label>
     <Div class="experience-title" Margin="Margin.Is4.OnY">
         <Div Display="Display.Flex" Flex="Flex.AlignItems.Center" class="location-category" style="display: flex; align-items: center; justify-content: left;">
@@ -101,6 +101,8 @@
     </div>
     <Divider />
     <div class="experience-what-you-will-provide active-marker margin-botton-3rem m-margin-bottom-10 m-font-size-12">
+        <input type="hidden" value="@Activity.IsPublishedDescription" id="activity-is-published" />
+
         <button class="check-button" type="button" @onclick=TogglePublishActivity>
             <img class="me-1" src='@(Activity.IsPublished ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
             <span>Active</span>

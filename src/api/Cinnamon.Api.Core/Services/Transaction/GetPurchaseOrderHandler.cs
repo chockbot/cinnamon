@@ -86,7 +86,10 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
                 ScheduleId = purchaseOrder.ScheduleId,
                 Total = purchaseOrder.Total,
                 EnrolleeCount = enroleeCount,
-                PaymentMethod = paymentMethod
+                PaymentMethod = paymentMethod,
+                ServiceFee = deserializedPayload != null ? deserializedPayload.Fees.ServiceFee : 0,
+                PaymentProviderFee = deserializedPayload != null ? deserializedPayload.Fees.PaymentProviderFee : 0,
+                AppliedCredits = purchaseOrder.CreditAmount
             }, "Successfully get purhase order details");
         }
         catch (Exception ex)
@@ -98,6 +101,7 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
     class Payload 
     {
         public IEnumerable<Student> Students {get; set;}
+        public Fees Fees {get; set;}
         public string PaymentChannel {get; set;}
     }
 
@@ -105,5 +109,10 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
     {
         public int Id {get; set;}
         public string Name {get; set;}
+    }
+
+    class Fees {
+        public decimal PaymentProviderFee {get; set;}
+        public decimal ServiceFee {get; set;}
     }
 }

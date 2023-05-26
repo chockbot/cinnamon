@@ -1,7 +1,11 @@
 ﻿let cropperCoverPhoto, cropperFirstPhoto, cropperSecondPhoto;
 
 let multiplePhotoUploadInput = "#photo-upload";
-const controls = ["#cover-photo", "#first-support-photo", "#second-support-photo"];
+const controls = [
+  "#cover-photo",
+  "#first-support-photo",
+  "#second-support-photo",
+];
 
 let cropperCoverPhotoModal = "#cropperCoverPhotoModal";
 let $jsPhotoUploadInput = "#cover-photo";
@@ -18,7 +22,8 @@ let imageFirstSupportPhoto = "#imgFirstSupportPhotoPreview";
 let btnSaveCropFirstPhoto = "#btnSaveCropFirstPhoto";
 let imgSrc2 = "#imgSrc2";
 let firstPhotoData = "#firstPhotoData";
-let btnCloseCropperFirstSupportPhotoModal = "#btnCloseCropperFirstSupportPhotoModal";
+let btnCloseCropperFirstSupportPhotoModal =
+  "#btnCloseCropperFirstSupportPhotoModal";
 let firstPhotoFileName = "";
 
 let cropperSecondSupportPhotoModal = "#cropperSecondSupportPhotoModal";
@@ -27,194 +32,275 @@ let imageSecondSupportPhoto = "#imgSecondSupportPhotoPreview";
 let btnSaveCropSecondPhoto = "#btnSaveCropSecondPhoto";
 let imgSrc3 = "#imgSrc3";
 let secondPhotoData = "#secondPhotoData";
-let btnCloseCropperSecondSupportPhotoModal = "#btnCloseCropperSecondSupportPhotoModal";
+let btnCloseCropperSecondSupportPhotoModal =
+  "#btnCloseCropperSecondSupportPhotoModal";
 let secondPhotoFileName = "";
 
-let coverPhotos = [imageCoverPhoto, imageFirstSupportPhoto, imageSecondSupportPhoto];
-let photoModals = [cropperCoverPhotoModal, cropperFirstSupportPhotoModal, cropperSecondSupportPhotoModal];
+let experienceCreationGuideModal = "#experienceCreationGuideModal";
+let infoTitle = "#info-title";
+let infoDescription = "#info-description";
+let infoExperienceType = "#info-experience-type";
+let infoSchedule = "#info-schedule";
+let infoOptionalDetails = "#info-optional-details";
+let infoGallery = "#info-gallery";
+let imageSection = "#image-section";
+let btnCloseExperienceCreationGuideModal = "#btnCloseExperienceCreationGuideModal";
 
+let coverPhotos = [
+  imageCoverPhoto,
+  imageFirstSupportPhoto,
+  imageSecondSupportPhoto,
+];
+let photoModals = [
+  cropperCoverPhotoModal,
+  cropperFirstSupportPhotoModal,
+  cropperSecondSupportPhotoModal,
+];
 
-$(document).on('change', multiplePhotoUploadInput, function () {
-    const inputElement = document.querySelector(multiplePhotoUploadInput);
-    let totalFileSize = 0;
+$(document).on("change", multiplePhotoUploadInput, function () {
+  const inputElement = document.querySelector(multiplePhotoUploadInput);
+  let totalFileSize = 0;
 
-    if (inputElement.files.length > 3) {
-        return;
+  if (inputElement.files.length > 3) {
+    return;
+  } else {
+    for (let i = 0; i < 3; i++) {
+      if (inputElement.files[i]) {
+        totalFileSize += inputElement.files[i].size / 1024 / 1024;
+      }
     }
-    else {
-        for (let i = 0; i < 3; i++) {
-            if (inputElement.files[i]) {
-                totalFileSize += inputElement.files[i].size / 1024 / 1024;
-            }
+    if (totalFileSize > 25) {
+      return;
+    } else {
+      for (let i = 0; i < 3; i++) {
+        if (inputElement.files[i]) {
+          handlePhoto(this, coverPhotos[i], photoModals[i], [
+            inputElement.files[i],
+          ]);
         }
-        if (totalFileSize > 10) {
-            return;
-        }
-        else {
-            for (let i = 0; i < 3; i++) {
-                if (inputElement.files[i]) {
-                    handlePhoto(this, coverPhotos[i], photoModals[i], [inputElement.files[i]]);
-                }
-            }
-        }
+      }
     }
+  }
+});
+
+$(document).on("change", $jsPhotoUploadInput, function () {
+  handlePhoto(this, imageCoverPhoto, cropperCoverPhotoModal, null);
+});
+
+$(document).on("change", firstSupportPhotoInput, function () {
+  handlePhoto(
+    this,
+    imageFirstSupportPhoto,
+    cropperFirstSupportPhotoModal,
+    null
+  );
+});
+
+$(document).on("change", secondSupportPhotoInput, function () {
+  handlePhoto(
+    this,
+    imageSecondSupportPhoto,
+    cropperSecondSupportPhotoModal,
+    null
+  );
+});
+
+$(document).on("click", btnSaveCropCoverPhoto, function () {
+  saveCroppedCoverPhoto(
+    event,
+    imgSrc1,
+    cropperCoverPhotoModal,
+    imageCoverPhoto,
+    coverPhotoData,
+    cropperCoverPhoto,
+    0,
+    coverPhotoFileName
+  );
+});
+
+$(document).on("click", btnSaveCropFirstPhoto, function () {
+  saveCroppedCoverPhoto(
+    event,
+    imgSrc2,
+    cropperFirstSupportPhotoModal,
+    imageFirstSupportPhoto,
+    firstPhotoData,
+    cropperFirstPhoto,
+    1,
+    firstPhotoFileName
+  );
+});
+
+$(document).on("click", btnSaveCropSecondPhoto, function () {
+  saveCroppedCoverPhoto(
+    event,
+    imgSrc3,
+    cropperSecondSupportPhotoModal,
+    imageSecondSupportPhoto,
+    secondPhotoData,
+    cropperSecondPhoto,
+    2,
+    secondPhotoFileName
+  );
+});
+
+$(document).on("click", btnCloseCropperCoverPhotoModal, function () {
+  closeModal(cropperCoverPhotoModal, cropperCoverPhoto);
+});
+
+$(document).on("click", btnCloseCropperFirstSupportPhotoModal, function () {
+  closeModal(cropperFirstSupportPhotoModal, cropperFirstPhoto);
+});
+
+$(document).on("click", btnCloseCropperSecondSupportPhotoModal, function () {
+  closeModal(cropperSecondSupportPhotoModal, cropperSecondPhoto);
+});
+
+$(document).on("click", `${infoTitle}, ${infoDescription}, ${infoExperienceType}, ${infoSchedule}, ${infoOptionalDetails}, ${infoGallery}`, function () {
+    let fileName = $(this).attr("data-image-url");
+    displayExperienceCreationGuideModal(fileName);
+});
+
+$(document).on("click", btnCloseExperienceCreationGuideModal, function () {
+    closeExperienceCreationGuideModal();
 });
 
 
-$(document).on('change', $jsPhotoUploadInput, function () {
-    handlePhoto(this, imageCoverPhoto, cropperCoverPhotoModal, null);
-});
 
-$(document).on('change', firstSupportPhotoInput, function () {
-    handlePhoto(this, imageFirstSupportPhoto, cropperFirstSupportPhotoModal, null);
-
-});
-
-$(document).on('change', secondSupportPhotoInput, function () {
-    handlePhoto(this, imageSecondSupportPhoto, cropperSecondSupportPhotoModal, null);
-});
-
-$(document).on('click', btnSaveCropCoverPhoto, function () {
-    saveCroppedCoverPhoto(event, imgSrc1, cropperCoverPhotoModal, imageCoverPhoto, coverPhotoData, cropperCoverPhoto,0, coverPhotoFileName);
-});
-
-$(document).on('click', btnSaveCropFirstPhoto, function () {
-    saveCroppedCoverPhoto(event, imgSrc2, cropperFirstSupportPhotoModal, imageFirstSupportPhoto, firstPhotoData, cropperFirstPhoto,1, firstPhotoFileName);
-});
-
-$(document).on('click', btnSaveCropSecondPhoto, function () {
-    saveCroppedCoverPhoto(event, imgSrc3, cropperSecondSupportPhotoModal, imageSecondSupportPhoto, secondPhotoData, cropperSecondPhoto,2, secondPhotoFileName);
-});
-
-$(document).on('click', btnCloseCropperCoverPhotoModal, function () {
-    closeModal(cropperCoverPhotoModal, cropperCoverPhoto);
-});
-
-$(document).on('click', btnCloseCropperFirstSupportPhotoModal, function () {
-    closeModal(cropperFirstSupportPhotoModal, cropperFirstPhoto);
-});
-
-$(document).on('click', btnCloseCropperSecondSupportPhotoModal, function () {
-    closeModal(cropperSecondSupportPhotoModal, cropperSecondPhoto);
-});
 
 function handlePhoto(that, imgPreview, photoModal, multipleFileObject) {
-    var files = multipleFileObject ? multipleFileObject : that.files;
-    if (files.length > 0) {
-        var photo = files[0];
-        var fileName = photo.name;
-        if (photo.size > 10000000) {
+  var files = multipleFileObject ? multipleFileObject : that.files;
+  if (files.length > 0) {
+    var photo = files[0];
+    var fileName = photo.name;
+    if (photo.size > 25000000) {
+      return;
+    } else {
+      var reader = new FileReader();
+      reader.onload = function (event) {
+        $(photoModal).find(imgPreview).attr("src", event.target.result);
+        //imgPreview.src = event.target.result;
 
-            return;
+        if (photoModal == cropperCoverPhotoModal) {
+          cropperCoverPhoto = initializeCropper($(imgPreview)[0], photoModal);
+          coverPhotoFileName = fileName;
+        } else if (photoModal == cropperFirstSupportPhotoModal) {
+          cropperFirstPhoto = initializeCropper($(imgPreview)[0], photoModal);
+          firstPhotoFileName = fileName;
+        } else if (photoModal == cropperSecondSupportPhotoModal) {
+          cropperSecondPhoto = initializeCropper($(imgPreview)[0], photoModal);
+          secondPhotoFileName = fileName;
         }
-        else {
-            var reader = new FileReader();
-            reader.onload = function (event) {
-
-                $(photoModal).find(imgPreview).attr('src', event.target.result);
-                //imgPreview.src = event.target.result;
-
-                if (photoModal == cropperCoverPhotoModal) {
-                    cropperCoverPhoto = initializeCropper($(imgPreview)[0], photoModal);
-                    coverPhotoFileName = fileName;
-                }
-                else if (photoModal == cropperFirstSupportPhotoModal) {
-                    cropperFirstPhoto = initializeCropper($(imgPreview)[0], photoModal);
-                    firstPhotoFileName = fileName;
-                }
-
-                else if (photoModal == cropperSecondSupportPhotoModal) {
-                    cropperSecondPhoto = initializeCropper($(imgPreview)[0], photoModal);
-                    secondPhotoFileName = fileName;
-                }
-                    
-
-                
-            };
-            reader.readAsDataURL(photo);
-        }
+      };
+      reader.readAsDataURL(photo);
     }
+  }
 }
 
 function initializeCropper(imgPreview, photoModal) {
-    return new Cropper(imgPreview, {
-        viewMode: 1,
-        aspectRatio: 4/5,
-        minContainerWidth: 350,
-        minContainerHeight: 400,
-        minCropBoxWidth: 271,
-        minCropBoxHeight: 271,
-        movable: true,
-        ready: function () {
-            $(photoModal).modal({ backdrop: "static", keyboard: false });
-            $(photoModal).modal('show');
-        },
-    });
+  return new Cropper(imgPreview, {
+    viewMode: 1,
+    aspectRatio: 4 / 5,
+    minContainerWidth: 350,
+    minContainerHeight: 400,
+    minCropBoxWidth: 271,
+    minCropBoxHeight: 271,
+    movable: true,
+    ready: function () {
+      $(photoModal).modal({ backdrop: "static", keyboard: false });
+      $(photoModal).modal("show");
+    },
+  });
 }
 
-function saveCroppedCoverPhoto(event, imgSrc, photoModal, imgPreview, imageData, cropper, index, fileName) {
-    event.preventDefault();
+function saveCroppedCoverPhoto(
+  event,
+  imgSrc,
+  photoModal,
+  imgPreview,
+  imageData,
+  cropper,
+  index,
+  fileName
+) {
+  event.preventDefault();
 
-    var $button = $(this);
-    $button.text("Saving...");
-    $button.prop("disabled", true);
+  var $button = $(this);
+  $button.text("Saving...");
+  $button.prop("disabled", true);
 
-    //Crop
-    const canvas = cropper.getCroppedCanvas();
-    //Round
-    const roundedcanvas = getRoundedCanvas(canvas);
+  //Crop
+  const canvas = cropper.getCroppedCanvas({
+    imageSmoothingQuality: "low",
+    imageSmoothingEnabled: true,
+  });
+  //Round
+  const roundedcanvas = getRoundedCanvas(canvas);
 
-    //Check image Size
-    const size = roundedcanvas.size;
-    //Show
-    const base64encodedImage = roundedcanvas.toDataURL("image/jpeg", 0.9);
+  //Check image Size
+  const size = roundedcanvas.size;
+  //Show
+  const base64encodedImage = roundedcanvas.toDataURL("image/jpeg", 0.4);
 
-    $(imageData).val(base64encodedImage);
+  $(imageData).val(base64encodedImage);
 
-    loadImage(imgSrc, base64encodedImage, index, fileName)
-    $(photoModal).modal("hide");
+  loadImage(imgSrc, base64encodedImage, index, fileName);
+  $(photoModal).modal("hide");
 
-    $button.prop("disabled", false);
-    $button.text("Save");
+  $button.prop("disabled", false);
+  $button.text("Save");
 
-    cropper.destroy();
-    cropper = null;
+  cropper.destroy();
+  cropper = null;
 
-    $(imgPreview).src = null;
+  $(imgPreview).src = null;
 }
 
 function loadImage(imgSelector, url, index, filename) {
-    const el = document.querySelector(imgSelector);
-    if (!el) return;
+  const el = document.querySelector(imgSelector);
+  if (!el) return;
 
-    el.classList.remove("invalid");
-    $(el).attr("data-index", index);
-    $(el).attr("data-name", filename);
-    $(el).attr("data-changed", true);
-    el.addEventListener("load", () => URL.revokeObjectURL(url), { once: true });
-    el.src = url;
-    //$(imgSrc).attr("src", base64encodedImage);
+  el.classList.remove("invalid");
+  $(el).attr("data-index", index);
+  $(el).attr("data-name", filename);
+  $(el).attr("data-changed", true);
+  el.addEventListener("load", () => URL.revokeObjectURL(url), { once: true });
+  el.src = url;
+  //$(imgSrc).attr("src", base64encodedImage);
 }
 
 function getRoundedCanvas(sourceCanvas) {
-    var canvas = document.createElement('canvas');
-    var context = canvas.getContext('2d');
-    var width = sourceCanvas.width;
-    var height = sourceCanvas.height;
-    canvas.width = width;
-    canvas.height = height;
-    context.imageSmoothingEnabled = true;
-    context.drawImage(sourceCanvas, 0, 0, width, height);
-    context.globalCompositeOperation = 'destination-in';
-    context.beginPath();
-    context.rect(0, 0, width, height);
-    context.fill();
-    return canvas;
+  var canvas = document.createElement("canvas");
+  var context = canvas.getContext("2d");
+  var width = sourceCanvas.width;
+  var height = sourceCanvas.height;
+  canvas.width = width;
+  canvas.height = height;
+  context.imageSmoothingEnabled = true;
+  context.drawImage(sourceCanvas, 0, 0, width, height);
+  context.globalCompositeOperation = "destination-in";
+  context.beginPath();
+  context.rect(0, 0, width, height);
+  context.fill();
+  return canvas;
 }
 
 function closeModal(cropperModalId, cropper) {
-    $(cropperModalId).modal("hide");
-    cropper.destroy();
-    cropper = null;
+  $(cropperModalId).modal("hide");
+  cropper.destroy();
+  cropper = null;
 }
 
+function displayExperienceCreationGuideModal(fileName) {
+    var imageList = fileName.split('|');
+    $(experienceCreationGuideModal).modal("show");
+    $(imageSection).html("");
+    imageList.forEach(item => {
+        $(`<div class="col-lg-12 mb-4"><img src='${item}' class="guide-image" /></div>`).appendTo(imageSection);
+    });
+}
+
+function closeExperienceCreationGuideModal() {
+    $(experienceCreationGuideModal).modal("hide");
+    $(imageSection).html("");
+}

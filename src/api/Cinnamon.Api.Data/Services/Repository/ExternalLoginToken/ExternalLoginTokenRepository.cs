@@ -17,7 +17,7 @@ public class ExternalLoginTokenRepository : IExternalLoginTokenRepository
     }
 
     public async Task<AppResult<ExternalLoginTokenDTO>> CreateTokenAsync(string token, string guid, string email, 
-        DateTime dateGenerated, string firstName, string lastName)
+        DateTime dateGenerated, string firstName, string lastName, bool isEmptyUsername)
     {
         try
         {
@@ -34,7 +34,8 @@ public class ExternalLoginTokenRepository : IExternalLoginTokenRepository
                 Email = email,
                 Guid = guid,
                 FirstName = firstName,
-                LastName = lastName
+                LastName = lastName,
+                IsEmptyUsername = isEmptyUsername
             };
 
             var result = await dataStore.ExternalLoginToken.Add(entity);
@@ -52,7 +53,8 @@ public class ExternalLoginTokenRepository : IExternalLoginTokenRepository
                 Email = result.Result.Email,
                 Guid = result.Result.Guid,
                 FirstName = result.Result.FirstName,
-                LastName = result.Result.LastName
+                LastName = result.Result.LastName,
+                IsEmptyUsername = result.Result.IsEmptyUsername
             }, "Successfully saved external login token");
         }
         catch (Exception ex)
@@ -78,7 +80,8 @@ public class ExternalLoginTokenRepository : IExternalLoginTokenRepository
                 Token = result.Result.Token,
                 Email = result.Result.Email,
                 FirstName = result.Result.FirstName,
-                LastName = result.Result.LastName
+                LastName = result.Result.LastName,
+                IsEmptyUsername = result.Result.IsEmptyUsername
             }, "Successfully get token");
         }
         catch (Exception ex)
@@ -115,7 +118,8 @@ public class ExternalLoginTokenRepository : IExternalLoginTokenRepository
                 Token = updated.Result.Token,
                 Email = updated.Result.Email,
                 FirstName = updated.Result.FirstName,
-                LastName = updated.Result.LastName
+                LastName = updated.Result.LastName,
+                IsEmptyUsername = updated.Result.IsEmptyUsername
             }, "Successfully update token"); 
         }
         catch (Exception ex)
