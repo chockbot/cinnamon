@@ -46,8 +46,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IPayoutAccountData, Modules.DataAccess.PayoutAccount.PayoutAccountData>();
         services.AddTransient<Modules.DataAccess.Handlers.IPayoutLogData, Modules.DataAccess.PayoutLog.PayoutLogData>();
         services.AddTransient<Modules.DataAccess.Handlers.IAdminUserData, Modules.DataAccess.AdminUser.AdminUserData>();
-
         services.AddTransient<Modules.DataAccess.Handlers.IBadgesData, Modules.DataAccess.Badges.BadgesData>();
+        services.AddTransient<Modules.DataAccess.Handlers.ICustomerPricingData, Modules.DataAccess.CustomerPricingData>();
          
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();

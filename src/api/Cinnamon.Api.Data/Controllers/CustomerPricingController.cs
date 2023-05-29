@@ -132,7 +132,7 @@ public class CustomerPricingController : ControllerBase
     [Route("UpdateCustomerPricing")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateCustomerPricingResult), StatusCodes.Status202Accepted)]
-    public async Task<IActionResult> UpdateResetPassword([FromBody] UpdateCustomerPricingArgs args)
+    public async Task<IActionResult> UpdateCustomerPricing([FromBody] UpdateCustomerPricingArgs args)
     {
         try
         {
