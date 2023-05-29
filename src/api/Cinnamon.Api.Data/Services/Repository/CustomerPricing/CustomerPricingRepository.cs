@@ -60,10 +60,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
     {
         try
         {
-            var includes = new List<Expression<Func<Entities.CustomerPricing,object>>>();
-            includes.Add(c => c.Customer);
-
-            var result = await dataStore.CustomerPricing.FindAsync(c => true, count, skip, includes);
+            var result = await dataStore.CustomerPricing.GetAllowedCustomers(count, skip);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<CustomerPricingDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -83,7 +80,6 @@ public class CustomerPricingRepository : ICustomerPricingRepository
         }
         catch (Exception ex)
         {
-            
             return AppResult<IEnumerable<CustomerPricingDTO>>.CreateFailed(ex, "An error occured when getting customer pricing");
         }
     }
