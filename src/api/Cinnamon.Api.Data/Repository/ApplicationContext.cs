@@ -61,6 +61,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<BadgeList> BadgeList { get; set; }
 
+    public DbSet<CustomerPricing> CustomerPricings {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -179,6 +181,8 @@ public class ApplicationContext : IdentityDbContext
         //badge 
         modelBuilder.Entity<BadgeList>().HasIndex(c => c.Id);
 
+        // customer pricing
+        modelBuilder.Entity<CustomerPricing>().HasOne<Customer>(c => c.Customer);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
