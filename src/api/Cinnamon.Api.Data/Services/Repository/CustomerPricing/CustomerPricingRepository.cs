@@ -35,7 +35,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
             var includes = new List<Expression<Func<Entities.CustomerPricing, object>>>();
             includes.Add(c => c.Customer);
             
-            var getCreatedRes = await dataStore.CustomerPricing.FindFirstAsync(a => a.CustomerId == customerId, includes);
+            var getCreatedRes = await dataStore.CustomerPricing.FindFirstAsync(a => a.Id == entity.Id, includes);
             if(!getCreatedRes.Succeeded || getCreatedRes.Result == null)
             {
                 return AppResult<CustomerPricingDTO>.CreateFailed(new ApplicationException(getCreatedRes.Message), getCreatedRes.Message);
@@ -101,8 +101,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
             var customerPricings = result.Result.Select(c => {
                 return new CustomerPricingDTO {
                     Email = c.Email,
-                    FirstName = c.Customer.FirstName,
-                    LastName = c.Customer.LastName,
+                    FirstName = c.Customer?.FirstName ?? string.Empty,
+                    LastName = c.Customer?.LastName ?? string.Empty,
                     Id = c.Id,
                     Rate = c.Rate
                 };
@@ -113,6 +113,34 @@ public class CustomerPricingRepository : ICustomerPricingRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<CustomerPricingDTO>>.CreateFailed(ex, "An error occured when getting customer pricing");
+        }
+    }
+
+    public async Task<AppResult<CustomerPricingDTO>> GetByCustomerIdAsync(int id) 
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.CustomerPricing,object>>>();
+            includes.Add(c => c.Customer);
+
+            var result = await dataStore.CustomerPricing.FindFirstAsync(c => c.CustomerId == id,includes);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<CustomerPricingDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+            var customerPricing = result.Result;
+
+            return AppResult<CustomerPricingDTO>.CreateSucceeded(new CustomerPricingDTO {
+                Email = customerPricing.Email,
+                FirstName = customerPricing.Customer.FirstName,
+                Id = customerPricing.Id,
+                LastName = customerPricing.Customer.LastName,
+                Rate = customerPricing.Rate
+            }, "Successfully get customer pricing by customer id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CustomerPricingDTO>.CreateFailed(ex, "An error occured when getting customer pricing by customer id");
         }
     }
 
