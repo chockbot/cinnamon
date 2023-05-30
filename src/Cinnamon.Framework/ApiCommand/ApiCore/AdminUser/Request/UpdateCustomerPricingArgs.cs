@@ -8,6 +8,6 @@ public class UpdateCustomerPricingArgs
     public int CustomerId {get; set;}
 
     [Required]
-    [Range(1, 100)]
+    [Range(0, 100)]
     public decimal Rate {get; set;}
 }

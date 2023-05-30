@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IAdminApiHandler adminApiHandler;
 
 <PageTitle>Admin - Manage Users | CinnamonPH</PageTitle>
 <SeoMeta Title="Admin - Manage Users" Subject="Admin - Manage Users" Url="/admin/users" />
@@ -52,7 +53,7 @@
                         Last Name
                     </TableHeaderCell>
                     <TableHeaderCell class="text-start">
-                        Rate
+                        Rate (%)
                     </TableHeaderCell>
                     <TableHeaderCell>
                         Action
@@ -71,7 +72,7 @@
                                     placeholder="Enter Amount" @bind-value="item.Pricing.Rate" />
                         </TableRowCell>
                         <TableRowCell class="name-body text-center">
-                            <Button Size="Size.Small" Type="ButtonType.Button" 
+                            <Button Clicked="() => SubmitCustomerPricing(item)" Size="Size.Small" Type="ButtonType.Button" 
                                 Loading="item.Pricing.IsSubmitting" Disabled="item.Pricing.IsSubmitting"
                                 class="btn-primary min-width-130 font-20" Border="Border.Is0">
                                 <LoadingTemplate>
@@ -178,50 +179,28 @@
         NavigationManager.NavigateTo("/api/account/logout", true);
     }
 
-    private async Task HandleCheckedChanged(ChangeEventArgs e, CustomerProfile customer)
-    {
-        bool isChecked = (bool)e.Value;
-
-        int verifiedBadge = 0;
-
-        if (isChecked)
-        {
-            verifiedBadge = 2;
-        }
-        else
-        {
-            if (string.IsNullOrEmpty(customer.BackIdImagePath) && string.IsNullOrEmpty(customer.FrontIdImagePath))
-            {
-                verifiedBadge = 0;
-            }
-            else
-            {
-                verifiedBadge = 0;
-            }
-        }
-
-        var result = await accountApiHandler.UpdateCustomerProfile(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
-            {
-                VerifiedBadge = verifiedBadge,
-                VerifiedBadgeDate = DateTime.UtcNow,
-                CustomerId = customer.Id,
-                IsOG = customer.IsOG,
-                IsOGDate = customer.IsOGDate,
-                IsOF = customer.IsOfficial,
-                IsOFDate = customer.IsOfficialDate
-            }, token);
-
-        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-        {
-            StateHasChanged();
-        }
-    }
     private bool IsActive(string page)
         => currentPage == page;
+
 
     private async Task SetActive(string page)
     {
         currentPage = page;
         await GetAllCustomers(int.Parse(page));
+    }
+
+    private async Task SubmitCustomerPricing(CustomerProfile item)
+    {
+        if(item.Pricing.Rate >= 0)
+        {
+            item.Pricing.IsSubmitting = true;
+
+            var result = await adminApiHandler.CustomerPricing(new Framework.ApiCommand.ApiCore.AdminUser.Request.UpdateCustomerPricingArgs {
+                CustomerId = item.Id,
+                Rate = item.Pricing.Rate
+            }, token);
+
+            item.Pricing.IsSubmitting = false;
+        }
     }
 }
