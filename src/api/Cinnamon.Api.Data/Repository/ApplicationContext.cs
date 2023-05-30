@@ -136,6 +136,11 @@ public class ApplicationContext : IdentityDbContext
             .WithOne(o => o.Customer)
             .HasForeignKey(o => o.CustomerId);
 
+        modelBuilder.Entity<Customer>()
+            .HasOne(c => c.CustomerPricing)
+            .WithOne(c => c.Customer)
+            .HasForeignKey<CustomerPricing>(c => c.CustomerId);
+
         // ongoingActivity
         modelBuilder.Entity<OngoingActivity>().HasIndex(o => o.PurchaseOrderId);
         modelBuilder.Entity<OngoingActivity>()
