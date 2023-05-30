@@ -16,13 +16,16 @@ namespace Cinnamon.Api.Core.Controllers
     public class AdminController : ControllerBase
     {
         private readonly IGetAdminUserByEmailHandler getAdminUserByEmailHandler;
+        private readonly IUpdateCustomerPricingHandler updateCustomerPricingHandler;
         private readonly ILogger _logger;
 
-        public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger)
+        public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger,
+            IUpdateCustomerPricingHandler updateCustomerPricingHandler)
         {
             _logger = logger;
 
             this.getAdminUserByEmailHandler = getAdminUserByEmailHandler;
+            this.updateCustomerPricingHandler = updateCustomerPricingHandler;
         }
 
         [Route("User")]
@@ -60,6 +63,35 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetAdminUserByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("CustomerPricing")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateCustomerPricingResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CustomerPricing([FromBody] UpdateCustomerPricingArgs args)
+        {
+            try
+            {
+                var result = await updateCustomerPricingHandler.ExecuteAsync(new Services.AdminService.Interactors.UpdateCustomerPricingArgs {
+                    CustomerId = args.CustomerId,
+                    Rate = args.Rate
+                });
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetAdminUserByEmailResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new UpdateCustomerPricingResult
+                {
+                    IsSuccess = true,
+                    Result = true
+                });
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new UpdateCustomerPricingResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
