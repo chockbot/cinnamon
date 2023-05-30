@@ -142,12 +142,13 @@ public class StudentData: IStudentData
         }
     }
 
-    public async Task<AppResult<GetStudentsToDisburseResult>> GetStudentsToDisburse()
+    public async Task<AppResult<GetStudentsToDisburseResult>> GetStudentsToDisburse(GetStudentsToDisburseArgs args)
     {
         try
         {
             var result = await flurlClient
                             .Request("Student/GetStudentsToDisburse")
+                            .SetQueryParams(args)
                             .GetJsonAsync<GetStudentsToDisburseResult>();
 
             return AppResult<GetStudentsToDisburseResult>.CreateSucceeded(result, "Successfully getting get all students api");

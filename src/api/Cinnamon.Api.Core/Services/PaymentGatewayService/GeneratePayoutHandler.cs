@@ -7,6 +7,7 @@ using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Interactors.Results;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Zendit.ReponseMessage;
 using Cinnamon.Api.Core.Services.PaymentGatewayService.Zendit.RequestMessage;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.PayoutAccount;
 using Cinnamon.Framework.Common;
 using Flurl.Http;
 using Flurl.Http.Configuration;
@@ -24,10 +25,12 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
     private readonly GeneratePayoutHelper generatePayoutHelper;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IStudentData studentData;
+    private readonly ICustomerPricingData customerPricingData;
 
     public GeneratePayoutHandler(IPurchaseOrderData purchaseOrderData, IPayoutLogData payoutLogData, 
         ApplicationConfig applicationConfig, IFlurlClientFactory flurlFac, IPayoutAccountData payoutAccountData,
-        IActivityData activityData, IJsonSerializationProvider jsonSerializationProvider, IStudentData studentData)
+        IActivityData activityData, IJsonSerializationProvider jsonSerializationProvider, IStudentData studentData,
+        ICustomerPricingData customerPricingData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.payoutLogData = payoutLogData;
@@ -36,6 +39,7 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
         this.applicationConfig = applicationConfig;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.studentData = studentData;
+        this.customerPricingData = customerPricingData;
 
         var paymentUrl = applicationConfig.Payment.Accounts.First().Settings.First(s => s.Name == "DisbursementUrl").Value;
         flurlClient = flurlFac.Get(paymentUrl);
@@ -59,18 +63,24 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
     {
         try
         {
-            var transactions = await studentData.GetStudentsToDisburse();
-            if(!transactions.Succeeded || transactions.Result == null || !transactions.Result.IsSuccess)
-            {
-                return AppResult<GeneratePayoutResult>.CreateFailed(new ApplicationException(transactions.Result?.ErrorInfo?.Message), transactions.Message);
-            }
-
             if(!applicationConfig.Payment.Accounts.First().Settings.Any(a => a.Name == "Token"))
             {
                 return AppResult<GeneratePayoutResult>.CreateFailed(new ApplicationException("Can't find authentication token"), "Can't find authentication token");
             }
             var authToken = applicationConfig.Payment.Accounts.First().Settings.First(a => a.Name == "Token").Value;
-            
+
+            var cachedPayoutAccounts = new Dictionary<int, PayoutAccountDTO>();
+            var cachedCustomerPricing = new Dictionary<int, decimal>();
+
+            // for exclusive transactions
+            var transactions = await studentData.GetStudentsToDisburse(new Framework.ApiCommand.ApiData.Student.Request.GetStudentsToDisburseArgs {
+                IsInclusive = false
+            });
+            if(!transactions.Succeeded || transactions.Result == null || !transactions.Result.IsSuccess)
+            {
+                return AppResult<GeneratePayoutResult>.CreateFailed(new ApplicationException(transactions.Result?.ErrorInfo?.Message), transactions.Message);
+            }
+
             // skip data have errors
             int totalTransactions = transactions.Result.Result.Count();
             for(int i = 0; i < totalTransactions; i++)
@@ -78,15 +88,69 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                 var transaction = transactions.Result.Result.ElementAt(i);
                 if(transaction != null)
                 {
-                    // get maker bank account
-                    var accountRes = await payoutAccountData.GetPayoutAccountByCustomerId(transaction.MakerId);
-                    if(!accountRes.Succeeded || accountRes.Result == null || !accountRes.Result.IsSuccess)
+                    // get maker payout account and cache in memory
+                    if(!cachedPayoutAccounts.ContainsKey(transaction.MakerId))
                     {
-                        continue;
+                        var accountRes = await payoutAccountData.GetPayoutAccountByCustomerId(transaction.MakerId);
+                        if(!accountRes.Succeeded || accountRes.Result == null || !accountRes.Result.IsSuccess)
+                        {
+                            continue;
+                        }
+                        cachedPayoutAccounts.Add(transaction.MakerId, accountRes.Result.Result);
                     }
-                    var account = accountRes.Result.Result;
+                    var account = cachedPayoutAccounts[transaction.MakerId];
 
                     generatePayoutHelper.AddCustomerSummary(transaction.MakerId, transaction.UnitPrice, transaction.TransactionId, 
+                        account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
+                }
+            }
+
+
+            // for inslusive transaction
+            var inclusiveTransactions = await studentData.GetStudentsToDisburse(new Framework.ApiCommand.ApiData.Student.Request.GetStudentsToDisburseArgs {
+                IsInclusive = true
+            });
+            if(!inclusiveTransactions.Succeeded || inclusiveTransactions.Result == null || !inclusiveTransactions.Result.IsSuccess)
+            {
+                return AppResult<GeneratePayoutResult>.CreateFailed(new ApplicationException(inclusiveTransactions.Result?.ErrorInfo?.Message), inclusiveTransactions.Message);
+            }
+            // skip data have errors
+            int totalInclusiveTransactions = inclusiveTransactions.Result.Result.Count();
+            for(int i = 0; i < totalInclusiveTransactions; i++)
+            {
+                var transaction = inclusiveTransactions.Result.Result.ElementAt(i);
+                if(transaction != null)
+                {
+                    // get maker payout account and cache in memory
+                    if(!cachedPayoutAccounts.ContainsKey(transaction.MakerId))
+                    {
+                        var accountRes = await payoutAccountData.GetPayoutAccountByCustomerId(transaction.MakerId);
+                        if(!accountRes.Succeeded || accountRes.Result == null || !accountRes.Result.IsSuccess)
+                        {
+                            continue;
+                        }
+                        cachedPayoutAccounts.Add(transaction.MakerId, accountRes.Result.Result);
+                    }
+
+                    // get customer pricing and cached in memory
+                    decimal amountToDeduct = 0;
+                    if(!cachedCustomerPricing.ContainsKey(transaction.MakerId))
+                    {
+                        var customerPricingRes = await customerPricingData.GetCustomerPricingByCustomerId(transaction.MakerId);
+                        if(!customerPricingRes.Succeeded || customerPricingRes.Result == null || !customerPricingRes.Result.IsSuccess)
+                        {
+                            continue;
+                        }
+                        cachedCustomerPricing.Add(transaction.MakerId, customerPricingRes.Result.Result.Rate);
+                    }
+
+                    var percentage = cachedCustomerPricing[transaction.MakerId] / 100;
+                    amountToDeduct = percentage * transaction.UnitPrice;
+
+                    var totalAmount = transaction.UnitPrice - amountToDeduct;
+                    var account = cachedPayoutAccounts[transaction.MakerId];
+
+                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, totalAmount, transaction.TransactionId, 
                         account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
                 }
             }

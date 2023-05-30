@@ -151,7 +151,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Payload = serializedPayload,
                 CreditAmount = creditAmount,
                 UnitCount = args.Students.Count(),
-                UnitPrice = activitySchedule.Price
+                UnitPrice = activitySchedule.Price,
+                IsInclusivePayment = IsInclusivePayment
             });
 
             if(!result.Succeeded || result.Result == null)
