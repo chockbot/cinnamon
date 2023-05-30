@@ -8,7 +8,7 @@ public class CustomerPayedNotificationHelper
     public string GetTemplate(string customerName, string experienceName, string coachName, 
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedMembers> members, string referenceNumber, string paymentMethod,
-        string makerEmail, string coachNumber, decimal providerFee, decimal appliedCredits)
+        string makerEmail, string coachNumber, decimal providerFee, decimal appliedCredits, bool isInclusivePayment)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string enrolleesString = string.Empty;
@@ -23,6 +23,46 @@ public class CustomerPayedNotificationHelper
             {
                 enrolleesString += $", {item.Name}";
             }
+        }
+
+        string paymentProviderHtmlString = string.Empty;
+        string serviceFeeHtmlString = string.Empty;
+        
+        if(!isInclusivePayment)
+        {
+            paymentProviderHtmlString = $@"
+                <tr>
+                    <td style='width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Payment Provider Fee: </span>
+                        </p>
+                    </td>
+                    <td style='text-align: right; width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{providerFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                    </td>
+                </tr>
+            ";
+
+            serviceFeeHtmlString = $@"
+                <tr>
+                    <td style='width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Service Fee: </span>
+                        </p>
+                    </td>
+                    <td style='text-align: right; width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{serviceFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                    </td>
+                </tr>
+            ";
         }
 
         return $@"
@@ -138,34 +178,8 @@ public class CustomerPayedNotificationHelper
                                 </p>
                             </td>
                             </tr>
-                            <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Payment Provider Fee: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{providerFee.ToString("#,##0.00")}</span
-                                >
-                                </p>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Service Fee: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{serviceFee.ToString("#,##0.00")}</span
-                                >
-                                </p>
-                            </td>
-                            </tr>
+                            {paymentProviderHtmlString}
+                            {serviceFeeHtmlString}
                             <tr>
                             <td style='width: 50%'>
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
