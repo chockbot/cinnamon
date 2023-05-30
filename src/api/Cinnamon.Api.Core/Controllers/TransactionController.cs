@@ -108,7 +108,8 @@ public class TransactionController : ControllerBase
                     PaymentMethod = purchseOrder.PaymentMethod,
                     ServiceFee = purchseOrder.ServiceFee,
                     PaymentProviderFee = purchseOrder.PaymentProviderFee,
-                    AppliedCredit = purchseOrder.AppliedCredits
+                    AppliedCredit = purchseOrder.AppliedCredits,
+                    IsInclusivePayment = purchseOrder.IsInclusivePayment
                 }
             });
         }

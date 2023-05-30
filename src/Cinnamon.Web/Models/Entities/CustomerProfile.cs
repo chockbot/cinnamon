@@ -24,6 +24,8 @@
 
         public IList<FamilyMember> FamilyMembers {get; set;}
 
+        public CustomerPricing Pricing {get; set;}
+
         private bool _isChecked;
 
         public bool IsChecked
@@ -35,6 +37,15 @@
         public string HasVerificationRequest
         {
             get { return !string.IsNullOrEmpty(FrontIdImagePath) && !string.IsNullOrEmpty(BackIdImagePath) ? "Yes" : "No"; }
+        }
+
+        public class CustomerPricing 
+        {
+            public decimal Rate {get; set;}
+
+            // extra fields
+            public string ExtraClass {get ;set;}
+            public bool IsSubmitting {get; set;}
         }
     }
 }

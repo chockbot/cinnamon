@@ -645,6 +645,44 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("Rate")
+                        .HasColumnType("numeric");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId")
+                        .IsUnique();
+
+                    b.ToTable("CustomerPricings");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", b =>
                 {
                     b.Property<int>("Id")
@@ -1734,6 +1772,17 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Activity");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", b =>
+                {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
+                        .WithOne("CustomerPricing")
+                        .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.FamilyMember", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
@@ -1930,6 +1979,9 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
                 {
+                    b.Navigation("CustomerPricing")
+                        .IsRequired();
+
                     b.Navigation("FamilyMembers");
 
                     b.Navigation("OngoingActivities");

@@ -23,7 +23,7 @@ public class CustomerEntity : GenericEntity<Customer>, ICustomer
             int limitCount = take.HasValue ? take.Value : int.MaxValue;
             int skipCount = skip.HasValue ? skip.Value : 0;
 
-            var query = applicationContext.Set<Customer>().OrderBy(a => a.Id).Where(expression);
+            var query = applicationContext.Set<Customer>().Include(c => c.CustomerPricing).OrderBy(a => a.Id).Where(expression);
 
             if (!string.IsNullOrEmpty(searchValue))
             {
@@ -36,7 +36,7 @@ public class CustomerEntity : GenericEntity<Customer>, ICustomer
             }
             query = query.Skip(skipCount).Take(limitCount);
          
-            var results = query.AsQueryable();
+            var results = await query.ToListAsync();
             return AppResult<IEnumerable<Customer>>.CreateSucceeded(results, "Successfully find entities");
         }
         catch (Exception ex)
