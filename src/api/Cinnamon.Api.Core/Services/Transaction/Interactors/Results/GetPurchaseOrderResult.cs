@@ -16,4 +16,5 @@ public class GetPurchaseOrderResult
     public decimal ServiceFee {get; set;}
     public decimal PaymentProviderFee {get; set;}
     public decimal AppliedCredits {get; set;}
+    public bool IsInclusivePayment {get; set;}
 }
