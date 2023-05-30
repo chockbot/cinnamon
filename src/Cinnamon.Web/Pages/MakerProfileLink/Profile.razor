@@ -16,8 +16,9 @@
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 
 <PageTitle>Activity Provider Profile - @MakerFullname | CinnamonPH</PageTitle>
 <SeoMeta Subject="Activity Provider Profile" Title="Activity Provider Profile"
@@ -87,6 +88,131 @@
                                     </Div>
                                 </Div>
                                 <p class="m-0 text-color-8080 font-16">@customerDetail.About</p>
+                                @*Activity Provider Badges*@
+                                @if (customerDetail.IsVerified == 2)
+                                {
+                                    int cnt = 0;
+                                    <p class="@displayBadge my-3 fw-bold font-18">Badges</p>
+                                    <div class="@displayBadge justify-content-center">
+                                        <Card class="badges-column">
+                                            <CardBody Flex="Flex.AlignContent.Center">
+                                                @if (customerDetail.IsVerified == 2)
+                                                {
+                                                    cnt++;
+                                                    <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>Verified</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (customerDetail.IsOG == true)
+                                                {
+                                                    cnt++;
+                                                    <Tooltip Multiline=true Text="For being part of the alpha and beta testing." Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="images/Badges/OG.svg" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>OG</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (customerDetail.IsOfficial == true)
+                                                {
+                                                    cnt++;
+                                                    <Tooltip Multiline=true Text="Legitimate experience provider in the platform." Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>Official Partner</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                                {
+                                                    cnt++;
+                                                    var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                                    <Tooltip Multiline=true Text="@rare.Description" Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="@rare.ImgScr" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>@rare.Name</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                                {
+                                                    cnt++;
+                                                    var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
+                                                    <Tooltip Multiline=true Text="@epic.Description" Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="@epic.ImgScr" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>@epic.Name</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (MakerCompletedStudent >= 100)
+                                                {
+                                                    cnt++;
+                                                    var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                                                    <Tooltip Multiline=true Text="@legendary.Description" Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="@legendary.ImgScr" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>@legendary.Name</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (cnt == 0)
+                                                {
+                                                    displayBadge = "d-none";
+                                                }
+                                            </CardBody>
+                                        </Card>
+                                    </div>
+                                }
+                                else
+                                {
+                                    displayBadge = "d-none";
+                                }
                             </Div>
                         </Column>
                     </Row>
@@ -128,8 +254,17 @@
     private string ImageSource { get; set; } = "images/Profile/user";
 
     public CustomerProfile customerDetail = new CustomerProfile();
+    public List<BadgeList> badges = new List<BadgeList>();
 
     public int MakerId { get; set; }
+
+    public string displayBadge = "d-flex";
+
+    public string displayText = "d-flex";
+
+    public int MakerOngoingStudent { get; set; }
+
+    public int MakerCompletedStudent { get; set; }
 
     //public CustomerModel Customer { get; set; }
 
@@ -143,6 +278,7 @@
     {
         try
         {
+            await FetchMakerBadges();
             //Get Customer By Id
             bool isIdUsed = int.TryParse(Id, out int intId);
             var customer = isIdUsed ? await accountApiHandler.GetCustomerById(intId) : await accountApiHandler.GetMakerDetailByHandler(Id.Trim());
@@ -157,6 +293,8 @@
                         IsMaker = args.IsMaker,
                         ProfilePath = args.ProfileImg,
                         IsVerified = args.IsVerified,
+                        IsOG = args.IsOG,
+                        IsOfficial = args.IsOfficial,
                         About = args.About,
                         DateJoined = args.DateJoined,
                         Email = args.Email
@@ -238,6 +376,8 @@
                     }).ToList();
                 }
             }
+            MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
+            MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
         }
         catch (Exception e)
         {
@@ -255,7 +395,27 @@
             return customerDetail.FirstName?.ToUpper() + " " + customerDetail.LastName?.ToUpper();
         }
     }
-
+    private async Task FetchMakerBadges()
+    {
+        //Get Badges
+        var badgeList = await dashboardApiHandler.GetAllBadge();
+        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
+        {
+            badges = badgeList.Result.Result.Select(b =>
+            {
+                return new BadgeList
+                    {
+                        Id = b.Id,
+                        Name = b.Name,
+                        Description = b.Description,
+                        NumberOfStudent = b.NumberOfStudent,
+                        NumberOfCompleted = b.NumberOfCompleted,
+                        NumberOfReviews = b.NumberOfReviews,
+                        ImgScr = b.ImgScr
+                    };
+            }).ToList();
+        }
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
