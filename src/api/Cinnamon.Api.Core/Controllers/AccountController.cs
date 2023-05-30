@@ -1230,7 +1230,8 @@ public class AccountController : ControllerBase
             {
                 SearchValue = string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex
+                PageIndex = args.PageIndex,
+                IsOfficialPartner = args.IsOfficialPartner
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -1259,7 +1260,10 @@ public class AccountController : ControllerBase
                         IsOG             = c.IsOG,
                         IsOGDate         = c.IsOGDate,
                         IsOfficial       = c.IsOF,
-                        IsOfficialDate   = c.IsOFDate
+                        IsOfficialDate   = c.IsOFDate,
+                        CustomerPricing = new CustomerPricingDTO {
+                            Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0
+                        }
                     };
                 }),
                 IsSuccess = true,

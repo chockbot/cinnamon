@@ -222,33 +222,39 @@
                                                 @GetTotalPerHeadPrice
                                             </div>
                                         </div>
-                                        <div class="d-flex justify-content-between py-1 price-per-head">
-                                            <div>
-                                                Payment provider fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
+                                        @if(!IsInclusivePricing)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head">
+                                                <div>
+                                                    Payment provider fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
+                                                </div>
+                                                <div>
+                                                    @GetConvinienceFee
+                                                </div>
                                             </div>
-                                            <div>
-                                                @GetConvinienceFee
+                                        }
+                                        @if(!IsInclusivePricing)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head service-fee">
+                                                <div class="d-flex align-items-center">
+                                                    <CustomTooltip MarginLeft="-100">
+                                                        <TextContent>
+                                                            <span class="rounded-circle service-fee-info">i</span>
+                                                        </TextContent>
+                                                        <TooltipContent>
+                                                            <span class="color-grey-100">
+                                                                This helps Cinnamon run its services and protects your payment in case the experience provider does 
+                                                                something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                            </span>
+                                                        </TooltipContent>
+                                                    </CustomTooltip> 
+                                                    <span class="ms-1">Service Fee</span>
+                                                </div>
+                                                <div>
+                                                    PHP @(SelectedAttendeesCount > 0 ? "50.00" : "0.00")
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between py-1 price-per-head service-fee">
-                                            <div class="d-flex align-items-center">
-                                                <CustomTooltip MarginLeft="-100">
-                                                    <TextContent>
-                                                        <span class="rounded-circle service-fee-info">i</span>
-                                                    </TextContent>
-                                                    <TooltipContent>
-                                                        <span class="color-grey-100">
-                                                            This helps Cinnamon run its services and protects your payment in case the experience provider does 
-                                                            something illegal or against our policy. They won't get paid until after the sessions or work have been done.
-                                                        </span>
-                                                    </TooltipContent>
-                                                </CustomTooltip> 
-                                                <span class="ms-1">Service Fee</span>
-                                            </div>
-                                            <div>
-                                                PHP @(SelectedAttendeesCount > 0 ? "50.00" : "0.00")
-                                            </div>
-                                        </div>
+                                        }
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div>
                                                 <TextEdit style="background-color: #F3F6FC;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
@@ -493,6 +499,8 @@
 
     private string Token { get; set; }
 
+    private bool IsInclusivePricing {get; set;} = false;
+
     protected override async Task OnInitializedAsync()
     {
         await FetchAccountDetails();
@@ -674,6 +682,12 @@
                 } : null
             };
         Model.Activity = activity;
+
+        var inclusivePricingRes = await activityApiHandler.OwnerPricingInclusive(Model.Activity.Owner.Id);
+        if(inclusivePricingRes.Succeeded && inclusivePricingRes.Result != null && inclusivePricingRes.Result.IsSuccess)
+        {
+            IsInclusivePricing = inclusivePricingRes.Result.Result.IsInclusivePricing;
+        }
     }
 
     private async Task FetchMakerBadges()
@@ -935,6 +949,10 @@
             {
                 return "PHP 0.00";
             }
+            if(IsInclusivePricing)
+            {
+                return "PHP 0.00";
+            }
             return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .05m).ToString("#,##0.00");
         }
     }
@@ -949,9 +967,9 @@
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal paymentProviderFee = subTotal * .05m;
+            decimal paymentProviderFee = IsInclusivePricing ? 0 : subTotal * .05m;
             decimal discount = 0;
-            decimal serviceFee = 50;
+            decimal serviceFee = IsInclusivePricing ? 0 : 50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
 
             if (Model.IsCreditApplied && Model.Customer.TotalCredits > 0)
@@ -974,9 +992,9 @@
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal paymentProviderFee = subTotal * .05m;
+            decimal paymentProviderFee = IsInclusivePricing ? 0 : subTotal * .05m;
             decimal discount = 0;
-            decimal serviceFee = 50;
+            decimal serviceFee = IsInclusivePricing ? 0 : 50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 

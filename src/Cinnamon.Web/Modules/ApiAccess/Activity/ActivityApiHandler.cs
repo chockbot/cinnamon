@@ -565,4 +565,24 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<DeleteActivityResult>.CreateFailed(ex, "An error occured when calling delete activity api");
         }
     }
+
+    public async Task<AppResult<OwnerPricingInclusiveResult>> OwnerPricingInclusive(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/OwnerPricingInclusive/{id}")
+                .GetJsonAsync<OwnerPricingInclusiveResult>();
+
+            return AppResult<OwnerPricingInclusiveResult>.CreateSucceeded(result, "Successfully getting owner pricing inclusive identifier api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, "An error occured when getting owner pricing inclusive identifier api");
+        }   
+    }
 }
