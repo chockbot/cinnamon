@@ -475,7 +475,7 @@ public class CustomerRepository : ICustomerRepository
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified,DateTime? isVerifiedDate, string? frontIdImagePath, string? backIdImageParh,
-        decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate)
+        decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate, string? handler = null)
     {
         try
         {
@@ -503,7 +503,8 @@ public class CustomerRepository : ICustomerRepository
             customer.IsOG = isOG ?? customer.IsOG;
             customer.IsOGDate = isOGDate ?? customer.IsOGDate;
             customer.IsOfficialPartner = isOF ?? customer.IsOfficialPartner;
-            customer.IsOfficialDate = isOfficialDate ?? customer.IsOfficialDate;    
+            customer.IsOfficialDate = isOfficialDate ?? customer.IsOfficialDate;
+            customer.Handler = handler ?? customer.Handler;
 
             var updatedCustomerRes = await dataStore.Customer.Update(customer);
             if (!updatedCustomerRes.Succeeded)

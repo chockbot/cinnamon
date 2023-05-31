@@ -89,6 +89,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IUpdateRequestRefundHandler, Services.AccountService.UpdateRequestRefundHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateCreditBalanceHandler, Services.AccountService.UpdateCreditBalanceHandler>();
         services.AddTransient<Services.AccountService.Handlers.IAccountSubmitVerifiedHandler, Services.AccountService.AccountSubmitVerifiedHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGenerateCustomerHandler, Services.AccountService.GenerateCustomerHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -119,6 +120,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityGuidHandler, Services.ActivityService.UpdateActivityGuidHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteActivityHandler, Services.ActivityService.DeleteActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOwnerPricingInclusiveHandler, Services.ActivityService.OwnerPricingInclusiveHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGenerateActivityHandler, Services.ActivityService.GenerateActivityHandler>();
         
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
@@ -147,6 +149,7 @@ public static class ServiceExtenstion
 
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
+        services.AddTransient<Services.SystemService.Handlers.IGenerateSitemapHandler, Services.SystemService.GenerateSitemapHandler>();
 
         // payment gateways
         services.AddTransient<Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();
