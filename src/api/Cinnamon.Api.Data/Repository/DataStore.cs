@@ -72,6 +72,10 @@ public class DataStore : IDataStore
 
     public ICustomerPricing CustomerPricing => new CustomerPricingEntity(applicationContext);
 
+    public IChatHistory ChatHistory => new ChatHistoryEntity(applicationContext);
+
+    public IChatRooms ChatRooms => new ChatRoomsEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

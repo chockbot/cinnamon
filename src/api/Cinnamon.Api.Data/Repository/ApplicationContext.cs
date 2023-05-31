@@ -62,6 +62,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<BadgeList> BadgeList { get; set; }
 
     public DbSet<CustomerPricing> CustomerPricings {get; set;}
+    public DbSet<ChatHistory> ChatHistories {get; set; }
+    public DbSet<ChatRoom> ChatRooms { get; set; }
 
     #endregion
 
