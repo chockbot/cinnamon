@@ -214,7 +214,7 @@
                                                 </Tooltip>
                                                 @*<img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" data-toggle="tooltip" data-placement="top" title="Legitimate experience provider in the platform." />*@
                                             }
-                                            @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                            @if (MakerCompletedStudent >= 10)
                                             {
                                                 var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@rare.Description">
@@ -222,7 +222,7 @@
                                                 </Tooltip>
                                                 @* <img class="verified-logo" src="@rare.ImgScr" data-toggle="tooltip" data-placement="top" title="@rare.Description" />*@
                                             }
-                                            @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                            @if (MakerCompletedStudent >= 25)
                                             {
                                                 var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@epic.Description">

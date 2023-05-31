@@ -338,14 +338,14 @@
                                                     <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
                                                 </Tooltip>
                                             }
-                                            @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                            @if (MakerCompletedStudent >= 10)
                                             {
                                                 var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@rare.Description">
                                                     <img class="verified-logo" src="@rare.ImgScr" />
                                                 </Tooltip>
                                             }
-                                            @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                            @if (MakerCompletedStudent >= 25)
                                             {
                                                 var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@epic.Description">
