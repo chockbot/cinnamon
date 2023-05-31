@@ -46,20 +46,38 @@ public class GenerateCustomerHandler : IGenerateCustomerHandler
                     new ApplicationException(queryCustomerHandler.Result?.ErrorInfo?.Message), queryCustomerHandler.Message);
             }
 
-            var customerHandlers = queryCustomerHandler.Result.Result.OrderBy(a => a.Handler);
-            if(customerHandlers.Count() > 0)
+            var customerHandlers = queryCustomerHandler.Result.Result.Select(c => c.Handler).OrderBy(s => s).ToList();
+            if(customerHandlers.Count > 0)
             {
-                var splittedLastHandler = customerHandlers.Last().Handler.Split("-");
-                if(splittedLastHandler.Count() > 0)
+                for(int i = customerHandlers.Count - 1; i >= 0; i--)
                 {
-                    var lastIdentifier = splittedLastHandler.Last();
-                    if(int.TryParse(lastIdentifier, out int intResult))
+                    var nameHandler = customerHandlers[i];
+                    var splittedHandler = nameHandler.Split("-").ToList();
+
+                    if(splittedHandler.Count > 0)
                     {
-                        handlerName = $"{handlerName}-{intResult +1}";
-                    }
-                    else 
-                    {
-                        handlerName = $"{handlerName}-1";
+                        var lastIdentifier = splittedHandler.Last();
+
+                        // concatenated string without last identifier eg: lim-lim
+                        var concatHandler = string.Join("-",splittedHandler.Take(splittedHandler.Count -1)).ToLower();
+
+                        if(int.TryParse(lastIdentifier, out int intResult))
+                        {
+                            if(concatHandler == handlerName)
+                            {
+                                handlerName = $"{handlerName}-{intResult + 1}";
+                                break;
+                            }
+                        }
+                        else
+                        {
+                            var concatSplitted = string.Join("-",splittedHandler).ToLower();
+                            if(concatSplitted == handlerName)
+                            {
+                                handlerName = $"{handlerName}-1";
+                                break;
+                            }
+                        }
                     }
                 }
             }

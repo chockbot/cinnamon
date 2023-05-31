@@ -46,7 +46,7 @@ public class GenerateActivityHandler : IGenerateActivityHandler
                     new ApplicationException(queryActivitiesLikeHandlerName.Result?.ErrorInfo?.Message), queryActivitiesLikeHandlerName.Message);
             }
             var activitiesHandlers = queryActivitiesLikeHandlerName.Result.Result.Select(a => a.Handler).OrderBy(h => h).ToList();
-            if(activitiesHandlers.Count() > 0)
+            if(activitiesHandlers.Count > 0)
             {
                 for(int i = activitiesHandlers.Count - 1; i >= 0; i--)
                 {
