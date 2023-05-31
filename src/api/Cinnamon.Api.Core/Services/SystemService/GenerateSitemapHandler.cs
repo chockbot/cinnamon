@@ -13,13 +13,15 @@ public class GenerateSitemapHandler : IGenerateSitemapHandler
     private readonly IGetAllActivitiesHandler getAllActivitiesHandler;
     private readonly ApplicationConfig applicationConfig;
     private readonly IGetAllCustomersHandler getAllCustomersHandler;
+    private readonly ILogger logger;
 
     public GenerateSitemapHandler(IGetAllActivitiesHandler getAllActivitiesHandler, ApplicationConfig applicationConfig,
-        IGetAllCustomersHandler getAllCustomersHandler)
+        IGetAllCustomersHandler getAllCustomersHandler, ILogger<GenerateSitemapHandler> logger)
     {
         this.getAllActivitiesHandler = getAllActivitiesHandler;
         this.applicationConfig = applicationConfig;
         this.getAllCustomersHandler = getAllCustomersHandler;
+        this.logger = logger;
     }
     
     public AppResult<GenerateSitemapResult> Execute(GenerateSitemapArgs args)
@@ -42,6 +44,7 @@ public class GenerateSitemapHandler : IGenerateSitemapHandler
             var currentDate = DateTime.Now;
             var dateString = currentDate.ToString("yyyy-MM-dd");
 
+            logger.LogInformation("-- starting generating sitemap... --");
             using(StreamWriter sw = new StreamWriter(path))
             {
                 await sw.WriteLineAsync("<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:xhtml=\"http:www.w3.org/1999/xhtml\">");
@@ -122,10 +125,12 @@ public class GenerateSitemapHandler : IGenerateSitemapHandler
 
                 await sw.WriteLineAsync("</urlset>");
             }
+            logger.LogInformation("-- Done generating sitemap --");
             return AppResult<GenerateSitemapResult>.CreateSucceeded(new GenerateSitemapResult {}, "Success");
         }
         catch (Exception ex)
         {
+            logger.LogError("-- Error when generating sitemap " + ex.Message + " --");
             return AppResult<GenerateSitemapResult>.CreateFailed(ex, "An error occured in GenerateSitemapHandler");
         }
     }
