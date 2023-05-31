@@ -35,12 +35,14 @@
     text-align: left;
 }
 ::deep .dropdown-menu {
-    width: 382px;
+    width: 400px;
     border-radius: 10px;
     padding: 10px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 .check-button {
-    width:350px;
+    width:390px;
     background-color: white;
     border: none;
     text-align: left;
@@ -62,6 +64,7 @@
     font-size: 14px;
     font-weight: 400;
     color: #717171;
+    text-align: left;
 }
 student-attendance .activities-schedule-section .swiper-wrapper {
     padding-top: 20px;
@@ -134,9 +137,20 @@ student-attendance .activities-schedule-section .swiper-wrapper {
 
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .student-attendance .activities-schedule-section {
-    margin-top: -10px;
+    margin-top: 2rem;
   }
-
+    ::deep .dropdown .btn {
+        width: 100%;
+    }
+    ::deep .dropdown-menu {
+        width: 90%;
+    }
+    .check-button {
+        width: 95%;
+    }
+    .schedule-title {
+        margin-left:2rem;
+    }
   .student-attendance .title {
     font-size: 20px;
     margin-bottom: 0;
