@@ -92,13 +92,16 @@ builder.Services.AddQuartz(q => {
         .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Activity.RunPerHour).RepeatForever())
     );
 
-    var generateSitemapJobKey = new JobKey("GenerateSitemapHandler");
-    q.AddJob<GenerateSitemapJob>(opts => opts.WithIdentity(generateSitemapJobKey));
-    q.AddTrigger(opts => opts
-        .ForJob(generateSitemapJobKey)
-        .WithIdentity("GenerateSitemapHandler-trigger")
-        .WithSimpleSchedule(x => x.WithIntervalInHours(24).RepeatForever())
-    );
+    if(applicationConfig.Sitemap.RunSitemap)
+    {
+        var generateSitemapJobKey = new JobKey("GenerateSitemapHandler");
+        q.AddJob<GenerateSitemapJob>(opts => opts.WithIdentity(generateSitemapJobKey));
+        q.AddTrigger(opts => opts
+            .ForJob(generateSitemapJobKey)
+            .WithIdentity("GenerateSitemapHandler-trigger")
+            .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Sitemap.RunPerHour).RepeatForever())
+        );
+    }
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 

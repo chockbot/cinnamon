@@ -1,4 +1,5 @@
 using Cinnamon.Api.Core.Config;
+using Cinnamon.Api.Core.Services.AccountService.Handlers;
 using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.SystemService.Handlers;
 using Cinnamon.Api.Core.Services.SystemService.Interactors;
@@ -11,11 +12,14 @@ public class GenerateSitemapHandler : IGenerateSitemapHandler
 {
     private readonly IGetAllActivitiesHandler getAllActivitiesHandler;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IGetAllCustomersHandler getAllCustomersHandler;
 
-    public GenerateSitemapHandler(IGetAllActivitiesHandler getAllActivitiesHandler, ApplicationConfig applicationConfig)
+    public GenerateSitemapHandler(IGetAllActivitiesHandler getAllActivitiesHandler, ApplicationConfig applicationConfig,
+        IGetAllCustomersHandler getAllCustomersHandler)
     {
         this.getAllActivitiesHandler = getAllActivitiesHandler;
         this.applicationConfig = applicationConfig;
+        this.getAllCustomersHandler = getAllCustomersHandler;
     }
     
     public AppResult<GenerateSitemapResult> Execute(GenerateSitemapArgs args)
@@ -93,6 +97,26 @@ public class GenerateSitemapHandler : IGenerateSitemapHandler
                         await sw.WriteLineAsync($"<lastmod>{dateString}</lastmod>");
                         await sw.WriteLineAsync("<priority>0.8</priority>");
                         await sw.WriteLineAsync("</url>");
+                    }
+                }
+
+                // customers sitemap
+                var customerRes = await getAllCustomersHandler.ExecuteAsync(new AccountService.Interactors.GetAllCustomersArgs {
+
+                });
+                if(customerRes.Succeeded && customerRes.Result != null)
+                {
+                    var customers = customerRes.Result.Customers.ToList();
+                    for(int i = 0, cnt = customers.Count; i < cnt; i++)
+                    {
+                        if(customers[i].IsMaker)
+                        {
+                            await sw.WriteLineAsync("<url>");
+                            await sw.WriteLineAsync($"<loc>https://cinnamon.ph/maker/profile/{customers[i].Handler}</loc>");
+                            await sw.WriteLineAsync($"<lastmod>{dateString}</lastmod>");
+                            await sw.WriteLineAsync("<priority>0.8</priority>");
+                            await sw.WriteLineAsync("</url>");
+                        }
                     }
                 }
 
