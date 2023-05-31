@@ -321,32 +321,53 @@
         MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
 
         //Get Student Attendance 
-        foreach (var item in activities)
-        {
-            var attendance = await dashboardApiHandler.GetAllStudentsAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceArgs
-                {
-                    ActivityId = item.Id,
-                }, token);
-            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-            {
-                studentAttendances = attendance.Result.Result.Select(a =>
-                {
-                    return new StudentAttendance
-                        {
-                            Id = a.Id,
-                            Date = a.Date,
-                            IsPresent = a.IsPresent,
-                            NumberOfSessions = a.NumberOfSessions,
-                            SessionsAttended = a.SessionsAttended,
-                            StudentId = a.StudentId
-                        };
-                }).Where(s => s.IsPresent == true && (s.SessionsAttended == s.NumberOfSessions || s.SessionsAttended >= s.NumberOfSessions))
-                .GroupBy(p => p.StudentId).Select(a => a.Last())
-                .OrderBy(a => a.Date).ToList();
+        //foreach (var item in activities)
+        //{
+        //    var attendance = await dashboardApiHandler.GetAllStudentsAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceArgs
+        //        {
+        //            ActivityId = item.Id,
+        //        }, token);
+        //    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        //    {
+        //        studentAttendances = attendance.Result.Result.Select(a =>
+        //        {
+        //            return new StudentAttendance
+        //                {
+        //                    Id = a.Id,
+        //                    Date = a.Date,
+        //                    IsPresent = a.IsPresent,
+        //                    NumberOfSessions = a.NumberOfSessions,
+        //                    SessionsAttended = a.SessionsAttended,
+        //                    StudentId = a.StudentId
+        //                };
+        //        }).Where(s => s.IsPresent == true && (s.SessionsAttended == s.NumberOfSessions || s.SessionsAttended >= s.NumberOfSessions))
+        //        .GroupBy(p => p.StudentId).Select(a => a.Last())
+        //        .OrderBy(a => a.Date).ToList();
 
-                Attendances.item.AddRange(studentAttendances);
-            }
+        //        Attendances.item.AddRange(studentAttendances);
+        //    }
+        //}
+        var attendance = await dashboardApiHandler.GetCompletedStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCompletedStudetnsArgs
+        {
+            ActivityIds = activities.Select(s => s.ActivityId).ToList()
+        }, token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        StudentId = a.StudentId
+                    };
+            }).Where(s => s.IsPresent == true).OrderBy(a => a.Date).ToList();
+            Attendances.item.AddRange(studentAttendances);
         }
+
         //Get Badges Percentage AND Date Obtained
         if (customerProfile.IsVerified == 2)
         {
@@ -355,19 +376,19 @@
         if (MakerCompletedStudent >= 10)
         {
             cnt++;
-            var attendance = Attendances.item.OrderBy(p=> p.Date).Take(10).LastOrDefault();
-            RareBadgeDate = attendance.Date.ToString("MM-dd-yyyy");
+            var top10 = Attendances.item.OrderBy(p=> p.Date).Take(10).LastOrDefault();
+            RareBadgeDate = top10.Date.ToString("MM-dd-yyyy");
             if (MakerCompletedStudent >= 25)
             {
                 cnt++;
-                var attendance1 = Attendances.item.OrderBy(p=> p.Date).Take(25).LastOrDefault();
-                EpicBadgeDate = attendance1.Date.ToString("MM-dd-yyyy");
+                var top25 = Attendances.item.OrderBy(p=> p.Date).Take(25).LastOrDefault();
+                EpicBadgeDate = top25.Date.ToString("MM-dd-yyyy");
 
                 if (MakerCompletedStudent >= 100)
                 {
                     cnt++;
-                    var attendance2 = Attendances.item.OrderBy(p=> p.Date).Take(100).LastOrDefault();
-                    LegendaryBadgeDate = attendance2.Date.ToString("MM-dd-yyyy");
+                    var top100 = Attendances.item.OrderBy(p=> p.Date).Take(100).LastOrDefault();
+                    LegendaryBadgeDate = top100.Date.ToString("MM-dd-yyyy");
                 }
             }
         }

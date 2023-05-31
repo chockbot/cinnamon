@@ -236,8 +236,8 @@ public class StudentAttendanceController : ControllerBase
                 date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
             }
 
-            var result = 
-                args.Id != 0 || args.ActivityId !=0 || args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
+            var result =
+                args.Id != 0 || args.ActivityId != 0 || args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
                     args.IsIncludeStudent.HasValue || args.ScheduleIds != null ?
                 await studentAttendanceRepository.GetAttendanceByIdAsync(args.Id,args.ActivityId,args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,
                     date, args.IsIncludeStudent, args.ScheduleIds) :
@@ -279,4 +279,62 @@ public class StudentAttendanceController : ControllerBase
             return new JsonResult(new GetAllStudentAttendanceByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetCompletedStudents")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCompletedStudentsResult), StatusCodes.Status200OK)]
+
+    public async Task<IActionResult> GetCompletedStudents([FromQuery] GetCompletedStudentsArgs args)
+    {
+        try
+        {
+            DateTime? date = null;
+            if (!string.IsNullOrEmpty(args.Date))
+            {
+                date = DateTime.ParseExact(args.Date, "yyyyMMdd", CultureInfo.InvariantCulture);
+            }
+
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
+                    args.IsIncludeStudent.HasValue || args.ActivityIds != null || args.ScheduleIds != null ?
+                await studentAttendanceRepository.GetCompletedStudents(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage,args.IsIncludeStudent, args.ActivityIds, args.ScheduleIds) :
+                await studentAttendanceRepository.GetAllAsync();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            // get all without pagination to get all rows
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.Date) ||
+                    args.IsIncludeStudent.HasValue || args.ActivityIds != null || args.ScheduleIds != null ?
+                await studentAttendanceRepository.GetCompletedStudents(null, null, args.IsIncludeStudent, args.ActivityIds, args.ScheduleIds) :
+                await studentAttendanceRepository.GetAllAsync();
+
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetAllStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
+            }
+
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetAllStudentAttendanceResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
 }
