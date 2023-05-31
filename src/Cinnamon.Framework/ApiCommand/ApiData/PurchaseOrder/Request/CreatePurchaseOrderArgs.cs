@@ -29,4 +29,6 @@ public class CreatePurchaseOrderArgs
     public decimal UnitPrice {get; set;}
     [Required]
     public int UnitCount {get; set;}
+    [Required]
+    public bool IsInclusivePayment {get; set;}
 }

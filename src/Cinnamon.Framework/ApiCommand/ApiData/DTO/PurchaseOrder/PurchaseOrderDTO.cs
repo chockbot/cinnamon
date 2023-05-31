@@ -16,6 +16,7 @@ public class PurchaseOrderDTO
     public decimal CreditAmount {get; set;}
     public int UnitCount {get; set;}
     public decimal UnitPrice {get; set;}
+    public bool IsInclusivePayment {get; set;}
 
     public AssociatedActivity Activity {get; set;}
     public AssociatedSchedule Schedule {get; set;}

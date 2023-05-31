@@ -20,11 +20,12 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IRequestPaymentHandler requestPaymentHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IFinishTransactionHandler finishTransactionHandler;
+    private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
-        IFinishTransactionHandler finishTransactionHandler)
+        IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -33,6 +34,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.requestPaymentHandler = requestPaymentHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.finishTransactionHandler = finishTransactionHandler;
+        this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -79,6 +81,17 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("Invalid schedule id provided"), "Invalid schedule id provided");
             }
 
+            // check if inclusive payment
+            var checkInclusiveRes = await ownerPricingInclusiveHandler.ExecuteAsync(new ActivityService.Interactors.OwnerPricingInclusiveArgs {
+                CustomerId = activityRes.Result.Owner?.Id ?? 0
+            });
+            if(!checkInclusiveRes.Succeeded || checkInclusiveRes.Result == null)
+            {
+                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
+            }
+
+            bool IsInclusivePayment = checkInclusiveRes.Result.IsInclusivePricing;
+
             // check customer id
             var customerRes = await customerData.GetCustomerById(id);
             if(!customerRes.Succeeded || customerRes.Result == null)
@@ -92,9 +105,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             }
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
-            decimal paymentProviderFee = subTotal * .05m;
+            decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * .05m;
             var discount = 0;
-            decimal serviceFee = 50;
+            decimal serviceFee = IsInclusivePayment ? 0 : 50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
             
@@ -118,7 +131,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Fees = new {
                     PaymentProviderFee = paymentProviderFee,
                     ServiceFee = serviceFee
-                }
+                },
+                IsInclusivePayment
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -137,7 +151,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Payload = serializedPayload,
                 CreditAmount = creditAmount,
                 UnitCount = args.Students.Count(),
-                UnitPrice = activitySchedule.Price
+                UnitPrice = activitySchedule.Price,
+                IsInclusivePayment = IsInclusivePayment
             });
 
             if(!result.Succeeded || result.Result == null)

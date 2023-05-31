@@ -40,6 +40,11 @@
                             <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Badges</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToPricing">
+                            <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Pricing</span>
+                        </a>
+                    </li>
                 </ul>
             }
         </LayoutSiderContent>
@@ -87,5 +92,10 @@
     private void NavigateToBadges()
     {
         navigationManager.NavigateTo("/admin/badges");
+    }
+
+    private void NavigateToPricing()
+    {
+        navigationManager.NavigateTo("/admin/pricing");
     }
 }

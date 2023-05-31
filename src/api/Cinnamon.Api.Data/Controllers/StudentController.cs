@@ -188,11 +188,11 @@ public class StudentController : ControllerBase
     [Route("GetStudentsToDisburse")]
     [HttpGet]
     [ProducesResponseType(typeof(GetStudentsToDisburseResult), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetStudentsToDisburse()
+    public async Task<IActionResult> GetStudentsToDisburse([FromQuery] GetStudentsToDisburseArgs args)
     {
         try
         {
-            var result = await studentRepository.GetStudentsToDisburse();
+            var result = await studentRepository.GetStudentsToDisburse(args.IsInclusive ?? false);
 
             if (!result.Succeeded || result.Result == null)
             {
