@@ -39,6 +39,7 @@ public class ActivityController : ControllerBase
     private readonly IGetRefundableExperienceHandler getRefundableExperienceHandler;
     private readonly IUpdateActivityScheduleHandler updateActivityScheduleHandler;
     private readonly IDeleteActivityHandler deleteActivityHandler;
+    private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -51,7 +52,8 @@ public class ActivityController : ControllerBase
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler, IGetMakerActivitiesHandler getMakerActivitiesHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
-        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, IDeleteActivityHandler deleteActivityHandler)
+        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
+        IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler)
     {
         _logger = logger;
 
@@ -81,6 +83,7 @@ public class ActivityController : ControllerBase
         this.getRefundableExperienceHandler = getRefundableExperienceHandler;
         this.updateActivityScheduleHandler = updateActivityScheduleHandler;
         this.deleteActivityHandler = deleteActivityHandler;
+        this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
     }
 
     [Route("CreateActivity")]
@@ -1774,6 +1777,37 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OwnerPricingInclusive/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OwnerPricingInclusiveResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> OwnerPricingInclusive(int id)
+    {
+        try
+        {
+            var result = await ownerPricingInclusiveHandler.ExecuteAsync(new Services.ActivityService.Interactors.OwnerPricingInclusiveArgs {
+                CustomerId = id
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OwnerPricingInclusiveResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OwnerPricingInclusiveResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityOwnerPricingInclusiveDTO {
+                    IsInclusivePricing = result.Result.IsInclusivePricing
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OwnerPricingInclusiveResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

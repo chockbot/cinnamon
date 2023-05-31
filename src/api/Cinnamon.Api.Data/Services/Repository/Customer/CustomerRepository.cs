@@ -218,13 +218,15 @@ public class CustomerRepository : ICustomerRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified,string searchValue, int? count, int? skip, string? handlerLike = null)
+    public async Task<AppResult<IEnumerable<CustomerDTO>>> GetAllAsync(bool? isVerified,string searchValue, 
+        int? count, int? skip, string? handlerLike = null, bool? isOfficialPartner = false)
     {
         try
         {
             Expression<Func<Entities.Customer,bool>> filter = 
                 a => /*(isVerified.HasValue ? a.IsVerifiedBadge == 2 : true) &&*/
-                    (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower()));
+                    (string.IsNullOrEmpty(handlerLike) ? true : a.Handler.ToLower().Contains(handlerLike.ToLower())) &&
+                    (isOfficialPartner.HasValue && isOfficialPartner.Value ? a.IsOfficialPartner == true : true);
 
             var result = await dataStore.Customer.FindCustomerAsync(filter,searchValue,count, skip);
             if (!result.Succeeded || result.Result == null)
@@ -256,7 +258,10 @@ public class CustomerRepository : ICustomerRepository
                     Handler = c.Handler,
                     BackIdImagePath = c.BackIdImagePath,
                     FrontIdImagePath = c.FrontIdImagePath,
-                    TotalCredits = c.TotalCredits
+                    TotalCredits = c.TotalCredits,
+                    CustomerPricing = new CustomerDTO.Pricing {
+                        Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
+                    }
                 };
             });
 

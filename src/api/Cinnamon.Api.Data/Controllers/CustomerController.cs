@@ -132,7 +132,8 @@ public class CustomerController : ControllerBase
         {
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
-                await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike) :
+                await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, 
+                    args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike, args.IsOfficialPartner) :
                 await customerRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)

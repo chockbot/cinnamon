@@ -29,4 +29,5 @@ public class Customer : BaseEntity
     public bool HasAcceptedTerms { get; set; }
     public virtual IList<FamilyMember> FamilyMembers {get; set;}
     public virtual IList<OngoingActivity> OngoingActivities { get; set;}
+    public virtual CustomerPricing CustomerPricing {get; set;}
 }

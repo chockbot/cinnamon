@@ -70,22 +70,28 @@
                                 <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
                             </td>
                         </tr>
-                        <tr>
-                            <td>
-                                <p class="text-capitalize mb-0 mt-2">Payment Provider Fee: </p>
-                            </td>
-                            <td class="text-end">
-                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.PaymentProviderFee.ToString("#,##0.00")</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p class="text-capitalize mb-0 mt-2">Service Fee: </p>
-                            </td>
-                            <td class="text-end">
-                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.ServiceFee.ToString("#,##0.00")</p>
-                            </td>
-                        </tr>
+                        @if(!IsInclusivePayment)
+                        {
+                            <tr>
+                                <td>
+                                    <p class="text-capitalize mb-0 mt-2">Payment Provider Fee: </p>
+                                </td>
+                                <td class="text-end">
+                                    <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.PaymentProviderFee.ToString("#,##0.00")</p>
+                                </td>
+                            </tr>
+                        }
+                        @if(!IsInclusivePayment)
+                        {
+                            <tr>
+                                <td>
+                                    <p class="text-capitalize mb-0 mt-2">Service Fee: </p>
+                                </td>
+                                <td class="text-end">
+                                    <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.ServiceFee.ToString("#,##0.00")</p>
+                                </td>
+                            </tr>
+                        }
                         <tr>
                             <td>
                                 <p class="text-capitalize mb-0 mt-2">Applied Credits: </p>
@@ -125,6 +131,8 @@
 @code
 {
     private PurchaseOrderModel Model {get; set;}
+
+    private bool IsInclusivePayment {get; set;}
 
     protected override async Task OnInitializedAsync()
     {
@@ -217,6 +225,8 @@
             },
             Token = token
         };
+
+        IsInclusivePayment = purchaseOrder.IsInclusivePayment;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
