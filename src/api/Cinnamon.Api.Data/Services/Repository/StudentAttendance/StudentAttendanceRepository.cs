@@ -411,7 +411,7 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
             Expression<Func<Entities.StudentAttendance, bool>> filter =
                 a =>(activityIds != null ? activityIds.Contains(a.Student.ActivityId) : true) &&
                     (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true) &&
-                    (a.Student.SessionsAttended == a.Student.NumberOfSessions);
+                    (a.Student.SessionsAttended >= a.Student.NumberOfSessions);
 
             var result = await dataStore.StudentAttendance.FindAsync(filter, count, skip, includes);
             if (!result.Succeeded || result.Result == null)

@@ -321,35 +321,9 @@
         MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
 
         //Get Student Attendance 
-        //foreach (var item in activities)
-        //{
-        //    var attendance = await dashboardApiHandler.GetAllStudentsAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceArgs
-        //        {
-        //            ActivityId = item.Id,
-        //        }, token);
-        //    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-        //    {
-        //        studentAttendances = attendance.Result.Result.Select(a =>
-        //        {
-        //            return new StudentAttendance
-        //                {
-        //                    Id = a.Id,
-        //                    Date = a.Date,
-        //                    IsPresent = a.IsPresent,
-        //                    NumberOfSessions = a.NumberOfSessions,
-        //                    SessionsAttended = a.SessionsAttended,
-        //                    StudentId = a.StudentId
-        //                };
-        //        }).Where(s => s.IsPresent == true && (s.SessionsAttended == s.NumberOfSessions || s.SessionsAttended >= s.NumberOfSessions))
-        //        .GroupBy(p => p.StudentId).Select(a => a.Last())
-        //        .OrderBy(a => a.Date).ToList();
-
-        //        Attendances.item.AddRange(studentAttendances);
-        //    }
-        //}
         var attendance = await dashboardApiHandler.GetCompletedStudents(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCompletedStudetnsArgs
         {
-            ActivityIds = activities.Select(s => s.ActivityId).ToList()
+            ActivityIds = activities.Select(s => s.Id).ToList()
         }, token);
         if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
@@ -364,12 +338,13 @@
                         SessionsAttended = a.SessionsAttended,
                         StudentId = a.StudentId
                     };
-            }).Where(s => s.IsPresent == true).OrderBy(a => a.Date).ToList();
+            }).Where(s => s.IsPresent == true).GroupBy(p => new { p.StudentId, p.ActivityId})
+            .Select(a => a.Last()).OrderBy(a => a.Date).ToList();
             Attendances.item.AddRange(studentAttendances);
         }
 
         //Get Badges Percentage AND Date Obtained
-        if (customerProfile.IsVerified == 2)
+        if (customerProfile.IsVerified == 2) 
         {
             cnt++;
         }
@@ -392,7 +367,6 @@
                 }
             }
         }
-        
     }
     public double GetPercentage()
     {
