@@ -146,6 +146,7 @@ public static class ServiceExtenstion
 
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
+        services.AddTransient<Services.SystemService.Handlers.IGenerateSitemapHandler, Services.SystemService.GenerateSitemapHandler>();
 
         // payment gateways
         services.AddTransient<Services.PaymentGatewayService.Zendit.EWalletGenerateResponseHandler>();

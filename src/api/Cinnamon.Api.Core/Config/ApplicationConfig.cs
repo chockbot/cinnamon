@@ -10,4 +10,5 @@ public class ApplicationConfig
     public FailedLogin FailedLogin {get; set;}
     public Payment Payment {get; set;}
     public Activity Activity { get; set; }
+    public Sitemap Sitemap {get; set;}
 }
