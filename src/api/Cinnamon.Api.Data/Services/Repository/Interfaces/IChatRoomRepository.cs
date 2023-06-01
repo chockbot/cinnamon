@@ -10,4 +10,5 @@ public interface IChatRoomRepository
 {
    
     Task<AppResult<ChatRoomDTO>> Create(int fromUserId, int toUserId);
+    Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatRoomsByUserId(int userId);
 }

@@ -40,4 +40,25 @@ public class ChatRoomData : IChatRoomData
             return AppResult<CreateChatRoomResult>.CreateFailed(ex, "An error occured when posting create chat room api");
         }
     }
+
+    public async Task<AppResult<GetChatRoomsByUserIdResult>> GetChatRoomsByUserId(GetChatRoomsByUserIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                        .Request("Chat/ChatRooms")
+                        .SetQueryParams(args)
+                        .GetJsonAsync<GetChatRoomsByUserIdResult>();
+
+            return AppResult<GetChatRoomsByUserIdResult>.CreateSucceeded(result, "Successfully posted get chat room api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetChatRoomsByUserIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetChatRoomsByUserIdResult>.CreateFailed(ex, "An error occured when posting get chat room api");
+        }
+    }
 }

@@ -7,4 +7,5 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 public interface IChatRoomData
 {
     Task<AppResult<CreateChatRoomResult>> CreateChatRoom(CreateChatRoomArgs args);
+    Task<AppResult<GetChatRoomsByUserIdResult>> GetChatRoomsByUserId(GetChatRoomsByUserIdArgs args);
 }

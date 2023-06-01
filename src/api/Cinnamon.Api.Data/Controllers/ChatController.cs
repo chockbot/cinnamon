@@ -71,7 +71,7 @@ namespace Cinnamon.Api.Data.Controllers
             }
         }
 
-        [Route("ByChatRoomId")]
+        [Route("ChatHistories")]
         [HttpGet]
         [ProducesResponseType(typeof(GetChatHistoryByChatRoomIdResult), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetChatHistoryByChatRoomId([FromQuery] GetChatHistoryByChatRoomIdArgs args)
@@ -130,6 +130,33 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatRooms")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatRoomsByUserIdResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatRoomsByUserId([FromQuery] GetChatRoomsByUserIdArgs args)
+        {
+            try
+            {
+                var result = await _chatRoomRepository.GetChatRoomsByUserId(args.UserId);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatRoomsByUserIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var totalRecords = result.Result.Count();
+                return new JsonResult(new GetChatRoomsByUserIdResult
+                {
+                    Result = result.Result,
+                    IsSuccess = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatRoomsByUserIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

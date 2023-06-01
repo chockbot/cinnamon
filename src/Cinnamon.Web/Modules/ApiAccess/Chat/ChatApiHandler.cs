@@ -10,7 +10,7 @@ using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
 
-namespace Cinnamon.Web.Modules.ApiAccess.Admin
+namespace Cinnamon.Web.Modules.ApiAccess.Chat
 {
     public class ChatApiHandler : IChatApiHandler
     {
@@ -112,6 +112,29 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             catch (Exception ex)
             {
                 return AppResult<CreateChatRoomResult>.CreateFailed(ex, "An error occured when calling create chat room api");
+            }
+        }
+
+        public async Task<AppResult<GetChatRoomsByUserIdResult>> GetChatRoomsByUserId(GetChatRoomsByUserIdArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                     .WithOAuthBearerToken(token)
+                     .Request("Chat/ChatRooms")
+                     .SetQueryParams(args)
+                     .GetJsonAsync<GetChatRoomsByUserIdResult>();
+
+                return AppResult<GetChatRoomsByUserIdResult>.CreateSucceeded(result, "Successfully called get chat room api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetChatRoomsByUserIdResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetChatRoomsByUserIdResult>.CreateFailed(ex, "An error occured when calling get chat room api");
             }
         }
     }

@@ -25,8 +25,9 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IUpdateChatHistoryHandler updateChatHistoryHandler;
         private readonly IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler;
         private readonly ICreateChatRoomHandler createChatRoomHandler;
+        private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler)
         {
             _logger = logger;
 
@@ -34,6 +35,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.updateChatHistoryHandler = updateChatHistoryHandler;
             this.getChatHistoryByChatRoomIdHandler = getChatHistoryByChatRoomIdHandler;
             this.createChatRoomHandler = createChatRoomHandler;
+            this.getChatRoomsByUserIdHandler = getChatRoomsByUserIdHandler;
         }
 
         [Route("Create")]
@@ -197,6 +199,51 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatRooms")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatRoomsByUserIdResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatRoomsByUserId([FromQuery] GetChatRoomsByUserIdArgs args)
+        {
+            try
+            {
+                var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
+                {
+                    UserId = args.UserId
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatRoomsByUserIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var chatResult = result.Result;
+
+                return new JsonResult(new GetChatRoomsByUserIdResult
+                {
+                    IsSuccess = true,
+                    Result = result.Result.ChatRooms.Select(c =>
+                    {
+                        return new Framework.ApiCommand.ApiCore.DTO.ChatRoom.ChatRoomDTO
+                        {
+                            ChatRoomId    = c.ChatRoomId,
+                            FromUserId    = c.FromUserId,
+                            DateCreated   = c.DateCreated,
+                            FromFirstName = c.FromFirstName,
+                            FromLastName  = c.FromLastName,
+                            Message       = c.Message,
+                            ToFirstName   = c.ToFirstName,
+                            ToLastName    = c.ToLastName,
+                            ToUserId      = c.ToUserId,
+                        };
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatRoomsByUserIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

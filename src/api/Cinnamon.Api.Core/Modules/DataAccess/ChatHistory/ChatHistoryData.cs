@@ -65,7 +65,7 @@ public class ChatHistoryData : IChatHistoryData
         try
         {
             var result = await flurlClient
-                        .Request("Chat/ByChatRoomId")
+                        .Request("Chat/ChatHistories")
                         .SetQueryParams(args)
                         .GetJsonAsync<GetChatHistoryByChatRoomIdResult>();
 
