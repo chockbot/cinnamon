@@ -1,12 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cinnamon.Framework.ApiCommand.ApiCore;
 
-namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.ChatHistory
+namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
 {
-    public class ChatHistoryDTO
+    public class GetChatHistoryByChatRoomIdResult
+    {
+        public ErrorInfo? ErrorInfo { get; set; }
+        public Pagination? Pagination { get; set; }
+        public IEnumerable<ChatHistory> ChatHistories { get; set; }
+    }
+
+    public class ChatHistory
     {
         public int ChatRoomId { get; set; }
         public int FromUserId { get; set; }

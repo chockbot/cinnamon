@@ -9,4 +9,5 @@ public interface IChatHistoryData
 {
     Task<AppResult<CreateChatHistoryResult>> CreateChatHistory(CreateChatHistoryArgs args);
     Task<AppResult<UpdateChatHistoryResult>> UpdateChatHistory(UpdateChatHistoryArgs args);
+    Task<AppResult<GetChatHistoryByChatRoomIdResult>> GetChatHistoryByChatRoomId(GetChatHistoryByChatRoomIdArgs args);
 }

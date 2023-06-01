@@ -59,4 +59,25 @@ public class ChatHistoryData : IChatHistoryData
             return AppResult<UpdateChatHistoryResult>.CreateFailed(ex, "An error occured when posting update chat history api");
         }
     }
+
+    public async Task<AppResult<GetChatHistoryByChatRoomIdResult>> GetChatHistoryByChatRoomId(GetChatHistoryByChatRoomIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                        .Request("Chat/ByChatRoomId")
+                        .SetQueryParams(args)
+                        .GetJsonAsync<GetChatHistoryByChatRoomIdResult>();
+
+            return AppResult<GetChatHistoryByChatRoomIdResult>.CreateSucceeded(result, "Successfully posted get chat history api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetChatHistoryByChatRoomIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetChatHistoryByChatRoomIdResult>.CreateFailed(ex, "An error occured when posting get chat history api");
+        }
+    }
 }

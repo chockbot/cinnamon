@@ -66,6 +66,46 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new UpdateChatHistoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
+        [Route("ByChatRoomId")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatHistoryByChatRoomIdResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatHistoryByChatRoomId([FromQuery] GetChatHistoryByChatRoomIdArgs args)
+        {
+            try
+            {
+                int? skip = 0;
+                int? take = args.CountPerPage;
+
+                skip = (args.PageIndex - 1) * args.CountPerPage;
+
+                var result = await _chatHistoryRepository.GetChatHistoryByChatRoomId(args.ChatRoomId, skip, take);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatHistoryByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var totalRecords = result.Result.Count();
+                return new JsonResult(new GetChatHistoryByChatRoomIdResult
+                {
+                    Result = result.Result,
+                    IsSuccess = true,
+                    Pagination = new Pagination
+                    {
+                        PageIndex = args.PageIndex,
+                        PerPage = args.CountPerPage,
+                        TotalRecords = totalRecords,
+                        TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                    (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatHistoryByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
     }
 }
     

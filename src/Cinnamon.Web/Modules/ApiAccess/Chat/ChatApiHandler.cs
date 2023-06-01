@@ -26,10 +26,10 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             try
             {
                 var result = await flurlClient
-                .WithOAuthBearerToken(token)
-                .Request("Chat/Create")
-                .SetQueryParams(args)
-                .GetJsonAsync<CreateChatHistoryResult>();
+                    .WithOAuthBearerToken(token)
+                    .Request("Chat/Create")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<CreateChatHistoryResult>();
 
                 return AppResult<CreateChatHistoryResult>.CreateSucceeded(result, "Successfully called create chat history api");
             }
@@ -49,10 +49,10 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             try
             {
                 var result = await flurlClient
-                .WithOAuthBearerToken(token)
-                .Request("Chat/Update")
-                .SetQueryParams(args)
-                .GetJsonAsync<UpdateChatHistoryResult>();
+                   .WithOAuthBearerToken(token)
+                   .Request("Chat/Update")
+                   .PostJsonAsync(args)
+                   .ReceiveJson<UpdateChatHistoryResult>();
 
                 return AppResult<UpdateChatHistoryResult>.CreateSucceeded(result, "Successfully called update chat history api");
             }
@@ -64,6 +64,29 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             catch (Exception ex)
             {
                 return AppResult<UpdateChatHistoryResult>.CreateFailed(ex, "An error occured when calling update chat history api");
+            }
+        }
+
+        public async Task<AppResult<GetChatHistoryByChatRoomIdResult>> GetChatHistoryByChatRoomId(GetChatHistoryByChatRoomIdArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                     .WithOAuthBearerToken(token)
+                     .Request("Chat/ByChatRoomId")
+                     .SetQueryParams(args)
+                     .GetJsonAsync<GetChatHistoryByChatRoomIdResult>();
+
+                return AppResult<GetChatHistoryByChatRoomIdResult>.CreateSucceeded(result, "Successfully called get chat history api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetChatHistoryByChatRoomIdResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetChatHistoryByChatRoomIdResult>.CreateFailed(ex, "An error occured when calling get chat history api");
             }
         }
     }

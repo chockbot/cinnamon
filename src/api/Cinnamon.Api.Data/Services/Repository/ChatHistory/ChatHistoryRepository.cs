@@ -60,6 +60,38 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             }
         }
 
+        public async Task<AppResult<IEnumerable<ChatHistoryDTO>>> GetChatHistoryByChatRoomId(int? chatRoomId, int? skip, int? take)
+        {
+            try
+            {
+                Expression<Func<Entities.ChatHistory, bool>> filter =
+                a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true));
+                
+                var result = await dataStore.ChatHistory.GetOrderedChatHistoryByChatRoomId(filter, take, skip);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<IEnumerable<ChatHistoryDTO>>.CreateFailed(result.Error.Exception, result.Message);
+                }
+
+                var chatHistories = result.Result.Select(c => new ChatHistoryDTO
+                {
+                    ChatRoomId  = c.ChatRoomId,
+                    FromUserId  = c.FromUserId,
+                    ToUserId    = c.ToUserId,
+                    DateCreated = c.CreatedOn,
+                    IsViewed    = c.IsViewed,
+                    Message     = c.Message
+                });
+
+                return AppResult<IEnumerable<ChatHistoryDTO>>.CreateSucceeded(chatHistories, "Successfully retrieved chat histories");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<IEnumerable<ChatHistoryDTO>>.CreateFailed(ex, "An error occured when retrieving chat histories");
+            }
+        }
+
         public async Task<AppResult<bool>> Update(int? chatRoomId, int? fromUserId, int? toUserId, bool? isViewed)
         {
             try
