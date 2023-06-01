@@ -1,0 +1,13 @@
+﻿using Cinnamon.Framework.Common;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.Waitlist;
+using Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatHistory;
+
+namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
+
+public interface IChatHistoryRepository
+{
+   
+    Task<AppResult<ChatHistoryDTO>> Create(int chatRoomActivityId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId);
+   
+}

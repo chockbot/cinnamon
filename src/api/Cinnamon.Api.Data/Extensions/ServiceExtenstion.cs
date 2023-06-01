@@ -57,6 +57,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IAdminUserRepository, Services.Repository.AdminUser.AdminUserRepository>();
         services.AddTransient<Services.Repository.Interfaces.IBadgeListRepository, Services.Repository.BadgeList.BadgeListRepository>();
         services.AddTransient<Services.Repository.Interfaces.ICustomerPricingRepository, Services.Repository.CustomerPricing.CustomerPricingRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IChatHistoryRepository, Services.Repository.ChatHistory.ChatHistoryRepository>();
 
         return services;
     }

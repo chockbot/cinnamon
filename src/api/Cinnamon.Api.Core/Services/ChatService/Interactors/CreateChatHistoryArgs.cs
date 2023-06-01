@@ -1,0 +1,15 @@
+﻿using Cinnamon.Framework.Interactor;
+
+namespace Cinnamon.Api.Core.Services.ChatService.Interactors
+{
+    public class CreateChatHistoryArgs : IInteractor
+    {
+        public int ChatRoomActivityId { get; set; }
+        public int FromUserId { get; set; }
+        public int ToUserId { get; set; }
+        public string Message { get; set; }
+        public bool IsViewed { get; set; }
+        public string FromConnectionId { get; set; }
+        public string ToConnectionId { get; set; }
+    }
+}

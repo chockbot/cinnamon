@@ -48,6 +48,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAdminUserData, Modules.DataAccess.AdminUser.AdminUserData>();
         services.AddTransient<Modules.DataAccess.Handlers.IBadgesData, Modules.DataAccess.Badges.BadgesData>();
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerPricingData, Modules.DataAccess.CustomerPricingData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IChatHistoryData, Modules.DataAccess.ChatHistory.ChatHistoryData>();
          
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -160,6 +161,9 @@ public static class ServiceExtenstion
         //admin services
         services.AddTransient<Services.AdminService.Handlers.IGetAdminUserByEmailHandler, Services.AdminService.GetAdminUserByEmailHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
+
+        //chat services
+        services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();
 
         return services;
     }
