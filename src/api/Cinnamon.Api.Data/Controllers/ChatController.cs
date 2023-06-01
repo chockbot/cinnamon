@@ -3,6 +3,8 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatHistory.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.ChatRoom.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.ChatRoom.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Customer.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.Location.Request;
@@ -17,10 +19,12 @@ namespace Cinnamon.Api.Data.Controllers
     public class ChatController : ControllerBase
     {
         private readonly IChatHistoryRepository _chatHistoryRepository;
+        private readonly IChatRoomRepository _chatRoomRepository;
 
-        public ChatController(IChatHistoryRepository chatHistoryRepository)
+        public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository)
         {
             _chatHistoryRepository = chatHistoryRepository;
+            _chatRoomRepository = chatRoomRepository;
         }
 
         [Route("Create")]
@@ -104,6 +108,28 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetChatHistoryByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("Room/Create")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateChatRoomResult), StatusCodes.Status201Created)]
+        public async Task<IActionResult> CreateChatRoom([FromBody] CreateChatRoomArgs args)
+        {
+            try
+            {
+                var result = await _chatRoomRepository.Create(args.FromUserId, args.ToUserId);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new CreateChatRoomResult { IsSuccess = true, Result = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

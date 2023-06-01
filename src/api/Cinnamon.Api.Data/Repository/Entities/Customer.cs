@@ -31,4 +31,5 @@ public class Customer : BaseEntity
     public virtual IList<FamilyMember> FamilyMembers {get; set;}
     public virtual IList<OngoingActivity> OngoingActivities { get; set;}
     public virtual CustomerPricing CustomerPricing {get; set;}
+    public virtual IList<ChatRoom> ChatRoom {get; set; }
 }

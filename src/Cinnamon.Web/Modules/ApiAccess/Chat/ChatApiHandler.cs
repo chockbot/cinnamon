@@ -2,6 +2,8 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Activity;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -87,6 +89,29 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             catch (Exception ex)
             {
                 return AppResult<GetChatHistoryByChatRoomIdResult>.CreateFailed(ex, "An error occured when calling get chat history api");
+            }
+        }
+
+        public async Task<AppResult<CreateChatRoomResult>> CreateChatRoom(CreateChatRoomArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Chat/Room/Create")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<CreateChatRoomResult>();
+
+                return AppResult<CreateChatRoomResult>.CreateSucceeded(result, "Successfully called create chat room api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<CreateChatRoomResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<CreateChatRoomResult>.CreateFailed(ex, "An error occured when calling create chat room api");
             }
         }
     }

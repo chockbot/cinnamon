@@ -9,5 +9,6 @@
         public bool IsViewed { get; set; }
         public string FromConnectionId { get; set; }
         public string ToConnectionId { get; set; }
+        public virtual ChatRoom ChatRoom { get; set; }
     }
 }

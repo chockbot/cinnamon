@@ -190,6 +190,22 @@ public class ApplicationContext : IdentityDbContext
 
         // customer pricing
         modelBuilder.Entity<CustomerPricing>().HasOne<Customer>(c => c.Customer);
+
+        //chat
+        modelBuilder.Entity<Customer>()
+            .HasMany<ChatRoom>(a => a.ChatRoom)
+            .WithOne(i => i.Customer)
+            .HasForeignKey(i => i.ToUserId);
+
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatRoom>(a => a.ChatRoom)
+           .WithOne(i => i.Customer)
+           .HasForeignKey(i => i.FromUserId);
+
+        modelBuilder.Entity<ChatRoom>()
+          .HasMany<ChatHistory>(a => a.ChatHistory)
+          .WithOne(i => i.ChatRoom)
+          .HasForeignKey(i => i.ChatRoomId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

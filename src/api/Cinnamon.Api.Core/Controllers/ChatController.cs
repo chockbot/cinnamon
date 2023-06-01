@@ -6,6 +6,8 @@ using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,14 +24,16 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly ICreateChatHistoryHandler createChatHistoryHandler;
         private readonly IUpdateChatHistoryHandler updateChatHistoryHandler;
         private readonly IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler;
+        private readonly ICreateChatRoomHandler createChatRoomHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler)
         {
             _logger = logger;
 
             this.createChatHistoryHandler = createChatHistoryHandler;
             this.updateChatHistoryHandler = updateChatHistoryHandler;
             this.getChatHistoryByChatRoomIdHandler = getChatHistoryByChatRoomIdHandler;
+            this.createChatRoomHandler = createChatRoomHandler;
         }
 
         [Route("Create")]
@@ -156,6 +160,43 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetChatHistoryByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("Room/Create")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateChatRoomResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateChatRoom([FromBody] CreateChatRoomArgs args)
+        {
+            try
+            {
+                var result = await createChatRoomHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatRoomArgs
+                {
+                    FromUserId = args.FromUserId,
+                    ToUserId = args.ToUserId
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var chatResult = result.Result;
+
+                return new JsonResult(new CreateChatRoomResult
+                {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.ChatRoom.ChatRoomDTO
+                    {
+                        ChatRoomId = chatResult.ChatRoomId,
+                        FromUserId = chatResult.FromUserId,
+                        ToUserId = chatResult.ToUserId
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
