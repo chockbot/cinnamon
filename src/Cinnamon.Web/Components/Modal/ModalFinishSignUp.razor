@@ -71,14 +71,14 @@
                         <Field>
                             <FieldLabel>Password</FieldLabel>
                             <div class="password-content">
-                                <TextEdit Role="viewModel.IsRevealPassword ? TextRole.Text : TextRole.Password" 
+                                <TextEdit Role="TextRole.Password" ElementId="finish-input-password" 
                                     Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
                                 </TextEdit>
                                 <span class="fa fa-fw fa-eye field-icon toggle-password" 
-                                    @onclick="() => viewModel.IsRevealPassword = !viewModel.IsRevealPassword"></span>
+                                    @onclick="PasswordClicked"></span>
                             </div>
                         </Field>
                     </Validation>
@@ -87,14 +87,14 @@
                         <Field>
                             <FieldLabel>Confirm Password</FieldLabel>
                             <div class="password-content">
-                                <TextEdit KeyDown="OnConfirmPasswordTextSubmit" Role="viewModel.IsRevealConfirmPassword ? TextRole.Text : TextRole.Password" 
+                                <TextEdit KeyDown="OnConfirmPasswordTextSubmit" Role="TextRole.Password" ElementId="finish-input-confirm-password" 
                                     Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
                                 </TextEdit>
                                 <span class="fa fa-fw fa-eye field-icon toggle-password" 
-                                    @onclick="() => viewModel.IsRevealConfirmPassword = !viewModel.IsRevealConfirmPassword"></span>
+                                    @onclick="ConfirmPasswordClicked"></span>
                             </div>
                         </Field>
                     </Validation>
@@ -231,6 +231,24 @@
 
             return "me-3 is-invalid";
         }
+    }
+
+    private async Task PasswordClicked()
+    {
+        viewModel.IsRevealPassword = !viewModel.IsRevealPassword;
+        await ShowHidePassword("#finish-input-password", viewModel.IsRevealPassword);
+    }
+
+    private async Task ConfirmPasswordClicked()
+    {
+        viewModel.IsRevealConfirmPassword = !viewModel.IsRevealConfirmPassword;
+        await ShowHidePassword("#finish-input-confirm-password", viewModel.IsRevealConfirmPassword);
+    }
+
+    private async Task ShowHidePassword(string selector, bool isShowPassword)
+    {
+        var type = isShowPassword ? "text" : "password";
+        await jsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Pages.customer.inputTypeChanger.execute", selector, type);
     }
 
     string flexItemStyle = $" width:660px;";

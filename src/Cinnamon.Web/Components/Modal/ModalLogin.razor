@@ -85,14 +85,14 @@
                     <div class="">
                         <div class="col-12 password-content">
                             <Validation>
-                                <TextEdit @ref="Model.TextPassword" KeyDown="OnPasswordTextSubmit" Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" 
+                                <TextEdit ElementId="input-password" @ref="Model.TextPassword" KeyDown="OnPasswordTextSubmit" Role="TextRole.Password" 
                                     Placeholder="Enter your password" @bind-Text="Model.PasswordModel.Password" class="input-password">
                                     <Feedback>
                                         <ValidationError TextAlignment="TextAlignment.Start"/>
                                     </Feedback>
                                     
                                 </TextEdit>
-                                <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => Model.IsRevealPassword = !Model.IsRevealPassword"></span>
+                                <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="ShowHidePassword"></span>
                             </Validation>
 
                             <Alert Color="Color.Danger" Margin="Margin.Is2.FromTop" Visible="Model.PasswordModel.IShowErrorMessage" Style="@alertStyle">
@@ -454,5 +454,13 @@
     private async Task CloseEmailModal()
     {
         await Model.EmailModal.Hide();
+    }
+
+    private async Task ShowHidePassword()
+    {
+        Model.IsRevealPassword = !Model.IsRevealPassword;
+        var type = Model.IsRevealPassword ? "text" : "password";
+        var selector = "#input-password";
+        await JsRuntime.InvokeAsync<Models.JsResultModel>("MyLib.Pages.customer.inputTypeChanger.execute", selector, type);
     }
 }
