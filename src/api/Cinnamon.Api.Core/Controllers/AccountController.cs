@@ -376,6 +376,7 @@ public class AccountController : ControllerBase
                     Id = profile.Id,
                     About = profile.About,
                     Birthdate = profile.Birthdate,
+                    PhoneNumber = profile.PhoneNumber,
                     DateJoined = profile.DateJoined,
                     IsVerified = profile.IsVerified,
                     IsVerifiedDate = profile.IsVerifiedDate,
@@ -593,7 +594,8 @@ public class AccountController : ControllerBase
                 Birthdate = args.Datebirth,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
-                VerifiedBadge = args.VerifiedBadge
+                VerifiedBadge = args.VerifiedBadge,
+                PhoneNumber = args.PhoneNumber
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -607,6 +609,7 @@ public class AccountController : ControllerBase
                     Birthdate = result.Result.Birthdate,
                     FirstName = result.Result.FirstName,
                     LastName = result.Result.LastName,
+                    PhoneNumber = result.Result.PhoneNumber
                 },
                 IsSuccess = true
             });
