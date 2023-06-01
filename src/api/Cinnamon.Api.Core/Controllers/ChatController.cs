@@ -36,7 +36,7 @@ namespace Cinnamon.Api.Core.Controllers
             {
                 var result = await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
                 {
-                    ChatRoomActivityId = args.ChatRoomActivityId,
+                    ChatRoomId = args.ChatRoomId,
                     FromConnectionId = args.FromConnectionId,
                     FromUserId = args.FromUserId,
                     IsViewed = args.IsViewed,
@@ -57,13 +57,13 @@ namespace Cinnamon.Api.Core.Controllers
                     IsSuccess = true,
                     Result = new Framework.ApiCommand.ApiData.DTO.ChatHistory.ChatHistoryDTO
                     {
-                        ChatRoomActivityId = chatResult.ChatRoomActivityId,
-                        FromConnectionId   = chatResult.FromConnectionId,
-                        FromUserId         = chatResult.FromUserId,
-                        IsViewed           = chatResult.IsViewed,
-                        Message            = chatResult.Message,
-                        ToConnectionId     = chatResult.ToConnectionId,
-                        ToUserId           = chatResult.ToUserId
+                        ChatRoomId       = chatResult.ChatRoomId,
+                        FromConnectionId = chatResult.FromConnectionId,
+                        FromUserId       = chatResult.FromUserId,
+                        IsViewed         = chatResult.IsViewed,
+                        Message          = chatResult.Message,
+                        ToConnectionId   = chatResult.ToConnectionId,
+                        ToUserId         = chatResult.ToUserId
                     }
                 });
             }

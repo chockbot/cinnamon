@@ -20,13 +20,13 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             this.dataStore = dataStore;
         }
 
-        public async Task<AppResult<ChatHistoryDTO>> Create(int chatRoomActivityId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId)
+        public async Task<AppResult<ChatHistoryDTO>> Create(int chatRoomId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId)
         {
             try
             {
                 var entity = new Entities.ChatHistory
                 {
-                    ChatRoomActivityId = chatRoomActivityId,
+                    ChatRoomId         = chatRoomId,
                     FromUserId         = fromUserId,
                     ToUserId           = toUserId,
                     Message            = message,
@@ -44,13 +44,13 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
 
                 return AppResult<ChatHistoryDTO>.CreateSucceeded(new ChatHistoryDTO
                 {
-                   ChatRoomActivityId = created.ChatRoomActivityId,
-                   FromUserId         = created.FromUserId,
-                   ToUserId           = created.ToUserId,
-                   Message            = created.Message,
-                   IsViewed           = created.IsViewed,
-                   FromConnectionId   = created.FromConnectionId,
-                   ToConnectionId     = created.ToConnectionId
+                   ChatRoomId       = created.ChatRoomId,
+                   FromUserId       = created.FromUserId,
+                   ToUserId         = created.ToUserId,
+                   Message          = created.Message,
+                   IsViewed         = created.IsViewed,
+                   FromConnectionId = created.FromConnectionId,
+                   ToConnectionId   = created.ToConnectionId
                 }, "Successully created chat history");
             }
             catch (Exception ex)

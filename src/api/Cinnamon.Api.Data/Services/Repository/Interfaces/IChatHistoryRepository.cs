@@ -8,6 +8,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 public interface IChatHistoryRepository
 {
    
-    Task<AppResult<ChatHistoryDTO>> Create(int chatRoomActivityId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId);
+    Task<AppResult<ChatHistoryDTO>> Create(int chatRoomId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId);
    
 }

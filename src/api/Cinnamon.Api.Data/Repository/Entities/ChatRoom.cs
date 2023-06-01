@@ -2,7 +2,7 @@
 {
     public class ChatRoom: BaseEntity
     {
-        public int ChatRoomActivityId { get; set; }
-        public int UserId { get; set; }
+        public int FromUserId { get; set; }
+        public int ToUserId { get; set; }
     }
 }

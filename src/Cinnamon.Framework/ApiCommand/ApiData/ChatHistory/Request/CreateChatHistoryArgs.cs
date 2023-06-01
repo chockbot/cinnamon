@@ -5,7 +5,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.ChatHistory.Request;
 
 public class CreateChatHistoryArgs
 {
-    public int ChatRoomActivityId { get; set; }
+    public int ChatRoomId { get; set; }
     public int FromUserId { get; set; }
     public int ToUserId { get; set; }
     public string Message { get; set; }

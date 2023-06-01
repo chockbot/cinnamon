@@ -14,11 +14,11 @@ namespace Cinnamon.Api.Data.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ChatHistoryController : ControllerBase
+    public class ChatController : ControllerBase
     {
         private readonly IChatHistoryRepository _chatHistoryRepository;
 
-        public ChatHistoryController(IChatHistoryRepository chatHistoryRepository)
+        public ChatController(IChatHistoryRepository chatHistoryRepository)
         {
             _chatHistoryRepository = chatHistoryRepository;
         }
@@ -30,7 +30,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _chatHistoryRepository.Create(args.ChatRoomActivityId, args.FromUserId, args.ToUserId, args.Message, args.IsViewed, args.FromConnectionId, args.ToConnectionId);
+                var result = await _chatHistoryRepository.Create(args.ChatRoomId, args.FromUserId, args.ToUserId, args.Message, args.IsViewed, args.FromConnectionId, args.ToConnectionId);
 
                 if (!result.Succeeded || result.Result == null)
                 {

@@ -37,13 +37,13 @@ namespace Cinnamon.Api.Core.Services.ChatService
             {
                 var result = await chatHistoryData.CreateChatHistory(new Framework.ApiCommand.ApiCore.ChatHistory.Request.CreateChatHistoryArgs
                 {
-                    ChatRoomActivityId = args.ChatRoomActivityId,
-                    FromConnectionId   = args.FromConnectionId,
-                    FromUserId         = args.FromUserId,
-                    IsViewed           = args.IsViewed,
-                    Message            = args.Message,
-                    ToConnectionId     = args.ToConnectionId,
-                    ToUserId           = args.ToUserId
+                    ChatRoomId       = args.ChatRoomId,
+                    FromConnectionId = args.FromConnectionId,
+                    FromUserId       = args.FromUserId,
+                    IsViewed         = args.IsViewed,
+                    Message          = args.Message,
+                    ToConnectionId   = args.ToConnectionId,
+                    ToUserId         = args.ToUserId
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -61,13 +61,13 @@ namespace Cinnamon.Api.Core.Services.ChatService
 
                 return AppResult<CreateChatHistoryResult>.CreateSucceeded(new CreateChatHistoryResult
                 {
-                    ChatRoomActivityId = chatResult.ChatRoomActivityId,
-                    FromConnectionId   = chatResult.FromConnectionId,
-                    FromUserId         = chatResult.FromUserId,
-                    IsViewed           = chatResult.IsViewed,
-                    Message            = chatResult.Message,
-                    ToConnectionId     = chatResult.ToConnectionId,
-                    ToUserId           = chatResult.ToUserId
+                    ChatRoomId       = chatResult.ChatRoomId,
+                    FromConnectionId = chatResult.FromConnectionId,
+                    FromUserId       = chatResult.FromUserId,
+                    IsViewed         = chatResult.IsViewed,
+                    Message          = chatResult.Message,
+                    ToConnectionId   = chatResult.ToConnectionId,
+                    ToUserId         = chatResult.ToUserId
                 }, "successfully called CreateChatHistoryHandler");
 
             }
