@@ -20,11 +20,14 @@ namespace Cinnamon.Api.Core.Controllers
     {
         private readonly ILogger _logger;
         private readonly ICreateChatHistoryHandler createChatHistoryHandler;
+        private readonly IUpdateChatHistoryHandler updateChatHistoryHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger logger)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger logger, IUpdateChatHistoryHandler updateChatHistoryHandler)
         {
-            this.createChatHistoryHandler = createChatHistoryHandler;
             _logger = logger;
+
+            this.createChatHistoryHandler = createChatHistoryHandler;
+            this.updateChatHistoryHandler = updateChatHistoryHandler;
         }
 
         [Route("Create")]
@@ -70,6 +73,39 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new CreateChatHistoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("Update")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateChatHistoryResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateChatHistory([FromBody] UpdateChatHistoryArgs args)
+        {
+            try
+            {
+                var result = await updateChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.UpdateChatHistoryArgs
+                {
+                    ChatRoomId = args.ChatRoomId,
+                    FromUserId = args.FromUserId,
+                    ToUserId   = args.ToUserId,
+                    IsViewed   = args.IsViewed
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new UpdateChatHistoryResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var chatResult = result.Result;
+
+                return new JsonResult(new UpdateChatHistoryResult
+                {
+                    IsSuccess = chatResult.IsSuccess
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new UpdateChatHistoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

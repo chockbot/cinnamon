@@ -44,6 +44,28 @@ namespace Cinnamon.Api.Data.Controllers
                 return new JsonResult(new CreateChatHistoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
+
+        [Route("Update")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateChatHistoryResult), StatusCodes.Status201Created)]
+        public async Task<IActionResult> UpdateChatHistory([FromBody] UpdateChatHistoryArgs args)
+        {
+            try
+            {
+                var result = await _chatHistoryRepository.Update(args.ChatRoomId, args.FromUserId, args.ToUserId, args.IsViewed);
+
+                if (!result.Succeeded || result.Result == false)
+                {
+                    return new JsonResult(new UpdateChatHistoryResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new UpdateChatHistoryResult { IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new UpdateChatHistoryResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
     }
 }
     

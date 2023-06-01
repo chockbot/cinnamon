@@ -7,6 +7,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PayoutLog;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Region;
 using Cinnamon.Framework.Common;
+using System.Linq.Expressions;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
@@ -56,6 +57,46 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             catch (Exception ex)
             {
                 return AppResult<ChatHistoryDTO>.CreateFailed(ex, "An error occured when creating chat history");
+            }
+        }
+
+        public async Task<AppResult<bool>> Update(int? chatRoomId, int? fromUserId, int? toUserId, bool? isViewed)
+        {
+            try
+            {
+                Expression<Func<Entities.ChatHistory, bool>> filter =
+                a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true) &&
+                      (fromUserId.HasValue ? a.FromUserId == fromUserId.Value : true) &&
+                      (toUserId.HasValue ? a.ToUserId == toUserId.Value : true));
+
+                var result = await dataStore.ChatHistory.FindAsync(filter);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
+                }
+
+                var chatHistories = result.Result.Select(c => new Entities.ChatHistory
+                {
+                    ChatRoomId = c.ChatRoomId,
+                    FromUserId = c.FromUserId,
+                    ToUserId   = c.ToUserId,
+                    IsViewed   = isViewed.GetValueOrDefault()
+                });
+
+                var updatedRes = await dataStore.ChatHistory.UpdateRange(chatHistories);
+
+                if (!updatedRes.Succeeded || updatedRes.Result == null)
+                {
+                    return AppResult<bool>.CreateFailed(
+                        new ApplicationException("An error occured when updating all entities"), "An error occured when updating all entities");
+                }
+
+                return AppResult<bool>.CreateSucceeded(true, "Successfully updated chat history");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<bool>.CreateFailed(ex, "An error occured when updating all entities");
             }
         }
     }

@@ -43,5 +43,28 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                 return AppResult<CreateChatHistoryResult>.CreateFailed(ex, "An error occured when calling create chat history api");
             }
         }
+
+        public async Task<AppResult<UpdateChatHistoryResult>> UpdateChatHistory(UpdateChatHistoryArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Chat/Update")
+                .SetQueryParams(args)
+                .GetJsonAsync<UpdateChatHistoryResult>();
+
+                return AppResult<UpdateChatHistoryResult>.CreateSucceeded(result, "Successfully called update chat history api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<UpdateChatHistoryResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<UpdateChatHistoryResult>.CreateFailed(ex, "An error occured when calling update chat history api");
+            }
+        }
     }
 }

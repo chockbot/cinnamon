@@ -23,7 +23,7 @@ public class ChatHistoryData : IChatHistoryData
         try
         {
             var result = await flurlClient
-                .Request("ChatHistory/Create")
+                .Request("Chat/Create")
                 .PostJsonAsync(args)
                 .ReceiveJson<CreateChatHistoryResult>();
 
@@ -36,6 +36,27 @@ public class ChatHistoryData : IChatHistoryData
         catch (Exception ex)
         {
             return AppResult<CreateChatHistoryResult>.CreateFailed(ex, "An error occured when posting create chat history api");
+        }
+    }
+
+    public async Task<AppResult<UpdateChatHistoryResult>> UpdateChatHistory(UpdateChatHistoryArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Chat/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateChatHistoryResult>();
+
+            return AppResult<UpdateChatHistoryResult>.CreateSucceeded(result, "Successfully posted update chat history api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateChatHistoryResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateChatHistoryResult>.CreateFailed(ex, "An error occured when posting update chat history api");
         }
     }
 }

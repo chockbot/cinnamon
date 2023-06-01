@@ -164,6 +164,7 @@ public static class ServiceExtenstion
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IUpdateChatHistoryHandler, Services.ChatService.UpdateChatHistoryHandler>();
 
         return services;
     }
