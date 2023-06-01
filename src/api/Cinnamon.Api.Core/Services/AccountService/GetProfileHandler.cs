@@ -53,6 +53,7 @@ public class GetProfileHandler : IGetProfileHandler
             return AppResult<GetProfileResult>.CreateSucceeded(new GetProfileResult {
                 About = profile.About,
                 Birthdate = profile.Birthdate,
+                PhoneNumber = profile.PhoneNumber,
                 Email = profile.Email,
                 FirstName = profile.FirstName,
                 Id = profile.Id,
@@ -67,7 +68,8 @@ public class GetProfileHandler : IGetProfileHandler
                 IsOfficial = profile.IsOfficial,
                 IsOfficialDate = profile.IsOfficialObtainedDate,
                 Handler = profile.Handler,
-                TotalCredits = profile.TotalCredits
+                TotalCredits = profile.TotalCredits,
+                
             }, "Successfully get profile");
         }
         catch (Exception ex)

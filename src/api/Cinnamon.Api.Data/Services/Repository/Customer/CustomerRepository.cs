@@ -491,6 +491,7 @@ public class CustomerRepository : ICustomerRepository
             customer.LastName = lastname ?? customer.LastName;
             customer.Email = email ?? customer.Email;
             customer.Birthdate = birthdate.HasValue ? birthdate.Value.SetKindUtc() : customer.Birthdate.SetKindUtc();
+            customer.PhoneNumber = phoneNumber ?? customer.PhoneNumber;
             customer.About = about ?? customer.About;
             customer.ProfilePath = profilePath ?? customer.ProfilePath;
             customer.IsMaker = ismaker ?? customer.IsMaker;
@@ -518,6 +519,7 @@ public class CustomerRepository : ICustomerRepository
                 Birthdate = customer.Birthdate,
                 DateJoined = customer.CreatedOn,
                 Email = customer.Email,
+                PhoneNumber = customer.PhoneNumber,
                 FirstName = customer.FirstName,
                 LastName = customer.LastName,
                 ExternalLogin = customer.ExternalLogin,

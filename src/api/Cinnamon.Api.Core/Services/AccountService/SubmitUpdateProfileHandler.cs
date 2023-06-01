@@ -76,6 +76,7 @@ public class SubmitUpdateProfileHandler : ISubmitUpdateProfileHandler
                 FirstName = args.FirstName ?? profile.FirstName,
                 LastName = args.LastName ?? profile.LastName,
                 Birthdate = args.Birthdate ?? profile.Birthdate,
+                PhoneNumber = args.PhoneNumber ?? profile.PhoneNumber,
                 CustomerId = profile.Id,
                 IsVerified = args.VerifiedBadge ?? profile.IsVerified,
                 Handler = handler
@@ -96,6 +97,7 @@ public class SubmitUpdateProfileHandler : ISubmitUpdateProfileHandler
                 Birthdate = result.Result.Result.Birthdate,
                 FirstName = result.Result.Result.FirstName,
                 LastName = result.Result.Result.LastName,
+                PhoneNumber = result.Result.Result.PhoneNumber,
                 Id = result.Result.Result.Id
             }, "Successfully update profile details");
         }
