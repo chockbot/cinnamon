@@ -560,7 +560,7 @@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
-<ReviewModal @ref=ReviewModalRef Students="studentAttendances"/>
+<ReviewModal @ref=ReviewModalRef/>
 
 @code
 {
@@ -682,39 +682,6 @@
             }
         }
     }
-    private async Task LoadReviewDialog()
-    {
-        if (CustomerModel.CustomerProfile != null)
-        {
-            //Get Completed Students
-            var attendance = await ongoingApiHandler.GetCompletedStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetCompletedStudentsByIdArgs
-                {
-                    CustomerId = CustomerModel.CustomerProfile.Id
-                }, CustomerModel.Token);
-
-            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-            {
-                studentAttendances = attendance.Result.Result.Select(a =>
-                {
-                    return new StudentAttendance
-                        {
-                            StudentId = a.Id,
-                            ActivityId = a.ActivityId,
-                            ScheduleId = a.ScheduleId,
-                            Name = a.Name,
-                            NumberOfSessions = a.NumberOfSessions,
-                            SessionsAttended = a.SessionsAttended
-                        };
-                }).ToList();
-            }
-        }
-        //Display Review Modal
-
-        // add some delay to populate parameters
-        await Task.Delay(2000);
-
-        await ReviewModalRef.Show();
-    }
     private async Task OnSkipMaker()
     {
         if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
@@ -733,7 +700,6 @@
             await InitializeSwiper();
             await InitializeCarouselSwipe();
             await LoadWelcomeDialog();
-            await LoadReviewDialog();
         }
         else
         {

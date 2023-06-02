@@ -1,11 +1,15 @@
 ﻿@namespace Cinnamon.Web.Components
 @inject IJSRuntime jsRuntime
+@using System.Security.Claims
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-@foreach (var item in Students)
+@foreach (var item in studentAttendances)
 {
     <Modal @ref="item.ModalRef" class="review-modal" Padding="Padding.Is0">
         <div class="modal-dialog">
@@ -42,11 +46,12 @@
 @code {
     IJSObjectReference module;
 
-    public Modal modRef { get; set; }
+    private IList<StudentAttendance> studentAttendances = new List<StudentAttendance>();
 
-    [Parameter]
-    public List<StudentAttendance> Students { get; set; }
-    
+    public ClaimsPrincipal AuthState { get; set; }
+
+    public CustomerProfile customerProfile = new CustomerProfile();
+
     public Activity activity = new Activity();
 
     public string imgScr = string.Empty;
@@ -65,6 +70,61 @@
 
     int SelectedValue = 0;
 
+    protected override async Task OnInitializedAsync()
+    {
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        AuthState = user;
+
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                customerProfile = new CustomerProfile
+                    {
+                        Birthdate = args.Birthdate,
+                        Email = args.Email,
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        IsMaker = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                    };
+            }
+        }
+
+        if (customerProfile != null)
+        {
+            //Get Completed Students
+            var attendance = await ongoingApiHandler.GetCompletedStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetCompletedStudentsByIdArgs
+                {
+                    CustomerId = customerProfile.Id
+                }, token);
+
+            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+            {
+                studentAttendances = attendance.Result.Result.Select(a =>
+                {
+                    return new StudentAttendance
+                        {
+                            StudentId = a.Id,
+                            ActivityId = a.ActivityId,
+                            ScheduleId = a.ScheduleId,
+                            Name = a.Name,
+                            NumberOfSessions = a.NumberOfSessions,
+                            SessionsAttended = a.SessionsAttended
+                        };
+                }).ToList();
+            }
+        }
+        // add some delay to populate parameters
+        await Task.Delay(2000);
+
+        await Show();
+    }
     private async Task<Activity> GetActivityById(int Id)
     {
         var ActivityListData = await activityApiHandler.GetActivity(Id, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
@@ -105,22 +165,12 @@
 
     public async Task Show()
     {
-        for(int i = 0; i < Students.Count; i++)
+        for (int i = 0; i < studentAttendances.Count; i++)
         {
-            await Students[i].ModalRef.Show();
+            await studentAttendances[i].ModalRef.Show();
         }
     }
 
-    public Task HideModal()
-    {
-        return modRef.Hide();
-    }
-
-    public async Task NotNow()
-    {
-        await modRef.Close(CloseReason.None);
-    }
-    
     public async Task SubmitReview()
     {
 
