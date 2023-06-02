@@ -1,52 +1,53 @@
 ﻿@namespace Cinnamon.Web.Components
 @inject IJSRuntime jsRuntime
 @using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IActivityApiHandler activityApiHandler
 @inject NavigationManager NavigationManager
 
-<div class="modal @ModalClass" id="@Student.StudentId" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style="overflow:hidden;display:@ModalDisplay">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
-                    You Just Finished an Activity
-                </p>
-                <button type="button" class="btn-close" @onclick="() => CloseModal(Student.StudentId)"></button>
-            </div>
-            <div class="modal-body">
-                <div class="text-center">
-                    <p class="font-14 color-gray-100">Leave a review</p>
-                    <img class="mt-1" src="@imgScr" alt="welcome image">
-                    <p class="font-16 color-black-100">@Activity.Title</p>
-                    <p class="font-14 color-gray-100">@Student.Name</p>
-                    <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
-                    <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-                        <MemoEdit Placeholder="Additional Comments" Text=""/>
-                    </div>
-                    <Button @onclick="() => CloseModal(Student.StudentId)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
-                        Not Now
-                    </Button>
-                    <Button Clicked="SubmitReview" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
+@foreach (var item in Students)
+{
+    <Modal @ref="modRef" class="review-modal" Padding="Padding.Is0">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
+                        You Just Finished an Activity
+                    </p>
+                    <button type="button" class="btn-close" @onclick="() => CloseModal(item.StudentId)"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <p class="font-14 color-gray-100">Leave a review</p>
+                        <img class="mt-1" src=@activity.Images.ElementAt(0).ImageSrc alt="review image">
+                        <p class="font-16 color-black-100">@activity.Title</p>
+                        <p class="font-14 color-gray-100">@item.Name</p>
+                        <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
+                        <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                            <MemoEdit Placeholder="Additional Comments" Text="" />
+                        </div>
+                        <Button @onclick="() => CloseModal(item.StudentId)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
+                            Not Now
+                        </Button>
+                        <Button Clicked="SubmitReview" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
                             Border="Border.Is0">
-                        Submit Review
-                    </Button>
+                            Submit Review
+                        </Button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
-@if (ShowBackdrop)
-{
-    <div class="modal-backdrop fade show" data-dismiss="modal" @onclick="() => CloseModal(Student.StudentId)"></div>
+    </Modal>
 }
 @code {
     IJSObjectReference module;
 
     public Modal modRef { get; set; }
 
-    public Activity Activity = new Activity();
-
-    public StudentAttendance Student = new StudentAttendance();
+    [Parameter]
+    public List<StudentAttendance> Students { get; set; }
+    
+    public Activity activity = new Activity();
 
     public string imgScr = string.Empty;
 
@@ -63,6 +64,36 @@
     public bool ShowBackdrop = false;
 
     int SelectedValue = 0;
+
+    private async Task<Activity> GetActivityById(int Id)
+    {
+        var ActivityListData = await activityApiHandler.GetActivity(Id, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+            {
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true,
+                IncludeAtivitySchedules = true,
+            });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        {
+            var result = ActivityListData.Result.Result;
+            activity = new Activity
+                {
+                    Id = result.ActivityId,
+                    Title = result.Title,
+                    Description = result.Description,
+                    Images = result.Images.Select(i =>
+                    {
+                        return new ActivityImage
+                        {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList(),
+                };
+        }
+        return await Task.FromResult<Activity>(activity);
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -70,16 +101,9 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/CloseModalById.js");
         }
     }
-    public async Task OpenModal(Activity activity, StudentAttendance studentAttendance, int id)
+    public Task Show()
     {
-        ModalDisplay    = "block;";
-        ModalClass      = "show";
-        ShowBackdrop    = true;
-        Activity        = activity;
-        Student         = studentAttendance;
-        Id              = id;
-        imgScr          = activity.Images.ElementAt(0).ImageSrc;
-        StateHasChanged();
+        return modRef.Show();
     }
     public async Task CloseModal(int Id)
     {

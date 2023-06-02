@@ -557,18 +557,15 @@
 <div id="observerTarget"></div>
 
 <ModalLogin @ref="signinModal" />
-
-<!--Filter-->
-@*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
-<ReviewModal @ref=ReviewModalRef/>
+<ReviewModal @ref=ReviewModalRef Students="studentAttendances"/>
 
 @code
 {
     private WelcomeModal WelcomeModalRef { get; set; }
-    private ReviewModal ReviewModalRef;
+    private ReviewModal ReviewModalRef { get; set; }
     private ModalLogin signinModal;
 
     public ExploreModel Model = new ExploreModel();
@@ -580,8 +577,6 @@
     public List<Activity> filteredActivities = new List<Activity>();
     public List<Activity> popularActivities = new List<Activity>();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    public StudentAttendance studentAttendance { get; set; } = new StudentAttendance();
-    public Activity activity { get; set; } = new Activity();
     public string searchValue = string.Empty;
     public string filterId = string.Empty;
     public int cnt = 0;
@@ -712,38 +707,9 @@
                         };
                 }).ToList();
             }
-            //Display Modal Review 
-            foreach(var item in studentAttendances)
-            {
-                var ActivityListData = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
-                    {
-                        IncludeActivityDescription = true,
-                        IncludeActivityImages = true,
-                        IncludeAtivitySchedules = true,
-                    });
-                if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
-                {
-                    var result = ActivityListData.Result.Result;
-                    activity = new Activity
-                    {
-                            Id = result.ActivityId,
-                            Title = result.Title,
-                            Description = result.Description,
-                            Images = result.Images.Select(i =>{
-                            return new ActivityImage
-                            {
-                                Id = i.Id,
-                                ImageSrc = i.ImageSrc,  
-                                Name = i.Name
-                            };
-                        }).ToList(),
-                    };
-
-                }
-                await ReviewModalRef.OpenModal(activity, item, item.StudentId);
-            }
-           
         }
+        //Display Review Modal
+        await ReviewModalRef.Show();
     }
     private async Task OnSkipMaker()
     {
@@ -763,12 +729,13 @@
             await InitializeSwiper();
             await InitializeCarouselSwipe();
             await LoadWelcomeDialog(); 
+            await LoadReviewDialog();
         }
         else
         {
             await InitializeSwiper();
             await InitializeCarouselSwipe();
-            await LoadReviewDialog();
+            
         }
 
 
