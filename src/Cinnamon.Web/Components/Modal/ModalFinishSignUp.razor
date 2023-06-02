@@ -71,24 +71,23 @@
                         <Field>
                             <FieldLabel>Password</FieldLabel>
                             <div class="password-content">
-                                @if(viewModel.IsRevealPassword)
-                                {
+                                @* create two textedit for toggle show password for safari issue *@
+                                <div class='@(viewModel.IsRevealPassword ? "d-block" : "d-none")'>
                                     <TextEdit Role="TextRole.Text"
                                         Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
                                     </TextEdit>
-                                }
-                                else 
-                                {
+                                </div>
+                                <div class='@(!viewModel.IsRevealPassword ? "d-block" : "d-none")'>
                                     <TextEdit Role="TextRole.Password"
                                         Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
                                     </TextEdit>
-                                }
+                                </div>
                                 <span class="fa fa-fw fa-eye field-icon toggle-password" 
                                     @onclick="() => viewModel.IsRevealPassword = !viewModel.IsRevealPassword"></span>
                             </div>
@@ -99,24 +98,23 @@
                         <Field>
                             <FieldLabel>Confirm Password</FieldLabel>
                             <div class="password-content">
-                                @if(viewModel.IsRevealConfirmPassword)
-                                {
+                                @* create two textedit for toggle show password for safari issue *@
+                                <div class='@(viewModel.IsRevealConfirmPassword ? "d-block" : "d-none")'>
                                     <TextEdit KeyDown="OnConfirmPasswordTextSubmit" Role="TextRole.Text"
                                         Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
                                     </TextEdit>
-                                }
-                                else 
-                                {
+                                </div>
+                                <div class='@(!viewModel.IsRevealConfirmPassword ? "d-block" : "d-none")'>
                                     <TextEdit KeyDown="OnConfirmPasswordTextSubmit" Role="TextRole.Password"
                                         Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
                                     </TextEdit>
-                                }
+                                </div>
                                 <span class="fa fa-fw fa-eye field-icon toggle-password" 
                                     @onclick="() => viewModel.IsRevealConfirmPassword = !viewModel.IsRevealConfirmPassword"></span>
                             </div>
