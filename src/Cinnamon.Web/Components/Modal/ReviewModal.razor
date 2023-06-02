@@ -9,44 +9,50 @@
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-@foreach (var item in studentAttendances)
+@if (studentAttendances.Count != 0)
 {
-    <Modal @ref="item.ModalRef" class="review-modal" Padding="Padding.Is0">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
-                        You Just Finished an Activity
-                    </p>
-                    <button type="button" class="btn-close" @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="text-center">
-                        <p class="font-14 color-gray-100">Leave a review</p>
-                        <img class="mt-1" src=@activity.Images.ElementAt(0).ImageSrc alt="review image">
-                        <p class="font-16 color-black-100">@activity.Title</p>
-                        <p class="font-14 color-gray-100">@item.Name</p>
-                        <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
-                        <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-                            <MemoEdit Placeholder="Additional Comments" Text="" />
-                        </div>
-                        <Button @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
-                            Not Now
-                        </Button>
-                        <Button Clicked="SubmitReview" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
+    foreach (var item in studentAttendances)
+    {
+        <Modal @ref="item.ModalRef" class="review-modal" Padding="Padding.Is0">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
+                            You Just Finished an Activity
+                        </p>
+                        <button type="button" class="btn-close" @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <p class="font-14 color-gray-100">Leave a review</p>
+                            <img class="mt-1" src="@activities.Where(a=> a.Id == item.ActivityId).FirstOrDefault().Images.ElementAt(0).ImageSrc" alt="review image">
+                            <p class="font-16 color-black-100">@activities.Where(a=> a.Id == item.ActivityId).FirstOrDefault().Title</p>
+                            <p class="font-14 color-gray-100">@item.Name</p>
+                            <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
+                            <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                                <MemoEdit Placeholder="Additional Comments" Text="" />
+                            </div>
+                            <Button @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
+                                Not Now
+                            </Button>
+                            <Button Clicked="SubmitReview" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
                             Border="Border.Is0">
-                            Submit Review
-                        </Button>
+                                Submit Review
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </Modal>
+        </Modal>
+    }
 }
+
 @code {
     IJSObjectReference module;
 
     private IList<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+
+    private List<Activity> activities = new List<Activity>();
 
     public ClaimsPrincipal AuthState { get; set; }
 
@@ -56,17 +62,9 @@
 
     public string imgScr = string.Empty;
 
+    public string title = string.Empty;
+
     public int Id { get; set; }
-
-    public string ModalDisplay = "none;";
-
-    public string ModalClass = "";
-
-    public string ClassName { get; set; } = string.Empty;
-
-    public string setEmail { get; set; }
-
-    public bool ShowBackdrop = false;
 
     int SelectedValue = 0;
 
@@ -119,11 +117,45 @@
                         };
                 }).ToList();
             }
+            //Get Activity
+            foreach (var item in studentAttendances)
+            {
+                var ActivityListData = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+                    {
+                        IncludeActivityDescription = true,
+                        IncludeActivityImages = true,
+                        IncludeAtivitySchedules = true,
+                    });
+                if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+                {
+                    var result = ActivityListData.Result.Result;
+                    activity = new Activity
+                    {
+                        Id = result.ActivityId,
+                        Title = result.Title,
+                        Description = result.Description,
+                        Images = result.Images.Select(i =>
+                        {
+                            return new ActivityImage
+                            {
+                                Id = i.Id,
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }).ToList(),
+                    };
+                }
+                activities.Add(activity);
+            }
         }
-        // add some delay to populate parameters
-        await Task.Delay(2000);
-
-        await Show();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await Task.Delay(2000);
+            await Show();
+        }
     }
     private async Task<Activity> GetActivityById(int Id)
     {
@@ -152,15 +184,7 @@
                     }).ToList(),
                 };
         }
-        return await Task.FromResult<Activity>(activity);
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/CloseModalById.js");
-        }
+        return activity;
     }
 
     public async Task Show()
