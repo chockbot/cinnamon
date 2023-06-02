@@ -104,7 +104,7 @@
                                         </Feedback>
                                     </TextEdit>
                                 </div>
-                                <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => Model.IsRevealPassword = !Model.IsRevealPassword"></span>
+                                <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="TogglePassword"></span>
                             </Validation>
 
                             <Alert Color="Color.Danger" Margin="Margin.Is2.FromTop" Visible="Model.PasswordModel.IShowErrorMessage" Style="@alertStyle">
@@ -466,5 +466,12 @@
     private async Task CloseEmailModal()
     {
         await Model.EmailModal.Hide();
+    }
+
+    private Task TogglePassword()
+    {
+        Model.IsRevealPassword = !Model.IsRevealPassword;
+        StateHasChanged();
+        return Task.CompletedTask;
     }
 }
