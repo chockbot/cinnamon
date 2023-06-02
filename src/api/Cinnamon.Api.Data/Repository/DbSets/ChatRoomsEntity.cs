@@ -1,8 +1,8 @@
 ﻿using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.Common;
-using System.Data.Entity;
 using System.Linq.Expressions;
+using Microsoft.EntityFrameworkCore;
 
 namespace Cinnamon.Api.Data.Repository.DbSets
 {
@@ -19,15 +19,15 @@ namespace Cinnamon.Api.Data.Repository.DbSets
         {
             try
             {
-                var query = applicationContext.Set<ChatRoom>().Include(c => c.ChatHistory).Where(expression);
+                var query = applicationContext.Set<ChatRoom>().Where(expression);
 
-                //if (includes != null)
-                //{
-                //    foreach (var include in includes)
-                //    {
-                //        query = query.Include(include);
-                //    }
-                //}
+                if (includes != null)
+                {
+                   foreach (var include in includes)
+                   {
+                       query = query.Include(include);
+                   }
+                }
 
                 var results = query.ToList();
 

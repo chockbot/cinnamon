@@ -205,7 +205,7 @@ public class ApplicationContext : IdentityDbContext
           .HasPrincipalKey(i => i.Id);
 
         modelBuilder.Entity<ChatRoom>()
-          .HasMany<ChatHistory>(a => a.ChatHistory)
+          .HasMany(a => a.ChatHistory)
           .WithOne(i => i.ChatRoom)
           .HasForeignKey(i => i.ChatRoomId);
     }
