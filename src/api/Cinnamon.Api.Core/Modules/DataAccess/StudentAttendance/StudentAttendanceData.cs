@@ -1,5 +1,7 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Framework.ApiCommand.ApiData.Student.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Student.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Response;
 using Cinnamon.Framework.Common;
@@ -204,4 +206,5 @@ public class StudentAttendanceData : IStudentAttendanceData
             return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, "An error occured when getting all completed student attendance api");
         }
     }
+    
 }

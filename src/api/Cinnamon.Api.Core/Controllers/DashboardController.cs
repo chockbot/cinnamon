@@ -6,6 +6,9 @@ using Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Badges;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
+using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -24,10 +27,12 @@ public class DashboardController : ControllerBase
     private readonly IGetAllBadgesHandler getAllBadgesHandler;
     private readonly IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler;
     private readonly IGetCompletedStudentsHandler getCompletedStudentsHandler;
+    
 
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
-        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,IGetCompletedStudentsHandler getCompletedStudentsHandler)
+        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
+        IGetCompletedStudentsHandler getCompletedStudentsHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
@@ -39,6 +44,8 @@ public class DashboardController : ControllerBase
         this.getAllBadgesHandler = getAllBadgesHandler;
         this.getAllStudentsAttendanceHandler = getAllStudentsAttendanceHandler;
         this.getCompletedStudentsHandler = getCompletedStudentsHandler;
+        
+
     }
 
     [Route("GetActivitySchedules")]
@@ -291,6 +298,7 @@ public class DashboardController : ControllerBase
             return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("UpdateAttendance")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateAttendanceResult), StatusCodes.Status202Accepted)]

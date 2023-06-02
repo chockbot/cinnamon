@@ -117,4 +117,25 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
             return AppResult<UpdateOngoingActivityResult>.CreateFailed(ex, "An error occured when posting update ongoing activity api");
         }
     }
+    public async Task<AppResult<GetCompletedStudentsByIdResult>> GetCompletedStudentsById(GetCompletedStudentsByIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetCompletedStudentsById")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetCompletedStudentsByIdResult>();
+
+            return AppResult<GetCompletedStudentsByIdResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCompletedStudentsByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCompletedStudentsByIdResult>.CreateFailed(ex, "An error occured when getting student attendance api");
+        }
+    }
 }

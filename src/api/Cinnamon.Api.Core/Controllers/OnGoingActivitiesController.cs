@@ -18,14 +18,16 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IUpdateOngoingActivityHadler updateOngoingActivityHadler;
     private readonly IAddActivityExpirationHandler addActivityExpirationHandler;
     private readonly IGetEnrolledStudentsHandler getEnrolledStudentsHandler;
+    private readonly IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
-        IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler)
+        IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler)
     {
         this.getAllOngoingActivitiesHandler = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler  = getOngoingActivityByIdHandler;
         this.updateOngoingActivityHadler    = updateOngoingActivityHadler;
         this.addActivityExpirationHandler   = addActivityExpirationHandler;
         this.getEnrolledStudentsHandler     = getEnrolledStudentsHandler;
+        this.getCompletedStudentsByIdHandler = getCompletedStudentsByIdHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -243,6 +245,42 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new AddActivityExpirationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+    [Route("GetCompletedStudentsById")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCompletedStudentsByIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCompletedStudentsById([FromQuery] GetCompletedStudentsByIdArgs args)
+    {
+        try
+        {
+            var result = await getCompletedStudentsByIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetCompletedStudentsByIdArgs
+            {
+                CustomerId = args.CustomerId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCompletedStudentsByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetCompletedStudentsByIdResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Student.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Student.StudentDTO
+                    {
+                        Id = s.StudentId,
+                        ActivityId = s.ActivityId,
+                        Name = s.StudentName,
+                        NumberOfSessions = s.NumberOfSessions,
+                        SessionsAttended = s.SessionsAttended,
+                        ScheduleId = s.ScheduleId
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCompletedStudentsByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

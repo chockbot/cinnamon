@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;

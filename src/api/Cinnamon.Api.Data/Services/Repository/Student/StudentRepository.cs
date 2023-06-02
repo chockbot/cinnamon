@@ -403,4 +403,44 @@ public class StudentRepository: IStudentRepository
             return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when updating students disbursement status");
         }
     }
+
+    public async Task<AppResult<IEnumerable<StudentDTO>>> GetCompletedStudentsById(int? customerId, int? count, int? skip)
+    {
+        try
+        {
+            Expression<Func<Entities.Student, bool>> filter = a => (a.CustomerId == customerId) && (a.SessionsAttended >= a.NumberOfSessions);
+            var result = await dataStore.Student.FindAsync(filter, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var students = result.Result.Select(s => {
+                var studentDto = new StudentDTO
+                {
+                    ActivityId = s.ActivityId,
+                    CustomerId = s.CustomerId,
+                    Id = s.Id,
+                    Name = s.Name,
+                    NumberOfSessions = s.NumberOfSessions,
+                    NumberOfBackTracking = s.NumberOfBacktracking,
+                    Remarks = s.Remarks,
+                    ScheduleId = s.ScheduleId,
+                    SessionsAttended = s.SessionsAttended,
+                    Status = s.Status,
+                    StudentNo = s.StudentNo,
+                    ExpirationStartDate = s.ExpirationDateStart,
+                    ExpirationEndDate = s.ExpirationDateEnd,
+                    IsDisbursement = s.IsDisbursement
+                };
+
+                return studentDto;
+            });
+
+            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(students, "Successfully get students");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when getting students");
+        }
+    }
 }

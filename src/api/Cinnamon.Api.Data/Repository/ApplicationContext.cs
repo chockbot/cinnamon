@@ -183,11 +183,15 @@ public class ApplicationContext : IdentityDbContext
 
         // purchase order
         modelBuilder.Entity<PurchaseOrder>().HasIndex(p => p.Status);
+
         //badge 
         modelBuilder.Entity<BadgeList>().HasIndex(c => c.Id);
 
         // customer pricing
         modelBuilder.Entity<CustomerPricing>().HasOne<Customer>(c => c.Customer);
+        
+        // reviews
+        modelBuilder.Entity<Reviews>().HasIndex(c => c.Id); 
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -1,3 +1,5 @@
+using Cinnamon.Framework.ApiCommand.ApiData.Student.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Student.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Response;
 using Cinnamon.Framework.Common;
@@ -15,5 +17,5 @@ public interface IStudentAttendanceData
     Task<AppResult<UpdateAttendanceResult>> UpdateAttendance(UpdateAttendanceArgs args);
     Task<AppResult<GetAllStudentAttendanceByIdResult>> GetAllStudentAttendanceById(GetAllStudentAttendanceByIdArgs args);
     Task<AppResult<GetCompletedStudentsResult>> GetCompletedStudents(GetCompletedStudentsArgs args);
-
+    
 }
