@@ -709,6 +709,10 @@
             }
         }
         //Display Review Modal
+
+        // add some delay to populate parameters
+        await Task.Delay(2000);
+
         await ReviewModalRef.Show();
     }
     private async Task OnSkipMaker()
@@ -728,7 +732,7 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await InitializeSwiper();
             await InitializeCarouselSwipe();
-            await LoadWelcomeDialog(); 
+            await LoadWelcomeDialog();
             await LoadReviewDialog();
         }
         else

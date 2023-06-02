@@ -7,14 +7,14 @@
 
 @foreach (var item in Students)
 {
-    <Modal @ref="modRef" class="review-modal" Padding="Padding.Is0">
+    <Modal @ref="item.ModalRef" class="review-modal" Padding="Padding.Is0">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
                         You Just Finished an Activity
                     </p>
-                    <button type="button" class="btn-close" @onclick="() => CloseModal(item.StudentId)"></button>
+                    <button type="button" class="btn-close" @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)"></button>
                 </div>
                 <div class="modal-body">
                     <div class="text-center">
@@ -26,7 +26,7 @@
                         <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
                             <MemoEdit Placeholder="Additional Comments" Text="" />
                         </div>
-                        <Button @onclick="() => CloseModal(item.StudentId)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
+                        <Button @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
                             Not Now
                         </Button>
                         <Button Clicked="SubmitReview" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
@@ -94,6 +94,7 @@
         }
         return await Task.FromResult<Activity>(activity);
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -101,23 +102,25 @@
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/CloseModalById.js");
         }
     }
-    public Task Show()
+
+    public async Task Show()
     {
-        return modRef.Show();
+        for(int i = 0; i < Students.Count; i++)
+        {
+            await Students[i].ModalRef.Show();
+        }
     }
-    public async Task CloseModal(int Id)
-    {
-        await Task.Run(() => module.InvokeVoidAsync("closeModalById", Id));
-        ShowBackdrop = false;
-    }
+
     public Task HideModal()
     {
         return modRef.Hide();
     }
+
     public async Task NotNow()
     {
         await modRef.Close(CloseReason.None);
     }
+    
     public async Task SubmitReview()
     {
 
