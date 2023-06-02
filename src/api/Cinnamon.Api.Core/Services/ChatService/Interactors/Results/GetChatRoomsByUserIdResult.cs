@@ -20,5 +20,7 @@ namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
         public string ToFirstName { get; set; }
         public DateTime DateCreated { get; set; }
         public string Message { get; set; }
+        public string? FromProfilePath { get; set; }
+        public string? ToProfilePath { get; set; }
     }
 }

@@ -13,6 +13,8 @@ using Cinnamon.Api.Core.Providers;
 using Microsoft.AspNetCore.Http.Features;
 using Quartz;
 using Cinnamon.Api.Core.Services.JobService;
+using Microsoft.AspNetCore.ResponseCompression;
+using Cinnamon.Api.Core.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,16 @@ var builder = WebApplication.CreateBuilder(args);
 ApplicationConfig applicationConfig = new ApplicationConfig();
 builder.Configuration.GetSection("Applicationconfig").Bind(applicationConfig);
 builder.Services.AddSingleton(applicationConfig);
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.EnableDetailedErrors = true;
+    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
+});
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
 
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
@@ -96,6 +108,7 @@ builder.Services.AddQuartz(q => {
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
+app.UseResponseCompression();
 app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
@@ -116,5 +129,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

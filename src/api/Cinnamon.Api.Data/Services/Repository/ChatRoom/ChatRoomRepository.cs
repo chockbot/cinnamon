@@ -65,8 +65,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                 var includes = new List<Expression<Func<Entities.ChatRoom, object>>>
                 {
                     a => a.ChatHistory,
-                    a => a.FromCustomer,
-                    a => a.ToCustomer
+                    //a => a.FromCustomer,
+                    //a => a.ToCustomer
                 };
 
                 var result = await dataStore.ChatRooms.GetChatRoomsByUserId(filter, includes);
@@ -78,17 +78,28 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
 
                 var chatRooms = result.Result.GroupBy(c => new
                 {
-                    c.Id,
-                }).Select(c => new ChatRoomDTO
-                {
-                    FromFirstName = c.Last().FromCustomer.FirstName,
-                    FromLastName  = c.Last().FromCustomer.LastName,
-                    FromUserId    = c.Last().FromCustomer.Id,
-                    ToUserId      = c.Last().ToCustomer.Id,
-                    ToFirstName   = c.Last().ToCustomer.FirstName,
-                    ToLastName    = c.Last().ToCustomer.LastName,
-                    ChatRoomId    = c.Key.Id,
-                    Message       = c.Last().ChatHistory.Last().Message
+                    FromFirstName   = c.FromCustomer.FirstName,
+                    //FromLastName    = c.Customer.LastName,
+                    //FromUserId      = c.FromUserId,
+                    //ToUserId        = c.ToUserId,
+                    //ToFirstName     = c.ToCustomer.FirstName,
+                    //ToLastName      = c.ToCustomer.LastName,
+                    //ChatRoomId      = c.Id,
+                    //Message         = c.ChatHistory?.FirstOrDefault().Message,
+                    //FromProfilePath = c.Customer.ProfilePath,
+                    //ToProfilePath   = c.ToCustomer?.ProfilePath
+                }).Select(c         => new ChatRoomDTO
+                {     
+                    FromFirstName   = c.Key.FromFirstName,
+                    //FromLastName    = c.Key.FromLastName,
+                    //FromUserId      = c.Key.FromUserId,
+                    //ToUserId        = c.Key.ToUserId,
+                    //ToFirstName     = c.Key.ToFirstName,
+                    //ToLastName      = c.Key.ToLastName,
+                    //ChatRoomId      = c.Key.ChatRoomId,
+                    //Message         = c.Key.Message,
+                    //FromProfilePath = c.Key.FromProfilePath,
+                    //ToProfilePath   = c.Key.ToProfilePath
                 });
 
                 return AppResult<IEnumerable<ChatRoomDTO>>.CreateSucceeded(chatRooms, "Successfully retrieved chat room");

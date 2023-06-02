@@ -28,6 +28,8 @@ public static class ServiceExtenstion
         services.AddTransient<IStudentAttendance, StudentAttendanceEntity>();
         services.AddTransient<IBadgeList, BadgeListEntity>();
         services.AddTransient<IFailedLogin, FailedLoginEntity>();
+        services.AddTransient<IChatRooms, ChatRoomsEntity>();
+        services.AddTransient<IChatHistory, ChatHistoryEntity>();
         services.AddTransient<IDataStore, DataStore>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();

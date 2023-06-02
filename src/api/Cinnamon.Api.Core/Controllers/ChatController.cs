@@ -27,7 +27,7 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly ICreateChatRoomHandler createChatRoomHandler;
         private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler)
         {
             _logger = logger;
 
@@ -228,15 +228,17 @@ namespace Cinnamon.Api.Core.Controllers
                     {
                         return new Framework.ApiCommand.ApiCore.DTO.ChatRoom.ChatRoomDTO
                         {
-                            ChatRoomId    = c.ChatRoomId,
-                            FromUserId    = c.FromUserId,
-                            DateCreated   = c.DateCreated,
-                            FromFirstName = c.FromFirstName,
-                            FromLastName  = c.FromLastName,
-                            Message       = c.Message,
-                            ToFirstName   = c.ToFirstName,
-                            ToLastName    = c.ToLastName,
-                            ToUserId      = c.ToUserId,
+                            ChatRoomId      = c.ChatRoomId,
+                            FromUserId      = c.FromUserId,
+                            DateCreated     = c.DateCreated,
+                            FromFirstName   = c.FromFirstName,
+                            FromLastName    = c.FromLastName,
+                            Message         = c.Message,
+                            ToFirstName     = c.ToFirstName,
+                            ToLastName      = c.ToLastName,
+                            ToUserId        = c.ToUserId,
+                            FromProfilePath = c.FromProfilePath,
+                            ToProfilePath   = c.ToProfilePath
                         };
                     })
                 });

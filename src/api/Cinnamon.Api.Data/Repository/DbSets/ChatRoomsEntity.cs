@@ -12,24 +12,24 @@ namespace Cinnamon.Api.Data.Repository.DbSets
 
         public ChatRoomsEntity(ApplicationContext applicationContext) : base(applicationContext)
         {
-
+            this.applicationContext = applicationContext;
         }
 
         public async Task<AppResult<IEnumerable<ChatRoom>>> GetChatRoomsByUserId(Expression<Func<ChatRoom, bool>> expression, IEnumerable<Expression<Func<ChatRoom, object>>>? includes = null)
         {
             try
             {
-                var query = applicationContext.Set<ChatRoom>().Where(expression);
+                var query = applicationContext.Set<ChatRoom>().Include(c => c.ChatHistory).Where(expression);
 
-                if (includes != null)
-                {
-                    foreach (var include in includes)
-                    {
-                        query = query.Include(include);
-                    }
-                }
+                //if (includes != null)
+                //{
+                //    foreach (var include in includes)
+                //    {
+                //        query = query.Include(include);
+                //    }
+                //}
 
-                var results = query.OrderBy(c => c.Id).AsQueryable();
+                var results = query.ToList();
 
                 return AppResult<IEnumerable<ChatRoom>>.CreateSucceeded(results, "Successfully find entities");
             }

@@ -192,15 +192,17 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<CustomerPricing>().HasOne<Customer>(c => c.Customer);
 
         //chat
-        modelBuilder.Entity<ChatRoom>()
-            .HasOne(a => a.FromCustomer)
-            .WithMany()
-            .HasForeignKey(i => i.FromUserId);
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatRoom>(a => a.FromChatRoom)
+           .WithOne(i => i.FromCustomer)
+           .HasForeignKey(i => i.FromUserId)
+           .HasPrincipalKey(i => i.Id);
 
-        modelBuilder.Entity<ChatRoom>()
-           .HasOne(a => a.ToCustomer)
-           .WithMany()
-           .HasForeignKey(i => i.ToUserId);
+        modelBuilder.Entity<Customer>()
+          .HasMany<ChatRoom>(a => a.ToChatRoom)
+          .WithOne(i => i.ToCustomer)
+          .HasForeignKey(i => i.ToUserId)
+          .HasPrincipalKey(i => i.Id);
 
         modelBuilder.Entity<ChatRoom>()
           .HasMany<ChatHistory>(a => a.ChatHistory)

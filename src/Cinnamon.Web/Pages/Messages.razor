@@ -1,0 +1,110 @@
+﻿@page "/messages/"
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@using Cinnamon.Web.Models.Entities;
+@inject IChatApiHandler chatApiHandler;
+@inject IAccountApiHandler accountApiHandler;
+
+@inject IJSRuntime jsRuntime;
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>@Title | CinnamonPH</PageTitle>
+<SeoMeta Title="@Title" Subject="@Title" Url="/Messages" />
+
+<h3>Messages</h3>
+
+@code {
+    private HubConnection? hubConnection;
+    private string? messageInput;
+    private string Title { get; set; } = "Messages";
+    private string Token { get; set; }
+    private int UserId { get; set; }
+    List<ChatRoom> chatRooms = new List<ChatRoom>();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        hubConnection = new HubConnectionBuilder()
+                .WithUrl("http://localhost:5187/chathub")
+                .WithAutomaticReconnect(new TimeSpan[] { TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
+                .Build();
+        hubConnection.On<string, string, string, string>("ReceiveMessage", (chatRoomId, fromUserId, toUserId, message) =>
+        {
+            var encodedMsg = chatRoomId;
+            //add message to current chatroom
+            InvokeAsync(() => StateHasChanged());
+        });
+
+        await hubConnection.StartAsync();
+
+        await LoadSigninUser();
+    }
+
+    private async Task Send()
+    {
+        if (hubConnection is not null)
+        {
+            //int chatRoomId, int fromUserId, int toUserId, string message, string fromConnectionId, string toConnectionId
+            await hubConnection.SendAsync("SendMessage");
+        }
+    }
+
+    private async Task GetChatRoomsByUserId()
+    {
+        var result = await chatApiHandler.GetChatRoomsByUserId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatRoomsByUserIdArgs
+        {
+            UserId = UserId
+        }, Token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            chatRooms = result.Result.Result.Select(c => new ChatRoom
+            {
+                ChatRoomId      = c.ChatRoomId,
+                FromUserId      = c.FromUserId,
+                DateCreated     = c.DateCreated,
+                FromFirstName   = c.FromFirstName,
+                FromLastName    = c.FromLastName,
+                Message         = c.Message,
+                ToFirstName     = c.ToFirstName,
+                ToLastName      = c.ToLastName,
+                ToUserId        = c.ToUserId,
+                FromProfilePath = c.FromProfilePath,
+                ToProfilePath   = c.ToProfilePath
+            }).ToList();
+        }
+    }
+
+    private void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            Send();
+            messageInput = string.Empty;
+        }
+    }
+
+    private async Task LoadSigninUser()
+    {
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        Token = user.FindFirstValue("Token");
+
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                UserId = args.Id;
+                await GetChatRoomsByUserId();
+            }
+        }
+    }
+}

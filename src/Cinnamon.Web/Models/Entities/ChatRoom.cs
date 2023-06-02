@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.ChatRoom
+﻿namespace Cinnamon.Web.Models.Entities
 {
-    public class ChatRoomDTO
+    public class ChatRoom
     {
         public int ChatRoomId { get; set; }
         public int FromUserId { get; set; }

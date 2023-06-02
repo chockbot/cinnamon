@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Api.Data.Repository.Entities
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Cinnamon.Api.Data.Repository.Entities
 {
     public class ChatRoom: BaseEntity
     {

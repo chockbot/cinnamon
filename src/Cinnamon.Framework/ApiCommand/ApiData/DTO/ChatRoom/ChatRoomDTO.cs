@@ -17,5 +17,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatRoom
         public string ToFirstName { get; set; }
         public DateTime DateCreated { get; set; }
         public string Message { get; set; }
+        public string? FromProfilePath { get; set; }
+        public string? ToProfilePath { get; set; }
     }
 }

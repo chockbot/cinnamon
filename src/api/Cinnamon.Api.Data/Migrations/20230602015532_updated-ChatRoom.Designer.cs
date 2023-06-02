@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230602015532_updated-ChatRoom")]
+    partial class updatedChatRoom
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -125,7 +127,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("SubCategoryId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ActivityAddress", b =>
@@ -204,7 +206,7 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ActivityId")
                         .IsUnique();
 
-                    b.ToTable("ActivityAddress", (string)null);
+                    b.ToTable("ActivityAddress");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ActivityDescription", b =>
@@ -264,7 +266,7 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ActivityId")
                         .IsUnique();
 
-                    b.ToTable("ActivityDescriptions", (string)null);
+                    b.ToTable("ActivityDescriptions");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ActivityImage", b =>
@@ -305,7 +307,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("ActivityImages", (string)null);
+                    b.ToTable("ActivityImages");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ActivitySchedule", b =>
@@ -370,7 +372,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("ActivitySchedules", (string)null);
+                    b.ToTable("ActivitySchedules");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.AdminUser", b =>
@@ -407,7 +409,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("AdminUsers", (string)null);
+                    b.ToTable("AdminUsers");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.BadgeList", b =>
@@ -455,7 +457,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Id");
 
-                    b.ToTable("BadgeList", (string)null);
+                    b.ToTable("BadgeList");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Barangay", b =>
@@ -496,7 +498,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Barangays", (string)null);
+                    b.ToTable("Barangays");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatHistory", b =>
@@ -547,7 +549,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ChatRoomId");
 
-                    b.ToTable("ChatHistories", (string)null);
+                    b.ToTable("ChatHistories");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatRoom", b =>
@@ -570,6 +572,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("integer");
+
                     b.Property<int>("FromUserId")
                         .HasColumnType("integer");
 
@@ -578,11 +583,13 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CustomerId");
+
                     b.HasIndex("FromUserId");
 
                     b.HasIndex("ToUserId");
 
-                    b.ToTable("ChatRooms", (string)null);
+                    b.ToTable("ChatRooms");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.City", b =>
@@ -625,7 +632,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cities", (string)null);
+                    b.ToTable("Cities");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
@@ -731,7 +738,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", b =>
@@ -769,7 +776,7 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("CustomerId")
                         .IsUnique();
 
-                    b.ToTable("CustomerPricings", (string)null);
+                    b.ToTable("CustomerPricings");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceCategory", b =>
@@ -802,7 +809,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExperienceCategories", (string)null);
+                    b.ToTable("ExperienceCategories");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceType", b =>
@@ -831,7 +838,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ExperienceTypes", (string)null);
+                    b.ToTable("ExperienceTypes");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExternalLoginToken", b =>
@@ -889,7 +896,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Token", "Guid");
 
-                    b.ToTable("ExternalLoginTokens", (string)null);
+                    b.ToTable("ExternalLoginTokens");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.FailedLogin", b =>
@@ -927,7 +934,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Email", "LoginDate");
 
-                    b.ToTable("FailedLogins", (string)null);
+                    b.ToTable("FailedLogins");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.FamilyMember", b =>
@@ -972,7 +979,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("FamilyMembers", (string)null);
+                    b.ToTable("FamilyMembers");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.OngoingActivity", b =>
@@ -1017,7 +1024,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("OngoingActivities", (string)null);
+                    b.ToTable("OngoingActivities");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PayoutAccount", b =>
@@ -1063,7 +1070,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("PayoutAccounts", (string)null);
+                    b.ToTable("PayoutAccounts");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PayoutLog", b =>
@@ -1108,7 +1115,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("PayoutLogs", (string)null);
+                    b.ToTable("PayoutLogs");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.PurchaseOrder", b =>
@@ -1182,7 +1189,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Status");
 
-                    b.ToTable("PurchaseOrders", (string)null);
+                    b.ToTable("PurchaseOrders");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Region", b =>
@@ -1219,7 +1226,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Regions", (string)null);
+                    b.ToTable("Regions");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.RequestRefund", b =>
@@ -1268,7 +1275,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("PurchaseOrderId");
 
-                    b.ToTable("RequestRefunds", (string)null);
+                    b.ToTable("RequestRefunds");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ResendEmail", b =>
@@ -1304,7 +1311,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Email", "DateResend");
 
-                    b.ToTable("ResendEmails", (string)null);
+                    b.ToTable("ResendEmails");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ResetPassword", b =>
@@ -1350,7 +1357,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Guid", "Token");
 
-                    b.ToTable("ResetPasswords", (string)null);
+                    b.ToTable("ResetPasswords");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SearchTags", b =>
@@ -1396,7 +1403,7 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasIndex("ActivityId")
                         .IsUnique();
 
-                    b.ToTable("SearchTags", (string)null);
+                    b.ToTable("SearchTags");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Student", b =>
@@ -1480,7 +1487,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("Students", (string)null);
+                    b.ToTable("Students");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.StudentAttendance", b =>
@@ -1516,7 +1523,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("StudentAttendances", (string)null);
+                    b.ToTable("StudentAttendances");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SubCategory", b =>
@@ -1548,7 +1555,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SubCategory", (string)null);
+                    b.ToTable("SubCategory");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.WaitList", b =>
@@ -1590,7 +1597,7 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.HasIndex("Guid");
 
-                    b.ToTable("WaitLists", (string)null);
+                    b.ToTable("WaitLists");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -1877,14 +1884,18 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatRoom", b =>
                 {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", null)
+                        .WithMany("ChatRoom")
+                        .HasForeignKey("CustomerId");
+
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "FromCustomer")
-                        .WithMany("FromChatRoom")
+                        .WithMany()
                         .HasForeignKey("FromUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "ToCustomer")
-                        .WithMany("ToChatRoom")
+                        .WithMany()
                         .HasForeignKey("ToUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -2106,16 +2117,14 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
                 {
+                    b.Navigation("ChatRoom");
+
                     b.Navigation("CustomerPricing")
                         .IsRequired();
 
                     b.Navigation("FamilyMembers");
 
-                    b.Navigation("FromChatRoom");
-
                     b.Navigation("OngoingActivities");
-
-                    b.Navigation("ToChatRoom");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceType", b =>

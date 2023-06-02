@@ -88,6 +88,12 @@
                                     <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
                             }
+                            else
+                            {
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                </li>
+                            }
                             <li class="dropdown-item">
                                 <NavButton OnClick="NavigateToAccount" Text="Account" />
                             </li>
@@ -1055,6 +1061,11 @@
     private void NavigateToAttendance()
     {
         NavigationManager.NavigateTo("/maker/dashboard/attendance");
+    }
+
+    private void NavigateToMessages()
+    {
+        NavigationManager.NavigateTo("/Messages");
     }
 
     private void onClickMenu()

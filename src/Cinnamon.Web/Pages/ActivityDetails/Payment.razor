@@ -15,6 +15,7 @@
 @inject IActivityApiHandler activityApiHandler;
 @inject ITransactionApiHandler transactionApiHandler;
 @inject IDashboardApiHandler dashboardApiHandler
+@inject IChatApiHandler chatApiHandler
 
 <PageTitle>Checkout Payment | CinnamonPH</PageTitle>
 <SeoMeta Title="Checkout Payment" Subject="Checkout Payment" />
@@ -580,7 +581,8 @@
                     LastName = profile.LastName,
                     IsVerified = profile.IsVerified,
                     ProfilePath = profile.ProfileImg,
-                    TotalCredits = profile.TotalCredits
+                    TotalCredits = profile.TotalCredits,
+                    Id = profile.Id
                 },
                 Token = token
             };
@@ -900,6 +902,11 @@
             else
             {
                 isLoading = false;
+                await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
+                {
+                    FromUserId = Model.Customer.Id,
+                    ToUserId = Model.Activity.CreatedBy
+                }, Model.Token);
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
