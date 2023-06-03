@@ -6,5 +6,4 @@ namespace Cinnamon.Api.Data.Repository.Interfaces;
 
 public interface IChatRooms : IGenericEntity<ChatRoom>
 {
-    Task<AppResult<IEnumerable<ChatRoom>>> GetChatRoomsByUserId(Expression<Func<ChatRoom, bool>> expression, IEnumerable<Expression<Func<ChatRoom, object>>>? includes = null);
 }

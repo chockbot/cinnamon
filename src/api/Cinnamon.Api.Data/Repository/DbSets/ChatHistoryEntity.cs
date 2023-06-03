@@ -1,7 +1,7 @@
 ﻿using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.Common;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
 namespace Cinnamon.Api.Data.Repository.DbSets

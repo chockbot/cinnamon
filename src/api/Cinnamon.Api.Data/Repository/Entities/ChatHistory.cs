@@ -10,5 +10,7 @@
         public string FromConnectionId { get; set; }
         public string ToConnectionId { get; set; }
         public virtual ChatRoom ChatRoom { get; set; }
+        public virtual Customer FromCustomer { get; set; }
+        public virtual Customer ToCustomer { get; set; }
     }
 }

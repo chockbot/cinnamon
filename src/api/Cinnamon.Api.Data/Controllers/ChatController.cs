@@ -20,11 +20,13 @@ namespace Cinnamon.Api.Data.Controllers
     {
         private readonly IChatHistoryRepository _chatHistoryRepository;
         private readonly IChatRoomRepository _chatRoomRepository;
+        private readonly IChatMemberRepository _chatMemberRepository;
 
-        public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository)
+        public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository, IChatMemberRepository chatMemberRepository)
         {
             _chatHistoryRepository = chatHistoryRepository;
             _chatRoomRepository = chatRoomRepository;
+            _chatMemberRepository = chatMemberRepository;
         }
 
         [Route("Create")]
@@ -140,7 +142,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _chatRoomRepository.GetChatRoomsByUserId(args.UserId);
+                var result = await _chatMemberRepository.GetChatRoomsByUserId(args.UserId);
 
                 if (!result.Succeeded || result.Result == null)
                 {

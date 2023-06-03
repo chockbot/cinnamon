@@ -59,14 +59,21 @@ namespace Cinnamon.Api.Core.Services.ChatService
                 {
                     ChatHistories = chatResult.Select(c => new ChatHistory
                     {
+                        ChatHistoryId    = c.ChatHistoryId,
                         ChatRoomId       = c.ChatRoomId,
                         DateCreated      = c.DateCreated,
                         FromConnectionId = c.FromConnectionId,
                         FromUserId       = c.FromUserId,
+                        FromFirstName    = c.FromFirstName,
+                        FromLastName     = c.FromLastName,
+                        FromProfilePath  = c.FromProfilePath,
                         IsViewed         = c.IsViewed,
                         Message          = c.Message,
                         ToConnectionId   = c.ToConnectionId,
-                        ToUserId         = c.ToUserId
+                        ToUserId         = c.ToUserId,
+                        ToFirstName      = c.ToFirstName,
+                        ToLastName       = c.ToLastName,
+                        ToProfilePath    = c.ToProfilePath
                     }),
                     ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
                     {

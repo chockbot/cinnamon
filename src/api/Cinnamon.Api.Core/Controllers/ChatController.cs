@@ -147,14 +147,21 @@ namespace Cinnamon.Api.Core.Controllers
                     {
                         return new Framework.ApiCommand.ApiData.DTO.ChatHistory.ChatHistoryDTO
                         {
-                            ChatRoomId = c.ChatRoomId,
-                            DateCreated = c.DateCreated,
+                            ChatHistoryId    = c.ChatHistoryId,
+                            ChatRoomId       = c.ChatRoomId,
+                            DateCreated      = c.DateCreated,
                             FromConnectionId = c.FromConnectionId,
-                            FromUserId = c.FromUserId,
-                            IsViewed = c.IsViewed,
-                            Message = c.Message,
-                            ToConnectionId = c.ToConnectionId,
-                            ToUserId = c.ToUserId,
+                            FromUserId       = c.FromUserId,
+                            FromFirstName    = c.FromFirstName,
+                            FromLastName     = c.FromLastName,
+                            FromProfilePath  = c.FromProfilePath,
+                            IsViewed         = c.IsViewed,
+                            Message          = c.Message,
+                            ToConnectionId   = c.ToConnectionId,
+                            ToUserId         = c.ToUserId,
+                            ToFirstName      = c.ToFirstName,
+                            ToLastName       = c.ToLastName,
+                            ToProfilePath    = c.ToProfilePath
                         };
                     })
                 });

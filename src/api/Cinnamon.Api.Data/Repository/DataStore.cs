@@ -76,6 +76,8 @@ public class DataStore : IDataStore
 
     public IChatRooms ChatRooms => new ChatRoomsEntity(applicationContext);
 
+    public IChatMember ChatMember => new ChatMemberEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

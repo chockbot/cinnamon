@@ -14,29 +14,5 @@ namespace Cinnamon.Api.Data.Repository.DbSets
         {
             this.applicationContext = applicationContext;
         }
-
-        public async Task<AppResult<IEnumerable<ChatRoom>>> GetChatRoomsByUserId(Expression<Func<ChatRoom, bool>> expression, IEnumerable<Expression<Func<ChatRoom, object>>>? includes = null)
-        {
-            try
-            {
-                var query = applicationContext.Set<ChatRoom>().Where(expression);
-
-                if (includes != null)
-                {
-                   foreach (var include in includes)
-                   {
-                       query = query.Include(include);
-                   }
-                }
-
-                var results = query.ToList();
-
-                return AppResult<IEnumerable<ChatRoom>>.CreateSucceeded(results, "Successfully find entities");
-            }
-            catch (Exception ex)
-            {
-                return AppResult<IEnumerable<ChatRoom>>.CreateFailed(ex, "An error occured when finding entities");
-            }
-        }
     }
 }

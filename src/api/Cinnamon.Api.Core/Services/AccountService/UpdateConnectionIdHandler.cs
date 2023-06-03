@@ -33,17 +33,9 @@ public class UpdateConnectionIdHandler : IUpdateConnectionIdHandler
     {
         try
         {
-            // get profile details
-            var profileRes = await getProfileHandler.ExecuteAsync(new GetProfileArgs { });
-            if (!profileRes.Succeeded || profileRes.Result == null)
-            {
-                return AppResult<UpdateConnectionIdResult>.CreateFailed(new ApplicationException(profileRes.Message), profileRes.Message);
-            }
-            var profile = profileRes.Result;
-
             var result = await customerData.UpdateCustomer(new Framework.ApiCommand.ApiData.Customer.Request.UpdateCustomerArgs
             {
-                CustomerId = profile.Id,
+                CustomerId = args.CustomerId,
                 ConnectionId = args.ConnectionId,
             });
             if (!result.Succeeded || result.Result == null)

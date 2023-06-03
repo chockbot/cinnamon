@@ -29,8 +29,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
             {
                 var entity = new Entities.ChatRoom
                 {
-                    FromUserId         = fromUserId,
-                    ToUserId           = toUserId
+                    Name = string.Empty,
+                    LatestMessage= string.Empty,
                 };
 
                 var result = await dataStore.ChatRooms.Add(entity);
@@ -40,13 +40,33 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                     return AppResult<ChatRoomDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
                 }
 
-                var created = result.Result;
+                var newChatRoom = result.Result;
+
+
+                var chatMemberEntity = new List<Entities.ChatMember>
+                {
+                    new ChatMember
+                    {
+                        ChatRoomId = newChatRoom.Id,
+                        CustomerId = fromUserId
+                    },
+                    new ChatMember
+                    {
+                        ChatRoomId = newChatRoom.Id,
+                        CustomerId = toUserId
+                    }
+                };
+
+                var chatMemberResult = await dataStore.ChatMember.AddRange(chatMemberEntity);
+
+                if (!chatMemberResult.Succeeded || chatMemberResult.Result == null)
+                {
+                    return AppResult<ChatRoomDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+                }
 
                 return AppResult<ChatRoomDTO>.CreateSucceeded(new ChatRoomDTO
                 {
-                   ChatRoomId       = created.Id,
-                   FromUserId       = created.FromUserId,
-                   ToUserId         = created.ToUserId,
+                   ChatRoomId       = newChatRoom.Id
                 }, "Successully created chat room");
             }
             catch (Exception ex)
@@ -55,59 +75,6 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
             }
         }
 
-        public async Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatRoomsByUserId(int userId)
-        {
-            try
-            {
-                Expression<Func<Entities.ChatRoom, bool>> filter =
-                a => (a.FromUserId == userId || a.ToUserId == userId);
-
-                var includes = new List<Expression<Func<Entities.ChatRoom, object>>>
-                {
-                    a => a.ChatHistory,
-                    //a => a.FromCustomer,
-                    //a => a.ToCustomer
-                };
-
-                var result = await dataStore.ChatRooms.GetChatRoomsByUserId(filter, includes);
-
-                if (!result.Succeeded || result.Result == null)
-                {
-                    return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(result.Error.Exception, result.Message);
-                }
-
-                var chatRooms = result.Result.GroupBy(c => new
-                {
-                    FromFirstName   = c.FromCustomer.FirstName,
-                    //FromLastName    = c.Customer.LastName,
-                    //FromUserId      = c.FromUserId,
-                    //ToUserId        = c.ToUserId,
-                    //ToFirstName     = c.ToCustomer.FirstName,
-                    //ToLastName      = c.ToCustomer.LastName,
-                    //ChatRoomId      = c.Id,
-                    //Message         = c.ChatHistory?.FirstOrDefault().Message,
-                    //FromProfilePath = c.Customer.ProfilePath,
-                    //ToProfilePath   = c.ToCustomer?.ProfilePath
-                }).Select(c         => new ChatRoomDTO
-                {     
-                    FromFirstName   = c.Key.FromFirstName,
-                    //FromLastName    = c.Key.FromLastName,
-                    //FromUserId      = c.Key.FromUserId,
-                    //ToUserId        = c.Key.ToUserId,
-                    //ToFirstName     = c.Key.ToFirstName,
-                    //ToLastName      = c.Key.ToLastName,
-                    //ChatRoomId      = c.Key.ChatRoomId,
-                    //Message         = c.Key.Message,
-                    //FromProfilePath = c.Key.FromProfilePath,
-                    //ToProfilePath   = c.Key.ToProfilePath
-                });
-
-                return AppResult<IEnumerable<ChatRoomDTO>>.CreateSucceeded(chatRooms, "Successfully retrieved chat room");
-            }
-            catch (Exception ex)
-            {
-                return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(ex, "An error occured when retrieving chat room");
-            }
-        }
+       
     }
 }

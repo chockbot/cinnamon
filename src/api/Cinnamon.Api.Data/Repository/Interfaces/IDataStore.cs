@@ -33,6 +33,7 @@ public interface IDataStore
     ICustomerPricing CustomerPricing {get; }
     IChatHistory ChatHistory {get; }
     IChatRooms ChatRooms {get; }
+    IChatMember ChatMember {get; }
 
     Task EnsureMigrate();
 

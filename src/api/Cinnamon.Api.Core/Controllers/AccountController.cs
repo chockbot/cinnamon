@@ -387,7 +387,8 @@ public class AccountController : ControllerBase
                     IsOGDate = profile.IsOGDate,
                     ProfileImg = profile.ProfileImagePath,
                     Handler = profile.Handler,
-                    TotalCredits = profile.TotalCredits
+                    TotalCredits = profile.TotalCredits,
+                    ConnectionId = profile.ConnectionId
                 },
                 IsSuccess = true
             });

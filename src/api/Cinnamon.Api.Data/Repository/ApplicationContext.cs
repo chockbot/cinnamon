@@ -64,6 +64,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<CustomerPricing> CustomerPricings {get; set;}
     public DbSet<ChatHistory> ChatHistories {get; set; }
     public DbSet<ChatRoom> ChatRooms { get; set; }
+    public DbSet<ChatMember> ChatMembers { get; set; }
 
     #endregion
 
@@ -193,21 +194,24 @@ public class ApplicationContext : IdentityDbContext
 
         //chat
         modelBuilder.Entity<Customer>()
-           .HasMany<ChatRoom>(a => a.FromChatRoom)
-           .WithOne(i => i.FromCustomer)
-           .HasForeignKey(i => i.FromUserId)
-           .HasPrincipalKey(i => i.Id);
-
-        modelBuilder.Entity<Customer>()
-          .HasMany<ChatRoom>(a => a.ToChatRoom)
-          .WithOne(i => i.ToCustomer)
-          .HasForeignKey(i => i.ToUserId)
-          .HasPrincipalKey(i => i.Id);
+           .HasMany<ChatMember>(a => a.ChatMembers)
+           .WithOne(i => i.Customer)
+           .HasForeignKey(i => i.CustomerId);
 
         modelBuilder.Entity<ChatRoom>()
-          .HasMany(a => a.ChatHistory)
-          .WithOne(i => i.ChatRoom)
-          .HasForeignKey(i => i.ChatRoomId);
+           .HasMany<ChatMember>(a => a.ChatMembers)
+           .WithOne(i => i.ChatRoom)
+           .HasForeignKey(i => i.ChatRoomId);
+
+        modelBuilder.Entity<Customer>()
+            .HasMany<ChatHistory>(a => a.FromChatHistories)
+            .WithOne(i => i.FromCustomer)
+            .HasForeignKey(i => i.FromUserId);
+
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatHistory>(a => a.ToChatHistories)
+           .WithOne(i => i.ToCustomer)
+           .HasForeignKey(i => i.ToUserId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

@@ -4,10 +4,8 @@ namespace Cinnamon.Api.Data.Repository.Entities
 {
     public class ChatRoom: BaseEntity
     {
-        public int FromUserId { get; set; }
-        public int ToUserId { get; set; }
-        public virtual Customer FromCustomer { get; set; }
-        public virtual Customer ToCustomer { get; set; }
-        public virtual IList<ChatHistory> ChatHistory { get; set; }
+        public string Name { get; set; }
+        public string LatestMessage { get; set; }
+        public virtual IList<ChatMember> ChatMembers { get; set; }
     }
 }

@@ -6,8 +6,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatRoom;
 
 namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 
-public interface IChatRoomRepository
+public interface IChatMemberRepository
 {
-   
-    Task<AppResult<ChatRoomDTO>> Create(int fromUserId, int toUserId);
+    Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatRoomsByUserId(int userId);
 }
