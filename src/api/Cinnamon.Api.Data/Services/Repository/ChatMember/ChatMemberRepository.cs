@@ -59,25 +59,33 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                     var fromCustomer = result.Result.Where(c => c.ChatRoomId == chatRoomId && c.CustomerId != userId).FirstOrDefault()?.Customer;
                     var toCustomer = result.Result.Where(c => c.ChatRoomId == chatRoomId && c.CustomerId == userId).FirstOrDefault()?.Customer;
                     var chatDetail = result.Result.Where(c => c.ChatRoomId == chatRoomId && c.CustomerId == userId).FirstOrDefault();
-                    var chatHistoryResult = await dataStore.ChatHistory.FindAsync(c => c.ChatRoomId == chatRoomId && c.FromUserId == fromCustomer.Id && c.ToUserId == toCustomer.Id && !c.IsViewed);
+                    var newMessageResult = await dataStore.ChatHistory.FindAsync(c => c.ChatRoomId == chatRoomId && c.FromUserId == fromCustomer.Id && c.ToUserId == toCustomer.Id && !c.IsViewed,1,0);
+                    var oldMessageResult = await dataStore.ChatHistory.GetOrderedChatHistoryByChatRoomId(c => c.ChatRoomId == chatRoomId && (c.FromUserId == userId || c.ToUserId == userId),1,0);
                     
-                    if (!chatHistoryResult.Succeeded || chatHistoryResult.Result == null)
+                    if (!newMessageResult.Succeeded || newMessageResult.Result == null)
                     {
-                        return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(chatHistoryResult.Error.Exception, chatHistoryResult.Message);
+                        return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(newMessageResult.Error.Exception, newMessageResult.Message);
                     }
 
-                    var chatHistory = chatHistoryResult.Result;
+                    if (!oldMessageResult.Succeeded || oldMessageResult.Result == null)
+                    {
+                        return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(oldMessageResult.Error.Exception, oldMessageResult.Message);
+                    }
+
+                    var newChatHistory = newMessageResult.Result;
+                    var oldChatHistory = oldMessageResult.Result;
 
                     if (fromCustomer != null && toCustomer != null && chatDetail != null)
                     {
                         chatRooms.Add(new ChatRoomDTO
                         {
                             ChatRoomId       = chatRoomId,
-                            DateCreated      = chatDetail.CreatedOn,
+                            DateCreated      = oldChatHistory.Any() ? oldChatHistory.FirstOrDefault().CreatedOn : chatDetail.CreatedOn,
                             FromFirstName    = fromCustomer.FirstName,
                             FromLastName     = fromCustomer.LastName,
                             FromProfilePath  = fromCustomer.ProfilePath,
                             FromUserId       = fromCustomer.Id,
+                            FromProfileLink  = fromCustomer.Handler,
                             Message          = chatDetail.ChatRoom.LatestMessage,
                             ToFirstName      = toCustomer.FirstName,
                             ToLastName       = toCustomer.LastName,
@@ -85,7 +93,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                             ToUserId         = toCustomer.Id,
                             FromConnectionId = fromCustomer.ConnectionId,
                             ToConnectionId   = toCustomer.ConnectionId,
-                            HasNewMessage    = chatHistory.Any()
+                            HasNewMessage    = newChatHistory.Any()
                         });
                     }
                 }

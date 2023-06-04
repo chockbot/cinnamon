@@ -22,5 +22,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.ChatRoom
         public string FromConnectionId { get; set; }
         public string ToConnectionId { get; set; }
         public bool HasNewMessage { get; set; }
+        public string FromProfileLink { get; set; }
     }
 }

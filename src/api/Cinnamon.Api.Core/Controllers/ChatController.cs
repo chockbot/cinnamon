@@ -254,6 +254,7 @@ namespace Cinnamon.Api.Core.Controllers
                             FromConnectionId = c.FromConnectionId,
                             ToConnectionId   = c.ToConnectionId,
                             HasNewMessage    = c.HasNewMessage,
+                            FromProfileLink  = c.FromProfileLink
                         };
                     })
                 });

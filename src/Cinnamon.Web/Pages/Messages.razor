@@ -55,7 +55,7 @@
                 foreach (var chatRoom in @chatRooms)
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
-                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId)" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId))">
+                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId)" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
                         <div class="col-lg-12">
                             <div class="last-update-date">
                                 @chatRoom.DateCreated.ToShortTimeString()
@@ -88,15 +88,26 @@
                 <div class="row">
                     <div class="col-lg-6">
                         <div class="row">
-                            <div class="col-lg-1">
-                                <img src="https://stcinnamondev.blob.core.windows.net/upload-profile-picture/6fec2224-c4ba-437c-b2b0-da6f0ab954d7-profile-picture.jpeg" class="chatroom-profile-picture" />
+                            <div class="col-lg-1 chatmate-profile-picture-section">
+                                <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
+                                @if (!string.IsNullOrEmpty(chatMateConnectionId))
+                                {
+                                    <span class="logged-in"></span>
+                                }
                             </div>
                             <div class="col-lg-10">
                                 <div class="chat-profile-name">
-                                    Mark Torres
+                                    @chatMateFullName
                                 </div>
                                 <div class="last-seen">
-                                    Last seen 2:55 pm
+                                    @if (!string.IsNullOrEmpty(chatMateConnectionId))
+                                    {
+                                        <span>Active Now</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Last seen @lastSeenDate.GetValueOrDefault().ToString("hh:mm tt")</span>
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -107,64 +118,80 @@
                 </div>
             </div>
             <div class="conversation-section">
-                <ul class="list-unstyled d-flex flex-column">
-                    @foreach (var chat in chatHistories)
-                    {
-                        if (lastMessageDateCreated.HasValue)
-                        {
-                            TimeSpan ts = chat.DateCreated - lastMessageDateCreated.GetValueOrDefault();
 
-                            if (ts.Days > 1)
+                <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
+                    <ul class="list-unstyled d-flex flex-column">
+                        <div id="observerTarget"></div>
+                        @if (isLoading)
+                        {
+                            <div class="loading-section d-flex flex-row justify-content-center">
+                                <div class="spinner-border">
+                                </div>
+                            </div>
+                        }
+                        @foreach (var chat in chatHistories)
+                        {
+                            if (lastMessageDateCreated.HasValue)
                             {
+                                TimeSpan ts = chat.DateCreated - lastMessageDateCreated.GetValueOrDefault();
+
+                                if (ts.Days > 1)
+                                {
+                                    <li class="d-flex flex-row justify-content-center">
+                                        <div class="chat-date-time">
+                                            @chat.DateCreated.ToString("MMMM dd, yyyy, hh:mm tt")
+                                        </div>
+                                    </li>
+                                }
+                                else if (ts.Minutes > 2)
+                                {
+                                    <li class="d-flex flex-row justify-content-center">
+                                        <div class="chat-date-time">
+                                            @chat.DateCreated.ToString("dddd, hh:mm tt")
+                                        </div>
+                                    </li>
+                                }
+
+                                lastMessageDateCreated = chat.DateCreated;
+                            }
+                            else
+                            {
+
+                                lastMessageDateCreated = chat.DateCreated;
+
                                 <li class="d-flex flex-row justify-content-center">
                                     <div class="chat-date-time">
-                                        @chat.DateCreated.ToString("MMMM dd, yyyy, hh:mm tt")
+                                        @lastMessageDateCreated.GetValueOrDefault().ToString("MMMM dd, yyyy, hh:mm tt")
                                     </div>
                                 </li>
                             }
-                            else if(ts.Minutes > 2)
+                            @if (chat.FromUserId == currentUserId)
                             {
-                                <li class="d-flex flex-row justify-content-center">
-                                    <div class="chat-date-time">
-                                        @chat.DateCreated.ToString("dddd, hh:mm tt")
-                                    </div>
+                                <li class="d-flex flex-row justify-content-end">
+                                    <Tooltip Text="@chat.DateCreated.ToString("hh:mm tt")" Placement="TooltipPlacement.Left">
+                                        <div class="self-message">
+                                            @chat.Message
+                                        </div>
+                                    </Tooltip>
+                                    <img src="@chat.FromProfilePath" class="chat-profile-picture">
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="d-flex flex-row">
+                                    <img src="@chat.FromProfilePath" class="chat-profile-picture">
+                                    <Tooltip Text="@chat.DateCreated.ToString("hh:mm tt")" Placement="TooltipPlacement.Right">
+                                        <div class="sender-message">
+                                            @chat.Message
+                                        </div>
+                                    </Tooltip>
                                 </li>
                             }
 
-                            lastMessageDateCreated = chat.DateCreated;
                         }
-                        else
-                        {
+                    </ul>
 
-                            lastMessageDateCreated = chat.DateCreated;
-
-                            <li class="d-flex flex-row justify-content-center">
-                                <div class="chat-date-time">
-                                    @lastMessageDateCreated.GetValueOrDefault().ToString("MMMM dd, yyyy, hh:mm tt")
-                                </div>
-                            </li>
-                        }
-                        @if (chat.FromUserId == fromUserId)
-                        {
-                            <li class="d-flex flex-row justify-content-end">
-                                <div class="self-message">
-                                    @chat.Message
-                                </div>
-                                <img src="@chat.FromProfilePath" class="chat-profile-picture">
-                            </li>
-                        }
-                        else
-                        {
-                            <li class="d-flex flex-row">
-                                <img src="@chat.FromProfilePath" class="chat-profile-picture">
-                                <div class="sender-message">
-                                    @chat.Message
-                                </div>
-                            </li>
-                        }
-
-                    }
-                </ul>
+                </InfiniteScroll>
             </div>
             <div class="send-message-section">
                 <table>
@@ -201,6 +228,24 @@
         }
     </div>
     <div class="col-lg-2 profile-section">
+        <div class="row justify-content-center">
+            <div class="col-lg-12 text-center">
+                <img src="@chatMateProfilePicture" class="profile-section-picture" />
+                <div class="divider"></div>
+                <label class="profile-section-name">
+                    @chatMateFullName
+                </label>
+                <div class="divider"></div>
+                <button id="btnViewProfile" type="button" class="btn border-0" @onclick=NavigateToProfile>View Profile</button>
+                <div class="divider"></div>
+            </div>
+            <div class="col-lg-12 profile-attachment-section">
+                <label class="attachment-name">
+                    Attachments
+                </label>
+            </div>
+           
+        </div>
     </div>
 </div>
 
@@ -216,13 +261,19 @@
     private int countPerPage = 30;
     private int selectedChatRoomId = 0;
     private int toUserId = 0;
-    private string fromConnectionId = string.Empty;
-    private int fromUserId = 0;
-    private string fromLastName = string.Empty;
-    private string fromFirstName = string.Empty;
-    private string fromProfilePath = string.Empty;
+    private string currentUserConnectionId = string.Empty;
+    private int currentUserId = 0;
+    private string currentUserLastName = string.Empty;
+    private string currentUserFirstName = string.Empty;
+    private string currentUserProfilePath = string.Empty;
+    private string chatMateFullName = string.Empty;
+    private string chatMateProfilePicture = string.Empty;
+    private string chatMateConnectionId = string.Empty;
+    private string chatMateProfileLink = string.Empty;
     private DateTime? lastMessageDateCreated;
+    private DateTime? lastSeenDate;
     private ElementReference inputMessageRef;
+    private bool isLoading = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -259,7 +310,42 @@
                     ToLastName       = splitted[12],
                     ToProfilePath    = splitted[13]
                 });
+
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).Message = splitted[8];
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).DateCreated = DateTime.Parse(splitted[1]);
             }
+            else
+            {
+                if (chatRooms.Any(c => c.ChatRoomId == Convert.ToInt32(splitted[0])))
+                {
+                    chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).HasNewMessage = true;
+                    chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).Message = splitted[8];
+                    chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).DateCreated = DateTime.Parse(splitted[1]);
+                }
+                else
+                {
+                    chatRooms.Add(new ChatRoom
+                    {
+                        ChatRoomId       = Convert.ToInt32(splitted[0]),
+                        DateCreated      = DateTime.Parse(splitted[1]),
+                        FromConnectionId = splitted[2],
+                        FromUserId       = Convert.ToInt32(splitted[3]),
+                        FromFirstName    = splitted[4],
+                        FromLastName     = splitted[5],
+                        FromProfilePath  = splitted[6],
+                        HasNewMessage    = true,
+                        Message          = splitted[8],
+                        ToConnectionId   = splitted[9],
+                        ToUserId         = Convert.ToInt32(splitted[10]),
+                        ToFirstName      = splitted[11],
+                        ToLastName       = splitted[12],
+                        ToProfilePath    = splitted[13]
+                    });
+
+                }
+            }
+
+            chatRooms = chatRooms.OrderByDescending(c => c.DateCreated).ToList();
 
             InvokeAsync(() => StateHasChanged());
         });
@@ -271,11 +357,15 @@
         NavigationManager.LocationChanged += LocationChanged;
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+    }
+
     private async Task Send()
     {
         if (hubConnection is not null)
         {
-            await hubConnection.SendAsync("SendMessage", selectedChatRoomId, fromConnectionId, fromUserId, fromLastName, fromFirstName, fromProfilePath, toUserId, messageInput);
+            await hubConnection.SendAsync("SendMessage", selectedChatRoomId, currentUserConnectionId, currentUserId, currentUserLastName, currentUserFirstName, currentUserProfilePath, toUserId, messageInput);
         }
     }
 
@@ -283,7 +373,7 @@
     {
         var result = await chatApiHandler.GetChatRoomsByUserId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatRoomsByUserIdArgs
             {
-                UserId = fromUserId
+                UserId = currentUserId
             }, Token);
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
@@ -303,8 +393,14 @@
                     ToProfilePath    = c.ToProfilePath,
                     FromConnectionId = c.FromConnectionId,
                     ToConnectionId   = c.ToConnectionId,
-                    HasNewMessage    = c.HasNewMessage
-                }).ToList();
+                    HasNewMessage    = c.HasNewMessage,
+                    FromProfileLink  = c.FromProfileLink
+                }).OrderByDescending(c => c.DateCreated).ToList();
+
+            if (chatRooms.Any())
+            {
+                await GetChatHistoryByChatRoomId(chatRooms.FirstOrDefault().ChatRoomId, false, false);
+            }
         }
     }
 
@@ -333,12 +429,12 @@
             var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                var args         = result.Result.Result;
-                fromConnectionId = args.ConnectionId;
-                fromUserId       = args.Id;
-                fromFirstName    = args.FirstName;
-                fromLastName     = args.LastName;
-                fromProfilePath  = args.ProfileImg;
+                var args                = result.Result.Result;
+                currentUserConnectionId = args.ConnectionId;
+                currentUserId           = args.Id;
+                currentUserFirstName    = args.FirstName;
+                currentUserLastName     = args.LastName;
+                currentUserProfilePath  = args.ProfileImg;
                 await GetChatRoomsByUserId();
             }
         }
@@ -349,8 +445,21 @@
         NavigationManager.NavigateTo("/Explore");
     }
 
-    private async Task GetChatHistoryByChatRoomId(int chatRoomId)
+    private void NavigateToProfile()
     {
+        jsRuntime.InvokeAsync<string>("open", $"/maker/profile/{chatMateProfileLink}", "_blank");
+    }
+
+
+    private async Task GetChatHistoryByChatRoomId(int chatRoomId, bool fromClick, bool fromScroll)
+    {
+        isLoading = true;
+
+        if (chatRoomId != selectedChatRoomId)
+        {
+            pageIndex = 1;
+        }
+
         var result = await chatApiHandler.GetChatHistoryByChatRoomId(new Framework.ApiCommand.ApiCore.ChatHistory.Request.GetChatHistoryByChatRoomIdArgs
             {
                 ChatRoomId = chatRoomId,
@@ -360,7 +469,7 @@
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
-            chatHistories = result.Result.Result.Select(c => new ChatHistory
+            var chatHistoryResult = result.Result.Result.Select(c => new ChatHistory
                 {
                     ChatHistoryId    = c.ChatHistoryId,
                     ChatRoomId       = c.ChatRoomId,
@@ -377,23 +486,47 @@
                     ToFirstName      = c.ToFirstName,
                     ToLastName       = c.ToLastName,
                     ToProfilePath    = c.ToProfilePath
-                }).OrderBy(c         => c.ChatHistoryId).ToList();
+                }).OrderBy(c => c.ChatHistoryId).ToList();
 
-            //pageIndex = result.Result.Pagination.PageIndex.GetValueOrDefault() + 1;
-            selectedChatRoomId = chatRoomId;
-            toUserId = chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId).FromUserId;
+            if (fromScroll)
+            {
+                chatHistories.AddRange(chatHistoryResult);
+
+                chatHistories = chatHistories.OrderBy(c => c.ChatHistoryId).ToList();
+            }
+            else
+            {
+                chatHistories = chatHistoryResult;
+            }
+
+            var selectedChatRoom   = chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId);
+            toUserId               = selectedChatRoom.FromUserId;
+            chatMateFullName       = $"{selectedChatRoom.FromFirstName} {selectedChatRoom.FromLastName}";
+            chatMateProfilePicture = selectedChatRoom.FromProfilePath;
+            chatMateConnectionId   = selectedChatRoom.FromConnectionId;
+            chatMateProfileLink    = selectedChatRoom.FromProfileLink;
+            lastSeenDate           = selectedChatRoom.DateCreated;
+            selectedChatRoomId     = chatRoomId;
             lastMessageDateCreated = null;
+
             chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId).HasNewMessage = false;
-            inputMessageRef.FocusAsync();
+
+            pageIndex = result.Result.Pagination.PageIndex.GetValueOrDefault() + 1;
+
+            if (fromClick)
+            {
+                inputMessageRef.FocusAsync();
+            }
 
             var updateResult = await chatApiHandler.UpdateChatHistory(new Framework.ApiCommand.ApiCore.ChatHistory.Request.UpdateChatHistoryArgs
                 {
                     ChatRoomId = selectedChatRoomId,
                     FromUserId = toUserId,
-                    ToUserId = fromUserId,
+                    ToUserId = currentUserId,
                     IsViewed = true
                 }, Token);
         }
+        isLoading = false;
     }
 
     private string GetNewMessageStyle(bool hasNewMessage)
@@ -417,7 +550,7 @@
         chatApiHandler.UpdateConnectionId(new Framework.ApiCommand.ApiCore.Account.Request.UpdateConnectionIdArgs
             {
                 ConnectionId = string.Empty,
-                CustomerId = fromUserId,
+                CustomerId = currentUserId,
             }, Token);
         try { 
             hubConnection.StopAsync(); 
