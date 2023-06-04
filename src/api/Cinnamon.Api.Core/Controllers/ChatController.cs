@@ -1,7 +1,10 @@
-﻿using Cinnamon.Api.Core.Services.ActivityService;
+﻿using Cinnamon.Api.Core.Services.AccountService.Handlers;
+using Cinnamon.Api.Core.Services.ActivityService;
 using Cinnamon.Api.Core.Services.AdminService.Handlers;
 using Cinnamon.Api.Core.Services.ChatService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
@@ -26,8 +29,9 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler;
         private readonly ICreateChatRoomHandler createChatRoomHandler;
         private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
+        private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateConnectionIdHandler updateConnectionIdHandler)
         {
             _logger = logger;
 
@@ -36,6 +40,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.getChatHistoryByChatRoomIdHandler = getChatHistoryByChatRoomIdHandler;
             this.createChatRoomHandler = createChatRoomHandler;
             this.getChatRoomsByUserIdHandler = getChatRoomsByUserIdHandler;
+            this.updateConnectionIdHandler = updateConnectionIdHandler;
         }
 
         [Route("Create")]
@@ -235,17 +240,20 @@ namespace Cinnamon.Api.Core.Controllers
                     {
                         return new Framework.ApiCommand.ApiCore.DTO.ChatRoom.ChatRoomDTO
                         {
-                            ChatRoomId      = c.ChatRoomId,
-                            FromUserId      = c.FromUserId,
-                            DateCreated     = c.DateCreated,
-                            FromFirstName   = c.FromFirstName,
-                            FromLastName    = c.FromLastName,
-                            Message         = c.Message,
-                            ToFirstName     = c.ToFirstName,
-                            ToLastName      = c.ToLastName,
-                            ToUserId        = c.ToUserId,
-                            FromProfilePath = c.FromProfilePath,
-                            ToProfilePath   = c.ToProfilePath
+                            ChatRoomId       = c.ChatRoomId,
+                            FromUserId       = c.FromUserId,
+                            DateCreated      = c.DateCreated,
+                            FromFirstName    = c.FromFirstName,
+                            FromLastName     = c.FromLastName,
+                            Message          = c.Message,
+                            ToFirstName      = c.ToFirstName,
+                            ToLastName       = c.ToLastName,
+                            ToUserId         = c.ToUserId,
+                            FromProfilePath  = c.FromProfilePath,
+                            ToProfilePath    = c.ToProfilePath,
+                            FromConnectionId = c.FromConnectionId,
+                            ToConnectionId   = c.ToConnectionId,
+                            HasNewMessage    = c.HasNewMessage,
                         };
                     })
                 });
@@ -253,6 +261,42 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetChatRoomsByUserIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("Connection/Update")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateConnectionIdResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> UpdateConnectionId([FromBody] UpdateConnectionIdArgs args)
+        {
+            try
+            {
+                var result = await updateConnectionIdHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateConnectionIdArgs
+                {
+                    ConnectionId = args.ConnectionId,
+                    CustomerId = args.CustomerId,
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new UpdateConnectionIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var updateResult = result.Result;
+
+                return new JsonResult(new UpdateConnectionIdResult
+                {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.Customer.CustomerDTO
+                    {
+                        Id = updateResult.CustomerId,
+                        ConnectionId= updateResult.ConnectionId
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

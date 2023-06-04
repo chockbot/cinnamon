@@ -56,17 +56,20 @@ namespace Cinnamon.Api.Core.Services.ChatService
                 {
                     ChatRooms = chatResult.Select(c => new ChatRoom
                     {
-                        ChatRoomId      = c.ChatRoomId,
-                        DateCreated     = c.DateCreated,
-                        FromFirstName   = c.FromFirstName,
-                        FromLastName    = c.FromLastName,
-                        FromUserId      = c.FromUserId,
-                        Message         = c.Message,
-                        ToFirstName     = c.ToFirstName,
-                        ToLastName      = c.ToLastName,
-                        ToUserId        = c.ToUserId,
-                        ToProfilePath   = c.ToProfilePath,
-                        FromProfilePath = c.FromProfilePath,
+                        ChatRoomId       = c.ChatRoomId,
+                        DateCreated      = c.DateCreated,
+                        FromFirstName    = c.FromFirstName,
+                        FromLastName     = c.FromLastName,
+                        FromUserId       = c.FromUserId,
+                        Message          = c.Message,
+                        ToFirstName      = c.ToFirstName,
+                        ToLastName       = c.ToLastName,
+                        ToUserId         = c.ToUserId,
+                        ToProfilePath    = c.ToProfilePath,
+                        FromProfilePath  = c.FromProfilePath,
+                        ToConnectionId   = c.ToConnectionId,
+                        FromConnectionId = c.FromConnectionId,
+                        HasNewMessage    = c.HasNewMessage
                     })
                 }, "successfully called GetChatRoomsByUserIdHandler");
 

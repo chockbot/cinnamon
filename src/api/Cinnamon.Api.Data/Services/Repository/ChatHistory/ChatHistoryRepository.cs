@@ -171,15 +171,14 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                     return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
                 }
 
-                var chatHistories = result.Result.Select(c => new Entities.ChatHistory
+                foreach (var item in result.Result)
                 {
-                    ChatRoomId = c.ChatRoomId,
-                    FromUserId = c.FromUserId,
-                    ToUserId   = c.ToUserId,
-                    IsViewed   = isViewed.GetValueOrDefault()
-                });
+                    item.IsViewed = isViewed.GetValueOrDefault();
+                    item.ChangedBy = toUserId.Value;
+                    item.ChangedOn = DateTime.UtcNow;
+                }
 
-                var updatedRes = await dataStore.ChatHistory.UpdateRange(chatHistories);
+                var updatedRes = await dataStore.ChatHistory.UpdateRange(result.Result);
 
                 if (!updatedRes.Succeeded || updatedRes.Result == null)
                 {

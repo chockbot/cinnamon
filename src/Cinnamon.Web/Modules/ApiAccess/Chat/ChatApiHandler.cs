@@ -1,4 +1,6 @@
-﻿using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
+﻿using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Response;
@@ -135,6 +137,29 @@ namespace Cinnamon.Web.Modules.ApiAccess.Chat
             catch (Exception ex)
             {
                 return AppResult<GetChatRoomsByUserIdResult>.CreateFailed(ex, "An error occured when calling get chat room api");
+            }
+        }
+
+        public async Task<AppResult<UpdateConnectionIdResult>> UpdateConnectionId(UpdateConnectionIdArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Chat/Connection/Update")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<UpdateConnectionIdResult>();
+
+                return AppResult<UpdateConnectionIdResult>.CreateSucceeded(result, "Successfully called update connection id api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<UpdateConnectionIdResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<UpdateConnectionIdResult>.CreateFailed(ex, "An error occured when calling update connection id api");
             }
         }
     }

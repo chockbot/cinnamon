@@ -54,7 +54,7 @@ namespace Cinnamon.Api.Core.Hubs
                     FromUserId       = fromUserId,
                     ToConnectionId   = toUser.ConnectionId ?? string.Empty,
                     ToUserId         = toUserId,
-                    IsViewed         = false,
+                    IsViewed         = !string.IsNullOrEmpty(toUser.ConnectionId),
                     Message          = messageInput
                 });
             }

@@ -22,5 +22,8 @@ namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
         public string Message { get; set; }
         public string? FromProfilePath { get; set; }
         public string? ToProfilePath { get; set; }
+        public string FromConnectionId { get; set; }
+        public string ToConnectionId { get; set; }
+        public bool HasNewMessage { get; set; }
     }
 }

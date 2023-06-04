@@ -59,22 +59,33 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                     var fromCustomer = result.Result.Where(c => c.ChatRoomId == chatRoomId && c.CustomerId != userId).FirstOrDefault()?.Customer;
                     var toCustomer = result.Result.Where(c => c.ChatRoomId == chatRoomId && c.CustomerId == userId).FirstOrDefault()?.Customer;
                     var chatDetail = result.Result.Where(c => c.ChatRoomId == chatRoomId && c.CustomerId == userId).FirstOrDefault();
+                    var chatHistoryResult = await dataStore.ChatHistory.FindAsync(c => c.ChatRoomId == chatRoomId && c.FromUserId == fromCustomer.Id && c.ToUserId == toCustomer.Id && !c.IsViewed);
+                    
+                    if (!chatHistoryResult.Succeeded || chatHistoryResult.Result == null)
+                    {
+                        return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(chatHistoryResult.Error.Exception, chatHistoryResult.Message);
+                    }
+
+                    var chatHistory = chatHistoryResult.Result;
 
                     if (fromCustomer != null && toCustomer != null && chatDetail != null)
                     {
                         chatRooms.Add(new ChatRoomDTO
                         {
-                            ChatRoomId      = chatRoomId,
-                            DateCreated     = chatDetail.CreatedOn,
-                            FromFirstName   = fromCustomer.FirstName,
-                            FromLastName    = fromCustomer.LastName,
-                            FromProfilePath = fromCustomer.ProfilePath,
-                            FromUserId      = fromCustomer.Id,
-                            Message         = chatDetail.ChatRoom.LatestMessage,
-                            ToFirstName     = toCustomer.FirstName,
-                            ToLastName      = toCustomer.LastName,
-                            ToProfilePath   = toCustomer.ProfilePath,
-                            ToUserId        = toCustomer.Id
+                            ChatRoomId       = chatRoomId,
+                            DateCreated      = chatDetail.CreatedOn,
+                            FromFirstName    = fromCustomer.FirstName,
+                            FromLastName     = fromCustomer.LastName,
+                            FromProfilePath  = fromCustomer.ProfilePath,
+                            FromUserId       = fromCustomer.Id,
+                            Message          = chatDetail.ChatRoom.LatestMessage,
+                            ToFirstName      = toCustomer.FirstName,
+                            ToLastName       = toCustomer.LastName,
+                            ToProfilePath    = toCustomer.ProfilePath,
+                            ToUserId         = toCustomer.Id,
+                            FromConnectionId = fromCustomer.ConnectionId,
+                            ToConnectionId   = toCustomer.ConnectionId,
+                            HasNewMessage    = chatHistory.Any()
                         });
                     }
                 }
