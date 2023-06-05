@@ -226,8 +226,8 @@ public class DashboardController : ControllerBase
             var result = await getAllStudentAttendanceByIdHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetAllStudentAttendanceByIdArgs
             {
                 StudentId = args.StudentId,
-                ActivityId = args.ActivityId
-                
+                ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId
             });
             if (!result.Succeeded || result.Result == null)
             {

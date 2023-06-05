@@ -15,4 +15,5 @@ public interface IStudentData
     Task<AppResult<GetStudentsToDisburseResult>> GetStudentsToDisburse(GetStudentsToDisburseArgs args);
     Task<AppResult<UpdateStudentDisbursementStatusResult>> UpdateStudentsDisbursementStatus(UpdateStudentDisbursementArgs args);
     Task<AppResult<GetCompletedStudentsByIdResult>> GetCompletedStudentsById(GetCompletedStudentsByIdArgs args);
+    Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById (GetAllStudentsByIdArgs args);
 }

@@ -14,6 +14,7 @@ public class StudentAttendance
     public string ActivityName { get; set; }
     public int NumberOfSessions { get; set; }
     public int SessionsAttended { get; set; }
+    public bool HasReview { get; set; }
 
     // Extra properties
     public Modal ModalRef { get; set; } = new Modal();

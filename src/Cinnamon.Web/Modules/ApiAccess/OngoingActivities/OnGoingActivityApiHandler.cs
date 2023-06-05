@@ -163,4 +163,26 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
             return AppResult<CreateReviewResult>.CreateFailed(ex, "An error occured when posting create review api");
         }
     }
+
+    public async Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById(GetAllStudentsByIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetAllStudentsById")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllStudentsByIdResult>();
+
+            return AppResult<GetAllStudentsByIdResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, "An error occured when getting student attendance api");
+        }
+    }
 }

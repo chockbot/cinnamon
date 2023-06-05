@@ -1,8 +1,7 @@
-﻿using Cinnamon.Api.Core.Services.DashboardService;
-using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
+﻿using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
-using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Reviews;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -22,9 +21,10 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IGetEnrolledStudentsHandler getEnrolledStudentsHandler;
     private readonly IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler;
     private readonly ICreateReviewHandler createReviewHandler;
+    private readonly IGetAllStudentsByIdHandler getAllStudentsByIdHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
         IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, 
-        IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler)
+        IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler, IGetAllStudentsByIdHandler getAllStudentsByIdHandler)
     {
         this.getAllOngoingActivitiesHandler   = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler    = getOngoingActivityByIdHandler;
@@ -33,6 +33,7 @@ public class OnGoingActivitiesController : ControllerBase
         this.getEnrolledStudentsHandler       = getEnrolledStudentsHandler;
         this.getCompletedStudentsByIdHandler  = getCompletedStudentsByIdHandler;
         this.createReviewHandler              = createReviewHandler;
+        this.getAllStudentsByIdHandler        = getAllStudentsByIdHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -336,6 +337,51 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateReviewResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetAllStudentsById")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllStudentsByIdResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetAllStudentsById([FromQuery] GetAllStudentsByIdArgs args)
+    {
+        try
+        {
+            var result = await getAllStudentsByIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetAllStudentsByIdArgs
+            {
+                CustomerId = args.CustomerId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllStudentsByIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetAllStudentsByIdResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Student.Select(e => {
+                    return new StudentDTO
+                    {
+                        Id = e.Id,
+                        Name = e.Name,
+                        ActivityId = e.ActivityId,
+                        CustomerId = e.CustomerId,
+                        NumberOfSessions = e.NumberOfSessions,
+                        Remarks = e.Remarks,
+                        ScheduleId = e.ScheduleId,
+                        SessionsAttended = e.SessionsAttended,
+                        Status = e.Status,
+                        StudentNo = e.StudentNo,
+                        ExpirationStartDate = e.ExpirationStartDate,
+                        ExpirationEndDate = e.ExpirationEndDate,
+                        HasReview = e.HasReview
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllStudentsByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

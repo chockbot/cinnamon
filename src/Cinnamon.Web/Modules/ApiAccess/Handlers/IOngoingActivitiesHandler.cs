@@ -18,4 +18,6 @@ public interface IOngoingActivitiesHandler
     Task<AppResult<GetCompletedStudentsByIdResult>> GetCompletedStudentsById(GetCompletedStudentsByIdArgs args, string token);
 
     Task<AppResult<CreateReviewResult>> CreateReview(CreateReviewArgs args, string token);
+
+    Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById(GetAllStudentsByIdArgs args, string token);
 }

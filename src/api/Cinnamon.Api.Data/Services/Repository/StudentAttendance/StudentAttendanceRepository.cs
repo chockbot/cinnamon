@@ -350,7 +350,7 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
 
             Expression<Func<Entities.StudentAttendance, bool>> filter =
                 a =>(a.StudentId == id ) &&
-                    (activityId == activityId) &&
+                    (a.Student.ActivityId == activityId) &&
                     (date.HasValue ? a.Date == date.Value.Date.SetKindUtc() : true) &&
                     (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true);
 
@@ -385,7 +385,8 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
                         ScheduleId = student.ScheduleId,
                         SessionsAttended = student.SessionsAttended,
                         Status = student.Status,
-                        StudentNo = student.StudentNo
+                        StudentNo = student.StudentNo,
+                        HasReview = student.HasReview
                     };
                 }
 

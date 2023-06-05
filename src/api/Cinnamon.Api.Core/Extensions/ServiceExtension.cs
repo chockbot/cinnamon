@@ -147,6 +147,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetEnrolledStudentsHandler, Services.OnGoingActivityService.GetEnrolledStudentsHandler>();  
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetCompletedStudentsByIdHandler, Services.OnGoingActivityService.GetCompletedStudentsByIdHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.ICreateReviewHandler, Services.OnGoingActivityService.CreateReviewHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllStudentsByIdHandler, Services.OnGoingActivityService.GetAllStudentsByIdHandler>();
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
 
