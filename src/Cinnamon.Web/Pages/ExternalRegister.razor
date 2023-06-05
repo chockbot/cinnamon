@@ -79,12 +79,23 @@
                 <Field Style="@flexItemStyle">
                     <FieldLabel>Password</FieldLabel>
                     <div class="password-content">
-                        <TextEdit KeyDown="OnPasswordTextSubmit" Role="Model.IsRevealPassword ? TextRole.Text : TextRole.Password" Placeholder="your password" 
-                            @bind-Text="Model.Model.Password" class="input-password">
-                            <Feedback>
-                                <ValidationError />
-                            </Feedback>
-                        </TextEdit>
+                        @* create two textedit for toggle show password for safari issue *@
+                        <div class='@(Model.IsRevealPassword ? "d-block" : "d-none")'>
+                            <TextEdit KeyDown="OnPasswordTextSubmit" Role="TextRole.Text" Placeholder="your password" 
+                                @bind-Text="Model.Model.Password" class="input-password">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </div>
+                        <div class='@(!Model.IsRevealPassword ? "d-block" : "d-none")'>
+                            <TextEdit KeyDown="OnPasswordTextSubmit" Role="TextRole.Password" Placeholder="your password" 
+                                @bind-Text="Model.Model.Password" class="input-password">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </TextEdit>
+                        </div>
                         <span class="fa fa-fw fa-eye field-icon toggle-password" @onclick="() => Model.IsRevealPassword = !Model.IsRevealPassword"></span>
                     </div>
                 </Field>

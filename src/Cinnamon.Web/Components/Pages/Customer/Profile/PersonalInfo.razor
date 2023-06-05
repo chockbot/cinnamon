@@ -2,6 +2,9 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Models.Account;
 @using Cinnamon.Web.Models.Entities;
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Framework.ValidationAttributes;
+@using System.Text.RegularExpressions;
 @inject IAccountApiHandler accountApiHandler;
 
 <article class="personal-info-wrapper p-3">
@@ -67,6 +70,36 @@
                         @if (!string.IsNullOrEmpty(errorMessage))
                         {
                             <p class="activity-image-photos-error-message text-center">@errorMessage</p>
+                        }
+                    }
+                </div>
+                <div class="mt-2">
+                    <p class="title mb-1">Phone Number</p>
+                    @if (!isEditPhoneNumber)
+                    {
+                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                            <span class="text-capitalize">@Model.CustomerProfile.PhoneNumber</span>
+                            <span class="edit" @onclick="EditPhoneNumber">Edit</span>
+                        </Div>
+                    }
+                    else
+                    {
+                        <Div class="details" Display="Display.Flex" Flex="Flex.AlignContent.End.JustifyContent.Between">
+                        <span>Input a valid phone number.</span>
+                        <span class="edit" @onclick="() => isEditPhoneNumber = !isEditPhoneNumber">Cancel</span>
+                        </Div>
+                        <Row>
+                            <Column ColumnSize="ColumnSize.Is6.OnDesktop">
+                                <Field class="form-floating mt-3 profile-info-input">
+                                    <TextEdit class="border-10" id="phonenumber" Size="Size.Default" @bind-Text="phoneNumberLocalstate" />
+                                    <FieldLabel for="phonenumber">Phone Number</FieldLabel>
+                                </Field>
+                            </Column>
+                        </Row>
+                        <Button Border="Border.Is0" Margin="Margin.Is3.FromTop" TextColor="TextColor.White" Color="Color.Primary" @onclick="SavePhoneNumber">Save</Button>
+                        @if (!string.IsNullOrEmpty(errorMessage1))
+                        {
+                            <p class="activity-image-photos-error-message text-center">@errorMessage1</p>
                         }
                     }
                 </div>
@@ -191,6 +224,10 @@
 
     private bool isEditBirthDate = false;
 
+    private bool isEditPhoneNumber = false;
+
+    private string phoneNumberLocalstate { get; set; } = string.Empty;
+
     private string birthDateLocalstate = string.Empty;
 
     private IList<FamilyMember> localStateFamilyMembers = new List<FamilyMember>();
@@ -200,6 +237,10 @@
     private PayoutAccountModel PayoutAccount {get; set;}
 
     private string errorMessage = string.Empty;
+
+    private string errorMessage1 = string.Empty;
+
+    public const string regex = @"((^(\+)(\d){12}$)|(^\d{11}$))";
 
     protected override async Task OnInitializedAsync()
     {
@@ -327,6 +368,49 @@
         }
     }
 
+    private void EditPhoneNumber()
+    {
+        isEditPhoneNumber = !isEditPhoneNumber;
+        if (isEditPhoneNumber)
+        {
+            phoneNumberLocalstate = Model.CustomerProfile.PhoneNumber;
+        }
+        else
+        {
+            phoneNumberLocalstate = string.Empty;
+        }
+    }
+
+    private async Task SavePhoneNumber()
+    {
+        if (isEditPhoneNumber)
+        {
+            if (checkPhoneNumber(phoneNumberLocalstate))
+            {
+                var result = await accountApiHandler.UpdateProfileDetails(new Framework.ApiCommand.ApiCore.Account.Request.UpdateProfileDetailsArgs
+                    {
+                        PhoneNumber = phoneNumberLocalstate,
+                        Datebirth = Model.CustomerProfile.Birthdate
+                    }, Model.Token);
+
+                if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+                {
+                    Model.CustomerProfile.PhoneNumber = result.Result.Result.PhoneNumber;
+                    errorMessage1 = string.Empty;
+                    isEditPhoneNumber = false;
+                    await ModelChanged.InvokeAsync(Model);
+                }
+                else
+                {
+                    errorMessage1 = result?.Result?.ErrorInfo?.Message;
+                }
+            }
+            else
+            {
+                errorMessage1 = "Please provide valid phone number.";
+            }
+        }
+    }
     private async Task SaveBirthDate()
     {
         if(isEditBirthDate)
@@ -359,6 +443,12 @@
                 }
             }
         }
+    }
+
+    public static bool checkPhoneNumber(string number)
+    {
+        if (number != null) return Regex.IsMatch(number, regex);
+        else return false;
     }
 }
 

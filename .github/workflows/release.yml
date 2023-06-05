@@ -49,6 +49,7 @@ jobs:
           Applicationconfig.Disbursement.RunPerHour: 48
           Applicationconfig.Disbursement.CronString: "0 1 0 ? * TUE,FRI"
           Applicationconfig.FrontendUrl: "https://cinnamon.ph/"
+          Applicationconfig.Sitemap.RunSitemap: true
 
       # substitute web blazor server environemnt variables
       - name: App Settings Variables Substitution for Web Blazor
@@ -62,7 +63,6 @@ jobs:
       # copy sitemaps and robots.txt
       - name: Copy required files
         run: |
-          cp output/sitemap.xml src/Cinnamon.Web/wwwroot/sitemap.xml
           cp output/robots.txt src/Cinnamon.Web/wwwroot/robots.txt
 
       - name: Restore Framework

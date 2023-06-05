@@ -8,6 +8,7 @@ public class UpdateProfileDetailsArgs
     public string? LastName {get; set;}
     public DateTime? Datebirth {get; set;}
     public string? About {get; set;}
+    public string? PhoneNumber { get; set; }
     public int VerifiedBadge { get; set; }
     public DateTime? VerifiedBadgeDate { get; set; }
     public int CustomerId { get; set; }
