@@ -55,28 +55,28 @@
                 </Button>
             </div>
         }
-        else if (ActivityItemType == ItemType.Completed && item.HasReview == false)
-        {
-            <div class="view-button">
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>OpenReviewModal(item)" style="width:100%">
-                    Write a Review
-                </Button>
-            </div>
-        }
         else if (ActivityItemType == ItemType.Completed && item.HasReview == true)
         {
             <div class="view-button">
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
+                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
                     View Attendance
                 </Button>
             </div>
         }
-
-        </div>
+        else if (ActivityItemType == ItemType.Completed && item.HasReview == false)
+        {
+            <div class="view-button">
+                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
+                    Write a Review
+                </Button>
+            </div>
+        }
+    </div>
 }
-@*<ModalAttendance @ref="modalRef"></ModalAttendance>*@
-<Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
-    <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
+
+    @*Student Calendar*@
+    <Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
+        <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
         <ModalHeader>
             <h6 class="col-11 modal-title text-center" style="font-weight:bold">View Attendance</h6>
             <button type="button" class="btn-close" @onclick="() => HideModal()" />
@@ -85,113 +85,114 @@
             <div class="student-details-container">
                 <div class="student-details">
                     @if (studentAttendances.Count != 0)
+                        {
+                            var item = studentAttendances.FirstOrDefault();
+                            <div class="student-details-major">
+                                <p class="">Name : <span>@item.Name</span></p>
+                                <p class="">Present Days : <span class="days-present">@item.SessionsAttended</span></p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="student-details-major">
+                                <p class="">Name : <span>@selectedName</span></p>
+                                <p class="">Present Days : <span class="days-present">@studentAttendances.Count</span></p>
+                            </div>
+                        }
+                    </div>
+                </div>
+                @* CALENDAR *@
+                <div class="wrap-content calendar">
+                    <div class="calendar-header">
+
+                        <h1 class="calendar-header-details">@monthName @year</h1>
+                        <div class="calendar-arrow">
+                            <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
+                            <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
+                        </div>
+                    </div>
+                    <hr />
+                    <hr />
+                    <section>
+                        @foreach (var days in CalendarDays)
+                        {
+                            <div class="calendar-days">
+                                <p>@days</p>
+                            </div>
+                        }
+                        @for (int i = 0; i < numDummyColumn; i++)
+                        {
+                            <div></div>
+                        }
+                        @for (int i = 1; i <= monthEnd.Day; i++)
+                        {
+                            var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                            <div class="calendar-body">
+                                @if (calendarItem != null && calendarItem.IsPresent == true)
+                                {
+                                    //Display
+                                    <button class="btn-date">@i</button>
+                                }
+                                else if (calendarItem != null && calendarItem.IsPresent == false)
+                                {
+                                    //Update
+                                    <button class="btn-date-absent">@i</button>
+                                }
+                                else
+                                {
+                                    <p class="calendar-dates">@i</p>
+                                }
+                            </div>
+                        }
+                    </section>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+    @*Modal Review*@
+    <Modal @ref="modref" class="review-modal" Padding="Padding.Is0">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
+                        You Just Finished an Activity
+                    </p>
+                    <button type="button" class="btn-close" @onclick="() => modref.Close(CloseReason.UserClosing)"></button>
+                </div>
+                <div class="modal-body">
+                    @if (studentAttendances.Count != 0 && activity.Title != null)
                     {
                         var item = studentAttendances.FirstOrDefault();
-                        <div class="student-details-major">
-                            <p class="">Name : <span>@item.Name</span></p>
-                            <p class="">Present Days : <span class="days-present">@item.SessionsAttended</span></p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="student-details-major">
-                            <p class="">Name : <span>@selectedName</span></p>
-                            <p class="">Present Days : <span class="days-present">@studentAttendances.Count</span></p>
-                        </div>
-                    }
-                </div>
-            </div>
-            @* CALENDAR *@
-            <div class="wrap-content calendar">
-                <div class="calendar-header">
-
-                    <h1 class="calendar-header-details">@monthName @year</h1>
-                    <div class="calendar-arrow">
-                        <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
-                        <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
-                    </div>
-                </div>
-                <hr />
-                <hr />
-                <section>
-                    @foreach (var days in CalendarDays)
-                    {
-                        <div class="calendar-days">
-                            <p>@days</p>
-                        </div>
-                    }
-                    @for (int i = 0; i < numDummyColumn; i++)
-                    {
-                        <div></div>
-                    }
-                    @for (int i = 1; i <= monthEnd.Day; i++)
-                    {
-                        var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
-                        <div class="calendar-body">
-                            @if (calendarItem != null && calendarItem.IsPresent == true)
-                            {
-                                //Display
-                                <button class="btn-date">@i</button>
-                            }
-                            else if (calendarItem != null && calendarItem.IsPresent == false)
-                            {
-                                //Update
-                                <button class="btn-date-absent">@i</button>
-                            }
-                            else
-                            {
-                                <p class="calendar-dates">@i</p>
-                            }
-                        </div>
-                    }
-                </section>
-            </div>
-        </ModalBody>
-    </ModalContent>
-</Modal>
-@*Modal Review*@
-<Modal @ref="modref" class="review-modal" Padding="Padding.Is0">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
-                    You Just Finished an Activity
-                </p>
-                <button type="button" class="btn-close" @onclick="() => modref.Close(CloseReason.UserClosing)"></button>
-            </div>
-            <div class="modal-body">
-                @if (studentAttendances.Count != 0)
-                {
-                    var item = studentAttendances.FirstOrDefault();
-                    <div class="text-center">
-                        <p class="font-14 color-gray-100">Leave a review</p>
-                        <img class="mt-1" src="@activity.Images.ElementAt(0).ImageSrc" alt="review image">
-                        <p class="font-16 color-black-100">@activity.Title</p>
-                        <p class="font-14 color-gray-100">@item.Name</p>
-                        <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
-                        <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-                            <MemoEdit Placeholder="Additional Comments" @bind-Text=ReviewText />
-                        </div>
-                        <Button @onclick="() => modref.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
-                            Not Now
-                        </Button>
-                        <Button Clicked="() => SubmitReview(item, activity)" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
+                        <div class="text-center">
+                            <p class="font-14 color-gray-100">Leave a review</p>
+                            <img class="mt-1" src="@activity.Images.ElementAt(0).ImageSrc" alt="review image">
+                            <p class="font-16 color-black-100">@activity.Title</p>
+                            <p class="font-14 color-gray-100">@item.Name</p>
+                            <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
+                            <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                                <MemoEdit Placeholder="Additional Comments" @bind-Text=ReviewText />
+                            </div>
+                            <Button @onclick="() => modref.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
+                                Not Now
+                            </Button>
+                            <Button Clicked="() => SubmitReview(item, activity)" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
                             Border="Border.Is0">
-                            Submit Review
-                        </Button>
-                    </div>
-                }
+                                Submit Review
+                            </Button>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
-    </div>
-</Modal>
-@if (IsShowErrorMessage)
-{
-    <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
-        <strong>Error!</strong> @ErrorMessage
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-}
+        @if (IsShowErrorMessage)
+        {
+            <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+                <strong>Error!</strong> @ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </Modal>
 @code
 {
     [Parameter]
@@ -339,12 +340,12 @@
 
     public async Task CreateCalendar(Students student)
     {
-        await modalRef.Show();
+        studentAttendances.Clear();
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                     {
                         StudentId = student.Id,
                         ActivityId = student.ActivityId,
-                        ScheduleId = student.ScheduleId
+                        ScheduleId = student.ScheduleId,
                     }, Token);
         if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
@@ -361,16 +362,17 @@
                                 ScheduleId = a.ScheduleId,
                                 StudentId = a.StudentId,
                                 Name = a.Name,
-
                             };
             }).ToList();
         }
         selectedName = student.Name;
+        await modalRef.Show();
     }
 
     public async Task OpenReviewModal(Students student)
     {
-        await modref.Show();
+        studentAttendances.Clear();
+        
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                     {
                         StudentId = student.Id,
@@ -431,7 +433,9 @@
                     } : null
                 };
             }
+            await modref.Show();
     }
+
     public async Task SubmitReview(StudentAttendance studentAttendance, Activity activity)
     {
         try
@@ -442,6 +446,7 @@
                 ErrorMessage = "Review rating is required. Please try again";
                 StateHasChanged();
                 await Task.Delay(2000);
+                IsShowErrorMessage = false;
             }
             else
             {
@@ -474,6 +479,8 @@
                     else
                     {
                         await modref.Close(CloseReason.UserClosing);
+                        StateHasChanged();
+                        NavigationManager.NavigateTo("/customer/profile", true);
                     }
                 }
             }
@@ -484,9 +491,11 @@
             ErrorMessage = "An error occured. Please try again later.";
             StateHasChanged();
             await Task.Delay(2000);
+            IsShowErrorMessage = false;
         }
         
     }
+
     private async Task HideModal()
     {
         await modalRef.Hide();

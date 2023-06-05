@@ -25,8 +25,8 @@
                     <div class="modal-body">
                         <div class="text-center">
                             <p class="font-14 color-gray-100">Leave a review</p>
-                            <img class="mt-1" src="@item.activities.Where(a => a.Id == item.ActivityId).FirstOrDefault().Images.ElementAt(0).ImageSrc" alt="review image">
-                            <p class="font-16 color-black-100">@item.activities.Where(a => a.Id == item.ActivityId).FirstOrDefault().Title</p>
+                            <img class="mt-1" src="@activities.Where(a => a.Id == item.ActivityId).FirstOrDefault().Images.ElementAt(0).ImageSrc" alt="review image">
+                            <p class="font-16 color-black-100">@activities.Where(a => a.Id == item.ActivityId).FirstOrDefault().Title</p>
                             <p class="font-14 color-gray-100">@item.Name</p>
                             <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
                             <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
@@ -35,7 +35,7 @@
                             <Button @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
                                 Not Now
                             </Button>
-                            <Button Clicked="() => SubmitReview(item, item.activities.Where(a => a.Id == item.ActivityId).First())" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
+                            <Button Clicked="() => SubmitReview(item, activities.Where(a => a.Id == item.ActivityId).First())" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
                             Border="Border.Is0">
                                 Submit Review
                             </Button>
@@ -55,7 +55,9 @@
 @code {
     IJSObjectReference module;
 
-    private IList<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+
+    private List<StudentAttendance> students = new List<StudentAttendance>();
 
     private List<Activity> activities = new List<Activity>();
 
@@ -125,7 +127,8 @@
                 }).ToList();
             }
             //Get Activity
-            foreach (var item in studentAttendances)
+            students = studentAttendances.GroupBy(a => a.ActivityId).Select(s => s.First()).ToList();
+            foreach (var item in students)
             {
                 var ActivityListData = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
                     {
@@ -159,7 +162,7 @@
                         } : null
                     };
                 }
-                item.activities.Add(activity);
+                activities.Add(activity);
             }
         }
     }
