@@ -17,5 +17,7 @@
         public string ToConnectionId { get; set; }
         public bool HasNewMessage { get; set; }
         public string FromProfileLink { get; set; }
+        public string TypingStatus { get; set; }
+        
     }
 }

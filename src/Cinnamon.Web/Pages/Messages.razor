@@ -121,7 +121,10 @@
 
                 <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
                     <ul class="list-unstyled d-flex flex-column">
-                        <div id="observerTarget"></div>
+                        @if (chatHistories.Count >= 30)
+                        {
+                            <div id="observerTarget"></div>
+                        }
                         @if (isLoading)
                         {
                             <div class="loading-section d-flex flex-row justify-content-center">
@@ -193,13 +196,24 @@
 
                 </InfiniteScroll>
             </div>
+            <div class="typing-status-section">
+                @if (chatRooms.Count > 0)
+                {
+                    <label>
+                        @if (chatRooms.Any(c => c.ChatRoomId == selectedChatRoomId))
+                        {
+                            @chatRooms.FirstOrDefault(c => c.ChatRoomId == selectedChatRoomId).TypingStatus
+                        }
+                    </label>
+                }
+            </div>
             <div class="send-message-section">
                 <table>
                     <tr>
                         <td class="attachment-section"><img src="images/messages/send-attachment.png" /></td>
                         <td class="input-section">
                             <div class="input-group border rounded-pill p-1 rounded-pill-section">
-                                <input type="text" @ref="inputMessageRef" placeholder="Aa" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="messageInput" @oninput="HandleInput" @onkeydown="HandleKeyDown" class="form-control bg-none border-0 message-input">
+                                <input type="text" @ref="inputMessageRef" placeholder="Aa" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="messageInput" @oninput="HandleInput" @onkeydown="HandleKeyDown" @onkeyup="HandleKeyUp" class="form-control bg-none border-0 message-input">
                                 <div class="input-group-append border-0">
                                     <img src="images/messages/send-emoji.png" class="emoji-icon" />
                                 </div>
@@ -250,7 +264,6 @@
 </div>
 
 @code {
-    private HubConnection? hubConnection;
     private string? messageInput;
     private string? searchValue;
     private string Title { get; set; } = "Messages";
@@ -274,19 +287,12 @@
     private DateTime? lastSeenDate;
     private ElementReference inputMessageRef;
     private bool isLoading = false;
+    [Inject] HubConnection hubConnection { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var userToken = user.FindFirstValue("Token");
-
-        hubConnection = new HubConnectionBuilder()
-                .WithUrl("http://localhost:5187/chathub", options =>
-                {
-                    options.AccessTokenProvider = () => Task.FromResult(userToken);
-                })
-                .WithAutomaticReconnect(new TimeSpan[] { TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
-                .Build();
 
         hubConnection.On<string>("ReceiveMessage", (payload) =>
         {
@@ -350,7 +356,47 @@
             InvokeAsync(() => StateHasChanged());
         });
 
-        await hubConnection.StartAsync();
+        hubConnection.On<string>("UpdateChatStatus", (payload) =>
+        {
+            var splitted = payload.Split("|");
+
+            if (chatRooms.Any(c => c.ChatRoomId == Convert.ToInt32(splitted[0])))
+            {
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).FromConnectionId = splitted[1];
+                chatMateConnectionId = splitted[1];
+            }
+
+            InvokeAsync(() => StateHasChanged());
+        });
+
+        hubConnection.On<string>("UpdateTypingStatusKeyDown", (payload) =>
+        {
+            var splitted = payload.Split("|");
+
+            if (Convert.ToInt32(splitted[0]) == selectedChatRoomId)
+            {
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).TypingStatus = $"{splitted[2]} {splitted[1]} is typing...";
+            }
+
+            InvokeAsync(() => StateHasChanged());
+        });
+
+        hubConnection.On<string>("UpdateTypingStatusKeyUp", (payload) =>
+        {
+            var splitted = payload.Split("|");
+
+            if (Convert.ToInt32(splitted[0]) == selectedChatRoomId)
+            {
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).TypingStatus = string.Empty;
+            }
+
+            InvokeAsync(() => StateHasChanged());
+        });
+
+        if (!IsConnected)
+        {
+            await hubConnection.StartAsync();
+        }
 
         await LoadSigninUser();
 
@@ -367,6 +413,8 @@
         {
             await hubConnection.SendAsync("SendMessage", selectedChatRoomId, currentUserConnectionId, currentUserId, currentUserLastName, currentUserFirstName, currentUserProfilePath, toUserId, messageInput);
         }
+
+        messageInput = string.Empty;
     }
 
     private async Task GetChatRoomsByUserId()
@@ -414,7 +462,21 @@
         if (e.Key == "Enter" && !string.IsNullOrEmpty(messageInput))
         {
             await Send();
-            messageInput = string.Empty;
+        }
+        else
+        {
+            if (hubConnection is not null)
+            {
+                await hubConnection.SendAsync("SendTypingStatusKeyDown", selectedChatRoomId, currentUserId, currentUserLastName, currentUserFirstName);
+            }
+        }
+    }
+
+    private async Task HandleKeyUp(KeyboardEventArgs e)
+    {
+        if (hubConnection is not null)
+        {
+            await hubConnection.SendAsync("SendTypingStatusKeyUp", selectedChatRoomId, currentUserId);
         }
     }
 
@@ -547,18 +609,7 @@
 
     void LocationChanged(object sender, LocationChangedEventArgs e)
     {
-        chatApiHandler.UpdateConnectionId(new Framework.ApiCommand.ApiCore.Account.Request.UpdateConnectionIdArgs
-            {
-                ConnectionId = string.Empty,
-                CustomerId = currentUserId,
-            }, Token);
-        try { 
-            hubConnection.StopAsync(); 
-        }
-        finally
-        {
-            hubConnection.DisposeAsync();
-        }
+        //hubConnection.StopAsync();
     }
 
     void IDisposable.Dispose()
@@ -566,4 +617,6 @@
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
     }
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 }

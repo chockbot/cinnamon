@@ -14,11 +14,13 @@ namespace Cinnamon.Api.Core.Hubs
         private readonly ICreateChatHistoryHandler createChatHistoryHandler;
         private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
         private readonly IGetCustomerByIdHandler getCustomerByIdHandler;
-        public ChatHub(ICreateChatHistoryHandler createChatHistoryHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetCustomerByIdHandler getCustomerByIdHandler)
+        private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
+        public ChatHub(ICreateChatHistoryHandler createChatHistoryHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetCustomerByIdHandler getCustomerByIdHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler)
         {
             this.createChatHistoryHandler = createChatHistoryHandler;
             this.updateConnectionIdHandler = updateConnectionIdHandler;
             this.getCustomerByIdHandler = getCustomerByIdHandler;
+            this.getChatRoomsByUserIdHandler = getChatRoomsByUserIdHandler;
         }
         public async Task SendMessage(int chatRoomId, string fromConnectionId, int fromUserId, string fromLastName, string fromFirstName, string fromProfilePath, int toUserId, string messageInput)
         {
@@ -54,11 +56,66 @@ namespace Cinnamon.Api.Core.Hubs
                     FromUserId       = fromUserId,
                     ToConnectionId   = toUser.ConnectionId ?? string.Empty,
                     ToUserId         = toUserId,
-                    IsViewed         = !string.IsNullOrEmpty(toUser.ConnectionId),
+                    IsViewed         = false,
                     Message          = messageInput
                 });
             }
         }
+
+        public async Task SendChatStatus(int customerId)
+        {
+            var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
+            {
+                UserId = customerId
+            });
+
+            if (result.Succeeded && result != null) 
+            {
+                foreach (var item in result.Result.ChatRooms)
+                {
+                    if(!string.IsNullOrEmpty(item.FromConnectionId))
+                        await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}");
+                }
+            }
+        }
+
+        public async Task SendTypingStatusKeyDown(int chatRoomId, int fromUserId, string fromLastName, string fromFirstName)
+        {
+            var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
+            {
+                UserId = fromUserId
+            });
+
+            if (result.Succeeded && result != null)
+            {
+
+                foreach (var item in result.Result.ChatRooms.Where(c => c.ChatRoomId == chatRoomId))
+                {
+                    if (!string.IsNullOrEmpty(item.FromConnectionId))
+                        await Clients.Client(item.FromConnectionId).SendAsync("UpdateTypingStatusKeyDown", $"{chatRoomId}|{fromLastName}|{fromFirstName}");
+                }
+            }
+        }
+
+        public async Task SendTypingStatusKeyUp(int chatRoomId, int fromUserId)
+        {
+            var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
+            {
+                UserId = fromUserId
+            });
+
+            if (result.Succeeded && result != null)
+            {
+
+                foreach (var item in result.Result.ChatRooms.Where(c => c.ChatRoomId == chatRoomId))
+                {
+                    if (!string.IsNullOrEmpty(item.FromConnectionId))
+                        await Clients.Client(item.FromConnectionId).SendAsync("UpdateTypingStatusKeyUp", $"{chatRoomId}");
+                }
+            }
+        }
+
+        
 
         public async override Task OnConnectedAsync()
         {
@@ -69,6 +126,20 @@ namespace Cinnamon.Api.Core.Hubs
                 ConnectionId = Context.ConnectionId,
                 CustomerId = Convert.ToInt32(userId)
             });
+
+            var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
+            {
+                UserId = Convert.ToInt32(userId)
+            });
+
+            if (result.Succeeded && result != null)
+            {
+                foreach (var item in result.Result.ChatRooms)
+                {
+                    if (!string.IsNullOrEmpty(item.FromConnectionId))
+                        await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{Context.ConnectionId}");
+                }
+            }
         }
 
         public async override Task OnDisconnectedAsync(Exception? exception)
