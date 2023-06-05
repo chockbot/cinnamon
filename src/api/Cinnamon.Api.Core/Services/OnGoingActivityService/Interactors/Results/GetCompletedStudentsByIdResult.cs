@@ -15,6 +15,7 @@ public class GetCompletedStudentsByIdResult
         public int ActivityId { get; set; }
         public string ActivityTitle { get; set; }
         public string ActivityDescription { get; set; }
+        public bool HasReview { get; set; }
     }
 
 }

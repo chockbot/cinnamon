@@ -50,6 +50,7 @@ public class GetCompletedStudentsByIdHandler : IGetCompletedStudentsByIdHandler
                         NumberOfSessions = s.NumberOfSessions,
                         SessionsAttended = s.SessionsAttended,
                         StudentName = s.Name,
+                        HasReview = s.HasReview
                     };
                 })
             }, "Successfully get student attendance");

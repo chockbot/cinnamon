@@ -25,17 +25,17 @@
                     <div class="modal-body">
                         <div class="text-center">
                             <p class="font-14 color-gray-100">Leave a review</p>
-                            <img class="mt-1" src="@activities.Where(a=> a.Id == item.ActivityId).FirstOrDefault().Images.ElementAt(0).ImageSrc" alt="review image">
-                            <p class="font-16 color-black-100">@activities.Where(a=> a.Id == item.ActivityId).FirstOrDefault().Title</p>
+                            <img class="mt-1" src="@item.activities.Where(a => a.Id == item.ActivityId).FirstOrDefault().Images.ElementAt(0).ImageSrc" alt="review image">
+                            <p class="font-16 color-black-100">@item.activities.Where(a => a.Id == item.ActivityId).FirstOrDefault().Title</p>
                             <p class="font-14 color-gray-100">@item.Name</p>
                             <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
                             <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
-                                <MemoEdit Placeholder="Additional Comments" Text="" />
+                                <MemoEdit Placeholder="Additional Comments" @bind-Text=ReviewText/>
                             </div>
                             <Button @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
                                 Not Now
                             </Button>
-                            <Button Clicked="SubmitReview" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
+                            <Button Clicked="() => SubmitReview(item, item.activities.Where(a => a.Id == item.ActivityId).First())" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
                             Border="Border.Is0">
                                 Submit Review
                             </Button>
@@ -46,6 +46,11 @@
         </Modal>
     }
 }
+<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
+    <AlertMessage>
+        ErrorMessage
+    </AlertMessage>
+</Alert>
 
 @code {
     IJSObjectReference module;
@@ -60,19 +65,21 @@
 
     public Activity activity = new Activity();
 
-    public string imgScr = string.Empty;
+    public string token { get; set; }
 
-    public string title = string.Empty;
+    public string ReviewText { get; set; } = string.Empty;
 
-    public int Id { get; set; }
+    public int SelectedValue = 0;
 
-    int SelectedValue = 0;
+    public bool IsShowErrorMessage { get; set; }
+
+    public string ErrorMessage { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         // get user login
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        var token = user.FindFirstValue("Token");
+        token = user.FindFirstValue("Token");
         AuthState = user;
 
         if (user != null && user.Identity.IsAuthenticated)
@@ -125,6 +132,7 @@
                         IncludeActivityDescription = true,
                         IncludeActivityImages = true,
                         IncludeAtivitySchedules = true,
+                        IncludeCustomer = true
                     });
                 if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
                 {
@@ -143,9 +151,15 @@
                                 Name = i.Name
                             };
                         }).ToList(),
+                        Owner = result.Owner != null ? new CustomerProfile
+                        {
+                            // map only required fields
+                            Id = result.Owner.Id,
+                            Handler = result.Owner.Handler
+                        } : null
                     };
                 }
-                activities.Add(activity);
+                item.activities.Add(activity);
             }
         }
     }
@@ -157,36 +171,6 @@
             await Show();
         }
     }
-    private async Task<Activity> GetActivityById(int Id)
-    {
-        var ActivityListData = await activityApiHandler.GetActivity(Id, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
-            {
-                IncludeActivityDescription = true,
-                IncludeActivityImages = true,
-                IncludeAtivitySchedules = true,
-            });
-        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
-        {
-            var result = ActivityListData.Result.Result;
-            activity = new Activity
-                {
-                    Id = result.ActivityId,
-                    Title = result.Title,
-                    Description = result.Description,
-                    Images = result.Images.Select(i =>
-                    {
-                        return new ActivityImage
-                        {
-                            Id = i.Id,
-                            ImageSrc = i.ImageSrc,
-                            Name = i.Name
-                        };
-                    }).ToList(),
-                };
-        }
-        return activity;
-    }
-
     public async Task Show()
     {
         for (int i = 0; i < studentAttendances.Count; i++)
@@ -195,8 +179,59 @@
         }
     }
 
-    public async Task SubmitReview()
+    public async Task SubmitReview(StudentAttendance studentAttendance, Activity activity)
     {
+        try
+        {
+            if (SelectedValue == 0)
+            {
+                IsShowErrorMessage = true;
+                ErrorMessage = "Review rating is required. Please try again";
+                StateHasChanged();
+                await Task.Delay(2000);
+            }
+            else
+            {
+                var create = await ongoingApiHandler.CreateReview(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.CreateReviewArgs
+                    {
+                        CustomerId = customerProfile.Id,
+                        MakerId = activity.Owner.Id,
+                        ActivityId = studentAttendance.ActivityId,
+                        ScheduleId = studentAttendance.ScheduleId,
+                        StudentId = studentAttendance.StudentId,
+                        Rating = SelectedValue,
+                        Review = ReviewText,
+                        ReviewDate = DateTime.UtcNow
+                    }, token);
 
+                if (create.Succeeded && create.Result != null && create.Result.IsSuccess)
+                {
+                    //Update Student Table Has Review
+                    var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            HasReview = true
+                        });
+                    if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
+                    {
+                        IsShowErrorMessage = true;
+                        ErrorMessage = "An error occured. Please try again later.";
+                        return;
+                    }
+                    else
+                    {
+                        await studentAttendance.ModalRef.Close(CloseReason.UserClosing);
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            IsShowErrorMessage = true;
+            ErrorMessage = "An error occured. Please try again later.";
+            StateHasChanged();
+            await Task.Delay(2000);
+        }
+        
     }
 }

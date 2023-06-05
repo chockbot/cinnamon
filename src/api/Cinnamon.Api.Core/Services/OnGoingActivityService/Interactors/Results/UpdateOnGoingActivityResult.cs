@@ -12,6 +12,7 @@ public class UpdateOnGoingActivityResult
     public int NumberOfBacktracking { get; set; }
     public DateTime ExpirationStartDate { get; set; }
     public DateTime ExpirationEndDate { get; set; }
+    public bool HasReview { get; set; }
     public string Remarks { get; set; }
     public string Status { get; set; }
 }

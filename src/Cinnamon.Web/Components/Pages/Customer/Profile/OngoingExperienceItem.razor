@@ -46,11 +46,23 @@
                 </a>
             </div>
         </div>
+        @if (ActivityItemType == ItemType.Ongoing)
+        {
             <div class="view-button">
                 <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
                     View Attendance
                 </Button>
             </div>
+        }
+        else
+        {
+            <div class="view-button">
+                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
+                    Write a Review
+                </Button>
+            </div>
+        }
+
         </div>
 }
 @*<ModalAttendance @ref="modalRef"></ModalAttendance>*@
@@ -209,6 +221,7 @@
         }
         else 
         {
+
             students = students.Where(s => s.SessionsAttended >= s.NumberOfSessions).ToList();
         }
 

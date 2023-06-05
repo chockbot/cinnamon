@@ -10,12 +10,12 @@ public interface IStudentRepository
     Task<AppResult<IEnumerable<StudentDTO>>> GetAllAsync();
     Task<AppResult<StudentDTO>> Create(int customerId, int familyMemberId, int activityId, int scheduleId, string name, string studentNo, 
         int numberOfSessions, int sessionsAttended, int numberOfBacktracking, DateTime expirationStartDate, DateTime ExpirationEndDate, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false);
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false, bool hasReview = false);
     Task<AppResult<IEnumerable<StudentDTO>>> Create(int customerId, int activityId, int scheduleId,int numberOfSessions, 
         int sessionsAttended, int numberOfBacktracking, DateTime expirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false);
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false, bool hasReview = false);
     Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
-        int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? expirationStartDate, DateTime? ExpirationEndDate);
+        int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? expirationStartDate, DateTime? ExpirationEndDate, bool? hasReview);
     Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudent(int ActivityId);
     Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive);
     Task<AppResult<IEnumerable<StudentDTO>>> UpdateStudentsDisbursementStatus(IEnumerable<int> ids, bool isDisbursement);

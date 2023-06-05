@@ -119,7 +119,8 @@ public class StudentController : ControllerBase
         {
             var result = await studentRepository.Create(args.CustomerId, args.FamilyMemberId, 
                 args.ActivityId, args.ScheduleId, args.Name, args.StudentNo, 
-                args.NumberOfSessions, args.SessionsAttended, args.NumberOfBacktracking, args.ExpirationEndDate, args.ExpirationStartDate, args.OngoingActivityId);
+                args.NumberOfSessions, args.SessionsAttended, args.NumberOfBacktracking, args.ExpirationEndDate, args.ExpirationStartDate, 
+                args.OngoingActivityId);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -170,7 +171,7 @@ public class StudentController : ControllerBase
         try
         {
             var result = await studentRepository.Update(args.StudentId, args.Name, args.StudentNo, 
-                args.NumberOfSessions, args.SessionsAttended, args.NumberOfBacktracking, args.Remarks, args.Status, args.ExpirationStartDate, args.ExpirationEndDate);
+                args.NumberOfSessions, args.SessionsAttended, args.NumberOfBacktracking, args.Remarks, args.Status, args.ExpirationStartDate, args.ExpirationEndDate, args.HasReview);
 
             if (!result.Succeeded || result.Result == null)
             {

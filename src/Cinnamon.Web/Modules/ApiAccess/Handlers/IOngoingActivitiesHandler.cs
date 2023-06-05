@@ -16,4 +16,6 @@ public interface IOngoingActivitiesHandler
     Task<AppResult<AddActivityExpirationResult>> AddActivityExpiration(AddActivityExpirationArgs args);
 
     Task<AppResult<GetCompletedStudentsByIdResult>> GetCompletedStudentsById(GetCompletedStudentsByIdArgs args, string token);
+
+    Task<AppResult<CreateReviewResult>> CreateReview(CreateReviewArgs args, string token);
 }

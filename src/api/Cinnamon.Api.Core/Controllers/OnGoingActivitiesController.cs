@@ -1,6 +1,8 @@
-﻿using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
+﻿using Cinnamon.Api.Core.Services.DashboardService;
+using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Reviews;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Microsoft.AspNetCore.Authorization;
@@ -19,15 +21,18 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IAddActivityExpirationHandler addActivityExpirationHandler;
     private readonly IGetEnrolledStudentsHandler getEnrolledStudentsHandler;
     private readonly IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler;
+    private readonly ICreateReviewHandler createReviewHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
-        IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler)
+        IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, 
+        IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler)
     {
-        this.getAllOngoingActivitiesHandler = getAllOngoingActivitiesHandler;   
-        this.getOngoingActivityByIdHandler  = getOngoingActivityByIdHandler;
-        this.updateOngoingActivityHadler    = updateOngoingActivityHadler;
-        this.addActivityExpirationHandler   = addActivityExpirationHandler;
-        this.getEnrolledStudentsHandler     = getEnrolledStudentsHandler;
-        this.getCompletedStudentsByIdHandler = getCompletedStudentsByIdHandler;
+        this.getAllOngoingActivitiesHandler   = getAllOngoingActivitiesHandler;   
+        this.getOngoingActivityByIdHandler    = getOngoingActivityByIdHandler;
+        this.updateOngoingActivityHadler      = updateOngoingActivityHadler;
+        this.addActivityExpirationHandler     = addActivityExpirationHandler;
+        this.getEnrolledStudentsHandler       = getEnrolledStudentsHandler;
+        this.getCompletedStudentsByIdHandler  = getCompletedStudentsByIdHandler;
+        this.createReviewHandler              = createReviewHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -181,7 +186,8 @@ public class OnGoingActivitiesController : ControllerBase
                 Status= args.Status,
                 StudentNo= args.StudentNo,
                 ExpirationStartDate = args.ExpirationStartDate,
-                ExpirationEndDate = args.ExpirationEndDate
+                ExpirationEndDate = args.ExpirationEndDate,
+                HasReview = args.HasReview
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -200,7 +206,8 @@ public class OnGoingActivitiesController : ControllerBase
                    Name= result.Result.Name,
                    Id= result.Result.Id,
                    ExpirationStartDate= result.Result.ExpirationStartDate,
-                   ExpirationEndDate= result.Result.ExpirationEndDate
+                   ExpirationEndDate= result.Result.ExpirationEndDate,
+                   HasReview = result.Result.HasReview
                 },
                 IsSuccess = true
             });
@@ -247,6 +254,7 @@ public class OnGoingActivitiesController : ControllerBase
             return new JsonResult(new AddActivityExpirationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("GetCompletedStudentsById")]
     [HttpGet]
     [ProducesResponseType(typeof(GetCompletedStudentsByIdResult), StatusCodes.Status200OK)]
@@ -273,7 +281,8 @@ public class OnGoingActivitiesController : ControllerBase
                         Name = s.StudentName,
                         NumberOfSessions = s.NumberOfSessions,
                         SessionsAttended = s.SessionsAttended,
-                        ScheduleId = s.ScheduleId
+                        ScheduleId = s.ScheduleId,
+                        HasReview = s.HasReview
                     };
                 })
             });
@@ -281,6 +290,52 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetCompletedStudentsByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateReview")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateReviewResult), StatusCodes.Status201Created)]
+
+    public async Task<IActionResult> CreateReview([FromBody] CreateReviewArgs args)
+    {
+        try
+        {
+            var result = await createReviewHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.CreateReviewArgs
+            {
+                CustomerId  = args.CustomerId,
+                MakerId     = args.MakerId,
+                ActivityId  = args.ActivityId,
+                ScheduleId  = args.ScheduleId,
+                StudentId   = args.StudentId,
+                Rating      = args.Rating,
+                Review      = args.Review,
+                ReviewDate  = args.ReviewDate
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateReviewResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new CreateReviewResult
+            {
+                Result = new ReviewsDTO
+                {
+                    CustomerId  = result.Result.CustomerId,
+                    MakerId     = result.Result.MakerId,
+                    ActivityId  = result.Result.ActivityId,
+                    ScheduleId  = result.Result.ScheduleId,
+                    StudentId   = result.Result.StudentId,
+                    Rating      = result.Result.Rating,
+                    Review      = result.Result.Review,
+                    ReviewDate  = result.Result.ReviewDate
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateReviewResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

@@ -88,7 +88,7 @@ public class BadgesData : IBadgesData
                             .PostJsonAsync(args)
                             .ReceiveJson<UpdateBadgeResult>();
 
-            return AppResult<UpdateBadgeResult>.CreateSucceeded(result, "Successfully posting update category api");
+            return AppResult<UpdateBadgeResult>.CreateSucceeded(result, "Successfully posting update badge api");
         }
         catch (FlurlHttpException ex)
         {
@@ -96,7 +96,7 @@ public class BadgesData : IBadgesData
         }
         catch (Exception ex)
         {
-            return AppResult<UpdateBadgeResult>.CreateFailed(ex, "An error occured when posting update category api");
+            return AppResult<UpdateBadgeResult>.CreateFailed(ex, "An error occured when posting update badge api");
         }
     }
 }
