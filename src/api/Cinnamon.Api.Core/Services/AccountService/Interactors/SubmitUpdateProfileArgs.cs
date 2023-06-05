@@ -9,4 +9,5 @@ public class SubmitUpdateProfileArgs : IInteractor
     public DateTime? Birthdate {get; set;}
     public string? About {get; set;}
     public int? VerifiedBadge { get; set; }
+    public string? PhoneNumber { get; set; }
 }

@@ -40,4 +40,5 @@ public class UpdateActivity
     public string? PinnedLocation { get; set; }
     public bool? IsDeactivated { get; set; }
     public Enums.Enums.ActivityStatus? Status { get; set; }
+    public string? Handler {get; set;}
 }
