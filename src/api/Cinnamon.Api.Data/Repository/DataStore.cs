@@ -71,6 +71,7 @@ public class DataStore : IDataStore
     public IAdminUser AdminUser => new AdminUserEntity(applicationContext);
 
     public ICustomerPricing CustomerPricing => new CustomerPricingEntity(applicationContext);
+    public IReviews Reviews => new ReviewsEntity(applicationContext);
 
     public async Task EnsureMigrate()
     {

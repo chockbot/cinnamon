@@ -15,4 +15,5 @@ public class Students
     public string Status { get; set; }
     public DateTime ExpirationDateStart { get; set; }
     public DateTime ExpirationDateEnd { get;set; }
+    public bool HasReview { get; set; }
 }

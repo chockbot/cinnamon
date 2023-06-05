@@ -96,6 +96,7 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
             return AppResult<GetOngoingActivityByIdResult>.CreateFailed(ex, "An error occured when getting student activity by id api");
         }
     }
+
     public async Task<AppResult<UpdateOngoingActivityResult>> UpdateActivity(UpdateOngoingActivityArgs args)
     {
         try
@@ -115,6 +116,73 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
         catch (Exception ex)
         {
             return AppResult<UpdateOngoingActivityResult>.CreateFailed(ex, "An error occured when posting update ongoing activity api");
+        }
+    }
+
+    public async Task<AppResult<GetCompletedStudentsByIdResult>> GetCompletedStudentsById(GetCompletedStudentsByIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetCompletedStudentsById")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetCompletedStudentsByIdResult>();
+
+            return AppResult<GetCompletedStudentsByIdResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCompletedStudentsByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCompletedStudentsByIdResult>.CreateFailed(ex, "An error occured when getting student attendance api");
+        }
+    }
+
+    public async Task<AppResult<CreateReviewResult>> CreateReview(CreateReviewArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/CreateReview")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateReviewResult>();
+
+            return AppResult<CreateReviewResult>.CreateSucceeded(result, "Successfully posting create review api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateReviewResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateReviewResult>.CreateFailed(ex, "An error occured when posting create review api");
+        }
+    }
+
+    public async Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById(GetAllStudentsByIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetAllStudentsById")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllStudentsByIdResult>();
+
+            return AppResult<GetAllStudentsByIdResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, "An error occured when getting student attendance api");
         }
     }
 }

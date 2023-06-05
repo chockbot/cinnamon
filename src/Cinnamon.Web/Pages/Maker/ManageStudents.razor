@@ -228,6 +228,7 @@
     private List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     private GetAttendance Attendances = new GetAttendance();
+    private GetStudent students = new GetStudent();
     string token = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -297,27 +298,31 @@
                 }
             }
             //Get Enrolled Experience
-            var student = await ongoingApiHandler.GetAllOngoingActivities();
-            if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+            foreach (var item in Model.activities)
             {
-                Model.students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                var student = await ongoingApiHandler.GetEnrolledStudents(item.ActivityId);
+                if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
                 {
-                    return new Students
-                        {
-                            ActivityId = a.ActivityId,
-                            CustomerId = a.CustomerId,
-                            Id = a.Id,
-                            Name = a.Name,
-                            NumberOfSessions = a.NumberOfSessions,
-                            Remarks = a.Remarks,
-                            ScheduleId = a.ScheduleId,
-                            SessionsAttended = a.SessionsAttended,
-                            Status = a.Status,
-                            StudentNo = a.StudentNo
-                        };
-                }).ToList();
+                    Model.students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                    {
+                        return new Students
+                            {
+                                ActivityId = a.ActivityId,
+                                CustomerId = a.CustomerId,
+                                Id = a.Id,
+                                Name = a.Name,
+                                NumberOfSessions = a.NumberOfSessions,
+                                Remarks = a.Remarks,
+                                ScheduleId = a.ScheduleId,
+                                SessionsAttended = a.SessionsAttended,
+                                Status = a.Status,
+                                StudentNo = a.StudentNo
+                            };
+                    }).ToList();
+                }
+                students.item.AddRange(Model.students);
             }
-            var query = from item in Model.students
+            var query = from item in students.item
                         join item1 in Model.activities on item.ActivityId equals item1.ActivityId
                         orderby item.Id
                         select new ManageStudentsData
@@ -478,6 +483,11 @@
     public class GetAttendance
     {
         public List<StudentAttendance> item = new List<StudentAttendance>();    
+    }
+
+    public class GetStudent
+    {
+        public List<Students> item = new List<Students>();
     }
 }
 

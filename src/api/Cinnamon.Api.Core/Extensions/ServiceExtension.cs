@@ -48,7 +48,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAdminUserData, Modules.DataAccess.AdminUser.AdminUserData>();
         services.AddTransient<Modules.DataAccess.Handlers.IBadgesData, Modules.DataAccess.Badges.BadgesData>();
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerPricingData, Modules.DataAccess.CustomerPricingData>();
-         
+        services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
 
@@ -139,6 +139,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.ICreateStudentAttendanceHandler, Services.DashboardService.CreateStudentAttendanceHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetAllBadgesHandler, Services.DashboardService.GetAllBadgeHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetAllStudentsAttendanceHandler, Services.DashboardService.GetAllStudentsAttendanceHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetCompletedStudentsHandler, Services.DashboardService.GetCompletedStudentsHandler>();    
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();
@@ -146,7 +147,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.OnGoingActivityService.Handlers.IUpdateOngoingActivityHadler, Services.OnGoingActivityService.UpdateOngoingActivityHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IAddActivityExpirationHandler, Services.OnGoingActivityService.AddActivityExpirationHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetEnrolledStudentsHandler, Services.OnGoingActivityService.GetEnrolledStudentsHandler>();  
-
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetCompletedStudentsByIdHandler, Services.OnGoingActivityService.GetCompletedStudentsByIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.ICreateReviewHandler, Services.OnGoingActivityService.CreateReviewHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllStudentsByIdHandler, Services.OnGoingActivityService.GetAllStudentsByIdHandler>();
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
         services.AddTransient<Services.SystemService.Handlers.IGenerateSitemapHandler, Services.SystemService.GenerateSitemapHandler>();

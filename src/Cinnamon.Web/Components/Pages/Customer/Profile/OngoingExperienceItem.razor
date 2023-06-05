@@ -5,9 +5,10 @@
 @using System.Security.Claims
 @inject NavigationManager NavigationManager
 @inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IActivityApiHandler activityApiHandler
 @inject IDashboardApiHandler dashboardApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
-@inject IDashboardApiHandler dashboardApiHandler
+@inject IAccountApiHandler accountApiHandler
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
 
@@ -46,16 +47,36 @@
                 </a>
             </div>
         </div>
+        @if (ActivityItemType == ItemType.Ongoing)
+        {
             <div class="view-button">
                 <Button Color="Color.Primary" Border="Border.Is0" Clicked="() =>CreateCalendar(item)" style="width:100%">
                     View Attendance
                 </Button>
             </div>
-        </div>
+        }
+        else if (ActivityItemType == ItemType.Completed && item.HasReview == true)
+        {
+            <div class="view-button">
+                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => CreateCalendar(item)" style="width:100%">
+                    View Attendance
+                </Button>
+            </div>
+        }
+        else if (ActivityItemType == ItemType.Completed && item.HasReview == false)
+        {
+            <div class="view-button">
+                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => OpenReviewModal(item)" style="width:100%">
+                    Write a Review
+                </Button>
+            </div>
+        }
+    </div>
 }
-@*<ModalAttendance @ref="modalRef"></ModalAttendance>*@
-<Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
-    <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
+
+    @*Student Calendar*@
+    <Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
+        <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
         <ModalHeader>
             <h6 class="col-11 modal-title text-center" style="font-weight:bold">View Attendance</h6>
             <button type="button" class="btn-close" @onclick="() => HideModal()" />
@@ -64,78 +85,124 @@
             <div class="student-details-container">
                 <div class="student-details">
                     @if (studentAttendances.Count != 0)
-                    {
-                        var item = studentAttendances.FirstOrDefault();
-                        <div class="student-details-major">
-                            <p class="">Name : <span>@item.Name</span></p>
-                            <p class="">Present Days : <span class="days-present">@item.SessionsAttended</span></p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="student-details-major">
-                            <p class="">Name : <span>@selectedName</span></p>
-                            <p class="">Present Days : <span class="days-present">@studentAttendances.Count</span></p>
-                        </div>
-                    }
-                </div>
-            </div>
-            @* CALENDAR *@
-            <div class="wrap-content calendar">
-                <div class="calendar-header">
-
-                    <h1 class="calendar-header-details">@monthName @year</h1>
-                    <div class="calendar-arrow">
-                        <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
-                        <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
+                        {
+                            var item = studentAttendances.FirstOrDefault();
+                            <div class="student-details-major">
+                                <p class="">Name : <span>@item.Name</span></p>
+                                <p class="">Present Days : <span class="days-present">@item.SessionsAttended</span></p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="student-details-major">
+                                <p class="">Name : <span>@selectedName</span></p>
+                                <p class="">Present Days : <span class="days-present">@studentAttendances.Count</span></p>
+                            </div>
+                        }
                     </div>
                 </div>
-                <hr />
-                <hr />
-                <section>
-                    @foreach (var days in CalendarDays)
+                @* CALENDAR *@
+                <div class="wrap-content calendar">
+                    <div class="calendar-header">
+
+                        <h1 class="calendar-header-details">@monthName @year</h1>
+                        <div class="calendar-arrow">
+                            <button class="arrow-left" @onclick="() => { monthsAway--; CreateMonth(); }" disabled="@disableButtonLeft"><img src="images/calender icon left.png"></button>
+                            <button class="arrow-right" @onclick="() => { monthsAway++; CreateMonth(); }" disabled="@disableButtonRight"><img src="images/calender icon right.png"></button>
+                        </div>
+                    </div>
+                    <hr />
+                    <hr />
+                    <section>
+                        @foreach (var days in CalendarDays)
+                        {
+                            <div class="calendar-days">
+                                <p>@days</p>
+                            </div>
+                        }
+                        @for (int i = 0; i < numDummyColumn; i++)
+                        {
+                            <div></div>
+                        }
+                        @for (int i = 1; i <= monthEnd.Day; i++)
+                        {
+                            var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
+                            <div class="calendar-body">
+                                @if (calendarItem != null && calendarItem.IsPresent == true)
+                                {
+                                    //Display
+                                    <button class="btn-date">@i</button>
+                                }
+                                else if (calendarItem != null && calendarItem.IsPresent == false)
+                                {
+                                    //Update
+                                    <button class="btn-date-absent">@i</button>
+                                }
+                                else
+                                {
+                                    <p class="calendar-dates">@i</p>
+                                }
+                            </div>
+                        }
+                    </section>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+
+    @*Modal Review*@
+    <Modal @ref="modref" class="review-modal" Padding="Padding.Is0">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p class="col-11 modal-title text-center color-black-100 font-family-nunito font-weight-700">
+                        You Just Finished an Activity
+                    </p>
+                    <button type="button" class="btn-close" @onclick="() => modref.Close(CloseReason.UserClosing)"></button>
+                </div>
+                <div class="modal-body">
+                    @if (studentAttendances.Count != 0 && activity.Title != null)
                     {
-                        <div class="calendar-days">
-                            <p>@days</p>
+                        var item = studentAttendances.FirstOrDefault();
+                        <div class="text-center">
+                            <p class="font-14 color-gray-100">Leave a review</p>
+                            <img class="mt-1" src="@activity.Images.ElementAt(0).ImageSrc" alt="review image">
+                            <p class="font-16 color-black-100">@activity.Title</p>
+                            <p class="font-14 color-gray-100">@item.Name</p>
+                            <Rating Color="Color.Primary" @bind-SelectedValue="@SelectedValue" MaxValue="5" />
+                            <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
+                                <MemoEdit Placeholder="Additional Comments" @bind-Text=ReviewText />
+                            </div>
+                            <Button @onclick="() => modref.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
+                                Not Now
+                            </Button>
+                            <Button Clicked="() => SubmitReview(item, activity)" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
+                            Border="Border.Is0">
+                                Submit Review
+                            </Button>
                         </div>
                     }
-                    @for (int i = 0; i < numDummyColumn; i++)
-                    {
-                        <div></div>
-                    }
-                    @for (int i = 1; i <= monthEnd.Day; i++)
-                    {
-                        var calendarItem = studentAttendances.FirstOrDefault(n => n.Date == new DateTime(year, month, i));
-                        <div class="calendar-body">
-                            @if (calendarItem != null && calendarItem.IsPresent == true)
-                            {
-                                //Display
-                                <button class="btn-date">@i</button>
-                            }
-                            else if (calendarItem != null && calendarItem.IsPresent == false)
-                            {
-                                //Update
-                                <button class="btn-date-absent">@i</button>
-                            }
-                            else
-                            {
-                                <p class="calendar-dates">@i</p>
-                            }
-                        </div>
-                    }
-                </section>
+                </div>
             </div>
-        </ModalBody>
-    </ModalContent>
-</Modal>
+        </div>
+        @if (IsShowErrorMessage)
+        {
+            <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+                <strong>Error!</strong> @ErrorMessage
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+    </Modal>
 @code
 {
     [Parameter]
     public Activity Activity { get; set; }
     [Parameter]
     public CustomerProfile Profile { get; set; }
+
     public List<Students> students = new List<Students>();
     public ActivitySchedule Schedule = new ActivitySchedule();
+    public Activity activity = new Activity();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     public string monthName = "";
     public DateTime monthEnd;
@@ -148,7 +215,12 @@
     public bool disableButtonRight { get; set; } = false;
     public bool disableButtonLeft { get; set; } = false;
     public Modal modalRef;
+    public Modal modref;
     public string selectedName = string.Empty;
+    public string ReviewText { get; set; } = string.Empty;
+    public int SelectedValue = 0;
+    public bool IsShowErrorMessage { get; set; }
+    public string ErrorMessage { get; set; }
 
     public enum ItemType 
     {
@@ -180,29 +252,35 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
-        var student = await ongoingApiHandler.GetAllOngoingActivities();
-        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        // Get All Ongoing Activities of the Customer
+        var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
         {
-            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            CustomerId = Profile.Id
+        }, Token);
+        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
             {
-                return new Students
-                    {
-                        ActivityId = a.ActivityId,
-                        CustomerId = a.CustomerId,
-                        Id = a.Id,
-                        Name = a.Name,
-                        NumberOfSessions = a.NumberOfSessions,
-                        Remarks = a.Remarks,
-                        ScheduleId = a.ScheduleId,
-                        SessionsAttended = a.SessionsAttended,
-                        Status = a.Status,
-                        StudentNo = a.StudentNo,
-                        ExpirationDateStart = a.ExpirationStartDate,
-                        ExpirationDateEnd = a.ExpirationEndDate,
-                    };
-            }).ToList();
-        }
-        students = students.Where(a => a.ActivityId == Activity.ActivityId && a.CustomerId == Profile.Id).ToList();
+                students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                {
+                    return new Students
+                            {
+                                ActivityId = a.ActivityId,
+                                CustomerId = a.CustomerId,
+                                Id = a.Id,
+                                Name = a.Name,
+                                NumberOfSessions = a.NumberOfSessions,
+                                Remarks = a.Remarks,
+                                ScheduleId = a.ScheduleId,
+                                SessionsAttended = a.SessionsAttended,
+                                Status = a.Status,
+                                StudentNo = a.StudentNo,
+                                ExpirationDateStart = a.ExpirationStartDate,
+                                ExpirationDateEnd = a.ExpirationEndDate,
+                                HasReview = a.HasReview
+                            };
+                }).ToList();
+            }
+        students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
+
         if(ActivityItemType == ItemType.Ongoing)
         {
             students = students.Where(s => s.SessionsAttended < s.NumberOfSessions).ToList();
@@ -214,78 +292,208 @@
 
         await CreateMonth();
     }
+
     public double GetPercentage(double session, double total)
     {
-        return Math.Round(session / total * 100);
+    return Math.Round(session / total * 100);
     }
+
     public async Task CreateMonth()
     {
-        if (monthsAway <= 2 && monthsAway >= -2)
+    if (monthsAway <= 2 && monthsAway >= -2)
+    {
+        if(monthsAway == 2)
         {
-            if(monthsAway == 2)
-            {
-                disableButtonRight = true;
-            }else if(monthsAway == -2){
-                disableButtonLeft = true;
-            }
-            else{
-                disableButtonRight = false;
-                disableButtonLeft = false;
-            }
-            var tempDate = DateTime.Now.AddMonths(monthsAway);
-            month = tempDate.Month;
-            year = tempDate.Year;
-
-            DateTime monthStart = new DateTime(year, month, 1);
-            monthEnd = monthStart.AddMonths(1).AddDays(-1);
-            monthName = monthStart.Month switch
-            {
-                1 => "January",
-                2 => "February",
-                3 => "March",
-                4 => "April",
-                5 => "May",
-                6 => "June",
-                7 => "July",
-                8 => "August",
-                9 => "September",
-                10 => "October",
-                11 => "November",
-                12 => "December",
-                _ => ""
-            };
-            numDummyColumn = (int)monthStart.DayOfWeek;
+            disableButtonRight = true;
+        }else if(monthsAway == -2){
+            disableButtonLeft = true;
         }
+        else{
+            disableButtonRight = false;
+            disableButtonLeft = false;
+        }
+        var tempDate = DateTime.Now.AddMonths(monthsAway);
+        month = tempDate.Month;
+        year = tempDate.Year;
+
+        DateTime monthStart = new DateTime(year, month, 1);
+        monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        monthName = monthStart.Month switch
+        {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            _ => ""
+        };
+        numDummyColumn = (int)monthStart.DayOfWeek;
+    }
     }
 
     public async Task CreateCalendar(Students student)
     {
-        await modalRef.Show();
+        studentAttendances.Clear();
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-            {
-                StudentId = student.Id,
-                ActivityId = student.ActivityId
-            }, Token);
+                    {
+                        StudentId = student.Id,
+                        ActivityId = student.ActivityId,
+                        ScheduleId = student.ScheduleId,
+                    }, Token);
         if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
             studentAttendances = attendance.Result.Result.Select(a =>
             {
                 return new StudentAttendance
-                    {
-                        Id = a.Id,
-                        Date = a.Date,
-                        IsPresent = a.IsPresent,
-                        ActivityId = a.ActivityId,
-                        NumberOfSessions = a.NumberOfSessions,
-                        SessionsAttended = a.SessionsAttended,
-                        ScheduleId = a.ScheduleId,
-                        StudentId = a.StudentId,
-                        Name = a.Name
-                    };
+                            {
+                                Id = a.Id,
+                                Date = a.Date,
+                                IsPresent = a.IsPresent,
+                                ActivityId = a.ActivityId,
+                                NumberOfSessions = a.NumberOfSessions,
+                                SessionsAttended = a.SessionsAttended,
+                                ScheduleId = a.ScheduleId,
+                                StudentId = a.StudentId,
+                                Name = a.Name,
+                            };
             }).ToList();
         }
-
         selectedName = student.Name;
+        await modalRef.Show();
+    }
+
+    public async Task OpenReviewModal(Students student)
+    {
+        studentAttendances.Clear();
+        
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+                    {
+                        StudentId = student.Id,
+                        ActivityId = student.ActivityId,
+                        ScheduleId = student.ScheduleId
+                    }, Token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                            {
+                                Id = a.Id,
+                                Date = a.Date,
+                                IsPresent = a.IsPresent,
+                                ActivityId = a.ActivityId,
+                                NumberOfSessions = a.NumberOfSessions,
+                                SessionsAttended = a.SessionsAttended,
+                                ScheduleId = a.ScheduleId,
+                                StudentId = a.StudentId,
+                                Name = a.Name,
+                                HasReview = a.HasReview
+                            };
+            }).ToList();
+        }
+        selectedName = student.Name;
+        //Get Activity
+        var resultId = studentAttendances.FirstOrDefault().ActivityId;
+        var ActivityListData = await activityApiHandler.GetActivity(resultId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+                {
+                    IncludeActivityDescription = true,
+                    IncludeActivityImages = true,
+                    IncludeAtivitySchedules = true,
+                    IncludeCustomer = true
+                });
+            if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+            {
+                var result = ActivityListData.Result.Result;
+                activity = new Activity
+                {
+                    Id = result.ActivityId,
+                    Title = result.Title,
+                    Description = result.Description,
+                    Images = result.Images.Select(i =>
+                    {
+                        return new ActivityImage
+                        {
+                            Id = i.Id,
+                            ImageSrc = i.ImageSrc,
+                            Name = i.Name
+                        };
+                    }).ToList(),
+                    Owner = result.Owner != null ? new CustomerProfile
+                    {
+                        // map only required fields
+                        Id = result.Owner.Id,
+                        Handler = result.Owner.Handler
+                    } : null
+                };
+            }
+            await modref.Show();
+    }
+
+    public async Task SubmitReview(StudentAttendance studentAttendance, Activity activity)
+    {
+        try
+        {
+            if (SelectedValue == 0)
+            {
+                IsShowErrorMessage = true;
+                ErrorMessage = "Review rating is required. Please try again";
+                StateHasChanged();
+                await Task.Delay(2000);
+                IsShowErrorMessage = false;
+            }
+            else
+            {
+                var create = await ongoingApiHandler.CreateReview(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.CreateReviewArgs
+                    {
+                        CustomerId = Profile.Id,
+                        MakerId = activity.Owner.Id,
+                        ActivityId = studentAttendance.ActivityId,
+                        ScheduleId = studentAttendance.ScheduleId,
+                        StudentId = studentAttendance.StudentId,
+                        Rating = SelectedValue,
+                        Review = ReviewText,
+                        ReviewDate = DateTime.UtcNow
+                    }, Token);
+
+                if (create.Succeeded && create.Result != null && create.Result.IsSuccess)
+                {
+                    //Update Student Table Has Review
+                    var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            HasReview = true
+                        });
+                    if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
+                    {
+                        IsShowErrorMessage = true;
+                        ErrorMessage = "An error occured. Please try again later.";
+                        return;
+                    }
+                    else
+                    {
+                        await modref.Close(CloseReason.UserClosing);
+                        StateHasChanged();
+                        NavigationManager.NavigateTo("/customer/profile", true);
+                    }
+                }
+            }
+        }
+        catch (Exception)
+        {
+            IsShowErrorMessage = true;
+            ErrorMessage = "An error occured. Please try again later.";
+            StateHasChanged();
+            await Task.Delay(2000);
+            IsShowErrorMessage = false;
+        }
+        
     }
 
     private async Task HideModal()

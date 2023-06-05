@@ -1264,6 +1264,58 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("ResetPasswords");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Reviews", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MakerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Review")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ReviewDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("StudentId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Id");
+
+                    b.ToTable("Reviews");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SearchTags", b =>
                 {
                     b.Property<int>("Id")
@@ -1344,6 +1396,9 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<int>("FamilyMemberId")
                         .HasColumnType("integer");
+
+                    b.Property<bool>("HasReview")
+                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDisbursement")
                         .HasColumnType("boolean");

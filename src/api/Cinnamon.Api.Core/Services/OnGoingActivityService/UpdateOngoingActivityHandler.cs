@@ -1,5 +1,4 @@
 ﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Api.Core.Services.AccountService.Interactors.Results;
 using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors;
 using Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors.Results;
@@ -42,7 +41,8 @@ public class UpdateOngoingActivityHandler: IUpdateOngoingActivityHadler
                 StudentNo = args.StudentNo,
                 StudentId = args.Id,
                 ExpirationStartDate = args.ExpirationStartDate,
-                ExpirationEndDate = args.ExpirationEndDate
+                ExpirationEndDate = args.ExpirationEndDate,
+                HasReview = args.HasReview
             });
             if (!updated.Succeeded || updated.Result == null || !updated.Result.IsSuccess)
             {
@@ -63,9 +63,8 @@ public class UpdateOngoingActivityHandler: IUpdateOngoingActivityHadler
                 Status= updated.Result.Result.Status,
                 StudentNo = updated.Result.Result.StudentNo,
                 ExpirationStartDate = updated.Result.Result.ExpirationStartDate,
-                ExpirationEndDate = updated.Result.Result.ExpirationEndDate 
-                
-                
+                ExpirationEndDate = updated.Result.Result.ExpirationEndDate,
+                HasReview = updated.Result.Result.HasReview  
             }, "Successfully update student ongoing activity");
         }
         catch (Exception ex)

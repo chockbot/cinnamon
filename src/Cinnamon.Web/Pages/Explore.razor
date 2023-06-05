@@ -13,9 +13,10 @@
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Components.Pages;
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IActivityApiHandler activityApiHandler;
-@inject IAccountApiHandler accountApiHandler;
+@inject IActivityApiHandler activityApiHandler
+@inject IAccountApiHandler accountApiHandler
 @inject NavigationManager NavigationManager
+@inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IJSRuntime jsRuntime
 @inject Cinnamon.Web.Config.Config AppConfig;
 
@@ -556,18 +557,17 @@
 <div id="observerTarget"></div>
 
 <ModalLogin @ref="signinModal" />
-
-<!--Filter-->
-@*<FilterModal OnSelectedIdsChanged="OnFilterSelectedChanged"></FilterModal>*@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
-
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
+<ReviewModal @ref=ReviewModalRef/>
 
 @code
 {
     private WelcomeModal WelcomeModalRef { get; set; }
+    private ReviewModal ReviewModalRef { get; set; }
     private ModalLogin signinModal;
+
     public ExploreModel Model = new ExploreModel();
     public Profile CustomerModel = new Profile();
     public ExperienceType exptype = new ExperienceType();
@@ -576,6 +576,7 @@
     public List<Activity> activities = new List<Activity>();
     public List<Activity> filteredActivities = new List<Activity>();
     public List<Activity> popularActivities = new List<Activity>();
+    private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     public string searchValue = string.Empty;
     public string filterId = string.Empty;
     public int cnt = 0;
@@ -681,7 +682,6 @@
             }
         }
     }
-
     private async Task OnSkipMaker()
     {
         if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
@@ -690,7 +690,6 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Utils.cookieManager.setCookie", $"wel_dia_{customerId}", "1");
         }
     }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -700,13 +699,13 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await InitializeSwiper();
             await InitializeCarouselSwipe();
-
             await LoadWelcomeDialog();
         }
         else
         {
             await InitializeSwiper();
             await InitializeCarouselSwipe();
+            
         }
 
 

@@ -31,7 +31,7 @@ public interface IDataStore
     IPayoutLog PayoutLog {get;}
     IAdminUser AdminUser {get; }
     ICustomerPricing CustomerPricing {get; }
-
+    IReviews Reviews { get; }
     Task EnsureMigrate();
 
     Task SeedData();
