@@ -1,29 +1,102 @@
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using System.Security.Claims
+@inject NavigationManager NavigationManager
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 
-<div class="swiper-slide">
-    <Card class="card-review-item" Border="Border.Is0">
-        <CardHeader Border="Border.Is0" Background="Background.Transparent" Margin="Margin.Is3.FromTop">
-            <Row Flex="Flex.AlignItems.Center">
-                <Column ColumnSize="ColumnSize.Is4.OnDesktop.Is4.OnMobile">
-                    <Figure class="figure-container" Overflow="Overflow.Hidden" Width="Width.Max100" Margin="Margin.IsAuto.OnX.Is0.OnY" Display="Display.Block">
-                        <FigureImage Margin="Margin.Is0" Source="images/avatar-girl.png" AlternateText="banner" Width="Width.Is100" />
-                    </Figure>
-                </Column>
-                <Column ColumnSize="ColumnSize.Is8.OnDesktop.Is8.OnMobile">
-                    <p class="mb-0 reviewer-name">Kelly james</p>
-                    <p class="mb-0 reviewer-position">UI/UX Designer</p>
-                </Column>
-            </Row>
-        </CardHeader>
-        <CardBody Border="Border.Is0" Margin="Margin.Is3.FromTop" Padding="Padding.Is0.FromTop">
-            <CardTitle>
-                <p class="reviewer-content mb-2">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Cupiditate autem quaerat fugit a vitae 
-                    facilis impedit eveniet suscipit sed animi?</p>
-                <Div class="review-badge" Display="Display.Flex" Flex="Flex.JustifyContent.Center.AlignItems.Center">
-                    <img class="review-star" src="images/star-tag.png" alt="star">
-                    <span class="review-count">5</span>
-                </Div>
-            </CardTitle>
-        </CardBody>
-    </Card>
+
+<div class="experience-box">
+    <div class="top-content">
+        <div class="experience-content">
+            @*Get Activity Detail*@
+            <a class="button" href="/explore/@Review.ActivityId" style="text-decoration:none;">
+                <label class="xp-title">@makerActivity.Title</label>
+            </a>
+            <div class="xp-body-item d-flex">
+                <div class="activity-img">
+                    <img class="rounded-2 rounded-circle" src="@reviweeProfile.ProfilePath" />
+                </div>
+                <div>
+                    <p class="customer-name">@reviweeProfile.FirstName @reviweeProfile.LastName</p>
+                    <Rating Color="Color.Primary" SelectedValue="@Review.Rating" MaxValue="5" ReadOnly=true/>
+                </div>
+                
+            </div>
+            
+            <div class="xp-body-item">
+                <p class="secondary-caption">@Review.Review</p>
+            </div>
+        </div>
+    </div>
 </div>
+
+@code
+{
+    [Parameter]
+    public Reviews Review { get; set; }
+
+    public Activity makerActivity = new Activity();
+
+    public CustomerProfile reviweeProfile = new CustomerProfile();
+
+    public string Token;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        var token = user.FindFirstValue("Token");
+        Token = token;
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        await GetCustomer(Review.CustomerId);
+        await GetActivity(Review.ActivityId);
+    }
+    private async Task GetCustomer(int CustomerId)
+    {
+        reviweeProfile = new CustomerProfile();
+        var profileResult = await accountApiHandler.GetCustomerById(CustomerId);
+        if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
+        {
+            var result = profileResult.Result.Result;
+            reviweeProfile = new CustomerProfile
+                {
+                    Id = result.Id,
+                    FirstName = result.FirstName,
+                    LastName = result.LastName,
+                    ProfilePath = result.ProfileImg
+                };
+        }
+    }
+    private async Task GetActivity(int ActivityId)
+    {
+        makerActivity = new Activity();
+        var ActivityListData = await activityApiHandler.GetActivity(ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+            {
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true,
+                IncludeAtivitySchedules = true,
+                IncludeCustomer = true
+            });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        {
+            var result = ActivityListData.Result.Result;
+            makerActivity = new Activity
+                {
+                    Id = result.ActivityId,
+                    Title = result.Title,
+                    Description = result.Description,
+                };
+        }
+    }
+}

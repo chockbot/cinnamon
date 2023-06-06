@@ -1,66 +1,102 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Models.Entities
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject NavigationManager NavigationManager
+
 
 <article class="experience-review-wrapper py-3">
     <h3 class="title">Your Reviews</h3>
-    <Div class="experience-reviews-container experience-review-swiper" Margin="Margin.Is3.FromTop">
-        <div class="swiper-wrapper">
-           @* @for(int i =0; i < 6; i++)
+    <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true/>
+    <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
+        <div class="review-wrapper">
+            @if (reviews != null)
             {
-                <ExperienceReviewItem />
-            }*@
+                foreach (var item in top3Reviews)
+                {
+                    <ExperienceReviewItem Review="item"/>
+                }
+            }
         </div>
     </Div>
 </article>
 
-<style scoped>
-.experience-review-wrapper {
-    font-family: "Nunito";
-    overflow: hidden;
-}
-.experience-review-wrapper .title 
+@code
 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #343D4C;
+
+    [Parameter]
+    public IEnumerable<Activity> Activities { get; set; }
+
+    public List<Reviews> reviews = new List<Reviews>();
+
+    public List<Reviews> top3Reviews = new List<Reviews>();
+
+    public CustomerProfile customerProfile = new CustomerProfile();
+
+    public string Token;
+
+    public int SelectedValue { get; set; }
+
+    public ClaimsPrincipal AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+
+        Token = user.FindFirstValue("Token");
+        if (Token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                customerProfile = new CustomerProfile
+                    {
+                        Birthdate = args.Birthdate,
+                        Email = args.Email,
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        IsMaker = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                    };
+            }
+        }
+        var reviewsResult = await ongoingApiHandler.GetReviewsByMakerId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByMakerIdArgs
+            {
+                MakerId = customerProfile.Id
+            }, Token);
+
+        if (reviewsResult.Succeeded && reviewsResult.Result != null && reviewsResult.Result.IsSuccess)
+        {
+            reviews = reviewsResult.Result.Result.Select(a =>
+            {
+                return new Reviews
+                    {
+                        Id = a.Id,
+                        CustomerId = a.CustomerId,
+                        MakerId = a.MakerId,
+                        ActivityId = a.ActivityId,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId,
+                        Review = a.Review,
+                        Rating = a.Rating,
+                        ReviewDate = a.ReviewDate
+                    };
+            }).ToList();
+        }
+        SelectedValue = reviews.Sum(a => a.Rating) / reviews.Count;
+        top3Reviews = reviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
+    }
 }
-.card-review-item {
-  width: 100%;
-  box-shadow: 0 0 10px -5px rgb(0 0 0 / 50%) !important;
-}
-.card-review-item .reviewer-name 
-{
-    font-size: 18px;
-    text-transform: capitalize;
-    font-weight: 700;
-    color: #344050;
-}
-.card-review-item .reviewer-position 
-{
-    font-size: 14px;
-    text-transform: capitalize;
-    font-weight: 400px;
-    color: #717171;
-}
-.card-review-item .reviewer-content 
-{
-    font-size: 14px;
-    font-weight: 400px;
-    color: #717171;
-}
-.card-review-item .review-star
-{
-    width: 15px;
-    height: auto;
-}
-.card-review-item .review-count
-{
-    font-size: 14px;
-    margin-left: 5px;
-}
-.card-review-item .review-badge
-{
-    background-color: #F8F8F8;
-    border-radius: 14px;
-    width: 50px;
-}
-</style>
+

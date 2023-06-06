@@ -43,15 +43,16 @@
                     </div>
                 </div>
             </div>
+            @if (IsShowErrorMessage)
+            {
+                <div class="alert alert-danger alert-dismissible fade-in show position-absolute top-0 end-0 m-2" role="alert" style="z-index:99999">
+                    <strong>Error!</strong> @ErrorMessage
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
         </Modal>
     }
 }
-<Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="IsShowErrorMessage">
-    <AlertMessage>
-        ErrorMessage
-    </AlertMessage>
-</Alert>
-
 @code {
     IJSObjectReference module;
 
@@ -192,6 +193,7 @@
                 ErrorMessage = "Review rating is required. Please try again";
                 StateHasChanged();
                 await Task.Delay(2000);
+                IsShowErrorMessage = false;
             }
             else
             {
@@ -234,6 +236,7 @@
             ErrorMessage = "An error occured. Please try again later.";
             StateHasChanged();
             await Task.Delay(2000);
+            IsShowErrorMessage = false;
         }
         
     }

@@ -2,6 +2,7 @@
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Reviews;
 using Cinnamon.Framework.Common;
+using System.Linq.Expressions;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Reviews;
@@ -119,7 +120,7 @@ public class ReviewsRepository: IReviewsRepository
             return AppResult<IEnumerable<ReviewsDTO>>.CreateFailed(ex, "An error occured in getting reviews");
         }
     }
-
+    
     public async Task<AppResult<ReviewsDTO>> GetByIdAsync(int id)
     {
         try
@@ -195,4 +196,40 @@ public class ReviewsRepository: IReviewsRepository
             return AppResult<ReviewsDTO>.CreateFailed(ex, "An error occured when updating activity review");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ReviewsDTO>>> GetAllReviewsById(int? makerId, int? count, int? skip)
+    {
+        try
+        {
+            Expression<Func<Entities.Reviews, bool>> filter = a => (a.MakerId == makerId);
+            var result = await dataStore.Reviews.FindAsync(filter, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ReviewsDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var reviews = result.Result.Select(s => {
+                var reviewsDto = new ReviewsDTO
+                {
+                    Id          = s.Id,
+                    CustomerId  = s.CustomerId,
+                    MakerId     = s.MakerId,
+                    ActivityId  = s.ActivityId,
+                    StudentId   = s.StudentId,
+                    ScheduleId  = s.ScheduleId,
+                    Rating      = s.Rating,
+                    Review      = s.Review,
+                    ReviewDate  = s.ReviewDate
+                };
+
+                return reviewsDto;
+            });
+
+            return AppResult<IEnumerable<ReviewsDTO>>.CreateSucceeded(reviews, "Successfully get reviews");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ReviewsDTO>>.CreateFailed(ex, "An error occured when getting reviews");
+        }
+    }
+
 }

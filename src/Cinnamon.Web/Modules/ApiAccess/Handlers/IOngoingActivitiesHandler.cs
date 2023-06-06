@@ -20,4 +20,6 @@ public interface IOngoingActivitiesHandler
     Task<AppResult<CreateReviewResult>> CreateReview(CreateReviewArgs args, string token);
 
     Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById(GetAllStudentsByIdArgs args, string token);
+
+    Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args, string token);
 }

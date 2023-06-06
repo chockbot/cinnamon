@@ -10,4 +10,5 @@ public interface IReviewsData
     Task<AppResult<GetAllReviewsResult>> GetAllReviews(GetAllReviewsArgs args);
     Task<AppResult<CreatedReviewResult>> CreateReview(CreateReviewArgs args);
     Task<AppResult<UpdatedReviewResult>> UpdateReview(UpdateReviewArgs args);
+    Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args);
 }

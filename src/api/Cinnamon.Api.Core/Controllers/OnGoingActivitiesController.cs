@@ -22,9 +22,11 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler;
     private readonly ICreateReviewHandler createReviewHandler;
     private readonly IGetAllStudentsByIdHandler getAllStudentsByIdHandler;
+    private readonly IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
         IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, 
-        IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler, IGetAllStudentsByIdHandler getAllStudentsByIdHandler)
+        IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler, IGetAllStudentsByIdHandler getAllStudentsByIdHandler,
+        IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler)
     {
         this.getAllOngoingActivitiesHandler   = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler    = getOngoingActivityByIdHandler;
@@ -34,6 +36,7 @@ public class OnGoingActivitiesController : ControllerBase
         this.getCompletedStudentsByIdHandler  = getCompletedStudentsByIdHandler;
         this.createReviewHandler              = createReviewHandler;
         this.getAllStudentsByIdHandler        = getAllStudentsByIdHandler;
+        this.getReviewsByMakerIdHandler       = getReviewsByMakerIdHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -382,6 +385,47 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetAllStudentsByIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetReviewsByMakerId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetReviewsByMakerIdResult), StatusCodes.Status200OK)]
+
+    public async Task<IActionResult> GetReviewsByMakerId([FromQuery] GetReviewsByMakerIdArgs args)
+    {
+        try
+        {
+            var result = await getReviewsByMakerIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetReviewsByMakerIdArgs
+            {
+                MakerId = args.MakerId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetReviewsByMakerIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetReviewsByMakerIdResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Review.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Reviews.ReviewsDTO
+                    {
+                        Id          = s.Id,
+                        CustomerId  = s.CustomerId,
+                        MakerId     = s.MakerId,
+                        ActivityId  = s.ActivityId,
+                        ScheduleId  = s.ScheduleId,
+                        StudentId   = s.StudentId,
+                        Rating      = s.Rating,
+                        Review      = s.Review,
+                        ReviewDate  = s.ReviewDate
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetReviewsByMakerIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

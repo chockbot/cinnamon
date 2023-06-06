@@ -10,4 +10,5 @@ public interface IReviewsRepository
     Task<AppResult<IEnumerable<ReviewsDTO>>> GetAllAsync();
     Task<AppResult<ReviewsDTO>> CreateExperienceCategoryAsync(int CustomerId, int MakerId, int ActivityId, int ScheduleId, int StudentId, int Rating, string Review, DateTime ReviewDate);
     Task<AppResult<ReviewsDTO>> UpdateExperienceCategoryAsync(int Id, int? CustomerId, int? MakerId, int? ActivityId, int? ScheduleId, int? StudentId, int? Rating, string? Review, DateTime? ReviewDate);
+    Task<AppResult<IEnumerable<ReviewsDTO>>> GetAllReviewsById(int? makerId, int? count, int? skip);
 }

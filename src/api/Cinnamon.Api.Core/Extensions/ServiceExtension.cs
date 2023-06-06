@@ -150,6 +150,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetCompletedStudentsByIdHandler, Services.OnGoingActivityService.GetCompletedStudentsByIdHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.ICreateReviewHandler, Services.OnGoingActivityService.CreateReviewHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllStudentsByIdHandler, Services.OnGoingActivityService.GetAllStudentsByIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByMakerIdHandler, Services.OnGoingActivityService.GetReviewsByMakerIdHandler>();
+
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
         services.AddTransient<Services.SystemService.Handlers.IGenerateSitemapHandler, Services.SystemService.GenerateSitemapHandler>();
