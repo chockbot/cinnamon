@@ -13,4 +13,7 @@ public class CreateCustomerPricingArgs
 
     [Required]
     public decimal Rate {get; set;}
+
+    [Required]
+    public bool IsManualPayment {get; set;}
 }
