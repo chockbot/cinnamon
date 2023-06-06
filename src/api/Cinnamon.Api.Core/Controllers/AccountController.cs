@@ -1262,7 +1262,8 @@ public class AccountController : ControllerBase
                         IsOfficial       = c.IsOF,
                         IsOfficialDate   = c.IsOFDate,
                         CustomerPricing = new CustomerPricingDTO {
-                            Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0
+                            Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
+                            IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false
                         }
                     };
                 }),

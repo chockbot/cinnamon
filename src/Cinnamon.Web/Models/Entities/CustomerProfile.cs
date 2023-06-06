@@ -42,6 +42,7 @@
         public class CustomerPricing 
         {
             public decimal Rate {get; set;}
+            public bool IsManualPayment {get; set;}
 
             // extra fields
             public string ExtraClass {get ;set;}

@@ -6,4 +6,5 @@ public class UpdateCustomerPricingArgs : IInteractor
 {
     public int CustomerId {get; set;}
     public decimal Rate {get; set;}
+    public bool IsManualPayment {get; set;}
 }

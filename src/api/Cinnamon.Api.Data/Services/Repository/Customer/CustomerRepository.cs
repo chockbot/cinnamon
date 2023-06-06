@@ -261,6 +261,7 @@ public class CustomerRepository : ICustomerRepository
                     TotalCredits = c.TotalCredits,
                     CustomerPricing = new CustomerDTO.Pricing {
                         Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
+                        IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false
                     }
                 };
             });
