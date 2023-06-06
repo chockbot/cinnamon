@@ -1,7 +1,10 @@
 ﻿.messages-container {
+    margin: 40px;
+    height: 90vh;
 }
+
 .messages-section {
-    border-right: 1px solid #D9D9D9;
+    border: 1px solid #D9D9D9;
 }
 
 .message-title {
@@ -12,15 +15,15 @@
     color: #343D4C;
 }
 
-.message-title-section{
+.message-title-section {
     margin: 25px 20px;
 }
 
-.add-message-section{
+.add-message-section {
     text-align: right;
 }
 
-.search-section{
+.search-section {
     margin: 0px 5px;
 }
 
@@ -103,19 +106,8 @@
 }
 
 .no-message-section {
-    margin-top: 250px;
+    margin-top: 150px;
     margin-bottom: 300px;
-}
-
-.chat-section {
-    border-right: 1px solid #D9D9D9;
-    padding: 0px;
-}
-
-.chat-profile-section {
-    border-bottom: 1px solid #D9D9D9;
-    /*box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);*/
-    padding: 25px 40px;
 }
 
 .last-seen {
@@ -130,6 +122,7 @@
 .chat-profile-info-icon-section {
     text-align: right;
     padding-top: 1%;
+    cursor: pointer;
 }
 
 .chat-profile-name {
@@ -154,7 +147,7 @@
     width: 30px;
     height: 30px;
     border-radius: 50%;
-    margin-top:0.3%;
+    margin-top: 0.3%;
 }
 
 .self-message {
@@ -192,14 +185,14 @@
     border-top: 1px solid #D9D9D9;
 }
 
-    .send-message-section table{
+    .send-message-section table {
         width: 100%;
     }
 
-    .rounded-pill-section {
-        height: 40px;
-        background: #F3F6FC;
-    }
+.rounded-pill-section {
+    height: 40px;
+    background: #F3F6FC;
+}
 
 .message-input {
     height: 30px;
@@ -260,8 +253,9 @@
     border-radius: 50%;
 }
 
-.profile-section{
+.profile-section {
     padding-top: 60px;
+    border: 1px solid #D9D9D9;
 }
 
 .profile-section-name {
@@ -299,14 +293,15 @@
 }
 
 .typing-status-section {
-   margin-left: 15px;
-}
-.typing-status-section label{
-    font-style: italic;
-    font-size: 13px;
+    margin-left: 15px;
 }
 
-.chatroom-name-section{
+    .typing-status-section label {
+        font-style: italic;
+        font-size: 13px;
+    }
+
+.chatroom-name-section {
     position: relative;
 }
 
@@ -319,6 +314,11 @@
     background: #AD2323;
     border-radius: 50%;
 }
+
+.profile-back-button-section img {
+    cursor: pointer;
+}
+
 @media (min-width: 0px) and (max-width: 575.98px) {
     .search-section {
         margin: 25px 20px;
@@ -349,7 +349,7 @@
         padding-top: 0px;
     }
 
-    .profile-back-button-section{
+    .profile-back-button-section {
         margin: 30px 25px;
     }
 
@@ -364,8 +364,26 @@
     }
 
     .has-new-message-badge {
-        left: 287px;
+        left: 250px;
         top: 17px;
+    }
+
+    .messages-container {
+        margin: 0px;
+    }
+
+    .messages-section {
+        border: none;
+    }
+
+    .chat-section {
+        border-bottom: 1px solid #D9D9D9;
+        padding: 0px;
+    }
+
+    .chat-profile-section {
+        border-bottom: 1px solid #D9D9D9;
+        padding: 25px 30px;
     }
 }
 
@@ -373,13 +391,105 @@
     .search-section {
         margin: 25px 20px;
     }
+
+    .conversation-section {
+        height: 68vh;
+    }
+
+    .self-message {
+        max-width: 200px;
+    }
+
+    .sender-message {
+        max-width: 200px;
+    }
+
+    .chat-profile-info-icon-section {
+        text-align: left;
+        padding: 0px;
+    }
+
+    .attachment-name {
+        margin-left: 25px;
+    }
+
+    .profile-section {
+        padding-top: 0px;
+    }
+
+    .profile-back-button-section {
+        margin: 30px 25px;
+    }
+
+    .attachment-section {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .send-section {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+
+    .has-new-message-badge {
+        left: 250px;
+        top: 17px;
+    }
+
+    .messages-container {
+        margin: 0px;
+    }
+
+    .messages-section {
+        border: none;
+    }
+
+    .chat-section {
+        border-bottom: 1px solid #D9D9D9;
+        padding: 0px;
+    }
+
+    .chat-profile-section {
+        border-bottom: 1px solid #D9D9D9;
+        padding: 25px 30px;
+    }
 }
 
 @media (min-width: 768px) and (max-width: 991.98px) {
 }
 
 @media (min-width: 992px) and (max-width: 1199.98px) {
+    .profile-back-button-section {
+        margin: 35px 48px;
+    }
+    .attachment-name {
+        margin-left: 110px;
+    }
+    .chat-section {
+        border: 1px solid #D9D9D9;
+        padding: 0px;
+    }
+
+    .chat-profile-section {
+        border: 1px solid #D9D9D9;
+        padding: 25px 40px;
+    }
 }
 
 @media (min-width: 1200px) {
+    .profile-back-button-section {
+        margin: 35px 48px;
+    }
+    .attachment-name {
+        margin-left: 110px;
+    }
+    .chat-section {
+        border: 1px solid #D9D9D9;
+        padding: 0px;
+    }
+
+    .chat-profile-section {
+        border: 1px solid #D9D9D9;
+        padding: 25px 40px;
+    }
 }

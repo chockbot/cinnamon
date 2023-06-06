@@ -22,15 +22,15 @@
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
 
 <div class="messages-container row">
-    <div class="col-lg-2 messages-section">
+    <div class="col-lg-2 col-md-2 col-sm-2 col-12 messages-section d-xl-block d-lg-block d-md-block d-sm-block @messagesSectionDisplayStyle">
         <div class="message-title-section">
             <div class="row">
-                <div class="col-lg-6">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-6">
                     <label class="message-title">
                         Messages
                     </label>
                 </div>
-                <div class="col-lg-6 add-message-section">
+                <div class="col-lg-6 col-md-6 col-sm-6 col-6 add-message-section">
                     @if (chatRooms.Count > 0)
                     {
                         <img src="images/messages/add-message.png" />
@@ -41,10 +41,14 @@
         <div class="search-section">
             @if (chatRooms.Count > 0)
             {
-                <div class="input-group border rounded-pill p-1">
-                    <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" class="form-control bg-none border-0">
-                    <div class="input-group-append border-0">
-                        <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                        <div class="input-group border rounded-pill p-1">
+                            <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" class="form-control bg-none border-0">
+                            <div class="input-group-append border-0">
+                                <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             }
@@ -56,37 +60,42 @@
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
                     <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId)" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
-                        <div class="col-lg-12">
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="last-update-date">
                                 @chatRoom.DateCreated.ToShortTimeString()
                             </div>
                         </div>
-                        <div class="col-lg-2 chatroom-profile-picture-section">
+                        <div class="col-lg-2 col-md-2 col-sm-2 col-2 chatroom-profile-picture-section">
                             <img src="@chatRoom.FromProfilePath" class="chatroom-profile-picture" />
                             @if (!string.IsNullOrEmpty(chatRoom.FromConnectionId))
                             {
                                 <span class="logged-in"></span>
                             }
                         </div>
-                        <div class="col-lg-10">
+                        <div class="col-lg-10 col-md-10 col-sm-10 col-10 chatroom-name-section">
                             <div class="chatroom-name">
                                 @fullName
                             </div>
                             <div class="last-message">
                                 @chatRoom.Message
                             </div>
+                            @if (chatRoom.HasNewMessage)
+                            {
+                                <span class="has-new-message-badge">
+                                </span>
+                            }
                         </div>
                     </div>
                 }
             }
         </div>
     </div>
-    <div class="col-lg-8 chat-section">
+    <div class="col-lg-8 col-md-8 col-sm-8 col-12 chat-section d-xl-block d-lg-block d-md-block d-sm-block @chatSectionDisplayStyle">
         @if (chatRooms.Count > 0)
         {
             <div class="chat-profile-section">
                 <div class="row">
-                    <div class="col-lg-6">
+                    <div class="col-lg-6 d-xl-block d-lg-block d-md-block d-sm-block d-none">
                         <div class="row">
                             <div class="col-lg-1 chatmate-profile-picture-section">
                                 <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
@@ -112,18 +121,33 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 chat-profile-info-icon-section">
+                    <div class="col-lg-6 chat-profile-info-icon-section d-xl-block d-lg-block d-md-block d-sm-block d-none">
                         <img src="images/messages/chat-profile-info.png" />
+                    </div>
+                    <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                        <div class="row">
+                            <div class="col-lg-1 col-md-1 col-sm-1 col-1">
+                                <img src="images/messages/back-arrow.png" @onclick="DisplayChatRooms" />
+                            </div>
+                             <div class="col-lg-10 col-md-10 col-sm-10 col-10 text-center">
+                                <div class="chat-profile-name">
+                                    @chatMateFullName
+                                </div>
+                            </div>
+                            <div class="col-lg-1 col-md-1 col-sm-1 col-1 chat-profile-info-icon-section">
+                                <img src="images/messages/chat-profile-info-mobile.png" @onclick="DisplayChatProfile" />
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
             <div class="conversation-section">
-
                 <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
                     <ul class="list-unstyled d-flex flex-column">
+                        <div id="observerTarget"></div>
+
                         @if (chatHistories.Count >= 30)
                         {
-                            <div id="observerTarget"></div>
                         }
                         @if (isLoading)
                         {
@@ -241,25 +265,40 @@
             </div>
         }
     </div>
-    <div class="col-lg-2 profile-section">
-        <div class="row justify-content-center">
-            <div class="col-lg-12 text-center">
-                <img src="@chatMateProfilePicture" class="profile-section-picture" />
-                <div class="divider"></div>
-                <label class="profile-section-name">
-                    @chatMateFullName
-                </label>
-                <div class="divider"></div>
-                <button id="btnViewProfile" type="button" class="btn border-0" @onclick=NavigateToProfile>View Profile</button>
-                <div class="divider"></div>
+    <div class="col-lg-2 col-md-2 col-sm-2 col-12 profile-section d-xl-block d-lg-block d-md-block d-sm-block @profileSectionDisplayStyle">
+        @if (chatRooms.Count > 0)
+        {
+            <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                <div class="row">
+                    <div class="col-lg-12 profile-back-button-section">
+                        <img src="images/messages/back-arrow.png" @onclick="DisplayConversations" />
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-12 profile-attachment-section">
-                <label class="attachment-name">
-                    Attachments
-                </label>
-            </div>
+            <div class="row justify-content-center">
+                <div class="col-lg-12 text-center">
+                    <img src="@chatMateProfilePicture" class="profile-section-picture" />
+                    <div class="divider"></div>
+                    <label class="profile-section-name">
+                        @chatMateFullName
+                    </label>
+                    <div class="divider"></div>
+                    <div class="d-xl-block d-lg-block d-md-block d-sm-block d-none">
+                        <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(false)">View Profile</button>
+                    </div>
+                    <div class="d-block d-sm-none d-md-none d-lg-none d-xl-none">
+                        <button id="btnViewProfile" type="button" class="btn border-0" @onclick="() => NavigateToProfile(true)">View Profile</button>
+                    </div>
+                    <div class="divider"></div>
+                </div>
+                <div class="col-lg-12 profile-attachment-section">
+                    <label class="attachment-name">
+                        Attachments
+                    </label>
+                </div>
            
-        </div>
+            </div>
+        }
     </div>
 </div>
 
@@ -288,6 +327,9 @@
     private ElementReference inputMessageRef;
     private bool isLoading = false;
     [Inject] HubConnection hubConnection { get; set; }
+    private string messagesSectionDisplayStyle = string.Empty;
+    private string chatSectionDisplayStyle = string.Empty;
+    private string profileSectionDisplayStyle = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -348,6 +390,7 @@
                         ToProfilePath    = splitted[13]
                     });
 
+                    DisplayChatRooms();
                 }
             }
 
@@ -448,6 +491,11 @@
             if (chatRooms.Any())
             {
                 await GetChatHistoryByChatRoomId(chatRooms.FirstOrDefault().ChatRoomId, false, false);
+                DisplayChatRooms();
+            }
+            else
+            {
+                DisplayConversations();
             }
         }
     }
@@ -507,9 +555,16 @@
         NavigationManager.NavigateTo("/Explore");
     }
 
-    private void NavigateToProfile()
+    private void NavigateToProfile(bool isMobile)
     {
-        jsRuntime.InvokeAsync<string>("open", $"/maker/profile/{chatMateProfileLink}", "_blank");
+        if (isMobile)
+        {
+            NavigationManager.NavigateTo($"/maker/profile/{chatMateProfileLink}");
+        }
+        else
+        {
+            jsRuntime.InvokeAsync<string>("open", $"/maker/profile/{chatMateProfileLink}", "_blank");
+        }
     }
 
 
@@ -517,7 +572,7 @@
     {
         isLoading = true;
 
-        if (chatRoomId != selectedChatRoomId)
+        if (chatRoomId != selectedChatRoomId || fromClick)
         {
             pageIndex = 1;
         }
@@ -561,17 +616,22 @@
                 chatHistories = chatHistoryResult;
             }
 
-            var selectedChatRoom   = chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId);
-            toUserId               = selectedChatRoom.FromUserId;
-            chatMateFullName       = $"{selectedChatRoom.FromFirstName} {selectedChatRoom.FromLastName}";
-            chatMateProfilePicture = selectedChatRoom.FromProfilePath;
-            chatMateConnectionId   = selectedChatRoom.FromConnectionId;
-            chatMateProfileLink    = selectedChatRoom.FromProfileLink;
-            lastSeenDate           = selectedChatRoom.DateCreated;
-            selectedChatRoomId     = chatRoomId;
-            lastMessageDateCreated = null;
+            if (chatRoomId != 0)
+            {
+                var selectedChatRoom   = chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId);
+                toUserId               = selectedChatRoom.FromUserId;
+                chatMateFullName       = $"{selectedChatRoom.FromFirstName} {selectedChatRoom.FromLastName}";
+                chatMateProfilePicture = selectedChatRoom.FromProfilePath;
+                chatMateConnectionId   = selectedChatRoom.FromConnectionId;
+                chatMateProfileLink    = selectedChatRoom.FromProfileLink;
+                lastSeenDate           = selectedChatRoom.DateCreated;
+                selectedChatRoomId     = chatRoomId;
+                lastMessageDateCreated = null;
 
-            chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId).HasNewMessage = false;
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId).HasNewMessage = false;
+
+                DisplayConversations();
+            }
 
             pageIndex = result.Result.Pagination.PageIndex.GetValueOrDefault() + 1;
 
@@ -605,6 +665,27 @@
             return "chatroom-item-active";
 
         return "chatroom-item";
+    }
+
+    private void DisplayChatRooms()
+    {
+        messagesSectionDisplayStyle = "d-block";
+        chatSectionDisplayStyle = "d-none";
+        profileSectionDisplayStyle = "d-none";
+    }
+
+    private void DisplayConversations()
+    {
+        messagesSectionDisplayStyle = "d-none";
+        chatSectionDisplayStyle = "d-block";
+        profileSectionDisplayStyle = "d-none";
+    }
+
+    private void DisplayChatProfile()
+    {
+        messagesSectionDisplayStyle = "d-none";
+        chatSectionDisplayStyle = "d-none";
+        profileSectionDisplayStyle = "d-block";
     }
 
     void LocationChanged(object sender, LocationChangedEventArgs e)
