@@ -5,6 +5,7 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PurchaseOrder;
 using Cinnamon.Framework.Common;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -75,12 +76,12 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
 
             if(!string.IsNullOrEmpty(name))
             {
-                queryFilters += "and (cc.\"FirstName\" like '%'@name'%' or cc.\"LastName\" like '%'@name'%') ";
+                queryFilters += "and (cc.\"FirstName\" like @name or cc.\"LastName\" like @name ) ";
             }
 
             if(purchaseDate.HasValue)
             {
-                queryFilters += "and cast(po.\"CreatedOn\" as date) = @date ";
+                queryFilters += "and cast(po.\"CreatedOn\" as date) = cast(@date as date) ";
             }
 
             if(!string.IsNullOrEmpty(email))
@@ -113,33 +114,25 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
 
                 if(!string.IsNullOrEmpty(name))
                 {
-                    var parameterName = new EntityParameter();
-                    parameterName.ParameterName = "name";
-                    parameterName.Value = name;
+                    var parameterName = new NpgsqlParameter("name", $"%{name}%");
                     command.Parameters.Add(parameterName);
                 }
 
                 if(purchaseDate.HasValue)
                 {
-                    var parameterDate = new EntityParameter();
-                    parameterDate.ParameterName = "date";
-                    parameterDate.Value = purchaseDate?.ToString("YYYY-MM-dd");
+                    var parameterDate = new NpgsqlParameter("date", purchaseDate);
                     command.Parameters.Add(parameterDate);
                 }
 
                 if(!string.IsNullOrEmpty(email))
                 {
-                    var parameterEmail = new EntityParameter();
-                    parameterEmail.ParameterName = "email";
-                    parameterEmail.Value = email;
+                    var parameterEmail = new NpgsqlParameter("email", email);
                     command.Parameters.Add(parameterEmail);
                 }
 
                 if(status.HasValue) 
                 {
-                    var parameterStatus = new EntityParameter();
-                    parameterStatus.ParameterName = "status";
-                    parameterStatus.Value = status;
+                    var parameterStatus = new NpgsqlParameter("status", status);
                     command.Parameters.Add(parameterStatus);
                 }
 
