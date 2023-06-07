@@ -7,7 +7,7 @@ on:
 env:
   FLAG_ENV: Production
   BASE_URL: "https://cinnamon.ph"
-
+  CHATHUB_PROD_URL: "http://cinnamon.ph/chathub"
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -59,7 +59,7 @@ jobs:
         env:
           AppConfig.Environment: ${{ env.FLAG_ENV }}
           AppConfig.BaseUrl: ${{ env.BASE_URL }}
-
+          AppConfig.ChatHubUrl: ${{ env.CHATHUB_PROD_URL }}
       # copy sitemaps and robots.txt
       - name: Copy required files
         run: |
