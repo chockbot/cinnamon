@@ -5,7 +5,10 @@ public class GetAllInclusiveTransactionArgs
     public string? Name {get; set;}
 
     // date format must be yyyyMMddHHmmss
-    public string? PurchaseDate {get; set;}
+    public string? PurchaseDateFrom {get; set;}
+
+    // date format must be yyyyMMddHHmmss
+    public string? PurchaseDateTo {get; set;}
 
     public string? Email {get; set;}
 

@@ -68,7 +68,8 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
         }
     }
 
-    public async Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransaction(string? name, DateTime? purchaseDate, string? email, int? status)
+    public async Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransaction(string? name, string? email, 
+        int? status, DateTime? dateFrom, DateTime? dateTo)
     {
         try
         {
@@ -79,9 +80,12 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
                 queryFilters += "and (cc.\"FirstName\" like @name or cc.\"LastName\" like @name ) ";
             }
 
-            if(purchaseDate.HasValue)
+            if(dateFrom.HasValue && dateTo.HasValue)
             {
-                queryFilters += "and cast(po.\"CreatedOn\" as date) = cast(@date as date) ";
+                queryFilters += "and ( " +
+                                    "cast(po.\"CreatedOn\" as date) >= cast(@dateFrom as date) and " +
+                                    "cast(po.\"CreatedOn\" as date) <= cast(@dateTo as date) " +
+                                ") ";
             }
 
             if(!string.IsNullOrEmpty(email))
@@ -118,10 +122,13 @@ public class PurchaseOrderEntity : GenericEntity<PurchaseOrder>, IPurchaseOrder
                     command.Parameters.Add(parameterName);
                 }
 
-                if(purchaseDate.HasValue)
+                if(dateFrom.HasValue && dateTo.HasValue)
                 {
-                    var parameterDate = new NpgsqlParameter("date", purchaseDate);
-                    command.Parameters.Add(parameterDate);
+                    var parameterDateFrom = new NpgsqlParameter("dateFrom", dateFrom);
+                    command.Parameters.Add(parameterDateFrom);
+
+                    var parameterDateTo = new NpgsqlParameter("dateTo", dateTo);
+                    command.Parameters.Add(parameterDateTo);
                 }
 
                 if(!string.IsNullOrEmpty(email))

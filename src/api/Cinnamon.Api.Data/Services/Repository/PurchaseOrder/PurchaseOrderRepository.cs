@@ -392,11 +392,12 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, DateTime? purchaseDate, string? email, int? status) 
+    public async Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, string? email, 
+        int? status, DateTime? dateFrom, DateTime? dateTo) 
     {
         try
         {
-            var result = await dataStore.PurchaseOrder.GetInclusiveTransaction(name, purchaseDate, email, status);
+            var result = await dataStore.PurchaseOrder.GetInclusiveTransaction(name, email, status, dateFrom, dateTo);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);

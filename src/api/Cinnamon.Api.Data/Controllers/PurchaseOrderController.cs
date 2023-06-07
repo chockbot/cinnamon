@@ -191,13 +191,15 @@ public class PurchaseOrderController : ControllerBase
     {
         try
         {
-            DateTime? purchaseDate = null;
-            if(!string.IsNullOrEmpty(args.PurchaseDate))
+            DateTime? purchaseDateFrom = null;
+            DateTime? purchaseDateTo = null;
+            if(!string.IsNullOrEmpty(args.PurchaseDateFrom) && !string.IsNullOrEmpty(args.PurchaseDateTo))
             {
-                purchaseDate = DateTime.ParseExact(args.PurchaseDate, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                purchaseDateFrom = DateTime.ParseExact(args.PurchaseDateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                purchaseDateTo = DateTime.ParseExact(args.PurchaseDateTo, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
             }
 
-            var result = await purchaseOrderRepository.GetInclusiveTransactions(args.Name, purchaseDate, args.Email, args.Status);
+            var result = await purchaseOrderRepository.GetInclusiveTransactions(args.Name, args.Email, args.Status, purchaseDateFrom, purchaseDateTo);
             if(!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new GetAllInclusiveTransactionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

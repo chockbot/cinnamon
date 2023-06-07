@@ -8,5 +8,5 @@ public interface IPurchaseOrder : IGenericEntity<PurchaseOrder>
 {
     Task<AppResult<IEnumerable<PurchaseOrder>>> GetAllPurchaseOrdersNeedPayout();
     Task<AppResult<IEnumerable<PurchaseOrder>>> UpdatePurchaseOrdersByStatus(IEnumerable<PurchaseOrder> purchaseOrders);
-    Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransaction(string? name, DateTime? purchaseDate, string? email, int? status);
+    Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransaction(string? name, string? email, int? status, DateTime? dateFrom, DateTime? dateTo);
 }
