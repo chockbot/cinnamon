@@ -29,6 +29,8 @@ builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.EnableDetailedErrors = true;
     hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
+    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
+    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(15);
 });
 builder.Services.AddResponseCompression(opts =>
 {
