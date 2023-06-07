@@ -85,28 +85,15 @@ builder.Services.AddScoped(sp =>
             {
                 logger.Information("add scoped HubConnectionBuilder was called");
 
-                var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+                var httpContextUser = sp.GetRequiredService<IHttpContextAccessor>().HttpContext.User;
 
-                if (httpContext != null)
+                if (httpContextUser != null)
                 {
                     logger.Information("httpContext is not null");
 
-                    var claimsPrincipal = httpContext.User as ClaimsPrincipal;
-                    var accessToken = string.Empty;
+                    var accessToken = httpContextUser.FindFirst(c => c.Type == "Token")?.Value;
 
-                    if (claimsPrincipal != null)
-                    {
-                        logger.Information("claimsPrincipal is not null");
-
-                        accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
-
-                        logger.Information($"token {accessToken}");
-                    }
-                    else
-                    {
-                        logger.Information("claimsPrincipal is null");
-
-                    }
+                    logger.Information($"token {accessToken}");
 
                     return accessToken;
                 }
