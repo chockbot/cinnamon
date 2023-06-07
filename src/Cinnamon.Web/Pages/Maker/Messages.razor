@@ -236,7 +236,7 @@
                             <td class="attachment-section"><img src="images/messages/send-attachment.png" /></td>
                             <td class="input-section">
                                 <div class="input-group border rounded-pill p-1 rounded-pill-section">
-                                    <input type="text" @ref="inputMessageRef" placeholder="Aa" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="messageInput" @oninput="HandleInput" @onkeydown="HandleKeyDown" @onkeyup="HandleKeyUp" class="form-control bg-none border-0 message-input">
+                                    <input type="text" @ref="inputMessageRef" placeholder="Aa" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="messageInput" @oninput="HandleInput" @onkeydown="HandleKeyDown" @onkeyup="HandleKeyUp" @onfocus="OnFocus" class="form-control bg-none border-0 message-input">
                                     <div class="input-group-append border-0">
                                         <img src="images/messages/send-emoji.png" class="emoji-icon" />
                                     </div>
@@ -336,6 +336,13 @@
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         var userToken = user.FindFirstValue("Token");
+
+        if (userToken == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
 
         hubConnection.On<string>("ReceiveMessage", (payload) =>
         {
@@ -516,7 +523,7 @@
         {
             if (hubConnection is not null)
             {
-                await hubConnection.SendAsync("SendTypingStatusKeyDown", selectedChatRoomId, currentUserId, currentUserLastName, currentUserFirstName);
+                //await hubConnection.SendAsync("SendTypingStatusKeyDown", selectedChatRoomId, currentUserId, currentUserLastName, currentUserFirstName);
             }
         }
     }
@@ -525,8 +532,19 @@
     {
         if (hubConnection is not null)
         {
-            await hubConnection.SendAsync("SendTypingStatusKeyUp", selectedChatRoomId, currentUserId);
+            //await hubConnection.SendAsync("SendTypingStatusKeyUp", selectedChatRoomId, currentUserId);
         }
+    }
+
+    private async Task OnFocus()
+    {
+        var updateResult = await chatApiHandler.UpdateChatHistory(new Framework.ApiCommand.ApiCore.ChatHistory.Request.UpdateChatHistoryArgs
+            {
+                ChatRoomId = selectedChatRoomId,
+                FromUserId = toUserId,
+                ToUserId = currentUserId,
+                IsViewed = true
+            }, Token);
     }
 
     private async Task LoadSigninUser()

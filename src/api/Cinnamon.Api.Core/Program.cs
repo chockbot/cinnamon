@@ -16,6 +16,7 @@ using Cinnamon.Api.Core.Services.JobService;
 using Microsoft.AspNetCore.ResponseCompression;
 using Cinnamon.Api.Core.Hubs;
 using Microsoft.Extensions.Options;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -160,6 +161,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<ChatHub>("/chathub");
+app.MapHub<ChatHub>("/chathub", options =>
+{
+    options.TransportMaxBufferSize = 256000;
+    options.ApplicationMaxBufferSize = 256000;
+    options.Transports = (Microsoft.AspNetCore.Http.Connections.HttpTransportType)TransportType.All;
+    options.WebSockets.CloseTimeout = TimeSpan.FromSeconds(10);
+    options.LongPolling.PollTimeout = TimeSpan.FromSeconds(10);
+});
 
 app.Run();
