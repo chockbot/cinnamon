@@ -73,6 +73,8 @@ var logger = new LoggerConfiguration()
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
 
+builder.Services.AddSingleton<IHttpContextAccessor, CustomHttpContextAccessor>();
+
 builder.Services.AddScoped(sp =>
 {
     var navMan = sp.GetRequiredService<NavigationManager>();
@@ -168,3 +170,13 @@ app.UseEndpoints(endpoints =>
 
 app.Run();
 
+public class CustomHttpContextAccessor : IHttpContextAccessor
+{
+    private static AsyncLocal<HttpContext> _httpContextCurrent = new AsyncLocal<HttpContext>();
+
+    public HttpContext HttpContext
+    {
+        get => _httpContextCurrent.Value;
+        set => _httpContextCurrent.Value = value;
+    }
+}
