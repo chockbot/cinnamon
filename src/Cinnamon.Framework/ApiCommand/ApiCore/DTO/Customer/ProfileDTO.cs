@@ -20,4 +20,6 @@ public class ProfileDTO
     public DateTime IsOfficialDate { get; set; }
     public string Handler {get; set;}
     public decimal TotalCredits {get; set;}
+    public string ConnectionId { get; set; }
+
 }

@@ -13,6 +13,9 @@ using Cinnamon.Api.Core.Providers;
 using Microsoft.AspNetCore.Http.Features;
 using Quartz;
 using Cinnamon.Api.Core.Services.JobService;
+using Microsoft.AspNetCore.ResponseCompression;
+using Cinnamon.Api.Core.Hubs;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,16 @@ var builder = WebApplication.CreateBuilder(args);
 ApplicationConfig applicationConfig = new ApplicationConfig();
 builder.Configuration.GetSection("Applicationconfig").Bind(applicationConfig);
 builder.Services.AddSingleton(applicationConfig);
+builder.Services.AddSignalR(hubOptions =>
+{
+    hubOptions.EnableDetailedErrors = true;
+    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
+});
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
 
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
@@ -56,6 +69,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(applicationConfig.Jwt.Key)),
             ValidateIssuer = true,
             ValidateAudience = true
+        };
+        opts.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                // If the request is for our hub...
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/hubs/chat")))
+                {
+                    // Read the token out of the query string
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 
@@ -107,6 +137,7 @@ builder.Services.AddQuartz(q => {
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
+app.UseResponseCompression();
 app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
@@ -127,5 +158,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

@@ -384,7 +384,8 @@ public class CustomerRepository : ICustomerRepository
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler,
                 TotalCredits = result.Result.TotalCredits,
-                PhoneNumber = result.Result.PhoneNumber
+                PhoneNumber = result.Result.PhoneNumber,
+                ConnectionId= result.Result.ConnectionId,
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by id");
@@ -475,7 +476,7 @@ public class CustomerRepository : ICustomerRepository
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified,DateTime? isVerifiedDate, string? frontIdImagePath, string? backIdImageParh,
-        decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate, string? handler = null)
+        decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate, string? connectionId, string? handler = null)
     {
         try
         {
@@ -504,7 +505,8 @@ public class CustomerRepository : ICustomerRepository
             customer.IsOG = isOG ?? customer.IsOG;
             customer.IsOGDate = isOGDate ?? customer.IsOGDate;
             customer.IsOfficialPartner = isOF ?? customer.IsOfficialPartner;
-            customer.IsOfficialDate = isOfficialDate ?? customer.IsOfficialDate;
+            customer.IsOfficialDate = isOfficialDate ?? customer.IsOfficialDate;    
+            customer.ConnectionId = connectionId ?? customer.ConnectionId;
             customer.Handler = handler ?? customer.Handler;
 
             var updatedCustomerRes = await dataStore.Customer.Update(customer);

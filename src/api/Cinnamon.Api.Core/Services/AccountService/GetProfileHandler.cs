@@ -69,7 +69,7 @@ public class GetProfileHandler : IGetProfileHandler
                 IsOfficialDate = profile.IsOfficialObtainedDate,
                 Handler = profile.Handler,
                 TotalCredits = profile.TotalCredits,
-                
+                ConnectionId = profile.ConnectionId
             }, "Successfully get profile");
         }
         catch (Exception ex)
