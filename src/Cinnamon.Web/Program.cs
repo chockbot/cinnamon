@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,26 +85,22 @@ builder.Services.AddScoped(sp =>
             {
                 logger.Information("add scoped HubConnectionBuilder was called");
 
-                var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
-                if (httpContext != null)
+                var authState = await sp.GetRequiredService<AuthenticationStateProvider>().GetAuthenticationStateAsync();
+                var user = authState.User;
+
+                if (user != null)
                 {
-                    logger.Information("httpContext is not null");
+                    logger.Information("user is not null");
 
-                    var claimsPrincipal = httpContext.User as ClaimsPrincipal;
+                    var accessToken = user.FindFirst(c => c.Type == "Token")?.Value;
 
-                    var accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
-
-                    foreach (var item in claimsPrincipal.Claims)
-                    {
-                        logger.Information($"claim type: {item.Type} | claim value: {item.Value}");
-
-                    }
+                    logger.Information($"token {accessToken}");
 
                     return accessToken;
                 }
 
-                logger.Information("httpContext is null");
+                logger.Information("user is null");
 
                 return null;
             };
