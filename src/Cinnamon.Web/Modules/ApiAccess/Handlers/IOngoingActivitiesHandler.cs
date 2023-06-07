@@ -21,5 +21,5 @@ public interface IOngoingActivitiesHandler
 
     Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById(GetAllStudentsByIdArgs args, string token);
 
-    Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args, string token);
+    Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args);
 }

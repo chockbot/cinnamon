@@ -319,7 +319,7 @@
                     @if(Model.CustomerProfile.IsMaker)
                     {
                         <TabPanel Name="maker-experience">
-                            <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" />
+                            <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" Profile="Model.CustomerProfile" />
                         </TabPanel>
                     }
                     <TabPanel Name="request-for-refund">

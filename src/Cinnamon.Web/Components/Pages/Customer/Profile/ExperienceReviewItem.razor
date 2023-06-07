@@ -49,16 +49,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var token = user.FindFirstValue("Token");
-        Token = token;
-        if (token == null)
-        {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
         await GetCustomer(Review.CustomerId);
         await GetActivity(Review.ActivityId);
     }

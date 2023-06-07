@@ -10,19 +10,23 @@
 
 
 <article class="experience-review-wrapper py-3">
-    <h3 class="title">Your Reviews</h3>
-    <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true/>
-    <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
-        <div class="review-wrapper">
-            @if (reviews != null)
-            {
-                foreach (var item in top3Reviews)
+    <h3 class="title">Reviews</h3>
+    @if (reviews.Count != 0)
+    {
+        <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true />
+        <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
+            <div class="review-wrapper">
+                @foreach (var item in top3Reviews)
                 {
-                    <ExperienceReviewItem Review="item"/>
+                    <ExperienceReviewItem Review="item" />
                 }
-            }
-        </div>
-    </Div>
+            </div>
+        </Div>
+    }
+    else
+    {
+        <p class="p-1" style="font-family:'Nunito';font-weight:bold">No reviews yet!</p>
+    }
 </article>
 
 @code
@@ -30,6 +34,9 @@
 
     [Parameter]
     public IEnumerable<Activity> Activities { get; set; }
+
+    [Parameter]
+    public Models.Entities.CustomerProfile Profile { get; set; }
 
     public List<Reviews> reviews = new List<Reviews>();
 
@@ -39,44 +46,16 @@
 
     public string Token;
 
-    public int SelectedValue { get; set; }
+    public int SelectedValue { get; set; } = 0;
 
     public ClaimsPrincipal AuthState { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        Token = user.FindFirstValue("Token");
-        if (Token == null)
-        {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        if (user != null && user.Identity.IsAuthenticated)
-        {
-            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
-            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                var args = result.Result.Result;
-                customerProfile = new CustomerProfile
-                    {
-                        Birthdate = args.Birthdate,
-                        Email = args.Email,
-                        FirstName = args.FirstName,
-                        LastName = args.LastName,
-                        Id = args.Id,
-                        IsMaker = args.IsMaker,
-                        IsVerified = args.IsVerified,
-                    };
-            }
-        }
         var reviewsResult = await ongoingApiHandler.GetReviewsByMakerId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByMakerIdArgs
             {
-                MakerId = customerProfile.Id
-            }, Token);
-
+                MakerId = Profile.Id
+            });
         if (reviewsResult.Succeeded && reviewsResult.Result != null && reviewsResult.Result.IsSuccess)
         {
             reviews = reviewsResult.Result.Result.Select(a =>
@@ -95,8 +74,11 @@
                     };
             }).ToList();
         }
-        SelectedValue = reviews.Sum(a => a.Rating) / reviews.Count;
-        top3Reviews = reviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
+        if (reviews.Count != 0)
+        {
+            SelectedValue = reviews.Sum(a => a.Rating) / reviews.Count;
+            top3Reviews = reviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
+        }
     }
 }
 

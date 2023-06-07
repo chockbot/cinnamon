@@ -391,7 +391,7 @@ public class OnGoingActivitiesController : ControllerBase
     [Route("GetReviewsByMakerId")]
     [HttpGet]
     [ProducesResponseType(typeof(GetReviewsByMakerIdResult), StatusCodes.Status200OK)]
-
+    [AllowAnonymous]
     public async Task<IActionResult> GetReviewsByMakerId([FromQuery] GetReviewsByMakerIdArgs args)
     {
         try

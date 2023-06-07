@@ -4,7 +4,6 @@ using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
 using Flurl.Http.Configuration;
-using NuGet.Common;
 
 namespace Cinnamon.Web.Modules.ApiAccess.OngoingActivities;
 
@@ -186,12 +185,11 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
         }
     }
 
-    public async Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args, string token)
+    public async Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args)
     {
         try
         {
             var result = await flurlClient
-                .WithOAuthBearerToken(token)
                 .Request("OnGoingActivities/GetReviewsByMakerId")
                 .SetQueryParams(args)
                 .GetJsonAsync<GetReviewsByMakerIdResult>();
