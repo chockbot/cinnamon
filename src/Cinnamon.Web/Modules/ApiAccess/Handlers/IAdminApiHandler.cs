@@ -8,5 +8,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers
     {
         Task<AppResult<GetAdminUserByEmailResult>> GetAdminUserByEmail(GetAdminUserByEmailArgs args, string token);
         Task<AppResult<UpdateCustomerPricingResult>> CustomerPricing(UpdateCustomerPricingArgs args, string token);
+        Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAdminUserByEmailArgs args, string token);
     }
 }
