@@ -13,7 +13,16 @@
     <h3 class="title">Reviews</h3>
     @if (reviews.Count != 0)
     {
-        <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true />
+        <div class="d-flex">
+            <div class="col-8 d-flex justify-content-start rating-section">
+                <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true />
+                <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
+            </div>
+            <div class="col-4 d-flex justify-content-end">
+                <a class="see-more">See More</a>
+            </div>
+           
+        </div>
         <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
             <div class="review-wrapper">
                 @foreach (var item in top3Reviews)
@@ -48,6 +57,8 @@
 
     public int SelectedValue { get; set; } = 0;
 
+    public double AverageRating { get; set; } = 0;
+
     public ClaimsPrincipal AuthState { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -76,7 +87,10 @@
         }
         if (reviews.Count != 0)
         {
-            SelectedValue = reviews.Sum(a => a.Rating) / reviews.Count;
+            double SumOfRating = reviews.Sum(a => a.Rating);
+            double numberOfRatee = reviews.Count;
+            AverageRating = (double) SumOfRating/numberOfRatee;
+            SelectedValue = (int)Math.Round(AverageRating);
             top3Reviews = reviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
         }
     }
