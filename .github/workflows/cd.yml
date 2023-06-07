@@ -7,7 +7,7 @@ on:
 env:
   FLAG_ENV: Development
   BASE_URL: "https://dev.cinnamon.ph"
-  CHATHUB_DEV_URL: "http://dev.cinnamon.ph/chathub"
+  CHATHUB_DEV_URL: "https://dev.cinnamon.ph/chathub"
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
