@@ -27,32 +27,6 @@ builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {
 });
 builder.Services.AddHttpContextAccessor();
 
-builder.Services.AddScoped(sp =>
-{
-    var navMan = sp.GetRequiredService<NavigationManager>();
-    return new HubConnectionBuilder()
-        .WithUrl(navMan.ToAbsoluteUri(builder.Configuration["AppConfig:ChatHubUrl"]), options =>
-        {
-            options.AccessTokenProvider = async () =>
-            {
-                var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
-
-                if (httpContext != null)
-                {
-                    var claimsPrincipal = httpContext.User as ClaimsPrincipal;
-
-                    var accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
-
-                    return accessToken;
-                }
-
-                return null;
-            };
-        })
-        .WithAutomaticReconnect(new TimeSpan[] { TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
-        .Build();
-});
-
 // blazorise
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddBootstrapProviders()
@@ -98,6 +72,44 @@ var logger = new LoggerConfiguration()
                         .Enrich.WithProperty("ApplicationContext", "Cinnamon.Web")
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
+
+builder.Services.AddScoped(sp =>
+{
+    var navMan = sp.GetRequiredService<NavigationManager>();
+    return new HubConnectionBuilder()
+        .WithUrl(navMan.ToAbsoluteUri(builder.Configuration["AppConfig:ChatHubUrl"]), options =>
+        {
+            options.AccessTokenProvider = async () =>
+            {
+                logger.Information("add scoped HubConnectionBuilder was called");
+
+                var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+
+                if (httpContext != null)
+                {
+                    logger.Information("httpContext is not null");
+
+                    var claimsPrincipal = httpContext.User as ClaimsPrincipal;
+
+                    var accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
+
+                    foreach (var item in claimsPrincipal.Claims)
+                    {
+                        logger.Information($"claim type: {item.Type} | claim value: {item.Value}");
+
+                    }
+
+                    return accessToken;
+                }
+
+                logger.Information("httpContext is null");
+
+                return null;
+            };
+        })
+        .WithAutomaticReconnect(new TimeSpan[] { TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
+        .Build();
+});
 
 builder.Services.AppExtendServices();
 
