@@ -92,12 +92,19 @@ builder.Services.AddScoped(sp =>
                     logger.Information("httpContext is not null");
 
                     var claimsPrincipal = httpContext.User as ClaimsPrincipal;
+                    var accessToken = string.Empty;
 
-                    var accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
-
-                    foreach (var item in claimsPrincipal.Claims)
+                    if (claimsPrincipal != null)
                     {
-                        logger.Information($"claim type: {item.Type} | claim value: {item.Value}");
+                        logger.Information("claimsPrincipal is not null");
+
+                        accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
+
+                        logger.Information($"token {accessToken}");
+                    }
+                    else
+                    {
+                        logger.Information("claimsPrincipal is null");
 
                     }
 
