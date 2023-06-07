@@ -2,7 +2,6 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
-using Blazorise.DataGrid;
 using Cinnamon.Web.Extensions;
 using Cinnamon.Web.Providers;
 using Flurl.Http;
@@ -10,9 +9,11 @@ using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.File;
 using Cinnamon.Web.Middleware;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,33 @@ builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {
     opts.DetailedErrors = true;
+});
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped(sp =>
+{
+    var navMan = sp.GetRequiredService<NavigationManager>();
+    return new HubConnectionBuilder()
+        .WithUrl(navMan.ToAbsoluteUri(builder.Configuration["AppConfig:ChatHubUrl"]), options =>
+        {
+            options.AccessTokenProvider = async () =>
+            {
+                var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+
+                if (httpContext != null)
+                {
+                    var claimsPrincipal = httpContext.User as ClaimsPrincipal;
+
+                    var accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
+
+                    return accessToken;
+                }
+
+                return null;
+            };
+        })
+        .WithAutomaticReconnect(new TimeSpan[] { TimeSpan.FromSeconds(0), TimeSpan.FromSeconds(2), TimeSpan.FromSeconds(10), TimeSpan.FromSeconds(30) })
+        .Build();
 });
 
 // blazorise

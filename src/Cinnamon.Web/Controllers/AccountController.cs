@@ -20,14 +20,16 @@ public class AccountController : Controller
     private readonly IAdminApiHandler adminApiHandler;
     private readonly Cinnamon.Web.Config.Config config;
     private readonly ILogger logger;
+    private readonly IChatApiHandler chatApiHandler;
 
     public AccountController(IAccountApiHandler accountApiHandler, Cinnamon.Web.Config.Config config, IAdminApiHandler adminApiHandler,
-        ILogger<AccountController> logger)
+        ILogger<AccountController> logger, IChatApiHandler chatApiHandler)
     {
         this.accountApiHandler = accountApiHandler;
         this.config = config;
         this.adminApiHandler = adminApiHandler;
         this.logger = logger;
+        this.chatApiHandler = chatApiHandler;
     }
 
     [Route("logout")]
@@ -35,8 +37,24 @@ public class AccountController : Controller
     [Authorize]
     public async Task<IActionResult> Logout()
     {
-        await HttpContext.SignOutAsync();
+        var token = User.FindFirstValue("Token");
 
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+        if ((result.Succeeded || result.Result != null) || (result.Succeeded && result.Result.IsSuccess))
+        {
+            var profile = result.Result.Result;
+
+            await chatApiHandler.UpdateConnectionId(new Framework.ApiCommand.ApiCore.Account.Request.UpdateConnectionIdArgs
+            {
+                ConnectionId = string.Empty,
+                CustomerId = profile.Id,
+            }, token);
+
+            await HttpContext.SignOutAsync();
+
+            return Redirect("/explore");
+
+        }
         return Redirect("/explore");
     }
 
