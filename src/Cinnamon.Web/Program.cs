@@ -18,7 +18,7 @@ using System.Security.Claims;
 var builder = WebApplication.CreateBuilder(args);
 
 // register flurl
-builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
+builder.Services.AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>();
 
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
@@ -33,7 +33,7 @@ builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddFontAwesomeIcons()
     .AddBlazoriseRichTextEdit();
 
-builder.Services.AddSignalR(options => { options.MaximumReceiveMessageSize = 10 * 1024 * 1024;});
+builder.Services.AddSignalR(options => { options.MaximumReceiveMessageSize = 10 * 1024 * 1024; });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opts => {
@@ -50,7 +50,8 @@ builder.Services.AddAuthentication().AddGoogle(o =>
     // o.CallbackPath = builder.Configuration["AppConfig:Authentication:Google:CallbackPath"];
     o.ClaimActions.MapJsonKey("urn:google:profile", "link");
     o.ClaimActions.MapJsonKey("urn:google:image", "picture");
-    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
+    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+    {
     };
 });
 
@@ -62,7 +63,7 @@ builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
 });
 
 // add config
-Cinnamon.Web.Config.Config  config = new Cinnamon.Web.Config.Config();
+Cinnamon.Web.Config.Config config = new Cinnamon.Web.Config.Config();
 builder.Configuration.GetSection("AppConfig").Bind(config);
 builder.Services.AddSingleton(config);
 
@@ -72,8 +73,6 @@ var logger = new LoggerConfiguration()
                         .Enrich.WithProperty("ApplicationContext", "Cinnamon.Web")
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
-
-builder.Services.AddSingleton<IHttpContextAccessor, CustomHttpContextAccessor>();
 
 builder.Services.AddScoped(sp =>
 {
@@ -85,15 +84,21 @@ builder.Services.AddScoped(sp =>
             {
                 logger.Information("add scoped HubConnectionBuilder was called");
 
-                var httpContextUser = sp.GetRequiredService<IHttpContextAccessor>().HttpContext.User;
+                var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
 
-                if (httpContextUser != null)
+                if (httpContext != null)
                 {
                     logger.Information("httpContext is not null");
 
-                    var accessToken = httpContextUser.FindFirst(c => c.Type == "Token")?.Value;
+                    var claimsPrincipal = httpContext.User as ClaimsPrincipal;
 
-                    logger.Information($"token {accessToken}");
+                    var accessToken = claimsPrincipal.FindFirst(c => c.Type == "Token")?.Value;
+
+                    foreach (var item in claimsPrincipal.Claims)
+                    {
+                        logger.Information($"claim type: {item.Type} | claim value: {item.Value}");
+
+                    }
 
                     return accessToken;
                 }
@@ -113,7 +118,7 @@ builder.Services.AppExtendServices();
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 
-app.Use((context,next) => {
+app.Use((context, next) => {
     if (context.Request.Headers["x-forwarded-proto"] == "https")
     {
         context.Request.Scheme = "https";
@@ -164,13 +169,3 @@ app.UseEndpoints(endpoints =>
 
 app.Run();
 
-public class CustomHttpContextAccessor : IHttpContextAccessor
-{
-    private static AsyncLocal<HttpContext> _httpContextCurrent = new AsyncLocal<HttpContext>();
-
-    public HttpContext HttpContext
-    {
-        get => _httpContextCurrent.Value;
-        set => _httpContextCurrent.Value = value;
-    }
-}
