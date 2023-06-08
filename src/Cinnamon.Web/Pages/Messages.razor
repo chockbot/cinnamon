@@ -488,7 +488,7 @@
                 {
                     ChatRoomId       = c.ChatRoomId,
                     FromUserId       = c.FromUserId,
-                    DateCreated      = c.DateCreated,
+                    DateCreated      = c.DateCreated.ToLocalTime(),
                     FromFirstName    = c.FromFirstName,
                     FromLastName     = c.FromLastName,
                     Message          = c.Message,
@@ -617,7 +617,7 @@
                 {
                     ChatHistoryId    = c.ChatHistoryId,
                     ChatRoomId       = c.ChatRoomId,
-                    DateCreated      = c.DateCreated,
+                    DateCreated      = c.DateCreated.ToLocalTime(),
                     FromConnectionId = c.FromConnectionId,
                     FromUserId       = c.FromUserId,
                     FromFirstName    = c.FromFirstName,
