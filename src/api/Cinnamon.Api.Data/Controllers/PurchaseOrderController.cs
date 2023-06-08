@@ -3,6 +3,7 @@ using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
 using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.PurchaseOrder.Request;
+using System.Globalization;
 
 namespace Cinnamon.Api.Data.Controllers;
 
@@ -180,6 +181,39 @@ public class PurchaseOrderController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdatePurchaseOrdersStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetAllInclusiveTransactions")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetAllInclusiveTransactionResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllInclusiveTransactions([FromQuery] GetAllInclusiveTransactionArgs args)
+    {
+        try
+        {
+            DateTime? purchaseDateFrom = null;
+            DateTime? purchaseDateTo = null;
+            if(!string.IsNullOrEmpty(args.PurchaseDateFrom) && !string.IsNullOrEmpty(args.PurchaseDateTo))
+            {
+                purchaseDateFrom = DateTime.ParseExact(args.PurchaseDateFrom, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+                purchaseDateTo = DateTime.ParseExact(args.PurchaseDateTo, "yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            }
+
+            var result = await purchaseOrderRepository.GetInclusiveTransactions(args.Name, args.Email, args.Status, purchaseDateFrom, purchaseDateTo);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetAllInclusiveTransactionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetAllInclusiveTransactionResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetAllInclusiveTransactionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

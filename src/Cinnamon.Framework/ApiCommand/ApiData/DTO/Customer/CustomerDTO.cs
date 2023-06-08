@@ -29,5 +29,6 @@ public class CustomerDTO
     public class Pricing 
     {
         public decimal Rate {get; set;}
+        public bool IsManualPayment {get; set;}
     }
 }

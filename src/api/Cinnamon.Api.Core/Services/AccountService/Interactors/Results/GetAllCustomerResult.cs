@@ -35,6 +35,7 @@ namespace Cinnamon.Api.Core.Services.AccountService.Interactors.Results
         public class  CustomerPricing 
         {
             public decimal Rate {get; set;}
+            public bool IsManualPayment {get; set;}
         }
     }
 }

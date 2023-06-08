@@ -69,7 +69,8 @@ namespace Cinnamon.Api.Core.Services.AccountService
                     IsOF             = c.IsOfficial,
                     IsOFDate         = c.IsOfficialObtainedDate,
                     CustomerPricing = new GetAllCustomerResult.CustomerPricing {
-                        Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0
+                        Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
+                        IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false,
                     }
                 }),
                 Pagination = new Framework.ApiCommand.ApiCore.Pagination

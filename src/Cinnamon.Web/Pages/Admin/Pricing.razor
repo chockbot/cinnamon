@@ -55,6 +55,9 @@
                     <TableHeaderCell class="text-start">
                         Rate (%)
                     </TableHeaderCell>
+                    <TableHeaderCell class="text-center">
+                       Is Manual Payment
+                    </TableHeaderCell>
                     <TableHeaderCell>
                         Action
                     </TableHeaderCell>
@@ -70,6 +73,9 @@
                         <TableRowCell class="name-body">
                             <input class='@($"form-control {item.Pricing.ExtraClass}")' type="number" min="0" 
                                     placeholder="Enter Amount" @bind-value="item.Pricing.Rate" />
+                        </TableRowCell>
+                        <TableRowCell class="name-body text-center">
+                            <Switch TValue="bool" @bind-Checked="item.Pricing.IsManualPayment"></Switch>
                         </TableRowCell>
                         <TableRowCell class="name-body text-center">
                             <Button Clicked="() => SubmitCustomerPricing(item)" Size="Size.Small" Type="ButtonType.Button" 
@@ -149,7 +155,8 @@
                 IsOfficial = r.IsOfficial,
                 IsOfficialDate = r.IsOfficialDate,
                 Pricing = new CustomerProfile.CustomerPricing {
-                    Rate = r.CustomerPricing != null ? r.CustomerPricing.Rate : 0
+                    Rate = r.CustomerPricing != null ? r.CustomerPricing.Rate : 0,
+                    IsManualPayment = r.CustomerPricing != null ? r.CustomerPricing.IsManualPayment : false
                 }
             }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
@@ -197,7 +204,8 @@
 
             var result = await adminApiHandler.CustomerPricing(new Framework.ApiCommand.ApiCore.AdminUser.Request.UpdateCustomerPricingArgs {
                 CustomerId = item.Id,
-                Rate = item.Pricing.Rate
+                Rate = item.Pricing.Rate,
+                IsManualPayment = item.Pricing.IsManualPayment
             }, token);
 
             item.Pricing.IsSubmitting = false;

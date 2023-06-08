@@ -62,7 +62,8 @@ public class UpdateCustomerPricingHandler : IUpdateCustomerPricingHandler
                     var createCustomerPricingRes = await customerPricingData.CreateCustomerPricing(new Framework.ApiCommand.ApiData.CustomerPricing.Request.CreateCustomerPricingArgs {
                         CustomerId = args.CustomerId,
                         Email = customer.Email,
-                        Rate = args.Rate
+                        Rate = args.Rate,
+                        IsManualPayment = args.IsManualPayment
                     });
                     if(!createCustomerPricingRes.Succeeded || createCustomerPricingRes.Result == null || !createCustomerPricingRes.Result.IsSuccess)
                     {
@@ -80,7 +81,8 @@ public class UpdateCustomerPricingHandler : IUpdateCustomerPricingHandler
             
             var updateCustomerPricing = await customerPricingData.UpdateCustomerPricing(new Framework.ApiCommand.ApiData.CustomerPricing.Request.UpdateCustomerPricingArgs {
                 Id = customerPricingRes.Result?.Result.Id ?? 0,
-                Rate = args.Rate
+                Rate = args.Rate,
+                IsManualPayment = args.IsManualPayment
             });
             if(!updateCustomerPricing.Succeeded || updateCustomerPricing.Result == null)
             {

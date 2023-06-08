@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230606040636_AddColumnCustomerPricing")]
+    partial class AddColumnCustomerPricing
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -499,132 +501,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("Barangays");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatHistory", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ChatRoomId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("FromConnectionId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("FromUserId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsViewed")
-                        .HasColumnType("boolean");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ToConnectionId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("ToUserId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChatRoomId");
-
-                    b.HasIndex("FromUserId");
-
-                    b.HasIndex("ToUserId");
-
-                    b.ToTable("ChatHistories");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatMember", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ChatRoomId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("HasLeft")
-                        .HasColumnType("boolean");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ChatRoomId");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("ChatMembers");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatRoom", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("LatestMessage")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ChatRooms");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.City", b =>
                 {
                     b.Property<int>("Id")
@@ -690,9 +566,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<DateTime>("ChangedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("ConnectionId")
-                        .HasColumnType("text");
 
                     b.Property<int>("CreatedBy")
                         .HasColumnType("integer");
@@ -1396,58 +1269,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("ResetPasswords");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Reviews", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("MakerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("Review")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("StudentId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Id");
-
-                    b.ToTable("Reviews");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.SearchTags", b =>
                 {
                     b.Property<int>("Id")
@@ -1528,9 +1349,6 @@ namespace Cinnamon.Api.Data.Migrations
 
                     b.Property<int>("FamilyMemberId")
                         .HasColumnType("integer");
-
-                    b.Property<bool>("HasReview")
-                        .HasColumnType("boolean");
 
                     b.Property<bool>("IsDisbursement")
                         .HasColumnType("boolean");
@@ -1962,52 +1780,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Activity");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatHistory", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.ChatRoom", "ChatRoom")
-                        .WithMany()
-                        .HasForeignKey("ChatRoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "FromCustomer")
-                        .WithMany("FromChatHistories")
-                        .HasForeignKey("FromUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "ToCustomer")
-                        .WithMany("ToChatHistories")
-                        .HasForeignKey("ToUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChatRoom");
-
-                    b.Navigation("FromCustomer");
-
-                    b.Navigation("ToCustomer");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatMember", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.ChatRoom", "ChatRoom")
-                        .WithMany("ChatMembers")
-                        .HasForeignKey("ChatRoomId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
-                        .WithMany("ChatMembers")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ChatRoom");
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
@@ -2213,25 +1985,14 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Students");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatRoom", b =>
-                {
-                    b.Navigation("ChatMembers");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
                 {
-                    b.Navigation("ChatMembers");
-
                     b.Navigation("CustomerPricing")
                         .IsRequired();
 
                     b.Navigation("FamilyMembers");
 
-                    b.Navigation("FromChatHistories");
-
                     b.Navigation("OngoingActivities");
-
-                    b.Navigation("ToChatHistories");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ExperienceType", b =>

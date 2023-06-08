@@ -16,7 +16,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
         this.dataStore = dataStore;
     }
     
-    public async Task<AppResult<CustomerPricingDTO>> Create(int customerId, string email, decimal rate)
+    public async Task<AppResult<CustomerPricingDTO>> Create(int customerId, string email, decimal rate, bool isManualPayment)
     {
         try
         {
@@ -24,6 +24,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 CustomerId = customerId,
                 Email = email,
                 Rate = rate,
+                IsManualPayment = isManualPayment
             };
 
             var result = await dataStore.CustomerPricing.Add(entity);
@@ -47,7 +48,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 FirstName = created.Customer.FirstName,
                 Id = created.Id,
                 LastName = created.Customer.LastName,
-                Rate = created.Rate
+                Rate = created.Rate,
+                IsManualPayment = created.IsManualPayment
             }, "Successfully created customer pricing");
         }
         catch (Exception ex)
@@ -72,7 +74,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                     FirstName = c.Customer.FirstName,
                     LastName = c.Customer.LastName,
                     Id = c.Id,
-                    Rate = c.Rate
+                    Rate = c.Rate,
+                    IsManualPayment = c.IsManualPayment
                 };
             });
 
@@ -100,7 +103,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                     FirstName = c.Customer?.FirstName ?? string.Empty,
                     LastName = c.Customer?.LastName ?? string.Empty,
                     Id = c.Id,
-                    Rate = c.Rate
+                    Rate = c.Rate,
+                    IsManualPayment = c.IsManualPayment
                 };
             });
 
@@ -131,7 +135,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 FirstName = customerPricing.Customer.FirstName,
                 Id = customerPricing.Id,
                 LastName = customerPricing.Customer.LastName,
-                Rate = customerPricing.Rate
+                Rate = customerPricing.Rate,
+                IsManualPayment = customerPricing.IsManualPayment
             }, "Successfully get customer pricing by customer id");
         }
         catch (Exception ex)
@@ -159,7 +164,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 FirstName = customerPricing.Customer.FirstName,
                 Id = customerPricing.Id,
                 LastName = customerPricing.Customer.LastName,
-                Rate = customerPricing.Rate
+                Rate = customerPricing.Rate,
+                IsManualPayment = customerPricing.IsManualPayment
             }, "Successfully get customer pricing by id");
         }
         catch (Exception ex)
@@ -168,7 +174,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
         }
     }
 
-    public async Task<AppResult<CustomerPricingDTO>> Update(int id, decimal rate)
+    public async Task<AppResult<CustomerPricingDTO>> Update(int id, decimal rate, bool isManualPayment)
     {
         try
         {
@@ -178,6 +184,7 @@ public class CustomerPricingRepository : ICustomerPricingRepository
                 return AppResult<CustomerPricingDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
             }
             result.Result.Rate = rate;
+            result.Result.IsManualPayment = isManualPayment;
 
             var updatedRes = await dataStore.CustomerPricing.Update(result.Result);
             if(!updatedRes.Succeeded || updatedRes.Result == null)
@@ -188,7 +195,8 @@ public class CustomerPricingRepository : ICustomerPricingRepository
             return AppResult<CustomerPricingDTO>.CreateSucceeded(new CustomerPricingDTO {
                 Email = result.Result.Email,
                 Id = result.Result.Id,
-                Rate = rate
+                Rate = rate,
+                IsManualPayment = isManualPayment
             }, "Successfuly updated customer pricing");
         }
         catch (Exception ex)
