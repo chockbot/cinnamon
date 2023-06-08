@@ -232,4 +232,75 @@ public class ReviewsRepository: IReviewsRepository
         }
     }
 
+    public async Task<AppResult<IEnumerable<ReviewsDTO>>> GetAllReviewsByCustomerId(int? customerId, int? count, int? skip)
+    {
+        try
+        {
+            Expression<Func<Entities.Reviews, bool>> filter = a => (a.CustomerId == customerId);
+            var result = await dataStore.Reviews.FindAsync(filter, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ReviewsDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var reviews = result.Result.Select(s =>
+            {
+                var reviewsDto = new ReviewsDTO
+                {
+                    Id = s.Id,
+                    CustomerId = s.CustomerId,
+                    MakerId = s.MakerId,
+                    ActivityId = s.ActivityId,
+                    StudentId = s.StudentId,
+                    ScheduleId = s.ScheduleId,
+                    Rating = s.Rating,
+                    Review = s.Review,
+                    ReviewDate = s.ReviewDate
+                };
+
+                return reviewsDto;
+            });
+
+            return AppResult<IEnumerable<ReviewsDTO>>.CreateSucceeded(reviews, "Successfully get reviews");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ReviewsDTO>>.CreateFailed(ex, "An error occured when getting reviews");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<ReviewsDTO>>> GetAllReviewsByActivityId(int? activityId, int? count, int? skip)
+    {
+        try
+        {
+            Expression<Func<Entities.Reviews, bool>> filter = a => (a.ActivityId == activityId);
+            var result = await dataStore.Reviews.FindAsync(filter, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ReviewsDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var reviews = result.Result.Select(s =>
+            {
+                var reviewsDto = new ReviewsDTO
+                {
+                    Id = s.Id,
+                    CustomerId = s.CustomerId,
+                    MakerId = s.MakerId,
+                    ActivityId = s.ActivityId,
+                    StudentId = s.StudentId,
+                    ScheduleId = s.ScheduleId,
+                    Rating = s.Rating,
+                    Review = s.Review,
+                    ReviewDate = s.ReviewDate
+                };
+
+                return reviewsDto;
+            });
+
+            return AppResult<IEnumerable<ReviewsDTO>>.CreateSucceeded(reviews, "Successfully get reviews");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ReviewsDTO>>.CreateFailed(ex, "An error occured when getting reviews");
+        }
+    }
 }

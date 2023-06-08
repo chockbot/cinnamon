@@ -7,12 +7,12 @@ using Flurl.Http.Configuration;
 
 namespace Cinnamon.Web.Modules.ApiAccess.OngoingActivities;
 
-public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
+public class OnGoingActivityApiHandler : IOngoingActivitiesHandler
 {
     private readonly IFlurlClient flurlClient;
 
-	public OnGoingActivityApiHandler(IFlurlClientFactory flurlFac, Config.Config config)
-	{
+    public OnGoingActivityApiHandler(IFlurlClientFactory flurlFac, Config.Config config)
+    {
         flurlClient = flurlFac.Get(config.ApiUrl);
     }
     public async Task<AppResult<AddActivityExpirationResult>> AddActivityExpiration(AddActivityExpirationArgs args)
@@ -76,7 +76,7 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
         }
     }
 
-    public async Task<AppResult<GetOngoingActivityByIdResult>>GetOngoingActivityById(int id)
+    public async Task<AppResult<GetOngoingActivityByIdResult>> GetOngoingActivityById(int id)
     {
         try
         {
@@ -194,7 +194,7 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
                 .SetQueryParams(args)
                 .GetJsonAsync<GetReviewsByMakerIdResult>();
 
-            return AppResult<GetReviewsByMakerIdResult>.CreateSucceeded(result, "Successfully getting reviews by maker id  api");
+            return AppResult<GetReviewsByMakerIdResult>.CreateSucceeded(result, "Successfully getting reviews by maker id api");
         }
         catch (FlurlHttpException ex)
         {
@@ -203,6 +203,48 @@ public class OnGoingActivityApiHandler: IOngoingActivitiesHandler
         catch (Exception ex)
         {
             return AppResult<GetReviewsByMakerIdResult>.CreateFailed(ex, "An error occured when getting reviews by maker id api");
+        }
+    }
+
+    public async Task<AppResult<GetReviewsByCustomerIdResult>> GetReviewsByCustomerId(GetReviewsByCustomerIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("OnGoingActivities/GetReviewsByCustomerId")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetReviewsByCustomerIdResult>();
+
+            return AppResult<GetReviewsByCustomerIdResult>.CreateSucceeded(result, "Successfully getting reviews by customer id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetReviewsByCustomerIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetReviewsByCustomerIdResult>.CreateFailed(ex, "An error occured when getting reviews by customer id api");
+        }
+    }
+
+    public async Task<AppResult<GetReviewsByActivityIdResult>> GetReviewsByActivityId(GetReviewsByActivityIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("OnGoingActivities/GetReviewsByActivityId")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetReviewsByActivityIdResult>();
+
+            return AppResult<GetReviewsByActivityIdResult>.CreateSucceeded(result, "Successfully getting reviews by activity id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetReviewsByActivityIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetReviewsByActivityIdResult>.CreateFailed(ex, "An error occured when getting reviews by activity id api");
         }
     }
 }

@@ -10,7 +10,7 @@
 
 
 <article class="experience-review-wrapper py-3">
-    <h3 class="title">Reviews</h3>
+    <h3 class="title">Customer Feedbacks</h3>
     @if (reviews.Count != 0)
     {
         <div class="d-flex">
@@ -18,10 +18,12 @@
                 <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true />
                 <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
             </div>
-            <div class="col-4 d-flex justify-content-end">
-                <a class="see-more">See More</a>
-            </div>
-           
+            @if (reviews.Count > 3)
+            {
+                <div class="col-4 d-flex justify-content-end">
+                    <button class="see-more" @onclick="() => modRef.ShowModal()">See More</button>
+                </div>
+            }
         </div>
         <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
             <div class="review-wrapper">
@@ -38,6 +40,8 @@
     }
 </article>
 
+<MultipleReviewModal @ref="modRef" Reviews="reviews" SelectedValue="SelectedValue" 
+    AverageRating="AverageRating" CustomerProfiles="customerProfiles"></MultipleReviewModal>
 @code
 {
 
@@ -47,11 +51,17 @@
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }
 
+    private MultipleReviewModal modRef;
+
     public List<Reviews> reviews = new List<Reviews>();
 
     public List<Reviews> top3Reviews = new List<Reviews>();
 
-    public CustomerProfile customerProfile = new CustomerProfile();
+    public List<CustomerProfile> customerProfiles = new List<CustomerProfile>();
+
+    public Activity makerActivity = new Activity();
+
+    public CustomerProfile reviweeProfile = new CustomerProfile();
 
     public string Token;
 
@@ -92,6 +102,24 @@
             AverageRating = (double) SumOfRating/numberOfRatee;
             SelectedValue = (int)Math.Round(AverageRating);
             top3Reviews = reviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
+        }
+        //Get Customer Details
+        foreach (var item in reviews)
+        {
+            var profileResult = await accountApiHandler.GetCustomerById(item.CustomerId);
+            if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
+            {
+                var result = profileResult.Result.Result;
+                reviweeProfile = new CustomerProfile
+                    {
+                        Id = result.Id,
+                        FirstName = result.FirstName,
+                        LastName = result.LastName,
+                        ProfilePath = result.ProfileImg
+                    };
+                customerProfiles.Add(reviweeProfile);
+            }
+
         }
     }
 }

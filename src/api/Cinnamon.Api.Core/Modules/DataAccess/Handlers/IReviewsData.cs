@@ -11,4 +11,6 @@ public interface IReviewsData
     Task<AppResult<CreatedReviewResult>> CreateReview(CreateReviewArgs args);
     Task<AppResult<UpdatedReviewResult>> UpdateReview(UpdateReviewArgs args);
     Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args);
+    Task<AppResult<GetReviewsByCustomerIdResult>> GetReviewsByCustomerId(GetReviewsByCustomerIdArgs args);
+    Task<AppResult<GetReviewsByActivityIdResult>> GetReviewsByActivityId(GetReviewsByActivityIdArgs args);
 }

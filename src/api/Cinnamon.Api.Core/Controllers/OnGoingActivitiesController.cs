@@ -23,10 +23,12 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly ICreateReviewHandler createReviewHandler;
     private readonly IGetAllStudentsByIdHandler getAllStudentsByIdHandler;
     private readonly IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler;
+    private readonly IGetReviewsByActivityIdHandler getReviewsByActivityIdHandler;
+    private readonly IGetReviewsByCustomerIdHandler getReviewsByCustomerIdHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
         IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, 
         IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler, IGetAllStudentsByIdHandler getAllStudentsByIdHandler,
-        IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler)
+        IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler, IGetReviewsByActivityIdHandler getReviewsByActivityIdHandler, IGetReviewsByCustomerIdHandler getReviewsByCustomerIdHandler)
     {
         this.getAllOngoingActivitiesHandler   = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler    = getOngoingActivityByIdHandler;
@@ -37,6 +39,8 @@ public class OnGoingActivitiesController : ControllerBase
         this.createReviewHandler              = createReviewHandler;
         this.getAllStudentsByIdHandler        = getAllStudentsByIdHandler;
         this.getReviewsByMakerIdHandler       = getReviewsByMakerIdHandler;
+        this.getReviewsByActivityIdHandler    = getReviewsByActivityIdHandler;
+        this.getReviewsByCustomerIdHandler    = getReviewsByCustomerIdHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -426,6 +430,88 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetReviewsByMakerIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetReviewsByCustomerId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetReviewsByCustomerIdResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetReviewsByCustomerId([FromQuery] GetReviewsByCustomerIdArgs args)
+    {
+        try
+        {
+            var result = await getReviewsByCustomerIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetReviewsByCustomerIdArgs
+            {
+                CustomerId = args.CustomerId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetReviewsByCustomerIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetReviewsByCustomerIdResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Review.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Reviews.ReviewsDTO
+                    {
+                        Id = s.Id,
+                        CustomerId = s.CustomerId,
+                        MakerId = s.MakerId,
+                        ActivityId = s.ActivityId,
+                        ScheduleId = s.ScheduleId,
+                        StudentId = s.StudentId,
+                        Rating = s.Rating,
+                        Review = s.Review,
+                        ReviewDate = s.ReviewDate
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetReviewsByCustomerIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetReviewsByActivityId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetReviewsByActivityIdResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> GetReviewsByActivityId([FromQuery] GetReviewsByActivityIdArgs args)
+    {
+        try
+        {
+            var result = await getReviewsByActivityIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetReviewsByActivityIdArgs
+            {
+                ActivityId = args.ActivityId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetReviewsByActivityIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetReviewsByActivityIdResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Review.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Reviews.ReviewsDTO
+                    {
+                        Id = s.Id,
+                        CustomerId = s.CustomerId,
+                        MakerId = s.MakerId,
+                        ActivityId = s.ActivityId,
+                        ScheduleId = s.ScheduleId,
+                        StudentId = s.StudentId,
+                        Rating = s.Rating,
+                        Review = s.Review,
+                        ReviewDate = s.ReviewDate
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetReviewsByActivityIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

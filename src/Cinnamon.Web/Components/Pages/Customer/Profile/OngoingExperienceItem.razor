@@ -478,6 +478,8 @@
                     }
                     else
                     {
+                        SelectedValue = 0;
+                        ReviewText = string.Empty;
                         await modref.Close(CloseReason.UserClosing);
                         StateHasChanged();
                         NavigationManager.NavigateTo("/customer/profile", true);

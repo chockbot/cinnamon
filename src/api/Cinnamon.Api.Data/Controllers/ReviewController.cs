@@ -177,4 +177,102 @@ public class ReviewController : ControllerBase
             return new JsonResult(new GetReviewsByMakerIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetReviewsByCustomerId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetReviewsByCustomerIdResult), StatusCodes.Status200OK)]
+
+    public async Task<IActionResult> GetReviewsByCustomerId([FromQuery] GetReviewsByCustomerIdArgs args)
+    {
+        try
+        {
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || args.CustomerId != 0 ?
+                await reviews.GetAllReviewsByCustomerId(args.CustomerId, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await reviews.GetAllAsync();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetReviewsByCustomerIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            // get all without pagination to get all rows
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.CustomerId != 0 ?
+                await reviews.GetAllReviewsByCustomerId(0, null, null) :
+                await reviews.GetAllAsync();
+
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetReviewsByCustomerIdResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
+            }
+
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetReviewsByCustomerIdResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetReviewsByCustomerIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetReviewsByActivityId")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetReviewsByActivityIdResult), StatusCodes.Status200OK)]
+
+    public async Task<IActionResult> GetReviewsByActivityId([FromQuery] GetReviewsByActivityIdArgs args)
+    {
+        try
+        {
+            var result =
+                args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ActivityId != 0 ?
+                await reviews.GetAllReviewsByActivityId(args.ActivityId, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage) :
+                await reviews.GetAllAsync();
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetReviewsByActivityIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            // get all without pagination to get all rows
+            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || args.ActivityId != 0 ?
+                await reviews.GetAllReviewsByActivityId(0, null, null) :
+                await reviews.GetAllAsync();
+
+            if (!all.Succeeded || all.Result == null)
+            {
+                return new JsonResult(new GetReviewsByActivityIdResult { ErrorInfo = new ErrorInfo { Message = all.Message } });
+            }
+
+            var totalRecords = all.Result.Count();
+            return new JsonResult(new GetReviewsByActivityIdResult
+            {
+                Result = result.Result,
+                IsSuccess = true,
+                Pagination = new Pagination
+                {
+                    PageIndex = args.PageIndex,
+                    PerPage = args.CountPerPage,
+                    TotalRecords = totalRecords,
+                    TotalPages = args.CountPerPage.HasValue && args.PageIndex.HasValue ?
+                                (int)Math.Ceiling((double)totalRecords / args.CountPerPage.Value) : null
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetReviewsByActivityIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }
