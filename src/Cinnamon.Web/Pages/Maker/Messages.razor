@@ -61,9 +61,10 @@
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
                     <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
+                        <input type="hidden" value="@chatRoom.DateCreated" id="date-created" />
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="last-update-date">
-                                @chatRoom.DateCreated.ToShortTimeString()
+                                @chatRoom.DateCreated.ToString("hh:mm tt")
                             </div>
                         </div>
                         <div class="col-lg-2 col-md-2 col-sm-2 col-2 chatroom-profile-picture-section">
@@ -145,7 +146,7 @@
                 </div>
                 <div class="conversation-section">
                     <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
-                        <ul class="list-unstyled d-flex flex-column">
+                        <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
                             <div id="observerTarget"></div>
                            
                             @if (isLoading)
@@ -163,7 +164,8 @@
 
                                     if (ts.Days > 1)
                                     {
-                                        <li class="d-flex flex-row justify-content-center">
+                                        <li class="d-flex flex-row justify-content-center list-item-days">
+                                            <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
                                             <div class="chat-date-time">
                                                 @chat.DateCreated.ToString("MMMM dd, yyyy, hh:mm tt")
                                             </div>
@@ -171,7 +173,8 @@
                                     }
                                     else if (ts.Minutes > 2)
                                     {
-                                        <li class="d-flex flex-row justify-content-center">
+                                        <li class="d-flex flex-row justify-content-center list-item-minutes">
+                                            <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
                                             <div class="chat-date-time">
                                                 @chat.DateCreated.ToString("dddd, hh:mm tt")
                                             </div>
@@ -185,7 +188,8 @@
 
                                     lastMessageDateCreated = chat.DateCreated;
 
-                                    <li class="d-flex flex-row justify-content-center">
+                                    <li class="d-flex flex-row justify-content-center list-item-days">
+                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
                                         <div class="chat-date-time">
                                             @lastMessageDateCreated.GetValueOrDefault().ToString("MMMM dd, yyyy, hh:mm tt")
                                         </div>
@@ -463,7 +467,9 @@
         {
             objectRef = DotNetObjectReference.Create(this);
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.initMessages", objectRef, "#chat-message-input");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
         }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
     }
 
     private async Task Send()
@@ -489,7 +495,7 @@
                 {
                     ChatRoomId = c.ChatRoomId,
                     FromUserId = c.FromUserId,
-                    DateCreated = c.DateCreated.ToLocalTime(),
+                    DateCreated = c.DateCreated,
                     FromFirstName = c.FromFirstName,
                     FromLastName = c.FromLastName,
                     Message = c.Message,
@@ -618,7 +624,7 @@
                 {
                     ChatHistoryId = c.ChatHistoryId,
                     ChatRoomId = c.ChatRoomId,
-                    DateCreated = c.DateCreated.ToLocalTime(),
+                    DateCreated = c.DateCreated,
                     FromConnectionId = c.FromConnectionId,
                     FromUserId = c.FromUserId,
                     FromFirstName = c.FromFirstName,

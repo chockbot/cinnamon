@@ -40,7 +40,7 @@
                         aria-expanded="false" border="none" @onclick="onClickMenu">
                         <div class="menu">
                             <img src="images/menu.png">
-                            @if (Model.Profile != null && !Model.Profile.IsMaker)
+                            @if (Model.Profile != null)
                             {
                                 @if (newMessagesCount != 0)
                                 {
@@ -58,6 +58,14 @@
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                </li>
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
                                 </li>
                             }
                             else
@@ -225,7 +233,7 @@
 
     private async Task SendChatStatus()
     {
-        if (hubConnection is not null)
+        if (hubConnection is not null && Model.Profile is not null)
         {
             await hubConnection.SendAsync("SendChatStatus", Model.Profile.Id);
         }

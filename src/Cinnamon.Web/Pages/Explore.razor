@@ -75,7 +75,7 @@
                 <button class="btn border-0" type="button" id="dropdownMenu2" data-bs-toggle="dropdown" aria-expanded="false" border="none" @onclick="onClickMenu">
                     <div class="menu">
                         <img src="images/menu.png">
-                        @if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsMaker)
+                        @if (CustomerModel.CustomerProfile != null)
                         {
                             @if (newMessagesCount != 0)
                             {
@@ -99,10 +99,18 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
+                                </li>
                             }
                             else
                             {
-                                <li class="dropdown-item messages-item">
+                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
                                     @if (hasNewMessages)
                                     {
@@ -689,7 +697,7 @@
 
     private async Task SendChatStatus()
     {
-        if (hubConnection is not null)
+        if (hubConnection is not null && CustomerModel.CustomerProfile is not null)
         {
             await hubConnection.SendAsync("SendChatStatus", CustomerModel.CustomerProfile.Id);
         }

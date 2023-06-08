@@ -27,14 +27,78 @@ messages.initControls = (obj, elementId) => {
         dotnetObj.invokeMethodAsync('SendMessageAsync', $(messageElementId).text());
         $(messageElementId).text("")
     });
-
-    
 }
+
+function formatDay(date) {
+    var dayOfWeek = date.getDay();
+    var dayOfWeekString = "Sunday";
+    switch (dayOfWeek) {
+        case 0:
+            dayOfWeekString = "Sunday";
+            break;
+        case 1:
+            dayOfWeekString = "Monday";
+            break;
+        case 2:
+            dayOfWeekString = "Tuesday";
+            break;
+        case 3:
+            dayOfWeekString = "Wednesday";
+            break;
+        case 4:
+            dayOfWeekString = "Thursday";
+            break;
+        case 5:
+            dayOfWeekString = "Friday";
+            break;
+        case 6:
+            dayOfWeekString = "Saturday";
+            break;
+    }
+    return dayOfWeekString;
+}
+
+function formatDate(date) {
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    var day = date.getDate();
+    var month = months[date.getMonth()];
+    var year = date.getFullYear();
+
+    return month + " " + day + ", " + year;
+}
+
+export async function handleDateFormat() {
+    $(document).ready(function () {
+        $(".chatroom-list-item ").each(function () {
+            var date = new Date($(this).find('#date-created').val()).toLocaleTimeString([], { timeStyle: 'short' });
+
+            $(this).find('.last-update-date').html(date);
+        });
+
+        $("#chat-history-list li.list-item-days").each(function () {
+            var date = new Date($(this).find('#chat-history-date-created').val());
+
+            var formattedDate = `${formatDate(date)} ${date.toLocaleTimeString([], { timeStyle: 'short' })}`;
+
+            $(this).find('.chat-date-time').html(formattedDate);
+        });
+
+        $("#chat-history-list li.list-item-minutes").each(function () {
+            var date = new Date($(this).find('#chat-history-date-created').val());
+
+            var formattedDay = `${formatDay(date)}, ${date.toLocaleTimeString([], { timeStyle: 'short' })}`;
+
+            $(this).find('.chat-date-time').html(formattedDay);
+        });
+    });
+};
 
 export async function initMessages(obj, elementId) {
     return await messages.initControls(obj, elementId);
 }
 
 export default {
-    initMessages
+    initMessages,
+    handleDateFormat
 };
