@@ -54,7 +54,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                         Message          = message,
                         IsViewed         = isViewed,
                         FromConnectionId = customerResult.Result.ConnectionId,
-                        ToConnectionId   = string.IsNullOrEmpty(c.Customer.ConnectionId) ? string.Empty : c.Customer.ConnectionId
+                        ToConnectionId   = string.IsNullOrEmpty(c.Customer.ConnectionId) ? string.Empty : c.Customer.ConnectionId,
+                        CreatedOn        = DateTime.UtcNow
                     })
                 );
 
