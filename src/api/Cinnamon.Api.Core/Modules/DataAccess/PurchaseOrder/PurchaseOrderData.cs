@@ -148,6 +148,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
             {
                 var result = await _flurlClient
                                 .Request("PurchaseOrder/GetAllInclusiveTransactions")
+                                .SetQueryParams(args)
                                 .GetJsonAsync<GetAllInclusiveTransactionResult>();
 
                 return AppResult<GetAllInclusiveTransactionResult>.CreateSucceeded(result, "Successfully getting get all PurchaseOrder api");
