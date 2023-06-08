@@ -42,14 +42,59 @@
     <div class="filters">
         <div>
             <h5 for="filter-by">Filter by</h5>
-            <Select style="width: 300px; margin-bottom: 1rem;" TValue="Filters" name="fiter-by" id="filter-by" class="form-control">
+            <Select style="width: 300px; margin-bottom: 1rem;" TValue="Filters" 
+                name="fiter-by" id="filter-by" class="form-control" @bind-SelectedValue="selectedValue">
+                <SelectItem Value="Filters.All">All</SelectItem>
                 <SelectItem Value="Filters.Name">Provider Name</SelectItem>
                 <SelectItem Value="Filters.Email">Provider Email</SelectItem>
                 <SelectItem Value="Filters.Date">Date Purchased</SelectItem>
                 <SelectItem Value="Filters.Status">Status</SelectItem>
             </Select>
-            <Button class="btn-primary min-width-130 font-20 mb-3" Border="Border.Is0" Size="Size.Small" Type="ButtonType.Button">
-                Submit
+            <div class="filter-fields mt-3 mb-3">
+                @if(selectedValue == Filters.Name)
+                {
+                    <TextEdit style="width: 300px;" Placeholder="Provider's first name or last name" Role="TextRole.Text" @bind-Text="selectedFilterValues.StringField" />
+                }
+                else if(selectedValue == Filters.Email)
+                {
+                    <TextEdit style="width: 300px;" Placeholder="Provider's email" Role="TextRole.Email" @bind-Text="selectedFilterValues.StringField" />
+                }
+                else if(selectedValue == Filters.Status)
+                {
+                    <Select style="width: 300px;" TValue="int" 
+                            class="form-control" @bind-SelectedValue="selectedFilterValues.Status">
+                        <SelectItem Value="0">Processing</SelectItem>
+                        <SelectItem Value="1">Payed</SelectItem>
+                        <SelectItem Value="2">Failed</SelectItem>
+                        <SelectItem Value="3">Refunded</SelectItem>
+                        <SelectItem Value="5">Disbursed</SelectItem>
+                    </Select>
+                }
+                else if(selectedValue == Filters.Date)
+                {
+                    <div style="width: 300px;">
+                        <div class="mb-3">
+                            <label>from</label>
+                            <DatePicker TValue="DateTime" Placeholder="date from" Date="selectedFilterValues.DateFrom" 
+                                DateChanged="v => selectedFilterValues.DateFrom = v" />
+                        </div>
+                        <div>
+                            <label>to</label>
+                            <DatePicker TValue="DateTime" Placeholder="date to" Date="selectedFilterValues.DateTo" 
+                                DateChanged="v => selectedFilterValues.DateTo = v" />
+                        </div>
+                    </div>
+                }
+            </div>
+            <Button class="btn-primary min-width-130 font-20 mb-3" Border="Border.Is0" Clicked="SubmitFilters"
+                Size="Size.Small" Type="ButtonType.Button" Loading="IsFetchingTransactions" Disabled="IsFetchingTransactions">
+                <LoadingTemplate>
+                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                    Please wait..
+                </LoadingTemplate>
+                <ChildContent>
+                    Submit Filter
+                </ChildContent>
             </Button>
         </div>
     </div>
@@ -66,22 +111,22 @@
                     <TableHeaderCell class="text-start">
                         Email
                     </TableHeaderCell>
-                    <TableHeaderCell class="text-start">
+                    <TableHeaderCell class="text-center">
                         Total
                     </TableHeaderCell>
                     <TableHeaderCell class="text-center">
                        Convenience Fee
                     </TableHeaderCell>
-                    <TableHeaderCell>
+                    <TableHeaderCell class="text-center">
                         Credit Amount
                     </TableHeaderCell>
-                    <TableHeaderCell>
+                    <TableHeaderCell class="text-center">
                         Overall Total
                     </TableHeaderCell>
-                    <TableHeaderCell>
+                    <TableHeaderCell class="text-center">
                         Status
                     </TableHeaderCell>
-                    <TableHeaderCell>
+                    <TableHeaderCell class="text-end">
                         Date Purchased
                     </TableHeaderCell>
                 </TableRow>
@@ -102,7 +147,7 @@
                             <TableRowCell class="name-body">
                                 @if(item.Status == 0)
                                 {
-                                    <span>Pending</span>
+                                    <span>Processing</span>
                                 }
                                 else if (item.Status == 1)
                                 {
@@ -125,7 +170,7 @@
                                     <span>Unknown</span>
                                 }
                             </TableRowCell>
-                            <TableRowCell class="name-body">@item.PurchaseDate.ToString("MMM/dd/yyyy")</TableRowCell>
+                            <TableRowCell class="name-body text-end">@item.PurchaseDate.ToString("MMM/dd/yyyy")</TableRowCell>
                         </TableRow>
                     }
                 </TableBody>
@@ -157,11 +202,18 @@
     private string currentPage = "1";
     string token = string.Empty;
 
+    private Filters selectedValue = Filters.All;
+
+    private SelectedFilterValues selectedFilterValues = new ();
+
+    private bool IsFetchingTransactions {get; set;}
+
     enum Filters {
-        Name = 0,
-        Email = 1,
-        Date = 2,
-        Status = 3
+        All = 0,
+        Name = 1,
+        Email = 2,
+        Date = 3,
+        Status = 4
     }
 
     protected override async Task OnInitializedAsync()
@@ -173,32 +225,44 @@
         await GetAllTransactions(1);
     }
 
-    private async Task GetAllTransactions(int pageIndex)
+    private async Task GetAllTransactions(int pageIndex, bool isFiltered = false)
     {
-        var result = await adminApiHandler.GetAllInclusiveTransactions(new Framework.ApiCommand.ApiCore.AdminUser.Request.GetAdminUserByEmailArgs {
-
-        }, token);
-        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        if(isFiltered)
         {
+            IsFetchingTransactions = true;
+        }
+        var result = await adminApiHandler.GetAllInclusiveTransactions(new Framework.ApiCommand.ApiCore.AdminUser.Request.GetAllInclusiveTransactionArgs {
+            Email = selectedValue == Filters.Email ? selectedFilterValues.StringField : null,
+            Name = selectedValue == Filters.Name ? selectedFilterValues.StringField : null,
+            Status = selectedValue == Filters.Status ? selectedFilterValues.Status : null,
+            PurchaseDateFrom = selectedValue == Filters.Date ? selectedFilterValues.DateFrom.ToString("yyyyMMddHHmmss") : null,
+            PurchaseDateTo = selectedValue == Filters.Date ? selectedFilterValues.DateTo.ToString("yyyyMMddHHmmss") : null
+        }, token);
 
+        if(isFiltered)
+        {
+            IsFetchingTransactions = false;
         }
 
-        transactions = result.Result.Result.Select(t => new InclusiveTransactionDto {
-            ConvinienceFee = t.ConvinienceFee,
-            CreditAmount = t.CreditAmount,
-            OverallTotal = t.OverallTotal,
-            PurchaseDate = t.PurchaseDate,
-            PurchaseOrderId = t.PurchaseOrderId,
-            Status = t.Status,
-            Total = t.Total,
-            UnitCount = t.UnitCount,
-            UnitPrice = t.UnitPrice,
-            Provider = new InclusiveTransactionDto.ProviderDto {
-                Email = t.Provider.Email,
-                FirstName = t.Provider.FirstName,
-                LastName = t.Provider.LastName
-            }
-        });
+        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+                transactions = result.Result.Result.Select(t => new InclusiveTransactionDto {
+                ConvinienceFee = t.ConvinienceFee,
+                CreditAmount = t.CreditAmount,
+                OverallTotal = t.OverallTotal,
+                PurchaseDate = t.PurchaseDate,
+                PurchaseOrderId = t.PurchaseOrderId,
+                Status = t.Status,
+                Total = t.Total,
+                UnitCount = t.UnitCount,
+                UnitPrice = t.UnitPrice,
+                Provider = new InclusiveTransactionDto.ProviderDto {
+                    Email = t.Provider.Email,
+                    FirstName = t.Provider.FirstName,
+                    LastName = t.Provider.LastName
+                }
+            });
+        }
     }
 
     private string ShowMenu()
@@ -234,20 +298,9 @@
         await GetAllTransactions(int.Parse(page));
     }
 
-    private async Task SubmitCustomerPricing(CustomerProfile item)
+    private Task SubmitFilters()
     {
-        if(item.Pricing.Rate >= 0)
-        {
-            item.Pricing.IsSubmitting = true;
-
-            var result = await adminApiHandler.CustomerPricing(new Framework.ApiCommand.ApiCore.AdminUser.Request.UpdateCustomerPricingArgs {
-                CustomerId = item.Id,
-                Rate = item.Pricing.Rate,
-                IsManualPayment = item.Pricing.IsManualPayment
-            }, token);
-
-            item.Pricing.IsSubmitting = false;
-        }
+        return GetAllTransactions(0, true);
     }
 
     public class InclusiveTransactionDto
@@ -270,5 +323,13 @@
             public string LastName {get; set;}
             public string Email {get; set;}
         }
+    }
+
+    public class SelectedFilterValues 
+    {
+        public string StringField {get; set;}
+        public int Status {get; set;}
+        public DateTime DateFrom {get; set;} = DateTime.Now;
+        public DateTime DateTo {get; set;} = DateTime.Now;
     }
 }

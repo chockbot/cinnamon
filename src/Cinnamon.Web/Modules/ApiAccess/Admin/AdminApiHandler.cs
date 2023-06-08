@@ -65,7 +65,7 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             }
         }
 
-        public async Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAdminUserByEmailArgs args, string token)
+        public async Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAllInclusiveTransactionArgs args, string token)
         {
             try
             {
