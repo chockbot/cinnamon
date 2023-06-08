@@ -9,6 +9,7 @@
 @using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IAdminApiHandler adminApiHandler;
+@inject IJSRuntime jsRuntime
 
 <PageTitle>Admin - Inclusive Transactions | CinnamonPH</PageTitle>
 <SeoMeta Title="Admin - Inclusive Transactions" Subject="Admin - Inclusive Transactions" Url="/admin/inclusive-transactions" />
@@ -86,16 +87,22 @@
                     </div>
                 }
             </div>
-            <Button class="btn-primary min-width-130 font-20 mb-3" Border="Border.Is0" Clicked="SubmitFilters"
-                Size="Size.Small" Type="ButtonType.Button" Loading="IsFetchingTransactions" Disabled="IsFetchingTransactions">
-                <LoadingTemplate>
-                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
-                    Please wait..
-                </LoadingTemplate>
-                <ChildContent>
-                    Submit Filter
-                </ChildContent>
-            </Button>
+            <div class="d-flex justify-content-between">
+                <Button class="btn-primary min-width-130 font-20 mb-3" Border="Border.Is0" Clicked="SubmitFilters"
+                    Size="Size.Small" Type="ButtonType.Button" Loading="IsFetchingTransactions" Disabled="IsFetchingTransactions">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        Please wait..
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Submit Filter
+                    </ChildContent>
+                </Button>
+                <Button Clicked="ExportExcel" class="btn-primary min-width-130 font-20 mb-3" 
+                    Border="Border.Is0" Size="Size.Small" Type="ButtonType.Button">
+                    Export to Excel
+                </Button>
+            </div>
         </div>
     </div>
     <div class="table-list">
@@ -301,6 +308,11 @@
     private Task SubmitFilters()
     {
         return GetAllTransactions(0, true);
+    }
+
+    private async Task ExportExcel()
+    {
+        await jsRuntime.InvokeVoidAsync("MyLib.Utils.excelWriter.execute", transactions);
     }
 
     public class InclusiveTransactionDto
