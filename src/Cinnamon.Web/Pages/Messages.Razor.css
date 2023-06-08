@@ -173,6 +173,7 @@
     margin-top: 3px;
     margin-bottom: 3px;
     max-width: 600px;
+    white-space: pre-wrap;
 }
 
 .sender-message {
@@ -188,6 +189,7 @@
     margin-top: 3px;
     margin-bottom: 3px;
     max-width: 600px;
+    white-space: pre-wrap;
 }
 
 .send-message-section {
@@ -199,14 +201,18 @@
         width: 100%;
     }
 
-    .rounded-pill-section {
-        height: 40px;
-        background: #F3F6FC;
-    }
+.rounded-pill-section {
+    min-height: 40px;
+    max-height: 150px;
+    background: #F3F6FC;
+    overflow-y: auto;
+    border-radius: 1rem !important;
+}
 
 .message-input {
     height: 30px;
     background: #F3F6FC;
+    display: none;
 }
 
 .emoji-icon {
@@ -322,6 +328,20 @@
     background: #AD2323;
     border-radius: 50%;
 }
+
+#chat-message-input {
+    user-select: text;
+    white-space: pre-wrap;
+    word-break: break-word;
+    outline: 0px solid transparent;
+    width: 97%;
+    padding: 2px 5px 5px 10px;
+}
+
+[contentEditable=true]:empty:not(:focus):before {
+    content: attr(data-text)
+}
+
 @media (min-width: 0px) and (max-width: 575.98px) {
     .search-section {
         margin: 25px 20px;
@@ -369,6 +389,10 @@
     .has-new-message-badge {
         left: 287px;
         top: 17px;
+    }
+
+    #chat-message-input {
+        width: 88%;
     }
 }
 

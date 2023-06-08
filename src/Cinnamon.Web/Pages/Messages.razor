@@ -59,7 +59,7 @@
                 foreach (var chatRoom in @chatRooms)
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
-                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId)" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
+                    <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <div class="last-update-date">
                                 @chatRoom.DateCreated.ToShortTimeString()
@@ -236,15 +236,17 @@
                     <tr>
                         <td class="attachment-section"><img src="images/messages/send-attachment.png" /></td>
                         <td class="input-section">
-                            <div class="input-group border rounded-pill p-1 rounded-pill-section">
-                                <input type="text" @ref="inputMessageRef" placeholder="Aa" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="messageInput" @oninput="HandleInput" @onkeydown="HandleKeyDown" @onkeyup="HandleKeyUp" @onfocus="OnFocus" class="form-control bg-none border-0 message-input">
+                            <div class="input-group border p-1 rounded-pill-section">
+                                <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
+                                </div>
                                 <div class="input-group-append border-0">
                                     <img src="images/messages/send-emoji.png" class="emoji-icon" />
                                 </div>
                             </div>
+                          
                         </td>
                         <td class="send-section">
-                            <img src="images/messages/send-message.png" @onclick="Send" />
+                            <img id="send-message" src="images/messages/send-message.png" />
                         </td>
                     </tr>
                 </table>
@@ -303,7 +305,7 @@
 </div>
 
 @code {
-    private string? messageInput;
+    private string messageInput = string.Empty;
     private string? searchValue;
     private string Title { get; set; } = "Messages";
     private string Token { get; set; }
@@ -324,12 +326,13 @@
     private string chatMateProfileLink = string.Empty;
     private DateTime? lastMessageDateCreated;
     private DateTime? lastSeenDate;
-    private ElementReference inputMessageRef;
     private bool isLoading = false;
     [Inject] HubConnection hubConnection { get; set; }
     private string messagesSectionDisplayStyle = string.Empty;
     private string chatSectionDisplayStyle = string.Empty;
     private string profileSectionDisplayStyle = string.Empty;
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+    private DotNetObjectReference<Cinnamon.Web.Pages.Messages> objectRef;
 
     protected override async Task OnInitializedAsync()
     {
@@ -455,11 +458,16 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        if (firstRender)
+        {
+            objectRef = DotNetObjectReference.Create(this);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.initMessages", objectRef, "#chat-message-input");
+        }
     }
 
     private async Task Send()
     {
-        if (hubConnection is not null)
+        if (hubConnection is not null && !string.IsNullOrEmpty(messageInput.Trim()))
         {
             await hubConnection.SendAsync("SendMessage", selectedChatRoomId, currentUserConnectionId, currentUserId, currentUserLastName, currentUserFirstName, currentUserProfilePath, toUserId, messageInput);
         }
@@ -535,7 +543,8 @@
         }
     }
 
-    private async Task OnFocus()
+    [JSInvokable]
+    public async Task OnFocus()
     {
         var updateResult = await chatApiHandler.UpdateChatHistory(new Framework.ApiCommand.ApiCore.ChatHistory.Request.UpdateChatHistoryArgs
             {
@@ -653,11 +662,6 @@
 
             pageIndex = result.Result.Pagination.PageIndex.GetValueOrDefault() + 1;
 
-            if (fromClick)
-            {
-                inputMessageRef.FocusAsync();
-            }
-
             var updateResult = await chatApiHandler.UpdateChatHistory(new Framework.ApiCommand.ApiCore.ChatHistory.Request.UpdateChatHistoryArgs
                 {
                     ChatRoomId = selectedChatRoomId,
@@ -717,5 +721,11 @@
         NavigationManager.LocationChanged -= LocationChanged;
     }
 
-    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+    [JSInvokable]
+    public async Task SendMessageAsync(string message)
+    {
+        messageInput = message;
+
+        await Send();
+    }
 }

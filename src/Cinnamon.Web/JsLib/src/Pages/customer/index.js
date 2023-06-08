@@ -3,6 +3,7 @@ import onboarding from "./onboarding";
 import externalRegister from "./externalRegister";
 import upload from "./uploadGovernmentIds";
 import inputTypeChanger from "./inputTypeChanger";
+import messages from "./messages"
 
 export default {
   profile,
@@ -10,4 +11,5 @@ export default {
   externalRegister,
   upload,
   inputTypeChanger,
+  messages
 };
