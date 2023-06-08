@@ -31,7 +31,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                 {
                     Name = string.Empty,
                     LatestMessage= string.Empty,
-                    CreatedOn= DateTime.UtcNow
+                    CreatedOn = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now)
                 };
 
                 var result = await dataStore.ChatRooms.Add(entity);
