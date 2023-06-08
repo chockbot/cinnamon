@@ -7,6 +7,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Customer;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.PayoutLog;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Region;
 using Cinnamon.Framework.Common;
+using System.Data;
 using System.Linq.Expressions;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
@@ -55,7 +56,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                         IsViewed         = isViewed,
                         FromConnectionId = customerResult.Result.ConnectionId,
                         ToConnectionId   = string.IsNullOrEmpty(c.Customer.ConnectionId) ? string.Empty : c.Customer.ConnectionId,
-                        CreatedOn        = DateTime.UtcNow
+                        CreatedOn        = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now)
                     })
                 );
 
@@ -176,7 +177,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                 {
                     item.IsViewed = isViewed.GetValueOrDefault();
                     item.ChangedBy = toUserId.Value;
-                    item.ChangedOn = DateTime.UtcNow;
+                    item.ChangedOn = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now);
                 }
 
                 var updatedRes = await dataStore.ChatHistory.UpdateRange(result.Result);
