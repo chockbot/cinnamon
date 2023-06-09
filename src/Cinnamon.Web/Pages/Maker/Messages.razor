@@ -34,7 +34,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-6 add-message-section">
                     @if (chatRooms.Count > 0)
                     {
-                        <img src="images/messages/add-message.png" />
+                        @*<img src="images/messages/add-message.png" />*@
                     }
                 </div>
             </div>
@@ -45,7 +45,7 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="input-group border rounded-pill p-1">
-                            <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" class="form-control bg-none border-0">
+                            <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" @oninput="HandleInput" class="form-control bg-none border-0">
                             <div class="input-group-append border-0">
                                 <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
                             </div>
@@ -57,7 +57,7 @@
         <div class="chatroom-section">
             @if (chatRooms.Count > 0)
             {
-                foreach (var chatRoom in @chatRooms)
+                foreach (var chatRoom in @chatRooms.Where(c => c.FromFirstName.ToLower().Contains(searchValue) || c.FromLastName.ToLower().Contains(searchValue)).ToList())
                 {
                     var fullName = $"{chatRoom.FromFirstName} {chatRoom.FromLastName}";
                     <div class="row @GetNewMessageStyle(chatRoom.HasNewMessage) @GetActiveStyle(selectedChatRoomId == chatRoom.ChatRoomId) chatroom-list-item" @onclick="(() => GetChatHistoryByChatRoomId(chatRoom.ChatRoomId, true, false))">
@@ -310,7 +310,7 @@
 
 @code {
     private string messageInput = string.Empty;
-    private string? searchValue;
+    private string searchValue = string.Empty;
     private string Title { get; set; } = "Messages";
     private string Token { get; set; }
     List<ChatRoom> chatRooms = new List<ChatRoom>();
@@ -522,7 +522,8 @@
 
     private void HandleInput(ChangeEventArgs e)
     {
-        messageInput = e.Value.ToString();
+        searchValue = e.Value.ToString().ToLower().Trim();
+        StateHasChanged();
     }
 
     private async Task HandleKeyDown(KeyboardEventArgs e)
