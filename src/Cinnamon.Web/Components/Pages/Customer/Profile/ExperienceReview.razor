@@ -40,16 +40,16 @@
     }
 </article>
 
-<MultipleReviewModal @ref="modRef" Reviews="reviews" SelectedValue="SelectedValue" 
-    AverageRating="AverageRating" CustomerProfiles="customerProfiles"></MultipleReviewModal>
+<MultipleReviewModal @ref="modRef" Reviews="reviews" SelectedValue="SelectedValue"
+AverageRating="AverageRating" CustomerProfiles="customerProfiles" Activities="Activities"></MultipleReviewModal>
 @code
 {
 
     [Parameter]
-    public IEnumerable<Activity> Activities { get; set; }
+    public IList<Activity> Activities { get; set; }
 
     [Parameter]
-    public Models.Entities.CustomerProfile Profile { get; set; }
+    public CustomerProfile Profile { get; set; }
 
     private MultipleReviewModal modRef;
 
@@ -58,8 +58,6 @@
     public List<Reviews> top3Reviews = new List<Reviews>();
 
     public List<CustomerProfile> customerProfiles = new List<CustomerProfile>();
-
-    public Activity makerActivity = new Activity();
 
     public CustomerProfile reviweeProfile = new CustomerProfile();
 
@@ -104,7 +102,7 @@
             top3Reviews = reviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
         }
         //Get Customer Details
-        foreach (var item in reviews)
+        foreach (var item in reviews.GroupBy(g=>g.CustomerId).Select(s=>s.First()).ToList())
         {
             var profileResult = await accountApiHandler.GetCustomerById(item.CustomerId);
             if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
@@ -119,7 +117,6 @@
                     };
                 customerProfiles.Add(reviweeProfile);
             }
-
         }
     }
 }

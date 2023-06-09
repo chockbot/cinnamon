@@ -84,7 +84,12 @@
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
         token = user.FindFirstValue("Token");
         AuthState = user;
-
+        if (token == null)
+        {
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
         if (user != null && user.Identity.IsAuthenticated)
         {
             var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
