@@ -118,7 +118,7 @@
                                         }
                                         else
                                         {
-                                            <span>Last seen @lastSeenDate.GetValueOrDefault().ToString("hh:mm tt")</span>
+                                            <span id="last-seen-date" data-last-seen-date="@lastSeenDate.GetValueOrDefault()"></span>
                                         }
                                     </div>
                                 </div>
@@ -198,23 +198,25 @@
                                 @if (chat.FromUserId == currentUserId)
                                 {
                                     <li class="d-flex flex-row justify-content-end">
-                                        <Tooltip Text="@chat.DateCreated.ToString("hh:mm tt")" Placement="TooltipPlacement.Left">
+                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                        <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="left">
                                             <div class="self-message">
                                                 @chat.Message
                                             </div>
-                                        </Tooltip>
+                                        </span>
                                         <img src="@chat.FromProfilePath" class="chat-profile-picture">
                                     </li>
                                 }
                                 else
                                 {
                                     <li class="d-flex flex-row">
+                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
                                         <img src="@chat.FromProfilePath" class="chat-profile-picture">
-                                        <Tooltip Text="@chat.DateCreated.ToString("hh:mm tt")" Placement="TooltipPlacement.Right">
+                                        <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="right">
                                             <div class="sender-message">
                                                 @chat.Message
                                             </div>
-                                        </Tooltip>
+                                        </span>
                                     </li>
                                 }
 

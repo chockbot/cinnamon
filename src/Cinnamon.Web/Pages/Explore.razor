@@ -191,6 +191,14 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
+                                </li>
                             }
                             else if (CustomerModel.CustomerProfile != null && !CustomerModel.CustomerProfile.IsMaker)
                             {
