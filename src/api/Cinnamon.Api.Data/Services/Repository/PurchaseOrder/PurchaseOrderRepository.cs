@@ -391,4 +391,23 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
             return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when updating purchase orders");
         }
     }
+
+    public async Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, string? email, 
+        int? status, DateTime? dateFrom, DateTime? dateTo) 
+    {
+        try
+        {
+            var result = await dataStore.PurchaseOrder.GetInclusiveTransaction(name, email, status, dateFrom, dateTo);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateSucceeded(result.Result, "Successfuly get inclusive transactions");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting inclusive transactions");
+        }
+    }
 }

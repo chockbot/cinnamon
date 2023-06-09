@@ -64,5 +64,28 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                 return AppResult<UpdateCustomerPricingResult>.CreateFailed(ex, "An error occured when posting customer pricing api");
             }
         }
+
+        public async Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAllInclusiveTransactionArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Admin/GetAllInclusiveTransactions")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllInclusiveTransactionResult>();
+
+                return AppResult<GetAllInclusiveTransactionResult>.CreateSucceeded(result, "Successfully called get admin inclusive transactiond api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetAllInclusiveTransactionResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAllInclusiveTransactionResult>.CreateFailed(ex, "An error occured when calling get admin inclusive transactiond api");
+            }
+        }
     }
 }

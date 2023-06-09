@@ -22,8 +22,9 @@
 
         let box = document.getElementById(observerTargetId);
         
-        if (box == null) console.log('Target was not found');;
-        observer.observe(box);
+        if (box != null) {
+            observer.observe(box);
+        }
     }
 
 };

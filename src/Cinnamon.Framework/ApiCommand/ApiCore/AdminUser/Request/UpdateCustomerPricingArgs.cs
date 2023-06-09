@@ -10,4 +10,7 @@ public class UpdateCustomerPricingArgs
     [Required]
     [Range(0, 100)]
     public decimal Rate {get; set;}
+
+    [Required]
+    public bool IsManualPayment {get; set;}
 }

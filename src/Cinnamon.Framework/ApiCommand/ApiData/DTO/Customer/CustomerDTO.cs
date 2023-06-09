@@ -24,9 +24,11 @@ public class CustomerDTO
     public string BackIdImagePath { get; set; }
     public decimal TotalCredits {get; set;}
     public Pricing CustomerPricing {get; set;}
+    public string? ConnectionId { get; set; }
 
     public class Pricing 
     {
         public decimal Rate {get; set;}
+        public bool IsManualPayment {get; set;}
     }
 }

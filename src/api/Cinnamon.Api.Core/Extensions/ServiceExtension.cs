@@ -48,6 +48,9 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IAdminUserData, Modules.DataAccess.AdminUser.AdminUserData>();
         services.AddTransient<Modules.DataAccess.Handlers.IBadgesData, Modules.DataAccess.Badges.BadgesData>();
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerPricingData, Modules.DataAccess.CustomerPricingData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IChatHistoryData, Modules.DataAccess.ChatHistory.ChatHistoryData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IChatRoomData, Modules.DataAccess.ChatRoom.ChatRoomData>();
+
         services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
@@ -89,6 +92,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IUpdateRequestRefundHandler, Services.AccountService.UpdateRequestRefundHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateCreditBalanceHandler, Services.AccountService.UpdateCreditBalanceHandler>();
         services.AddTransient<Services.AccountService.Handlers.IAccountSubmitVerifiedHandler, Services.AccountService.AccountSubmitVerifiedHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IUpdateConnectionIdHandler, Services.AccountService.UpdateConnectionIdHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGenerateCustomerHandler, Services.AccountService.GenerateCustomerHandler>();
         
         // activity services
@@ -169,6 +173,14 @@ public static class ServiceExtenstion
         //admin services
         services.AddTransient<Services.AdminService.Handlers.IGetAdminUserByEmailHandler, Services.AdminService.GetAdminUserByEmailHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
+
+        //chat services
+        services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IUpdateChatHistoryHandler, Services.ChatService.UpdateChatHistoryHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetChatHistoryByChatRoomIdHandler, Services.ChatService.GetChatHistoryByChatRoomIdHandler>();
+        services.AddTransient<Services.ChatService.Handlers.ICreateChatRoomHandler, Services.ChatService.CreateChatRoomHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetChatRoomsByUserIdHandler, Services.ChatService.GetChatRoomsByUserIdHandler>();
 
         return services;
     }

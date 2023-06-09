@@ -70,7 +70,7 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
             var authToken = applicationConfig.Payment.Accounts.First().Settings.First(a => a.Name == "Token").Value;
 
             var cachedPayoutAccounts = new Dictionary<int, PayoutAccountDTO>();
-            var cachedCustomerPricing = new Dictionary<int, decimal>();
+            var cachedCustomerPricing = new Dictionary<int, CustomerPricing>();
 
             // for exclusive transactions
             var transactions = await studentData.GetStudentsToDisburse(new Framework.ApiCommand.ApiData.Student.Request.GetStudentsToDisburseArgs {
@@ -133,7 +133,6 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                     }
 
                     // get customer pricing and cached in memory
-                    decimal amountToDeduct = 0;
                     if(!cachedCustomerPricing.ContainsKey(transaction.MakerId))
                     {
                         var customerPricingRes = await customerPricingData.GetCustomerPricingByCustomerId(transaction.MakerId);
@@ -141,17 +140,25 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                         {
                             continue;
                         }
-                        cachedCustomerPricing.Add(transaction.MakerId, customerPricingRes.Result.Result.Rate);
+                        var cp = customerPricingRes.Result.Result;
+                        cachedCustomerPricing.Add(transaction.MakerId, 
+                            new CustomerPricing { IsManualPayment = cp.IsManualPayment, MakerId = cp.Id, Rate = cp.Rate });
                     }
+                    var customerPricing = cachedCustomerPricing[transaction.MakerId];
 
-                    var percentage = cachedCustomerPricing[transaction.MakerId] / 100;
-                    amountToDeduct = percentage * transaction.UnitPrice;
+                    // skip manual disbursement
+                    if(!customerPricing.IsManualPayment)
+                    {
+                        decimal amountToDeduct = 0;
+                        var percentage = customerPricing.Rate / 100;
+                        amountToDeduct = percentage * transaction.UnitPrice;
 
-                    var totalAmount = transaction.UnitPrice - amountToDeduct;
-                    var account = cachedPayoutAccounts[transaction.MakerId];
+                        var totalAmount = transaction.UnitPrice - amountToDeduct;
+                        var account = cachedPayoutAccounts[transaction.MakerId];
 
-                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, totalAmount, transaction.TransactionId, 
-                        account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
+                        generatePayoutHelper.AddCustomerSummary(transaction.MakerId, totalAmount, transaction.TransactionId, 
+                            account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
+                    }
                 }
             }
 
@@ -219,5 +226,12 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
         {
             return AppResult<GeneratePayoutResult>.CreateFailed(ex, "An error occured in GeneratePayoutHandler");
         }
+    }
+
+    public class CustomerPricing 
+    {
+        public int MakerId {get; set;}
+        public decimal Rate {get; set;}
+        public bool IsManualPayment {get; set;}
     }
 }

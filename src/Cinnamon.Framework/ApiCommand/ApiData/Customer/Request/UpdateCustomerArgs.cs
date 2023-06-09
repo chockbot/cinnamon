@@ -25,5 +25,6 @@ public class UpdateCustomerArgs
     public DateTime? IsOGDate { get; set; }
     public bool? IsOF { get; set; }
     public DateTime? IsOFDate { get; set; }
+    public string? ConnectionId { get; set; }
     public string? Handler {get; set;}
 }

@@ -31,6 +31,10 @@ public interface IDataStore
     IPayoutLog PayoutLog {get;}
     IAdminUser AdminUser {get; }
     ICustomerPricing CustomerPricing {get; }
+    IChatHistory ChatHistory {get; }
+    IChatRooms ChatRooms {get; }
+    IChatMember ChatMember {get; }
+
     IReviews Reviews { get; }
     Task EnsureMigrate();
 

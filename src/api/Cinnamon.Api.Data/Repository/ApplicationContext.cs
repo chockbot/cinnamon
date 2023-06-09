@@ -62,6 +62,9 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<BadgeList> BadgeList { get; set; }
 
     public DbSet<CustomerPricing> CustomerPricings {get; set;}
+    public DbSet<ChatHistory> ChatHistories {get; set; }
+    public DbSet<ChatRoom> ChatRooms { get; set; }
+    public DbSet<ChatMember> ChatMembers { get; set; }
 
     #endregion
 
@@ -189,6 +192,27 @@ public class ApplicationContext : IdentityDbContext
 
         // customer pricing
         modelBuilder.Entity<CustomerPricing>().HasOne<Customer>(c => c.Customer);
+
+        //chat
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatMember>(a => a.ChatMembers)
+           .WithOne(i => i.Customer)
+           .HasForeignKey(i => i.CustomerId);
+
+        modelBuilder.Entity<ChatRoom>()
+           .HasMany<ChatMember>(a => a.ChatMembers)
+           .WithOne(i => i.ChatRoom)
+           .HasForeignKey(i => i.ChatRoomId);
+
+        modelBuilder.Entity<Customer>()
+            .HasMany<ChatHistory>(a => a.FromChatHistories)
+            .WithOne(i => i.FromCustomer)
+            .HasForeignKey(i => i.FromUserId);
+
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatHistory>(a => a.ToChatHistories)
+           .WithOne(i => i.ToCustomer)
+           .HasForeignKey(i => i.ToUserId);
         
         // reviews
         modelBuilder.Entity<Reviews>().HasIndex(c => c.Id); 

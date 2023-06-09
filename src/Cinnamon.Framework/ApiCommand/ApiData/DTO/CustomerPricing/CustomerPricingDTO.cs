@@ -7,4 +7,5 @@ public class CustomerPricingDTO
     public string LastName {get; set;}
     public string Email {get; set;}
     public decimal Rate {get; set;}
+    public bool IsManualPayment {get; set;}
 }

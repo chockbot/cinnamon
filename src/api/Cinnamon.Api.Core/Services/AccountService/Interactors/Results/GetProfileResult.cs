@@ -20,4 +20,6 @@ public class GetProfileResult
     public string ProfileImagePath {get; set;}
     public string Handler {get; set;}
     public decimal TotalCredits {get; set;}
+    public string? ConnectionId { get; set; }
+
 }

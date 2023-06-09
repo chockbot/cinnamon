@@ -758,4 +758,26 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<SubmitAccountVerifiedResult>.CreateFailed(ex, "An error occured when calling submit account verification api");
         }
     }
+
+    public async Task<AppResult<UpdateConnectionIdResult>> UpdateConnectionId(UpdateConnectionIdArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Customer/ConnectionId/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateConnectionIdResult>();
+
+            return AppResult<UpdateConnectionIdResult>.CreateSucceeded(result, "Successfully called update connection id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateConnectionIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateConnectionIdResult>.CreateFailed(ex, "An error occured when calling update connection id api");
+        }
+    }
 }
