@@ -129,6 +129,14 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
                                 </li>
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
+                                </li>
                             }
                             else if (Model.Profile != null && !Model.Profile.IsMaker)
                             {

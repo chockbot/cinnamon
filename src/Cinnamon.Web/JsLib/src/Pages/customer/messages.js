@@ -27,6 +27,10 @@ messages.initControls = (obj, elementId) => {
         dotnetObj.invokeMethodAsync('SendMessageAsync', $(messageElementId).text());
         $(messageElementId).text("")
     });
+
+    $(document).ready(function () {
+        $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+    });
 }
 
 function formatDay(date) {
@@ -70,6 +74,13 @@ function formatDate(date) {
 
 export async function handleDateFormat() {
     $(document).ready(function () {
+        let lastSeen = $("#last-seen-date").attr("data-last-seen-date");
+
+        if (lastSeen) {
+            let lastSeenDate = new Date(`${lastSeen} UTC`);
+            $("#last-seen-date").html(`Last seen ${lastSeenDate.toLocaleTimeString([], { timeStyle: 'short' }) }`)
+        }
+
         $(".chatroom-list-item ").each(function () {
             var date = new Date(`${$(this).find('#date-created').val()} UTC`).toLocaleTimeString([], { timeStyle: 'short' });
 
@@ -90,6 +101,12 @@ export async function handleDateFormat() {
             var formattedDay = `${formatDay(date)}, ${date.toLocaleTimeString([], { timeStyle: 'short' })}`;
 
             $(this).find('.chat-date-time').html(formattedDay);
+        });
+
+        $("#chat-history-list li").each(function () {
+            var date = new Date(`${$(this).find('#chat-history-date-created').val()} UTC`);
+
+            $(this).find('[data-toggle=tooltip]').attr("title", date.toLocaleTimeString([], { timeStyle: 'short' }));
         });
     });
 };
