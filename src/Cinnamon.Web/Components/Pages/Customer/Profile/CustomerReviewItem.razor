@@ -1,4 +1,4 @@
-@using Cinnamon.Web.Models.Entities;
+﻿@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using System.Security.Claims
 @inject NavigationManager NavigationManager
@@ -20,15 +20,15 @@
             </a>
             <div class="xp-body-item d-flex">
                 <div class="activity-img">
-                    <img class="rounded-2 rounded-circle" src="@reviweeProfile.ProfilePath" />
+                    <img class="rounded-2 rounded-circle" src="@Profile.ProfilePath" />
                 </div>
                 <div>
-                    <p class="customer-name">@reviweeProfile.FirstName @reviweeProfile.LastName</p>
-                    <Rating Color="Color.Primary" SelectedValue="@Review.Rating" MaxValue="5" ReadOnly=true/>
+                    <p class="customer-name">@Profile.FirstName @Profile.LastName</p>
+                    <Rating Color="Color.Primary" SelectedValue="@Review.Rating" MaxValue="5" ReadOnly=true />
                 </div>
-                
+
             </div>
-            
+
             <div class="xp-body-item">
                 <p class="secondary-caption">@Review.Review</p>
             </div>
@@ -36,37 +36,18 @@
     </div>
 </div>
 
-@code
-{
+@code {
     [Parameter]
     public Reviews Review { get; set; }
 
+    [Parameter]
+    public CustomerProfile Profile { get; set; }
+
     public Activity makerActivity = new Activity();
-
-    public CustomerProfile reviweeProfile = new CustomerProfile();
-
-    public string Token;
 
     protected override async Task OnInitializedAsync()
     {
-        await GetCustomer(Review.CustomerId);
         await GetActivity(Review.ActivityId);
-    }
-    private async Task GetCustomer(int CustomerId)
-    {
-        reviweeProfile = new CustomerProfile();
-        var profileResult = await accountApiHandler.GetCustomerById(CustomerId);
-        if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
-        {
-            var result = profileResult.Result.Result;
-            reviweeProfile = new CustomerProfile
-                {
-                    Id = result.Id,
-                    FirstName = result.FirstName,
-                    LastName = result.LastName,
-                    ProfilePath = result.ProfileImg
-                };
-        }
     }
     private async Task GetActivity(int ActivityId)
     {

@@ -1,0 +1,83 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler
+
+<Modal @ref="modalRef" class="multiple-review-modal" Padding="Padding.Is0">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <p class="col-12 modal-title text-left color-black-100 font-family-nunito font-weight-700">
+                    Reviews
+                    <div class="d-flex">
+                        <div class="col-12 d-flex justify-content-start rating-section">
+                            <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true />
+                            <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
+                            <ul>
+                                <li>
+                                </li>
+                            </ul>
+                            <p class="rating-number">(@Reviews.Count)</p>
+                        </div>
+                    </div>
+                </p>
+            </div>
+            <div class="modal-body">
+                @foreach (var item in Reviews)
+                {
+                    @if (CustomerProfiles != null && Activities != null)
+                    {
+                        var profile = CustomerProfiles.Where(a => a.Id == item.CustomerId).FirstOrDefault();
+                        var activity = Activities.Where(a => a.ActivityId == item.ActivityId).FirstOrDefault();
+                        <div class="xp-body-item d-flex">
+                            <div class="activity-img">
+                                <img class="rounded-2 rounded-circle" src="@profile.ProfilePath" />
+                            </div>
+                            <div>
+                                <p class="customer-name">@profile.FirstName @profile.LastName</p>
+                                <Rating Color="Color.Primary" SelectedValue="@item.Rating" MaxValue="5" ReadOnly=true />
+                            </div>
+                        </div>
+                        <div class="xp-activity">
+                            <p class="xp-title">@activity.Title (@activity.ActivitySchedules.Where(a=>a.Id == item.ScheduleId).First().Name)</p>
+                        </div>
+                        <div class="xp-body-item">
+                            <p class="secondary-caption">@item.Review</p>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</Modal>
+@code {
+    private Modal modalRef;
+
+    [Parameter]
+    public List<Reviews> Reviews { get; set; }
+
+    [Parameter]
+    public int SelectedValue { get; set; }
+
+    [Parameter]
+    public double AverageRating { get; set; }
+
+    [Parameter]
+    public List<CustomerProfile> CustomerProfiles { get; set; }
+
+    [Parameter]
+    public IList<Activity> Activities { get; set; }
+
+
+    public Task ShowModal()
+    {
+        return modalRef.Show();
+    }
+
+    public Task HideModal()
+    {
+        return modalRef.Hide();
+    }
+}

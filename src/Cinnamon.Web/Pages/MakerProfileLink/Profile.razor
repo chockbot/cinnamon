@@ -22,14 +22,11 @@
 
 @if (Model != null)
 {
-
 <PageTitle>Activity Provider Profile - @MakerFullname | CinnamonPH</PageTitle>
 <SeoMeta Subject="Activity Provider Profile" Title="Activity Provider Profile"
          Url='@($"/maker/profile/{Id}")' Description="@(Model.CustomerProfile?.About ?? string.Empty)"
          Image="@(Model.CustomerProfile?.ProfilePath ?? string.Empty)" />
 
-    <Div ElementId="#b-animate">
-        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
             <div id="alertContainer" class="alertContainer">
                 <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
             </div>
@@ -227,14 +224,12 @@
                         </Items>
                         <Content>
                             <TabPanel Name="maker-experience">
-                                <MakerExperiences Activities="activities" />
+                                <MakerExperiences @ref="makerExperiences" Activities="activities" Profile="Model.CustomerProfile" />
                             </TabPanel>
                         </Content>
                     </Tabs>
                 </Container>
             </section>
-        </Animate>
-    </Div>
 }
 
 

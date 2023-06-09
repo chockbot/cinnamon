@@ -75,7 +75,7 @@
 }
 
     @*Student Calendar*@
-    <Modal ShowBackdrop=false ScrollToTop=false @ref="modalRef">
+    <Modal ShowBackdrop=true ScrollToTop=false @ref="modalRef">
         <ModalContent Size="ModalSize.ExtraLarge" Scrollable=false Overflow="Overflow.Visible" Position="Position.Absolute" Centered>
         <ModalHeader>
             <h6 class="col-11 modal-title text-center" style="font-weight:bold">View Attendance</h6>
@@ -478,6 +478,8 @@
                     }
                     else
                     {
+                        SelectedValue = 0;
+                        ReviewText = string.Empty;
                         await modref.Close(CloseReason.UserClosing);
                         StateHasChanged();
                         NavigationManager.NavigateTo("/customer/profile", true);

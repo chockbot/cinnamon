@@ -4,11 +4,18 @@
 <div>
     <MakerOngoingExperience Activities="Activities" />
     <Divider class="my-3" />
-    <ExperienceReview />
+    @if (Profile.IsMaker)
+    {
+        <ExperienceReview Activities="Activities" Profile="Profile"/>
+    }
 </div>
 
 @code
 {
     [Parameter]
     public IList<Activity> Activities { get; set; }
+    [Parameter]
+    public CustomerProfile Profile { get; set; }
 }
+
+

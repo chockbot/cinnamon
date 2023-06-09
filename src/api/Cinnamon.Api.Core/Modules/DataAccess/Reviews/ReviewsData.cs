@@ -78,6 +78,69 @@ public class ReviewsData: IReviewsData
         }
     }
 
+    public async Task<AppResult<GetReviewsByActivityIdResult>> GetReviewsByActivityId(GetReviewsByActivityIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Review/GetReviewsByActivityId")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetReviewsByActivityIdResult>();
+
+            return AppResult<GetReviewsByActivityIdResult>.CreateSucceeded(result, "Successfully getting get all reviews by activity id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetReviewsByActivityIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetReviewsByActivityIdResult>.CreateFailed(ex, "An error occured when getting reviews by activity id api");
+        }
+    }
+
+    public async Task<AppResult<GetReviewsByCustomerIdResult>> GetReviewsByCustomerId(GetReviewsByCustomerIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Review/GetReviewsByCustomerId")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetReviewsByCustomerIdResult>();
+
+            return AppResult<GetReviewsByCustomerIdResult>.CreateSucceeded(result, "Successfully getting get all reviews by customer id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetReviewsByCustomerIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetReviewsByCustomerIdResult>.CreateFailed(ex, "An error occured when getting reviews by customer id api");
+        }
+    }
+
+    public async Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Review/GetReviewsByMakerId")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetReviewsByMakerIdResult>();
+
+            return AppResult<GetReviewsByMakerIdResult>.CreateSucceeded(result, "Successfully getting get all reviews by id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetReviewsByMakerIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetReviewsByMakerIdResult>.CreateFailed(ex, "An error occured when getting reviews by id api");
+        }
+    }
+
     public async Task<AppResult<UpdatedReviewResult>> UpdateReview(UpdateReviewArgs args)
     {
         try
