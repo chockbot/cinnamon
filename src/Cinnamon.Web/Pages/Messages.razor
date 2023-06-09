@@ -359,7 +359,7 @@
                 chatHistories.Add(new ChatHistory
                 {
                     ChatRoomId       = Convert.ToInt32(splitted[0]),
-                    DateCreated      = DateTime.Parse(splitted[1]),
+                    DateCreated      = DateTime.Parse(splitted[1]).ToLocalTime(),
                     FromConnectionId = splitted[2],
                     FromUserId       = Convert.ToInt32(splitted[3]),
                     FromFirstName    = splitted[4],
@@ -375,7 +375,7 @@
                 });
 
                 chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).Message = splitted[8];
-                chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).DateCreated = DateTime.Parse(splitted[1]);
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).DateCreated = DateTime.Parse(splitted[1]).ToLocalTime();
             }
             else
             {
@@ -383,14 +383,14 @@
                 {
                     chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).HasNewMessage = true;
                     chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).Message = splitted[8];
-                    chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).DateCreated = DateTime.Parse(splitted[1]);
+                    chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).DateCreated = DateTime.Parse(splitted[1]).ToLocalTime();
                 }
                 else
                 {
                     chatRooms.Add(new ChatRoom
                     {
                         ChatRoomId       = Convert.ToInt32(splitted[0]),
-                        DateCreated      = DateTime.Parse(splitted[1]),
+                        DateCreated      = DateTime.Parse(splitted[1]).ToLocalTime(),
                         FromConnectionId = splitted[2],
                         FromUserId       = Convert.ToInt32(splitted[3]),
                         FromFirstName    = splitted[4],
@@ -467,9 +467,7 @@
         {
             objectRef = DotNetObjectReference.Create(this);
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.initMessages", objectRef, "#chat-message-input");
-            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
         }
-        await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
     }
 
     private async Task Send()
@@ -495,7 +493,7 @@
                 {
                     ChatRoomId       = c.ChatRoomId,
                     FromUserId       = c.FromUserId,
-                    DateCreated      = c.DateCreated,
+                    DateCreated      = c.DateCreated.ToLocalTime(),
                     FromFirstName    = c.FromFirstName,
                     FromLastName     = c.FromLastName,
                     Message          = c.Message,
@@ -624,7 +622,7 @@
                 {
                     ChatHistoryId    = c.ChatHistoryId,
                     ChatRoomId       = c.ChatRoomId,
-                    DateCreated      = c.DateCreated,
+                    DateCreated      = c.DateCreated.ToLocalTime(),
                     FromConnectionId = c.FromConnectionId,
                     FromUserId       = c.FromUserId,
                     FromFirstName    = c.FromFirstName,
