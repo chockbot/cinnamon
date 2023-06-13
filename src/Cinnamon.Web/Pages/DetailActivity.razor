@@ -5,7 +5,7 @@
 @using Cinnamon.Web.Models
 @using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Models.Entities
-@using Cinnamon.Web.Components.Pages
+@using Cinnamon.Web.Components.Pages.Customer.Profile
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
@@ -376,7 +376,7 @@
                                     {
                                         <div class="d-flex">
                                             <div class="col-8 d-flex justify-content-start rating-section">
-                                                <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true />
+                                                <div id="star-rating"></div>
                                                 <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
                                             </div>
                                             @if (activityReviews.Count > 3)
@@ -444,6 +444,7 @@
 }
 @code {
     IJSObjectReference module;
+    IJSObjectReference moduleRating;
     private MultipleReviewModal modRef;
     [Parameter]
     public string Identifier { get; set; }
@@ -730,12 +731,15 @@
         if (firstRender)
         {
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
+            moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
+            await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             await InitializeCarouselSwipe();
         }
         else
         {
             await InitializeCarouselSwipe();
+            await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
         }
     }
     private async Task InitializeCarouselSwipe()

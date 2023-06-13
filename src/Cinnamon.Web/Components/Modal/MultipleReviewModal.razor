@@ -1,6 +1,7 @@
-﻿@namespace Cinnamon.Web.Components
+﻿@namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IJSRuntime jsRuntime
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IAccountApiHandler accountApiHandler
@@ -8,21 +9,27 @@
 <Modal @ref="modalRef" class="multiple-review-modal" Padding="Padding.Is0">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <p class="col-12 modal-title text-left color-black-100 font-family-nunito font-weight-700">
-                    Reviews
-                    <div class="d-flex">
-                        <div class="col-12 d-flex justify-content-start rating-section">
-                            <Rating Color="Color.Primary" SelectedValue="SelectedValue" MaxValue="5" ReadOnly=true />
-                            <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
-                            <ul>
-                                <li>
-                                </li>
-                            </ul>
-                            <p class="rating-number">(@Reviews.Count)</p>
-                        </div>
+            <div class="modal-header d-block">
+                <div class="row d-flex">
+                    <div class="col-lg-11 col-md-11 col-10">
+                        <p class="modal-title justify-content-start">Reviews</p>
                     </div>
-                </p>
+                    <div class="col-lg-1 col-md-1 col-2 justify-content-end">
+                        <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
+                    </div> 
+                </div>
+                <div class="row d-flex">
+                    <div class="col-12 d-flex justify-content-start rating-section">
+                        <div id="star-rating"></div>
+                        <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
+                        <ul>
+                            <li>
+                            </li>
+                        </ul>
+                        <p class="rating-number">(@Reviews.Count)</p>
+                    </div>
+                </div>
+                
             </div>
             <div class="modal-body">
                 @foreach (var item in Reviews)
@@ -53,6 +60,8 @@
     </div>
 </Modal>
 @code {
+    IJSObjectReference module;
+
     private Modal modalRef;
 
     [Parameter]
@@ -70,14 +79,15 @@
     [Parameter]
     public IList<Activity> Activities { get; set; }
 
-
-    public Task ShowModal()
+    public async Task ShowModal()
     {
-        return modalRef.Show();
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
+        await Task.Run(() => module.InvokeVoidAsync("generateStarRating", AverageRating));
+        await modalRef.Show();
     }
 
-    public Task HideModal()
+    public async Task HideModal()
     {
-        return modalRef.Hide();
+        await modalRef.Close(CloseReason.None);
     }
 }
