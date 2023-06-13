@@ -20,7 +20,7 @@
                 </div>
                 <div class="row d-flex">
                     <div class="col-12 d-flex justify-content-start rating-section">
-                        <div id="star-rating"></div>
+                        <div id="modal-star-rating"></div>
                         <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
                         <ul>
                             <li>
@@ -81,7 +81,7 @@
 
     public async Task ShowModal()
     {
-        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ModalStarRating.js");
         await Task.Run(() => module.InvokeVoidAsync("generateStarRating", AverageRating));
         await modalRef.Show();
     }
