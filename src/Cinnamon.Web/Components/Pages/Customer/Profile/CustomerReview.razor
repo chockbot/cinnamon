@@ -72,11 +72,11 @@
                         Rating = a.Rating,
                         ReviewDate = a.ReviewDate
                     };
-            }).ToList();
+            }).OrderByDescending(a => a.ReviewDate).ToList();
         }
         if (reviews.Count != 0)
         {
-            top3Reviews = reviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
+            top3Reviews = reviews.Take(3).ToList();
         }
     }
 }

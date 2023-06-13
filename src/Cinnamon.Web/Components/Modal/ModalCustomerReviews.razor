@@ -8,10 +8,14 @@
 <Modal @ref="modalRef" class="multiple-review-modal" Padding="Padding.Is0">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="col-12 d-flex">
-                    <p class="your-reviews">Your Reviews</p>
-                    <p class="rating-number">(@Reviews.Count)</p>
+            <div class="modal-header d-block">
+                <div class="row d-flex">
+                    <div class="col-lg-11 col-md-11 col-10">
+                        <p class="your-reviews">Your Reviews (@Reviews.Count)</p>
+                    </div>
+                    <div class="col-lg-1 col-md-1 col-2 justify-content-end">
+                        <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
+                    </div>
                 </div>
             </div>
             <div class="modal-body">
