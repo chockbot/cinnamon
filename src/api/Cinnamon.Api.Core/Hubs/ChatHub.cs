@@ -51,13 +51,13 @@ namespace Cinnamon.Api.Core.Hubs
 
                 await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
                 {
-                    ChatRoomId       = chatRoomId,
+                    ChatRoomId = chatRoomId,
                     FromConnectionId = fromUser.ConnectionId ?? string.Empty,
-                    FromUserId       = fromUserId,
-                    ToConnectionId   = toUser.ConnectionId ?? string.Empty,
-                    ToUserId         = toUserId,
-                    IsViewed         = false,
-                    Message          = messageInput
+                    FromUserId = fromUserId,
+                    ToConnectionId = toUser.ConnectionId ?? string.Empty,
+                    ToUserId = toUserId,
+                    IsViewed = false,
+                    Message = messageInput
                 });
             }
         }
