@@ -61,6 +61,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<BadgeList> BadgeList { get; set; }
 
+    public DbSet<Coupon> Coupons {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -179,6 +181,11 @@ public class ApplicationContext : IdentityDbContext
         //badge 
         modelBuilder.Entity<BadgeList>().HasIndex(c => c.Id);
 
+        // for coupons
+        modelBuilder.Entity<Coupon>().HasOne(c => c.Activity);
+        modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);
+        modelBuilder.Entity<Coupon>().HasIndex(c => c.Code);
+        modelBuilder.Entity<Coupon>().HasIndex(new string[] {"Code", "CustomerId", "ActivityId"});
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
