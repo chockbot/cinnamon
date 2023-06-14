@@ -377,16 +377,19 @@
                                                             <div class="card-container">
                                                                 <div class="row text-start star-pulse-section">
                                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                                        @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
-                                                                        <span>
-                                                                            @if (act.IsNew)
-                                                                            {
-                                                                                <i> New Experience</i>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                            }
-                                                                        </span>
+                                                                        @if (act.NumberOfReviews > 0)
+                                                                        {
+                                                                            <img src="images/dark-round-star.png" class="star-tag-badge" />
+                                                                            <span class="average-rating">@act.AverageRating</span>
+                                                                            <span class="number-of-reviews">(@act.NumberOfReviews)</span>
+                                                                        }
+                                                                        else if (act.IsNew)
+                                                                        {
+                                                                            <span class="new-experience-label">New Experience</span>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                        }
                                                                     </div>
                                                                     <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
                                                                     </div>
@@ -545,11 +548,16 @@
                                         <div class="card-container">
                                             <div class="row text-start star-pulse-section">
                                                 <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                    @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
                                                     <span>
-                                                        @if (act.IsNew)
+                                                        @if (act.NumberOfReviews > 0)
                                                         {
-                                                            <i> New Experience</i>
+                                                            <img src="images/dark-round-star.png" class="star-tag-badge" />
+                                                            <span class="average-rating">@act.AverageRating</span>
+                                                            <span class="number-of-reviews">(@act.NumberOfReviews)</span>
+                                                        }
+                                                        else if (act.IsNew)
+                                                        {
+                                                            <span class="new-experience-label">New Experience</span>
                                                         }
                                                         else
                                                         {
@@ -857,7 +865,8 @@
                 IncludeCustomer = true,
                 IncludeStudents = true,
                 IsDeactivated = false,
-                Status = Framework.Enums.Enums.ActivityStatus.Submitted
+                Status = Framework.Enums.Enums.ActivityStatus.Submitted,
+                IncludeReviews = true
             });
         if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
         {
@@ -903,6 +912,8 @@
                                    IsNew = r.IsNew,
                                    OngoingStudents = r.OngoingStudents,
                                    CompletedStudents = r.CompletedStudents,
+                                   NumberOfReviews = r.NumberOfReviews,
+                                   AverageRating = r.AverageRating,
                                    ActivitySchedules = r.ActivitySchedules.Select(e =>
             {
                         return new ActivitySchedule
@@ -984,7 +995,8 @@
                 CountPerPage = 20,
                 IncludeStudents = true,
                 IncludeCustomer = true,
-                IsDeactivated = false
+                IsDeactivated = false,
+                IncludeReviews = true
             });
         if (popularActivityList.Succeeded && popularActivityList.Result != null && popularActivityList.Result.IsSuccess)
         {
@@ -1030,6 +1042,8 @@
                             IsNew = r.IsNew,
                             OngoingStudents = r.OngoingStudents,
                             CompletedStudents = r.CompletedStudents,
+                            AverageRating = r.AverageRating,
+                            NumberOfReviews = r.NumberOfReviews,
                             ActivitySchedules = r.ActivitySchedules.Select(e =>
                             {
                                 return new ActivitySchedule

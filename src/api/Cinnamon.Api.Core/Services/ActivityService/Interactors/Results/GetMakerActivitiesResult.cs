@@ -37,6 +37,8 @@ public class GetMakerActivitiesResult
         public string BarangayName { get; set; }
         public int OngoingStudents { get; set; }
         public int CompletedStudents { get; set; }
+        public double AverageRating { get; set; }
+        public int NumberOfReviews { get; set; }
         public IEnumerable<string> SearchTags { get; set; }
         public IEnumerable<ActivitySchedule> ActivitySchedules { get; set; }
         public IEnumerable<ActivityImage> Images { get; set; }

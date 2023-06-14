@@ -47,7 +47,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                 IncludeStudents = args.IncludeStudents,
                 IsDeactivated = args.IsDeactivated,
                 Status = args.Status,
-                IsAdmin= args.IsAdmin
+                IsAdmin = args.IsAdmin,
+                IncludeReviews = args.IncludeReviews
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -135,6 +136,8 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         IsNew = e.IsNew,
                         CompletedStudents = e.CompletedStudents,
                         OngoingStudents = e.OngoingStudents,
+                        AverageRating = e.AverageRating,
+                        NumberOfReviews = e.NumberOfReviews,
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

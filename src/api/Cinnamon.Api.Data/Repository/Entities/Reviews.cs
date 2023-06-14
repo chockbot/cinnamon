@@ -9,5 +9,6 @@ public class Reviews : BaseEntity
     public int Rating { get; set; }
     public string Review { get; set; }
     public DateTime ReviewDate { get; set; }
+    public Activity Activity { get; set; }
 
 }

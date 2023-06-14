@@ -215,7 +215,12 @@ public class ApplicationContext : IdentityDbContext
            .HasForeignKey(i => i.ToUserId);
         
         // reviews
-        modelBuilder.Entity<Reviews>().HasIndex(c => c.Id); 
+        modelBuilder.Entity<Reviews>().HasIndex(c => c.Id);
+
+        modelBuilder.Entity<Activity>()
+            .HasMany<Reviews>(a => a.Reviews)
+            .WithOne(i => i.Activity)
+            .HasForeignKey(i => i.ActivityId);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

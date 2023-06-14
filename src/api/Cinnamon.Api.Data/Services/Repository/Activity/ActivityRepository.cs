@@ -386,7 +386,8 @@ public class ActivityRepository : IActivityRepository
         int experienceCategoryId, string searchValue, bool? isDeactivated, Enums.ActivityStatus? status,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
-        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
+        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, 
+        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false)
     {
         try
         {
@@ -401,6 +402,7 @@ public class ActivityRepository : IActivityRepository
             if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
             if (includeSubCategories) includes.Add(a => a.SubCategory);
             if (includeStudents) includes.Add(a => a.Students);
+            if (includeReviews) includes.Add(a => a.Reviews);
 
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -554,6 +556,16 @@ public class ActivityRepository : IActivityRepository
                     var students = a.Students;
                     activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
                     activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                }
+
+                // reviews
+                if (includeReviews && a.Reviews != null)
+                {
+                    var reviews = a.Reviews;
+                    double sumOfRating = reviews.Sum(a => a.Rating);
+                    int numberOfRatee = reviews.Count;
+                    activityDTO.NumberOfReviews = numberOfRatee;
+                    activityDTO.AverageRating = Math.Round(sumOfRating / numberOfRatee, 1);
                 }
 
                 return activityDTO;
@@ -1158,7 +1170,7 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false)
     {
         try
         {
@@ -1173,6 +1185,7 @@ public class ActivityRepository : IActivityRepository
             if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
             if (includeSubCategories) includes.Add(a => a.SubCategory);
             if (includeStudents) includes.Add(a => a.Students);
+            if (includeReviews) includes.Add(a => a.Reviews);
 
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -1321,6 +1334,16 @@ public class ActivityRepository : IActivityRepository
                     var students = a.Students;
                     activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
                     activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                }
+
+                // reviews
+                if (includeReviews && a.Reviews != null)
+                {
+                    var reviews = a.Reviews;
+                    double sumOfRating = reviews.Sum(a => a.Rating);
+                    int numberOfRatee = reviews.Count;
+                    activityDTO.NumberOfReviews = numberOfRatee;
+                    activityDTO.AverageRating = Math.Round(sumOfRating / numberOfRatee, 1);
                 }
 
                 return activityDTO;

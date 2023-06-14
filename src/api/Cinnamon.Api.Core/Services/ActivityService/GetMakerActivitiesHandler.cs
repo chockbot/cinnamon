@@ -41,7 +41,7 @@ public class GetMakerActivitiesHandler: IGetMakerActivitiesHandler
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
                 IncludeStudents = args.IncludeStudents,
-
+                IncludeReviews = args.IncludeReviews
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -92,6 +92,8 @@ public class GetMakerActivitiesHandler: IGetMakerActivitiesHandler
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews = a.NumberOfReviews,
+                        AverageRating = a.AverageRating,
                         ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
                             return new GetMakerActivitiesResult.Activity.ActivitySchedule
                             {
