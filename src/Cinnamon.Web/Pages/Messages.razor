@@ -384,6 +384,8 @@
 
                 chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).Message = splitted[8];
                 chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).DateCreated = DateTime.Parse(splitted[1]);
+
+                OnFocus();
             }
             else
             {
@@ -728,7 +730,7 @@
 
     void LocationChanged(object sender, LocationChangedEventArgs e)
     {
-        //hubConnection.StopAsync();
+        selectedChatRoomId = 0;
     }
 
     void IDisposable.Dispose()

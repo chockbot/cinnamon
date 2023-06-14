@@ -39,6 +39,17 @@ namespace Cinnamon.Api.Core.Hubs
                 var fromUser = fromCustomerResult.Result;
                 var toUser = toCustomerResult.Result;
 
+                await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
+                {
+                    ChatRoomId = chatRoomId,
+                    FromConnectionId = fromUser.ConnectionId ?? string.Empty,
+                    FromUserId = fromUserId,
+                    ToConnectionId = toUser.ConnectionId ?? string.Empty,
+                    ToUserId = toUserId,
+                    IsViewed = false,
+                    Message = messageInput
+                });
+
                 if (!string.IsNullOrEmpty(toUser.ConnectionId))
                 {
                     await Clients.Client(toUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}");
@@ -48,17 +59,6 @@ namespace Cinnamon.Api.Core.Hubs
                 {
                     await Clients.Client(fromUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}");
                 }
-
-                await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
-                {
-                    ChatRoomId       = chatRoomId,
-                    FromConnectionId = fromUser.ConnectionId ?? string.Empty,
-                    FromUserId       = fromUserId,
-                    ToConnectionId   = toUser.ConnectionId ?? string.Empty,
-                    ToUserId         = toUserId,
-                    IsViewed         = false,
-                    Message          = messageInput
-                });
             }
         }
 
