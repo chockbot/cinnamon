@@ -691,7 +691,7 @@
                             Rating = a.Rating,
                             ReviewDate = a.ReviewDate
                         };
-                }).ToList();
+                }).OrderByDescending(a => a.ReviewDate).ToList();
             }
             if (activityReviews.Count != 0)
             {
@@ -699,7 +699,7 @@
                 double numberOfRatee = activityReviews.Count;
                 AverageRating = (double)SumOfRating / numberOfRatee;
                 SelectedValue = (int)Math.Round(AverageRating);
-                top3Reviews = activityReviews.Take(3).OrderBy(a => a.ReviewDate).ToList();
+                top3Reviews = activityReviews.Take(3).ToList();
             }
 
             //Get Customer Details
