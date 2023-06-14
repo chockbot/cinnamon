@@ -18,11 +18,11 @@ public interface IActivityRepository
         int experienceCategoryId, string searchValue, bool? isDeactivated, Enums.ActivityStatus? status,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
-        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false);
+        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false);
 
     Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
-        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false);
+        bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false);
     Task<AppResult<IEnumerable<ActivityDTO>>> GetAllAsync();
     Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price,
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district,

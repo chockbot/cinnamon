@@ -669,7 +669,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents ?? false
+                IncludeStudents = args.IncludeStudents ?? false,
+                IncludeReviews = args.IncludeReviews ?? false
             }) ;
 
             if (!result.Succeeded || result.Result == null)
@@ -740,6 +741,8 @@ public class ActivityController : ControllerBase
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        AverageRating = a.AverageRating,
+                        NumberOfReviews = a.NumberOfReviews,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
@@ -783,7 +786,8 @@ public class ActivityController : ControllerBase
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
                 Status = args.Status,
-                IsAdmin = args.IsAdmin
+                IsAdmin = args.IsAdmin,
+                IncludeReviews = args.IncludeReviews ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -868,7 +872,9 @@ public class ActivityController : ControllerBase
                         IsNew = a.IsNew,
                         CompletedStudents = a.CompletedStudents,
                         OngoingStudents = a.OngoingStudents,
-                        IsDeactivated = a.IsDeactivated
+                        IsDeactivated = a.IsDeactivated,
+                        NumberOfReviews = a.NumberOfReviews,
+                        AverageRating = a.AverageRating,
                     };
                 }).AsQueryable()
             });
@@ -1572,6 +1578,7 @@ public class ActivityController : ControllerBase
                 CountPerPage = args.CountPerPage,
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
+                IncludeReviews = args.IncludeReviews ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1653,7 +1660,9 @@ public class ActivityController : ControllerBase
                         } : null,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
-                        CompletedStudents = a.CompletedStudents
+                        CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews = a.NumberOfReviews,
+                        AverageRating = a.AverageRating
                     };
                 }).AsQueryable()
             });

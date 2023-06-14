@@ -111,7 +111,7 @@ public class ActivityController : ControllerBase
                         .GetAllAsync(args.CustomerId, args.IsActive, take, skip, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated, args.Status,
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
-                            args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false) :
+                            args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -258,7 +258,7 @@ public class ActivityController : ControllerBase
                     await activityRepository.GetPopularActivitiesAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IsDeactivated,
                                         args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false, args.IncludeSchedules ?? false,
                                         args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, 
-                                        args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false) :
+                                        args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false) :
                     await activityRepository.GetAllAsync();
             
             if (!result.Succeeded || result.Result == null)

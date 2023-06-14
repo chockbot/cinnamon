@@ -315,7 +315,8 @@
                     IncludeAtivitySchedules = true,
                     IsActive = true,
                     IncludeStudents = true,
-                    IncludeCustomer = true
+                    IncludeCustomer = true,
+                    IncludeReviews = true
                 });
             if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
             {
@@ -345,6 +346,8 @@
                                 IsNew = a.IsNew,
                                 OngoingStudents = a.OngoingStudents,
                                 CompletedStudents = a.CompletedStudents,
+                                AverageRating = a.AverageRating,
+                                NumberOfReviews = a.NumberOfReviews,
                                 Images = a.Images.Select(i =>
                     {
                                 return new ActivityImage

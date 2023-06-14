@@ -35,4 +35,5 @@ public class Activity : BaseEntity
     [ForeignKey("CreatedBy")]
     public virtual Customer Customer {get; set;}
     public virtual IList<Student> Students {get; set; }
+    public virtual IList<Reviews> Reviews {get; set; }
 }
