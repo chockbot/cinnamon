@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -32,4 +34,8 @@ public interface IActivityApiHandler
     Task<AppResult<UpdateScheduleResult>> UpdateActivitySchedule(UpdateScheduleArgs args, string token);
     Task<AppResult<DeleteActivityResult>> DeleteActivityById(DeleteActivityArgs args, string token);
     Task<AppResult<OwnerPricingInclusiveResult>> OwnerPricingInclusive(int id);
-} 
+    Task<AppResult<CreateFavoriteResult>> CreateFavorite(CreateFavoriteArgs args, string token);
+    Task<AppResult<RemoveFavoriteResult>> RemoveFavorite(RemoveFavoriteArgs args, string token);
+    Task<AppResult<GetFavoritesByCustomerResult>> GetFavoritesByCustomer(GetFavoritesByCustomerArgs args, string token);
+
+}

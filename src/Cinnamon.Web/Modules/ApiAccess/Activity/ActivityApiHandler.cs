@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
@@ -584,5 +586,72 @@ public class ActivityApiHandler : IActivityApiHandler
         {
             return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, "An error occured when getting owner pricing inclusive identifier api");
         }   
+    }
+
+    public async Task<AppResult<CreateFavoriteResult>> CreateFavorite(CreateFavoriteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/Favorite/Create")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateFavoriteResult>();
+
+            return AppResult<CreateFavoriteResult>.CreateSucceeded(result, "Successfully called create favorite api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateFavoriteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateFavoriteResult>.CreateFailed(ex, "An error occured when calling create favorite api");
+        }
+    }
+
+    public async Task<AppResult<RemoveFavoriteResult>> RemoveFavorite(RemoveFavoriteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/Favorite/Remove")
+                .PostJsonAsync(args)
+                .ReceiveJson<RemoveFavoriteResult>();
+
+            return AppResult<RemoveFavoriteResult>.CreateSucceeded(result, "Successfully called remove favorite api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<RemoveFavoriteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<RemoveFavoriteResult>.CreateFailed(ex, "An error occured when calling remove favorite api");
+        }
+    }
+
+    public async Task<AppResult<GetFavoritesByCustomerResult>> GetFavoritesByCustomer(GetFavoritesByCustomerArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Favorite/ByCustomer")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetFavoritesByCustomerResult>();
+
+            return AppResult<GetFavoritesByCustomerResult>.CreateSucceeded(result, "Successfully called get favorites api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetFavoritesByCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetFavoritesByCustomerResult>.CreateFailed(ex, "An error occured when calling get favorites api");
+        }
     }
 }

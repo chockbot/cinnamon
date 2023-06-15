@@ -65,6 +65,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<ChatHistory> ChatHistories {get; set; }
     public DbSet<ChatRoom> ChatRooms { get; set; }
     public DbSet<ChatMember> ChatMembers { get; set; }
+    public DbSet<Favorite> Favorites { get; set; }
 
     #endregion
 

@@ -34,8 +34,9 @@ public interface IDataStore
     IChatHistory ChatHistory {get; }
     IChatRooms ChatRooms {get; }
     IChatMember ChatMember {get; }
-
     IReviews Reviews { get; }
+    IFavorite Favorite { get; }
+
     Task EnsureMigrate();
 
     Task SeedData();

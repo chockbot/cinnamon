@@ -32,6 +32,7 @@ public static class ServiceExtenstion
         services.AddTransient<IChatHistory, ChatHistoryEntity>();
         services.AddTransient<IDataStore, DataStore>();
         services.AddTransient<IReviews, ReviewsEntity>();
+        services.AddTransient<IFavorite, FavoriteEntity>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -64,6 +65,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IChatRoomRepository, Services.Repository.ChatRoom.ChatRoomRepository>();
         services.AddTransient<Services.Repository.Interfaces.IChatMemberRepository, Services.Repository.ChatRoom.ChatMemberRepository>();
         services.AddTransient<Services.Repository.Interfaces.IReviewsRepository, Services.Repository.Reviews.ReviewsRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IFavoriteRepository, Services.Repository.Favorite.FavoriteRepository>();
 
         return services;
     }
