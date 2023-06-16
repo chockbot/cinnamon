@@ -362,18 +362,23 @@
                                                                 {
                                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
                                                                 }
-                                                                <div class="card-img-overlay">
-                                                                    @if (act.OngoingStudents > 0)
-                                                                    {
-                                                                        <div class="rounded-pill popular-ongoing-section">
-                                                                            <div class="active-badge" style="text-align:center">
-                                                                                <span class="pulse"></span>
-                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    }
-                                                                </div>
                                                             </a>
+                                                            <div class="card-img-overlay favorite-section">
+                                                                <button type="button" class="favorite-icon-button border-0">
+                                                                    <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                                </button>
+                                                            </div>
+                                                            <div class="card-img-overlay ongoing-students-section">
+                                                                @if (act.OngoingStudents > 0)
+                                                                {
+                                                                    <div class="rounded-pill popular-ongoing-section">
+                                                                        <div class="active-badge" style="text-align:center">
+                                                                            <span class="pulse"></span>
+                                                                            <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
                                                             <div class="card-container">
                                                                 <div class="row text-start star-pulse-section">
                                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
