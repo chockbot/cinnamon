@@ -12,17 +12,18 @@ namespace Cinnamon.Api.Core.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize]
-
     public class AdminController : ControllerBase
     {
         private readonly IGetAdminUserByEmailHandler getAdminUserByEmailHandler;
+        private readonly ICreateCouponHandler createCouponHandler;
         private readonly ILogger _logger;
 
-        public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger)
+        public AdminController(IGetAdminUserByEmailHandler getAdminUserByEmailHandler, ILogger<AdminController> logger, ICreateCouponHandler createCouponHandler)
         {
             _logger = logger;
 
             this.getAdminUserByEmailHandler = getAdminUserByEmailHandler;
+            this.createCouponHandler = createCouponHandler;
         }
 
         [Route("User")]
@@ -60,6 +61,54 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetAdminUserByEmailResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("CreateCoupon")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateCouponResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateCoupon([FromBody] CreateCouponArgs args)
+        {
+            try
+            {
+                var result = await createCouponHandler.ExecuteAsync(new Services.AdminService.Interactors.CreateCouponArgs {
+                    ActivityId = args.ActivityId,
+                    Amount = args.Amount,
+                    Code = args.Code,
+                    DiscountType = args.DiscountType,
+                    FromDate = args.FromDate,
+                    MaximumSpend = args.MaximumSpend,
+                    Name = args.Name,
+                    ToDate = args.ToDate
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                var created = result.Result;
+
+                return new JsonResult(new CreateCouponResult {
+                    IsSuccess = true,
+                    Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
+                        ActivityId = created.ActivityId,
+                        Amount = created.Amount,
+                        Code = created.Code,
+                        CustomerId = created.CustomerId,
+                        DiscountType = created.DiscountType,
+                        FromDate = created.FromDate,
+                        Id = created.Id,
+                        IsAdmin = created.IsAdmin,
+                        MaximumSpend = created.MaximumSpend,
+                        Name = created.Name,
+                        Status = created.Status,
+                        ToDate = created.ToDate
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
