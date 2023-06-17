@@ -8,4 +8,6 @@ public interface IChatRoomData
 {
     Task<AppResult<CreateChatRoomResult>> CreateChatRoom(CreateChatRoomArgs args);
     Task<AppResult<GetChatRoomsByUserIdResult>> GetChatRoomsByUserId(GetChatRoomsByUserIdArgs args);
+    Task<AppResult<GetChatMembersByChatRoomIdResult>> GetChatMembersByChatRoomId(GetChatMembersByChatRoomIdArgs args);
+    Task<AppResult<UpdateChatMemberResult>> UpdateChatMember(UpdateChatMemberArgs args);
 }

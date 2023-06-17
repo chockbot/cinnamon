@@ -33,7 +33,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                     a => a.Customer,
                 };
 
-                var chatMemberResult = await dataStore.ChatMember.FindAsync(c => c.ChatRoomId == chatRoomId && c.CustomerId != fromUserId, 1000, 0, includes);
+                var chatMemberResult = await dataStore.ChatMember.FindAsync(c => c.ChatRoomId == chatRoomId && !c.HasLeft, int.MaxValue, 0, includes);
 
                 if (!chatMemberResult.Succeeded || chatMemberResult.Result == null)
                 {
@@ -97,12 +97,13 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             }
         }
 
-        public async Task<AppResult<IEnumerable<ChatHistoryDTO>>> GetChatHistoryByChatRoomId(int? chatRoomId, int? skip, int? take)
+        public async Task<AppResult<IEnumerable<ChatHistoryDTO>>> GetChatHistoryByChatRoomId(int? chatRoomId, int? skip, int? take, int? userId)
         {
             try
             {
                 Expression<Func<Entities.ChatHistory, bool>> filter =
-                a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true));
+                a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true) &&
+                      (userId.HasValue ? a.ToUserId == userId : true));
 
                 var includes = new List<Expression<Func<Entities.ChatHistory, object>>>
                 {
@@ -163,7 +164,6 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             {
                 Expression<Func<Entities.ChatHistory, bool>> filter =
                 a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true) &&
-                      (fromUserId.HasValue ? a.FromUserId == fromUserId.Value : true) &&
                       (toUserId.HasValue ? a.ToUserId == toUserId.Value : true));
 
                 var result = await dataStore.ChatHistory.FindAsync(filter);

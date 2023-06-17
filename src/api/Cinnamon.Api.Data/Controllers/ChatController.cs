@@ -85,7 +85,7 @@ namespace Cinnamon.Api.Data.Controllers
 
                 skip = (args.PageIndex - 1) * args.CountPerPage;
 
-                var result = await _chatHistoryRepository.GetChatHistoryByChatRoomId(args.ChatRoomId, skip, take);
+                var result = await _chatHistoryRepository.GetChatHistoryByChatRoomId(args.ChatRoomId, skip, take, args.UserId);
 
                 if (!result.Succeeded || result.Result == null)
                 {
@@ -120,7 +120,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _chatRoomRepository.Create(args.FromUserId, args.ToUserId);
+                var result = await _chatRoomRepository.Create(args.FromUserId, args.ToUserId, args.ChatType, args.GroupName, args.ChatName);
 
                 if (!result.Succeeded || result.Result == null)
                 {
@@ -159,6 +159,55 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new GetChatRoomsByUserIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatMembers")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatMembersByChatRoomIdResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatMembersByChatRoomId([FromQuery] GetChatMembersByChatRoomIdArgs args)
+        {
+            try
+            {
+                var result = await _chatMemberRepository.GetChatMembersByChatRoomId(args.ChatRoomId);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatMembersByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var totalRecords = result.Result.Count();
+                return new JsonResult(new GetChatMembersByChatRoomIdResult
+                {
+                    Result = result.Result,
+                    IsSuccess = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatMembersByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatMember/Update")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateChatMemberResult), StatusCodes.Status201Created)]
+        public async Task<IActionResult> UpdateChatMember([FromBody] UpdateChatMemberArgs args)
+        {
+            try
+            {
+                var result = await _chatMemberRepository.UpdateChatMember(args.ChatRoomId, args.UserId, args.HasLeft);
+
+                if (!result.Succeeded || !result.Result)
+                {
+                    return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new CreateChatRoomResult { IsSuccess = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

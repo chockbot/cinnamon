@@ -1,4 +1,6 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore;
+using Cinnamon.Framework.Enums;
+using System;
 
 namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
 {
@@ -26,5 +28,8 @@ namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
         public string ToConnectionId { get; set; }
         public bool HasNewMessage { get; set; }
         public string FromProfileLink { get; set; }
+        public Enums.ChatType ChatType { get; set; }
+        public string GroupName { get; set; }
+        public string ChatName { get; set; }
     }
 }

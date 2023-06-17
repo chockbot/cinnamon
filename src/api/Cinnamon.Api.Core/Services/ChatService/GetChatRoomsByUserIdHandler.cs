@@ -71,6 +71,9 @@ namespace Cinnamon.Api.Core.Services.ChatService
                         FromConnectionId = c.FromConnectionId,
                         HasNewMessage    = c.HasNewMessage,
                         FromProfileLink  = c.FromProfileLink,
+                        ChatName         = c.ChatName,
+                        ChatType         = c.ChatType,
+                        GroupName        = c.GroupName
                     })
                 }, "successfully called GetChatRoomsByUserIdHandler");
 

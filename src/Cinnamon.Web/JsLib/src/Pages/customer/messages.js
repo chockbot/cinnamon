@@ -11,7 +11,13 @@ messages.initControls = (obj, elementId) => {
     messageElementId = elementId;
 
     $(document).ready(function () {
-        $("body").tooltip({ selector: '[data-toggle=tooltip]' });
+        $("body").tooltip({
+            selector: '[data-toggle=tooltip]',
+            trigger: 'hover'
+        });
+        $('body [data-toggle=tooltip]').on('click', function () {
+            $(this).tooltip('hide')
+        })
     });
 
     $(document).on("keydown", messageElementId, function (e) {

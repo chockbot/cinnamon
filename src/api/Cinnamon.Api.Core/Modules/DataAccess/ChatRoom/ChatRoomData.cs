@@ -41,6 +41,27 @@ public class ChatRoomData : IChatRoomData
         }
     }
 
+    public async Task<AppResult<GetChatMembersByChatRoomIdResult>> GetChatMembersByChatRoomId(GetChatMembersByChatRoomIdArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                        .Request("Chat/ChatMembers")
+                        .SetQueryParams(args)
+                        .GetJsonAsync<GetChatMembersByChatRoomIdResult>();
+
+            return AppResult<GetChatMembersByChatRoomIdResult>.CreateSucceeded(result, "Successfully posted get chat members api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetChatMembersByChatRoomIdResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetChatMembersByChatRoomIdResult>.CreateFailed(ex, "An error occured when posting get chat members api");
+        }
+    }
+
     public async Task<AppResult<GetChatRoomsByUserIdResult>> GetChatRoomsByUserId(GetChatRoomsByUserIdArgs args)
     {
         try
@@ -59,6 +80,27 @@ public class ChatRoomData : IChatRoomData
         catch (Exception ex)
         {
             return AppResult<GetChatRoomsByUserIdResult>.CreateFailed(ex, "An error occured when posting get chat room api");
+        }
+    }
+
+    public async Task<AppResult<UpdateChatMemberResult>> UpdateChatMember(UpdateChatMemberArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Chat/ChatMember/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateChatMemberResult>();
+
+            return AppResult<UpdateChatMemberResult>.CreateSucceeded(result, "Successfully posted update chat member api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateChatMemberResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateChatMemberResult>.CreateFailed(ex, "An error occured when posting update chat member api");
         }
     }
 }
