@@ -39,6 +39,7 @@ public class ActivityController : ControllerBase
     private readonly IGetRefundableExperienceHandler getRefundableExperienceHandler;
     private readonly IUpdateActivityScheduleHandler updateActivityScheduleHandler;
     private readonly IDeleteActivityHandler deleteActivityHandler;
+    private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -51,7 +52,8 @@ public class ActivityController : ControllerBase
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler, IGetMakerActivitiesHandler getMakerActivitiesHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
-        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, IDeleteActivityHandler deleteActivityHandler)
+        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
+        IDeleteActivityHandler deleteActivityHandler, IProviderCreateCouponHandler providerCreateCouponHandler)
     {
         _logger = logger;
 
@@ -81,6 +83,7 @@ public class ActivityController : ControllerBase
         this.getRefundableExperienceHandler = getRefundableExperienceHandler;
         this.updateActivityScheduleHandler = updateActivityScheduleHandler;
         this.deleteActivityHandler = deleteActivityHandler;
+        this.providerCreateCouponHandler = providerCreateCouponHandler;
     }
 
     [Route("CreateActivity")]
@@ -1774,6 +1777,56 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateCoupon")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateCouponResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateCoupon([FromBody] CreateCouponArgs args)
+    {
+        try
+        {
+            var result = await providerCreateCouponHandler.ExecuteAsync(new Services.ActivityService.Interactors.ProviderCreateCouponArgs {
+                ActivityId = args.ActivityId,
+                Amount = args.Amount,
+                Code = args.Code,
+                DiscountType = args.DiscountType,
+                FromDate = args.FromDate,
+                MaximumSpend = args.MaximumSpend,
+                Name = args.Name,
+                ToDate = args.ToDate,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var created = result.Result;
+
+            return new JsonResult(new CreateCouponResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
+                    ActivityId = created.ActivityId,
+                    Amount = created.Amount,
+                    Code = created.Code,
+                    CustomerId = created.CustomerId,
+                    DiscountType = created.DiscountType,
+                    FromDate = created.FromDate,
+                    Id = created.Id,
+                    IsAdmin = created.IsAdmin,
+                    MaximumSpend = created.MaximumSpend,
+                    Name = created.Name,
+                    Status = created.Status,
+                    ToDate = created.ToDate
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
