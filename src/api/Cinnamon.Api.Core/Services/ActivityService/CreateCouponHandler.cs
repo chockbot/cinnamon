@@ -49,9 +49,12 @@ public class CreateCouponHandler : ICreateCouponHandler
                 return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Provide valid percentage value"), "Provide valid percentage value");
             }
 
-            // check ef promo code already exist
+            
+            // check ef promo code already exist, if activity id = 0 check only customer id and promo code
+            // else check activity id, code and customer id
+            int? activityId = args.ActivityId == 0 ? null : args.ActivityId;
             var checkResult = await couponData.IsPromotionCodeExist(new Framework.ApiCommand.ApiData.Coupon.Request.IsPromotionCodeExistArgs {
-                ActivityId = args.ActivityId,
+                ActivityId = activityId,
                 Code = args.Code,
                 CustomerId = args.CustomerId
             });

@@ -185,6 +185,24 @@ public class CouponRespository : ICouponRepository
         }
     }
 
+    public async Task<AppResult<bool>> IsCouponCodeAlreadyExist(string code, int customerId)
+    {
+        try
+        {
+            var result = await dataStore.Coupon.FindAsync(c => c.Code.ToLower() == code.ToLower() && c.CustomerId == c.CustomerId);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<bool>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<bool>.CreateSucceeded(result.Result.Count() > 0, "Successfully check coupon code");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<bool>.CreateFailed(ex, "An error occured when checking if coupon code already exist");
+        }
+    }
+
     public async Task<AppResult<CouponDTO>> UpdateCouponAsync(int id, int? activityId, bool? isAdmin, int? customerId, string? name, 
         string? code, int? discountType, decimal? amount, decimal? maximumSpend, DateTime? from, DateTime? to, int? status)
     {

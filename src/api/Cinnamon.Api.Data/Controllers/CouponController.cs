@@ -141,7 +141,9 @@ public class CouponController : ControllerBase
     {
         try
         {
-            var result = await couponRepository.IsCouponCodeAlreadyExist(args.Code, args.ActivityId, args.CustomerId);
+            var result = args.ActivityId != null ? 
+                await couponRepository.IsCouponCodeAlreadyExist(args.Code, args.ActivityId.Value, args.CustomerId) :
+                await couponRepository.IsCouponCodeAlreadyExist(args.Code, args.CustomerId);
 
             if(!result.Succeeded)
             {

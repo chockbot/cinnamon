@@ -13,4 +13,5 @@ public interface ICouponRepository
     Task<AppResult<CouponDTO>> UpdateCouponAsync(int id, int? activityId, bool? isAdmin, int? customerId, string? name, string? code, int? discountType,
         decimal? amount, decimal? maximumSpend, DateTime? from, DateTime? to, int? status);
     Task<AppResult<bool>> IsCouponCodeAlreadyExist(string code, int activityId, int customerId);
+    Task<AppResult<bool>> IsCouponCodeAlreadyExist(string code, int customerId);
 }
