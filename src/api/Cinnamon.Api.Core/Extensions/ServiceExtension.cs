@@ -121,6 +121,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IDeleteActivityHandler, Services.ActivityService.DeleteActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICreateCouponHandler, Services.ActivityService.CreateCouponHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IProviderCreateCouponHandler, Services.ActivityService.ProviderCreateCouponHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetCouponsHandler, Services.ActivityService.GetCouponsHandler>();
         
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();

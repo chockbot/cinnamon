@@ -14,4 +14,11 @@ public class CouponDTO
     public DateTime FromDate {get; set;}
     public DateTime ToDate {get; set;}
     public int Status {get; set;}
+    public Activity? AppliedActivity {get; set;}
+
+    public class Activity 
+    {
+        public int Id {get; set;}
+        public string Name {get; set;}
+    }
 }

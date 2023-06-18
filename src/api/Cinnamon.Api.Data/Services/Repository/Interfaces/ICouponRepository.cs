@@ -6,7 +6,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 public interface ICouponRepository 
 {
     Task<AppResult<CouponDTO>> GetByIdAsync(int id);
-    Task<AppResult<IEnumerable<CouponDTO>>> GetAllAsync(int? count, int? skip, bool? includeActivity);
+    Task<AppResult<IEnumerable<CouponDTO>>> GetAllAsync(int? count, int? skip, bool? includeActivity, int? customerId);
     Task<AppResult<IEnumerable<CouponDTO>>> GetAllAsync();
     Task<AppResult<CouponDTO>> CreateCouponAsync(int activityId, bool isAdmin, int customerId, string name, string code, int discountType, 
         decimal amount, decimal maximumSpend, DateTime from, DateTime to, int status);

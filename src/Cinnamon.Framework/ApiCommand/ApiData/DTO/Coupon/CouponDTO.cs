@@ -13,6 +13,7 @@ public class CouponDTO
     public DateTime From {get; set;}
     public DateTime To {get; set;}
     public int Status {get; set;}
+    public bool IsAdmin {get; set;}
     public Activity? ActivityApplied {get; set;}
 
     public class Activity 

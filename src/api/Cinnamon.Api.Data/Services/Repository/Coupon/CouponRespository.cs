@@ -63,14 +63,16 @@ public class CouponRespository : ICouponRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<CouponDTO>>> GetAllAsync(int? count, int? skip, bool? includeActivity)
+    public async Task<AppResult<IEnumerable<CouponDTO>>> GetAllAsync(int? count, int? skip, bool? includeActivity, int? customerId)
     {
         try
         {
             var include = new List<Expression<Func<Entities.Coupon, object>>>();
             if(includeActivity.HasValue && includeActivity.Value) include.Add(c => c.Activity);
 
-            var result = await dataStore.Coupon.FindAsync(c => true, count, skip, include);
+            Expression<Func<Entities.Coupon, bool>> filter = c => (customerId.HasValue ? c.CustomerId == customerId.Value : true);
+
+            var result = await dataStore.Coupon.FindAsync(filter, count, skip, include);
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<CouponDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
@@ -79,7 +81,7 @@ public class CouponRespository : ICouponRepository
 
             return AppResult<IEnumerable<CouponDTO>>.CreateSucceeded(coupons.Select(c =>  {
                 return new CouponDTO {
-                    ActivityApplied = includeActivity.HasValue && includeActivity.Value ? new CouponDTO.Activity {
+                    ActivityApplied = includeActivity.HasValue && includeActivity.Value && c.Activity != null ? new CouponDTO.Activity {
                         Id = c.Activity.Id,
                         Title = c.Activity.Title
                     } : null,
@@ -94,6 +96,7 @@ public class CouponRespository : ICouponRepository
                     Name = c.Name,
                     Status = c.Status,
                     To = c.To,
+                    IsAdmin = c.IsAdmin
                 };
             }), "Successfully get coupons");
         }

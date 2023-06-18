@@ -40,6 +40,7 @@ public class ActivityController : ControllerBase
     private readonly IUpdateActivityScheduleHandler updateActivityScheduleHandler;
     private readonly IDeleteActivityHandler deleteActivityHandler;
     private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
+    private readonly IGetCouponsHandler getCouponsHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -53,7 +54,7 @@ public class ActivityController : ControllerBase
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
         IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
-        IDeleteActivityHandler deleteActivityHandler, IProviderCreateCouponHandler providerCreateCouponHandler)
+        IDeleteActivityHandler deleteActivityHandler, IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler)
     {
         _logger = logger;
 
@@ -84,6 +85,7 @@ public class ActivityController : ControllerBase
         this.updateActivityScheduleHandler = updateActivityScheduleHandler;
         this.deleteActivityHandler = deleteActivityHandler;
         this.providerCreateCouponHandler = providerCreateCouponHandler;
+        this.getCouponsHandler = getCouponsHandler;
     }
 
     [Route("CreateActivity")]
@@ -1827,6 +1829,53 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetCoupons")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCouponsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCoupons()
+    {
+        try
+        {
+            var result = await getCouponsHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetCouponsArgs {});
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCouponsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var created = result.Result;
+
+            return new JsonResult(new GetCouponsResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Coupons.Select(c => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
+                        ActivityId = c.ActivityId,
+                        Amount = c.Amount,
+                        AppliedActivity = c.AppliedActivity != null ? new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO.Activity {
+                            Id = c.AppliedActivity.Id,
+                            Name = c.AppliedActivity.Name
+                        } : null,
+                        Code = c.Code,
+                        CustomerId = c.CustomerId,
+                        DiscountType = c.DiscountType,
+                        FromDate = c.FromDate,
+                        Id = c.Id,
+                        IsAdmin = c.IsAdmin,
+                        MaximumSpend = c.MaximumSpend,
+                        Name = c.Name,
+                        Status = c.Status,
+                        ToDate = c.ToDate
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCouponsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

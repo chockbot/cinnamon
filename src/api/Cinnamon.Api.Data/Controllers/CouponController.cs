@@ -92,10 +92,10 @@ public class CouponController : ControllerBase
     {
         try
         {
-            bool isHaveFilter = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.IncludeActivity.HasValue;
+            bool isHaveFilter = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || args.IncludeActivity.HasValue || args.CustomerId.HasValue;
 
             var result = isHaveFilter?
-                await couponRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IncludeActivity) :
+                await couponRepository.GetAllAsync(args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IncludeActivity, args.CustomerId) :
                 await couponRepository.GetAllAsync();
             
             if (!result.Succeeded || result.Result == null)
@@ -105,7 +105,7 @@ public class CouponController : ControllerBase
 
             // get all without pagination to get all rows
             var all = isHaveFilter ?
-                await couponRepository.GetAllAsync(null, null, null) :
+                await couponRepository.GetAllAsync(null, null, null, null) :
                 await couponRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
