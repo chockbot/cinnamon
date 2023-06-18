@@ -23,7 +23,7 @@ public class CouponRespository : ICouponRepository
         try
         {
             var coupon = new Entities.Coupon {
-                ActivityId = activityId,
+                ActivityId = activityId == 0 ? null : activityId,
                 Amount = amount,
                 Code = code,
                 CustomerId = customerId,
@@ -44,7 +44,7 @@ public class CouponRespository : ICouponRepository
             var created = createCoupon.Result;
 
             return AppResult<CouponDTO>.CreateSucceeded(new CouponDTO {
-                ActivityId = created.ActivityId,
+                ActivityId = created.ActivityId ?? 0,
                 Amount = created.Amount,
                 Code = created.Code,
                 CustomerId = created.CustomerId,
@@ -83,7 +83,7 @@ public class CouponRespository : ICouponRepository
                         Id = c.Activity.Id,
                         Title = c.Activity.Title
                     } : null,
-                    ActivityId = c.ActivityId,
+                    ActivityId = c.ActivityId ?? 0,
                     Amount = c.Amount,
                     Code = c.Code,
                     CustomerId = c.CustomerId,
@@ -116,7 +116,7 @@ public class CouponRespository : ICouponRepository
 
             return AppResult<IEnumerable<CouponDTO>>.CreateSucceeded(coupons.Select(c =>  {
                 return new CouponDTO {
-                    ActivityId = c.ActivityId,
+                    ActivityId = c.ActivityId ?? 0,
                     Amount = c.Amount,
                     Code = c.Code,
                     CustomerId = c.CustomerId,
@@ -148,7 +148,7 @@ public class CouponRespository : ICouponRepository
             var coupon = result.Result;
 
             return AppResult<CouponDTO>.CreateSucceeded(new CouponDTO {
-                ActivityId = coupon.ActivityId,
+                ActivityId = coupon.ActivityId ?? 0,
                 Amount = coupon.Amount,
                 Code = coupon.Code,
                 CustomerId = coupon.CustomerId,
@@ -197,7 +197,10 @@ public class CouponRespository : ICouponRepository
             }
             var coupon = result.Result;
 
-            coupon.ActivityId = activityId ?? coupon.ActivityId;
+            if(activityId.HasValue)
+            {
+                coupon.ActivityId = activityId.Value == 0 ? null : activityId.Value;
+            }
             coupon.Amount = amount ?? coupon.Amount;
             coupon.Code = code ?? coupon.Code;
             coupon.CustomerId = customerId ?? coupon.CustomerId;
@@ -217,7 +220,7 @@ public class CouponRespository : ICouponRepository
             var updated = updateRes.Result;
 
             return AppResult<CouponDTO>.CreateSucceeded(new CouponDTO {
-                ActivityId = updated.ActivityId,
+                ActivityId = updated.ActivityId ?? 0,
                 Amount = updated.Amount,
                 Code = updated.Code,
                 CustomerId = updated.CustomerId,

@@ -40,14 +40,17 @@ public class ProviderCreateCouponHandler : IProviderCreateCouponHandler
             var customerId = httpContext.HttpContext?.User.FindFirstValue("UserId");
             int id = customerId != null ? Convert.ToInt32(customerId) : 0;
 
-            // validate activity if associated to customer
-            var activityRes = await getActivityHandler.ExecuteAsync(new GetActivityArgs {
-                ActivityId = args.ActivityId,
-                CustomerId = id
-            });
-            if(!activityRes.Succeeded || activityRes.Result == null)
+            // validate activity if associated to customer, skip if all applied to associated activities
+            if(args.ActivityId != 0)
             {
-                return AppResult<ProviderCreateCouponResult>.CreateFailed(new ApplicationException("Invalid request"), "Invalid request");
+                var activityRes = await getActivityHandler.ExecuteAsync(new GetActivityArgs {
+                    ActivityId = args.ActivityId,
+                    CustomerId = id
+                });
+                if(!activityRes.Succeeded || activityRes.Result == null)
+                {
+                    return AppResult<ProviderCreateCouponResult>.CreateFailed(new ApplicationException("Invalid request"), "Invalid request");
+                }
             }
 
             var createRes = await createCouponHandler.ExecuteAsync(new CreateCouponArgs {

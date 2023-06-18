@@ -2,8 +2,8 @@ namespace Cinnamon.Api.Data.Repository.Entities;
 
 public class Coupon : BaseEntity 
 {
-    // if 0 then apply to all else apply only in associated activity
-    public int ActivityId {get; set;}
+    // if 0 or null then apply to all else apply only in associated activity
+    public int? ActivityId {get; set;}
     public bool IsAdmin {get; set;}
     public int CustomerId {get; set;}
     public string Name {get; set;}

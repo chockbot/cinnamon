@@ -182,7 +182,7 @@ public class ApplicationContext : IdentityDbContext
         modelBuilder.Entity<BadgeList>().HasIndex(c => c.Id);
 
         // for coupons
-        modelBuilder.Entity<Coupon>().HasOne(c => c.Activity);
+        modelBuilder.Entity<Coupon>().HasOne(c => c.Activity).WithMany().IsRequired(false);
         modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);
         modelBuilder.Entity<Coupon>().HasIndex(c => c.Code);
         modelBuilder.Entity<Coupon>().HasIndex(new string[] {"Code", "CustomerId", "ActivityId"});

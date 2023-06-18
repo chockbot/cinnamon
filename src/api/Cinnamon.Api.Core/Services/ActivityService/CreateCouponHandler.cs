@@ -60,7 +60,7 @@ public class CreateCouponHandler : ICreateCouponHandler
                 return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException(checkResult.Result?.ErrorInfo?.Message), checkResult.Message);
             }
 
-            if(!checkResult.Result.Result)
+            if(checkResult.Result.Result)
             {
                 return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Coupon code already exist."), "Coupon code already exist.");
             }
