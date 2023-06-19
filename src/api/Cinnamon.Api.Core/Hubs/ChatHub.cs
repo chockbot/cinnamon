@@ -18,13 +18,16 @@ namespace Cinnamon.Api.Core.Hubs
         private readonly IGetCustomerByIdHandler getCustomerByIdHandler;
         private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
         private readonly IUpdateChatMemberHandler updateChatMemberHandler;
-        public ChatHub(ICreateChatHistoryHandler createChatHistoryHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetCustomerByIdHandler getCustomerByIdHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateChatMemberHandler updateChatMemberHandler)
+        private readonly ILogger _logger;
+
+        public ChatHub(ICreateChatHistoryHandler createChatHistoryHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetCustomerByIdHandler getCustomerByIdHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateChatMemberHandler updateChatMemberHandler, ILogger<ChatHub> logger)
         {
             this.createChatHistoryHandler = createChatHistoryHandler;
             this.updateConnectionIdHandler = updateConnectionIdHandler;
             this.getCustomerByIdHandler = getCustomerByIdHandler;
             this.getChatRoomsByUserIdHandler = getChatRoomsByUserIdHandler;
             this.updateChatMemberHandler = updateChatMemberHandler;
+            this._logger = logger;
         }
         public async Task SendMessage(string payload)
         {
@@ -196,6 +199,8 @@ namespace Cinnamon.Api.Core.Hubs
         {
             var userId = Context.User.FindFirstValue("UserId");
 
+            _logger.LogInformation($"UserId {userId} is connected on connection id {Context.ConnectionId}");
+
             await updateConnectionIdHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateConnectionIdArgs
             {
                 ConnectionId = Context.ConnectionId,
@@ -220,6 +225,8 @@ namespace Cinnamon.Api.Core.Hubs
         public async override Task OnDisconnectedAsync(Exception? exception)
         {
             var userId = Context.User.FindFirstValue("UserId");
+
+            _logger.LogInformation($"UserId {userId} is disconnected on connection id {Context.ConnectionId}. exception: {exception?.Message}");
 
             await updateConnectionIdHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateConnectionIdArgs
             {

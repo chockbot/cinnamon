@@ -148,7 +148,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
             try
             {
                 Expression<Func<Entities.ChatMember, bool>> filter =
-                a => (a.ChatRoomId == chatRoomId && a.CustomerId == userId);
+                a => (a.ChatRoomId == chatRoomId && a.CustomerId == userId && !a.HasLeft);
 
                 var result = await dataStore.ChatMember.FindFirstAsync(filter);
 

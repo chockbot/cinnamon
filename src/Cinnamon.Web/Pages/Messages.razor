@@ -13,6 +13,7 @@
 
 @inject IJSRuntime jsRuntime;
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ILogger<Messages> logger
 
 @implements IDisposable
 
@@ -381,13 +382,13 @@
                     <div class="row">
                         @foreach (var item in chatMembers)
                         {
-                            <div class="col-lg-1 col-md-1 col-sm-1 col-1 chat-member-picture-section">
+                            <div class="col-lg-2 col-md-2 col-sm-2 col-2 chat-member-picture-section">
                                 <img src="@item.FromProfilePath" class="chat-profile-picture" />
                             </div>
-                            <div class="col-lg-6 col-md-10 col-sm-10 col-10 chat-member-name-section">
+                            <div class="col-lg-6 col-md-6 col-sm-6 col-6 chat-member-name-section">
                                 @item.FromFirstName @item.FromLastName
                             </div>
-                            <div class="col-lg-4 col-md-1 col-sm-1 col-1 send-private-message-section">
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-4 send-private-message-section">
                                 @if (item.FromUserId != currentUserId)
                                 {
                                     <span data-toggle="tooltip" title="Send a Message" data-bs-toggle="tooltip" data-bs-placement="top">
@@ -411,9 +412,28 @@
                         <label class="attachment-name">
                             Settings
                         </label>
-                        <button type="button" class="border-0 leave-button" @onclick="LeaveGroup">
-                            <span class="fa fa-arrow-circle-left"></span> Leave Group
-                        </button>
+                        <div class="divider"></div>
+                        @if (showLeaveGroup)
+                        {
+                            <button type="button" class="border-0 leave-button" @onclick="DisplayLeaveGroupConfirmation">
+                                <span class="fa fa-arrow-circle-left"></span> Leave Group
+                            </button>
+                        }
+                        else if (showLeaveGroupConfirmation)
+                        {
+                            <div class="row">
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                                    <button type="button" class="border-0 leave-no-button" @onclick="HideLeaveGroupConfirmation">
+                                        No
+                                    </button>
+                                </div>
+                                <div class="col-lg-4 col-md-4 col-sm-4 col-4">
+                                    <button type="button" class="border-0 leave-yes-button" @onclick="ConfirmLeaveGroup">
+                                        Yes
+                                    </button>
+                                </div>
+                            </div>
+                        }
                     </div>
                 }
             </div>
@@ -454,6 +474,8 @@
     private string profileSectionDisplayStyle = string.Empty;
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
     private DotNetObjectReference<Cinnamon.Web.Pages.Messages> objectRef;
+    private bool showLeaveGroup = false;
+    private bool showLeaveGroupConfirmation = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -628,6 +650,28 @@
         if (!IsConnected)
         {
             await hubConnection.StartAsync();
+
+            if (IsConnected)
+            {
+                hubConnection.Closed += async (exception) =>
+                {
+                    logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
+
+                    TimeSpan retryDuration = TimeSpan.FromSeconds(30);
+
+                    while (DateTime.UtcNow < DateTime.UtcNow.Add(retryDuration))
+                    {
+                        logger.LogInformation($"reconnecting {currentUserId}");
+
+                        await hubConnection.StartAsync();
+                        if (IsConnected)
+                        {
+                            logger.LogInformation($"successfully reconnected {currentUserId}");
+                            return;
+                        }
+                    }
+                };
+            }
         }
 
         await LoadSigninUser();
@@ -848,6 +892,7 @@
                 {
                     if (IsConnected)                    {
                         await hubConnection.SendAsync("AddToGroup", chatMateGroupName, currentUserId);
+                        showLeaveGroup = true;
                     }
                 }
 
@@ -971,13 +1016,28 @@
         }
     }
 
-    private async Task LeaveGroup()
+    private async Task DisplayLeaveGroupConfirmation()
+    {
+        showLeaveGroupConfirmation = true;
+        showLeaveGroup = false;
+    }
+
+    private async Task HideLeaveGroupConfirmation()
+    {
+        showLeaveGroupConfirmation = false;
+        showLeaveGroup = true;
+    }
+
+    private async Task ConfirmLeaveGroup()
     {
         await hubConnection.SendAsync("RemoveFromGroup", chatMateGroupName, currentUserId, selectedChatRoomId);
 
         chatRooms = chatRooms.Where(c => c.ChatRoomId != selectedChatRoomId).ToList();
 
         selectedChatRoomId = 0;
+
+        showLeaveGroupConfirmation = false;
+        showLeaveGroup = false;
 
         StateHasChanged();
     }
