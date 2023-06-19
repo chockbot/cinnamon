@@ -8,6 +8,7 @@
         public string Email { get; set; }
         public bool IsMaker { get; set; }
         public DateTime Birthdate { get; set; }
+        public string PhoneNumber { get; set; }
         public DateTime DateJoined { get; set; }
         public string ProfilePath { get; set; }
         public int IsVerified { get; set; }
@@ -24,6 +25,8 @@
 
         public IList<FamilyMember> FamilyMembers {get; set;}
 
+        public CustomerPricing Pricing {get; set;}
+
         private bool _isChecked;
 
         public bool IsChecked
@@ -35,6 +38,16 @@
         public string HasVerificationRequest
         {
             get { return !string.IsNullOrEmpty(FrontIdImagePath) && !string.IsNullOrEmpty(BackIdImagePath) ? "Yes" : "No"; }
+        }
+
+        public class CustomerPricing 
+        {
+            public decimal Rate {get; set;}
+            public bool IsManualPayment {get; set;}
+
+            // extra fields
+            public string ExtraClass {get ;set;}
+            public bool IsSubmitting {get; set;}
         }
     }
 }

@@ -1,66 +1,137 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Models.Entities
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject NavigationManager NavigationManager
+
 
 <article class="experience-review-wrapper py-3">
-    <h3 class="title">Your Reviews</h3>
-    <Div class="experience-reviews-container experience-review-swiper" Margin="Margin.Is3.FromTop">
-        <div class="swiper-wrapper">
-           @* @for(int i =0; i < 6; i++)
+    <h3 class="title">Customer Feedbacks</h3>
+    @if (reviews.Count != 0)
+    {
+        <div class="d-flex">
+            <div class="col-8 d-flex justify-content-start rating-section">
+                <div id="star-rating"></div>
+                <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
+            </div>
+            @if (reviews.Count > 3)
             {
-                <ExperienceReviewItem />
-            }*@
+                <div class="col-4 d-flex justify-content-end">
+                    <button class="see-more" @onclick="() => modRef.ShowModal()">See More</button>
+                </div>
+            }
         </div>
-    </Div>
+        <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
+            <div class="review-wrapper">
+                @foreach (var item in top3Reviews)
+                {
+                    <ExperienceReviewItem Review="item" />
+                }
+            </div>
+        </Div>
+    }
+    else
+    {
+        <p class="p-1" style="font-family:'Nunito';font-weight:bold">No reviews yet!</p>
+    }
 </article>
 
-<style scoped>
-.experience-review-wrapper {
-    font-family: "Nunito";
-    overflow: hidden;
-}
-.experience-review-wrapper .title 
+<MultipleReviewModal @ref="modRef" Reviews="reviews" SelectedValue="SelectedValue"
+AverageRating="AverageRating" CustomerProfiles="customerProfiles" Activities="Activities"></MultipleReviewModal>
+@code
 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #343D4C;
+    IJSObjectReference module;
+
+    [Parameter]
+    public IList<Activity> Activities { get; set; }
+
+    [Parameter]
+    public CustomerProfile Profile { get; set; }
+
+    private MultipleReviewModal modRef;
+
+    public List<Reviews> reviews = new List<Reviews>();
+
+    public List<Reviews> top3Reviews = new List<Reviews>();
+
+    public List<CustomerProfile> customerProfiles = new List<CustomerProfile>();
+
+    public CustomerProfile reviweeProfile = new CustomerProfile();
+
+    public string Token;
+
+    public int SelectedValue { get; set; } = 0;
+
+    public double AverageRating { get; set; } = 0;
+
+    public ClaimsPrincipal AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var reviewsResult = await ongoingApiHandler.GetReviewsByMakerId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByMakerIdArgs
+            {
+                MakerId = Profile.Id
+            });
+        if (reviewsResult.Succeeded && reviewsResult.Result != null && reviewsResult.Result.IsSuccess)
+        {
+            reviews = reviewsResult.Result.Result.Select(a =>
+            {
+                return new Reviews
+                    {
+                        Id = a.Id,
+                        CustomerId = a.CustomerId,
+                        MakerId = a.MakerId,
+                        ActivityId = a.ActivityId,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId,
+                        Review = a.Review,
+                        Rating = a.Rating,
+                        ReviewDate = a.ReviewDate
+                    };
+            }).OrderByDescending(a => a.ReviewDate).ToList();
+        }
+        if (reviews.Count != 0)
+        {
+            double SumOfRating = reviews.Sum(a => a.Rating);
+            double numberOfRatee = reviews.Count;
+            AverageRating = (double) SumOfRating/numberOfRatee;
+            SelectedValue = (int)Math.Round(AverageRating);
+            top3Reviews = reviews.Take(3).ToList();
+        }
+        //Get Customer Details
+        foreach (var item in reviews.GroupBy(g=>g.CustomerId).Select(s=>s.First()).ToList())
+        {
+            var profileResult = await accountApiHandler.GetCustomerById(item.CustomerId);
+            if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
+            {
+                var result = profileResult.Result.Result;
+                reviweeProfile = new CustomerProfile
+                    {
+                        Id = result.Id,
+                        FirstName = result.FirstName,
+                        LastName = result.LastName,
+                        ProfilePath = result.ProfileImg
+                    };
+                customerProfiles.Add(reviweeProfile);
+            }
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
+            await Task.Run(() => module.InvokeVoidAsync("generateStarRating", AverageRating));
+        }
+        else
+        {
+            module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
+            await Task.Run(() => module.InvokeVoidAsync("generateStarRating", AverageRating));
+        }
+    }
 }
-.card-review-item {
-  width: 100%;
-  box-shadow: 0 0 10px -5px rgb(0 0 0 / 50%) !important;
-}
-.card-review-item .reviewer-name 
-{
-    font-size: 18px;
-    text-transform: capitalize;
-    font-weight: 700;
-    color: #344050;
-}
-.card-review-item .reviewer-position 
-{
-    font-size: 14px;
-    text-transform: capitalize;
-    font-weight: 400px;
-    color: #717171;
-}
-.card-review-item .reviewer-content 
-{
-    font-size: 14px;
-    font-weight: 400px;
-    color: #717171;
-}
-.card-review-item .review-star
-{
-    width: 15px;
-    height: auto;
-}
-.card-review-item .review-count
-{
-    font-size: 14px;
-    margin-left: 5px;
-}
-.card-review-item .review-badge
-{
-    background-color: #F8F8F8;
-    border-radius: 14px;
-    width: 50px;
-}
-</style>

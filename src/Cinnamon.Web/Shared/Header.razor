@@ -1,16 +1,19 @@
 ﻿@using System.Security.Claims
 @inherits LayoutComponentBase
+@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Layout;
+@using Microsoft.AspNetCore.SignalR.Client;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Components;
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAccountApiHandler accountApiHandler;
-
+@inject IChatApiHandler chatApiHandler;
+@implements IDisposable
 
 <PageTitle>Cinnamon.Web</PageTitle>
 
-<div class="page">
+<div class="page app-name-section">
     <main>
         <div class="top-row px-4">
             <!--App Name-->
@@ -37,6 +40,15 @@
                         aria-expanded="false" border="none" @onclick="onClickMenu">
                         <div class="menu">
                             <img src="images/menu.png">
+                            @if (Model.Profile != null)
+                            {
+                                @if (newMessagesCount != 0)
+                                {
+                                    <span class="new-message-count-badge">
+                                        @newMessagesCount
+                                    </span>
+                                }
+                            }
                         </div>
                     </button>
                     <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
@@ -46,6 +58,25 @@
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                </li>
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
                                 </li>
                             }
                             <li class="dropdown-item">
@@ -79,6 +110,15 @@
                         aria-expanded="false" border="none" @onclick="onClickMenu">
                         <div class="menu">
                             <img src="images/menu.png">
+                            @if (Model.Profile != null && !Model.Profile.IsMaker)
+                            {
+                                @if (newMessagesCount != 0)
+                                {
+                                    <span class="new-message-count-badge">
+                                        @newMessagesCount
+                                    </span>
+                                }
+                            }
                         </div>
                     </button>
                     <ul class="dropdown-menu @ShowMenu()" aria-labelledby="dropdownMenu2">
@@ -89,11 +129,27 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
                                 </li>
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
+                                </li>
                             }
                             else if (Model.Profile != null && !Model.Profile.IsMaker)
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToOnboarding" Text="Become an Activity Provider" />
+                                </li>
+                                <li class="dropdown-item messages-item">
+                                    <NavButton OnClick="NavigateToMessages" Text="Messages" />
+                                    @if (hasNewMessages)
+                                    {
+                                        <span class="has-new-message-badge">
+                                        </span>
+                                    }
                                 </li>
                             }
                             <li class="dropdown-item">
@@ -144,9 +200,18 @@
     private bool mouseEnter { get; set; }
 
     private HeaderModel Model {get; set;} = new();
-    
+
+    private bool hasNewMessages = false;
+
+    private int newMessagesCount = 0;
+
+    List<ChatRoom> chatRooms = new List<ChatRoom>();
+
+    [Inject] HubConnection hubConnection { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
+        var test = NavigationManager.Uri;
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
         var token = user.FindFirstValue("Token");
@@ -157,10 +222,28 @@
             {
                 // map only required field
                 Model.Profile = new Models.Entities.CustomerProfile {
-                    IsMaker = result.Result.Result.IsMaker
+                    IsMaker = result.Result.Result.IsMaker,
+                    Id = result.Result.Result.Id
                 };
                 Model.IsAuthenticated = true;
+
+                await GetChatRoomsByUserId();
+
+                if (!IsConnected)
+                {
+                    await hubConnection.StartAsync();
+                }
             }
+        }
+
+        NavigationManager.LocationChanged += LocationChanged;
+    }
+
+    private async Task SendChatStatus()
+    {
+        if (hubConnection is not null && Model.Profile is not null)
+        {
+            await hubConnection.SendAsync("SendChatStatus", Model.Profile.Id);
         }
     }
 
@@ -213,7 +296,71 @@
 
     private void Logout()
     {
+        SendChatStatus();
+
+        try
+        {
+            hubConnection.StopAsync();
+        }
+        finally
+        {
+            hubConnection.DisposeAsync();
+        }
+
         NavigationManager.NavigateTo("/api/account/logout", true);
     }
+
+    private async Task GetChatRoomsByUserId()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+
+        var result = await chatApiHandler.GetChatRoomsByUserId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatRoomsByUserIdArgs
+            {
+                UserId = Model.Profile.Id
+            }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            chatRooms = result.Result.Result.Select(c => new ChatRoom
+                {
+                    ChatRoomId = c.ChatRoomId,
+                    FromUserId = c.FromUserId,
+                    DateCreated = c.DateCreated,
+                    FromFirstName = c.FromFirstName,
+                    FromLastName = c.FromLastName,
+                    Message = c.Message,
+                    ToFirstName = c.ToFirstName,
+                    ToLastName = c.ToLastName,
+                    ToUserId = c.ToUserId,
+                    FromProfilePath = c.FromProfilePath,
+                    ToProfilePath = c.ToProfilePath,
+                    FromConnectionId = c.FromConnectionId,
+                    ToConnectionId = c.ToConnectionId,
+                    HasNewMessage = c.HasNewMessage,
+                    FromProfileLink = c.FromProfileLink
+                }).ToList();
+
+            hasNewMessages = chatRooms.Any(c => c.HasNewMessage);
+            newMessagesCount = chatRooms.Count(c => c.HasNewMessage);
+        }
+    }
+
+    private void NavigateToMessages()
+    {
+        NavigationManager.NavigateTo("/Messages");
+    }
+
+    void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+    }
+
+    void IDisposable.Dispose()
+    {
+        // Unsubscribe from the event when our component is disposed
+        NavigationManager.LocationChanged -= LocationChanged;
+    }
+
+    public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 }
 

@@ -15,6 +15,7 @@
 @inject IActivityApiHandler activityApiHandler;
 @inject ITransactionApiHandler transactionApiHandler;
 @inject IDashboardApiHandler dashboardApiHandler
+@inject IChatApiHandler chatApiHandler
 
 <PageTitle>Checkout Payment | CinnamonPH</PageTitle>
 <SeoMeta Title="Checkout Payment" Subject="Checkout Payment" />
@@ -222,33 +223,39 @@
                                                 @GetTotalPerHeadPrice
                                             </div>
                                         </div>
-                                        <div class="d-flex justify-content-between py-1 price-per-head">
-                                            <div>
-                                                Payment provider fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
+                                        @if(!IsInclusivePricing)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head">
+                                                <div>
+                                                    Payment provider fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
+                                                </div>
+                                                <div>
+                                                    @GetConvinienceFee
+                                                </div>
                                             </div>
-                                            <div>
-                                                @GetConvinienceFee
+                                        }
+                                        @if(!IsInclusivePricing)
+                                        {
+                                            <div class="d-flex justify-content-between py-1 price-per-head service-fee">
+                                                <div class="d-flex align-items-center">
+                                                    <CustomTooltip MarginLeft="-100">
+                                                        <TextContent>
+                                                            <span class="rounded-circle service-fee-info">i</span>
+                                                        </TextContent>
+                                                        <TooltipContent>
+                                                            <span class="color-grey-100">
+                                                                This helps Cinnamon run its services and protects your payment in case the experience provider does 
+                                                                something illegal or against our policy. They won't get paid until after the sessions or work have been done.
+                                                            </span>
+                                                        </TooltipContent>
+                                                    </CustomTooltip> 
+                                                    <span class="ms-1">Service Fee</span>
+                                                </div>
+                                                <div>
+                                                    PHP @(SelectedAttendeesCount > 0 ? "50.00" : "0.00")
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="d-flex justify-content-between py-1 price-per-head service-fee">
-                                            <div class="d-flex align-items-center">
-                                                <CustomTooltip MarginLeft="-100">
-                                                    <TextContent>
-                                                        <span class="rounded-circle service-fee-info">i</span>
-                                                    </TextContent>
-                                                    <TooltipContent>
-                                                        <span class="color-grey-100">
-                                                            This helps Cinnamon run its services and protects your payment in case the experience provider does 
-                                                            something illegal or against our policy. They won't get paid until after the sessions or work have been done.
-                                                        </span>
-                                                    </TooltipContent>
-                                                </CustomTooltip> 
-                                                <span class="ms-1">Service Fee</span>
-                                            </div>
-                                            <div>
-                                                PHP @(SelectedAttendeesCount > 0 ? "50.00" : "0.00")
-                                            </div>
-                                        </div>
+                                        }
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div>
                                                 <TextEdit style="background-color: #F3F6FC;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
@@ -332,14 +339,14 @@
                                                     <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
                                                 </Tooltip>
                                             }
-                                            @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                            @if (MakerCompletedStudent >= 10)
                                             {
                                                 var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@rare.Description">
                                                     <img class="verified-logo" src="@rare.ImgScr" />
                                                 </Tooltip>
                                             }
-                                            @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                            @if (MakerCompletedStudent >= 25)
                                             {
                                                 var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@epic.Description">
@@ -493,6 +500,8 @@
 
     private string Token { get; set; }
 
+    private bool IsInclusivePricing {get; set;} = false;
+
     protected override async Task OnInitializedAsync()
     {
         await FetchAccountDetails();
@@ -572,7 +581,8 @@
                     LastName = profile.LastName,
                     IsVerified = profile.IsVerified,
                     ProfilePath = profile.ProfileImg,
-                    TotalCredits = profile.TotalCredits
+                    TotalCredits = profile.TotalCredits,
+                    Id = profile.Id
                 },
                 Token = token
             };
@@ -674,6 +684,12 @@
                 } : null
             };
         Model.Activity = activity;
+
+        var inclusivePricingRes = await activityApiHandler.OwnerPricingInclusive(Model.Activity.Owner.Id);
+        if(inclusivePricingRes.Succeeded && inclusivePricingRes.Result != null && inclusivePricingRes.Result.IsSuccess)
+        {
+            IsInclusivePricing = inclusivePricingRes.Result.Result.IsInclusivePricing;
+        }
     }
 
     private async Task FetchMakerBadges()
@@ -886,6 +902,14 @@
             else
             {
                 isLoading = false;
+                await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
+                {
+                    FromUserId = Model.Customer.Id,
+                    ToUserId = Model.Activity.CreatedBy,
+                    ChatType = Framework.Enums.Enums.ChatType.GroupChat,
+                    GroupName = Guid.NewGuid().ToString(),
+                    ChatName = $"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group"
+                }, Model.Token);
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
@@ -935,6 +959,10 @@
             {
                 return "PHP 0.00";
             }
+            if(IsInclusivePricing)
+            {
+                return "PHP 0.00";
+            }
             return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .05m).ToString("#,##0.00");
         }
     }
@@ -949,9 +977,9 @@
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal paymentProviderFee = subTotal * .05m;
+            decimal paymentProviderFee = IsInclusivePricing ? 0 : subTotal * .05m;
             decimal discount = 0;
-            decimal serviceFee = 50;
+            decimal serviceFee = IsInclusivePricing ? 0 : 50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
 
             if (Model.IsCreditApplied && Model.Customer.TotalCredits > 0)
@@ -974,9 +1002,9 @@
             }
 
             decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal paymentProviderFee = subTotal * .05m;
+            decimal paymentProviderFee = IsInclusivePricing ? 0 : subTotal * .05m;
             decimal discount = 0;
-            decimal serviceFee = 50;
+            decimal serviceFee = IsInclusivePricing ? 0 : 50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 

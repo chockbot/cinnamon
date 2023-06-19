@@ -28,7 +28,10 @@ public static class ServiceExtenstion
         services.AddTransient<IStudentAttendance, StudentAttendanceEntity>();
         services.AddTransient<IBadgeList, BadgeListEntity>();
         services.AddTransient<IFailedLogin, FailedLoginEntity>();
+        services.AddTransient<IChatRooms, ChatRoomsEntity>();
+        services.AddTransient<IChatHistory, ChatHistoryEntity>();
         services.AddTransient<IDataStore, DataStore>();
+        services.AddTransient<IReviews, ReviewsEntity>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -56,6 +59,11 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IPayoutLogRepository, Services.Repository.PayoutLog.PayoutLogRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAdminUserRepository, Services.Repository.AdminUser.AdminUserRepository>();
         services.AddTransient<Services.Repository.Interfaces.IBadgeListRepository, Services.Repository.BadgeList.BadgeListRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ICustomerPricingRepository, Services.Repository.CustomerPricing.CustomerPricingRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IChatHistoryRepository, Services.Repository.ChatHistory.ChatHistoryRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IChatRoomRepository, Services.Repository.ChatRoom.ChatRoomRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IChatMemberRepository, Services.Repository.ChatRoom.ChatMemberRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IReviewsRepository, Services.Repository.Reviews.ReviewsRepository>();
         services.AddTransient<Services.Repository.Interfaces.ICouponRepository, Services.Repository.Coupon.CouponRespository>();
 
         return services;

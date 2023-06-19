@@ -89,7 +89,8 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
                 PaymentMethod = paymentMethod,
                 ServiceFee = deserializedPayload != null ? deserializedPayload.Fees.ServiceFee : 0,
                 PaymentProviderFee = deserializedPayload != null ? deserializedPayload.Fees.PaymentProviderFee : 0,
-                AppliedCredits = purchaseOrder.CreditAmount
+                AppliedCredits = purchaseOrder.CreditAmount,
+                IsInclusivePayment = deserializedPayload?.IsInclusivePayment ?? false
             }, "Successfully get purhase order details");
         }
         catch (Exception ex)
@@ -103,6 +104,7 @@ public class GetPurchaseOrderHandler : IGetPurchaseOrderHandler
         public IEnumerable<Student> Students {get; set;}
         public Fees Fees {get; set;}
         public string PaymentChannel {get; set;}
+        public bool IsInclusivePayment {get; set;}
     }
 
     class Student 

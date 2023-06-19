@@ -566,6 +566,26 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
+    public async Task<AppResult<OwnerPricingInclusiveResult>> OwnerPricingInclusive(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/OwnerPricingInclusive/{id}")
+                .GetJsonAsync<OwnerPricingInclusiveResult>();
+
+            return AppResult<OwnerPricingInclusiveResult>.CreateSucceeded(result, "Successfully getting owner pricing inclusive identifier api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, "An error occured when getting owner pricing inclusive identifier api");
+        }   
+    }
+
     public async Task<AppResult<GetCouponsResult>> GetCoupons(string token)
     {
         try

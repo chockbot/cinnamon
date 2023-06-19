@@ -61,6 +61,11 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<BadgeList> BadgeList { get; set; }
 
+    public DbSet<CustomerPricing> CustomerPricings {get; set;}
+    public DbSet<ChatHistory> ChatHistories {get; set; }
+    public DbSet<ChatRoom> ChatRooms { get; set; }
+    public DbSet<ChatMember> ChatMembers { get; set; }
+
     public DbSet<Coupon> Coupons {get; set;}
 
     #endregion
@@ -136,6 +141,11 @@ public class ApplicationContext : IdentityDbContext
             .WithOne(o => o.Customer)
             .HasForeignKey(o => o.CustomerId);
 
+        modelBuilder.Entity<Customer>()
+            .HasOne(c => c.CustomerPricing)
+            .WithOne(c => c.Customer)
+            .HasForeignKey<CustomerPricing>(c => c.CustomerId);
+
         // ongoingActivity
         modelBuilder.Entity<OngoingActivity>().HasIndex(o => o.PurchaseOrderId);
         modelBuilder.Entity<OngoingActivity>()
@@ -178,9 +188,41 @@ public class ApplicationContext : IdentityDbContext
 
         // purchase order
         modelBuilder.Entity<PurchaseOrder>().HasIndex(p => p.Status);
+
         //badge 
         modelBuilder.Entity<BadgeList>().HasIndex(c => c.Id);
 
+        // customer pricing
+        modelBuilder.Entity<CustomerPricing>().HasOne<Customer>(c => c.Customer);
+
+        //chat
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatMember>(a => a.ChatMembers)
+           .WithOne(i => i.Customer)
+           .HasForeignKey(i => i.CustomerId);
+
+        modelBuilder.Entity<ChatRoom>()
+           .HasMany<ChatMember>(a => a.ChatMembers)
+           .WithOne(i => i.ChatRoom)
+           .HasForeignKey(i => i.ChatRoomId);
+
+        modelBuilder.Entity<Customer>()
+            .HasMany<ChatHistory>(a => a.FromChatHistories)
+            .WithOne(i => i.FromCustomer)
+            .HasForeignKey(i => i.FromUserId);
+
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatHistory>(a => a.ToChatHistories)
+           .WithOne(i => i.ToCustomer)
+           .HasForeignKey(i => i.ToUserId);
+        
+        // reviews
+        modelBuilder.Entity<Reviews>().HasIndex(c => c.Id);
+
+        modelBuilder.Entity<Activity>()
+            .HasMany<Reviews>(a => a.Reviews)
+            .WithOne(i => i.Activity)
+            .HasForeignKey(i => i.ActivityId);
         // for coupons
         modelBuilder.Entity<Coupon>().HasOne(c => c.Activity).WithMany().IsRequired(false);
         modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);

@@ -132,7 +132,8 @@ public class CustomerController : ControllerBase
         {
             var result =
                 args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
-                await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike) :
+                await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, 
+                    args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike, args.IsOfficialPartner) :
                 await customerRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -225,7 +226,7 @@ public class CustomerController : ControllerBase
         {
             var result = await customerRepository.Update(args.CustomerId, args.FirstName, args.LastName, args.Email,
                 args.Birthdate, args.PhoneNumber, args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, 
-                args.IsVerified,args.IsVerifiedDate , args.FrontIdImagePath, args.BackIdImagePath, args.TotalCredits, args.IsOG, args.IsOGDate, args.IsOF, args.IsOFDate);
+                args.IsVerified,args.IsVerifiedDate , args.FrontIdImagePath, args.BackIdImagePath, args.TotalCredits, args.IsOG, args.IsOGDate, args.IsOF, args.IsOFDate, args.ConnectionId, args.Handler);
 
             if (!result.Succeeded || result.Result == null)
             {

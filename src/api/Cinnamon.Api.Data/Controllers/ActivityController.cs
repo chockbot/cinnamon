@@ -111,7 +111,7 @@ public class ActivityController : ControllerBase
                         .GetAllAsync(args.CustomerId, args.IsActive, take, skip, args.ExperienceCategoryId.GetValueOrDefault(), args.SearchValue, args.IsDeactivated, args.Status,
                             args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false,
                             args.IncludeSchedules ?? false, args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.LikeHandler ?? null,
-                            args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false) :
+                            args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false) :
                     await activityRepository.GetAllAsync();
 
             if (!result.Succeeded || result.Result == null)
@@ -187,7 +187,7 @@ public class ActivityController : ControllerBase
                 args.Price, args.ScheduleIndicator, args.Remarks, args.IsPublished, args.Address1, args.Address2, args.District,
                 args.City, args.Subdivision, args.Region, args.Barangay, args.PostalCode, args.SpecificsYouWillProvide, args.CustomerBringWithThem,args.AdditionalRequirements, args.ActivityLevel, args.SkillLevel,
                 args.MinimumAge, args.CanAdultsJoin, args.Searchtag1, args.Searhtag2, args.Searhtag3, args.Searchtag4, args.Searchtag5,
-                args.ExperienceCategoryId, args.SubCategoryId,args.IsSetSession, args.SessionName, args.PinnedLocation, args.IsDeactivated, args.Status);
+                args.ExperienceCategoryId, args.SubCategoryId,args.IsSetSession, args.SessionName, args.PinnedLocation, args.IsDeactivated, args.Status, args.Handler);
 
             if (!result.Succeeded || result.Result == null)
             {
@@ -258,7 +258,7 @@ public class ActivityController : ControllerBase
                     await activityRepository.GetPopularActivitiesAsync(args.CustomerId, args.IsActive, args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.IsDeactivated,
                                         args.IncludeAddress ?? false, args.IncludeDescription ?? false, args.IncludeSearchTags ?? false, args.IncludeSchedules ?? false,
                                         args.IncludeImages ?? false, ids.Count > 0 ? ids : null, args.IncludeCustomer ?? false, args.IncludeExperienceTypes ?? false, 
-                                        args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false) :
+                                        args.IncludeExperienceCategories ?? false, args.IncludeSubCategories ?? false, args.IncludeStudents ?? false, args.IncludeReviews ?? false) :
                     await activityRepository.GetAllAsync();
             
             if (!result.Succeeded || result.Result == null)

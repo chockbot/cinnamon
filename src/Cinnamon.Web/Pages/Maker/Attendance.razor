@@ -22,37 +22,38 @@
 
 <section class="student-attendance mt-5 overflow-hidden">
     <h3 class="title">Check Attendance for Today - @Model.ServerDate.ToString("MMMM dd, yyyy")</h3>
-    <div class="activities-schedule-section schedule-swiper">
-        <div class="swiper-wrapper">
-            @foreach (var schedule in Model.Schedules)
-            {
-                @if (schedule.IsActiveSchedule == true)
+    <div class="activities-schedule-section">
+        <Dropdown>
+            <DropdownToggle>
+                Select Activity 
+                @if(selectCount == 0)
                 {
-                    <div class="swiper-slide shadow">
-                        <p class="schedule-title">@schedule.ActivityTitle</p>
-                        <p class="schedule-title">@schedule.ScheduleTitle</p>
-                        <p class="schedule-time">@schedule.ScheduleDescription</p>
-                        <p class="schedule-toggle">
-                            <div class="form-check form-switch">
-                                <span class="active-label">Set Inactive/Active:</span>
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(schedule.IsActiveSchedule == true)" @onchange="((e) => UpdateSchedule(e, schedule))">
-                             </div>
-                        </p>
-                        <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
-                            <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                            Select
-                        </Button>
-                    </div>
+                    @string.Empty;
                 }
-            }
+                else
+                {
+                    var count = "(" + selectCount + ")";
+                    @count.ToString();
+                }
+            </DropdownToggle>
+            <DropdownMenu>
+                @foreach (var schedule in Model.Schedules)
+                {
+                    <button class="check-button" type="button" @onclick="() => CheckUnCheckSchedule(schedule)">
+                        <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                        <p class="activity-title">@schedule.ActivityTitle</p>
+                        <p class="schedule-title">@schedule.ScheduleTitle - @schedule.ScheduleDescription</p>
+                    </button>
+                }
+            </DropdownMenu>
+        </Dropdown>
         </div>
-        <div class="swiper-scrollbar"></div>
-    </div>
+    <hr />
     <div class="student-attendance-section">
         <div class="tool-action">
             <Button class="check-button" Type="ButtonType.Button" Clicked="CheckUnCheckAllStudent">
                 <img class="me-1" src='@(Model.IsCheckAllStudent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                Select All
+                Check All
             </Button>
             <TextEdit TextChanged="TextSearchChanged" class="search-text" Size="Size.Small" Placeholder="Search" Role="TextRole.Text" />
         </div>
@@ -156,7 +157,7 @@
 {
     private AttendanceModel Model {get; set;} = new();
     public Activity activity = new Activity();
-
+    public int selectCount = 0;
     // 2 seconds delay
     private Timer checkUncheckAllTimer = new Timer(2000);
 
@@ -293,6 +294,7 @@
         schedule.IsSelected = !schedule.IsSelected;
         if(schedule.IsSelected)
         {
+            selectCount++;
             var result = await dashboardApiHandler.GetCurrentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCurrentAttendanceArgs {
                 ActivityId = schedule.ActivityId,
                 ScheduleId = schedule.ScheduleId
@@ -315,6 +317,7 @@
         }
         else 
         {
+            selectCount--;
             Model.Attendances.RemoveAll(s => s.ActivityId == schedule.ActivityId && s.ScheduleId == schedule.ScheduleId);
         }
         Model.FilteredAttendance = Model.Attendances;

@@ -18,7 +18,7 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
 
     public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, 
         decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal, 
-        int status, string payload, decimal creditAmount, decimal unitPrice, int unitCount)
+        int status, string payload, decimal creditAmount, decimal unitPrice, int unitCount, bool isInclusivePayment)
     {
         try
         {
@@ -63,7 +63,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Payload = payload,
                 CreditAmount = creditAmount,
                 UnitCount = unitCount,
-                UnitPrice = unitPrice
+                UnitPrice = unitPrice,
+                IsInclusivePayment = isInclusivePayment
             };
 
             var createdPurchaseOrder = await dataStore.PurchaseOrder.Add(purchaseOrder);
@@ -98,7 +99,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Payload = payload,
                 CreditAmount = creditAmount,
                 UnitCount = unitCount,
-                UnitPrice = unitPrice
+                UnitPrice = unitPrice,
+                IsInclusivePayment = isInclusivePayment
             }, "Successfully created purchase order");
         }
         catch (Exception ex)
@@ -141,7 +143,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Payload = p.Payload,
                     CreditAmount = p.CreditAmount,
                     UnitCount = p.UnitCount,
-                    UnitPrice = p.UnitPrice
+                    UnitPrice = p.UnitPrice,
+                    IsInclusivePayment = p.IsInclusivePayment
                 };
 
                 // include activity details
@@ -200,7 +203,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Payload = p.Payload,
                     CreditAmount = p.CreditAmount,
                     UnitCount = p.UnitCount,
-                    UnitPrice = p.UnitPrice
+                    UnitPrice = p.UnitPrice,
+                    IsInclusivePayment = p.IsInclusivePayment
                 };
             });
 
@@ -236,7 +240,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Payload = result.Result.Payload,
                 CreditAmount = result.Result.CreditAmount,
                 UnitCount = result.Result.UnitCount,
-                UnitPrice = result.Result.UnitPrice
+                UnitPrice = result.Result.UnitPrice,
+                IsInclusivePayment = result.Result.IsInclusivePayment
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -311,7 +316,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 Payload = updated.Payload,
                 CreditAmount = updated.CreditAmount,
                 UnitCount = updated.UnitCount,
-                UnitPrice = updated.UnitPrice
+                UnitPrice = updated.UnitPrice,
+                IsInclusivePayment = updated.IsInclusivePayment
             }, "Successfully updated purchase order");
         }
         catch (Exception ex)
@@ -343,7 +349,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Total = p.Total,
                     Status = p.Status,
                     Payload = p.Payload,
-                    CreditAmount = p.CreditAmount
+                    CreditAmount = p.CreditAmount,
+                    IsInclusivePayment = p.IsInclusivePayment
                 };
             });
 
@@ -382,6 +389,25 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<PurchaseOrderDTO>>.CreateFailed(ex, "An error occured when updating purchase orders");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<InclusivePurchaseOrderDTO>>> GetInclusiveTransactions(string? name, string? email, 
+        int? status, DateTime? dateFrom, DateTime? dateTo) 
+    {
+        try
+        {
+            var result = await dataStore.PurchaseOrder.GetInclusiveTransaction(name, email, status, dateFrom, dateTo);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateSucceeded(result.Result, "Successfuly get inclusive transactions");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<InclusivePurchaseOrderDTO>>.CreateFailed(ex, "An error occured when getting inclusive transactions");
         }
     }
 }

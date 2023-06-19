@@ -16,18 +16,17 @@
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
-@inject IAccountApiHandler accountApiHandler;
-@inject IActivityApiHandler activityApiHandler;
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@inject IDashboardApiHandler dashboardApiHandler
 
+@if (Model != null)
+{
 <PageTitle>Activity Provider Profile - @MakerFullname | CinnamonPH</PageTitle>
 <SeoMeta Subject="Activity Provider Profile" Title="Activity Provider Profile"
-         Url='@($"/maker/profile/{Id}")' Description="@(customerDetail?.About ?? string.Empty)"
-         Image="@(customerDetail?.ProfilePath ?? string.Empty)" />
+         Url='@($"/maker/profile/{Id}")' Description="@(Model.CustomerProfile?.About ?? string.Empty)"
+         Image="@(Model.CustomerProfile?.ProfilePath ?? string.Empty)" />
 
-@if (activities != null)
-{
-    <Div ElementId="#b-animate">
-        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
             <div id="alertContainer" class="alertContainer">
                 <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
             </div>
@@ -46,9 +45,9 @@
                                 </CardHeader>
                                 <CardBody Border="Border.Is0" Padding="Padding.Is3.OnY">
                                     <CardTitle TextAlignment="TextAlignment.Center">
-                                        <p class="text-capitalize fw-bold m-0 mb-1 font-30">@customerDetail.FirstName @customerDetail.LastName</p>
+                                    <p class="text-capitalize fw-bold m-0 mb-1 font-30">@Model.CustomerProfile.FirstName @Model.CustomerProfile.LastName</p>
                                         <p class="text-color-8080 font-16 mb-1">Use the badge to prove your identify to others.</p>
-                                        @switch (customerDetail.IsVerified)
+                                    @switch (Model.CustomerProfile.IsVerified)
                                         {
                                             case 0:
                                                 <p class="text-color-8080 my-1 font-24">
@@ -78,15 +77,139 @@
                         <Column class="profile-details" ColumnSize="ColumnSize.Is9.OnDesktop.Is6.OnTablet.Is12.OnMobile">
                             <Div Padding="Padding.Is5.OnX.OnDesktop" Margin="Margin.Is2.FromTop.OnMobile">
                                 <Div>
-                                    <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@customerDetail.FirstName</span></p>
-                                    <p class="m-0 text-color-8080 font-14">Joined in @customerDetail.DateJoined.Year</p>
+                                    <p class="m-0 font-30 fw-bold">Hi, I'm <span class="text-capitalize">@Model.CustomerProfile.FirstName</span></p>
+                                    <p class="m-0 text-color-8080 font-14">Joined in @Model.CustomerProfile.DateJoined.Year</p>
                                 </Div>
                                 <Div Display="Display.Flex" Flex="Flex.AlignItems.Center.JustifyContent.Between">
                                     <Div Display="Display.Flex" Flex="Flex.AlignItems.Center">
                                         <p class="my-3 fw-bold font-18">About you</p>
                                     </Div>
                                 </Div>
-                                <p class="m-0 text-color-8080 font-16">@customerDetail.About</p>
+                                <p class="m-0 text-color-8080 font-16">@Model.CustomerProfile.About</p>
+                                @*Activity Provider Badges*@
+                                @if (Model.CustomerProfile.IsVerified == 2)
+                                {
+                                    <p class="@displayBadge my-3 fw-bold font-18">Badges</p>
+                                    <div class="@displayBadge justify-content-center">
+                                        <Card class="badges-column">
+                                            <CardBody Flex="Flex.AlignContent.Center">
+                                                @if (Model.CustomerProfile.IsVerified == 2)
+                                                {
+                                                    cnt++;
+                                                    <Tooltip Multiline=true Text="For uploading and completing all identification requirements." Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>Verified</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (Model.CustomerProfile.IsOG == true)
+                                                {
+                                                    cnt++;
+                                                    <Tooltip Multiline=true Text="For being part of the alpha and beta testing." Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="images/Badges/OG.svg" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>OG</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (Model.CustomerProfile.IsOfficial == true)
+                                                {
+                                                    cnt++;
+                                                    <Tooltip Multiline=true Text="Legitimate experience provider in the platform." Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>Official Partner</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (MakerCompletedStudent >= 10)
+                                                {
+                                                    cnt++;
+                                                    var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
+                                                    <Tooltip Multiline=true Text="@rare.Description" Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="@rare.ImgScr" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>@rare.Name</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (MakerCompletedStudent >= 25)
+                                                {
+                                                    cnt++;
+                                                    var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
+                                                    <Tooltip Multiline=true Text="@epic.Description" Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="@epic.ImgScr" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>@epic.Name</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (MakerCompletedStudent >= 100)
+                                                {
+                                                    cnt++;
+                                                    var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
+                                                    <Tooltip Multiline=true Text="@legendary.Description" Flex="Flex.AlignContent">
+                                                        <img class="verified-logo" src="@legendary.ImgScr" />
+                                                        <div class="badge-name @displayText">
+                                                            @if (cnt <= 3)
+                                                            {
+                                                                <p>@legendary.Name</p>
+                                                            }
+                                                            else
+                                                            {
+                                                                displayText = "d-none";
+                                                            }
+                                                        </div>
+                                                    </Tooltip>
+                                                }
+                                                @if (cnt == 0)
+                                                {
+                                                    displayBadge = "d-none";
+                                                }
+                                            </CardBody>
+                                        </Card>
+                                    </div>
+                                }
+                                else
+                                {
+                                    displayBadge = "d-none";
+                                }
                             </Div>
                         </Column>
                     </Row>
@@ -101,14 +224,12 @@
                         </Items>
                         <Content>
                             <TabPanel Name="maker-experience">
-                                <MakerExperiences Activities="activities" />
+                                <MakerExperiences @ref="makerExperiences" Activities="activities" Profile="Model.CustomerProfile" />
                             </TabPanel>
                         </Content>
                     </Tabs>
                 </Container>
             </section>
-        </Animate>
-    </Div>
 }
 
 
@@ -116,20 +237,32 @@
 {
     IJSObjectReference module;
 
+    private MakerExperiences makerExperiences;
+
     [Parameter]
     public string Id { get; set; }
 
     public List<Activity> activities = new List<Activity>();
 
-    private MakerExperiences makerExperiences;
-
     private string selectedTab = "maker-experience";
 
     private string ImageSource { get; set; } = "images/Profile/user";
 
-    public CustomerProfile customerDetail = new CustomerProfile();
+    private Models.Customer.Profile Model;
+
+    public List<BadgeList> badges = new List<BadgeList>();
 
     public int MakerId { get; set; }
+
+    public int cnt = 0;
+
+    public string displayBadge = "d-flex";
+
+    public string displayText = "d-flex";
+
+    public int MakerOngoingStudent { get; set; }
+
+    public int MakerCompletedStudent { get; set; }
 
     //public CustomerModel Customer { get; set; }
 
@@ -143,41 +276,47 @@
     {
         try
         {
+            await FetchMakerBadges();
             //Get Customer By Id
             bool isIdUsed = int.TryParse(Id, out int intId);
             var customer = isIdUsed ? await accountApiHandler.GetCustomerById(intId) : await accountApiHandler.GetMakerDetailByHandler(Id.Trim());
-            if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
-            {
-                var args = customer.Result.Result;
-                customerDetail = new CustomerProfile
-                    {
-                        FirstName = args.FirstName,
-                        LastName = args.LastName,
-                        Id = args.Id,
-                        IsMaker = args.IsMaker,
-                        ProfilePath = args.ProfileImg,
-                        IsVerified = args.IsVerified,
-                        About = args.About,
-                        DateJoined = args.DateJoined,
-                        Email = args.Email
-                    };
-                ImageSource = customerDetail.ProfilePath;
-            }
-            else
+            if ((!customer.Succeeded || customer.Result == null) || (customer.Succeeded && !customer.Result.IsSuccess))
             {
                 NavigationManager.NavigateTo("/page-not-found");
             }
+            var profile = customer.Result.Result;
+            Model = new Models.Customer.Profile
+                {
+                    CustomerProfile = new Models.Entities.CustomerProfile
+                    {
+                        About = profile.About,
+                        Birthdate = profile.Birthdate,
+                        Email = profile.Email,
+                        FirstName = profile.FirstName,
+                        LastName = profile.LastName,
+                        Id = profile.Id,
+                        IsMaker = profile.IsMaker,
+                        IsVerified = profile.IsVerified,
+                        IsOG = profile.IsOG,
+                        IsOfficial = profile.IsOfficial,
+                        ProfilePath = profile.ProfileImg,
+                        DateJoined = profile.DateJoined,
+                        Handler = profile.Handler
+                    }
+                };
+            ImageSource = Model.CustomerProfile.ProfilePath;
             //Get Maker Activity
             var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
                 {
-                    CustomerId = customerDetail.Id,
+                    CustomerId = Model.CustomerProfile.Id,
                     IncludeActivityAddress = true,
                     IncludeActivityDescription = true,
                     IncludeActivityImages = true,
                     IncludeAtivitySchedules = true,
                     IsActive = true,
                     IncludeStudents = true,
-                    IncludeCustomer = true
+                    IncludeCustomer = true,
+                    IncludeReviews = true
                 });
             if (ActivityList.Succeeded && ActivityList.Result != null && ActivityList.Result.IsSuccess)
             {
@@ -207,6 +346,8 @@
                                 IsNew = a.IsNew,
                                 OngoingStudents = a.OngoingStudents,
                                 CompletedStudents = a.CompletedStudents,
+                                AverageRating = a.AverageRating,
+                                NumberOfReviews = a.NumberOfReviews,
                                 Images = a.Images.Select(i =>
                     {
                                 return new ActivityImage
@@ -238,6 +379,8 @@
                     }).ToList();
                 }
             }
+            MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
+            MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
         }
         catch (Exception e)
         {
@@ -250,9 +393,31 @@
     {
         get
         {
-            if (customerDetail == null) return string.Empty;
+            if (Model.CustomerProfile == null) return string.Empty;
 
-            return customerDetail.FirstName?.ToUpper() + " " + customerDetail.LastName?.ToUpper();
+            return Model.CustomerProfile.FirstName?.ToUpper() + " " + Model.CustomerProfile.LastName?.ToUpper();
+        }
+    }
+
+    private async Task FetchMakerBadges()
+    {
+        //Get Badges
+        var badgeList = await dashboardApiHandler.GetAllBadge();
+        if (badgeList.Succeeded && badgeList.Result != null && badgeList.Result.IsSuccess)
+        {
+            badges = badgeList.Result.Result.Select(b =>
+            {
+                return new BadgeList
+                    {
+                        Id = b.Id,
+                        Name = b.Name,
+                        Description = b.Description,
+                        NumberOfStudent = b.NumberOfStudent,
+                        NumberOfCompleted = b.NumberOfCompleted,
+                        NumberOfReviews = b.NumberOfReviews,
+                        ImgScr = b.ImgScr
+                    };
+            }).ToList();
         }
     }
 
@@ -264,6 +429,7 @@
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.profile.init", "Experience Details Page Loaded");
     }
+
     private async Task CopyToClipboard()
     {
         await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));

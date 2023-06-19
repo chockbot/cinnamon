@@ -21,10 +21,10 @@
 
 @if(Model != null)
 {
-    <div id="alertContainer" class="alertContainer">
-        <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
-    </div>
-    <section class="py-3 mt-5 profile-content">
+        <div id="alertContainer" class="alertContainer">
+            <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
+        </div>
+        <section class="py-3 mt-5 profile-content">
         <Container>
             <Row>
                 <Column class="profile-column-card" ColumnSize="ColumnSize.Is3.OnDesktop.Is6.OnTablet.Is12.OnMobile">
@@ -188,7 +188,7 @@
                                                 </div>
                                         </Tooltip>
                                     }
-                                    @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                    @if (MakerCompletedStudent >= 10)
                                     {
                                         cnt++;
                                         var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
@@ -206,7 +206,7 @@
                                             </div>
                                         </Tooltip>
                                     }
-                                    @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                    @if (MakerCompletedStudent >= 25)
                                     {
                                         cnt++;
                                         var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
@@ -259,80 +259,80 @@
         </Container>
     </section>
 
-    <section class="mt-5 customer-profile-details">
-        <Container>
-            <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
-                <div class="swiper-wrapper">
-                    <div class='swiper-slide @(selectedTab == "experiences" ? "swiper-slide-active" : "")'>
-                        <div class='tab-item @(selectedTab == "experiences" ? "active" : "")'
-                            @onclick='() => selectedTab = "experiences"'>
-                            experiences
-                        </div>
-                    </div>
-                    <div class='swiper-slide @(selectedTab == "personal-info" ? "swiper-slide-active" : "")'>
-                        <div class='tab-item @(selectedTab == "personal-info" ? "active" : "")'
-                            @onclick='() => selectedTab = "personal-info"'>
-                            personal info
-                        </div>
-                    </div>
-                    @if(Model.CustomerProfile.IsMaker)
-                    {
-                        <div class='swiper-slide @(selectedTab == "maker-experience" ? "swiper-slide-active" : "")'>
-                            <div class='tab-item @(selectedTab == "maker-experience" ? "active" : "")'
-                                @onclick='() => selectedTab = "maker-experience"'>
-                                created experiences
+        <section class="mt-5 customer-profile-details">
+            <Container>
+                <Div Overflow="Overflow.Hidden" class="ongoing-experiences-container personal-tab-swiper" Display="Display.None.OnDesktop.Block.OnMobile">
+                    <div class="swiper-wrapper">
+                        <div class='swiper-slide @(selectedTab == "experiences" ? "swiper-slide-active" : "")'>
+                            <div class='tab-item @(selectedTab == "experiences" ? "active" : "")'
+                                @onclick='() => selectedTab = "experiences"'>
+                                experiences
                             </div>
                         </div>
-                    }
-                    <div class='swiper-slide @(selectedTab == "request-for-refund" ? "swiper-slide-active" : "")'>
-                        <div class='tab-item @(selectedTab == "request-for-refund" ? "active" : "")'
-                            @onclick='() => selectedTab = "request-for-refund"'>
-                            request refund
+                        <div class='swiper-slide @(selectedTab == "personal-info" ? "swiper-slide-active" : "")'>
+                            <div class='tab-item @(selectedTab == "personal-info" ? "active" : "")'
+                                @onclick='() => selectedTab = "personal-info"'>
+                                personal info
+                            </div>
+                        </div>
+                        @if(Model.CustomerProfile.IsMaker)
+                        {
+                            <div class='swiper-slide @(selectedTab == "maker-experience" ? "swiper-slide-active" : "")'>
+                                <div class='tab-item @(selectedTab == "maker-experience" ? "active" : "")'
+                                    @onclick='() => selectedTab = "maker-experience"'>
+                                    created experiences
+                                </div>
+                            </div>
+                        }
+                        <div class='swiper-slide @(selectedTab == "request-for-refund" ? "swiper-slide-active" : "")'>
+                            <div class='tab-item @(selectedTab == "request-for-refund" ? "active" : "")'
+                                @onclick='() => selectedTab = "request-for-refund"'>
+                                request refund
+                            </div>
+                        </div>
+                        <div class='swiper-slide @(selectedTab == "cinnamon-credit" ? "swiper-slide-active" : "")'>
+                            <div class='tab-item @(selectedTab == "cinnamon-credit" ? "active" : "")'
+                                @onclick='() => selectedTab = "cinnamon-credit"'>
+                                cinnamon credits
+                            </div>
                         </div>
                     </div>
-                    <div class='swiper-slide @(selectedTab == "cinnamon-credit" ? "swiper-slide-active" : "")'>
-                        <div class='tab-item @(selectedTab == "cinnamon-credit" ? "active" : "")'
-                            @onclick='() => selectedTab = "cinnamon-credit"'>
-                            cinnamon credits
-                        </div>
-                    </div>
-                </div>
-            </Div>
-            <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
-                <Items>
-                    <Tab Name="experiences" TextTransform="TextTransform.Capitalize">enrolled experiences</Tab>
-                    <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
-                    @if(Model.CustomerProfile.IsMaker)
-                    {
-                        <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
-                    }
-                    <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">request refund</Tab>
-                    <Tab Name="cinnamon-credit" TextTransform="TextTransform.Capitalize">cinnamon credits</Tab>
-                </Items>
-                <Content>
-                    <TabPanel Name="experiences">
-                        <Experiences Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
-                    </TabPanel>
-                    <TabPanel Name="personal-info">
-                        <PersonalInfo @bind-Model="Model" OnEditIdClick="() => NavigateToUploadId()" />
-                    </TabPanel>
-                    @if(Model.CustomerProfile.IsMaker)
-                    {
-                        <TabPanel Name="maker-experience">
-                            <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" />
+                </Div>
+                <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
+                    <Items>
+                        <Tab Name="experiences" TextTransform="TextTransform.Capitalize">enrolled experiences</Tab>
+                        <Tab Name="personal-info" TextTransform="TextTransform.Capitalize">personal info</Tab>
+                        @if(Model.CustomerProfile.IsMaker)
+                        {
+                            <Tab Name="maker-experience" TextTransform="TextTransform.Capitalize">created experiences</Tab>
+                        }
+                        <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">request refund</Tab>
+                        <Tab Name="cinnamon-credit" TextTransform="TextTransform.Capitalize">cinnamon credits</Tab>
+                    </Items>
+                    <Content>
+                        <TabPanel Name="experiences">
+                            <Experiences Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
                         </TabPanel>
-                    }
-                    <TabPanel Name="request-for-refund">
-                        <RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token"/>
-                    </TabPanel>
-                    <TabPanel Name="cinnamon-credit">
-                        <CinnamonCredits Token="@Model.Token" />
-                    </TabPanel>
-                </Content>
-            </Tabs>
-        </Container>
-    </section>
-    <ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
+                        <TabPanel Name="personal-info">
+                            <PersonalInfo @bind-Model="Model" OnEditIdClick="() => NavigateToUploadId()" />
+                        </TabPanel>
+                        @if(Model.CustomerProfile.IsMaker)
+                        {
+                            <TabPanel Name="maker-experience">
+                                <MakerExperiences @ref="makerExperiences" Activities="Model.OwnedActivities" Profile="Model.CustomerProfile" />
+                            </TabPanel>
+                        }
+                        <TabPanel Name="request-for-refund">
+                            <RequestRefund Profile="Model.CustomerProfile" Token="@Model.Token"/>
+                        </TabPanel>
+                        <TabPanel Name="cinnamon-credit">
+                            <CinnamonCredits Token="@Model.Token" />
+                        </TabPanel>
+                    </Content>
+                </Tabs>
+            </Container>
+        </section>
+        <ModalUploadingProfile @ref="upload" Token="@Model.Token"></ModalUploadingProfile>
 }
 
 @code 
@@ -514,6 +514,7 @@
                         return new ActivitySchedule
                         {
                             Id = s.Id,
+                            Name = s.Name
                         };
                     }).ToList(),
                     Owner = a.Owner != null ? new CustomerProfile
@@ -531,6 +532,7 @@
             {
                 About = profile.About,
                 Birthdate = profile.Birthdate,
+                PhoneNumber = profile.PhoneNumber,
                 Email = profile.Email,
                 FirstName = profile.FirstName,
                 LastName = profile.LastName,
@@ -541,7 +543,7 @@
                 IsOfficial = profile.IsOfficial,
                 ProfilePath = profile.ProfileImg,
                 DateJoined = profile.DateJoined,
-                Handler = profile.Handler
+                Handler = profile.Handler,            
             },
             FamilyMembers = familyMembers,
             OwnedActivities = ownedActivities,

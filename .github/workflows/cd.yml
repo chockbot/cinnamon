@@ -7,7 +7,7 @@ on:
 env:
   FLAG_ENV: Development
   BASE_URL: "https://dev.cinnamon.ph"
-
+  CHATHUB_DEV_URL: "https://dev.cinnamon.ph/chathub"
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -57,6 +57,7 @@ jobs:
         env:
           AppConfig.Environment: ${{ env.FLAG_ENV }}
           AppConfig.BaseUrl: ${{ env.BASE_URL }}
+          AppConfig.ChatHubUrl: ${{ env.CHATHUB_DEV_URL }}
 
       - name: Restore Framework
         run: dotnet restore src/Cinnamon.Framework/Cinnamon.Framework.csproj

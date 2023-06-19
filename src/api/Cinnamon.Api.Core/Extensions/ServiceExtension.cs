@@ -46,8 +46,12 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IPayoutAccountData, Modules.DataAccess.PayoutAccount.PayoutAccountData>();
         services.AddTransient<Modules.DataAccess.Handlers.IPayoutLogData, Modules.DataAccess.PayoutLog.PayoutLogData>();
         services.AddTransient<Modules.DataAccess.Handlers.IAdminUserData, Modules.DataAccess.AdminUser.AdminUserData>();
-
         services.AddTransient<Modules.DataAccess.Handlers.IBadgesData, Modules.DataAccess.Badges.BadgesData>();
+        services.AddTransient<Modules.DataAccess.Handlers.ICustomerPricingData, Modules.DataAccess.CustomerPricingData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IChatHistoryData, Modules.DataAccess.ChatHistory.ChatHistoryData>();
+        services.AddTransient<Modules.DataAccess.Handlers.IChatRoomData, Modules.DataAccess.ChatRoom.ChatRoomData>();
+
+        services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
         services.AddTransient<Modules.DataAccess.Handlers.ICouponData, Modules.DataAccess.Coupon.CouponData>();
          
         // ongoing activity services
@@ -90,6 +94,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IUpdateRequestRefundHandler, Services.AccountService.UpdateRequestRefundHandler>();
         services.AddTransient<Services.AccountService.Handlers.IUpdateCreditBalanceHandler, Services.AccountService.UpdateCreditBalanceHandler>();
         services.AddTransient<Services.AccountService.Handlers.IAccountSubmitVerifiedHandler, Services.AccountService.AccountSubmitVerifiedHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IUpdateConnectionIdHandler, Services.AccountService.UpdateConnectionIdHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IGenerateCustomerHandler, Services.AccountService.GenerateCustomerHandler>();
         
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
@@ -119,6 +125,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityScheduleHandler, Services.ActivityService.UpdateActivityScheduleHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateActivityGuidHandler, Services.ActivityService.UpdateActivityGuidHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IDeleteActivityHandler, Services.ActivityService.DeleteActivityHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IOwnerPricingInclusiveHandler, Services.ActivityService.OwnerPricingInclusiveHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGenerateActivityHandler, Services.ActivityService.GenerateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.ICreateCouponHandler, Services.ActivityService.CreateCouponHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IProviderCreateCouponHandler, Services.ActivityService.ProviderCreateCouponHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetCouponsHandler, Services.ActivityService.GetCouponsHandler>();
@@ -141,6 +149,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.DashboardService.Handlers.ICreateStudentAttendanceHandler, Services.DashboardService.CreateStudentAttendanceHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetAllBadgesHandler, Services.DashboardService.GetAllBadgeHandler>();
         services.AddTransient<Services.DashboardService.Handlers.IGetAllStudentsAttendanceHandler, Services.DashboardService.GetAllStudentsAttendanceHandler>();
+        services.AddTransient<Services.DashboardService.Handlers.IGetCompletedStudentsHandler, Services.DashboardService.GetCompletedStudentsHandler>();    
 
         //OnGoingActivities
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllOngoingActivitiesHandler, Services.OnGoingActivityService.GetAllOngoingActivitiesHandler>();
@@ -148,6 +157,12 @@ public static class ServiceExtenstion
         services.AddTransient<Services.OnGoingActivityService.Handlers.IUpdateOngoingActivityHadler, Services.OnGoingActivityService.UpdateOngoingActivityHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IAddActivityExpirationHandler, Services.OnGoingActivityService.AddActivityExpirationHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetEnrolledStudentsHandler, Services.OnGoingActivityService.GetEnrolledStudentsHandler>();  
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetCompletedStudentsByIdHandler, Services.OnGoingActivityService.GetCompletedStudentsByIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.ICreateReviewHandler, Services.OnGoingActivityService.CreateReviewHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllStudentsByIdHandler, Services.OnGoingActivityService.GetAllStudentsByIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByMakerIdHandler, Services.OnGoingActivityService.GetReviewsByMakerIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByCustomerIdHandler, Services.OnGoingActivityService.GetReviewsByCustomerIdHandler>();
+        services.AddTransient < Services.OnGoingActivityService.Handlers.IGetReviewsByActivityIdHandler, Services.OnGoingActivityService.GetReviewsByActivityIdHandler>();
 
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();
@@ -163,7 +178,18 @@ public static class ServiceExtenstion
 
         //admin services
         services.AddTransient<Services.AdminService.Handlers.IGetAdminUserByEmailHandler, Services.AdminService.GetAdminUserByEmailHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
+        services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
         services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
+
+        //chat services
+        services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IUpdateChatHistoryHandler, Services.ChatService.UpdateChatHistoryHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetChatHistoryByChatRoomIdHandler, Services.ChatService.GetChatHistoryByChatRoomIdHandler>();
+        services.AddTransient<Services.ChatService.Handlers.ICreateChatRoomHandler, Services.ChatService.CreateChatRoomHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetChatRoomsByUserIdHandler, Services.ChatService.GetChatRoomsByUserIdHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetChatMembersByChatRoomIdHandler, Services.ChatService.GetChatMembersByChatRoomIdHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IUpdateChatMemberHandler, Services.ChatService.UpdateChatMemberHandler>();
 
         return services;
     }

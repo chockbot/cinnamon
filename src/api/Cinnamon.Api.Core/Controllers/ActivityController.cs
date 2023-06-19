@@ -39,6 +39,7 @@ public class ActivityController : ControllerBase
     private readonly IGetRefundableExperienceHandler getRefundableExperienceHandler;
     private readonly IUpdateActivityScheduleHandler updateActivityScheduleHandler;
     private readonly IDeleteActivityHandler deleteActivityHandler;
+    private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
     private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
     private readonly IGetCouponsHandler getCouponsHandler;
     private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
@@ -56,7 +57,8 @@ public class ActivityController : ControllerBase
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
         IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
-        IDeleteActivityHandler deleteActivityHandler, IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
+        IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler, 
+        IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
         IUpdateCouponStatusHandler updateCouponStatusHandler)
     {
         _logger = logger;
@@ -87,6 +89,7 @@ public class ActivityController : ControllerBase
         this.getRefundableExperienceHandler = getRefundableExperienceHandler;
         this.updateActivityScheduleHandler = updateActivityScheduleHandler;
         this.deleteActivityHandler = deleteActivityHandler;
+        this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
         this.providerCreateCouponHandler = providerCreateCouponHandler;
         this.getCouponsHandler = getCouponsHandler;
         this.updateCouponStatusHandler = updateCouponStatusHandler;
@@ -675,7 +678,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents ?? false
+                IncludeStudents = args.IncludeStudents ?? false,
+                IncludeReviews = args.IncludeReviews ?? false
             }) ;
 
             if (!result.Succeeded || result.Result == null)
@@ -746,6 +750,8 @@ public class ActivityController : ControllerBase
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        AverageRating = a.AverageRating,
+                        NumberOfReviews = a.NumberOfReviews,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
@@ -789,7 +795,8 @@ public class ActivityController : ControllerBase
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
                 Status = args.Status,
-                IsAdmin = args.IsAdmin
+                IsAdmin = args.IsAdmin,
+                IncludeReviews = args.IncludeReviews ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -874,7 +881,9 @@ public class ActivityController : ControllerBase
                         IsNew = a.IsNew,
                         CompletedStudents = a.CompletedStudents,
                         OngoingStudents = a.OngoingStudents,
-                        IsDeactivated = a.IsDeactivated
+                        IsDeactivated = a.IsDeactivated,
+                        NumberOfReviews = a.NumberOfReviews,
+                        AverageRating = a.AverageRating,
                     };
                 }).AsQueryable()
             });
@@ -1578,6 +1587,7 @@ public class ActivityController : ControllerBase
                 CountPerPage = args.CountPerPage,
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
+                IncludeReviews = args.IncludeReviews ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1659,7 +1669,9 @@ public class ActivityController : ControllerBase
                         } : null,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
-                        CompletedStudents = a.CompletedStudents
+                        CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews = a.NumberOfReviews,
+                        AverageRating = a.AverageRating
                     };
                 }).AsQueryable()
             });
@@ -1783,6 +1795,37 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OwnerPricingInclusive/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OwnerPricingInclusiveResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> OwnerPricingInclusive(int id)
+    {
+        try
+        {
+            var result = await ownerPricingInclusiveHandler.ExecuteAsync(new Services.ActivityService.Interactors.OwnerPricingInclusiveArgs {
+                CustomerId = id
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OwnerPricingInclusiveResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OwnerPricingInclusiveResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityOwnerPricingInclusiveDTO {
+                    IsInclusivePricing = result.Result.IsInclusivePricing
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OwnerPricingInclusiveResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 

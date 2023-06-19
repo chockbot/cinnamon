@@ -16,4 +16,5 @@ public class PurchaseOrderDTO
     public decimal ServiceFee {get; set;}
     public decimal PaymentProviderFee {get; set;}
     public decimal AppliedCredit {get; set;}
+    public bool IsInclusivePayment {get; set;}
 }
