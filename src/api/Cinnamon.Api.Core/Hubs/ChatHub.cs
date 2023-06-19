@@ -6,6 +6,7 @@ using Cinnamon.Framework.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR;
+using System;
 using System.Security.Claims;
 
 namespace Cinnamon.Api.Core.Hubs
@@ -220,6 +221,8 @@ namespace Cinnamon.Api.Core.Hubs
                         await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{Context.ConnectionId}");
                 }
             }
+
+            await base.OnConnectedAsync();
         }
 
         public async override Task OnDisconnectedAsync(Exception? exception)
@@ -233,6 +236,8 @@ namespace Cinnamon.Api.Core.Hubs
                 ConnectionId = string.Empty,
                 CustomerId = Convert.ToInt32(userId)
             });
+
+            await base.OnDisconnectedAsync(exception);
         }
     }
 }

@@ -185,7 +185,14 @@
                             </div>
                              <div class="col-lg-10 col-md-10 col-sm-10 col-10 text-center">
                                 <div class="chat-profile-name">
-                                    @chatMateFullName
+                                    @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
+                                    {
+                                        @chatMateFullName
+                                    }
+                                    else
+                                    {
+                                        @chatMateChatName
+                                    }
                                 </div>
                             </div>
                             <div class="col-lg-1 col-md-1 col-sm-1 col-1 chat-profile-info-icon-section">
@@ -391,11 +398,9 @@
                             <div class="col-lg-4 col-md-4 col-sm-4 col-4 send-private-message-section">
                                 @if (item.FromUserId != currentUserId)
                                 {
-                                    <span data-toggle="tooltip" title="Send a Message" data-bs-toggle="tooltip" data-bs-placement="top">
-                                        <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
-                                            <img src="images/Dashboard Icon/email.svg" class="send-private-message-picture" />
-                                        </button>
-                                    </span>
+                                    <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
+                                        <img src="images/Dashboard Icon/email.svg" class="send-private-message-picture" />
+                                    </button>
                                 }
                             </div>
                         }
@@ -653,24 +658,7 @@
 
             if (IsConnected)
             {
-                hubConnection.Closed += async (exception) =>
-                {
-                    logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
-
-                    TimeSpan retryDuration = TimeSpan.FromSeconds(30);
-
-                    while (DateTime.UtcNow < DateTime.UtcNow.Add(retryDuration))
-                    {
-                        logger.LogInformation($"reconnecting {currentUserId}");
-
-                        await hubConnection.StartAsync();
-                        if (IsConnected)
-                        {
-                            logger.LogInformation($"successfully reconnected {currentUserId}");
-                            return;
-                        }
-                    }
-                };
+                hubConnection.Closed += OnDisconnected;
             }
         }
 
@@ -735,6 +723,14 @@
             {
                 await GetChatHistoryByChatRoomId(chatRooms.FirstOrDefault().ChatRoomId, false, false);
                 DisplayChatRooms();
+
+                foreach (var item in chatRooms.Where(c => c.ChatType == Framework.Enums.Enums.ChatType.GroupChat))
+                {
+                    if (IsConnected)
+                    {
+                        await hubConnection.SendAsync("AddToGroup", item.GroupName, currentUserId);
+                    }
+                }
             }
             else
             {
@@ -890,10 +886,7 @@
 
                 if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat)
                 {
-                    if (IsConnected)                    {
-                        await hubConnection.SendAsync("AddToGroup", chatMateGroupName, currentUserId);
-                        showLeaveGroup = true;
-                    }
+                    showLeaveGroup = true;
                 }
 
                 chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId).HasNewMessage = false;
@@ -1042,6 +1035,36 @@
         StateHasChanged();
     }
 
+    private async Task OnDisconnected(Exception ex)
+    {
+        try
+        {
+            
+            logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
+
+            TimeSpan retryDuration = TimeSpan.FromSeconds(30);
+
+            while (DateTime.UtcNow < DateTime.UtcNow.Add(retryDuration))
+            {
+                logger.LogInformation($"reconnecting {currentUserId}");
+
+                await Task.Delay(3000).ContinueWith(async task =>
+                {
+                    await hubConnection.StartAsync();
+                });
+
+                if (IsConnected)
+                {
+                    logger.LogInformation($"successfully reconnected {currentUserId}");
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+
+        }
+    }
+
     void LocationChanged(object sender, LocationChangedEventArgs e)
     {
         selectedChatRoomId = 0;
@@ -1051,6 +1074,8 @@
     {
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
+        hubConnection.Closed -= OnDisconnected;
+
     }
 
     [JSInvokable]
