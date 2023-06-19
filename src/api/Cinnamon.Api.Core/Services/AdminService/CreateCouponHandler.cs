@@ -55,13 +55,16 @@ public class CreateCouponHandler : ICreateCouponHandler
                 return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
             }
 
-            // check activity
-            var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
-                ActivityId = args.ActivityId
-            });
-            if(!activityRes.Succeeded || activityRes.Result == null)
+            // check activity, skip if activity id == 0
+            if(args.ActivityId != 0)
             {
-                return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
+                var activityRes = await getActivityHandler.ExecuteAsync(new ActivityService.Interactors.GetActivityArgs {
+                    ActivityId = args.ActivityId
+                });
+                if(!activityRes.Succeeded || activityRes.Result == null)
+                {
+                    return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Invalid request."), "Invalid request.");
+                }
             }
 
             var createRes = await createCouponHandler.ExecuteAsync(new ActivityService.Interactors.CreateCouponArgs {
