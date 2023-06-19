@@ -31,4 +31,6 @@ public interface IActivityApiHandler
     Task<AppResult<GetRefundableExperienceResult>> GetRefundableExperience(string token);
     Task<AppResult<UpdateScheduleResult>> UpdateActivitySchedule(UpdateScheduleArgs args, string token);
     Task<AppResult<DeleteActivityResult>> DeleteActivityById(DeleteActivityArgs args, string token);
+    Task<AppResult<GetCouponsResult>> GetCoupons(string token);
+    Task<AppResult<CreateCouponResult>> CreateCoupon(CreateCouponArgs args, string token);
 } 
