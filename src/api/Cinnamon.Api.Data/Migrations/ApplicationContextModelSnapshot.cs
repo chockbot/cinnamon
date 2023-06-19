@@ -675,6 +675,74 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("Cities");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Coupon", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ActivityId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("DiscountType")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("From")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsAdmin")
+                        .HasColumnType("boolean");
+
+                    b.Property<decimal>("MaximumSpend")
+                        .HasColumnType("numeric");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("To")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("Code");
+
+                    b.HasIndex("CustomerId");
+
+                    b.HasIndex("Code", "CustomerId", "ActivityId");
+
+                    b.ToTable("Coupons");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
                 {
                     b.Property<int>("Id")
@@ -2024,6 +2092,23 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", "CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Coupon", b =>
+                {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId");
+
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
 
                     b.Navigation("Customer");
                 });

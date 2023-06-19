@@ -69,6 +69,8 @@ public class DataStore : IDataStore
     public IBadgeList BadgeList => new BadgeListEntity(applicationContext);
 
     public IAdminUser AdminUser => new AdminUserEntity(applicationContext);
+    
+    public ICoupon Coupon => new CouponEntity(applicationContext);
 
     public ICustomerPricing CustomerPricing => new CustomerPricingEntity(applicationContext);
     public IReviews Reviews => new ReviewsEntity(applicationContext);

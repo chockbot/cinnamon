@@ -52,6 +52,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IChatRoomData, Modules.DataAccess.ChatRoom.ChatRoomData>();
 
         services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
+        services.AddTransient<Modules.DataAccess.Handlers.ICouponData, Modules.DataAccess.Coupon.CouponData>();
+         
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
 
@@ -125,6 +127,10 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IDeleteActivityHandler, Services.ActivityService.DeleteActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOwnerPricingInclusiveHandler, Services.ActivityService.OwnerPricingInclusiveHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGenerateActivityHandler, Services.ActivityService.GenerateActivityHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ICreateCouponHandler, Services.ActivityService.CreateCouponHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IProviderCreateCouponHandler, Services.ActivityService.ProviderCreateCouponHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetCouponsHandler, Services.ActivityService.GetCouponsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IUpdateCouponStatusHandler, Services.ActivityService.UpdateCouponStatusHandler>();
         
         // transaction services
         services.AddTransient<Services.TransactionService.Handlers.IPurchaseOrderHandler, Services.TransactionService.PurchaseOrderHandler>();
@@ -174,6 +180,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.IGetAdminUserByEmailHandler, Services.AdminService.GetAdminUserByEmailHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
+        services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();

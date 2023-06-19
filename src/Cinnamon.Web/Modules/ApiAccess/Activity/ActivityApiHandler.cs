@@ -585,4 +585,71 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, "An error occured when getting owner pricing inclusive identifier api");
         }   
     }
+
+    public async Task<AppResult<GetCouponsResult>> GetCoupons(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GetCoupons")
+                .GetJsonAsync<GetCouponsResult>();
+
+            return AppResult<GetCouponsResult>.CreateSucceeded(result, "Successfully getting coupons");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCouponsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCouponsResult>.CreateFailed(ex, "An error occured when getting coupons");
+        }
+    }
+
+    public async Task<AppResult<CreateCouponResult>> CreateCoupon(CreateCouponArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateCoupon")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateCouponResult>();
+
+            return AppResult<CreateCouponResult>.CreateSucceeded(result, "Successfully called create coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateCouponResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateCouponResult>.CreateFailed(ex, "An error occured when calling create coupon api");
+        }
+    }
+
+    public async Task<AppResult<UpdateCouponStatusResult>> UpdateCouponStatus(UpdateCouponStatusArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateCouponStatus")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateCouponStatusResult>();
+
+            return AppResult<UpdateCouponStatusResult>.CreateSucceeded(result, "Successfully called create coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateCouponStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateCouponStatusResult>.CreateFailed(ex, "An error occured when calling create coupon api");
+        }
+    }
 }

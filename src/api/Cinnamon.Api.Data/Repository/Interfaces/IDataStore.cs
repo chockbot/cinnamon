@@ -34,6 +34,7 @@ public interface IDataStore
     IChatHistory ChatHistory {get; }
     IChatRooms ChatRooms {get; }
     IChatMember ChatMember {get; }
+    ICoupon Coupon {get; }
 
     IReviews Reviews { get; }
     Task EnsureMigrate();
