@@ -1039,7 +1039,6 @@
     {
         try
         {
-            
             logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
 
             TimeSpan retryDuration = TimeSpan.FromSeconds(30);
@@ -1061,7 +1060,7 @@
         }
         catch (Exception exception)
         {
-
+            logger.LogInformation($"reconnect error: {exception.Message}");
         }
     }
 

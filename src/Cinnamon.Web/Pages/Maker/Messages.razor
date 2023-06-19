@@ -658,24 +658,7 @@
 
             if (IsConnected)
             {
-                hubConnection.Closed += async (exception) =>
-                {
-                    logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
-
-                    TimeSpan retryDuration = TimeSpan.FromSeconds(30);
-
-                    while (DateTime.UtcNow < DateTime.UtcNow.Add(retryDuration))
-                    {
-                        logger.LogInformation($"reconnecting {currentUserId}");
-
-                        await hubConnection.StartAsync();
-                        if (IsConnected)
-                        {
-                            logger.LogInformation($"successfully reconnected {currentUserId}");
-                            return;
-                        }
-                    }
-                };
+                hubConnection.Closed += OnDisconnected;
             }
         }
 
@@ -1080,6 +1063,35 @@
         StateHasChanged();
     }
 
+    private async Task OnDisconnected(Exception ex)
+    {
+        try
+        {
+            logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
+
+            TimeSpan retryDuration = TimeSpan.FromSeconds(30);
+
+            while (DateTime.UtcNow < DateTime.UtcNow.Add(retryDuration))
+            {
+                logger.LogInformation($"reconnecting {currentUserId}");
+
+                await Task.Delay(3000).ContinueWith(async task =>
+                {
+                    await hubConnection.StartAsync();
+                });
+
+                if (IsConnected)
+                {
+                    logger.LogInformation($"successfully reconnected {currentUserId}");
+                }
+            }
+        }
+        catch (Exception exception)
+        {
+            logger.LogInformation($"reconnect error: {exception.Message}");
+        }
+    }
+
     void LocationChanged(object sender, LocationChangedEventArgs e)
     {
         selectedChatRoomId = 0;
@@ -1089,6 +1101,7 @@
     {
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
+        hubConnection.Closed -= OnDisconnected;
     }
 
     [JSInvokable]
