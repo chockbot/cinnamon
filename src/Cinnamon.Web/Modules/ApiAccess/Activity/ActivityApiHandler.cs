@@ -609,4 +609,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<CreateCouponResult>.CreateFailed(ex, "An error occured when calling create coupon api");
         }
     }
+
+    public async Task<AppResult<UpdateCouponStatusResult>> UpdateCouponStatus(UpdateCouponStatusArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateCouponStatus")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateCouponStatusResult>();
+
+            return AppResult<UpdateCouponStatusResult>.CreateSucceeded(result, "Successfully called create coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateCouponStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateCouponStatusResult>.CreateFailed(ex, "An error occured when calling create coupon api");
+        }
+    }
 }

@@ -92,8 +92,9 @@
                                 </TableRowCell>
                                 <TableRowCell>
                                     <div class="btn-status">
-                                        <button class="check-button" type="button">
-                                            <img class="me-1" src='@(item.Status == 1 ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                        <button class="check-button" type="button" @onclick="() => UpdateCouponStatus(item)">
+                                            <img class="me-1" alt="check-icon"
+                                                src='@(item.Status == 1 ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
                                         </button>
                                         <span>Active</span>
                                     </div>
@@ -382,6 +383,17 @@
         Form.Name = string.Empty;
         ListCoupons.IsShowErrorMessage = false;
         ListCoupons.ErrorMessage = string.Empty;
+    }
+
+    public async Task UpdateCouponStatus(CouponsModel.Coupon coupon)
+    {
+        coupon.Status = coupon.Status == 1 ? 0 : 1;
+        var updateRes = await activityApiHandler.UpdateCouponStatus(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateCouponStatusArgs {
+            Id = coupon.Id,
+            Status = coupon.Status
+        }, Token);
+
+        await FetchCouponCodes();
     }
     
 

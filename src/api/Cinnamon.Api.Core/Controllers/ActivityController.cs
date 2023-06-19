@@ -41,6 +41,8 @@ public class ActivityController : ControllerBase
     private readonly IDeleteActivityHandler deleteActivityHandler;
     private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
     private readonly IGetCouponsHandler getCouponsHandler;
+    private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
+
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -54,7 +56,8 @@ public class ActivityController : ControllerBase
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
         IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
-        IDeleteActivityHandler deleteActivityHandler, IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler)
+        IDeleteActivityHandler deleteActivityHandler, IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
+        IUpdateCouponStatusHandler updateCouponStatusHandler)
     {
         _logger = logger;
 
@@ -86,6 +89,7 @@ public class ActivityController : ControllerBase
         this.deleteActivityHandler = deleteActivityHandler;
         this.providerCreateCouponHandler = providerCreateCouponHandler;
         this.getCouponsHandler = getCouponsHandler;
+        this.updateCouponStatusHandler = updateCouponStatusHandler;
     }
 
     [Route("CreateActivity")]
@@ -1876,6 +1880,37 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetCouponsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateCouponStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateCouponStatusResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateCouponStatus([FromBody] UpdateCouponStatusArgs args)
+    {
+        try
+        {
+            var result = await updateCouponStatusHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateCouponStatusArgs {
+                Id = args.Id,
+                Status = args.Status
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateCouponStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var created = result.Result;
+
+            return new JsonResult(new UpdateCouponStatusResult
+            {
+                IsSuccess = true,
+                Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateCouponStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
