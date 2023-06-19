@@ -8,6 +8,7 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using System.Security.Claims;
 @using Cinnamon.Web.Models.Entities;
+@using System.Diagnostics;
 @inject IChatApiHandler chatApiHandler;
 @inject IAccountApiHandler accountApiHandler;
 
@@ -410,6 +411,9 @@
                     <label class="attachment-name">
                         Attachments
                     </label>
+                   @* <button type="button" class="border-0 leave-button" @onclick="Stop">
+                        <span class="fa fa-arrow-circle-left"></span> Stop
+                    </button>*@
                 </div>
                 @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat)
                 {
@@ -658,7 +662,7 @@
 
             if (IsConnected)
             {
-                hubConnection.Closed += OnDisconnected;
+                hubConnection.Closed += ConnectWithRetryAsync;
             }
         }
 
@@ -1035,32 +1039,34 @@
         StateHasChanged();
     }
 
-    private async Task OnDisconnected(Exception ex)
+    public async Task<bool> ConnectWithRetryAsync(Exception ex)
     {
-        try
+        await Task.Delay(new Random().Next(0, 5) * 1000);
+
+        logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
+
+        while (true)
         {
-            logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
-
-            TimeSpan retryDuration = TimeSpan.FromSeconds(30);
-
-            while (DateTime.UtcNow < DateTime.UtcNow.Add(retryDuration))
+            try
             {
-                logger.LogInformation($"reconnecting {currentUserId}");
+                logger.LogInformation($"reconnecting UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
 
-                await Task.Delay(3000).ContinueWith(async task =>
-                {
-                    await hubConnection.StartAsync();
-                });
+                await hubConnection.StartAsync();
+                Debug.Assert(hubConnection.State == HubConnectionState.Connected);
 
-                if (IsConnected)
-                {
-                    logger.LogInformation($"successfully reconnected {currentUserId}");
-                }
+                logger.LogInformation($"successfully reconnected UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
+
+                return true;
             }
-        }
-        catch (Exception exception)
-        {
-            logger.LogInformation($"reconnect error: {exception.Message}");
+            catch (ObjectDisposedException e)
+            {
+                return false;
+            }
+            catch
+            {
+                Debug.Assert(hubConnection.State == HubConnectionState.Disconnected);
+                await Task.Delay(5000);
+            }
         }
     }
 
@@ -1069,11 +1075,16 @@
         selectedChatRoomId = 0;
     }
 
+    void Stop()
+    {
+        hubConnection.StopAsync();
+    }
+
     void IDisposable.Dispose()
     {
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
-        hubConnection.Closed -= OnDisconnected;
+        hubConnection.Closed -= ConnectWithRetryAsync;
 
     }
 
