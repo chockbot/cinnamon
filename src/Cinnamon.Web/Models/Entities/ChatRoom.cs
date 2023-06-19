@@ -1,4 +1,7 @@
-﻿namespace Cinnamon.Web.Models.Entities
+﻿
+using Cinnamon.Framework.Enums;
+
+namespace Cinnamon.Web.Models.Entities
 {
     public class ChatRoom
     {
@@ -18,6 +21,9 @@
         public bool HasNewMessage { get; set; }
         public string FromProfileLink { get; set; }
         public string TypingStatus { get; set; }
-        
+        public Framework.Enums.Enums.ChatType ChatType { get; set; }
+        public string GroupName { get; set; }
+        public string ChatName { get; set; }
+
     }
 }

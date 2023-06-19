@@ -40,6 +40,7 @@ namespace Cinnamon.Api.Core.Services.ChatService
                     ChatRoomId   = args.ChatRoomId,
                     CountPerPage = args.CountPerPage,
                     PageIndex    = args.PageIndex,
+                    UserId       = args.UserId
                 });
 
                 if (!result.Succeeded || result.Result == null)

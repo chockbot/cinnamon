@@ -905,7 +905,10 @@
                 await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
                 {
                     FromUserId = Model.Customer.Id,
-                    ToUserId = Model.Activity.CreatedBy
+                    ToUserId = Model.Activity.CreatedBy,
+                    ChatType = Framework.Enums.Enums.ChatType.GroupChat,
+                    GroupName = Guid.NewGuid().ToString(),
+                    ChatName = $"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group"
                 }, Model.Token);
                 if (submit.Result.Result.Action == 1)
                 {
