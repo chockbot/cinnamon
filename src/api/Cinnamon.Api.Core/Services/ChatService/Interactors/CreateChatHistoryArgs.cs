@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Framework.Interactor;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Api.Core.Services.ChatService.Interactors
 {
@@ -11,5 +12,6 @@ namespace Cinnamon.Api.Core.Services.ChatService.Interactors
         public bool IsViewed { get; set; }
         public string FromConnectionId { get; set; }
         public string ToConnectionId { get; set; }
+        public ChatHistoryType ChatHistoryType { get; set; }
     }
 }

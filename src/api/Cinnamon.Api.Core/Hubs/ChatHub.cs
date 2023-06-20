@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Components.Routing;
 using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Security.Claims;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Api.Core.Hubs
 {
@@ -44,6 +45,8 @@ namespace Cinnamon.Api.Core.Hubs
             string messageInput     = splitted[7];
             string groupName        = splitted[8];
             Enums.ChatType chatType = (Enums.ChatType)int.Parse(splitted[9]);
+            Enums.ChatHistoryType chatHistoryType = (Enums.ChatHistoryType)int.Parse(splitted[10]);
+            string chatName         = splitted[11];
 
             if (chatType == Enums.ChatType.PrivateMessage)
             {
@@ -64,12 +67,12 @@ namespace Cinnamon.Api.Core.Hubs
 
                     if (!string.IsNullOrEmpty(toUser.ConnectionId))
                     {
-                        await Clients.Client(toUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}");
+                        await Clients.Client(toUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}|{(int)chatHistoryType}");
                     }
 
                     if (!string.IsNullOrEmpty(fromUser.ConnectionId))
                     {
-                        await Clients.Client(fromUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}");
+                        await Clients.Client(fromUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}|{(int)chatHistoryType}");
                     }
 
                     await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
@@ -80,7 +83,8 @@ namespace Cinnamon.Api.Core.Hubs
                         ToConnectionId = toUser.ConnectionId ?? string.Empty,
                         ToUserId = toUserId,
                         IsViewed = false,
-                        Message = messageInput
+                        Message = messageInput,
+                        ChatHistoryType = Enums.ChatHistoryType.Message
                     });
                 }
             }
@@ -88,7 +92,7 @@ namespace Cinnamon.Api.Core.Hubs
             {
                 if (!string.IsNullOrEmpty(groupName))
                 {
-                    await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{groupName}|{(int)chatType}");
+                    await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{groupName}|{(int)chatType}|{(int)chatHistoryType}|{false}|{chatName}");
                     
                     await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
                     {
@@ -98,7 +102,8 @@ namespace Cinnamon.Api.Core.Hubs
                         ToConnectionId = string.Empty,
                         ToUserId = toUserId,
                         IsViewed = false,
-                        Message = messageInput
+                        Message = messageInput,
+                        ChatHistoryType = Enums.ChatHistoryType.Message
                     });
                 }
             }
@@ -120,11 +125,72 @@ namespace Cinnamon.Api.Core.Hubs
             }
         }
 
-        public async Task RemoveFromGroup(string groupName, int userId, int chatRoomId)
+        public async Task AddToGroupAfterPayment(string payload)
         {
+            var splitted           = payload.Split("|");
+            string groupName       = splitted[0];
+            int chatRoomId         = int.Parse(splitted[1]);
+            int fromUserId         = int.Parse(splitted[2]);
+            string fromFirstName   = splitted[3];
+            string fromLastName    = splitted[4];
+            string fromProfilePath = splitted[5];
+            string chatName        = splitted[6];
+
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} has joined the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{false}|{chatName}");
+
+            await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
+            {
+                ChatRoomId = chatRoomId,
+                FromConnectionId = string.Empty,
+                FromUserId = fromUserId,
+                ToConnectionId = string.Empty,
+                ToUserId = 0,
+                IsViewed = false,
+                Message = $"{fromFirstName} {fromLastName} has joined the group.",
+                ChatHistoryType = Enums.ChatHistoryType.Notification
+            });
+
             var toCustomerResult = await getCustomerByIdHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByIdArgs
             {
-                Id = userId
+                Id = fromUserId
+            });
+
+            if (!string.IsNullOrEmpty(groupName))
+            {
+                if (toCustomerResult.Succeeded && toCustomerResult.Result != null)
+                {
+                    await Groups.AddToGroupAsync(toCustomerResult.Result.ConnectionId, groupName);
+                }
+            }
+        }
+
+        public async Task RemoveFromGroup(string payload)
+        {
+            var splitted           = payload.Split("|");
+            string groupName       = splitted[0];
+            int chatRoomId         = int.Parse(splitted[1]);
+            int fromUserId         = int.Parse(splitted[2]);
+            string fromFirstName   = splitted[3];
+            string fromLastName    = splitted[4];
+            string fromProfilePath = splitted[5];
+
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} has left the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{true}|{string.Empty}");
+
+            await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
+            {
+                ChatRoomId = chatRoomId,
+                FromConnectionId = string.Empty,
+                FromUserId = fromUserId,
+                ToConnectionId = string.Empty,
+                ToUserId = 0,
+                IsViewed = false,
+                Message = $"{fromFirstName} {fromLastName} has left the group.",
+                ChatHistoryType = Enums.ChatHistoryType.Notification
+            });
+
+            var toCustomerResult = await getCustomerByIdHandler.ExecuteAsync(new Services.AccountService.Interactors.GetCustomerByIdArgs
+            {
+                Id = fromUserId
             });
 
             if (!string.IsNullOrEmpty(groupName))
@@ -139,7 +205,7 @@ namespace Cinnamon.Api.Core.Hubs
             {
                 ChatRoomId = chatRoomId,
                 HasLeft = true,
-                UserId = userId
+                UserId = fromUserId
             });
         }
 
@@ -217,8 +283,15 @@ namespace Cinnamon.Api.Core.Hubs
             {
                 foreach (var item in result.Result.ChatRooms)
                 {
-                    if (!string.IsNullOrEmpty(item.FromConnectionId))
-                        await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{Context.ConnectionId}");
+                    if (item.ChatType == ChatType.PrivateMessage)
+                    {
+                        if (!string.IsNullOrEmpty(item.FromConnectionId))
+                            await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{Context.ConnectionId}");
+                    }
+                    else
+                    {
+                        await Groups.AddToGroupAsync(Context.ConnectionId, item.GroupName);
+                    }
                 }
             }
 

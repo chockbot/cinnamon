@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Web.Models.Entities
+﻿using static Cinnamon.Framework.Enums.Enums;
+
+namespace Cinnamon.Web.Models.Entities
 {
     public class ChatHistory
     {
@@ -17,5 +19,6 @@
         public string FromConnectionId { get; set; }
         public string ToConnectionId { get; set; }
         public DateTime DateCreated { get; set; }
+        public ChatHistoryType ChatHistoryType { get; set; }
     }
 }

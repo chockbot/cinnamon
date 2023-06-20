@@ -74,7 +74,8 @@ namespace Cinnamon.Api.Core.Services.ChatService
                         ToUserId         = c.ToUserId,
                         ToFirstName      = c.ToFirstName,
                         ToLastName       = c.ToLastName,
-                        ToProfilePath    = c.ToProfilePath
+                        ToProfilePath    = c.ToProfilePath,
+                        ChatHistoryType  = c.ChatHistoryType
                     }),
                     ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
                     {

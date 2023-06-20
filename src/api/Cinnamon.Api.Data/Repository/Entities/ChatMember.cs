@@ -9,6 +9,7 @@ namespace Cinnamon.Api.Data.Repository.Entities
         public bool HasLeft { get; set; }
         public virtual Customer Customer { get; set; }
         public virtual ChatRoom ChatRoom { get; set; }
+        public int ChatMemberType { get; set; }
 
     }
 }

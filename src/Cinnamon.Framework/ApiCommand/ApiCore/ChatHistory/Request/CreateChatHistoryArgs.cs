@@ -1,5 +1,6 @@
 ﻿using Cinnamon.Framework.Enums;
 using System.ComponentModel.DataAnnotations;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 
@@ -12,4 +13,5 @@ public class CreateChatHistoryArgs
     public bool IsViewed { get; set; }
     public string FromConnectionId { get; set; }
     public string ToConnectionId { get; set; }
+    public ChatHistoryType ChatHistoryType { get; set; }
 }

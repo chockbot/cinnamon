@@ -50,7 +50,9 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                     FromUserId      = item.Customer.Id,
                     FromFirstName   = item.Customer.FirstName,
                     FromLastName    = item.Customer.LastName,
-                    FromProfilePath = item.Customer.ProfilePath
+                    FromProfilePath = item.Customer.ProfilePath,
+                    FromProfileLink = item.Customer.Handler,
+                    ChatMemberType  = (Enums.ChatMemberType)item.ChatMemberType
                 });
             }
 

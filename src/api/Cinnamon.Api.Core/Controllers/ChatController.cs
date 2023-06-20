@@ -60,7 +60,8 @@ namespace Cinnamon.Api.Core.Controllers
                     IsViewed = args.IsViewed,
                     Message = args.Message,
                     ToConnectionId = args.ToConnectionId,
-                    ToUserId = args.ToUserId
+                    ToUserId = args.ToUserId,
+                    ChatHistoryType = args.ChatHistoryType
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -169,7 +170,8 @@ namespace Cinnamon.Api.Core.Controllers
                             ToUserId         = c.ToUserId,
                             ToFirstName      = c.ToFirstName,
                             ToLastName       = c.ToLastName,
-                            ToProfilePath    = c.ToProfilePath
+                            ToProfilePath    = c.ToProfilePath,
+                            ChatHistoryType  = c.ChatHistoryType
                         };
                     })
                 });
@@ -210,7 +212,8 @@ namespace Cinnamon.Api.Core.Controllers
                     {
                         ChatRoomId = chatResult.ChatRoomId,
                         FromUserId = chatResult.FromUserId,
-                        ToUserId = chatResult.ToUserId
+                        ToUserId = chatResult.ToUserId,
+                        GroupName = chatResult.GroupName,
                     }
                 });
             }
@@ -338,6 +341,8 @@ namespace Cinnamon.Api.Core.Controllers
                         FromFirstName = c.FromFirstName,
                         FromLastName = c.FromLastName,
                         FromProfilePath = c.FromProfilePath,
+                        ChatMemberType = c.ChatMemberType,
+                        FromProfileLink = c.FromProfileLink
                     })
                 });
             }

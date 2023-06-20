@@ -36,7 +36,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _chatHistoryRepository.Create(args.ChatRoomId, args.FromUserId, args.ToUserId, args.Message, args.IsViewed, args.FromConnectionId, args.ToConnectionId);
+                var result = await _chatHistoryRepository.Create(args.ChatRoomId, args.FromUserId, args.ToUserId, args.Message, args.IsViewed, args.FromConnectionId, args.ToConnectionId, args.ChatHistoryType);
 
                 if (!result.Succeeded || result.Result == null)
                 {
