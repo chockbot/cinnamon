@@ -250,8 +250,20 @@
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between py-1 price-per-head">
-                                            <div>
-                                                <TextEdit style="background-color: #F3F6FC;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
+                                            <div class="d-flex position-relative">
+                                                <TextEdit class="is-invalid" style="background-color: #F3F6FC; width: 150px;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
+                                                <Button Type="ButtonType.Button" 
+                                                    class="btn-primary font-12" Border="Border.Is0" 
+                                                    style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 3px;">
+                                                    Apply
+                                                </Button>
+                                                <div class="coupon-error-message font-12">
+                                                    <b style="color: #AD0C0C;">Invalid Coupon Code</b>
+                                                    <br>
+                                                    <span class="color-grey-100">
+                                                        This coupon code is not valid. Please try again with another coupon code
+                                                    </span>
+                                                </div>
                                             </div>
                                             <div>
                                                 PHP 0.00
@@ -480,16 +492,7 @@
 
     private Models.Forms.CardPaymentModel CardPaymentModel { get; set; } = new();
 
-    private enum CouponAction
-    {
-        NoCoupon = 0,
-        EnteringCoupon = 1,
-        AppliedCoupon = 2
-    }
-
-    private CouponAction couponAction = CouponAction.EnteringCoupon;
-
-    private decimal couponAmount = 50;
+    private CouponDetails Coupon {get; set;} = new ();
 
     private string Token { get; set; }
 
@@ -1019,5 +1022,14 @@
         public string PaymentChannel { get; set; }
         public string DisplayName { get; set; }
         public string Code { get; set; }
+    }
+
+    class CouponDetails 
+    {
+        public bool IsValid {get; set;}
+        public bool IsCouponApplied {get; set;}
+        public int DiscountType {get; set;}
+        public decimal Amount {get; set;}
+        public decimal maximumSpend {get; set;}
     }
 }
