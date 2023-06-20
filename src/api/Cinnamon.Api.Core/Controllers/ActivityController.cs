@@ -45,7 +45,6 @@ public class ActivityController : ControllerBase
     private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
     private readonly IGetCouponsHandler getCouponsHandler;
     private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
-
     private readonly ICreateFavoriteHandler createFavoriteHandler;
     private readonly IRemoveFavoriteHandler removeFavoriteHandler;
     private readonly IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler;
@@ -64,9 +63,7 @@ public class ActivityController : ControllerBase
         IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
         IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler, 
         IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
-        IUpdateCouponStatusHandler updateCouponStatusHandler)
-        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler,
-        IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler, ICreateFavoriteHandler createFavoriteHandler, IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler)
+        IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler)
     {
         _logger = logger;
 
