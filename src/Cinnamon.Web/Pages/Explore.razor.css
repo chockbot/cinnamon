@@ -281,15 +281,23 @@ img.img-icon, img.img-icon-home {
 .swiper-scrollbar {
     display: none
 }
-
+/*
 img {
     object-fit: cover;
     object-position: center;
-}
+}*/
 
 .card-img-overlay {
     z-index: 99;
     height: 0px;
+}
+
+.activities-card .favorite-section {
+    z-index: 99;
+    height: 0px;
+}
+.activities-card .carousel-item img {
+    z-index: 1;
 }
 
 .new-badge-section, .activity-new-badge-section {
@@ -461,14 +469,6 @@ img {
 .favorite-icon-button{
     background: none;
 }
-
-
-
-
-
-
-
-
 
 
 /* Extra small devices (portrait phones, less than 576px) */
@@ -789,25 +789,23 @@ img {
     }
 
     .popular-ongoing-section {
-        width: 52px;
-        height: 24px;
+        width: 60px;
+        height: 28px;
         background: #FFFFFF;
         display: flex;
         justify-content: center;
-        position: absolute;
-        right: 10px;
-        bottom: 10px;
+        float: right;
+        margin-top: 10rem;
     }
 
     .ongoing-section {
-        width: 52px;
-        height: 24px;
+        width: 60px;
+        height: 28px;
         background: #FFFFFF;
         display: flex;
         justify-content: center;
-        position: absolute;
-        right: 10px;
-        bottom: 10px;
+        float: right;
+        margin-top: 10rem;
     }
 
     .pulse {
@@ -826,40 +824,51 @@ img {
         height: 223.39px;
     }
 
-    .card-img-overlay {
+    /*.card-img-overlay {
         height: 223.39px;
-    }
+    }*/
 
     .new-message-count-badge {
         right: -7px;
     }
+    .favorite-icon {
+        width: 22px;
+        height: 22px;
+    }
+
+    .activities-card .favorite-icon {
+        width: 22px;
+        height: 22px;
+    }
+    .favorite-icon-button {
+        float: right;
+    }
+
+    .activities-card .favorite-icon-button {
+        float: right;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* Small devices (landscape phones, 576px and up) */
 @media (min-width: 576px) and (max-width: 767.98px) {
+    .favorite-icon {
+        width: 22px;
+        height: 22px;
+    }
+    .activities-card .favorite-icon {
+        width: 22px;
+        height: 22px;
+    }
+    .favorite-icon-button {
+        float: right;
+    }
+    .activities-card .favorite-icon-button {
+        float: right;
+    }
     .top-row {
         padding: 0;
         margin: 0;
     }
-
     .input-group {
         margin: 0px;
         margin-top: 0.5rem !important;
@@ -1199,32 +1208,14 @@ img {
         height: 223.39px;
     }
 
-    .card-img-overlay {
+   /* .card-img-overlay {
         height: 223.39px;
     }
-
+*/
     .new-message-count-badge {
         right: -7px;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* Medium devices (tablets, 768px and up) */
 @media (min-width: 768px) and (max-width: 991.98px) {
@@ -1548,25 +1539,12 @@ img {
     .card-img-overlay {
         height: 261.78px;
     }
+
+    .favorite-icon {
+        width: 24px;
+        height: 24px;
+    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 /* Large devices (desktops, 992px and up) */
 @media (min-width: 992px) and (max-width: 1199.98px) {
@@ -1881,27 +1859,6 @@ img {
     }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* Extra large devices (large desktops, 1200px and up) */
 @media (min-width: 1200px) {
     .top-row {
@@ -2148,8 +2105,8 @@ img {
         display: flex;
         justify-content: center;
         position: absolute;
-        right: 10px;
-        bottom: 10px;
+        left: 200px;
+        top: 300px;
     }
 
     .pulse {

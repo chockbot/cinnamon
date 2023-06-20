@@ -13,6 +13,8 @@ public class Activity
 
     private string _title;
 
+    public bool IsFavorite { get; set; }
+
     public string Title
     {
         get

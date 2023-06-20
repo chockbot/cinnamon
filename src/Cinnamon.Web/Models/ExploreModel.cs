@@ -10,6 +10,7 @@ public class ExploreModel
     public IEnumerable<SubCategory> SubCategories { get; set; }
     public IEnumerable<ActivityImage> ActivityImages { get; set; } 
     public IEnumerable<ActivityAddress> Address { get; set; }
+    public List<Favorite> Favorites { get; set; } = new();
     public string Token { get; set; } = string.Empty;
     public bool HasError { get; set; }
 }

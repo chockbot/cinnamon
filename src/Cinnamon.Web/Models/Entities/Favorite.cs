@@ -4,5 +4,7 @@
     {
         public int CustomerId { get; set; }
         public int ActivityId { get; set; }
+
+        public bool IsFavorite { get; set; }    
     }
 }
