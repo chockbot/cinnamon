@@ -3,6 +3,8 @@ using Cinnamon.Api.Core.Services.DashboardService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +45,9 @@ public class ActivityController : ControllerBase
     private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
     private readonly IGetCouponsHandler getCouponsHandler;
     private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
-
+    private readonly ICreateFavoriteHandler createFavoriteHandler;
+    private readonly IRemoveFavoriteHandler removeFavoriteHandler;
+    private readonly IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -59,7 +63,7 @@ public class ActivityController : ControllerBase
         IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
         IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler, 
         IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
-        IUpdateCouponStatusHandler updateCouponStatusHandler)
+        IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler)
     {
         _logger = logger;
 
@@ -93,6 +97,9 @@ public class ActivityController : ControllerBase
         this.providerCreateCouponHandler = providerCreateCouponHandler;
         this.getCouponsHandler = getCouponsHandler;
         this.updateCouponStatusHandler = updateCouponStatusHandler;
+        this.createFavoriteHandler = createFavoriteHandler;
+        this.removeFavoriteHandler = removeFavoriteHandler;
+        this.getFavoritesByCustomerHandler = getFavoritesByCustomerHandler;
     }
 
     [Route("CreateActivity")]
@@ -1954,6 +1961,107 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateCouponStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Favorite/Create")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateFavoriteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateFavorite([FromBody] CreateFavoriteArgs args)
+    {
+        try
+        {
+            var result = await createFavoriteHandler.ExecuteAsync(new Services.ActivityService.Interactors.CreateFavoriteArgs
+            {
+                ActivityId = args.ActivityId,
+                CustomerId = args.CustomerId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateFavoriteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateFavoriteResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Favorite.FavoriteDTO
+                {
+                    CustomerId = result.Result.CustomerId,
+                    ActivityId = result.Result.ActivityId,
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateFavoriteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Favorite/Remove")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RemoveFavoriteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemoveFavorite([FromBody] RemoveFavoriteArgs args)
+    {
+        try
+        {
+            var result = await removeFavoriteHandler.ExecuteAsync(new Services.ActivityService.Interactors.RemoveFavoriteArgs
+            {
+                ActivityId = args.ActivityId,
+                CustomerId = args.CustomerId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RemoveFavoriteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new RemoveFavoriteResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Favorite.FavoriteDTO
+                {
+                    CustomerId = result.Result.CustomerId,
+                    ActivityId = result.Result.ActivityId,
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RemoveFavoriteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Favorite/ByCustomer")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetFavoritesByCustomerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFavoritesByCustomer([FromQuery] GetFavoritesByCustomerArgs args)
+    {
+        try
+        {
+            var result = await getFavoritesByCustomerHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetFavoritesByCustomerArgs
+            {
+                CustomerId = args.CustomerId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetFavoritesByCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetFavoritesByCustomerResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = result.Result.Favorites.Select(f => new Framework.ApiCommand.ApiCore.DTO.Favorite.FavoriteDTO
+                {
+                    ActivityId = f.ActivityId,
+                    CustomerId = f.CustomerId,
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetFavoritesByCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

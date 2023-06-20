@@ -81,6 +81,8 @@ public class DataStore : IDataStore
 
     public IChatMember ChatMember => new ChatMemberEntity(applicationContext);
 
+    public IFavorite Favorite => new FavoriteEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

@@ -362,18 +362,47 @@
                                                                 {
                                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
                                                                 }
-                                                                <div class="card-img-overlay">
-                                                                    @if (act.OngoingStudents > 0)
-                                                                    {
-                                                                        <div class="rounded-pill popular-ongoing-section">
-                                                                            <div class="active-badge" style="text-align:center">
-                                                                                <span class="pulse"></span>
-                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                            </div>
-                                                                        </div>
-                                                                    }
-                                                                </div>
                                                             </a>
+                                                                @if(CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                                                {
+                                                                act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                                                if (act.IsFavorite != false)
+                                                                {
+                                                                    <div class="card-img-overlay favorite-section">
+                                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
+                                                                            <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                                        </button>
+                                                                    </div>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <div class="card-img-overlay favorite-section">
+                                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
+                                                                            <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                                        </button>
+                                                                    </div>
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                <div class="card-img-overlay favorite-section">
+                                                                    <button type="button" class="favorite-icon-button border-0">
+                                                                        <img src="@addToFavorites" class="favorite-icon" @onclick= "() =>signinModal.Show()" />
+                                                                    </button>
+                                                                </div>
+                                                            }
+                                                            
+                                                            <div class="card-img-overlay ongoing-students-section">
+                                                                @if (act.OngoingStudents > 0)
+                                                                {
+                                                                    <div class="rounded-pill popular-ongoing-section">
+                                                                        <div class="active-badge" style="text-align:center">
+                                                                            <span class="pulse"></span>
+                                                                            <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                        </div>
+                                                                    </div>
+                                                                }
+                                                            </div>
                                                             <div class="card-container">
                                                                 <div class="row text-start star-pulse-section">
                                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
@@ -501,40 +530,73 @@
                 @foreach (var act in activities)
                 {
                     <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body" style="margin-bottom:30px">
-                        <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                             <Div ElementId="#b-animate">
                                 <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                     <div class="card activities-card">
-                                        <div id="carousel1-@act.ActivityId" class="carousel slide" data-bs-ride="carousel">
-                                            <div class="carousel-indicators">
-                                                <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
-                                                <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                                <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                            <div id="carousel1-@act.ActivityId" class="carousel slide" data-bs-ride="carousel">
+                                                <div class="carousel-indicators">
+                                                    <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
+                                                    <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                                                    <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                                                </div>
+                                                <div class="carousel-inner">
+                                                    @if (act.Images.Count > 0)
+                                                    {
+                                                        <div class="carousel-item active">
+                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                                <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img img-fluid">
+                                                            </a>
+                                                        </div>
+                                                        <div class="carousel-item">
+                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                                <img src=@act.Images.ElementAt(1).ImageSrc alt="Second slide" class="card-img img-fluid">
+                                                            </a>
+                                                        </div>
+                                                        <div class="carousel-item">
+                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                                <img src=@act.Images.ElementAt(2).ImageSrc alt="Second slide" class="card-img img-fluid">
+                                                            </a>
+                                                        </div>
+                                                    }
+                                                </div>
+                                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="prev">
+                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden"></span>
+                                                </button>
+                                                <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="next">
+                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                                    <span class="visually-hidden"></span>
+                                                </button>
                                             </div>
-                                            <div class="carousel-inner">
-                                                @if (act.Images.Count > 0)
-                                                {
-                                                    <div class="carousel-item active">
-                                                        <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img img-fluid">
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <img src=@act.Images.ElementAt(1).ImageSrc alt="Second slide" class="card-img img-fluid">
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <img src=@act.Images.ElementAt(2).ImageSrc alt="Second slide" class="card-img img-fluid">
-                                                    </div>
-                                                }
+                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                        {
+                                            act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                            if (act.IsFavorite != false)
+                                            {
+                                                <div class="card-img-overlay favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
+                                                        <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                    </button>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="card-img-overlay favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
+                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                    </button>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="card-img-overlay favorite-section">
+                                                <button type="button" class="favorite-icon-button border-0">
+                                                    <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
+                                                </button>
                                             </div>
-                                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="prev">
-                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                <span class="visually-hidden"></span>
-                                            </button>
-                                            <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="next">
-                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                <span class="visually-hidden"></span>
-                                            </button>
-                                        </div>
-                                        <div class="card-img-overlay">
+                                        }
+                                    <div class="card-img-overlay ongoing-students-section">
                                             @if (act.OngoingStudents > 0)
                                             {
                                                 <div class="rounded-pill ongoing-section">
@@ -591,7 +653,6 @@
                                     </div>
                                 </Animate>
                             </Div>
-                        </a>
                     </div>
                 }
                 <div class="align-items-center" style="text-align:center;">
@@ -622,7 +683,7 @@
 <ModalFinishSignUp @ref="modalFinishSignUp"></ModalFinishSignUp>
 <ModalPassword @ref="modalPassword"></ModalPassword>
 <WelcomeModal @ref=WelcomeModalRef UserTriggered="OnSkipMaker" />
-<ReviewModal @ref=ReviewModalRef/>
+@*<ReviewModal @ref=ReviewModalRef/>*@
 
 @code
 {
@@ -639,10 +700,12 @@
     public List<Activity> filteredActivities = new List<Activity>();
     public List<Activity> popularActivities = new List<Activity>();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    public List<Favorite> Favorites = new List<Favorite>();
     public string searchValue = string.Empty;
     public string filterId = string.Empty;
     public int cnt = 0;
     public int experienceCategoryId = 0;
+    public string addToFavorites = "images/favorites/experience-heart-default.svg";
 
     private string value { get; set; }
     public bool clickButton { get; set; }
@@ -766,7 +829,67 @@
             }
         }
     }
-    private async Task OnSkipMaker()
+
+    private async Task GetFavorites()
+    {
+        if (CustomerModel.CustomerProfile != null)
+        {
+            var customerFavorites = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
+                {
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+            if (customerFavorites.Succeeded && customerFavorites.Result != null && customerFavorites.Result.IsSuccess)
+            {
+                CustomerModel.Favorites = customerFavorites.Result.Result.Select(i =>
+                {
+                    return new Favorite
+                        {
+                            ActivityId = i.ActivityId,
+                            CustomerId = i.CustomerId,
+                            IsFavorite = true
+                        };
+                }).ToList();
+            }
+        }
+    }
+
+    private async Task AddToFavorites(Activity activity)
+    {
+        activity.IsFavorite = !activity.IsFavorite;
+        if (activity.IsFavorite)
+        {
+            //Add to Favorites
+            var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        else
+        {
+            //Delete to Favorites
+            var createFavorite = await activityApiHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        await GetFavorites();
+    }
+
+    private async Task CreateFavorite(Activity activity)
+    {
+        //Add to Favorites
+        var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+            {
+                ActivityId = activity.ActivityId,
+                CustomerId = CustomerModel.CustomerProfile.Id
+            }, CustomerModel.Token);
+        await GetFavorites();
+
+    }
+        
+    private async Task OnSkipMaker() 
     {
         if (IsNewRegistered.HasValue && IsNewRegistered.Value && CustomerModel.CustomerProfile != null)
         {
@@ -774,11 +897,13 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Utils.cookieManager.setCookie", $"wel_dia_{customerId}", "1");
         }
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             await LoadSigninUser();
+            await GetFavorites();
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Explore Page Loaded");
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.maker.attendance.initSwiper", ".schedule-swiper", ".swiper-scrollbar");
             await InitializeSwiper();
@@ -787,6 +912,7 @@
         }
         else
         {
+            await GetFavorites();
             await InitializeSwiper();
             await InitializeCarouselSwipe();
 
@@ -1168,6 +1294,7 @@
     {
         return clickButton ? "show" : "";
     }
+
     private void Logout()
     {
         SendChatStatus();

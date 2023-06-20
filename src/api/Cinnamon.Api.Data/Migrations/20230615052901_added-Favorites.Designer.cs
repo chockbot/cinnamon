@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230615052901_added-Favorites")]
+    partial class addedFavorites
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -513,9 +515,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("ChangedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ChatHistoryType")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ChatRoomId")
                         .HasColumnType("integer");
 
@@ -571,9 +570,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("ChangedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ChatMemberType")
-                        .HasColumnType("integer");
-
                     b.Property<int>("ChatRoomId")
                         .HasColumnType("integer");
 
@@ -612,18 +608,11 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<DateTime>("ChangedOn")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<int>("ChatType")
-                        .HasColumnType("integer");
-
                     b.Property<int>("CreatedBy")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("GroupName")
-                        .IsRequired()
-                        .HasColumnType("text");
 
                     b.Property<string>("LatestMessage")
                         .IsRequired()
@@ -679,74 +668,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Cities");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Coupon", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("ActivityId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("numeric");
-
-                    b.Property<int>("ChangedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("ChangedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("CreatedBy")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("DiscountType")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("From")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("boolean");
-
-                    b.Property<decimal>("MaximumSpend")
-                        .HasColumnType("numeric");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("To")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ActivityId");
-
-                    b.HasIndex("Code");
-
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("Code", "CustomerId", "ActivityId");
-
-                    b.ToTable("Coupons");
                 });
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
@@ -2129,23 +2050,6 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", "CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Coupon", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
-                        .WithMany()
-                        .HasForeignKey("ActivityId");
-
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Activity");
 
                     b.Navigation("Customer");
                 });

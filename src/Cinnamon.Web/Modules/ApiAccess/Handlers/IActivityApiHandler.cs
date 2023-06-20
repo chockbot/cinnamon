@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -35,4 +37,7 @@ public interface IActivityApiHandler
     Task<AppResult<GetCouponsResult>> GetCoupons(string token);
     Task<AppResult<CreateCouponResult>> CreateCoupon(CreateCouponArgs args, string token);
     Task<AppResult<UpdateCouponStatusResult>> UpdateCouponStatus(UpdateCouponStatusArgs args, string token);
-} 
+    Task<AppResult<CreateFavoriteResult>> CreateFavorite(CreateFavoriteArgs args, string token);
+    Task<AppResult<RemoveFavoriteResult>> RemoveFavorite(RemoveFavoriteArgs args, string token);
+    Task<AppResult<GetFavoritesByCustomerResult>> GetFavoritesByCustomer(GetFavoritesByCustomerArgs args, string token);
+}
