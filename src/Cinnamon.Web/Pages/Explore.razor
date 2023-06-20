@@ -776,7 +776,7 @@
 
     private async Task SendChatStatus()
     {
-        if (hubConnection is not null && CustomerModel.CustomerProfile is not null)
+        if (hubConnection is not null && CustomerModel.CustomerProfile is not null && IsConnected)
         {
             await hubConnection.SendAsync("SendChatStatus", CustomerModel.CustomerProfile.Id);
         }
@@ -915,6 +915,7 @@
             await GetFavorites();
             await InitializeSwiper();
             await InitializeCarouselSwipe();
+
         }
 
 
@@ -1300,7 +1301,10 @@
 
         try
         {
-            hubConnection.StopAsync();
+            if (IsConnected)
+            {
+                hubConnection.StopAsync();
+            }
         }
         finally
         {

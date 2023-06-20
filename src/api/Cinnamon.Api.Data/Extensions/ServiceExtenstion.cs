@@ -65,6 +65,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IChatRoomRepository, Services.Repository.ChatRoom.ChatRoomRepository>();
         services.AddTransient<Services.Repository.Interfaces.IChatMemberRepository, Services.Repository.ChatRoom.ChatMemberRepository>();
         services.AddTransient<Services.Repository.Interfaces.IReviewsRepository, Services.Repository.Reviews.ReviewsRepository>();
+        services.AddTransient<Services.Repository.Interfaces.ICouponRepository, Services.Repository.Coupon.CouponRespository>();
         services.AddTransient<Services.Repository.Interfaces.IFavoriteRepository, Services.Repository.Favorite.FavoriteRepository>();
 
         return services;

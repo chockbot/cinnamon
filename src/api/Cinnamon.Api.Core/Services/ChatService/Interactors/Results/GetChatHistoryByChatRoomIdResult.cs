@@ -1,4 +1,5 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
 {
@@ -26,5 +27,6 @@ namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
         public string FromConnectionId { get; set; }
         public string ToConnectionId { get; set; }
         public DateTime DateCreated { get; set; }
+        public ChatHistoryType ChatHistoryType { get; set; }
     }
 }

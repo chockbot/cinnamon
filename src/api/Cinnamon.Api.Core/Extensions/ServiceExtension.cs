@@ -53,6 +53,8 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.DataAccess.Handlers.IFavoriteData, Modules.DataAccess.Favorite.FavoriteData>();
 
         services.AddTransient<Modules.DataAccess.Handlers.IReviewsData, Modules.DataAccess.Reviews.ReviewsData>();  
+        services.AddTransient<Modules.DataAccess.Handlers.ICouponData, Modules.DataAccess.Coupon.CouponData>();
+         
         // ongoing activity services
         services.AddTransient<Services.OngoingActivityService.Handlers.ICreateOngoingActivityHandler, Services.OngoingActivityService.CreateOngoingActivityHandler>();
 
@@ -126,6 +128,11 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IDeleteActivityHandler, Services.ActivityService.DeleteActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IOwnerPricingInclusiveHandler, Services.ActivityService.OwnerPricingInclusiveHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGenerateActivityHandler, Services.ActivityService.GenerateActivityHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.ICreateCouponHandler, Services.ActivityService.CreateCouponHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IProviderCreateCouponHandler, Services.ActivityService.ProviderCreateCouponHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IGetCouponsHandler, Services.ActivityService.GetCouponsHandler>();
+        services.AddTransient<Services.ActivityService.Handlers.IUpdateCouponStatusHandler, Services.ActivityService.UpdateCouponStatusHandler>();
+        
         services.AddTransient<Services.ActivityService.Handlers.ICreateFavoriteHandler, Services.ActivityService.CreateFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IRemoveFavoriteHandler, Services.ActivityService.RemoveFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetFavoritesByCustomerHandler, Services.ActivityService.GetFavoritesByCustomerHandler>();
@@ -178,6 +185,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AdminService.Handlers.IGetAdminUserByEmailHandler, Services.AdminService.GetAdminUserByEmailHandler>();
         services.AddTransient<Services.AdminService.Handlers.IUpdateCustomerPricingHandler, Services.AdminService.UpdateCustomerPricingHandler>();
         services.AddTransient<Services.AdminService.Handlers.IGetAllInclusiveTransactionHandler, Services.AdminService.GetAllInclusiveTransactionHandler>();
+        services.AddTransient<Services.AdminService.Handlers.ICreateCouponHandler, Services.AdminService.CreateCouponHandler>();
 
         //chat services
         services.AddTransient<Services.ChatService.Handlers.ICreateChatHistoryHandler, Services.ChatService.CreateChatHistoryHandler>();
@@ -185,6 +193,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ChatService.Handlers.IGetChatHistoryByChatRoomIdHandler, Services.ChatService.GetChatHistoryByChatRoomIdHandler>();
         services.AddTransient<Services.ChatService.Handlers.ICreateChatRoomHandler, Services.ChatService.CreateChatRoomHandler>();
         services.AddTransient<Services.ChatService.Handlers.IGetChatRoomsByUserIdHandler, Services.ChatService.GetChatRoomsByUserIdHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetChatMembersByChatRoomIdHandler, Services.ChatService.GetChatMembersByChatRoomIdHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IUpdateChatMemberHandler, Services.ChatService.UpdateChatMemberHandler>();
 
         return services;
     }

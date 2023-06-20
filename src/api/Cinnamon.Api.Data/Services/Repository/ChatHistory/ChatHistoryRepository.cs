@@ -9,6 +9,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Region;
 using Cinnamon.Framework.Common;
 using System.Data;
 using System.Linq.Expressions;
+using static Cinnamon.Framework.Enums.Enums;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
@@ -22,7 +23,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             this.dataStore = dataStore;
         }
 
-        public async Task<AppResult<ChatHistoryDTO>> Create(int chatRoomId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId)
+        public async Task<AppResult<ChatHistoryDTO>> Create(int chatRoomId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId, ChatHistoryType chatHistoryType)
         {
             try
             {
@@ -33,7 +34,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                     a => a.Customer,
                 };
 
-                var chatMemberResult = await dataStore.ChatMember.FindAsync(c => c.ChatRoomId == chatRoomId && c.CustomerId != fromUserId, 1000, 0, includes);
+                var chatMemberResult = await dataStore.ChatMember.FindAsync(c => c.ChatRoomId == chatRoomId && !c.HasLeft, int.MaxValue, 0, includes);
 
                 if (!chatMemberResult.Succeeded || chatMemberResult.Result == null)
                 {
@@ -56,7 +57,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                         IsViewed         = isViewed,
                         FromConnectionId = customerResult.Result.ConnectionId,
                         ToConnectionId   = string.IsNullOrEmpty(c.Customer.ConnectionId) ? string.Empty : c.Customer.ConnectionId,
-                        CreatedOn        = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now)
+                        CreatedOn        = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now),
+                        ChatHistoryType  = (int)chatHistoryType
                     })
                 );
 
@@ -97,12 +99,13 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             }
         }
 
-        public async Task<AppResult<IEnumerable<ChatHistoryDTO>>> GetChatHistoryByChatRoomId(int? chatRoomId, int? skip, int? take)
+        public async Task<AppResult<IEnumerable<ChatHistoryDTO>>> GetChatHistoryByChatRoomId(int? chatRoomId, int? skip, int? take, int? userId)
         {
             try
             {
                 Expression<Func<Entities.ChatHistory, bool>> filter =
-                a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true));
+                a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true) &&
+                      (userId.HasValue ? a.ToUserId == userId : true));
 
                 var includes = new List<Expression<Func<Entities.ChatHistory, object>>>
                 {
@@ -121,13 +124,14 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                 {
                     var chatHistoryDto = new ChatHistoryDTO
                     {
-                        ChatHistoryId = c.Id,
-                        ChatRoomId    = c.ChatRoomId,
-                        FromUserId    = c.FromUserId,
-                        ToUserId      = c.ToUserId,
-                        DateCreated   = c.CreatedOn,
-                        IsViewed      = c.IsViewed,
-                        Message       = c.Message
+                        ChatHistoryId   = c.Id,
+                        ChatRoomId      = c.ChatRoomId,
+                        FromUserId      = c.FromUserId,
+                        ToUserId        = c.ToUserId,
+                        DateCreated     = c.CreatedOn,
+                        IsViewed        = c.IsViewed,
+                        Message         = c.Message,
+                        ChatHistoryType = (ChatHistoryType)c.ChatHistoryType
                     };
 
                     if (c.FromCustomer != null)
@@ -163,7 +167,6 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             {
                 Expression<Func<Entities.ChatHistory, bool>> filter =
                 a => ((chatRoomId.HasValue ? a.ChatRoomId == chatRoomId.Value : true) &&
-                      (fromUserId.HasValue ? a.FromUserId == fromUserId.Value : true) &&
                       (toUserId.HasValue ? a.ToUserId == toUserId.Value : true));
 
                 var result = await dataStore.ChatHistory.FindAsync(filter);

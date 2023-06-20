@@ -67,6 +67,8 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<ChatMember> ChatMembers { get; set; }
     public DbSet<Favorite> Favorites { get; set; }
 
+    public DbSet<Coupon> Coupons {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -222,6 +224,11 @@ public class ApplicationContext : IdentityDbContext
             .HasMany<Reviews>(a => a.Reviews)
             .WithOne(i => i.Activity)
             .HasForeignKey(i => i.ActivityId);
+        // for coupons
+        modelBuilder.Entity<Coupon>().HasOne(c => c.Activity).WithMany().IsRequired(false);
+        modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);
+        modelBuilder.Entity<Coupon>().HasIndex(c => c.Code);
+        modelBuilder.Entity<Coupon>().HasIndex(new string[] {"Code", "CustomerId", "ActivityId"});
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

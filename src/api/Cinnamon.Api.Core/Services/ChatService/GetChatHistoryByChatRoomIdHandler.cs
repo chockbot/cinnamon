@@ -40,6 +40,7 @@ namespace Cinnamon.Api.Core.Services.ChatService
                     ChatRoomId   = args.ChatRoomId,
                     CountPerPage = args.CountPerPage,
                     PageIndex    = args.PageIndex,
+                    UserId       = args.UserId
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -73,7 +74,8 @@ namespace Cinnamon.Api.Core.Services.ChatService
                         ToUserId         = c.ToUserId,
                         ToFirstName      = c.ToFirstName,
                         ToLastName       = c.ToLastName,
-                        ToProfilePath    = c.ToProfilePath
+                        ToProfilePath    = c.ToProfilePath,
+                        ChatHistoryType  = c.ChatHistoryType
                     }),
                     ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
                     {

@@ -39,6 +39,9 @@ namespace Cinnamon.Api.Core.Services.ChatService
                 {
                     ToUserId  = args.ToUserId,
                     FromUserId = args.FromUserId,
+                    ChatType = args.ChatType,
+                    GroupName = args.GroupName,
+                    ChatName = args.ChatName
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -56,9 +59,10 @@ namespace Cinnamon.Api.Core.Services.ChatService
 
                 return AppResult<CreateChatRoomResult>.CreateSucceeded(new CreateChatRoomResult
                 {
-                    ChatRoomId       = chatResult.ChatRoomId,
-                    FromUserId       = chatResult.FromUserId,
-                    ToUserId         = chatResult.ToUserId
+                    ChatRoomId = chatResult.ChatRoomId,
+                    FromUserId = chatResult.FromUserId,
+                    ToUserId   = chatResult.ToUserId,
+                    GroupName  = chatResult.GroupName,
                 }, "successfully called CreateChatRoomHandler");
 
             }

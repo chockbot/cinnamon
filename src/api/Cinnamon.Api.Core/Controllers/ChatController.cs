@@ -30,8 +30,9 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly ICreateChatRoomHandler createChatRoomHandler;
         private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
         private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
+        private readonly IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateConnectionIdHandler updateConnectionIdHandler)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler)
         {
             _logger = logger;
 
@@ -41,6 +42,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.createChatRoomHandler = createChatRoomHandler;
             this.getChatRoomsByUserIdHandler = getChatRoomsByUserIdHandler;
             this.updateConnectionIdHandler = updateConnectionIdHandler;
+            this.getChatMembersByChatRoomIdHandler = getChatMembersByChatRoomIdHandler;
         }
 
         [Route("Create")]
@@ -58,7 +60,8 @@ namespace Cinnamon.Api.Core.Controllers
                     IsViewed = args.IsViewed,
                     Message = args.Message,
                     ToConnectionId = args.ToConnectionId,
-                    ToUserId = args.ToUserId
+                    ToUserId = args.ToUserId,
+                    ChatHistoryType = args.ChatHistoryType
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -134,6 +137,7 @@ namespace Cinnamon.Api.Core.Controllers
                     ChatRoomId = args.ChatRoomId,
                     CountPerPage = args.CountPerPage,
                     PageIndex = args.PageIndex,
+                    UserId = args.UserId
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -166,7 +170,8 @@ namespace Cinnamon.Api.Core.Controllers
                             ToUserId         = c.ToUserId,
                             ToFirstName      = c.ToFirstName,
                             ToLastName       = c.ToLastName,
-                            ToProfilePath    = c.ToProfilePath
+                            ToProfilePath    = c.ToProfilePath,
+                            ChatHistoryType  = c.ChatHistoryType
                         };
                     })
                 });
@@ -187,7 +192,10 @@ namespace Cinnamon.Api.Core.Controllers
                 var result = await createChatRoomHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatRoomArgs
                 {
                     FromUserId = args.FromUserId,
-                    ToUserId = args.ToUserId
+                    ToUserId = args.ToUserId,
+                    ChatType = args.ChatType,
+                    GroupName = args.GroupName,
+                    ChatName = args.ChatName
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -204,7 +212,8 @@ namespace Cinnamon.Api.Core.Controllers
                     {
                         ChatRoomId = chatResult.ChatRoomId,
                         FromUserId = chatResult.FromUserId,
-                        ToUserId = chatResult.ToUserId
+                        ToUserId = chatResult.ToUserId,
+                        GroupName = chatResult.GroupName,
                     }
                 });
             }
@@ -254,7 +263,10 @@ namespace Cinnamon.Api.Core.Controllers
                             FromConnectionId = c.FromConnectionId,
                             ToConnectionId   = c.ToConnectionId,
                             HasNewMessage    = c.HasNewMessage,
-                            FromProfileLink  = c.FromProfileLink
+                            FromProfileLink  = c.FromProfileLink,
+                            ChatName         = c.ChatName,
+                            ChatType         = c.ChatType,
+                            GroupName        = c.GroupName
                         };
                     })
                 });
@@ -298,6 +310,45 @@ namespace Cinnamon.Api.Core.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatMembers")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatMembersByChatRoomIdResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatMembersByChatRoomId([FromQuery] GetChatMembersByChatRoomIdArgs args)
+        {
+            try
+            {
+                var result = await getChatMembersByChatRoomIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatMembersByChatRoomIdArgs
+                {
+                    ChatRoomId = args.ChatRoomId
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatMembersByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var chatResult = result.Result;
+
+                return new JsonResult(new GetChatMembersByChatRoomIdResult
+                {
+                    IsSuccess = true,
+                    Result = chatResult.ChatMembers.Select(c => new Framework.ApiCommand.ApiCore.DTO.ChatRoom.ChatRoomDTO
+                    {
+                        FromUserId = c.FromUserId,
+                        FromFirstName = c.FromFirstName,
+                        FromLastName = c.FromLastName,
+                        FromProfilePath = c.FromProfilePath,
+                        ChatMemberType = c.ChatMemberType,
+                        FromProfileLink = c.FromProfileLink
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatHistoryByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
