@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Cinnamon.Framework.Enums.Enums;
 
 namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatHistory
 {
@@ -22,6 +23,7 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.DTO.ChatHistory
         public bool IsViewed { get; set; }
         public string FromConnectionId { get; set; }
         public string ToConnectionId { get; set; }
+        public ChatHistoryType ChatHistoryType { get; set; }
         public DateTime DateCreated { get; set; }
     }
 }

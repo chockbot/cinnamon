@@ -9,6 +9,7 @@ using Cinnamon.Framework.ApiCommand.ApiData.DTO.Region;
 using Cinnamon.Framework.Common;
 using System.Data;
 using System.Linq.Expressions;
+using static Cinnamon.Framework.Enums.Enums;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
@@ -22,7 +23,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
             this.dataStore = dataStore;
         }
 
-        public async Task<AppResult<ChatHistoryDTO>> Create(int chatRoomId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId)
+        public async Task<AppResult<ChatHistoryDTO>> Create(int chatRoomId, int fromUserId, int toUserId, string message, bool isViewed, string fromConnectionId, string toConnectionId, ChatHistoryType chatHistoryType)
         {
             try
             {
@@ -56,7 +57,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                         IsViewed         = isViewed,
                         FromConnectionId = customerResult.Result.ConnectionId,
                         ToConnectionId   = string.IsNullOrEmpty(c.Customer.ConnectionId) ? string.Empty : c.Customer.ConnectionId,
-                        CreatedOn        = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now)
+                        CreatedOn        = TimeZoneInfo.ConvertTimeToUtc(DateTime.Now),
+                        ChatHistoryType  = (int)chatHistoryType
                     })
                 );
 
@@ -122,13 +124,14 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatHistory
                 {
                     var chatHistoryDto = new ChatHistoryDTO
                     {
-                        ChatHistoryId = c.Id,
-                        ChatRoomId    = c.ChatRoomId,
-                        FromUserId    = c.FromUserId,
-                        ToUserId      = c.ToUserId,
-                        DateCreated   = c.CreatedOn,
-                        IsViewed      = c.IsViewed,
-                        Message       = c.Message
+                        ChatHistoryId   = c.Id,
+                        ChatRoomId      = c.ChatRoomId,
+                        FromUserId      = c.FromUserId,
+                        ToUserId        = c.ToUserId,
+                        DateCreated     = c.CreatedOn,
+                        IsViewed        = c.IsViewed,
+                        Message         = c.Message,
+                        ChatHistoryType = (ChatHistoryType)c.ChatHistoryType
                     };
 
                     if (c.FromCustomer != null)

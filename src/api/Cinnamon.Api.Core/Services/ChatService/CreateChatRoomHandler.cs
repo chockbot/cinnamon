@@ -59,9 +59,10 @@ namespace Cinnamon.Api.Core.Services.ChatService
 
                 return AppResult<CreateChatRoomResult>.CreateSucceeded(new CreateChatRoomResult
                 {
-                    ChatRoomId       = chatResult.ChatRoomId,
-                    FromUserId       = chatResult.FromUserId,
-                    ToUserId         = chatResult.ToUserId
+                    ChatRoomId = chatResult.ChatRoomId,
+                    FromUserId = chatResult.FromUserId,
+                    ToUserId   = chatResult.ToUserId,
+                    GroupName  = chatResult.GroupName,
                 }, "successfully called CreateChatRoomHandler");
 
             }

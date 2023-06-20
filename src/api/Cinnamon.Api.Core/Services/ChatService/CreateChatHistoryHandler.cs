@@ -43,7 +43,8 @@ namespace Cinnamon.Api.Core.Services.ChatService
                     IsViewed         = args.IsViewed,
                     Message          = args.Message,
                     ToConnectionId   = args.ToConnectionId,
-                    ToUserId         = args.ToUserId
+                    ToUserId         = args.ToUserId,
+                    ChatHistoryType  = args.ChatHistoryType
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -67,7 +68,7 @@ namespace Cinnamon.Api.Core.Services.ChatService
                     IsViewed         = chatResult.IsViewed,
                     Message          = chatResult.Message,
                     ToConnectionId   = chatResult.ToConnectionId,
-                    ToUserId         = chatResult.ToUserId
+                    ToUserId         = chatResult.ToUserId,
                 }, "successfully called CreateChatHistoryHandler");
 
             }

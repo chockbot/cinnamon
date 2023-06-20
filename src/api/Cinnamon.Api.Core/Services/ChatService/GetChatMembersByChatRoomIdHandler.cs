@@ -60,7 +60,9 @@ namespace Cinnamon.Api.Core.Services.ChatService
                         FromFirstName = c.FromFirstName,
                         FromLastName = c.FromLastName,
                         FromProfilePath = c.FromProfilePath,
+                        FromProfileLink = c.FromProfileLink,
                         FromUserId = c.FromUserId,
+                        ChatMemberType = c.ChatMemberType
                     })
                 }, "successfully called GetChatMembersByChatRoomIdHandler");
 

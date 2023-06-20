@@ -71,7 +71,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                 }
                 else
                 {
-                    var chatMemberToResult = await dataStore.ChatMember.FindAsync(c => c.CustomerId == toUserId);
+                    var chatMemberToResult = await dataStore.ChatMember.FindAsync(c => c.CustomerId == toUserId && c.ChatMemberType == (int)Enums.ChatMemberType.ActivityProvider);
 
                     if (chatMemberToResult.Result.Count() > 0)
                     {
@@ -95,7 +95,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                                         new ChatMember
                                         {
                                             ChatRoomId = chatroom.Result.Id,
-                                            CustomerId = fromUserId
+                                            CustomerId = fromUserId,
+                                            ChatMemberType = (int)Enums.ChatMemberType.Customer
                                         },
                                     };
 
@@ -108,14 +109,16 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
 
                                     return AppResult<ChatRoomDTO>.CreateSucceeded(new ChatRoomDTO
                                     {
-                                        ChatRoomId = chatroom.Result.Id
+                                        ChatRoomId = chatroom.Result.Id,
+                                        GroupName = chatroom.Result.GroupName
                                     }, "Successully created chat room");
                                 }
                                 else
                                 {
                                     return AppResult<ChatRoomDTO>.CreateSucceeded(new ChatRoomDTO
                                     {
-                                        ChatRoomId = chatroom.Result.Id
+                                        ChatRoomId = chatroom.Result.Id,
+                                        GroupName = chatroom.Result.GroupName
                                     }, "Successully created chat room");
                                 }
                             }
@@ -123,7 +126,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                             {
                                 return AppResult<ChatRoomDTO>.CreateSucceeded(new ChatRoomDTO
                                 {
-                                    ChatRoomId = chatroom.Result.Id
+                                    ChatRoomId = chatroom.Result.Id,
+                                    GroupName = chatroom.Result.GroupName
                                 }, "Successully created chat room");
                             }
                         }
@@ -165,12 +169,14 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                                         new ChatMember
                                         {
                                             ChatRoomId = newChatRoom.Id,
-                                            CustomerId = fromUserId
+                                            CustomerId = fromUserId,
+                                            ChatMemberType = (int)Enums.ChatMemberType.Customer
                                         },
                                         new ChatMember
                                         {
                                             ChatRoomId = newChatRoom.Id,
-                                            CustomerId = toUserId
+                                            CustomerId = toUserId,
+                                            ChatMemberType = (int)Enums.ChatMemberType.ActivityProvider
                                         }
                                     };
 
@@ -183,7 +189,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
 
             return AppResult<ChatRoomDTO>.CreateSucceeded(new ChatRoomDTO
             {
-                ChatRoomId = newChatRoom.Id
+                ChatRoomId = newChatRoom.Id,
+                GroupName = newChatRoom.GroupName
             }, "Successully created chat room");
         }
 
