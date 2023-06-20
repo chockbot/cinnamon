@@ -42,6 +42,7 @@ public class ActivityController : ControllerBase
     private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
     private readonly IGetCouponsHandler getCouponsHandler;
     private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
+    private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
 
     private readonly ILogger _logger;
 
@@ -57,7 +58,7 @@ public class ActivityController : ControllerBase
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
         IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
         IDeleteActivityHandler deleteActivityHandler, IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
-        IUpdateCouponStatusHandler updateCouponStatusHandler)
+        IUpdateCouponStatusHandler updateCouponStatusHandler, IValidateCouponCodeHandler validateCouponCodeHandler)
     {
         _logger = logger;
 
@@ -90,6 +91,7 @@ public class ActivityController : ControllerBase
         this.providerCreateCouponHandler = providerCreateCouponHandler;
         this.getCouponsHandler = getCouponsHandler;
         this.updateCouponStatusHandler = updateCouponStatusHandler;
+        this.validateCouponCodeHandler = validateCouponCodeHandler;
     }
 
     [Route("CreateActivity")]
@@ -1911,6 +1913,42 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateCouponStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ValidateCouponCode")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ValidateCouponCodeResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ValidateCouponCode([FromBody] ValidateCouponCodeArgs args)
+    {
+        try
+        {
+            var result = await validateCouponCodeHandler.ExecuteAsync(new Services.ActivityService.Interactors.ValidateCouponCodeArgs {
+                ActivityId = args.ActivityId,
+                Amount = args.Amount,
+                CouponCode = args.CouponCode
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var validated = result.Result;
+
+            return new JsonResult(new ValidateCouponCodeResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.ValidatedCouponDTO {
+                    Amount = validated.Amount,
+                    DiscountType = validated.DiscountType,
+                    IsValid = validated.IsValid,
+                    MaximumSpend = validated.MaximumSpend
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
