@@ -1,0 +1,291 @@
+﻿@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using System.Security.Claims
+@inject IActivityApiHandler activityApiHandler
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+
+@if (activities.Count != 0)
+{
+    <article class="ongoing-experience-wrapper py-3">
+        <h3 class="title">Favorite Experiences</h3>
+        <Div class="ongoing-experiences-container activitySwiper" Margin="Margin.Is3.FromTop">
+            <div class="swiper-wrapper maker-wrapper">
+                @foreach (var item in Favorites)
+                {
+                    var ActivityData = activities.Where(a => a.ActivityId == item.ActivityId).FirstOrDefault();
+                    @if (ActivityData != null)
+                    {
+                        <div class="maker-swiper-slide">
+                            <Div ElementId="#b-animate">
+                                <Animate Anchor="#b-animate"    
+
+                                Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                <div class="card">
+                                    <a class="button" href="/explore/@ActivityData.ActivityId" style="text-decoration:none;">
+                                        <img src="@ActivityData.Images.ElementAt(0).ImageSrc" class="image-header card-img">
+                                    </a>
+                                        @if (Favorites != null)
+                                            {
+                                                ActivityData.IsFavorite = Favorites.Any(a => a.ActivityId == ActivityData.ActivityId);
+                                                if (ActivityData.IsFavorite != false)
+                                                {
+                                                    <div class="card-img-overlay favorite-section">
+                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(ActivityData)">
+                                                            <img src='@(ActivityData.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                        </button>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="card-img-overlay favorite-section">
+                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(ActivityData)">
+                                                            <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                        </button>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="card-img-overlay favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0">
+                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                    </button>
+                                                </div>
+                                            }
+                                            <div class="card-img-overlay">
+                                                @if (ActivityData.OngoingStudents > 0)
+                                                {
+                                                    <div class="rounded-pill ongoing-section">
+                                                        <div class="active-badge" style="text-align:center">
+                                                            <span class="pulse"></span>
+                                                            <span class="active-tag-label">@ActivityData.OngoingStudents</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        <div class="card-container">
+                                            <div class="row text-start star-pulse-section">
+                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                    @if (ActivityData.NumberOfReviews > 0)
+                                                    {
+                                                        <img src="images/dark-round-star.png" class="star-tag-badge" />
+                                                        <span class="average-rating">@ActivityData.AverageRating</span>
+                                                        <span class="number-of-reviews">(@ActivityData.NumberOfReviews)</span>
+                                                    }
+                                                    else if (ActivityData.IsNew)
+                                                    {
+                                                        <span class="new-experience-label">New Experience</span>
+                                                    }
+                                                    else
+                                                    {
+                                                    }
+                                                </div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                </div>
+                                            </div>
+                                            <div class="row text-start">
+                                                <div class="title-section">
+                                                    <div>
+                                                        <h4 class="card-title1 mb-0">@ActivityData.Title</h4>
+                                                        @if (ActivityData.ExperienceTypeId == 1)
+                                                        {
+                                                            <p class="card-title2 mb-0 in-person">@ActivityData.CityName, @ActivityData.RegionName</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="card-title2 mb-0 online">
+                                                                @(ActivityData.ExperienceTypeId == 1 ? "In-Person" : "Online")
+                                                            </p>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row price-badge-section">
+                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(ActivityData)</p></div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Animate>
+                            </Div>
+                        </div>
+                    }
+                }
+            </div>
+        </Div>
+    </article>
+}
+@code
+{
+    [Parameter]
+    public CustomerProfile Profile { get; set; }
+
+    public string Token { get; set; }
+
+    public Activity Activity = new Activity();
+
+    public List<Activity> activities = new List<Activity>();
+
+    public List<Favorite> Favorites = new List<Favorite>();
+
+    public ClaimsPrincipal AuthState { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        Token = user.FindFirstValue("Token");
+
+        await GetFavorites();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await GetActivity();
+        }
+        else
+        {
+            await GetActivity();
+            await GetFavorites();
+        }
+    }
+    private string GetImage()
+    {
+        if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
+        return string.Empty;
+    }
+    private string GetPriceLabel(Activity activity)
+    {
+        var schedules = activity.ActivitySchedules.OrderBy(s => s.Price).ToList();
+        if (schedules.Count > 1)
+        {
+            return $"₱ {(long)schedules[0].Price} - {(long)schedules[schedules.Count - 1].Price}";
+        }
+        if (schedules.Count == 1)
+        {
+            return $"₱ {(long)schedules[0].Price}";
+        }
+        return string.Empty;
+    }
+    private async Task GetFavorites()
+    {
+        if (Profile != null)
+        {
+            var customerFavorites = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
+                {
+                    CustomerId = Profile.Id
+                }, Token);
+            if (customerFavorites.Succeeded && customerFavorites.Result != null && customerFavorites.Result.IsSuccess)
+            {
+                Favorites = customerFavorites.Result.Result.Select(i =>
+                {
+                    return new Favorite
+                        {
+                            ActivityId = i.ActivityId,
+                            CustomerId = i.CustomerId,
+                            IsFavorite = true
+                        };
+                }).ToList();
+            }
+           
+        }
+    }
+
+    private async Task GetActivity()
+    {
+        foreach (var item in Favorites)
+        {
+            var ActivityListData = await activityApiHandler.GetActivity(item.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
+                {
+                    IncludeActivityAddress = true,
+                    IncludeActivityDescription = true,
+                    IncludeActivityImages = true,
+                    IncludeAtivitySchedules = true,
+                    IncludeCustomer = true
+                });
+            if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+            {
+                var result = ActivityListData.Result.Result;
+                Activity = new Activity
+                    {
+                        Id = result.ActivityId,
+                        ActivityId = result.ActivityId,
+                        Title = result.Title,
+                        ExperienceTypeId = result.ExperienceTypeId,
+                        Description = result.Description,
+                        Price = result.Price,
+                        District = result.District,
+                        City = result.City,
+                        CityName = result.CityName,
+                        BarangayName = result.BarangayName,
+                        RegionName = result.RegionName,
+                        CreatedBy = result.CreatedBy,
+                        MapDetails = result.MapDetails,
+                        OngoingStudents = result.OngoingStudents,
+                        CompletedStudents = result.CompletedStudents,
+                        AverageRating = result.AverageRating,
+                        NumberOfReviews = result.NumberOfReviews,
+                        ActivitySchedules = result.ActivitySchedules.Select(e => {
+                        return new ActivitySchedule
+                        {
+                            Id = e.Id,
+                            Name = e.Name,
+                            PerUnit1 = e.PerUnit1,
+                            PerUnit2 = e.PerUnit2,
+                            Price = e.Price,
+                            PriceUnit1 = e.PriceUnit1,
+                            PriceUnit2 = e.PriceUnit2,
+                            UnitPrice = e.UnitPrice
+                        };
+                        }).ToList(),
+                        Images = result.Images.Select(i =>
+                        {
+                            return new ActivityImage
+                            {
+                                Id = i.Id,
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }).ToList()
+                    };
+                activities.Add(Activity);
+            }
+        }
+    }
+    private async Task AddToFavorites(Activity activity)
+    {
+        activity.IsFavorite = !activity.IsFavorite;
+        if (activity.IsFavorite)
+        {
+            //Add to Favorites
+            var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = Profile.Id
+                }, Token);
+        }
+        else
+        {
+            //Delete to Favorites
+            var createFavorite = await activityApiHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = Profile.Id
+                }, Token);
+        }
+        await GetFavorites();
+    }
+
+    private async Task CreateFavorite(Activity activity)
+    {
+        var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+            {
+                ActivityId = activity.ActivityId,
+                CustomerId = Profile.Id
+            }, Token);
+        await GetFavorites();
+
+    }
+}

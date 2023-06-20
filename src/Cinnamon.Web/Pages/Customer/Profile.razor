@@ -296,6 +296,12 @@
                                 cinnamon credits
                             </div>
                         </div>
+                        <div class='swiper-slide @(selectedTab == "favorite-experience" ? "swiper-slide-active" : "")'>
+                            <div class='tab-item @(selectedTab == "favorite-experience" ? "active" : "")'
+                             @onclick='() => selectedTab = "favorite-experience"'>
+                                favorites
+                        </div>
+                    </div>
                     </div>
                 </Div>
                 <Tabs Margin="Margin.Is3.FromTop" SelectedTab="@selectedTab" SelectedTabChanged="@OnSelectedTabChanged">
@@ -308,6 +314,7 @@
                         }
                         <Tab Name="request-for-refund" TextTransform="TextTransform.Capitalize">request refund</Tab>
                         <Tab Name="cinnamon-credit" TextTransform="TextTransform.Capitalize">cinnamon credits</Tab>
+                        <Tab Name="favorite-experience" TextTransform="TextTransform.Capitalize">favorites</Tab>
                     </Items>
                     <Content>
                         <TabPanel Name="experiences">
@@ -327,6 +334,9 @@
                         </TabPanel>
                         <TabPanel Name="cinnamon-credit">
                             <CinnamonCredits Token="@Model.Token" />
+                        </TabPanel>
+                         <TabPanel Name="favorite-experience">
+                            <CustomerFavorite profile="Model.CustomerProfile"/>
                         </TabPanel>
                     </Content>
                 </Tabs>
@@ -362,6 +372,8 @@
     public List<Activity> activities = new List<Activity>();
 
     public List<BadgeList> badges = new List<BadgeList>();
+
+    public List<Favorite> favorites = new List<Favorite>();
 
     public string displayText = "d-flex";
 
@@ -576,6 +588,23 @@
         }
         MakerOngoingStudent = activities.Sum(x => x.OngoingStudents);
         MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
+
+        //Get Favorites Experience
+        var favoriteExperiences = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
+            {
+                CustomerId = Model.CustomerProfile.Id
+            }, token);
+        if (favoriteExperiences.Succeeded && favoriteExperiences.Result != null && favoriteExperiences.Result.IsSuccess)
+        {
+            favorites = favoriteExperiences.Result.Result.Select(a =>{
+                return new Favorite
+                {
+                    ActivityId = a.ActivityId,
+                    CustomerId = a.CustomerId,
+                    IsFavorite = true
+                };
+            }).ToList();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
