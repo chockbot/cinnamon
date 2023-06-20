@@ -497,6 +497,7 @@
     private DotNetObjectReference<Cinnamon.Web.Pages.Messages> objectRef;
     private bool showLeaveGroup = false;
     private bool showLeaveGroupConfirmation = false;
+    private System.Threading.Timer? timer;
 
     protected override async Task OnInitializedAsync()
     {
@@ -642,7 +643,7 @@
                                 ChatName        = splitted[12]
                             });
                     }
-                        
+
 
                     DisplayChatRooms();
                 }
@@ -702,6 +703,8 @@
 
         await LoadSigninUser();
 
+        await StartConnection();
+
         NavigationManager.LocationChanged += LocationChanged;
     }
 
@@ -714,6 +717,17 @@
             await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.messages.handleDateFormat");
+    }
+
+    public async Task StartConnection()
+    {
+        timer = new System.Threading.Timer(async (object? stateInfo) =>
+        {
+            if (hubConnection is not null && !IsConnected)
+            {
+                await hubConnection.StartAsync();
+            }
+        }, new System.Threading.AutoResetEvent(false), 0, 15000);
     }
 
     private async Task Send()
@@ -977,7 +991,7 @@
                     if (maker != null)
                     {
                         chatMateProfileLink = maker?.FromProfileLink;
-                        
+
                         if(IsConnected)
                             await hubConnection.SendAsync("AddToGroup", chatMateGroupName, maker?.FromUserId);
                     }
@@ -1139,7 +1153,7 @@
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
         hubConnection.Closed -= ConnectWithRetryAsync;
-
+        timer.DisposeAsync();
     }
 
     [JSInvokable]

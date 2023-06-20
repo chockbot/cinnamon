@@ -106,6 +106,10 @@ builder.Services.AddScoped(sp =>
             };
         })
         .WithAutomaticReconnect()
+        .ConfigureLogging(logging => {
+            logging.SetMinimumLevel(LogLevel.Information);
+            logging.AddConsole();
+        })
         .Build();
 });
 
