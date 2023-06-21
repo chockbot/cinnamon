@@ -1,4 +1,6 @@
-
+body {
+    min-height: 100%;
+}
 ::deep button:focus {
     outline: none !important;
     box-shadow: none !important;
@@ -29,6 +31,7 @@
         text-align: left;
         border-radius: 10px;
     }
+
 ::deep .dropdown-toggle {
     background-color: #F3F6FC;
     color: #FFA942;
@@ -38,10 +41,11 @@
     width: 400px;
     border-radius: 10px;
     padding: 10px;
-    overflow: auto;
+    max-height: 500px;
+    overflow-y: auto;
 }
 .check-button {
-    width:390px;
+    width: 390px;
     background-color: white;
     border: none;
     text-align: left;
