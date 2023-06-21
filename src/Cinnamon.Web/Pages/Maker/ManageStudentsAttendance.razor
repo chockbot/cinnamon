@@ -242,7 +242,8 @@
         var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                 {
                     StudentId = student.Id,
-                    ActivityId =student.ActivityId
+                    ActivityId =student.ActivityId,
+                    ScheduleId = student.ScheduleId
                 }, token);
         if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
