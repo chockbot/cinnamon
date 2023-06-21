@@ -5,6 +5,11 @@ let chatroomListItem = ".chatroom-list-item";
 let sendMessageId = "#send-message";
 let backToChatroom = ".back-to-chatroom";
 let backToConversation = ".back-to-conversation";
+let btnCancel = ".btn-cancel";
+let btnConfirmLeave = ".btn-confirm-leave";
+let leaveGroupModal = "#leaveGroupModal";
+let btnLeave = ".leave-button";
+let btnClose = ".btn-close";
 
 messages.initControls = (obj, elementId) => {
     dotnetObj = obj;
@@ -51,6 +56,24 @@ messages.initControls = (obj, elementId) => {
         }
     });
 
+    $(document).on("click", btnConfirmLeave, function (e) {
+        dotnetObj.invokeMethodAsync('ConfirmLeaveGroup');
+
+        $(leaveGroupModal).modal("hide");
+    });
+
+    $(document).on("click", btnClose, function (e) {
+        $(leaveGroupModal).modal("hide");
+    });
+
+    $(document).on("click", btnCancel, function (e) {
+        $(leaveGroupModal).modal("hide");
+    });
+
+    $(document).on("click", btnLeave, function (e) {
+        $(leaveGroupModal).modal("show");
+    });
+    
     if (isMobile()) {
         $(".messages-top-row").show();
     }
