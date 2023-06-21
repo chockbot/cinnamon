@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
 
-public class CreateCouponArgs
+public class AdminCreateCouponArgs
 {
     [Required]
     public int ActivityId {get; set;}

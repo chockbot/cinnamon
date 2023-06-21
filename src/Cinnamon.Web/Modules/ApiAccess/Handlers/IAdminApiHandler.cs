@@ -7,6 +7,6 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers
     public interface IAdminApiHandler
     {
         Task<AppResult<GetAdminUserByEmailResult>> GetAdminUserByEmail(GetAdminUserByEmailArgs args, string token);
-        Task<AppResult<CreateCouponResult>> CreateCoupon(CreateCouponArgs args, string token);
+        Task<AppResult<AdminCreateCouponResult>> CreateCoupon(AdminCreateCouponArgs args, string token);
     }
 }

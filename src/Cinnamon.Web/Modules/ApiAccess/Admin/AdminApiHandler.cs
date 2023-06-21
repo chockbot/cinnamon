@@ -42,7 +42,7 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
             }
         }
 
-        public async Task<AppResult<CreateCouponResult>> CreateCoupon(CreateCouponArgs args, string token)
+        public async Task<AppResult<AdminCreateCouponResult>> CreateCoupon(AdminCreateCouponArgs args, string token)
         {
             try
             {
@@ -50,18 +50,18 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                     .WithOAuthBearerToken(token)
                     .Request("Admin/CreateCoupon")
                     .PostJsonAsync(args)
-                    .ReceiveJson<CreateCouponResult>();
+                    .ReceiveJson<AdminCreateCouponResult>();
 
-                return AppResult<CreateCouponResult>.CreateSucceeded(result, "Successfully called create coupon api");
+                return AppResult<AdminCreateCouponResult>.CreateSucceeded(result, "Successfully called create coupon api");
             }
             catch (FlurlHttpException ex)
             {
                 var error = await ex.GetResponseJsonAsync();
-                return AppResult<CreateCouponResult>.CreateFailed(ex, ex.Message);
+                return AppResult<AdminCreateCouponResult>.CreateFailed(ex, ex.Message);
             }
             catch (Exception ex)
             {
-                return AppResult<CreateCouponResult>.CreateFailed(ex, "An error occured when calling create coupon api");
+                return AppResult<AdminCreateCouponResult>.CreateFailed(ex, "An error occured when calling create coupon api");
             }
         }
     }
