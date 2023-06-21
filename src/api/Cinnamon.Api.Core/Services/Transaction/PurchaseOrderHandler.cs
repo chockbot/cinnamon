@@ -20,11 +20,12 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IRequestPaymentHandler requestPaymentHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IFinishTransactionHandler finishTransactionHandler;
+    private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
-        IFinishTransactionHandler finishTransactionHandler)
+        IFinishTransactionHandler finishTransactionHandler, IValidateCouponCodeHandler validateCouponCodeHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -33,6 +34,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.requestPaymentHandler = requestPaymentHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.finishTransactionHandler = finishTransactionHandler;
+        this.validateCouponCodeHandler = validateCouponCodeHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -93,16 +95,48 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
             decimal paymentProviderFee = subTotal * .05m;
-            var discount = 0;
             decimal serviceFee = 50;
+            decimal discount = 0;
+
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
+
+            // validate coupon
+            if(!string.IsNullOrEmpty(args.CouponCode))
+            {
+                var validateCouponRes = await validateCouponCodeHandler.ExecuteAsync(new ActivityService.Interactors.ValidateCouponCodeArgs {
+                    ActivityId = args.ActivityId,
+                    Amount = overallTotal,
+                    CouponCode = args.CouponCode
+                });
+                if(!validateCouponRes.Succeeded || validateCouponRes.Result == null)
+                {
+                    return AppResult<PurchaseOrderResult>.CreateFailed(
+                        new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid request.");
+                }
+                var couopon = validateCouponRes.Result;
+
+                // fixed amount
+                if(couopon.DiscountType == 1)
+                {
+                    discount = couopon.Amount;
+                }
+                // percentage 
+                else if(couopon.DiscountType == 0)
+                {
+                    decimal percentage = couopon.Amount / 100;
+                    discount = overallTotal * percentage;
+                }
+
+                // deduct overall total to discount
+                overallTotal -= discount;
+            }
             
             if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
             {
                 var creditsBalance = customerRes.Result.Result.TotalCredits;
+                creditAmount = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
                 overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
-                creditAmount = subTotal + paymentProviderFee + serviceFee >= creditsBalance ? creditsBalance : subTotal + paymentProviderFee + serviceFee;
             }
 
             // serialize students data to use later

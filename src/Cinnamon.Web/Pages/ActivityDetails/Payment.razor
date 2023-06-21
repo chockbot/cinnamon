@@ -867,7 +867,7 @@
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs
                 {
                     ActivityId = Model.Activity.ActivityId,
-                    CouponCode = "temporary coupon code",
+                    CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : String.Empty,
                     NumberOfHeads = SelectedAttendeesCount,
                     ScheduleId = Model.SelectedSchedule.Id,
                     Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>
@@ -1007,7 +1007,6 @@
             
             if ((Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
             {
-                decimal discount = 0;
                 decimal overallTotal = (GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon;
 
                 decimal creditsBalance = Model.Customer.TotalCredits;
