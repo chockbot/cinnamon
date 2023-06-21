@@ -204,7 +204,10 @@
                             {
                                 var details = new ChatMember
                                 {
-                                    FromUserId = maker.FromUserId
+                                    FromUserId = maker.FromUserId,
+                                    FromFirstName = maker.FromFirstName,
+                                    FromLastName = maker.FromLastName,
+                                    FromProfilePath = maker.FromProfilePath
                                 };
                                 <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
                                     <img src="images/messages/personal-message.png" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
@@ -234,7 +237,10 @@
                                     {
                                         var details = new ChatMember
                                         {
-                                            FromUserId = maker.FromUserId
+                                            FromUserId = maker.FromUserId,
+                                            FromFirstName = maker.FromFirstName,
+                                            FromLastName = maker.FromLastName,
+                                            FromProfilePath = maker.FromProfilePath
                                         };
                                         <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
                                             <img src="images/messages/personal-message.png" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
