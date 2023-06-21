@@ -157,4 +157,26 @@ public class CouponController : ControllerBase
             return new JsonResult(new IsPromotionCodeExistResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("GetCouponByCode")]
+    [HttpPost]
+    [ProducesResponseType(typeof(GetCouponByCodeResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCouponByCode([FromBody] GetCouponByCodeArgs args) 
+    {
+        try
+        {
+            var result = await couponRepository.GetByCouponCodeAsync(args.Code);
+
+            if(!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCouponByCodeResult {ErrorInfo = new ErrorInfo {Message = result.Message}});
+            }
+
+            return new JsonResult(new GetCouponByCodeResult{IsSuccess = true, Result = result.Result});
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCouponByCodeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

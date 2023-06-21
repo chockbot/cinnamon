@@ -40,4 +40,5 @@ public interface IActivityApiHandler
     Task<AppResult<CreateFavoriteResult>> CreateFavorite(CreateFavoriteArgs args, string token);
     Task<AppResult<RemoveFavoriteResult>> RemoveFavorite(RemoveFavoriteArgs args, string token);
     Task<AppResult<GetFavoritesByCustomerResult>> GetFavoritesByCustomer(GetFavoritesByCustomerArgs args, string token);
+    Task<AppResult<ValidateCouponCodeResult>> ValidateCouponCode(ValidateCouponCodeArgs args, string token);
 }

@@ -120,4 +120,25 @@ public class CouponData : ICouponData
             return AppResult<UpdateCouponResult>.CreateFailed(ex, "An error occured when posting update coupon api");
         }
     }
+
+    public async Task<AppResult<GetCouponByCodeResult>> GetCouponByCode(GetCouponByCodeArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Coupon/GetCouponByCode")
+                            .PostJsonAsync(args)
+                            .ReceiveJson<GetCouponByCodeResult>();
+
+            return AppResult<GetCouponByCodeResult>.CreateSucceeded(result, "Successfully get coupon by code coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCouponByCodeResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCouponByCodeResult>.CreateFailed(ex, "An error occured when get coupon by code coupon api");
+        }
+    }
 }

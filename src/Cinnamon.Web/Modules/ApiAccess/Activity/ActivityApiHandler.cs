@@ -721,4 +721,27 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<GetFavoritesByCustomerResult>.CreateFailed(ex, "An error occured when calling get favorites api");
         }
     }
+
+    public async Task<AppResult<ValidateCouponCodeResult>> ValidateCouponCode(ValidateCouponCodeArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/ValidateCouponCode")
+                .PostJsonAsync(args)
+                .ReceiveJson<ValidateCouponCodeResult>();
+
+            return AppResult<ValidateCouponCodeResult>.CreateSucceeded(result, "Successfully called validate coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<ValidateCouponCodeResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ValidateCouponCodeResult>.CreateFailed(ex, "An error occured when calling validate coupon api");
+        }
+    }
 }

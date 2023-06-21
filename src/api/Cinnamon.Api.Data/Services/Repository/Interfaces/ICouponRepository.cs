@@ -14,4 +14,5 @@ public interface ICouponRepository
         decimal? amount, decimal? maximumSpend, DateTime? from, DateTime? to, int? status);
     Task<AppResult<bool>> IsCouponCodeAlreadyExist(string code, int activityId, int customerId);
     Task<AppResult<bool>> IsCouponCodeAlreadyExist(string code, int customerId);
+    Task<AppResult<CouponDTO>> GetByCouponCodeAsync(string code);
 }
