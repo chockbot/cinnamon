@@ -867,7 +867,7 @@
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs
                 {
                     ActivityId = Model.Activity.ActivityId,
-                    CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : String.Empty,
+                    CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
                     NumberOfHeads = SelectedAttendeesCount,
                     ScheduleId = Model.SelectedSchedule.Id,
                     Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>

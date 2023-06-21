@@ -31,6 +31,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
             }
             catch (FlurlHttpException ex)
             {
+                var error = await ex.GetResponseJsonAsync();
                 return AppResult<CreatePurchaseOrderResult>.CreateFailed(ex, ex.Message);
             }
             catch (Exception ex)
