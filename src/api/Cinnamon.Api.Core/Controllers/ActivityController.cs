@@ -45,6 +45,8 @@ public class ActivityController : ControllerBase
     private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
     private readonly IGetCouponsHandler getCouponsHandler;
     private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
+    private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
+
     private readonly ICreateFavoriteHandler createFavoriteHandler;
     private readonly IRemoveFavoriteHandler removeFavoriteHandler;
     private readonly IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler;
@@ -63,7 +65,9 @@ public class ActivityController : ControllerBase
         IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
         IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler, 
         IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
-        IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler)
+        IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, 
+        IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler,
+        IValidateCouponCodeHandler validateCouponCodeHandler)
     {
         _logger = logger;
 
@@ -100,6 +104,7 @@ public class ActivityController : ControllerBase
         this.createFavoriteHandler = createFavoriteHandler;
         this.removeFavoriteHandler = removeFavoriteHandler;
         this.getFavoritesByCustomerHandler = getFavoritesByCustomerHandler;
+        this.validateCouponCodeHandler = validateCouponCodeHandler;
     }
 
     [Route("CreateActivity")]
@@ -2062,6 +2067,42 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetFavoritesByCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ValidateCouponCode")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ValidateCouponCodeResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ValidateCouponCode([FromBody] ValidateCouponCodeArgs args)
+    {
+        try
+        {
+            var result = await validateCouponCodeHandler.ExecuteAsync(new Services.ActivityService.Interactors.ValidateCouponCodeArgs {
+                ActivityId = args.ActivityId,
+                Amount = args.Amount,
+                CouponCode = args.CouponCode
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var validated = result.Result;
+
+            return new JsonResult(new ValidateCouponCodeResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.ValidatedCouponDTO {
+                    Amount = validated.Amount,
+                    DiscountType = validated.DiscountType,
+                    IsValid = validated.IsValid,
+                    MaximumSpend = validated.MaximumSpend
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

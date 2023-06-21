@@ -49,29 +49,30 @@ public class CreateCouponHandler : ICreateCouponHandler
                 return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Provide valid percentage value"), "Provide valid percentage value");
             }
 
-            
-            // check ef promo code already exist, if activity id = 0 check only customer id and promo code
-            // else check activity id, code and customer id
-            int? activityId = args.ActivityId == 0 ? null : args.ActivityId;
-            var checkResult = await couponData.IsPromotionCodeExist(new Framework.ApiCommand.ApiData.Coupon.Request.IsPromotionCodeExistArgs {
-                ActivityId = activityId,
-                Code = args.Code,
-                CustomerId = args.CustomerId
+            // check coupon code if already exist
+            var checkResult = await couponData.GetCouponByCode(new Framework.ApiCommand.ApiData.Coupon.Request.GetCouponByCodeArgs {
+                Code = args.Code
             });
-            if(!checkResult.Succeeded || checkResult.Result == null || !checkResult.Result.IsSuccess)
+            if(!checkResult.Succeeded || checkResult.Result == null)
             {
-                return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException(checkResult.Result?.ErrorInfo?.Message), checkResult.Message);
+                return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException(checkResult.Message), checkResult.Message);
             }
 
-            if(checkResult.Result.Result)
+            if(checkResult.Succeeded && checkResult.Result != null && checkResult.Result.IsSuccess)
             {
-                return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Coupon code already exist."), "Coupon code already exist.");
+                return AppResult<CreateCouponResult>.CreateFailed(new ApplicationException("Coupon code already exist or already in used"), "Coupon code already exist or already in used");
+            }
+
+            // if discount type = 1 (fixed amount) maximum spend must be zero
+            if(args.DiscountType == 1)
+            {
+                args.MaximumSpend = 0;
             }
 
             var createResult = await couponData.CreateCoupon(new Framework.ApiCommand.ApiData.Coupon.Request.CreateCouponArgs {
                 ActivityId = args.ActivityId,
                 Amount = args.Amount,
-                Code = args.Code,
+                Code = args.Code.ToUpper(),
                 CustomerId = args.CustomerId,
                 DiscountType = args.DiscountType,
                 From = args.FromDate,

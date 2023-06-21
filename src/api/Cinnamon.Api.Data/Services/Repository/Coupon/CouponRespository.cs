@@ -259,4 +259,35 @@ public class CouponRespository : ICouponRepository
             return AppResult<CouponDTO>.CreateFailed(ex, "An error occured when updating coupon code");
         }
     }
+
+    public async Task<AppResult<CouponDTO>> GetByCouponCodeAsync(string code)
+    {
+        try
+        {
+            var result = await dataStore.Coupon.FindFirstAsync(c => c.Code.ToLower() == code.ToLower());
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<CouponDTO>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+            var coupon = result.Result;
+
+            return AppResult<CouponDTO>.CreateSucceeded(new CouponDTO {
+                ActivityId = coupon.ActivityId ?? 0,
+                Amount = coupon.Amount,
+                Code = coupon.Code,
+                CustomerId = coupon.CustomerId,
+                DiscountType = coupon.DiscountType,
+                From = coupon.From,
+                Id = coupon.Id,
+                MaximumSpend = coupon.MaximumSpend,
+                Name = coupon.Name,
+                Status = coupon.Status,
+                To = coupon.To
+            }, "Successfully get coupon code by id");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CouponDTO>.CreateFailed(ex, "An error occured when getting coupon by id");
+        }
+    }
 }

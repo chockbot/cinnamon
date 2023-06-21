@@ -11,4 +11,5 @@ public interface ICouponData
     Task<AppResult<GetCouponResult>> GetCouponById(int id);
     Task<AppResult<GetAllCouponResult>> GetAllCoupon(GetAllCouponArgs args);
     Task<AppResult<IsPromotionCodeExistResult>> IsPromotionCodeExist(IsPromotionCodeExistArgs args);
+    Task<AppResult<GetCouponByCodeResult>> GetCouponByCode(GetCouponByCodeArgs args);
 }
