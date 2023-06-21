@@ -147,8 +147,8 @@ namespace Cinnamon.Api.Core.Controllers
 
         [Route("CreateCoupon")]
         [HttpPost]
-        [ProducesResponseType(typeof(CreateCouponResult), StatusCodes.Status200OK)]
-        public async Task<IActionResult> CreateCoupon([FromBody] CreateCouponArgs args)
+        [ProducesResponseType(typeof(AdminCreateCouponResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> CreateCoupon([FromBody] AdminCreateCouponArgs args)
         {
             try
             {
@@ -165,11 +165,11 @@ namespace Cinnamon.Api.Core.Controllers
 
                 if (!result.Succeeded || result.Result == null)
                 {
-                    return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                    return new JsonResult(new AdminCreateCouponResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
                 }
                 var created = result.Result;
 
-                return new JsonResult(new CreateCouponResult {
+                return new JsonResult(new AdminCreateCouponResult {
                     IsSuccess = true,
                     Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
                         ActivityId = created.ActivityId,
@@ -189,7 +189,7 @@ namespace Cinnamon.Api.Core.Controllers
             }
             catch (Exception ex)
             {
-                return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+                return new JsonResult(new AdminCreateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }
