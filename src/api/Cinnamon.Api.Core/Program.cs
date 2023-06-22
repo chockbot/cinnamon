@@ -29,9 +29,9 @@ builder.Services.AddSingleton(applicationConfig);
 builder.Services.AddSignalR(hubOptions =>
 {
     hubOptions.EnableDetailedErrors = true;
-    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(5);
+    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
     hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(60);
+    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(180);
 });
 builder.Services.AddResponseCompression(opts =>
 {
@@ -166,8 +166,6 @@ app.MapHub<ChatHub>("/chathub", options =>
     options.TransportMaxBufferSize = 256000;
     options.ApplicationMaxBufferSize = 256000;
     options.Transports = (Microsoft.AspNetCore.Http.Connections.HttpTransportType)TransportType.All;
-    options.WebSockets.CloseTimeout = TimeSpan.FromSeconds(10);
-    options.LongPolling.PollTimeout = TimeSpan.FromSeconds(10);
 });
 
 app.Run();
