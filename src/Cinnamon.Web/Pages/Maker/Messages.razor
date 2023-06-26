@@ -453,11 +453,23 @@
                                     @item.FromFirstName @item.FromLastName
                                 </div>
                                 <div class="col-lg-4 col-md-4 col-sm-4 col-4 send-private-message-section">
-                                    @if (item.FromUserId != currentUserId)
+                                    @if (currentUserChatMemberType == ChatMemberType.Customer)
                                     {
-                                        <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
-                                            <img src="images/messages/chat-icon.png" class="send-private-message-picture" />
-                                        </button>
+                                        @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.ActivityProvider)
+                                        {
+                                            <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
+                                                <img src="images/messages/chat-icon.png" class="send-private-message-picture" />
+                                            </button>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.Customer)
+                                        {
+                                            <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
+                                                <img src="images/messages/chat-icon.png" class="send-private-message-picture" />
+                                            </button>
+                                        }
                                     }
                                 </div>
                             }
@@ -502,6 +514,7 @@
     private string currentUserLastName = string.Empty;
     private string currentUserFirstName = string.Empty;
     private string currentUserProfilePath = string.Empty;
+    private Framework.Enums.Enums.ChatMemberType currentUserChatMemberType;
     private string chatMateFullName = string.Empty;
     private string chatMateProfilePicture = string.Empty;
     private string chatMateConnectionId = string.Empty;
@@ -1024,6 +1037,8 @@
                             await hubConnection.SendAsync("AddToGroup", chatMateGroupName, maker?.FromUserId);
                     }
                 }
+
+                currentUserChatMemberType = chatMembers.FirstOrDefault(c => c.FromUserId == currentUserId).ChatMemberType;
             }
         }
     }
