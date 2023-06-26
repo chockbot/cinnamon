@@ -63,6 +63,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
         {
             try
             {
+                string profilePicture = string.Empty;
+
                 var customerChatRoomsResult = await dataStore.ChatMember.FindAsync(c => c.CustomerId == userId && !c.HasLeft);
 
                 if (!customerChatRoomsResult.Succeeded || customerChatRoomsResult.Result == null)
@@ -108,6 +110,15 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                         return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(oldMessageResult.Error.Exception, oldMessageResult.Message);
                     }
 
+                    if ((Enums.ChatType)chatDetail.ChatRoom.ChatType == Enums.ChatType.GroupChat)
+                    {
+                        profilePicture = result.Result.FirstOrDefault(c => c.ChatRoomId == chatRoomId && (Enums.ChatMemberType)c.ChatMemberType == Enums.ChatMemberType.ActivityProvider)?.Customer?.ProfilePath;
+                    }
+                    else
+                    {
+                        profilePicture = fromCustomer.ProfilePath;
+                    }
+
                     var newChatHistory = newMessageResult.Result;
                     var oldChatHistory = oldMessageResult.Result;
 
@@ -119,7 +130,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                             DateCreated      = oldChatHistory.Any() ? oldChatHistory.FirstOrDefault().CreatedOn : chatDetail.CreatedOn,
                             FromFirstName    = fromCustomer.FirstName,
                             FromLastName     = fromCustomer.LastName,
-                            FromProfilePath  = fromCustomer.ProfilePath,
+                            FromProfilePath  = profilePicture,
                             FromUserId       = fromCustomer.Id,
                             FromProfileLink  = fromCustomer.Handler,
                             Message          = chatDetail.ChatRoom.LatestMessage,
