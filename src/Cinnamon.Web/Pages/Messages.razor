@@ -106,7 +106,7 @@
                             }
                             else
                             {
-                                <img src="images/Profile/user.png" class="chatroom-profile-picture" />
+                                <img src="@chatRoom.FromProfilePath" class="chatroom-profile-picture" />
                                 @if (!string.IsNullOrEmpty(chatRoom.GroupName))
                                 {
                                     <span class="logged-in"></span>
@@ -173,7 +173,7 @@
                             else
                             {
                                 <div class="col-lg-1 chatmate-profile-picture-section">
-                                    <img src="images/Profile/user.png" class="chatmate-profile-picture" />
+                                    <img src="@chatMateProfilePicture" class="chatmate-profile-picture" />
                                     @if (!string.IsNullOrEmpty(chatMateGroupName))
                                     {
                                         <span class="logged-in"></span>
@@ -426,7 +426,7 @@
                     }
                     else
                     {
-                        <img src="images/Profile/user.png" class="profile-section-picture" />
+                        <img src="@chatMateProfilePicture" class="profile-section-picture" />
                         <div class="divider"></div>
                         <label class="profile-section-name">
                             @chatMateChatName
@@ -1036,6 +1036,7 @@
                     if (maker != null)
                     {
                         chatMateProfileLink = maker?.FromProfileLink;
+                        chatMateProfilePicture = maker?.FromProfilePath;
 
                         if(IsConnected)
                             await hubConnection.SendAsync("AddToGroup", chatMateGroupName, maker?.FromUserId);
