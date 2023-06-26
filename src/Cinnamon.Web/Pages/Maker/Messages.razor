@@ -544,6 +544,7 @@
             {
                 chatHistories.Add(new ChatHistory
                     {
+                        ChatHistoryId = chatHistories.Max(c => c.ChatHistoryId + 1),
                         ChatRoomId       = Convert.ToInt32(splitted[0]),
                         DateCreated      = DateTime.Parse(splitted[1]),
                         FromConnectionId = splitted[2],
@@ -613,6 +614,7 @@
             {
                 chatHistories.Add(new ChatHistory
                     {
+                        ChatHistoryId = chatHistories.Max(c => c.ChatHistoryId + 1),
                         ChatRoomId = Convert.ToInt32(splitted[0]),
                         DateCreated = DateTime.Parse(splitted[1]),
                         FromUserId = Convert.ToInt32(splitted[2]),
