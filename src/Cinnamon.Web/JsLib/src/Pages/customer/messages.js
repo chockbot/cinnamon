@@ -40,6 +40,8 @@ messages.initControls = (obj, elementId) => {
         if (isMobile()) {
             $(".messages-top-row").hide();
         }
+
+        $(".conversation-section").scrollTop($(".conversation-section").prop("scrollHeight"));
     });
 
     $(document).on("click", messageElementId, function (e) {
