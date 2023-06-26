@@ -124,13 +124,8 @@ function formatDate(date) {
 
 function handleDisplay() {
     if (isMobile()) {
-        if ($("#chat-history-list")) {
-            if ($("#chat-history-list").closest("div.app-name-section").length > 0) {
-                $("#chat-history-list").closest("div.app-name-section").find("div.page.app-name-section").hide();
-            }
-            if ($("#chat-history-list").closest("div.container-fluid").length > 0) {
-                $("#chat-history-list").closest("div.container-fluid").find(".header-mobile").hide();
-            }
+        if ($(".messages-container").length > 0) {
+            $(".messages-container").prev().hide();
         }
     }
 }
