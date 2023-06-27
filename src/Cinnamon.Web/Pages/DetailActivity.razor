@@ -232,7 +232,7 @@
                                         <div class="m-2 maker-profile-details">
                                             <span class="xp-by">Experience by</span>
                                             <span class="text-capitalize maker-name">@customerDetail.FirstName @customerDetail.LastName</span>
-                                            <a class="view-profile" href="/maker/profile/@(activity.Owner != null && !string.IsNullOrEmpty(activity.Owner.Handler) ? activity.Owner.Handler : activity.CreatedBy.ToString() )">View Profile</a>
+                                            <a class="view-profile" href="/maker/profile/@(activity.Owner != null && !string.IsNullOrEmpty(activity.Owner.Handler) ? activity.Owner.Handler : activity.CreatedBy.ToString() )" target="_blank">View Profile</a>
                                         </div>
                                         <div class="profile-badges">
                                             @if (customerDetail.IsVerified == 2)

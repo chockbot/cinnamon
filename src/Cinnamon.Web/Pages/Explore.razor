@@ -48,10 +48,10 @@
             </div>
             <form class="search-bar" @onsubmit=Search>
                 <div class="input-group border rounded-pill p-1">
-                    <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="button-addon3" class="form-control bg-none border-0">
+                    <input type="text" placeholder="Location | Experience" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" aria-describedby="btn-search" class="form-control bg-none border-0" style="outline: none;box-shadow: none;">
                     <div class="input-group-append border-0">
-                        <button id="button-addon3" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
-                        <button id="button-addon3" type="button" @onclick="Search" class="btn btn-link text-success" style="background-color:#ffa942; border-radius:50%"><i class="fa fa-search" style="color:white"></i></button>
+                        <button id="btn-clear" type="button" class="btn border-0" @onclick="Clear"><i class="fa fa-times" style="color:#8C8C8C"></i></button>
+                        <button id="btn-search" type="button" @onclick="Search" class="btn btn-link text-success"><i class="fa fa-search" style="color:white"></i></button>
                     </div>
                 </div>
             </form>
@@ -357,7 +357,7 @@
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card">
-                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
+                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;" target="_blank">
                                                                 @if (act.Images.Count > 0)
                                                                 {
                                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
@@ -543,17 +543,17 @@
                                                     @if (act.Images.Count > 0)
                                                     {
                                                         <div class="carousel-item active">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                                 <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img img-fluid">
                                                             </a>
                                                         </div>
                                                         <div class="carousel-item">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                                 <img src=@act.Images.ElementAt(1).ImageSrc alt="Second slide" class="card-img img-fluid">
                                                             </a>
                                                         </div>
                                                         <div class="carousel-item">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                    <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                                 <img src=@act.Images.ElementAt(2).ImageSrc alt="Second slide" class="card-img img-fluid">
                                                             </a>
                                                         </div>
