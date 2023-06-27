@@ -437,6 +437,8 @@
         public string Name {get; set;}
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Some characters are not allowed")]
+        [MaxLength(15, ErrorMessage = "Only allowed 15 characters")]
         public string Code {get; set;}
 
         [Required]
