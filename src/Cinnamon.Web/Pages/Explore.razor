@@ -357,7 +357,7 @@
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                                         <div class="card">
-                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
+                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;" target="_blank">
                                                                 @if (act.Images.Count > 0)
                                                                 {
                                                                     <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
@@ -543,17 +543,17 @@
                                                     @if (act.Images.Count > 0)
                                                     {
                                                         <div class="carousel-item active">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                                 <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img img-fluid">
                                                             </a>
                                                         </div>
                                                         <div class="carousel-item">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                                 <img src=@act.Images.ElementAt(1).ImageSrc alt="Second slide" class="card-img img-fluid">
                                                             </a>
                                                         </div>
                                                         <div class="carousel-item">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
+                                                    <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
                                                                 <img src=@act.Images.ElementAt(2).ImageSrc alt="Second slide" class="card-img img-fluid">
                                                             </a>
                                                         </div>
