@@ -171,8 +171,8 @@
                         </Field>
                         <Field class="mb-3">
                             <FieldBody>
-                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Maximum Spend" ShowStepButtons="false" Decimals="2" 
-                                    TValue="decimal?" ValueChanged="v => Form.MaximumSpend = v ?? 0">
+                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="2" 
+                                    TValue="decimal?" ValueChanged="v => Form.MinimumSpend = v ?? 0">
                                 </NumericPicker>
                             </FieldBody>
                         </Field>
@@ -347,7 +347,7 @@
                     Code = Form.Code,
                     DiscountType = Form.DiscountType,
                     FromDate = Form.DateFrom.Add(Form.TimeFrom),
-                    MaximumSpend = Form.MaximumSpend,
+                    MaximumSpend = Form.MinimumSpend,
                     Name = Form.Name,
                     ToDate = Form.DateTo.Add(Form.TimeTo),
                 }, Token);
@@ -379,7 +379,7 @@
         Form.ActivityId = -1;
         Form.Amount = 0;
         Form.Code = string.Empty;
-        Form.MaximumSpend = 0;
+        Form.MinimumSpend = 0;
         Form.Name = string.Empty;
         ListCoupons.IsShowErrorMessage = false;
         ListCoupons.ErrorMessage = string.Empty;
@@ -446,7 +446,7 @@
         public decimal Amount {get; set;}
 
         [Required]
-        public decimal MaximumSpend {get; set;}
+        public decimal MinimumSpend {get; set;}
 
         [Required]
         public DateTime DateFrom {get; set;} = DateTime.Now;
