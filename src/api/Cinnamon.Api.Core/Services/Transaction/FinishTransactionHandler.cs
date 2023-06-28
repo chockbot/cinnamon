@@ -141,7 +141,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 MakerEmail = $"{activity.Owner?.Email}",
                 ServiceFee = deserializedPayload.Fees.ServiceFee,
                 PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee,
-                AppliedCredits = purchaseOrder.CreditAmount
+                AppliedCredits = purchaseOrder.CreditAmount,
+                DiscountAmount = purchaseOrder.CouponAmount ?? 0
             });
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
@@ -166,7 +167,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 PayerEmail = customer.Email,
                 ServiceFee = deserializedPayload.Fees.ServiceFee,
                 PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee,
-                AppliedCredits = purchaseOrder.CreditAmount
+                AppliedCredits = purchaseOrder.CreditAmount,
+                DiscountAmount = purchaseOrder.CouponAmount ?? 0
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {

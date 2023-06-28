@@ -39,7 +39,7 @@ public class MakerEnrolledNotificationHandler : IMakerEnrolledNotificationHandle
         {
             var emailBody = helper.GetTemplate(args.MakerName, args.ExperienceName, args.PurchaseDate, 
                 args.PayerName, args.Amount, args.ServiceFee, config.FrontendUrl, args.Students, args.ReferenceNumber, args.PaymentMethod,
-                args.PayerEmail, args.PaymentProviderFee, args.AppliedCredits);
+                args.PayerEmail, args.PaymentProviderFee, args.AppliedCredits, args.DiscountAmount);
                 
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {
