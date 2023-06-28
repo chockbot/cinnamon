@@ -1036,6 +1036,28 @@ input::-ms-clear {
   margin-left: 15px;
 }
 
+.maker-coupons-wrapper
+  .section-content
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(2)
+  span:last-child {
+  display: none;
+}
+
+.maker-coupons-wrapper
+  .section-content
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(4)
+  span:last-child {
+  display: none;
+}
+
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .maker-coupons-wrapper .section-content .table-list .b-table.table {
     border: 0 !important;
@@ -1054,8 +1076,7 @@ input::-ms-clear {
   }
 
   .maker-coupons-wrapper .section-content .table-list table tbody tr td {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding: 10px;
     font-size: 12px;
   }
 
@@ -1071,8 +1092,6 @@ input::-ms-clear {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
   }
 
   .maker-coupons-wrapper
@@ -1106,7 +1125,33 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(2)::before {
+    td:nth-child(2) {
+    display: flex;
+    padding: 0;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:first-child {
+    width: 50%;
+    padding: 10px;
+
+    border-right: 1px solid #000;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:first-child::before {
     content: "Code: ";
     font-weight: bold;
   }
@@ -1117,7 +1162,21 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(3)::before {
+    td:nth-child(2)
+    span:last-child {
+    width: 50%;
+    padding: 10px;
+    display: block;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:last-child::before {
     content: "Discount: ";
     font-weight: bold;
   }
@@ -1128,7 +1187,42 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(4)::before {
+    td:nth-child(3) {
+    display: none;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4) {
+    display: flex;
+    padding: 0;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:first-child {
+    width: 50%;
+    padding: 10px;
+    border-right: 1px solid #000;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:first-child::before {
     content: "From: ";
     font-weight: bold;
   }
@@ -1139,9 +1233,33 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(5)::before {
+    td:nth-child(4)
+    span:last-child {
+    width: 50%;
+    padding: 10px;
+    display: block;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:last-child:before {
     content: "To: ";
     font-weight: bold;
+  }
+
+  .maker-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5) {
+    display: none;
   }
 
   .maker-coupons-wrapper
@@ -1166,7 +1284,9 @@ input::-ms-clear {
   }
 
   .maker-coupons-wrapper .section-content .table-list .btn-status {
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 0;
+    max-width: 80px;
   }
 
   .maker-coupons-wrapper .section-content .table-list .check-button {
