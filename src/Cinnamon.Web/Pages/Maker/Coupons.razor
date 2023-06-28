@@ -25,7 +25,7 @@
                     <TableRow>
                         <TableHeaderCell>
                             <Label class="sotring-column">
-                                Name
+                                Discription
                                 <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                             </Label>
                         </TableHeaderCell>
@@ -131,7 +131,7 @@
                     </Field>
                     <Validation>
                         <Field class="mb-3">
-                            <FieldLabel class="font-16">Label</FieldLabel>
+                            <FieldLabel class="font-16">Coupon Description</FieldLabel>
                             <FieldBody>
                                 <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
                                     <Feedback>
@@ -143,7 +143,7 @@
                     </Validation>
                     <Validation>
                         <Field class="mb-3">
-                            <FieldLabel class="font-16">Promo Code</FieldLabel>
+                            <FieldLabel class="font-16">Coupon Code</FieldLabel>
                             <FieldBody>
                                 <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code">
                                     <Feedback>
@@ -286,7 +286,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var activities = activityRes.Result.Result.OrderBy(a => a.Title);
+            var activities = activityRes.Result.Result.Where(a => a.Status != Framework.Enums.Enums.ActivityStatus.InProgress). OrderBy(a => a.Title);
 
             var listOfActivities = new List<CouponsModel.Activity>();
             listOfActivities.Add(new CouponsModel.Activity {Id = -1, Name = "Select Activity", Disabled = true});
