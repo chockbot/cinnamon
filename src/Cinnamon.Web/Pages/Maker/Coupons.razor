@@ -286,7 +286,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var activities = activityRes.Result.Result;
+            var activities = activityRes.Result.Result.OrderBy(a => a.Title);
 
             var listOfActivities = new List<CouponsModel.Activity>();
             listOfActivities.Add(new CouponsModel.Activity {Id = -1, Name = "Select Activity", Disabled = true});
