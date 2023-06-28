@@ -142,7 +142,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 ServiceFee = deserializedPayload.Fees.ServiceFee,
                 PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee,
                 AppliedCredits = purchaseOrder.CreditAmount,
-                IsInclusivePayment = deserializedPayload.IsInclusivePayment
+                IsInclusivePayment = deserializedPayload.IsInclusivePayment,
+                DiscountAmount = purchaseOrder.CouponAmount ?? 0
             });
             if(!emailNotifyRes.Succeeded || emailNotifyRes.Result == null)
             {
@@ -168,7 +169,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                 ServiceFee = deserializedPayload.Fees.ServiceFee,
                 PaymentProviderFee = deserializedPayload.Fees.PaymentProviderFee,
                 AppliedCredits = purchaseOrder.CreditAmount,
-                IsInclusivePayment = deserializedPayload.IsInclusivePayment
+                IsInclusivePayment = deserializedPayload.IsInclusivePayment,
+                DiscountAmount = purchaseOrder.CouponAmount ?? 0
             });
             if(!makerNotification.Succeeded || makerNotification.Result == null)
             {
