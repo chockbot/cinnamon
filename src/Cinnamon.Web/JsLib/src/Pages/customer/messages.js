@@ -20,7 +20,8 @@ messages.initControls = (obj, elementId) => {
             selector: '[data-toggle=tooltip]',
             trigger: 'hover',
         });
-        $('[data-toggle=tooltip]').click(function () {
+
+        $(document).on("click", '[data-toggle=tooltip]', function (e) {
             $(this).tooltip("hide");
         });
 
