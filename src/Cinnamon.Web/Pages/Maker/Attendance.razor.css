@@ -1,6 +1,7 @@
 body {
     min-height: 100%;
 }
+
 ::deep button:focus {
     outline: none !important;
     box-shadow: none !important;
@@ -19,59 +20,70 @@ body {
   color: var(--primary);
   font-weight: 700;
 }
-.student-attendance .activities-schedule-section {
-  margin-top: 2rem;
-  position: relative;
-}
-    ::deep .dropdown .btn {
-        width: 280px;
-        height: 40px;
-        background-color: #F3F6FC;
-        color: #FFA942;
-        text-align: left;
-        border-radius: 10px;
+
+    .student-attendance .activities-schedule-section {
+        margin-top: 2rem;
+        position: relative;
     }
+
+::deep .dropdown .btn {
+    width: 300px;
+    height: 40px;
+    background-color: #F3F6FC;
+    color: #FFA942;
+    text-align: left;
+    border-radius: 10px;
+}
 
 ::deep .dropdown-toggle {
     background-color: #F3F6FC;
     color: #FFA942;
     text-align: left;
 }
+
 ::deep .dropdown-menu {
-    width: 400px;
+    width: 420px;
     border-radius: 10px;
     padding: 10px;
-    max-height: 500px;
-    overflow-y: auto;
+    max-height: 400px;
+    overflow: auto;
 }
+
 .check-button {
     width: 390px;
     background-color: white;
     border: none;
     text-align: left;
+    
 }
-.check-button img{
+
+::deep .dropdown-menu .check-button img {
+    margin-top: 0.1rem;
     float: left;
 }
+
 .activity-title {
-    padding-top: 8px;
     font-family: Nunito;
     font-size: 16px;
     font-weight: 600;
     text-align: left;
-    line-height: 5px;
-    color: #343D4C;
-}
-.schedule-title {
-    font-family: Nunito;
-    font-size: 14px;
-    font-weight: 400;
     color: #717171;
+    padding: 5px;
+    margin-left: 2rem;
     text-align: left;
 }
-student-attendance .activities-schedule-section .swiper-wrapper {
-    padding-top: 20px;
-    padding-bottom: 20px;
+
+.swiper-wrapper .schedule-title {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 400;
+    color: #717171;
+    text-align: center;
+}
+
+.student-attendance .activities-schedule-section .swiper-wrapper {
+  padding-top: 20px;
+  padding-bottom: 20px;
 }
 
 .student-attendance .activities-schedule-section .swiper-slide {
@@ -92,6 +104,7 @@ student-attendance .activities-schedule-section .swiper-wrapper {
 
 .student-attendance .activities-schedule-section .swiper-slide .schedule-time {
   font-size: 16px;
+  text-align: center;
 }
 
 .student-attendance .activities-schedule-section .swiper-slide .schedule-toggle {
@@ -145,14 +158,17 @@ student-attendance .activities-schedule-section .swiper-wrapper {
     ::deep .dropdown .btn {
         width: 100%;
     }
+
     ::deep .dropdown-menu {
         width: 90%;
     }
+
     .check-button {
         width: 95%;
     }
-    .schedule-title {
-        margin-left:2rem;
+
+    .swiper-slide .schedule-title {
+        text-align: center;
     }
   .student-attendance .title {
     font-size: 20px;
@@ -208,6 +224,21 @@ student-attendance .activities-schedule-section .swiper-wrapper {
         margin-top: 8px;
     }
 }
+::deep th.sessions-attended-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep th.present-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary);
+    border: none;
+}
+
 
     ::deep th.sessions-attended-header {
         text-align: center;
