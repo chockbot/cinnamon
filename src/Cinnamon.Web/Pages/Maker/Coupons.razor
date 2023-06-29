@@ -3,6 +3,7 @@
 @using System.Security.Claims
 @using System.ComponentModel.DataAnnotations;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ValidationAttributes;
 @inject IActivityApiHandler activityApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject NavigationManager NavigationManager;
@@ -24,7 +25,7 @@
                     <TableRow>
                         <TableHeaderCell>
                             <Label class="sotring-column">
-                                Name
+                                Discription
                                 <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                             </Label>
                         </TableHeaderCell>
@@ -77,12 +78,14 @@
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.Code</span>
+                                    <span>@item.Discount</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.Discount</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.From</span>
+                                    <span>@item.To</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.To</span>
@@ -128,7 +131,7 @@
                     </Field>
                     <Validation>
                         <Field class="mb-3">
-                            <FieldLabel class="font-16">Label</FieldLabel>
+                            <FieldLabel class="font-16">Coupon Description</FieldLabel>
                             <FieldBody>
                                 <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
                                     <Feedback>
@@ -140,7 +143,7 @@
                     </Validation>
                     <Validation>
                         <Field class="mb-3">
-                            <FieldLabel class="font-16">Promo Code</FieldLabel>
+                            <FieldLabel class="font-16">Coupon Code</FieldLabel>
                             <FieldBody>
                                 <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code">
                                     <Feedback>
@@ -171,8 +174,8 @@
                         </Field>
                         <Field class="mb-3">
                             <FieldBody>
-                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Maximum Spend" ShowStepButtons="false" Decimals="2" 
-                                    TValue="decimal?" ValueChanged="v => Form.MaximumSpend = v ?? 0">
+                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="2" 
+                                    TValue="decimal?" ValueChanged="v => Form.MinimumSpend = v ?? 0">
                                 </NumericPicker>
                             </FieldBody>
                         </Field>
@@ -283,7 +286,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var activities = activityRes.Result.Result;
+            var activities = activityRes.Result.Result.Where(a => a.Status != Framework.Enums.Enums.ActivityStatus.InProgress). OrderBy(a => a.Title);
 
             var listOfActivities = new List<CouponsModel.Activity>();
             listOfActivities.Add(new CouponsModel.Activity {Id = -1, Name = "Select Activity", Disabled = true});
@@ -347,7 +350,7 @@
                     Code = Form.Code,
                     DiscountType = Form.DiscountType,
                     FromDate = Form.DateFrom.Add(Form.TimeFrom),
-                    MaximumSpend = Form.MaximumSpend,
+                    MaximumSpend = Form.MinimumSpend,
                     Name = Form.Name,
                     ToDate = Form.DateTo.Add(Form.TimeTo),
                 }, Token);
@@ -379,7 +382,7 @@
         Form.ActivityId = -1;
         Form.Amount = 0;
         Form.Code = string.Empty;
-        Form.MaximumSpend = 0;
+        Form.MinimumSpend = 0;
         Form.Name = string.Empty;
         ListCoupons.IsShowErrorMessage = false;
         ListCoupons.ErrorMessage = string.Empty;
@@ -437,6 +440,8 @@
         public string Name {get; set;}
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Some characters are not allowed")]
+        [MaxLength(15, ErrorMessage = "Only allowed 15 characters")]
         public string Code {get; set;}
 
         [Required]
@@ -446,15 +451,17 @@
         public decimal Amount {get; set;}
 
         [Required]
-        public decimal MaximumSpend {get; set;}
+        public decimal MinimumSpend {get; set;}
 
         [Required]
+        [DateOnwards(ErrorMessage = "Past dates now allowed")]
         public DateTime DateFrom {get; set;} = DateTime.Now;
 
         [Required]
         public TimeSpan TimeFrom {get; set;} = DateTime.Now.TimeOfDay;
 
         [Required]
+        [DateOnwards(ErrorMessage = "Past dates now allowed")]
         public DateTime DateTo {get; set;} = DateTime.Now;
 
         [Required]
