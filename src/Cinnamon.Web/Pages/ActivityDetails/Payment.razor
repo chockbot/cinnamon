@@ -1027,6 +1027,7 @@
             {
                 decimal discount = 0;
                 result = ((GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = result < 0 ? 0 : result;
             }
 
             return result;
