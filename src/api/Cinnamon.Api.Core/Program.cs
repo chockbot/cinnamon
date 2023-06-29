@@ -112,8 +112,8 @@ builder.Services.AddQuartz(q => {
         q.AddTrigger(opts => opts
             .ForJob(payoutJobkey)
             .WithIdentity("GeneratePayoutHandler-trigger")
-            .WithCronSchedule(applicationConfig.Disbursement.CronString)
-            //.WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Disbursement.RunPerHour))
+            //.WithCronSchedule(applicationConfig.Disbursement.CronString)
+            .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Disbursement.RunPerHour))
         );
     }
 
