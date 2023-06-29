@@ -35,4 +35,5 @@ public interface IActivityApiHandler
     Task<AppResult<CreateCouponResult>> CreateCoupon(CreateCouponArgs args, string token);
     Task<AppResult<UpdateCouponStatusResult>> UpdateCouponStatus(UpdateCouponStatusArgs args, string token);
     Task<AppResult<ValidateCouponCodeResult>> ValidateCouponCode(ValidateCouponCodeArgs args, string token);
+    Task<AppResult<UpdateCouponResult>> UpdateCoupon(UpdateCouponArgs args, string token);
 } 

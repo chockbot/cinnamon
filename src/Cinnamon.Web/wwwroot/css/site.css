@@ -1289,6 +1289,10 @@ input::-ms-clear {
     max-width: 80px;
   }
 
+  .maker-coupons-wrapper .section-content .table-list .btn-primary {
+    font-size: 12px !important;
+  }
+
   .maker-coupons-wrapper .section-content .table-list .check-button {
     font-size: 12px;
     padding: 5px;
@@ -1353,6 +1357,28 @@ input::-ms-clear {
   margin-left: 15px;
 }
 
+.admin-coupons-wrapper
+  .section-content
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(2)
+  span:last-child {
+  display: none;
+}
+
+.admin-coupons-wrapper
+  .section-content
+  .table-list
+  table
+  tbody
+  tr
+  td:nth-child(4)
+  span:last-child {
+  display: none;
+}
+
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .admin-coupons-wrapper .section-content .table-list .b-table.table {
     border: 0 !important;
@@ -1371,8 +1397,7 @@ input::-ms-clear {
   }
 
   .admin-coupons-wrapper .section-content .table-list table tbody tr td {
-    padding-top: 15px;
-    padding-bottom: 15px;
+    padding: 10px;
     font-size: 12px;
   }
 
@@ -1388,8 +1413,6 @@ input::-ms-clear {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 10px;
-    padding-bottom: 10px;
   }
 
   .admin-coupons-wrapper
@@ -1412,7 +1435,7 @@ input::-ms-clear {
     tr
     td:first-child
     span::before {
-    content: "Name: ";
+    content: "Description: ";
     font-weight: bold;
     width: 70%;
   }
@@ -1423,7 +1446,33 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(2)::before {
+    td:nth-child(2) {
+    display: flex;
+    padding: 0;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:first-child {
+    width: 50%;
+    padding: 10px;
+
+    border-right: 1px solid #000;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:first-child::before {
     content: "Code: ";
     font-weight: bold;
   }
@@ -1434,7 +1483,21 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(3)::before {
+    td:nth-child(2)
+    span:last-child {
+    width: 50%;
+    padding: 10px;
+    display: block;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(2)
+    span:last-child::before {
     content: "Discount: ";
     font-weight: bold;
   }
@@ -1445,7 +1508,42 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(4)::before {
+    td:nth-child(3) {
+    display: none;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4) {
+    display: flex;
+    padding: 0;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:first-child {
+    width: 50%;
+    padding: 10px;
+    border-right: 1px solid #000;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:first-child::before {
     content: "From: ";
     font-weight: bold;
   }
@@ -1456,9 +1554,33 @@ input::-ms-clear {
     table
     tbody
     tr
-    td:nth-child(5)::before {
+    td:nth-child(4)
+    span:last-child {
+    width: 50%;
+    padding: 10px;
+    display: block;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(4)
+    span:last-child:before {
     content: "To: ";
     font-weight: bold;
+  }
+
+  .admin-coupons-wrapper
+    .section-content
+    .table-list
+    table
+    tbody
+    tr
+    td:nth-child(5) {
+    display: none;
   }
 
   .admin-coupons-wrapper
@@ -1483,7 +1605,13 @@ input::-ms-clear {
   }
 
   .admin-coupons-wrapper .section-content .table-list .btn-status {
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 0;
+    max-width: 80px;
+  }
+
+  .admin-coupons-wrapper .section-content .table-list .btn-primary {
+    font-size: 12px !important;
   }
 
   .admin-coupons-wrapper .section-content .table-list .check-button {
