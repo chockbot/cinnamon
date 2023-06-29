@@ -344,7 +344,6 @@
         schedule.IsSelected = !schedule.IsSelected;
         if(schedule.IsSelected)
         {
-            selectCount++;
             var result = await dashboardApiHandler.GetCurrentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCurrentAttendanceArgs {
                 ActivityId = schedule.ActivityId,
                 ScheduleId = schedule.ScheduleId
@@ -367,7 +366,6 @@
         }
         else 
         {
-            selectCount--;
             Model.Attendances.RemoveAll(s => s.ActivityId == schedule.ActivityId && s.ScheduleId == schedule.ScheduleId);
         }
         Model.FilteredAttendance = Model.Attendances;
