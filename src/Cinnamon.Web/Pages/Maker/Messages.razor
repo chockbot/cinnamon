@@ -734,7 +734,7 @@
             InvokeAsync(() => StateHasChanged());
         });
 
-        if (!IsConnected)
+        if (hubConnection.State == HubConnectionState.Disconnected)
         {
             await hubConnection.StartAsync();
 
@@ -766,7 +766,7 @@
     {
         timer = new System.Threading.Timer(async (object? stateInfo) =>
         {
-            if (hubConnection is not null && !IsConnected)
+            if (hubConnection is not null && hubConnection.State == HubConnectionState.Disconnected)
             {
                 await hubConnection.StartAsync();
             }

@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Cinnamon.Api.Core.Hubs;
 using Microsoft.Extensions.Options;
 using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,13 +27,7 @@ var builder = WebApplication.CreateBuilder(args);
 ApplicationConfig applicationConfig = new ApplicationConfig();
 builder.Configuration.GetSection("Applicationconfig").Bind(applicationConfig);
 builder.Services.AddSingleton(applicationConfig);
-builder.Services.AddSignalR(hubOptions =>
-{
-    hubOptions.EnableDetailedErrors = true;
-    hubOptions.KeepAliveInterval = TimeSpan.FromSeconds(15);
-    hubOptions.ClientTimeoutInterval = TimeSpan.FromSeconds(30);
-    hubOptions.HandshakeTimeout = TimeSpan.FromSeconds(180);
-});
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetSection("ConnectionStrings:AzureSignalRConnectionString").Value);
 builder.Services.AddResponseCompression(opts =>
 {
     opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(

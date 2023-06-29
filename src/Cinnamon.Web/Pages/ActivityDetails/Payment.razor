@@ -541,7 +541,7 @@
 
         IsFullyLoaded = true;
 
-        if (!IsConnected)
+        if (hubConnection.State == HubConnectionState.Disconnected)
         {
             await hubConnection.StartAsync();
 
