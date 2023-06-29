@@ -42,7 +42,14 @@ messages.initControls = (obj, elementId) => {
             $(".messages-top-row").hide();
         }
 
-        $(".conversation-section").scrollTop($(".conversation-section").prop("scrollHeight"));
+        if (isMobile()) {
+            setTimeout(function () {
+                $(".conversation-section").scrollTop(0)
+            }, 100);
+        }
+        else {
+            $(".conversation-section").scrollTop($(".conversation-section").prop("scrollHeight"));
+        }
     });
 
     $(document).on("click", messageElementId, function (e) {
