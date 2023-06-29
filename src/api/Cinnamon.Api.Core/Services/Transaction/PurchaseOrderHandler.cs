@@ -153,6 +153,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
             }
 
+            // zero out over all total if less than zero
+            overallTotal = overallTotal < 0 ? 0 : overallTotal;
+
             // serialize students data to use later
             var payloadData = new {
                 Students = args.Students.Select(s => {
