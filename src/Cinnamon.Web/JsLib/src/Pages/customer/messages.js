@@ -25,6 +25,7 @@ messages.initControls = (obj, elementId) => {
             $(this).tooltip("hide");
         });
 
+        $(".messages-container").hide().fadeIn();
     });
 
     $(document).on("keydown", messageElementId, function (e) {
@@ -35,7 +36,8 @@ messages.initControls = (obj, elementId) => {
         }
     });
 
-    $(document).on("click", chatroomListItem, function (e) {
+    $(document).off('click').on("click", chatroomListItem, function (e) {
+
         $(messageElementId).focus();
 
         if (isMobile()) {
@@ -50,6 +52,9 @@ messages.initControls = (obj, elementId) => {
         else {
             $(".conversation-section").scrollTop($(".conversation-section").prop("scrollHeight"));
         }
+
+        $(".chat-section").hide().fadeIn();
+        $(".profile-section").hide().fadeIn();
     });
 
     $(document).on("click", messageElementId, function (e) {
