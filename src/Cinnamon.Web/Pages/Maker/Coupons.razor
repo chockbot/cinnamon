@@ -79,7 +79,7 @@
                         {
                             <TableRow>
                                 <TableRowCell>
-                                    <span>@item.Name</span>
+                                    <span class="font-weight-700">@item.Name</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.Code</span>
@@ -205,16 +205,23 @@
                             <label class="font-14">From <span class="color-red">*</span></label>
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is8">
-                                    <Field class="mb-3">
-                                        <FieldBody>
-                                            <DateEdit Size="Size.Small" TValue="DateTime"  @bind-Date="Form.DateFrom" />
-                                        </FieldBody>
-                                    </Field>
+                                    <Validation @ref="dateFromValidation">
+                                        <Field class="mb-3">
+                                            <FieldBody>
+                                                <DateEdit Size="Size.Small" TValue="DateTime"  @bind-Date="Form.DateFrom">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4">
                                     <Field class="mb-3">
                                         <FieldBody>
-                                            <TimeEdit Size="Size.Small" TValue="TimeSpan" @bind-Time="Form.TimeFrom" />
+                                            <TimeEdit class='@(dateFromValidation != null && dateFromValidation.Status == ValidationStatus.Error ? "is-invalid" : "is-valid")'
+                                                Size="Size.Small" TValue="TimeSpan" @bind-Time="Form.TimeFrom" />
                                         </FieldBody>
                                     </Field>
                                 </Column>
@@ -224,16 +231,23 @@
                             <label class="font-14">To <span class="color-red">*</span></label>
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is8">
-                                    <Field class="mb-3">
-                                        <FieldBody>
-                                            <DateEdit Size="Size.Small" TValue="DateTime"  @bind-Date="Form.DateTo" />
-                                        </FieldBody>
-                                    </Field>
+                                    <Validation @ref="dateToValidation">
+                                        <Field class="mb-3">
+                                            <FieldBody>
+                                                <DateEdit Size="Size.Small" TValue="DateTime"  @bind-Date="Form.DateTo">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is4">
                                     <Field class="mb-3">
                                         <FieldBody>
-                                            <TimeEdit Size="Size.Small" TValue="TimeSpan" @bind-Time="Form.TimeTo" />
+                                            <TimeEdit class='@(dateToValidation != null && dateToValidation.Status == ValidationStatus.Error ? "is-invalid" : "is-valid")' 
+                                                Size="Size.Small" TValue="TimeSpan" @bind-Time="Form.TimeTo" />
                                         </FieldBody>
                                     </Field>
                                 </Column>
@@ -272,6 +286,8 @@
     private Validations FormValidation {get; set;}
     private string Token = string.Empty;
     private ActionType UserAction = ActionType.Create;
+    private Validation dateFromValidation;
+    private Validation dateToValidation;
 
     enum ActionType {
         Create = 0,
@@ -367,10 +383,10 @@
                     Amount = Form.Amount,
                     Code = Form.Code,
                     DiscountType = Form.DiscountType,
-                    FromDate = Form.DateFrom.Add(Form.TimeFrom),
+                    FromDate = Form.DateFrom,
                     MaximumSpend = Form.MinimumSpend,
                     Name = Form.Name,
-                    ToDate = Form.DateTo.Add(Form.TimeTo),
+                    ToDate = Form.DateTo,
                 }, Token);
 
                 ListCoupons.IsSubmitting = false;
@@ -411,8 +427,8 @@
                 ListCoupons.IsSubmitting = true;
 
                 var updateRes = await activityApiHandler.UpdateCoupon(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateCouponArgs {
-                    DateFrom = Form.DateFrom.Add(Form.TimeFrom),
-                    DateTo = Form.DateTo.Add(Form.TimeTo),
+                    DateFrom = Form.DateFrom,
+                    DateTo = Form.DateTo,
                     Id = Form.Id,
                     Name = Form.Name
                 }, Token);
@@ -551,16 +567,40 @@
         [Required]
         public decimal MinimumSpend {get; set;}
 
+        private DateTime datefrom = DateTime.Now;
         [Required]
         [DateOnwards(ErrorMessage = "Past dates now allowed")]
-        public DateTime DateFrom {get; set;} = DateTime.Now;
+        public DateTime DateFrom 
+        {
+            get
+            {
+                datefrom = datefrom.Date + TimeFrom;
+                return datefrom;
+            }
+            set 
+            {
+                datefrom = value;
+            }
+        }
 
         [Required]
         public TimeSpan TimeFrom {get; set;} = DateTime.Now.TimeOfDay;
 
+        private DateTime dateto = DateTime.Now;
         [Required]
         [DateOnwards(ErrorMessage = "Past dates now allowed")]
-        public DateTime DateTo {get; set;} = DateTime.Now;
+        public DateTime DateTo 
+        {
+            get 
+            {
+                dateto = dateto.Date + TimeTo;
+                return dateto;
+            }
+            set 
+            {
+                dateto = value;
+            }
+        }
 
         [Required]
         public TimeSpan TimeTo {get; set;} = DateTime.Now.TimeOfDay;

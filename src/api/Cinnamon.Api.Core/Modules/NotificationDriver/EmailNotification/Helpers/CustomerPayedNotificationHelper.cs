@@ -99,7 +99,7 @@ public class CustomerPayedNotificationHelper
                         Hi <span style='text-transform: capitalize'>{customerName}</span>,
                         </p>
                         <p style='margin: 0; font-size: 20px; color: #343d4c'>
-                        Thank you for your purhcase!
+                        Thank you for your purchase!
                         </p>
                     </div>
                     <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
