@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cinnamon.Framework.ValidationAttributes;
@@ -11,6 +12,6 @@ public class DateOnwardsAttribute : ValidationAttribute
         var now = DateTime.Now;
         var date = Convert.ToDateTime(value);
         
-        return date < now;
+        return date >= now;
     }
 }
