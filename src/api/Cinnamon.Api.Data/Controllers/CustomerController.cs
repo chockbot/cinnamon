@@ -130,8 +130,10 @@ public class CustomerController : ControllerBase
     {
         try
         {
-            var result =
-                args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
+            bool applyFilters = (args.PageIndex.HasValue && args.CountPerPage.HasValue) || !string.IsNullOrEmpty(args.HandlerLike) || 
+                                    args.IsOfficialPartner.HasValue || !string.IsNullOrEmpty(args.SearchValue);
+
+            var result = applyFilters ?
                 await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, 
                     args.CountPerPage, (args.PageIndex - 1) * args.CountPerPage, args.HandlerLike, args.IsOfficialPartner) :
                 await customerRepository.GetAllAsync();
@@ -142,8 +144,8 @@ public class CustomerController : ControllerBase
             }
 
             // get all without pagination to get all rows
-            var all = args.PageIndex.HasValue && args.CountPerPage.HasValue || !string.IsNullOrEmpty(args.HandlerLike) ?
-                await customerRepository.GetAllAsync(args.IsVerified,args.SearchValue, null, null) :
+            var all = applyFilters ?
+                await customerRepository.GetAllAsync(args.IsVerified, args.SearchValue, null, null, args.HandlerLike, args.IsOfficialPartner) :
                 await customerRepository.GetAllAsync();
 
             if (!all.Succeeded || all.Result == null)
