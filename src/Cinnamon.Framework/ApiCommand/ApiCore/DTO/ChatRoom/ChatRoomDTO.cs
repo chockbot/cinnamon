@@ -27,5 +27,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.ChatRoom
         public Enums.Enums.ChatMemberType ChatMemberType { get; set; }
         public string GroupName { get; set; }
         public string ChatName { get; set; }
+        public int CommonPrivateChatRoomId { get; set; }
     }
 }

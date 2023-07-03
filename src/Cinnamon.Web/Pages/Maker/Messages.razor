@@ -525,6 +525,7 @@
     private string chatMateProfileLink = string.Empty;
     private string chatMateGroupName = string.Empty;
     private string chatMateChatName = string.Empty;
+    private bool chatMateHasTemporaryChatRoomId = false;
     private Framework.Enums.Enums.ChatType chatMateChatType;
     private Framework.Enums.Enums.ChatHistoryType chatHistoryType;
     private DateTime? lastMessageDateCreated;
@@ -561,7 +562,7 @@
             {
                 chatHistories.Add(new ChatHistory
                     {
-                        ChatHistoryId = chatHistories.Max(c => c.ChatHistoryId + 1),
+                        ChatHistoryId    = chatHistories.Any() ? chatHistories.Max(c => c.ChatHistoryId + 1) : 1,
                         ChatRoomId       = Convert.ToInt32(splitted[0]),
                         DateCreated      = DateTime.Parse(splitted[1]),
                         FromConnectionId = splitted[2],
@@ -631,7 +632,7 @@
             {
                 chatHistories.Add(new ChatHistory
                     {
-                        ChatHistoryId = chatHistories.Max(c => c.ChatHistoryId + 1),
+                        ChatHistoryId = chatHistories.Any() ? chatHistories.Max(c => c.ChatHistoryId + 1) : 1,
                         ChatRoomId = Convert.ToInt32(splitted[0]),
                         DateCreated = DateTime.Parse(splitted[1]),
                         FromUserId = Convert.ToInt32(splitted[2]),
@@ -734,19 +735,9 @@
             InvokeAsync(() => StateHasChanged());
         });
 
-        if (hubConnection.State == HubConnectionState.Disconnected)
-        {
-            await hubConnection.StartAsync();
-
-            if (IsConnected)
-            {
-                hubConnection.Closed += ConnectWithRetryAsync;
-            }
-        }
-
         await LoadSigninUser();
 
-        await StartConnection();
+        //await StartConnection();
 
         NavigationManager.LocationChanged += LocationChanged;
     }
@@ -894,6 +885,17 @@
                 currentUserFirstName = args.FirstName;
                 currentUserLastName = args.LastName;
                 currentUserProfilePath = args.ProfileImg;
+
+                if (string.IsNullOrEmpty(args.ConnectionId))
+                {
+                    await hubConnection.StartAsync();
+
+                    if (IsConnected)
+                    {
+                        hubConnection.Closed += ConnectWithRetryAsync;
+                    }
+                }
+
                 await GetChatRoomsByUserId(true);
             }
         }
@@ -970,18 +972,19 @@
 
             if (chatRoomId != 0)
             {
-                var selectedChatRoom   = chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId);
-                toUserId               = selectedChatRoom.FromUserId;
-                chatMateFullName       = $"{selectedChatRoom.FromFirstName} {selectedChatRoom.FromLastName}";
-                chatMateProfilePicture = selectedChatRoom.FromProfilePath;
-                chatMateConnectionId   = selectedChatRoom.FromConnectionId;
-                chatMateProfileLink    = selectedChatRoom.FromProfileLink;
-                chatMateGroupName      = selectedChatRoom.GroupName;
-                chatMateChatName       = selectedChatRoom.ChatName;
-                chatMateChatType       = selectedChatRoom.ChatType;
-                lastSeenDate           = selectedChatRoom.DateCreated;
-                selectedChatRoomId     = chatRoomId;
-                lastMessageDateCreated = null;
+                var selectedChatRoom           = chatRooms.FirstOrDefault(c => c.ChatRoomId == chatRoomId);
+                toUserId                       = selectedChatRoom.FromUserId;
+                chatMateFullName               = $"{selectedChatRoom.FromFirstName} {selectedChatRoom.FromLastName}";
+                chatMateProfilePicture         = selectedChatRoom.FromProfilePath;
+                chatMateConnectionId           = selectedChatRoom.FromConnectionId;
+                chatMateProfileLink            = selectedChatRoom.FromProfileLink;
+                chatMateGroupName              = selectedChatRoom.GroupName;
+                chatMateChatName               = selectedChatRoom.ChatName;
+                chatMateChatType               = selectedChatRoom.ChatType;
+                lastSeenDate                   = selectedChatRoom.DateCreated;
+                selectedChatRoomId             = chatRoomId;
+                lastMessageDateCreated         = null;
+                chatMateHasTemporaryChatRoomId = selectedChatRoom.HasTemporaryChatRoomId;
 
                 if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat)
                 {
@@ -1012,7 +1015,8 @@
     {
         var result = await chatApiHandler.GetChatMembersByChatRoomId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatMembersByChatRoomIdArgs
             {
-                ChatRoomId = chatRoomId
+                ChatRoomId = chatRoomId,
+                UserId = currentUserId
             }, Token);
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
@@ -1024,7 +1028,8 @@
                     FromProfilePath = r.FromProfilePath,
                     FromUserId = r.FromUserId,
                     ChatMemberType = r.ChatMemberType,
-                    FromProfileLink = r.FromProfileLink
+                    FromProfileLink = r.FromProfileLink,
+                    CommonPrivateChatRoomId = r.CommonPrivateChatRoomId
                 }).ToList();
 
             if (chatMembers.Any())
@@ -1114,47 +1119,48 @@
 
     private async Task CreatePrivateMessage(ChatMember chatMember)
     {
-        var result = await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
-            {
-                FromUserId = currentUserId,
-                ToUserId = chatMember.FromUserId,
-                ChatType = Framework.Enums.Enums.ChatType.PrivateMessage,
-                GroupName = string.Empty,
-                ChatName = string.Empty
-            }, Token);
-
+        var chatRoomId = 0;
         var toCustomerResult = await accountApiHandler.GetCustomerById(chatMember.FromUserId);
+        var hasTemporaryChatRoomId = false;
 
-        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        var commonPrivateChatRoomId = chatRooms.FirstOrDefault(c => c.FromUserId == chatMember.FromUserId && c.ChatType == ChatType.PrivateMessage)?.ChatRoomId;
+
+        if (commonPrivateChatRoomId.HasValue)
         {
-            var chatRoomId = result.Result.Result.ChatRoomId;
-
-            if (!chatRooms.Any(c => c.ChatRoomId == chatRoomId))
-            {
-                chatRooms.Add(new ChatRoom
-                    {
-                        ChatRoomId = chatRoomId,
-                        DateCreated = DateTime.UtcNow,
-                        FromConnectionId = toCustomerResult.Result.Result.ConnectionId,
-                        FromUserId = chatMember.FromUserId,
-                        FromFirstName = chatMember.FromFirstName,
-                        FromLastName = chatMember.FromLastName,
-                        FromProfilePath = chatMember.FromProfilePath,
-                        HasNewMessage = true,
-                        Message = string.Empty,
-                        ToConnectionId = currentUserConnectionId,
-                        ToUserId = currentUserId,
-                        ToFirstName = currentUserFirstName,
-                        ToLastName = currentUserLastName,
-                        ToProfilePath = currentUserProfilePath,
-                        ChatType = Framework.Enums.Enums.ChatType.PrivateMessage
-                    });
-            }
-
-            await GetChatHistoryByChatRoomId(chatRoomId, true, false);
-
-            chatRooms = chatRooms.OrderByDescending(c => c.DateCreated).ToList();
+            chatRoomId = commonPrivateChatRoomId.GetValueOrDefault();
         }
+        else
+        {
+            chatRoomId = (int)((DateTimeOffset)DateTime.UtcNow).ToUnixTimeSeconds();
+            hasTemporaryChatRoomId = true;
+        }
+
+        if (!chatRooms.Any(c => c.ChatRoomId == chatRoomId))
+        {
+            chatRooms.Add(new ChatRoom
+                {
+                    ChatRoomId = chatRoomId,
+                    DateCreated = DateTime.UtcNow,
+                    FromConnectionId = toCustomerResult.Result.Result.ConnectionId,
+                    FromUserId = chatMember.FromUserId,
+                    FromFirstName = chatMember.FromFirstName,
+                    FromLastName = chatMember.FromLastName,
+                    FromProfilePath = chatMember.FromProfilePath,
+                    HasNewMessage = true,
+                    Message = string.Empty,
+                    ToConnectionId = currentUserConnectionId,
+                    ToUserId = currentUserId,
+                    ToFirstName = currentUserFirstName,
+                    ToLastName = currentUserLastName,
+                    ToProfilePath = currentUserProfilePath,
+                    ChatType = Framework.Enums.Enums.ChatType.PrivateMessage,
+                    HasTemporaryChatRoomId = hasTemporaryChatRoomId
+                });
+        }
+
+        await GetChatHistoryByChatRoomId(chatRoomId, true, false);
+
+        chatRooms = chatRooms.OrderByDescending(c => c.DateCreated).ToList();
     }
 
     public async Task<bool> ConnectWithRetryAsync(Exception ex)
@@ -1212,7 +1218,34 @@
     {
         messageInput = message;
         chatHistoryType = ChatHistoryType.Message;
-        await Send();
+
+        if (chatMateHasTemporaryChatRoomId)
+        {
+            var result = await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
+                {
+                    FromUserId = currentUserId,
+                    ToUserId = toUserId,
+                    ChatType = Framework.Enums.Enums.ChatType.PrivateMessage,
+                    GroupName = string.Empty,
+                    ChatName = string.Empty
+                }, Token);
+
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var newChatRoomId = result.Result.Result.ChatRoomId;
+
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == selectedChatRoomId).ChatRoomId = newChatRoomId;
+                chatRooms.FirstOrDefault(c => c.ChatRoomId == newChatRoomId).HasTemporaryChatRoomId = false;
+
+                selectedChatRoomId = newChatRoomId;
+
+                await Send();
+            }
+        }
+        else
+        {
+            await Send();
+        }
     }
 
     [JSInvokable]

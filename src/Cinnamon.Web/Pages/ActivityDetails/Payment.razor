@@ -541,16 +541,6 @@
 
         IsFullyLoaded = true;
 
-        if (hubConnection.State == HubConnectionState.Disconnected)
-        {
-            await hubConnection.StartAsync();
-
-            if (IsConnected)
-            {
-                hubConnection.Closed += ConnectWithRetryAsync;
-            }
-        }
-
         NavigationManager.LocationChanged += LocationChanged;
     }
 
@@ -618,6 +608,16 @@
                 },
                 Token = token
             };
+
+        if (string.IsNullOrEmpty(profile.ConnectionId))
+        {
+            await hubConnection.StartAsync();
+
+            if (IsConnected)
+            {
+                hubConnection.Closed += ConnectWithRetryAsync;
+            }
+        }
     }
 
     private async Task FetchSelectedAcivityAndSchedule()

@@ -809,7 +809,7 @@
 
                 await GetChatRoomsByUserId();
 
-                if (hubConnection.State == HubConnectionState.Disconnected)
+                if (string.IsNullOrEmpty(args.ConnectionId))
                 {
                     await hubConnection.StartAsync();
                 }
