@@ -9,5 +9,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Request
     public class GetChatMembersByChatRoomIdArgs
     {
         public int ChatRoomId { get; set; }
+        public int UserId { get; set; }
     }
 }

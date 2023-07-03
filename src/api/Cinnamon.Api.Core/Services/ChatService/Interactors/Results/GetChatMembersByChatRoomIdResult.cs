@@ -18,6 +18,7 @@ namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
         public string FromFirstName { get; set; }
         public string? FromProfilePath { get; set; }
         public string? FromProfileLink { get; set; }
+        public int CommonPrivateChatRoomId { get; set; }
         public Enums.ChatMemberType ChatMemberType { get; set; }
     }
 }

@@ -37,7 +37,8 @@ namespace Cinnamon.Api.Core.Services.ChatService
             {
                 var result = await chatRoomData.GetChatMembersByChatRoomId(new Framework.ApiCommand.ApiData.ChatRoom.Request.GetChatMembersByChatRoomIdArgs
                 {
-                    ChatRoomId = args.ChatRoomId
+                    ChatRoomId = args.ChatRoomId,
+                    UserId = args.UserId
                 });
 
                 if (!result.Succeeded || result.Result == null)
@@ -62,7 +63,8 @@ namespace Cinnamon.Api.Core.Services.ChatService
                         FromProfilePath = c.FromProfilePath,
                         FromProfileLink = c.FromProfileLink,
                         FromUserId = c.FromUserId,
-                        ChatMemberType = c.ChatMemberType
+                        ChatMemberType = c.ChatMemberType,
+                        CommonPrivateChatRoomId = c.CommonPrivateChatRoomId
                     })
                 }, "successfully called GetChatMembersByChatRoomIdHandler");
 
