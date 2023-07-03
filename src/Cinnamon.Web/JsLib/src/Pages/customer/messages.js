@@ -53,6 +53,11 @@ messages.initControls = (obj, elementId) => {
             $(".conversation-section").scrollTop($(".conversation-section").prop("scrollHeight"));
         }
 
+        $(".chat-profile-section").show();
+        $(".conversation-section").show();
+        $(".send-message-section").show();
+        $(".profile-section .row").show();
+
         $(".chat-section").hide().fadeIn();
         $(".profile-section").hide().fadeIn();
     });
@@ -76,6 +81,11 @@ messages.initControls = (obj, elementId) => {
         dotnetObj.invokeMethodAsync('ConfirmLeaveGroup');
 
         $(leaveGroupModal).modal("hide");
+
+        $(".chat-profile-section").hide();
+        $(".conversation-section").hide();
+        $(".send-message-section").hide();
+        $(".profile-section .row").hide();
     });
 
     $(document).on("click", btnClose, function (e) {
