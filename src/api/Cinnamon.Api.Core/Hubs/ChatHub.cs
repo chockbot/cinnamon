@@ -310,6 +310,23 @@ namespace Cinnamon.Api.Core.Hubs
                 CustomerId = Convert.ToInt32(userId)
             });
 
+            var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
+            {
+                UserId = Convert.ToInt32(userId)
+            });
+
+            if (result.Succeeded && result != null)
+            {
+                foreach (var item in result.Result.ChatRooms)
+                {
+                    if (item.ChatType == ChatType.PrivateMessage)
+                    {
+                        if (!string.IsNullOrEmpty(item.FromConnectionId))
+                            await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}");
+                    }
+                }
+            }
+
             await base.OnDisconnectedAsync(exception);
         }
     }
