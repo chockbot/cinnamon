@@ -955,9 +955,15 @@
                 currentUserLastName = args.LastName;
                 currentUserProfilePath = args.ProfileImg;
 
-                if (hubConnection.State == HubConnectionState.Disconnected)
+                if (string.IsNullOrEmpty(args.ConnectionId))
                 {
-                    await hubConnection.StartAsync();
+                    try
+                    {
+                        await hubConnection.StartAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                    }
 
                     if (IsConnected)
                     {
