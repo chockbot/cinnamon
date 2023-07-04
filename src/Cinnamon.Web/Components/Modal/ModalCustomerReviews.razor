@@ -21,7 +21,7 @@
             </div>
             <div class="modal-body">
                 <div class="conversation-section">
-                    <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetReviews(false, true)">
+                    <InfiniteScroll ObserverTargetId="customer-observerTarget" ObservableTargetReach="(e)=> GetReviews(false, true)">
                         @foreach (var item in ReviewsHistory)
                          {
                              @if (Profile != null)
@@ -51,7 +51,7 @@
                                 </div>
                             </div>
                         }
-                        <div id="observerTarget"></div>
+                        <div id="customer-observerTarget"></div>
                     </InfiniteScroll>
 
                 </div>
