@@ -32,7 +32,9 @@ public class GetReviewsByActivityIdHandler: IGetReviewsByActivityIdHandler
         {
             var reviewResReLoad = await reviewsData.GetReviewsByActivityId(new Framework.ApiCommand.ApiData.Reviews.Request.GetReviewsByActivityIdArgs
             {
-                ActivityId = args.ActivityId
+                ActivityId   = args.ActivityId,
+                PageIndex    = args.PageIndex,
+                CountPerPage = args.CountPerPage
             });
             if (!reviewResReLoad.Succeeded || reviewResReLoad.Result == null || !reviewResReLoad.Result.IsSuccess)
             {
@@ -54,7 +56,20 @@ public class GetReviewsByActivityIdHandler: IGetReviewsByActivityIdHandler
                         Rating = s.Rating,
                         ReviewDate = s.ReviewDate
                     };
-                })
+                }),
+                ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo
+                {
+                    Code        = reviewResReLoad?.Result?.ErrorInfo?.Code,
+                    Description = reviewResReLoad?.Result?.ErrorInfo?.Description,
+                    Message     = reviewResReLoad?.Result?.ErrorInfo?.Message
+                },
+                Pagination = new Framework.ApiCommand.ApiCore.Pagination
+                {
+                    PageIndex    = reviewResReLoad.Result.Pagination.PageIndex,
+                    PerPage      = reviewResReLoad.Result.Pagination.PerPage,
+                    TotalPages   = reviewResReLoad.Result.Pagination.TotalPages,
+                    TotalRecords = reviewResReLoad.Result.Pagination.TotalRecords
+                }
             }, "Successfully get student attendance");
 
         }

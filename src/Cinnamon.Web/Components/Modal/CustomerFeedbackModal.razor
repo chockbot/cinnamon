@@ -2,6 +2,7 @@
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Pages
+@inject IJSRuntime jsRuntime
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IAccountApiHandler accountApiHandler
@@ -12,38 +13,51 @@
             <div class="modal-header d-block">
                 <div class="row d-flex">
                     <div class="col-lg-11 col-md-11 col-10">
-                        <p class="your-reviews">Your Reviews (@ReviewsCount)</p>
+                        <p class="modal-title justify-content-start">Reviews</p>
                     </div>
                     <div class="col-lg-1 col-md-1 col-2 justify-content-end">
                         <button type="button" class="btn-close" @onclick="() => HideModal()"></button>
                     </div>
                 </div>
+                <div class="row d-flex">
+                    <div class="col-12 d-flex justify-content-start rating-section">
+                        <div id="modal-star-rating"></div>
+                        <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
+                        <ul>
+                            <li>
+                            </li>
+                        </ul>
+                        <p class="rating-number">(@ReviewCount)</p>
+                    </div>
+                </div>
+
             </div>
             <div class="modal-body">
                 <div class="conversation-section">
                     <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetReviews(false, true)">
                         @foreach (var item in ReviewsHistory)
-                         {
-                             @if (Profile != null)
-                             {
-                                 var activity = Activities.Where(a => a.ActivityId == item.ActivityId).FirstOrDefault();
-                                 <div class="xp-body-item d-flex">
-                                     <div class="activity-img">
-                                         <img class="rounded-2 rounded-circle" src="@Profile.ProfilePath" />
-                                     </div>
-                                     <div>
-                                         <p class="customer-name">@Profile.FirstName @Profile.LastName</p>
-                                         <Rating Color="Color.Primary" SelectedValue="@item.Rating" MaxValue="5" ReadOnly=true />
-                                     </div>
-                                 </div>
-                                 <div class="xp-activity">
-                                     <p class="xp-title">@activity.Title (@activity.ActivitySchedules.Where(a=>a.Id == item.ScheduleId).First().Name)</p>
-                                 </div>
-                                 <div class="xp-body-item">
-                                     <p class="secondary-caption">@item.Review</p>
-                                 </div>
-                             }
-                         }
+                        {
+                            @if (CustomerProfiles != null)
+                            {
+                                var profile = CustomerProfiles.Where(a => a.Id == item.CustomerId).FirstOrDefault();
+                                var activity = Activities.Where(a => a.ActivityId == item.ActivityId).FirstOrDefault();
+                                <div class="xp-body-item d-flex">
+                                    <div class="activity-img">
+                                        <img class="rounded-2 rounded-circle" src="@profile.ProfilePath" />
+                                    </div>
+                                    <div>
+                                        <p class="customer-name">@profile.FirstName @profile.LastName</p>
+                                        <Rating Color="Color.Primary" SelectedValue="@item.Rating" MaxValue="5" ReadOnly=true />
+                                    </div>
+                                </div>
+                                <div class="xp-activity">
+                                    <p class="xp-title">@activity.Title (@activity.ActivitySchedules.Where(a=>a.Id == item.ScheduleId).First().Name)</p>
+                                </div>
+                                <div class="xp-body-item">
+                                    <p class="secondary-caption">@item.Review</p>
+                                </div>
+                            }
+                        }
                         @if (isLoading)
                         {
                             <div class="loading-section d-flex flex-row justify-content-center">
@@ -53,7 +67,6 @@
                         }
                         <div id="observerTarget"></div>
                     </InfiniteScroll>
-
                 </div>
             </div>
         </div>
@@ -61,19 +74,29 @@
 </Modal>
 
 @code {
+    IJSObjectReference module;
+
     private Modal modalRef;
-  
+
     [Parameter]
-    public CustomerProfile Profile { get; set; }
+    public CustomerProfile MakerProfile { get; set; }
+
+    [Parameter]
+    public int SelectedValue { get; set; }
+
+    [Parameter]
+    public double AverageRating { get; set; }
+
+    [Parameter]
+    public int ReviewCount { get; set; }
+
+    [Parameter]
+    public List<CustomerProfile> CustomerProfiles { get; set; }
 
     [Parameter]
     public IEnumerable<Activity> Activities { get; set; }
 
-    [Parameter]
-    public int ReviewsCount { get; set; }
-
     public List<Reviews> ReviewsHistory = new List<Reviews>();
-
 
     private bool isLoading = false;
 
@@ -81,14 +104,15 @@
 
     private int countPerPage = 10;
 
-    public Task ShowModal()
+    public async Task ShowModal()
     {
-        return modalRef.Show();
+        module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/ModalStarRating.js");
+        await Task.Run(() => module.InvokeVoidAsync("generateStarRating", AverageRating));
+        await modalRef.Show();
     }
-
-    public Task HideModal()
+    public async Task HideModal()
     {
-        return modalRef.Hide();
+        await modalRef.Close(CloseReason.None);
     }
     public async Task GetReviews(bool fromClick, bool fromScroll)
     {
@@ -98,9 +122,9 @@
         {
             pageIndex = 1;
         }
-        var reviewsResult = await ongoingApiHandler.GetReviewsByCustomerId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByCustomerIdArgs
+        var reviewsResult = await ongoingApiHandler.GetReviewsByMakerId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByMakerIdArgs
             {
-                CustomerId = Profile.Id,
+                MakerId = MakerProfile.Id,
                 CountPerPage = countPerPage,
                 PageIndex = pageIndex
             });
@@ -121,6 +145,7 @@
                         ReviewDate = a.ReviewDate
                     };
             }).OrderByDescending(a => a.ReviewDate).ToList();
+
             if (fromScroll)
             {
                 ReviewsHistory.AddRange(reviews);

@@ -1,7 +1,10 @@
-﻿namespace Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors.Results;
+﻿using Cinnamon.Framework.ApiCommand.ApiCore;
+namespace Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors.Results;
 
 public class GetReviewsByMakerIdResult
 {
+    public ErrorInfo? ErrorInfo { get; set; }
+    public Pagination? Pagination { get; set; }
     public IEnumerable<Reviews> Review { get; set; }
     public class Reviews
     {
