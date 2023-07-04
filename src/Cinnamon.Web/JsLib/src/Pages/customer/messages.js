@@ -32,9 +32,10 @@ messages.initControls = (obj, elementId) => {
         $(".messages-container").hide().fadeIn();
     });
 
-    $(document).on("keydown", messageElementId, function (e) {
+    $(document).off('keydown').on("keydown", messageElementId, function (e) {
         if (e.which === 13 && !e.shiftKey) {
             e.preventDefault();
+            e.stopPropagation();
             dotnetObj.invokeMethodAsync('SendMessageAsync', $(messageElementId).text());
             $(messageElementId).text("")
         }
