@@ -88,6 +88,10 @@
                 <div class="form-group">
                     <div class="form-check form-switch">
                         <div class="row">
+                            <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                <label for="title" class="pricing-title">Pricing & Schedule</label>
+                            </div>
+                            <hr>
                             <div class="col-lg-4 col-8">
                                 <label for="title" class="form-control-label">Set Inactive/Active:</label>
                             </div>
@@ -128,6 +132,10 @@
                     <label for="title" class="form-control-label label-top-margin">Session/s</label>
                     <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                 </div>
+                <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                    <label for="title" class="expiration-title">Activity Expiration</label>
+                </div>
+                <hr>
             }
             <div class="form-group">
                 <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
