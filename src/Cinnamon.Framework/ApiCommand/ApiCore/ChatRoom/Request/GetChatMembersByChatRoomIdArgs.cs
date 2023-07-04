@@ -10,5 +10,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Request
     {
         public int ChatRoomId { get; set; }
         public int UserId { get; set; }
+        public bool HasLeft { get; set; }
     }
 }

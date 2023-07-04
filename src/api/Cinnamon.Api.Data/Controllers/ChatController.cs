@@ -169,7 +169,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _chatMemberRepository.GetChatMembersByChatRoomId(args.ChatRoomId, args.UserId);
+                var result = await _chatMemberRepository.GetChatMembersByChatRoomId(args.ChatRoomId, args.UserId, args.HasLeft);
 
                 if (!result.Succeeded || result.Result == null)
                 {

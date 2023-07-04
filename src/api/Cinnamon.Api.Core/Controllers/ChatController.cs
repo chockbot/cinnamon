@@ -323,7 +323,8 @@ namespace Cinnamon.Api.Core.Controllers
                 var result = await getChatMembersByChatRoomIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatMembersByChatRoomIdArgs
                 {
                     ChatRoomId = args.ChatRoomId,
-                    UserId = args.UserId
+                    UserId = args.UserId,
+                    HasLeft = args.HasLeft
                 });
 
                 if (!result.Succeeded || result.Result == null)

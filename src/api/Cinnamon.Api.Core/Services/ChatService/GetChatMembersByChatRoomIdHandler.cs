@@ -38,7 +38,8 @@ namespace Cinnamon.Api.Core.Services.ChatService
                 var result = await chatRoomData.GetChatMembersByChatRoomId(new Framework.ApiCommand.ApiData.ChatRoom.Request.GetChatMembersByChatRoomIdArgs
                 {
                     ChatRoomId = args.ChatRoomId,
-                    UserId = args.UserId
+                    UserId = args.UserId,
+                    HasLeft = args.HasLeft
                 });
 
                 if (!result.Succeeded || result.Result == null)
