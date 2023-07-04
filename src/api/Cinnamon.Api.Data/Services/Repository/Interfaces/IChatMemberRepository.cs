@@ -9,6 +9,6 @@ namespace Cinnamon.Api.Data.Services.Repository.Interfaces;
 public interface IChatMemberRepository
 {
     Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatRoomsByUserId(int userId);
-    Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatMembersByChatRoomId(int chatRoomId, int userId);
+    Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatMembersByChatRoomId(int chatRoomId, int userId, bool hasLeft);
     Task<AppResult<bool>> UpdateChatMember(int chatRoomId, int userId, bool hasLeft);
 }

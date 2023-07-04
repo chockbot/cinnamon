@@ -24,9 +24,9 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
             this.dataStore = dataStore;
         }
 
-        public async Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatMembersByChatRoomId(int chatRoomId, int userId)
+        public async Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatMembersByChatRoomId(int chatRoomId, int userId, bool hasLeft)
         {
-            Expression<Func<Entities.ChatMember, bool>> filter = a => a.ChatRoomId == chatRoomId && !a.HasLeft;
+            Expression<Func<Entities.ChatMember, bool>> filter = a => a.ChatRoomId == chatRoomId && a.HasLeft == hasLeft;
 
             var includes = new List<Expression<Func<Entities.ChatMember, object>>>
                 {
@@ -47,27 +47,6 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
 
             foreach (var item in result.Result)
             {
-                var chatMemberFromResult = await dataStore.ChatMember.FindAsync(c => c.CustomerId == item.Customer.Id);
-                var chatMemberToResult = await dataStore.ChatMember.FindAsync(c => c.CustomerId == userId);
-
-                if (chatMemberFromResult != null || chatMemberToResult != null)
-                {
-                    var chatRoomsFromResult = await dataStore.ChatRooms.FindAsync(c => chatMemberFromResult.Result.Select(cm => cm.ChatRoomId).Contains(c.Id) && c.ChatType == (int)Enums.ChatType.PrivateMessage);
-                    var chatRoomsToResult = await dataStore.ChatRooms.FindAsync(c => chatMemberToResult.Result.Select(cm => cm.ChatRoomId).Contains(c.Id) && c.ChatType == (int)Enums.ChatType.PrivateMessage);
-
-                    if (chatRoomsFromResult != null || chatRoomsToResult != null)
-                    {
-                        foreach (var chatRoomItem in chatRoomsToResult.Result)
-                        {
-                            if (chatRoomsFromResult.Result.Select(c => c.Id).Contains(chatRoomItem.Id))
-                            {
-                                commonPrivateChatRoomId = chatRoomItem.Id;
-                                break;
-                            }
-                        }
-                    }
-                }
-
                 chatMembers.Add(new ChatRoomDTO
                 {
                     FromUserId      = item.Customer.Id,
@@ -75,8 +54,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                     FromLastName    = item.Customer.LastName,
                     FromProfilePath = item.Customer.ProfilePath,
                     FromProfileLink = item.Customer.Handler,
-                    ChatMemberType  = (Enums.ChatMemberType)item.ChatMemberType,
-                    CommonPrivateChatRoomId = commonPrivateChatRoomId
+                    ChatMemberType  = (Enums.ChatMemberType)item.ChatMemberType
                 });
             }
 

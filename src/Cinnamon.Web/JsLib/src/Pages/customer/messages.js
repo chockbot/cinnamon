@@ -10,6 +10,10 @@ let btnConfirmLeave = ".btn-confirm-leave";
 let leaveGroupModal = "#leaveGroupModal";
 let btnLeave = ".leave-button";
 let btnClose = ".btn-close";
+let addMemberModal = "#add-member-modal";
+let imgAddMember = "#img-add-member";
+let btnCloseAddMember = "#btn-close-add-member-modal";
+let btnAddMember = ".btn-add-member";
 
 messages.initControls = (obj, elementId) => {
     dotnetObj = obj;
@@ -98,6 +102,18 @@ messages.initControls = (obj, elementId) => {
 
     $(document).on("click", btnLeave, function (e) {
         $(leaveGroupModal).modal("show");
+    });
+
+    $(document).on("click", imgAddMember, function (e) {
+        $(addMemberModal).modal("show");
+    });
+
+    $(document).on("click", btnCloseAddMember, function (e) {
+        $(addMemberModal).modal("hide");
+    });
+
+    $(document).on("click", btnAddMember, function (e) {
+        $(addMemberModal).modal("hide");
     });
     
     if (isMobile()) {

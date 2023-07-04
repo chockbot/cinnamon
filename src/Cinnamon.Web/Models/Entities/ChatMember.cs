@@ -11,5 +11,6 @@ namespace Cinnamon.Web.Models.Entities
         public string? FromProfileLink { get; set; }
         public int CommonPrivateChatRoomId { get; set; }
         public Framework.Enums.Enums.ChatMemberType ChatMemberType { get; set; }
+        public bool IsSelected { get; set; }
     }
 }
