@@ -46,6 +46,7 @@ public class ActivityController : ControllerBase
     private readonly IGetCouponsHandler getCouponsHandler;
     private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
     private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
+    private readonly IUpdateCouponHandler updateCouponHandler;
 
     private readonly ICreateFavoriteHandler createFavoriteHandler;
     private readonly IRemoveFavoriteHandler removeFavoriteHandler;
@@ -67,7 +68,7 @@ public class ActivityController : ControllerBase
         IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
         IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, 
         IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler,
-        IValidateCouponCodeHandler validateCouponCodeHandler)
+        IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler)
     {
         _logger = logger;
 
@@ -105,6 +106,7 @@ public class ActivityController : ControllerBase
         this.removeFavoriteHandler = removeFavoriteHandler;
         this.getFavoritesByCustomerHandler = getFavoritesByCustomerHandler;
         this.validateCouponCodeHandler = validateCouponCodeHandler;
+        this.updateCouponHandler = updateCouponHandler;
     }
 
     [Route("CreateActivity")]
@@ -2103,6 +2105,51 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateCoupon")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateCouponResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateCoupon([FromBody] UpdateCouponArgs args)
+    {
+        try
+        {
+            var result = await updateCouponHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateCouponArgs {
+                From = args.DateFrom,
+                Id = args.Id,
+                Name = args.Name,
+                To = args.DateTo
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateCouponResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var updated = result.Result;
+
+            return new JsonResult(new UpdateCouponResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
+                    ActivityId = updated.ActivityId,
+                    Amount = updated.Amount,
+                    Code = updated.Code,
+                    CustomerId = updated.CustomerId,
+                    DiscountType = updated.DiscountType,
+                    FromDate = updated.FromDate,
+                    Id = updated.Id,
+                    IsAdmin = updated.IsAdmin,
+                    MaximumSpend = updated.MaximumSpend,
+                    Name = updated.Name,
+                    Status = updated.Status,
+                    ToDate = updated.ToDate
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

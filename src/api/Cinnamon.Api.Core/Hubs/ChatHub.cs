@@ -125,6 +125,35 @@ namespace Cinnamon.Api.Core.Hubs
             }
         }
 
+        public async Task AddFormerChatMemberToGroup(string payload)
+        {
+            var splitted = payload.Split("|");
+            string groupName = splitted[0];
+            int chatRoomId = int.Parse(splitted[1]);
+            int fromUserId = int.Parse(splitted[2]);
+            string fromFirstName = splitted[3];
+            string fromLastName = splitted[4];
+            string fromProfilePath = splitted[5];
+            string chatName = splitted[6];
+            string toFirstName = splitted[7];
+            string toLastName = splitted[8];
+
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} added {toFirstName} {toLastName} to the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{false}|{chatName}");
+
+            await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
+            {
+                ChatRoomId = chatRoomId,
+                FromConnectionId = string.Empty,
+                FromUserId = fromUserId,
+                ToConnectionId = string.Empty,
+                ToUserId = 0,
+                IsViewed = false,
+                Message = $"{fromFirstName} {fromLastName} added {toFirstName} {toLastName} to the group.",
+                ChatHistoryType = Enums.ChatHistoryType.Notification
+            });
+        }
+
+
         public async Task AddToGroupAfterPayment(string payload)
         {
             var splitted           = payload.Split("|");
@@ -309,6 +338,23 @@ namespace Cinnamon.Api.Core.Hubs
                 ConnectionId = string.Empty,
                 CustomerId = Convert.ToInt32(userId)
             });
+
+            var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
+            {
+                UserId = Convert.ToInt32(userId)
+            });
+
+            if (result.Succeeded && result != null)
+            {
+                foreach (var item in result.Result.ChatRooms)
+                {
+                    if (item.ChatType == ChatType.PrivateMessage)
+                    {
+                        if (!string.IsNullOrEmpty(item.FromConnectionId))
+                            await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}");
+                    }
+                }
+            }
 
             await base.OnDisconnectedAsync(exception);
         }

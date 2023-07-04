@@ -99,7 +99,7 @@ public class CustomerPayedNotificationHelper
                         Hi <span style='text-transform: capitalize'>{customerName}</span>,
                         </p>
                         <p style='margin: 0; font-size: 20px; color: #343d4c'>
-                        Thank you for your purhcase!
+                        Thank you for your purchase!
                         </p>
                     </div>
                     <hr style='margin: 0; border: none; height: 1px; background-color: #d9d9d9' />
@@ -219,8 +219,7 @@ public class CustomerPayedNotificationHelper
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
                                     ><b
-                                    >PHP {(amount + serviceFee +
-                                    providerFee - discountAmount - appliedCredits).ToString("#,##0.00")}</b
+                                    >PHP {GetTotalPurchase(amount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
                                     ></span
                                 >
                                 </p>
@@ -253,5 +252,12 @@ public class CustomerPayedNotificationHelper
     private string GetCreditString(decimal appliedCredits)
     {
         return appliedCredits > 0 ? "- " + appliedCredits.ToString("#,##0.00") : "0.00";
+    }
+
+    private decimal GetTotalPurchase(decimal amount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
+    {
+        var result = amount + serviceFee + providerFee - discountAmount - appliedCredits;
+        result = result < 0 ? 0 : result;
+        return result;
     }
 }

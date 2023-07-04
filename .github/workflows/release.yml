@@ -8,6 +8,7 @@ env:
   FLAG_ENV: Production
   BASE_URL: "https://cinnamon.ph"
   CHATHUB_PROD_URL: "https://cinnamon.ph/chathub"
+  SIGNALR_PROD_URL: "Endpoint=https://sigr-cinnamon-prod.service.signalr.net;AccessKey=RgvXsUzBiBrivFf7tK4Zf07fFIboytKDQKBP6MTbOYU=;Version=1.0;"
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -50,7 +51,8 @@ jobs:
           Applicationconfig.Disbursement.CronString: "0 1 0 ? * TUE,FRI"
           Applicationconfig.FrontendUrl: "https://cinnamon.ph/"
           Applicationconfig.Sitemap.RunSitemap: true
-
+          ConnectionStrings.AzureSignalRConnectionString: ${{ env.SIGNALR_PROD_URL }}
+          
       # substitute web blazor server environemnt variables
       - name: App Settings Variables Substitution for Web Blazor
         uses: microsoft/variable-substitution@v1

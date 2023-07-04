@@ -10,6 +10,10 @@ let btnConfirmLeave = ".btn-confirm-leave";
 let leaveGroupModal = "#leaveGroupModal";
 let btnLeave = ".leave-button";
 let btnClose = ".btn-close";
+let addMemberModal = "#add-member-modal";
+let imgAddMember = "#img-add-member";
+let btnCloseAddMember = "#btn-close-add-member-modal";
+let btnAddMember = ".btn-add-member";
 
 messages.initControls = (obj, elementId) => {
     dotnetObj = obj;
@@ -25,17 +29,20 @@ messages.initControls = (obj, elementId) => {
             $(this).tooltip("hide");
         });
 
+        $(".messages-container").hide().fadeIn();
     });
 
-    $(document).on("keydown", messageElementId, function (e) {
+    $(document).off('keydown').on("keydown", messageElementId, function (e) {
         if (e.which === 13 && !e.shiftKey) {
             e.preventDefault();
+            e.stopPropagation();
             dotnetObj.invokeMethodAsync('SendMessageAsync', $(messageElementId).text());
             $(messageElementId).text("")
         }
     });
 
-    $(document).on("click", chatroomListItem, function (e) {
+    $(document).off('click').on("click", chatroomListItem, function (e) {
+
         $(messageElementId).focus();
 
         if (isMobile()) {
@@ -50,6 +57,14 @@ messages.initControls = (obj, elementId) => {
         else {
             $(".conversation-section").scrollTop($(".conversation-section").prop("scrollHeight"));
         }
+
+        $(".chat-profile-section").show();
+        $(".conversation-section").show();
+        $(".send-message-section").show();
+        $(".profile-section .row").show();
+
+        $(".chat-section").hide().fadeIn();
+        $(".profile-section").hide().fadeIn();
     });
 
     $(document).on("click", messageElementId, function (e) {
@@ -71,6 +86,11 @@ messages.initControls = (obj, elementId) => {
         dotnetObj.invokeMethodAsync('ConfirmLeaveGroup');
 
         $(leaveGroupModal).modal("hide");
+
+        $(".chat-profile-section").hide();
+        $(".conversation-section").hide();
+        $(".send-message-section").hide();
+        $(".profile-section .row").hide();
     });
 
     $(document).on("click", btnClose, function (e) {
@@ -83,6 +103,18 @@ messages.initControls = (obj, elementId) => {
 
     $(document).on("click", btnLeave, function (e) {
         $(leaveGroupModal).modal("show");
+    });
+
+    $(document).on("click", imgAddMember, function (e) {
+        $(addMemberModal).modal("show");
+    });
+
+    $(document).on("click", btnCloseAddMember, function (e) {
+        $(addMemberModal).modal("hide");
+    });
+
+    $(document).on("click", btnAddMember, function (e) {
+        $(addMemberModal).modal("hide");
     });
     
     if (isMobile()) {

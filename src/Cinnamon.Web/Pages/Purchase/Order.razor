@@ -121,7 +121,7 @@
                             </td>
                             <td class="text-end">
                                 <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
-                                    PHP @(((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee - (Model.PurchaseOrder.CouponAmount ?? 0)) - Model.PurchaseOrder.AppliedCreditAmount).ToString("#,##0.00"))
+                                    PHP @GetOverallTotal.ToString("#,##0.00")
                                 </p>
                             </td>
                         </tr>
@@ -247,6 +247,17 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Payment Confirmation Page Loaded");
+        }
+    }
+
+    private decimal GetOverallTotal 
+    {
+        get
+        {
+            var result = (Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee - (Model.PurchaseOrder.CouponAmount ?? 0)) - Model.PurchaseOrder.AppliedCreditAmount;
+            result = result < 0 ? 0 : result;
+
+            return result;
         }
     }
 }

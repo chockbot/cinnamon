@@ -24,9 +24,9 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
             this.dataStore = dataStore;
         }
 
-        public async Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatMembersByChatRoomId(int chatRoomId)
+        public async Task<AppResult<IEnumerable<ChatRoomDTO>>> GetChatMembersByChatRoomId(int chatRoomId, int userId, bool hasLeft)
         {
-            Expression<Func<Entities.ChatMember, bool>> filter = a => a.ChatRoomId == chatRoomId && !a.HasLeft;
+            Expression<Func<Entities.ChatMember, bool>> filter = a => a.ChatRoomId == chatRoomId && a.HasLeft == hasLeft;
 
             var includes = new List<Expression<Func<Entities.ChatMember, object>>>
                 {
@@ -35,6 +35,8 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                 };
 
             List<ChatRoomDTO> chatMembers = new List<ChatRoomDTO>();
+
+            var commonPrivateChatRoomId = 0;
 
             var result = await dataStore.ChatMember.FindAsync(filter, int.MaxValue, 0, includes);
 

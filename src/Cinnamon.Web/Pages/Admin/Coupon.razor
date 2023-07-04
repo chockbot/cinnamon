@@ -15,7 +15,7 @@
 <div class="admin-coupons-wrapper">
     <div class="header">
         <p class="title">Coupons</p>
-        <button class="create-button" @onclick="() => modalRef.Show()">Create New Coupon</button>
+        <button class="create-button" @onclick="CreateCopon">Create New Coupon</button>
     </div>
 
     <div class="section-content">
@@ -65,6 +65,11 @@
                                 <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                             </Label>
                         </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Action
+                            </Label>
+                        </TableHeaderCell>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -74,16 +79,18 @@
                         {
                             <TableRow>
                                 <TableRowCell>
-                                    <span>@item.Name</span>
+                                    <span class="font-weight-700">@item.Name</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.Code</span>
+                                    <span>@item.Discount</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.Discount</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.From</span>
+                                    <span>@item.To</span>
                                 </TableRowCell>
                                 <TableRowCell>
                                     <span>@item.To</span>
@@ -99,6 +106,9 @@
                                         </button>
                                         <span>Active</span>
                                     </div>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <Button Clicked="() => UpdateCoupon(item)" class="btn-primary font-16" Border="Border.Is0">Update</Button>
                                 </TableRowCell>
                             </TableRow>   
                         }
@@ -116,7 +126,7 @@
                         <FieldBody>
                             @if(ListCoupons.Activities != null)
                             {
-                                <Select Size="Size.Small" @bind-SelectedValue="Form.ActivityId"
+                                <Select Size="Size.Small" @bind-SelectedValue="Form.ActivityId" Disabled="UserAction == ActionType.Update"
                                     class='@(ListCoupons.IsSelectedActivityError ? "form-control is-invalid" : "form-control")'>
                                     @foreach (var item in ListCoupons.Activities)
                                     {
@@ -129,7 +139,7 @@
                     </Field>
                     <Validation>
                         <Field class="mb-3">
-                            <FieldLabel class="font-16">Label</FieldLabel>
+                            <FieldLabel class="font-16">Coupon Description <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
                                 <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
                                     <Feedback>
@@ -141,9 +151,9 @@
                     </Validation>
                     <Validation>
                         <Field class="mb-3">
-                            <FieldLabel class="font-16">Promo Code</FieldLabel>
+                            <FieldLabel class="font-16">Coupon Code <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code">
+                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -152,11 +162,11 @@
                         </Field>
                     </Validation>
                     <Field class="radio-discount-type mb-3">
-                        <FieldLabel class="mb-1 font-16">Discount Type</FieldLabel>
-                        <FieldBody Display="Display.Flex" Flex="Flex.JustifyContent.Center">
+                        <FieldLabel class="mb-1 font-16">Discount Type <span class="color-red">*</span></FieldLabel>
+                        <FieldBody Display="Display.Flex" Flex="Flex.JustifyContent.Center" Disabled="UserAction == ActionType.Update">
                             <RadioGroup TValue="int" Name="DiscountType" @bind-CheckedValue="Form.DiscountType">
-                                <Radio class="form-check-input font-16" Value="0">Percentage</Radio>
-                                <Radio class="form-check-input font-16" Value="1">Fixed Amount</Radio>
+                                <Radio class="form-check-input font-16" Value="0" Disabled="UserAction == ActionType.Update">Percentage</Radio>
+                                <Radio class="form-check-input font-16" Value="1" Disabled="UserAction == ActionType.Update">Fixed Amount</Radio>
                             </RadioGroup>
                         </FieldBody>
                     </Field>
@@ -165,15 +175,15 @@
                         <Field class="mb-2">
                             <FieldBody>
                                 <NumericPicker Min="0" class='@(ListCoupons.IsPercentageValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Percentage %" ShowStepButtons="false" Decimals="2" 
-                                    TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0">
+                                    TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                                 <div class="invalid-feedback">Provide valid value</div>
                             </FieldBody>
                         </Field>
                         <Field class="mb-3">
                             <FieldBody>
-                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Maximum Spend" ShowStepButtons="false" Decimals="2" 
-                                    TValue="decimal?" ValueChanged="v => Form.MaximumSpend = v ?? 0">
+                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="2" 
+                                    TValue="decimal?" ValueChanged="v => Form.MinimumSpend = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                             </FieldBody>
                         </Field>
@@ -183,7 +193,7 @@
                         <Field class="mb-3">
                             <FieldBody>
                                 <NumericPicker Min="0" class='@(ListCoupons.IsFixedAmountValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Amount" ShowStepButtons="false" Decimals="2" 
-                                    TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0">
+                                    TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                                 <div class="invalid-feedback">Provide valid value</div>
                             </FieldBody>
@@ -192,7 +202,7 @@
                     <div>
                         <p class="font-16">Effective Date</p>
                         <div>
-                            <label class="font-14">From</label>
+                            <label class="font-14">From <span class="color-red">*</span></label>
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is8">
                                     <Field class="mb-3">
@@ -211,7 +221,7 @@
                             </Row>
                         </div>
                         <div>
-                            <label class="font-14">To</label>
+                            <label class="font-14">To <span class="color-red">*</span></label>
                             <Row>
                                 <Column ColumnSize="ColumnSize.Is8">
                                     <Field class="mb-3">
@@ -232,7 +242,7 @@
                     </div>
                     <Field class="mt-3">
                         <FieldBody>
-                            <Button Type="ButtonType.Button" Clicked="SubmitCreateCoupon"
+                            <Button Type="ButtonType.Button" Clicked="UserAction == ActionType.Create ? SubmitCreateCoupon : SubmitUpdateCoupon"
                                 class="btn-primary font-20 w-100" Border="Border.Is0" 
                                 Loading="ListCoupons.IsSubmitting" Disabled="ListCoupons.IsSubmitting">
                                 <LoadingTemplate>
@@ -240,7 +250,7 @@
                                     Saving Changes
                                 </LoadingTemplate>
                                 <ChildContent>
-                                    Create Coupon
+                                    @(UserAction == ActionType.Create ? "Create Coupon" : "Update Coupon")
                                 </ChildContent>
                             </Button>
                         </FieldBody>
@@ -261,6 +271,12 @@
     private FormCoupon Form {get; set;} = new();
     private Validations FormValidation {get; set;}
     private string Token = string.Empty;
+    private ActionType UserAction = ActionType.Create;
+
+    enum ActionType {
+        Create = 0,
+        Update = 1
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -324,6 +340,10 @@
                     Name = c.Name,
                     Status = c.Status,
                     To = c.ToDate,
+                    Amount = c.Amount,
+                    DiscountType = c.DiscountType,
+                    MinimumSpend = c.MaximumSpend,
+                    ActivityId = c.ActivityId,
                 };
             });
         }
@@ -349,7 +369,7 @@
                     Code = Form.Code,
                     DiscountType = Form.DiscountType,
                     FromDate = Form.DateFrom.Add(Form.TimeFrom),
-                    MaximumSpend = Form.MaximumSpend,
+                    MaximumSpend = Form.MinimumSpend,
                     Name = Form.Name,
                     ToDate = Form.DateTo.Add(Form.TimeTo),
 
@@ -364,16 +384,61 @@
                     return;
                 }
 
-                await modalRef.Close(CloseReason.None);
-                
                 ClearFields();
+
+                await modalRef.Close(CloseReason.None);
 
                 await FetchCouponCodes();
             }
         }
         catch (Exception ex)
         {
-            throw ex;
+            ListCoupons.ErrorMessage = "An error occured. Please try again later";
+            ListCoupons.IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task SubmitUpdateCoupon()
+    {
+        try
+        {
+            ListCoupons.IsPercentageValueError = (Form.Amount <= 0) || (Form.DiscountType == 0 && Form.Amount > 100);
+            ListCoupons.IsFixedAmountValueError = (Form.Amount <= 0);
+            ListCoupons.IsSelectedActivityError = (Form.ActivityId == -1);
+            bool isFormValidate = await FormValidation.ValidateAll();
+
+            if(!ListCoupons.IsFixedAmountValueError && !ListCoupons.IsPercentageValueError &&
+                !ListCoupons.IsSelectedActivityError && isFormValidate)
+            {
+                ListCoupons.IsSubmitting = true;
+
+                var updateRes = await activityApiHandler.UpdateCoupon(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateCouponArgs {
+                    DateFrom = Form.DateFrom.Add(Form.TimeFrom),
+                    DateTo = Form.DateTo.Add(Form.TimeTo),
+                    Id = Form.Id,
+                    Name = Form.Name
+                }, Token);
+
+                ListCoupons.IsSubmitting = false;
+
+                if(!updateRes.Succeeded || updateRes.Result == null || !updateRes.Result.IsSuccess)
+                {
+                    ListCoupons.ErrorMessage = updateRes.Result?.ErrorInfo?.Message ?? updateRes.Message;
+                    ListCoupons.IsShowErrorMessage = true;
+                    return;
+                }
+
+                ClearFields();
+
+                await modalRef.Close(CloseReason.None);
+
+                await FetchCouponCodes();
+            }
+        }
+        catch (Exception ex)
+        {
+            ListCoupons.ErrorMessage = "An error occured. Please try again later";
+            ListCoupons.IsShowErrorMessage = true;
         }
     }
 
@@ -382,10 +447,22 @@
         Form.ActivityId = -1;
         Form.Amount = 0;
         Form.Code = string.Empty;
-        Form.MaximumSpend = 0;
+        Form.MinimumSpend = 0;
+        Form.DiscountType = 0;
         Form.Name = string.Empty;
         ListCoupons.IsShowErrorMessage = false;
         ListCoupons.ErrorMessage = string.Empty;
+        Form.DateFrom = DateTime.Now;
+        Form.TimeFrom = DateTime.Now.TimeOfDay;
+        Form.DateTo = DateTime.Now;
+        Form.TimeTo = DateTime.Now.TimeOfDay;
+        StateHasChanged();
+    }
+
+    private async Task CreateCopon()
+    {
+        UserAction = ActionType.Create;
+        await modalRef.Show();
     }
 
     public async Task UpdateCouponStatus(CouponsModel.Coupon coupon)
@@ -397,6 +474,23 @@
         }, Token);
 
         await FetchCouponCodes();
+    }
+
+    private async Task UpdateCoupon(CouponsModel.Coupon selected)
+    {
+        Form.ActivityId = selected.ActivityId;
+        Form.Amount = selected.Amount;
+        Form.Code = selected.Code;
+        Form.DateFrom = selected.From;
+        Form.DateTo = selected.To;
+        Form.DiscountType = selected.DiscountType;
+        Form.MinimumSpend = selected.MinimumSpend;
+        Form.Name = selected.Name;
+        Form.TimeFrom = selected.From.TimeOfDay;
+        Form.TimeTo = selected.To.TimeOfDay;
+        Form.Id = selected.Id;
+        UserAction = ActionType.Update;
+        await modalRef.Show();
     }
     
 
@@ -421,6 +515,10 @@
             public string ActivityName {get; set;}
             public int Id {get; set;}
             public int Status {get; set;}
+            public decimal Amount {get; set;}
+            public int DiscountType {get; set;}
+            public decimal MinimumSpend {get; set;}
+            public int ActivityId {get; set;}
         }
 
         public class Activity 
@@ -433,6 +531,8 @@
 
     public class FormCoupon 
     {
+        public int Id {get; set;}
+
         [Required]
         public int ActivityId {get; set;}
 
@@ -440,6 +540,8 @@
         public string Name {get; set;}
 
         [Required]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Some characters are not allowed")]
+        [MaxLength(15, ErrorMessage = "Only allowed 15 characters")]
         public string Code {get; set;}
 
         [Required]
@@ -449,7 +551,7 @@
         public decimal Amount {get; set;}
 
         [Required]
-        public decimal MaximumSpend {get; set;}
+        public decimal MinimumSpend {get; set;}
 
         [Required]
         public DateTime DateFrom {get; set;} = DateTime.Now;

@@ -55,5 +55,6 @@ namespace Cinnamon.Web.Models.Entities
             string pattern = @"(\(?\d{3}\)?-? *\d{3}-? *-?\d{4})";
             return Regex.Replace(input, pattern, m => new string('*', m.Length));
         }
+        public bool HasTemporaryChatRoomId { get; set; }
     }
 }
