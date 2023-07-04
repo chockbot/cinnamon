@@ -337,6 +337,7 @@ public class OnGoingActivitiesController : ControllerBase
                     Rating      = result.Result.Rating,
                     Review      = result.Result.Review,
                     ReviewDate  = result.Result.ReviewDate
+
                 },
                 IsSuccess = true,
             });
@@ -403,6 +404,8 @@ public class OnGoingActivitiesController : ControllerBase
             var result = await getReviewsByMakerIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetReviewsByMakerIdArgs
             {
                 MakerId = args.MakerId,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -411,6 +414,8 @@ public class OnGoingActivitiesController : ControllerBase
             return new JsonResult(new GetReviewsByMakerIdResult
             {
                 IsSuccess = true,
+                Pagination = result.Result.Pagination,
+                ErrorInfo = result.Result.ErrorInfo,
                 Result = result.Result.Review.Select(s => {
                     return new Framework.ApiCommand.ApiCore.DTO.Reviews.ReviewsDTO
                     {
@@ -444,6 +449,8 @@ public class OnGoingActivitiesController : ControllerBase
             var result = await getReviewsByCustomerIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetReviewsByCustomerIdArgs
             {
                 CustomerId = args.CustomerId,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -452,6 +459,8 @@ public class OnGoingActivitiesController : ControllerBase
             return new JsonResult(new GetReviewsByCustomerIdResult
             {
                 IsSuccess = true,
+                Pagination = result.Result.Pagination,
+                ErrorInfo = result.Result.ErrorInfo,
                 Result = result.Result.Review.Select(s => {
                     return new Framework.ApiCommand.ApiCore.DTO.Reviews.ReviewsDTO
                     {
@@ -485,6 +494,8 @@ public class OnGoingActivitiesController : ControllerBase
             var result = await getReviewsByActivityIdHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetReviewsByActivityIdArgs
             {
                 ActivityId = args.ActivityId,
+                PageIndex = args.PageIndex,
+                CountPerPage = args.CountPerPage,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -493,6 +504,8 @@ public class OnGoingActivitiesController : ControllerBase
             return new JsonResult(new GetReviewsByActivityIdResult
             {
                 IsSuccess = true,
+                Pagination = result.Result.Pagination,
+                ErrorInfo = result.Result.ErrorInfo,
                 Result = result.Result.Review.Select(s => {
                     return new Framework.ApiCommand.ApiCore.DTO.Reviews.ReviewsDTO
                     {

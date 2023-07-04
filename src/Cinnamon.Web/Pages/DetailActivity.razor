@@ -478,8 +478,10 @@
     </Div>
     @* commented first for migration *@
     <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.ToList()" ActivityModel="activity"></SchedulesModal>
-    <MultipleReviewModal @ref="modRef" Reviews="activityReviews" SelectedValue="SelectedValue"
-                     AverageRating="AverageRating" CustomerProfiles="customerProfiles" Activities="makerActivity"></MultipleReviewModal>
+
+    <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating" 
+        CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>
+
     <ModalLogin @ref="signinModal" />
     <!--Beta Alert-->
     @*<BetaAlert></BetaAlert>*@
@@ -496,9 +498,9 @@
     public DetailActivityModel Model = new DetailActivityModel();
     public Activity activity = new Activity();
     public List<Activity> activities = new List<Activity>();
+    public List<Activity> MakerActivity = new List<Activity>();
     public CustomerProfile customerDetail = new CustomerProfile();
     public List<CustomerProfile> customerProfiles = new List<CustomerProfile>();
-    public List<Activity> makerActivity = new List<Activity>();
     public CustomerProfile reviweeProfile = new CustomerProfile();
     public List<ExperienceType> experienceTypes = new List<ExperienceType>();
     public ExperienceType experience = new ExperienceType();
@@ -510,6 +512,7 @@
     private SchedulesModal ModalSched { get; set; }
     public int SelectedValue { get; set; } = 0;
     public double AverageRating { get; set; } = 0;
+    public int ReviewCount { get; set; } = 0;
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
     public int MakerOngoingStudennt { get; set; }
@@ -608,7 +611,7 @@
                             Handler = result.Owner.Handler
                         } : null
                     };
-                    makerActivity.Add(activity);
+                    MakerActivity.Add(activity);
             }
 
             // Get experience types
@@ -745,6 +748,7 @@
                 AverageRating = (double)SumOfRating / numberOfRatee;
                 SelectedValue = (int)Math.Round(AverageRating);
                 top3Reviews = activityReviews.Take(3).ToList();
+                ReviewCount = activityReviews.Count;
             }
 
             //Get Customer Details

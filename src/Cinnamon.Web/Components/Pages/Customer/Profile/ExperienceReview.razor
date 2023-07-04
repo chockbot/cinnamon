@@ -1,14 +1,12 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
 @using Cinnamon.Web.Models.Entities
-@using System.Security.Claims
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
+@using Cinnamon.Web.Components
 @inject IJSRuntime jsRuntime
-@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IAccountApiHandler accountApiHandler
 @inject NavigationManager NavigationManager
-
 
 <article class="experience-review-wrapper py-3">
     <h3 class="title">Customer Feedbacks</h3>
@@ -22,7 +20,7 @@
             @if (reviews.Count > 3)
             {
                 <div class="col-4 d-flex justify-content-end">
-                    <button class="see-more" @onclick="() => modRef.ShowModal()">See More</button>
+                    <button class="see-more" @onclick="() => modalRef.ShowModal()">See More</button>
                 </div>
             }
         </div>
@@ -40,20 +38,21 @@
         <p class="p-1" style="font-family:'Nunito';font-weight:bold">No reviews yet!</p>
     }
 </article>
-
-<MultipleReviewModal @ref="modRef" Reviews="reviews" SelectedValue="SelectedValue"
-AverageRating="AverageRating" CustomerProfiles="customerProfiles" Activities="Activities"></MultipleReviewModal>
+<CustomerFeedbackModal @ref=modalRef AverageRating="AverageRating" SelectedValue="SelectedValue" ReviewCount="reviews.Count"
+Activities="Activities" CustomerProfiles="customerProfiles" MakerProfile="Profile"></CustomerFeedbackModal>
 @code
 {
     IJSObjectReference module;
 
     [Parameter]
-    public IList<Activity> Activities { get; set; }
+    public IEnumerable<Activity> Activities { get; set; }
 
     [Parameter]
     public CustomerProfile Profile { get; set; }
 
-    private MultipleReviewModal modRef;
+    private CustomerFeedbackModal modalRef;
+
+    public Activity activity = new Activity();
 
     public List<Reviews> reviews = new List<Reviews>();
 
@@ -63,19 +62,15 @@ AverageRating="AverageRating" CustomerProfiles="customerProfiles" Activities="Ac
 
     public CustomerProfile reviweeProfile = new CustomerProfile();
 
-    public string Token;
-
     public int SelectedValue { get; set; } = 0;
 
     public double AverageRating { get; set; } = 0;
-
-    public ClaimsPrincipal AuthState { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         var reviewsResult = await ongoingApiHandler.GetReviewsByMakerId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByMakerIdArgs
             {
-                MakerId = Profile.Id
+                MakerId = Profile.Id,
             });
         if (reviewsResult.Succeeded && reviewsResult.Result != null && reviewsResult.Result.IsSuccess)
         {
@@ -99,12 +94,12 @@ AverageRating="AverageRating" CustomerProfiles="customerProfiles" Activities="Ac
         {
             double SumOfRating = reviews.Sum(a => a.Rating);
             double numberOfRatee = reviews.Count;
-            AverageRating = (double) SumOfRating/numberOfRatee;
+            AverageRating = (double)SumOfRating / numberOfRatee;
             SelectedValue = (int)Math.Round(AverageRating);
             top3Reviews = reviews.Take(3).ToList();
         }
         //Get Customer Details
-        foreach (var item in reviews.GroupBy(g=>g.CustomerId).Select(s=>s.First()).ToList())
+        foreach (var item in reviews.GroupBy(g => g.CustomerId).Select(s => s.First()).ToList())
         {
             var profileResult = await accountApiHandler.GetCustomerById(item.CustomerId);
             if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
