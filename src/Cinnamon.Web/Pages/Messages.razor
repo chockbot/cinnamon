@@ -968,11 +968,6 @@
                     catch (Exception ex)
                     {
                     }
-
-                    if (IsConnected)
-                    {
-                        hubConnection.Closed += ConnectWithRetryAsync;
-                    }
                 }
 
                 await GetChatRoomsByUserId();
