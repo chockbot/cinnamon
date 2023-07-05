@@ -318,8 +318,20 @@
                     <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
                         <div id="observerTarget"></div>
 
-                        @if (chatHistories.Count >= 30)
+                        @if (chatHistories.Count == 0)
                         {
+                            <div class="row justify-content-center no-message-section text-center">
+                                <div class="col-lg-5">
+                                    <img src="images/messages/speech-bubble.svg" />
+                                    <div class="divider"></div>
+                                    <label class="no-conversation-title">
+                                        No Conversation Yet
+                                    </label>
+                                    <label class="no-conversation-sub-title">
+                                        You didn’t made any conversation yet, say something to this person.
+                                    </label>
+                                </div>
+                            </div>
                         }
                         @if (isLoading)
                         {
@@ -424,19 +436,19 @@
             <div class="send-message-section">
                 <table>
                     <tr>
-                        <td class="attachment-section"><img src="images/messages/send-attachment.png" /></td>
+                        <td class="attachment-section"><img src="images/messages/send-attachment.svg" /></td>
                         <td class="input-section">
                             <div class="input-group border p-1 rounded-pill-section">
                                 <div id="chat-message-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Aa">
                                 </div>
                                 <div class="input-group-append border-0">
-                                    <img src="images/messages/send-emoji.png" class="emoji-icon" />
+                                    <img src="images/messages/send-emoji.svg" class="emoji-icon" />
                                 </div>
                             </div>
                           
                         </td>
                         <td class="send-section">
-                            <img id="send-message" src="images/messages/send-message.png" />
+                            <img id="send-message" src="images/messages/send-message.svg" />
                         </td>
                     </tr>
                 </table>
