@@ -1,4 +1,5 @@
-﻿using Cinnamon.Api.Data.Repository.Interfaces;
+﻿using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Schedule;
 using Cinnamon.Framework.Common;
@@ -17,7 +18,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> CreateSchedule(int ActivityId, string Name, string datetime, 
                             decimal Price, string UnitPrice, int PerUnit1, string PriceUnit1, 
-                            int PerUnit2, string PriceUnit2, int order, bool IsActiveSchedule)
+                            int PerUnit2, string PriceUnit2, int order, bool IsActiveSchedule,bool IsSetSession, string SessionName, int HasExpiration, DateTime? startDate)
         {
             try
             {
@@ -26,6 +27,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(checkActivity.Error.Exception, checkActivity.Message);
                 }
+
+                startDate = startDate.SetKindUtc();
 
                 var result = await _dataStore.ActivitySchedule.Add(new Data.Repository.Entities.ActivitySchedule()
                 {
@@ -39,8 +42,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PerUnit2 = PerUnit2,
                     PriceUnit2 = PriceUnit2,
                     Order = order,
-                    IsActiveSchedule = IsActiveSchedule
-                    
+                    IsActiveSchedule = IsActiveSchedule,
+                    IsSetSession = IsSetSession,
+                    SessionName = SessionName,
+                    HasExpiration = HasExpiration,
+                    StartDate = startDate,  
                 });
 
                 if(!result.Succeeded || result.Result == null)
@@ -61,7 +67,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
                     Order = result.Result.Order,
-                    IsActiveSchedule = result.Result.IsActiveSchedule
+                    IsActiveSchedule = result.Result.IsActiveSchedule,
+                    IsSetSession= result.Result. IsSetSession,
+                    SessionName = result.Result.SessionName,
+                    HasExpiration = result.Result.HasExpiration,
+                    StartDate = result.Result.StartDate,
                 },
                 result.Message);
             }
@@ -75,6 +85,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
         {
             try
             {
+                
                 // check activity id if existed
                 var activity = await _dataStore.Activity.GetByIdAsync(activityId);
                 if(!activity.Succeeded || activity.Result == null)
@@ -82,7 +93,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(
                         new ApplicationException("Can't find provided activity id"), "Can't find provided activity id");
                 }
-
+                
                 var entities = schedules.Select(s => {
                     return new Entities.ActivitySchedule {
                         ActivityId = activityId,
@@ -95,7 +106,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate.SetKindUtc()
                     };
                 });
 
@@ -118,7 +133,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,  
+                        SessionName = s.SessionName,    
+                        HasExpiration = s.HasExpiration,   
+                        StartDate = s.StartDate.SetKindUtc()
                     };
                 });
 
@@ -187,7 +206,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         PriceUnit1 = x.PriceUnit1,
                         PerUnit2 = x.PerUnit2,
                         PriceUnit2 = x.PriceUnit2,
-                        IsActiveSchedule = x.IsActiveSchedule
+                        IsActiveSchedule = x.IsActiveSchedule,
+                        IsSetSession = x.IsSetSession,
+                        SessionName = x.SessionName,
+                        HasExpiration = x.HasExpiration,
+                        StartDate = x.StartDate,
                     };
                 });
 
@@ -225,7 +248,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
                     Order = result.Result.Order,
-                    IsActiveSchedule = result.Result.IsActiveSchedule  
+                    IsActiveSchedule = result.Result.IsActiveSchedule,
+                    IsSetSession = result.Result.IsSetSession,
+                    SessionName = result.Result.SessionName,
+                    HasExpiration = result.Result.HasExpiration,
+                    StartDate = result.Result.StartDate,    
                 },
                 result.Message); 
             }
@@ -257,7 +284,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         UnitPrice = s.UnitPrice,
                         ActivityId = s.ActivityId,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 });
 
@@ -281,7 +312,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession= s.IsSetSession,
+                            HasExpiration= s.HasExpiration,
+                            SessionName = s.SessionName,
+                            StartDate= s.StartDate
                         };
                     }), "Successfully update many schedules"
                 );
@@ -294,7 +329,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
         public async Task<AppResult<ScheduleDTO>> UpdateSchedule(int? ScheduleId, string? Name, string? datetime, decimal? Price, 
                                                                 string? UnitPrice, int? PerUnit1, string? PriceUnit1, int? PerUnit2, 
-                                                                string? PriceUnit2, int? order, bool? IsActiveSchedule)
+                                                                string? PriceUnit2, int? order, bool? IsActiveSchedule, bool? IsSetSession, string? SessionName, int? HasExpiration, DateTime? startDate)
         {
             try
             {
@@ -303,6 +338,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(checkSchedule.Error.Exception, checkSchedule.Message);
                 }
+                startDate = startDate.SetKindUtc();
 
                 var schedule = checkSchedule.Result;
 
@@ -318,6 +354,10 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 schedule.PriceUnit2       = PriceUnit2 ?? schedule.PriceUnit2;
                 schedule.Order            = order ?? schedule.Order;
                 schedule.IsActiveSchedule = IsActiveSchedule ?? schedule.IsActiveSchedule;
+                schedule.IsSetSession     = IsSetSession ?? schedule.IsSetSession;
+                schedule.SessionName      = SessionName ?? schedule.SessionName;
+                schedule.HasExpiration    = HasExpiration ?? schedule.HasExpiration;
+                schedule.StartDate        = startDate ?? schedule.StartDate;
 
                 var result = await _dataStore.ActivitySchedule.Update(schedule);
 
@@ -339,7 +379,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                     PerUnit2 = result.Result.PerUnit2,
                     PriceUnit2 = result.Result.PriceUnit2,
                     Order = result.Result.Order,
-                    IsActiveSchedule = result.Result.IsActiveSchedule
+                    IsActiveSchedule = result.Result.IsActiveSchedule,
+                    IsSetSession = result.Result.IsSetSession,
+                    SessionName = SessionName ?? schedule.SessionName,
+                    HasExpiration = HasExpiration ?? schedule.HasExpiration,
+                    StartDate     = startDate ?? schedule.StartDate,
                 },
                 result.Message);
             }

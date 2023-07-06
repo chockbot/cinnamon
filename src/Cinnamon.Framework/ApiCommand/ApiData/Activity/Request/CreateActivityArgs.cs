@@ -47,8 +47,6 @@ public class CreateActivityArgs
     public int SubCategoryId {get; set;}
     [Required]
     public string Handler {get; set;}
-    public bool IsSetSession { get; set; } = false;
-    public string SessionName { get; set; } = string.Empty;
     public Enums.Enums.ActivityStatus Status { get; set; }
 
 }

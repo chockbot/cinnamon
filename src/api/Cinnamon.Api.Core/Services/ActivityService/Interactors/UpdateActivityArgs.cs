@@ -31,8 +31,6 @@ public class UpdateActivityArgs : IInteractor
     public string? SkillLevel {get; set;}
     public int? MinimumAge {get; set;}
     public bool? CanAdultsJoin {get; set;}
-    public bool? IsSetSession { get; set; }
-    public string? SessionName { get; set; }
     public string? PinnedLocation { get; set; }
     public bool? IsDeactivated { get; set; }
     public bool? IsAdmin { get; set; }
@@ -55,5 +53,9 @@ public class UpdateActivityArgs : IInteractor
         public string? PriceUnit2 {get; set;}
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime StartDate { get; set; }
     }
 }

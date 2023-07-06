@@ -14,5 +14,9 @@
         public string PriceUnit2 { get; set; } = "Session";
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
+        public bool IsSetSession { get; set; } = false;
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; } = 0;
+        public DateTime? StartDate { get; set; }
     }
 }

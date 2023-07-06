@@ -151,8 +151,6 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide == null ? args.SpecificsYouWillProvide : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
                 IsDeactivated = args.IsDeactivated,
                 Status = args.Status,
@@ -208,7 +206,11 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
                                 Order = s.Order,
-                                IsActiveSchedule = s.IsActiveSchedule
+                                IsActiveSchedule = s.IsActiveSchedule,
+                                IsSetSession = s.IsSetSession,
+                                SessionName = s.SessionName,
+                                HasExpiration = s.HasExpiration,
+                                StartDate = s.StartDate
                             };
                         })
                     });
@@ -239,7 +241,11 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
                                 Order = s.Order,
-                                IsActiveSchedule = s.IsActiveSchedule
+                                IsActiveSchedule = s.IsActiveSchedule,
+                                IsSetSession = s.IsSetSession,
+                                SessionName = s.SessionName,
+                                HasExpiration = s.HasExpiration,
+                                StartDate = s.StartDate
                             };
                         })
                     });
@@ -305,8 +311,6 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SubCategoryId = updated.SubCategoryId,
                 Title = updated.Title,
                 Handler = updated.Handler,
-                IsSetSession = updated.IsSetSession,
-                SessionName = updated.SessionName,
                 Status = updated.Status
             }, "Successfully update activity details");
         }

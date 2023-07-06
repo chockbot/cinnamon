@@ -130,8 +130,6 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 Handler = handlerName,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
                 Status = args.Status,
             });
@@ -164,6 +162,10 @@ public class CreateActivityHandler : ICreateActivityHandler
                         UnitPrice = s.UnitPrice,
                         Order = order,
                         IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate,
                     };
                 })
             });
@@ -244,7 +246,11 @@ public class CreateActivityHandler : ICreateActivityHandler
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName =s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 })
 

@@ -103,7 +103,11 @@ public class ActivityController : ControllerBase
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
@@ -130,8 +134,6 @@ public class ActivityController : ControllerBase
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide ?? string.Empty,
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName ?? string.Empty,
                 PinnedLocation = args.PinnedLocation ?? string.Empty,
                 Status = args.Status
             });
@@ -157,6 +159,10 @@ public class ActivityController : ControllerBase
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
                         IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -184,8 +190,6 @@ public class ActivityController : ControllerBase
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
             }});
         }
         catch (Exception ex)
@@ -228,8 +232,6 @@ public class ActivityController : ControllerBase
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide,
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
                 IsDeactivated = args.IsDeactivated,
                 IsAdmin = args.IsAdmin,
@@ -247,7 +249,11 @@ public class ActivityController : ControllerBase
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
@@ -286,10 +292,28 @@ public class ActivityController : ControllerBase
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName,
-                Status = activity.Status
-            }});
+                Status = activity.Status,
+                ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                    {
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
+                    };
+                }),
+            }
+            });
         }
         catch (Exception ex)
         {
@@ -526,8 +550,6 @@ public class ActivityController : ControllerBase
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
@@ -627,8 +649,6 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
@@ -732,8 +752,6 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
@@ -852,8 +870,6 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
@@ -917,7 +933,11 @@ public class ActivityController : ControllerBase
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -956,8 +976,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     PinnedLocation= activity.PinnedLocation,
                     Status = activity.Status,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
@@ -1050,8 +1068,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
@@ -1147,8 +1163,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     PinnedLocation = activity.PinnedLocation,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
@@ -1253,8 +1267,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     PinnedLocation = activity.PinnedLocation,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
@@ -1408,8 +1420,6 @@ public class ActivityController : ControllerBase
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id
@@ -1640,8 +1650,6 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
