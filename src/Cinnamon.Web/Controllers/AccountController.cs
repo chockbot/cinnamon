@@ -55,6 +55,9 @@ public class AccountController : Controller
             return Redirect("/explore");
 
         }
+
+        await HttpContext.SignOutAsync();
+
         return Redirect("/explore");
     }
 
