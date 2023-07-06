@@ -380,7 +380,7 @@
                                 </span>
                             }
                         </div>
-                        @if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide))
+                        @if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide) && activity.SpecificsYouWillProvide != NOTHING_PROVIDED)
                         {
                             <hr />
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
@@ -390,7 +390,7 @@
                                 </p>
                             </div>
                         }
-                        @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem))
+                        @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && activity.CustomerBringWithThem != NOTHING_PROVIDED)
                         {
                             <hr />
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
@@ -398,7 +398,7 @@
                                 <p>@((MarkupString)activity.CustomerBringWithThem)</p>
                             </div>
                         }
-                        @if (!string.IsNullOrEmpty(activity.AdditionalRequirements))
+                        @if (!string.IsNullOrEmpty(activity.AdditionalRequirements) && activity.AdditionalRequirements != NOTHING_PROVIDED)
                         {
                             <hr />
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
@@ -517,6 +517,8 @@
     public int CompletedStudents { get; set; }
     public int MakerOngoingStudennt { get; set; }
     public int MakerCompletedStudent { get; set; }
+    private const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
+
     protected override async Task OnInitializedAsync()
     {
         try
