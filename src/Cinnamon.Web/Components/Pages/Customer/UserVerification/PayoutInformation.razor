@@ -233,6 +233,28 @@
                 }
             }
 
+            var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+            if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
+            {
+                var profile = profileResult.Result.Result;
+
+                var governmentIdsResult = await accountApiHandler.GetGovermentIds(Token);
+                if (governmentIdsResult.Succeeded && governmentIdsResult.Result != null && governmentIdsResult.Result.IsSuccess)
+                {
+                    var customerPictures = governmentIdsResult.Result.Result;
+
+                    await accountApiHandler.NotifyCustomerVerification(new Framework.ApiCommand.ApiCore.Account.Request.VerifyUserNotificationArgs
+                        {
+                            Email = profile.Email,
+                            IdAttached = !string.IsNullOrEmpty(customerPictures.FrontIdImagePath) && !string.IsNullOrEmpty(customerPictures.BackIdImagePath) ? "YES" : "NO",
+                            BankDetails = result.Succeeded ? "YES" : "NO"
+                        }, Token);
+                }
+            }
+
+           
+
+
             Message = string.Empty;
             IsShowErrorMessage = false;
 

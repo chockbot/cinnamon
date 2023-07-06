@@ -780,4 +780,26 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<UpdateConnectionIdResult>.CreateFailed(ex, "An error occured when calling update connection id api");
         }
     }
+
+    public async Task<AppResult<VerifyUserNotificationResult>> NotifyCustomerVerification(VerifyUserNotificationArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/Customer/Verification/Send")
+                .PostJsonAsync(args)
+                .ReceiveJson<VerifyUserNotificationResult>();
+
+            return AppResult<VerifyUserNotificationResult>.CreateSucceeded(result, "Successfully called notify customer verification api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<VerifyUserNotificationResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<VerifyUserNotificationResult>.CreateFailed(ex, "An error occured when calling notify customer verification api");
+        }
+    }
 }
