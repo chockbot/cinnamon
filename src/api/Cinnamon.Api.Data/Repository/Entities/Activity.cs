@@ -18,8 +18,6 @@ public class Activity : BaseEntity
     public int? SubCategoryId {get; set;}
     public string Handler {get; set;}
     public bool IsNew { get; set; }
-    public bool IsSetSession { get; set; }
-    public string SessionName { get; set; }
     public int PurchaseOrderCount { get; set; }
     public bool IsDeactivated { get; set; }
     public string Guid { get; set; }

@@ -106,9 +106,6 @@ public class CreateActivityArgs
     [Required]
     public bool CanAdultsJoin {get; set;}
     [Required]
-    public bool IsSetSession { get; set; }
-    public string? SessionName { get; set; }
-    [Required]
     public IEnumerable<string> SearchTags {get; set;}
     [Required]
     public IEnumerable<Schedule> ActivitySchedules {get; set;}
@@ -137,6 +134,14 @@ public class CreateActivityArgs
         public int Order {get; set;}
         [Required]
         public bool IsActiveSchedule { get; set; }
+        [Required]
+        public bool IsSetSession { get; set; }
+        [Required]
+        public string SessionName { get; set; }
+        [Required]
+        public int HasExpiration { get; set; }
+        [Required]
+        public DateTime? StartDate { get; set; }
     }
 
     public IFormFile? Image1 { get; set; }
