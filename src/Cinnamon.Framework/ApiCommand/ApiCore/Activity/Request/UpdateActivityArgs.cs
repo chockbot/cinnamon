@@ -56,6 +56,10 @@ public class UpdateActivityArgs
         public string? PriceUnit2 {get; set;}
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime StartDate { get; set; }
     }
 
     public IFormFile? Image1 { get; set; }

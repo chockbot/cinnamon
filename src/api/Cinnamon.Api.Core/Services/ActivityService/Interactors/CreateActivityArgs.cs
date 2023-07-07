@@ -31,8 +31,6 @@ public class CreateActivityArgs : IInteractor
     public string SkillLevel {get; set;}
     public int MinimumAge {get; set;}
     public bool CanAdultsJoin {get; set;}
-    public bool IsSetSession { get; set; } = false;
-    public string SessionName { get; set; } = string.Empty;
     public Enums.ActivityStatus Status { get; set; }
 
     public IEnumerable<string> SearchTags {get; set;}
@@ -51,5 +49,9 @@ public class CreateActivityArgs : IInteractor
         public string PriceUnit2 {get; set;}
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }

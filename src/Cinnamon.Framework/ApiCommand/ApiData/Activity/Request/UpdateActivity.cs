@@ -35,8 +35,6 @@ public class UpdateActivity
     public string? Searchtag5 { get; set; }
     public int? ExperienceCategoryId {get; set;}
     public int? SubCategoryId {get; set;}
-    public bool? IsSetSession { get; set; }
-    public string? SessionName { get; set; }
     public string? PinnedLocation { get; set; }
     public bool? IsDeactivated { get; set; }
     public Enums.Enums.ActivityStatus? Status { get; set; }
