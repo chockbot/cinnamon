@@ -37,6 +37,7 @@ public interface IDataStore
     IReviews Reviews { get; }
     IFavorite Favorite { get; }
     ICoupon Coupon {get; }
+    IChatConnection ChatConnection {get; }
 
     Task EnsureMigrate();
 

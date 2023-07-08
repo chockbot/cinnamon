@@ -1,5 +1,7 @@
 ﻿using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatConnection.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatConnection.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Request;
@@ -17,6 +19,8 @@ namespace Cinnamon.Web.Modules.ApiAccess.Handlers
         Task<AppResult<GetChatRoomsByUserIdResult>> GetChatRoomsByUserId(GetChatRoomsByUserIdArgs args, string token);
         Task<AppResult<UpdateConnectionIdResult>> UpdateConnectionId(UpdateConnectionIdArgs args, string token);
         Task<AppResult<GetChatMembersByChatRoomIdResult>> GetChatMembersByChatRoomId(GetChatMembersByChatRoomIdArgs args, string token);
+        Task<AppResult<GetChatConnectionByCustomerResult>> GetChatConnectionByCustomer(GetChatConnectionByCustomerArgs args, string token);
+
 
     }
 }

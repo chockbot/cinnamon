@@ -68,6 +68,7 @@ public class ApplicationContext : IdentityDbContext
     public DbSet<Favorite> Favorites { get; set; }
 
     public DbSet<Coupon> Coupons {get; set;}
+    public DbSet<ChatConnection> ChatConnections {get; set; }
 
     #endregion
 
@@ -216,7 +217,12 @@ public class ApplicationContext : IdentityDbContext
            .HasMany<ChatHistory>(a => a.ToChatHistories)
            .WithOne(i => i.ToCustomer)
            .HasForeignKey(i => i.ToUserId);
-        
+
+        modelBuilder.Entity<Customer>()
+           .HasMany<ChatConnection>(a => a.ChatConnections)
+           .WithOne(i => i.Customer)
+           .HasForeignKey(i => i.CustomerId);
+
         // reviews
         modelBuilder.Entity<Reviews>().HasIndex(c => c.Id);
 

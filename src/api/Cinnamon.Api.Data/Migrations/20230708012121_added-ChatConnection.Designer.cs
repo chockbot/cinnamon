@@ -3,6 +3,7 @@ using System;
 using Cinnamon.Api.Data.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Cinnamon.Api.Data.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230708012121_added-ChatConnection")]
+    partial class addedChatConnection
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -73,6 +75,9 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<bool>("IsPublished")
                         .HasColumnType("boolean");
 
+                    b.Property<bool>("IsSetSession")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("MapDetails")
                         .IsRequired()
                         .HasColumnType("text");
@@ -89,6 +94,10 @@ namespace Cinnamon.Api.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("ScheduleIndicator")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SessionName")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -328,13 +337,7 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("HasExpiration")
-                        .HasColumnType("integer");
-
                     b.Property<bool>("IsActiveSchedule")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("IsSetSession")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Name")
@@ -360,13 +363,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Property<string>("PriceUnit2")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("SessionName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("StartDate")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("UnitPrice")
                         .IsRequired()

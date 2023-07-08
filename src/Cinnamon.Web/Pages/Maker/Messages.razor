@@ -785,6 +785,16 @@
             {
                 chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).FromConnectionId = splitted[1];
                 chatMateConnectionId = splitted[1];
+
+                if (chatMembers.Any(c => c.FromUserId == Convert.ToInt32(splitted[2])))
+                {
+                    var chatMemberDetail = chatMembers.FirstOrDefault(c => c.FromUserId == Convert.ToInt32(splitted[2]));
+
+                    if (!string.IsNullOrEmpty(splitted[1]) && !chatMemberDetail.ConnectionIds.Contains(splitted[1]))
+                    {
+                        chatMemberDetail.ConnectionIds.Add(splitted[1]);
+                    }
+                }
             }
 
             InvokeAsync(() => StateHasChanged());
@@ -845,11 +855,21 @@
 
     private async Task Send()
     {
+        var connectionIds = string.Empty;
+
+        foreach (var item in chatMembers)
+        {
+            foreach (var connectionId in item.ConnectionIds)
+            {
+                connectionIds = connectionIds + "[~~~]" + connectionId;
+            }
+        }
+
         if (hubConnection is not null && !string.IsNullOrEmpty(messageInput.Trim()))
         {
             if (IsConnected)
             {
-                await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}");
+                await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}|{connectionIds}");
             }
             else
             {
@@ -857,7 +877,7 @@
 
                 if (IsConnected)
                 {
-                    await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}");
+                    await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}|{connectionIds}");
                 }
             }
         }
@@ -1116,7 +1136,8 @@
                     FromUserId = r.FromUserId,
                     ChatMemberType = r.ChatMemberType,
                     FromProfileLink = r.FromProfileLink,
-                    CommonPrivateChatRoomId = r.CommonPrivateChatRoomId
+                    CommonPrivateChatRoomId = r.CommonPrivateChatRoomId,
+                    ConnectionIds = r.ConnectionIds.ToList()
                 }).ToList();
 
             if (chatMembers.Any())
@@ -1381,6 +1402,35 @@
                     GroupName = string.Empty,
                     ChatName = string.Empty
                 }, Token);
+
+            var fromConnectionResult = await chatApiHandler.GetChatConnectionByCustomer(new Framework.ApiCommand.ApiCore.ChatConnection.Request.GetChatConnectionByCustomerArgs
+                {
+                    CustomerId = currentUserId
+                }, Token);
+
+            var toConnectionResult = await chatApiHandler.GetChatConnectionByCustomer(new Framework.ApiCommand.ApiCore.ChatConnection.Request.GetChatConnectionByCustomerArgs
+                {
+                    CustomerId = toUserId
+                }, Token);
+
+            if ((fromConnectionResult.Succeeded && fromConnectionResult.Result != null && fromConnectionResult.Result.IsSuccess) && (toConnectionResult.Succeeded && toConnectionResult.Result != null && toConnectionResult.Result.IsSuccess))
+            {
+                chatMembers = new List<ChatMember>();
+
+                chatMembers.AddRange(new List<ChatMember>
+                {
+                    new ChatMember
+                    {
+                        FromUserId = currentUserId,
+                        ConnectionIds = fromConnectionResult.Result.Result.Select(c => c.ConnectionId).ToList()
+                    },
+                    new ChatMember
+                    {
+                        FromUserId = toUserId,
+                        ConnectionIds = toConnectionResult.Result.Result.Select(c => c.ConnectionId).ToList()
+                    }
+                });
+            }
 
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {

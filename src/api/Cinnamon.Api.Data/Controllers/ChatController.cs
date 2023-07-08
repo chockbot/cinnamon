@@ -1,6 +1,8 @@
 ﻿using Cinnamon.Api.Data.Services.Repository.Customer;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData;
+using Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatHistory.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatRoom.Request;
@@ -21,12 +23,14 @@ namespace Cinnamon.Api.Data.Controllers
         private readonly IChatHistoryRepository _chatHistoryRepository;
         private readonly IChatRoomRepository _chatRoomRepository;
         private readonly IChatMemberRepository _chatMemberRepository;
+        private readonly IChatConnectionRepository _chatConnectionRepository;
 
-        public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository, IChatMemberRepository chatMemberRepository)
+        public ChatController(IChatHistoryRepository chatHistoryRepository, IChatRoomRepository chatRoomRepository, IChatMemberRepository chatMemberRepository, IChatConnectionRepository chatConnectionRepository)
         {
             _chatHistoryRepository = chatHistoryRepository;
             _chatRoomRepository = chatRoomRepository;
             _chatMemberRepository = chatMemberRepository;
+            _chatConnectionRepository = chatConnectionRepository;
         }
 
         [Route("Create")]
@@ -208,6 +212,76 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new CreateChatRoomResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatConnection")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateChatConnectionResult), StatusCodes.Status201Created)]
+        public async Task<IActionResult> CreateChatConnection([FromBody] CreateChatConnectionArgs args)
+        {
+            try
+            {
+                var result = await _chatConnectionRepository.Create(args.CustomerId, args.ConnectionId, args.UserAgent, args.IsConnected);
+
+                if (!result.Succeeded || !result.Result)
+                {
+                    return new JsonResult(new CreateChatConnectionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new CreateChatConnectionResult { IsSuccess = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateChatConnectionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatConnection/Update")]
+        [HttpPost]
+        [ProducesResponseType(typeof(UpdateChatConnectionResult), StatusCodes.Status201Created)]
+        public async Task<IActionResult> UpdateChatConnection([FromBody] UpdateChatConnectionArgs args)
+        {
+            try
+            {
+                var result = await _chatConnectionRepository.Update(args.CustomerId, args.ConnectionId, args.IsConnected);
+
+                if (!result.Succeeded || !result.Result)
+                {
+                    return new JsonResult(new UpdateChatConnectionResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new UpdateChatConnectionResult { IsSuccess = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new UpdateChatConnectionResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatConnections")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatConnectionByCustomerResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatConnectionByCustomer([FromQuery] GetChatConnectionByCustomerArgs args)
+        {
+            try
+            {
+                var result = await _chatConnectionRepository.GetChatConnectionByCustomer(args.CustomerId);
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatConnectionByCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new GetChatConnectionByCustomerResult
+                {
+                    Result = result.Result,
+                    IsSuccess = true,
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatConnectionByCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

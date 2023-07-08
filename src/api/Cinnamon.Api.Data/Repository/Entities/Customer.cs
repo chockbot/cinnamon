@@ -34,4 +34,6 @@ public class Customer : BaseEntity
     public virtual IList<ChatMember> ChatMembers {get; set; }
     public virtual IList<ChatHistory> FromChatHistories {get; set; }
     public virtual IList<ChatHistory> ToChatHistories { get; set; }
+    public virtual IList<ChatConnection> ChatConnections { get; set; }
+
 }
