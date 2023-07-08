@@ -80,7 +80,6 @@ builder.Services.AddQuartz(q => {
             .ForJob(payoutJobkey)
             .WithIdentity("GeneratePayoutHandler-trigger")
             .WithCronSchedule(applicationConfig.Disbursement.CronString)
-            //.WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Disbursement.RunPerHour))
         );
     }
 
