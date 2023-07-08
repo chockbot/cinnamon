@@ -356,53 +356,52 @@
                                             <div class="swiper-slide swiper-slide-popular">
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                                        <div class="card">
-                                                            <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;" target="_blank">
-                                                                @if (act.Images.Count > 0)
-                                                                {
-                                                                    <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
-                                                                }
-                                                            </a>
-                                                                @if(CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
-                                                                {
-                                                                act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                                                if (act.IsFavorite != false)
-                                                                {
-                                                                    <div class="card-img-overlay favorite-section">
-                                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
-                                                                            <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
-                                                                        </button>
-                                                                    </div>
-                                                                }
-                                                                else
-                                                                {
-                                                                    <div class="card-img-overlay favorite-section">
-                                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
-                                                                            <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
-                                                                        </button>
-                                                                    </div>
-                                                                }
-                                                            }
-                                                            else
+                                                        <div class="card activities-card">
+                                                            @if (act.Images.Count > 0)
                                                             {
-                                                                <div class="card-img-overlay favorite-section">
-                                                                    <button type="button" class="favorite-icon-button border-0">
-                                                                        <img src="@addToFavorites" class="favorite-icon" @onclick= "() =>signinModal.Show()" />
-                                                                    </button>
+                                                                <div class="card-img img-fluid position-relative">
+                                                                    <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;" target="_blank">
+                                                                        <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect" />
+                                                                    </a>
+                                                                    @if (act.OngoingStudents > 0)
+                                                                    {
+                                                                        <div class="rounded-pill ongoing-section">
+                                                                            <div class="active-badge" style="text-align:center">
+                                                                                <span class="pulse"></span>
+                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                            </div>
+                                                                        </div>
+                                                                    }
+                                                                    @if(CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                                                    {
+                                                                        act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                                                        if (act.IsFavorite != false)
+                                                                        {
+                                                                            <div class="favorite-section">
+                                                                                <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
+                                                                                    <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                                                </button>
+                                                                            </div>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <div class="favorite-section">
+                                                                                <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
+                                                                                    <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                                                </button>
+                                                                            </div>
+                                                                        }
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <div class="favorite-section">
+                                                                            <button type="button" class="favorite-icon-button border-0">
+                                                                                <img src="@addToFavorites" class="favorite-icon" @onclick= "() =>signinModal.Show()" />
+                                                                            </button>
+                                                                        </div>
+                                                                    }
                                                                 </div>
                                                             }
-                                                            
-                                                            <div class="card-img-overlay ongoing-students-section">
-                                                                @if (act.OngoingStudents > 0)
-                                                                {
-                                                                    <div class="rounded-pill popular-ongoing-section">
-                                                                        <div class="active-badge" style="text-align:center">
-                                                                            <span class="pulse"></span>
-                                                                            <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                        </div>
-                                                                    </div>
-                                                                }
-                                                            </div>
                                                             <div class="card-container">
                                                                 <div class="row text-start star-pulse-section">
                                                                     <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
@@ -530,73 +529,15 @@
                 @foreach (var act in activities)
                 {
                     <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body" style="margin-bottom:30px">
-                            <Div ElementId="#b-animate">
-                                <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                    <div class="card activities-card">
-                                            <div id="carousel1-@act.ActivityId" class="carousel slide" data-bs-ride="carousel">
-                                                <div class="carousel-indicators">
-                                                    <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
-                                                    <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                                    <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                                                </div>
-                                                <div class="carousel-inner">
-                                                    @if (act.Images.Count > 0)
-                                                    {
-                                                        <div class="carousel-item active">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
-                                                                <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img img-fluid">
-                                                            </a>
-                                                        </div>
-                                                        <div class="carousel-item">
-                                                             <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
-                                                                <img src=@act.Images.ElementAt(1).ImageSrc alt="Second slide" class="card-img img-fluid">
-                                                            </a>
-                                                        </div>
-                                                        <div class="carousel-item">
-                                                    <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
-                                                                <img src=@act.Images.ElementAt(2).ImageSrc alt="Second slide" class="card-img img-fluid">
-                                                            </a>
-                                                        </div>
-                                                    }
-                                                </div>
-                                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="prev">
-                                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden"></span>
-                                                </button>
-                                                <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="next">
-                                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                    <span class="visually-hidden"></span>
-                                                </button>
-                                            </div>
-                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
-                                        {
-                                            act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                            if (act.IsFavorite != false)
-                                            {
-                                                <div class="card-img-overlay favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
-                                                        <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <div class="card-img-overlay favorite-section">
-                                                    <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
-                                                        <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
-                                                    </button>
-                                                </div>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <div class="card-img-overlay favorite-section">
-                                                <button type="button" class="favorite-icon-button border-0">
-                                                    <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
-                                                </button>
-                                            </div>
-                                        }
-                                    <div class="card-img-overlay ongoing-students-section">
+                        <Div ElementId="#b-animate">
+                            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                <div class="card activities-card">
+                                    @if (act.Images.Count > 0)
+                                    {
+                                        <div class="card-img img-fluid position-relative">
+                                            <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
+                                                <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
+                                            </a>
                                             @if (act.OngoingStudents > 0)
                                             {
                                                 <div class="rounded-pill ongoing-section">
@@ -606,53 +547,77 @@
                                                     </div>
                                                 </div>
                                             }
-                                        </div>
-                                        <div class="card-container">
-                                            <div class="row text-start star-pulse-section">
-                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
-                                                    <span>
-                                                        @if (act.NumberOfReviews > 0)
-                                                        {
-                                                            <img src="images/dark-round-star.png" class="star-tag-badge" />
-                                                            <span class="average-rating">@act.AverageRating</span>
-                                                            <span class="number-of-reviews">(@act.NumberOfReviews)</span>
-                                                        }
-                                                        else if (act.IsNew)
-                                                        {
-                                                            <span class="new-experience-label">New Experience</span>
-                                                        }
-                                                        else
-                                                        {
-                                                        }
-                                                    </span>
-                                                </div>
-                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
-                                                </div>
-                                            </div>
-                                            <div class="row text-start">
-                                                <div class="title-section">
-                                                    <div>
-                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
-                                                        @if (@act.ExperienceTypeId == 1)
-                                                        {
-                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
-                                                        }
-                                                        else
-                                                        {
-                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
-                                                        }
+                                            @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                            {
+                                                act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                                if (act.IsFavorite != false)
+                                                {
+                                                    <div class="favorite-section">
+                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
+                                                            <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                        </button>
                                                     </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="favorite-section">
+                                                        <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
+                                                            <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                        </button>
+                                                    </div>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <div class="favorite-section">
+                                                    <button type="button" class="favorite-icon-button border-0">
+                                                        <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
+                                                    </button>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    <div class="card-container">
+                                        <div class="row text-start star-pulse-section">
+                                            <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
+                                                <span>
+                                                    @if (act.IsNew)
+                                                    {
+                                                        <i> New Experience</i>
+                                                    }
+                                                    else
+                                                    {
+                                                    }
+                                                </span>
+                                            </div>
+                                            <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                            </div>
+                                        </div>
+                                        <div class="row text-start">
+                                            <div class="title-section">
+                                                <div>
+                                                    <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                    @if (@act.ExperienceTypeId == 1)
+                                                    {
+                                                        <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                    }
+                                                    else
+                                                    {
+                                                        <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                    }
                                                 </div>
                                             </div>
-                                            <div class="row price-badge-section">
-                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
-                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
-                                                </div>
+                                        </div>
+                                        <div class="row price-badge-section">
+                                            <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
+                                            <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
                                             </div>
                                         </div>
                                     </div>
-                                </Animate>
-                            </Div>
+                                </div>
+                            </Animate>
+                        </Div>
                     </div>
                 }
                 <div class="align-items-center" style="text-align:center;">
