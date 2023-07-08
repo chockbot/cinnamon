@@ -301,23 +301,23 @@
                                             <div class="swiper-slide swiper-slide-popular">
                                                 <Div ElementId="#b-animate">
                                                     <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-                                                        <div class="card">
+                                                        <div class="card activities-card">
                                                             <a class="button" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" style="text-decoration:none;">
                                                                 @if (act.Images.Count > 0)
                                                                 {
-                                                                    <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img-top img-fluid" />
-                                                                }
-                                                                <div class="card-img-overlay">
-                                                                    @if (act.OngoingStudents > 0)
-                                                                    {
-                                                                        <div class="rounded-pill popular-ongoing-section">
-                                                                            <div class="active-badge" style="text-align:center">
-                                                                                <span class="pulse"></span>
-                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                    <div class="card-img img-fluid position-relative">
+                                                                        <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect" />
+                                                                        @if (act.OngoingStudents > 0)
+                                                                        {
+                                                                            <div class="rounded-pill ongoing-section">
+                                                                                <div class="active-badge" style="text-align:center">
+                                                                                    <span class="pulse"></span>
+                                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                                </div>
                                                                             </div>
-                                                                        </div>
-                                                                    }
-                                                                </div>
+                                                                        }
+                                                                    </div>
+                                                                }
                                                             </a>
                                                             <div class="card-container">
                                                                 <div class="row text-start star-pulse-section">
@@ -447,46 +447,21 @@
                             <Div ElementId="#b-animate">
                                 <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                     <div class="card activities-card">
-                                        <div id="carousel1-@act.ActivityId" class="carousel slide" data-bs-ride="carousel">
-                                            <div class="carousel-indicators">
-                                                <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="0" class="active" aria-current="false" aria-label="Slide 1"></button>
-                                                <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                                <button type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                                            </div>
-                                            <div class="carousel-inner">
-                                                @if (act.Images.Count > 0)
+                                        @if (act.Images.Count > 0)
+                                        {
+                                            <div class="card-img img-fluid position-relative">
+                                                <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
+                                                @if (act.OngoingStudents > 0)
                                                 {
-                                                    <div class="carousel-item active">
-                                                        <img src=@act.Images.ElementAt(0).ImageSrc alt="First slide" class="card-img img-fluid">
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <img src=@act.Images.ElementAt(1).ImageSrc alt="Second slide" class="card-img img-fluid">
-                                                    </div>
-                                                    <div class="carousel-item">
-                                                        <img src=@act.Images.ElementAt(2).ImageSrc alt="Second slide" class="card-img img-fluid">
+                                                    <div class="rounded-pill ongoing-section">
+                                                        <div class="active-badge" style="text-align:center">
+                                                            <span class="pulse"></span>
+                                                            <span class="active-tag-label">@act.OngoingStudents</span>
+                                                        </div>
                                                     </div>
                                                 }
                                             </div>
-                                            <button class="carousel-control-prev" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="prev">
-                                                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                                <span class="visually-hidden"></span>
-                                            </button>
-                                            <button class="carousel-control-next" type="button" data-bs-target="#carousel1-@act.ActivityId" data-bs-slide="next">
-                                                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                                <span class="visually-hidden"></span>
-                                            </button>
-                                        </div>
-                                        <div class="card-img-overlay">
-                                            @if (act.OngoingStudents > 0)
-                                            {
-                                                <div class="rounded-pill ongoing-section">
-                                                    <div class="active-badge" style="text-align:center">
-                                                        <span class="pulse"></span>
-                                                        <span class="active-tag-label">@act.OngoingStudents</span>
-                                                    </div>
-                                                </div>
-                                            }
-                                        </div>
+                                        }
                                         <div class="card-container">
                                             <div class="row text-start star-pulse-section">
                                                 <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
