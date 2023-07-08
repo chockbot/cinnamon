@@ -21,8 +21,11 @@ namespace Cinnamon.Api.Core.Hubs
         private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
         private readonly IUpdateChatMemberHandler updateChatMemberHandler;
         private readonly ILogger _logger;
+        private readonly ICreateChatConnectionHandler createChatConnectionHandler;
+        private readonly IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler;
+        private readonly IUpdateChatConnectionHandler updateChatConnectionHandler;
 
-        public ChatHub(ICreateChatHistoryHandler createChatHistoryHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetCustomerByIdHandler getCustomerByIdHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateChatMemberHandler updateChatMemberHandler, ILogger<ChatHub> logger)
+        public ChatHub(ICreateChatHistoryHandler createChatHistoryHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetCustomerByIdHandler getCustomerByIdHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateChatMemberHandler updateChatMemberHandler, ILogger<ChatHub> logger, ICreateChatConnectionHandler createChatConnectionHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler, IUpdateChatConnectionHandler updateChatConnectionHandler)
         {
             this.createChatHistoryHandler = createChatHistoryHandler;
             this.updateConnectionIdHandler = updateConnectionIdHandler;
@@ -30,23 +33,27 @@ namespace Cinnamon.Api.Core.Hubs
             this.getChatRoomsByUserIdHandler = getChatRoomsByUserIdHandler;
             this.updateChatMemberHandler = updateChatMemberHandler;
             this._logger = logger;
+            this.createChatConnectionHandler = createChatConnectionHandler;
+            this.getChatMembersByChatRoomIdHandler = getChatMembersByChatRoomIdHandler;
+            this.updateChatConnectionHandler = updateChatConnectionHandler;
         }
         public async Task SendMessage(string payload)
         {
             var splitted = payload.Split("|");
 
-            int chatRoomId          = int.Parse(splitted[0]);
-            string fromConnectionId = splitted[1];
-            int fromUserId          = int.Parse(splitted[2]);
-            string fromLastName     = splitted[3];
-            string fromFirstName    = splitted[4];
-            string fromProfilePath  = splitted[5];
-            int toUserId            = int.Parse(splitted[6]);
-            string messageInput     = splitted[7];
-            string groupName        = splitted[8];
-            Enums.ChatType chatType = (Enums.ChatType)int.Parse(splitted[9]);
+            int chatRoomId                        = int.Parse(splitted[0]);
+            string fromConnectionId               = splitted[1];
+            int fromUserId                        = int.Parse(splitted[2]);
+            string fromLastName                   = splitted[3];
+            string fromFirstName                  = splitted[4];
+            string fromProfilePath                = splitted[5];
+            int toUserId                          = int.Parse(splitted[6]);
+            string messageInput                   = splitted[7];
+            string groupName                      = splitted[8];
+            Enums.ChatType chatType               = (Enums.ChatType)int.Parse(splitted[9]);
             Enums.ChatHistoryType chatHistoryType = (Enums.ChatHistoryType)int.Parse(splitted[10]);
-            string chatName         = splitted[11];
+            string chatName                       = splitted[11];
+            List<string> connectionIds            = splitted[12].Split("[~~~]").Where(c => !string.IsNullOrEmpty(c)).Distinct().ToList();
 
             if (chatType == Enums.ChatType.PrivateMessage)
             {
@@ -65,14 +72,9 @@ namespace Cinnamon.Api.Core.Hubs
                     var fromUser = fromCustomerResult.Result;
                     var toUser = toCustomerResult.Result;
 
-                    if (!string.IsNullOrEmpty(toUser.ConnectionId))
+                    foreach (var connectionId in connectionIds)
                     {
-                        await Clients.Client(toUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}|{(int)chatHistoryType}");
-                    }
-
-                    if (!string.IsNullOrEmpty(fromUser.ConnectionId))
-                    {
-                        await Clients.Client(fromUser.ConnectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}|{(int)chatHistoryType}");
+                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}|{(int)chatHistoryType}");
                     }
 
                     await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
@@ -250,7 +252,25 @@ namespace Cinnamon.Api.Core.Hubs
                 foreach (var item in result.Result.ChatRooms)
                 {
                     if(!string.IsNullOrEmpty(item.FromConnectionId))
-                        await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}");
+                        await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}|{Convert.ToInt32(customerId)}");
+
+                    var chatMemberResult = await getChatMembersByChatRoomIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatMembersByChatRoomIdArgs
+                    {
+                        ChatRoomId = item.ChatRoomId,
+                        HasLeft = false
+                    });
+
+                    if (chatMemberResult.Succeeded && chatMemberResult != null)
+                    {
+                        foreach (var chatMemberItem in chatMemberResult.Result.ChatMembers)
+                        {
+                            foreach (var connectionId in chatMemberItem.ConnectionIds)
+                            {
+                                if (!string.IsNullOrEmpty(connectionId))
+                                    await Clients.Client(connectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}|{Convert.ToInt32(customerId)}");
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -303,6 +323,14 @@ namespace Cinnamon.Api.Core.Hubs
                 CustomerId = Convert.ToInt32(userId)
             });
 
+            await createChatConnectionHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatConnectionArgs
+            {
+                ConnectionId = Context.ConnectionId,
+                CustomerId = Convert.ToInt32(userId),
+                IsConnected = true,
+                UserAgent = Context.GetHttpContext() != null ? Context.GetHttpContext().Request.Headers["User-Agent"] : string.Empty
+            });
+
             var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
             {
                 UserId = Convert.ToInt32(userId)
@@ -315,11 +343,29 @@ namespace Cinnamon.Api.Core.Hubs
                     if (item.ChatType == ChatType.PrivateMessage)
                     {
                         if (!string.IsNullOrEmpty(item.FromConnectionId))
-                            await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{Context.ConnectionId}");
+                            await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{Context.ConnectionId}|{Convert.ToInt32(userId)}");
                     }
                     else
                     {
                         await Groups.AddToGroupAsync(Context.ConnectionId, item.GroupName);
+                    }
+
+                    var chatMemberResult = await getChatMembersByChatRoomIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatMembersByChatRoomIdArgs
+                    {
+                        ChatRoomId = item.ChatRoomId,
+                        HasLeft = false 
+                    });
+
+                    if (chatMemberResult.Succeeded && chatMemberResult != null)
+                    {
+                        foreach (var chatMemberItem in chatMemberResult.Result.ChatMembers)
+                        {
+                            foreach (var connectionId in chatMemberItem.ConnectionIds)
+                            {
+                                if (!string.IsNullOrEmpty(connectionId))
+                                    await Clients.Client(connectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{Context.ConnectionId}|{Convert.ToInt32(userId)}");
+                            }
+                        }
                     }
                 }
             }
@@ -339,6 +385,13 @@ namespace Cinnamon.Api.Core.Hubs
                 CustomerId = Convert.ToInt32(userId)
             });
 
+            await updateChatConnectionHandler.ExecuteAsync(new Services.ChatService.Interactors.UpdateChatConnectionArgs
+            {
+                ConnectionId = Context.ConnectionId,
+                CustomerId = Convert.ToInt32(userId),
+                IsConnected = false
+            });
+
             var result = await getChatRoomsByUserIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatRoomsByUserIdArgs
             {
                 UserId = Convert.ToInt32(userId)
@@ -351,7 +404,25 @@ namespace Cinnamon.Api.Core.Hubs
                     if (item.ChatType == ChatType.PrivateMessage)
                     {
                         if (!string.IsNullOrEmpty(item.FromConnectionId))
-                            await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}");
+                            await Clients.Client(item.FromConnectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}|{Convert.ToInt32(userId)}");
+                    }
+
+                    var chatMemberResult = await getChatMembersByChatRoomIdHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatMembersByChatRoomIdArgs
+                    {
+                        ChatRoomId = item.ChatRoomId,
+                        HasLeft = false
+                    });
+
+                    if (chatMemberResult.Succeeded && chatMemberResult != null)
+                    {
+                        foreach (var chatMemberItem in chatMemberResult.Result.ChatMembers)
+                        {
+                            foreach (var connectionId in chatMemberItem.ConnectionIds)
+                            {
+                                if (!string.IsNullOrEmpty(connectionId))
+                                    await Clients.Client(connectionId).SendAsync("UpdateChatStatus", $"{item.ChatRoomId}|{string.Empty}|{Convert.ToInt32(userId)}");
+                            }
+                        }
                     }
                 }
             }

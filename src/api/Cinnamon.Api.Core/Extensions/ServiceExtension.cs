@@ -196,6 +196,9 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ChatService.Handlers.IGetChatRoomsByUserIdHandler, Services.ChatService.GetChatRoomsByUserIdHandler>();
         services.AddTransient<Services.ChatService.Handlers.IGetChatMembersByChatRoomIdHandler, Services.ChatService.GetChatMembersByChatRoomIdHandler>();
         services.AddTransient<Services.ChatService.Handlers.IUpdateChatMemberHandler, Services.ChatService.UpdateChatMemberHandler>();
+        services.AddTransient<Services.ChatService.Handlers.ICreateChatConnectionHandler, Services.ChatService.CreateChatConnectionHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IUpdateChatConnectionHandler, Services.ChatService.UpdateChatConnectionHandler>();
+        services.AddTransient<Services.ChatService.Handlers.IGetChatConnectionByCustomerHandler, Services.ChatService.GetChatConnectionByCustomerHandler>();
 
         return services;
     }

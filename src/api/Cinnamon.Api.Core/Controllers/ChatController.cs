@@ -7,6 +7,8 @@ using Cinnamon.Framework.ApiCommand.ApiCore.Account.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatConnection.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatConnection.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Request;
@@ -31,8 +33,9 @@ namespace Cinnamon.Api.Core.Controllers
         private readonly IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler;
         private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
         private readonly IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler;
+        private readonly IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler;
 
-        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler)
+        public ChatController(ICreateChatHistoryHandler createChatHistoryHandler, ILogger<ChatController> logger, IUpdateChatHistoryHandler updateChatHistoryHandler, IGetChatHistoryByChatRoomIdHandler getChatHistoryByChatRoomIdHandler, ICreateChatRoomHandler createChatRoomHandler, IGetChatRoomsByUserIdHandler getChatRoomsByUserIdHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IGetChatMembersByChatRoomIdHandler getChatMembersByChatRoomIdHandler, IGetChatConnectionByCustomerHandler getChatConnectionByCustomerHandler)
         {
             _logger = logger;
 
@@ -43,6 +46,7 @@ namespace Cinnamon.Api.Core.Controllers
             this.getChatRoomsByUserIdHandler = getChatRoomsByUserIdHandler;
             this.updateConnectionIdHandler = updateConnectionIdHandler;
             this.getChatMembersByChatRoomIdHandler = getChatMembersByChatRoomIdHandler;
+            this.getChatConnectionByCustomerHandler = getChatConnectionByCustomerHandler;
         }
 
         [Route("Create")]
@@ -345,13 +349,51 @@ namespace Cinnamon.Api.Core.Controllers
                         FromProfilePath = c.FromProfilePath,
                         ChatMemberType = c.ChatMemberType,
                         FromProfileLink = c.FromProfileLink,
-                        CommonPrivateChatRoomId = c.CommonPrivateChatRoomId
+                        CommonPrivateChatRoomId = c.CommonPrivateChatRoomId,
+                        ConnectionIds = c.ConnectionIds
                     })
                 });
             }
             catch (Exception ex)
             {
                 return new JsonResult(new GetChatHistoryByChatRoomIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("ChatConnections")]
+        [HttpGet]
+        [ProducesResponseType(typeof(GetChatConnectionByCustomerResult), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetChatConnectionByCustomer([FromQuery] GetChatConnectionByCustomerArgs args)
+        {
+            try
+            {
+                var result = await getChatConnectionByCustomerHandler.ExecuteAsync(new Services.ChatService.Interactors.GetChatConnectionByCustomerArgs
+                {
+                    CustomerId = args.CustomerId
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetChatConnectionByCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                var chatResult = result.Result;
+
+                return new JsonResult(new GetChatConnectionByCustomerResult
+                {
+                    IsSuccess = true,
+                    Result = chatResult.ChatConnections.Select(c => new Framework.ApiCommand.ApiCore.DTO.ChatConnection.ChatConnectionDTO
+                    {
+                        ConnectionId = c.ConnectionId,
+                        CustomerId = c.CustomerId,
+                        IsConnected = c.IsConnected,
+                        UserAgent = c.UserAgent
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetChatConnectionByCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

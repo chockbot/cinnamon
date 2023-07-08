@@ -3,6 +3,8 @@ using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.ChatConnection.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatHistory.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatRoom.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.ChatRoom.Response;
@@ -18,6 +20,48 @@ public class ChatRoomData : IChatRoomData
 	public ChatRoomData(ApplicationConfig config, IFlurlClientFactory flurlFac)
 	{
         flurlClient = flurlFac.Get(config.ApiDataUrl);
+    }
+
+    public async Task<AppResult<CreateChatConnectionResult>> CreateChatConnection(CreateChatConnectionArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Chat/ChatConnection")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateChatConnectionResult>();
+
+            return AppResult<CreateChatConnectionResult>.CreateSucceeded(result, "Successfully posted create chat connection api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<CreateChatConnectionResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateChatConnectionResult>.CreateFailed(ex, "An error occured when posting create chat connection api");
+        }
+    }
+
+    public async Task<AppResult<UpdateChatConnectionResult>> UpdateChatConnection(UpdateChatConnectionArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Chat/ChatConnection/Update")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateChatConnectionResult>();
+
+            return AppResult<UpdateChatConnectionResult>.CreateSucceeded(result, "Successfully posted update chat connection api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<UpdateChatConnectionResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateChatConnectionResult>.CreateFailed(ex, "An error occured when posting update chat connection api");
+        }
     }
 
     public async Task<AppResult<CreateChatRoomResult>> CreateChatRoom(CreateChatRoomArgs args)
@@ -101,6 +145,27 @@ public class ChatRoomData : IChatRoomData
         catch (Exception ex)
         {
             return AppResult<UpdateChatMemberResult>.CreateFailed(ex, "An error occured when posting update chat member api");
+        }
+    }
+
+    public async Task<AppResult<GetChatConnectionByCustomerResult>> GetChatConnectionByCustomer(GetChatConnectionByCustomerArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                        .Request("Chat/ChatConnections")
+                        .SetQueryParams(args)
+                        .GetJsonAsync<GetChatConnectionByCustomerResult>();
+
+            return AppResult<GetChatConnectionByCustomerResult>.CreateSucceeded(result, "Successfully posted get chat connections api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetChatConnectionByCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetChatConnectionByCustomerResult>.CreateFailed(ex, "An error occured when posting get chat connections api");
         }
     }
 }

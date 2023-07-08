@@ -20,5 +20,6 @@ namespace Cinnamon.Api.Core.Services.ChatService.Interactors.Results
         public string? FromProfileLink { get; set; }
         public int CommonPrivateChatRoomId { get; set; }
         public Enums.ChatMemberType ChatMemberType { get; set; }
+        public IEnumerable<string> ConnectionIds { get; set; }
     }
 }
