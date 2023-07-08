@@ -23,4 +23,5 @@ public class GetAllActivitiesArgs:IInteractor
     public bool? IsDeactivated { get; set; }
     public Enums.ActivityStatus? Status { get; set; }
     public bool? IsAdmin { get; set; }
+    public bool? IncludeReviews { get; set; }
 }

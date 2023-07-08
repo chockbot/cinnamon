@@ -20,6 +20,7 @@ public class GetAllActivities
     public int? ExperienceCategoryId { get; set; }
     public string? SearchValue { get; set; }
     public bool? IncludeStudents { get; set; }
+    public bool? IncludeReviews { get; set; }
     public bool? IsDeactivated { get; set; }
     public Enums.Enums.ActivityStatus? Status { get; set; }
     public bool? IsAdmin { get; set; }

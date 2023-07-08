@@ -2,7 +2,6 @@ using Blazorise;
 using Blazorise.Bootstrap;
 using Blazorise.Icons.FontAwesome;
 using Blazorise.RichTextEdit;
-using Blazorise.DataGrid;
 using Cinnamon.Web.Extensions;
 using Cinnamon.Web.Providers;
 using Flurl.Http;
@@ -10,20 +9,24 @@ using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.File;
 using Cinnamon.Web.Middleware;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.SignalR.Client;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Components.Authorization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // register flurl
-builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
+builder.Services.AddSingleton<IFlurlClientFactory, PerBaseUrlFlurlClientFactory>();
 
 builder.Services.AddControllers();
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor().AddCircuitOptions(opts => {
     opts.DetailedErrors = true;
 });
+builder.Services.AddHttpContextAccessor();
 
 // blazorise
 builder.Services.AddBlazorise(options => { options.Immediate = true; })
@@ -31,7 +34,7 @@ builder.Services.AddBlazorise(options => { options.Immediate = true; })
     .AddFontAwesomeIcons()
     .AddBlazoriseRichTextEdit();
 
-builder.Services.AddSignalR(options => { options.MaximumReceiveMessageSize = 10 * 1024 * 1024;});
+builder.Services.AddSignalR(options => { options.MaximumReceiveMessageSize = 10 * 1024 * 1024; });
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(opts => {
@@ -48,7 +51,8 @@ builder.Services.AddAuthentication().AddGoogle(o =>
     // o.CallbackPath = builder.Configuration["AppConfig:Authentication:Google:CallbackPath"];
     o.ClaimActions.MapJsonKey("urn:google:profile", "link");
     o.ClaimActions.MapJsonKey("urn:google:image", "picture");
-    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents {
+    o.Events = new Microsoft.AspNetCore.Authentication.OAuth.OAuthEvents
+    {
     };
 });
 
@@ -60,7 +64,7 @@ builder.Services.AddAuthentication().AddFacebook(facebookOptions =>
 });
 
 // add config
-Cinnamon.Web.Config.Config  config = new Cinnamon.Web.Config.Config();
+Cinnamon.Web.Config.Config config = new Cinnamon.Web.Config.Config();
 builder.Configuration.GetSection("AppConfig").Bind(config);
 builder.Services.AddSingleton(config);
 
@@ -71,13 +75,51 @@ var logger = new LoggerConfiguration()
                         .CreateLogger();
 builder.Host.UseSerilog(logger);
 
+builder.Services.AddScoped(sp =>
+{
+    var navMan = sp.GetRequiredService<NavigationManager>();
+    return new HubConnectionBuilder()
+        .WithUrl(navMan.ToAbsoluteUri(builder.Configuration["AppConfig:ChatHubUrl"]), options =>
+        {
+            options.AccessTokenProvider = async () =>
+            {
+                logger.Information("add scoped HubConnectionBuilder was called");
+
+
+                var authState = await sp.GetRequiredService<AuthenticationStateProvider>().GetAuthenticationStateAsync();
+                var user = authState.User;
+
+                if (user != null)
+                {
+                    logger.Information("user is not null");
+
+                    var accessToken = user.FindFirst(c => c.Type == "Token")?.Value;
+
+                    logger.Information($"token {accessToken}");
+
+                    return accessToken;
+                }
+
+                logger.Information("user is null");
+
+                return null;
+            };
+        })
+        .WithAutomaticReconnect()
+        .ConfigureLogging(logging => {
+            logging.SetMinimumLevel(LogLevel.Information);
+            logging.AddConsole();
+        })
+        .Build();
+});
+
 builder.Services.AppExtendServices();
 
 
 var app = builder.Build();
 app.UseSerilogRequestLogging();
 
-app.Use((context,next) => {
+app.Use((context, next) => {
     if (context.Request.Headers["x-forwarded-proto"] == "https")
     {
         context.Request.Scheme = "https";

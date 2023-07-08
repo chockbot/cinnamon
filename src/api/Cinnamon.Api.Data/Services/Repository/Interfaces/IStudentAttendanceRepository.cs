@@ -16,4 +16,5 @@ public interface IStudentAttendanceRepository
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> UpdateAttendance(IEnumerable<UpdateAttendanceDTO> students, DateTime date);
     Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetAttendanceByIdAsync(int id, int activityId,int? count, int? skip,
         DateTime? date = null, bool? includeStudent = false, IEnumerable<int>? scheduleIds = null);
+    Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetCompletedStudents(int? count, int? skip, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null);
 }

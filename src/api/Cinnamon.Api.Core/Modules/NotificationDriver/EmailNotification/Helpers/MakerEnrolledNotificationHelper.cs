@@ -8,7 +8,8 @@ public class MakerEnrolledNotificationHelper
     public string GetTemplate(string makerName, string experienceName,
         DateTime purchaseDate, string payerName, decimal amount, decimal serviceFee, string host, 
         IEnumerable<IncludedStudents> students, string referenceNumber, string paymentMethod,
-        string payerEmail, decimal providerFee, decimal appliedCredits)
+        string payerEmail, decimal providerFee, decimal appliedCredits, bool inclusivePricing,
+        decimal discountAmount)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
         string enrolleesString = string.Empty;
@@ -23,6 +24,46 @@ public class MakerEnrolledNotificationHelper
             {
                 enrolleesString += $", {item.Name}";
             }
+        }
+
+        string providerFeeHtmlString = string.Empty;
+        string serviceFeeHtmlString = string.Empty;
+
+        if(!inclusivePricing)
+        {
+            providerFeeHtmlString = $@"
+                <tr>
+                    <td style='width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Payment Provider Fee: </span>
+                        </p>
+                    </td>
+                    <td style='text-align: right; width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{providerFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                    </td>
+                </tr>
+            ";
+
+            serviceFeeHtmlString = $@"
+                <tr>
+                    <td style='width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #717171'>Service Fee: </span>
+                        </p>
+                    </td>
+                    <td style='text-align: right; width: 50%'>
+                        <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
+                        <span style='color: #343d4c; text-transform: uppercase'
+                            >{serviceFee.ToString("#,##0.00")}</span
+                        >
+                        </p>
+                    </td>
+                </tr>
+            ";
         }
 
         return $@"
@@ -110,30 +151,18 @@ public class MakerEnrolledNotificationHelper
                                 </p>
                             </td>
                             </tr>
+                            {providerFeeHtmlString}
+                            {serviceFeeHtmlString}
                             <tr>
                             <td style='width: 50%'>
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Payment Provider Fee: </span>
+                                <span style='color: #717171'>Applied Discount: </span>
                                 </p>
                             </td>
                             <td style='text-align: right; width: 50%'>
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
-                                    >{providerFee.ToString("#,##0.00")}</span
-                                >
-                                </p>
-                            </td>
-                            </tr>
-                            <tr>
-                            <td style='width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #717171'>Service Fee: </span>
-                                </p>
-                            </td>
-                            <td style='text-align: right; width: 50%'>
-                                <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                                <span style='color: #343d4c; text-transform: uppercase'
-                                    >{serviceFee.ToString("#,##0.00")}</span
+                                    >{(discountAmount > 0 ? "-" : "")}{discountAmount.ToString("#,##0.00")}</span
                                 >
                                 </p>
                             </td>
@@ -162,8 +191,7 @@ public class MakerEnrolledNotificationHelper
                                 <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
                                 <span style='color: #343d4c; text-transform: uppercase'
                                     ><b
-                                    >PHP {(amount + serviceFee +
-                                    providerFee - appliedCredits).ToString("#,##0.00")}</b
+                                    >PHP {GetTotalPurchase(amount, serviceFee, providerFee, discountAmount, appliedCredits).ToString("#,##0.00")}</b
                                     ></span
                                 >
                                 </p>
@@ -202,5 +230,12 @@ public class MakerEnrolledNotificationHelper
     private string GetCreditString(decimal appliedCredits)
     {
         return appliedCredits > 0 ? "- " + appliedCredits.ToString("#,##0.00") : "0.00";
+    }
+
+    private decimal GetTotalPurchase(decimal amount, decimal serviceFee, decimal providerFee, decimal discountAmount, decimal appliedCredits)
+    {
+        var result = amount + serviceFee + providerFee - discountAmount - appliedCredits;
+        result = result < 0 ? 0 : result;
+        return result;
     }
 }

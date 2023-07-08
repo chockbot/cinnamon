@@ -17,10 +17,11 @@ public class UpdateActivityHandler : IUpdateActivityHandler
     private readonly IExperienceTypeData experienceTypeData;
     private readonly IScheduleData scheduleData;
     private readonly HtmlSanitizer htmlSanitizer;
+    private readonly IGenerateActivityHandler generateActivityHandler;
 
     public UpdateActivityHandler(IActivityData activityData, IExperienceCategoryData categoryData,
         ISubCategoryData subCategoryData, IExperienceTypeData experienceTypeData, IScheduleData scheduleData,
-        IHttpContextAccessor httpContext)
+        IHttpContextAccessor httpContext, IGenerateActivityHandler generateActivityHandler)
     {
         this.activityData = activityData;
         this.categoryData = categoryData;
@@ -28,6 +29,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
         this.experienceTypeData = experienceTypeData;
         this.scheduleData = scheduleData;
         this.httpContext = httpContext;
+        this.generateActivityHandler = generateActivityHandler;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -123,6 +125,20 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                     return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException("Can't find experience type id to update"), "Can't find experience type id to update");
                 }
             }
+            
+            // update handler only if have changes in activity title
+            var handler = activity.Result.Result.Handler;
+            if(!string.IsNullOrEmpty(args.Title) && args.Title.ToLower() != activity.Result.Result.Title.ToLower())
+            {
+                var generateHandlerRes = await generateActivityHandler.ExecuteAsync(new GenerateActivityHandlerArgs {
+                    ActivityName = args.Title
+                });
+                if(!generateHandlerRes.Succeeded || generateHandlerRes.Result == null)
+                {
+                    return AppResult<UpdateActivityResult>.CreateFailed(new ApplicationException(generateHandlerRes.Message), generateHandlerRes.Message);
+                }
+                handler = generateHandlerRes.Result.GeneratedHandler;
+            }
 
             // update activity details
             var entity = new Framework.ApiCommand.ApiData.Activity.Request.UpdateActivity {
@@ -151,11 +167,10 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide == null ? args.SpecificsYouWillProvide : htmlSanitizer.Sanitize(args.SpecificsYouWillProvide ?? string.Empty),
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
                 IsDeactivated = args.IsDeactivated,
                 Status = args.Status,
+                Handler = handler
             };
 
             if(args.SearchTags != null)
@@ -208,7 +223,11 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
                                 Order = s.Order,
-                                IsActiveSchedule = s.IsActiveSchedule
+                                IsActiveSchedule = s.IsActiveSchedule,
+                                IsSetSession = s.IsSetSession,
+                                SessionName = s.SessionName,
+                                HasExpiration = s.HasExpiration,
+                                StartDate = s.StartDate
                             };
                         })
                     });
@@ -239,7 +258,11 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 PriceUnit2 = s.PriceUnit2 ?? string.Empty,
                                 UnitPrice = s.UnitPrice ?? string.Empty,
                                 Order = s.Order,
-                                IsActiveSchedule = s.IsActiveSchedule
+                                IsActiveSchedule = s.IsActiveSchedule,
+                                IsSetSession = s.IsSetSession,
+                                SessionName = s.SessionName,
+                                HasExpiration = s.HasExpiration,
+                                StartDate = s.StartDate
                             };
                         })
                     });
@@ -305,8 +328,6 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                 SubCategoryId = updated.SubCategoryId,
                 Title = updated.Title,
                 Handler = updated.Handler,
-                IsSetSession = updated.IsSetSession,
-                SessionName = updated.SessionName,
                 Status = updated.Status
             }, "Successfully update activity details");
         }

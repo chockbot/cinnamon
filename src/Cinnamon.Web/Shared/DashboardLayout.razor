@@ -45,6 +45,16 @@
                                 <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
                             </a>
                         </li>
+                         <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToMessages">
+                                <img class="icon-home" src="images/Dashboard Icon/email.svg"> <span class="ms-1 d-sm-inline nav-text">Messages</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToCoupons">
+                                <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Coupons</span>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToReports">
                                 <img class="icon-home" src="images/Dashboard Icon/report icon.png"> <span class="ms-1 d-sm-inline nav-text">Reports</span>
@@ -153,7 +163,10 @@
     {
         navigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
-
+    private void NavigateToMessages()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/messages");
+    }
     private void NavigateToAttendance()
     {
         navigationManager.NavigateTo("/maker/dashboard/attendance");
@@ -177,6 +190,11 @@
     private void NavigateToHelp()
     {
         navigationManager.NavigateTo("/maker/dashboard/help");
+    }
+
+    private void NavigateToCoupons()
+    {
+        navigationManager.NavigateTo("/maker/dashboard/coupons");
     }
 
     private void NavigateToContact()

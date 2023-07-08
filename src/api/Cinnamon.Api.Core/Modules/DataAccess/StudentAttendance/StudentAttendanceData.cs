@@ -1,5 +1,7 @@
 using Cinnamon.Api.Core.Config;
 using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
+using Cinnamon.Framework.ApiCommand.ApiData.Student.Request;
+using Cinnamon.Framework.ApiCommand.ApiData.Student.Response;
 using Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Request;
 using Cinnamon.Framework.ApiCommand.ApiData.StudentAttendance.Response;
 using Cinnamon.Framework.Common;
@@ -180,7 +182,29 @@ public class StudentAttendanceData : IStudentAttendanceData
         }
         catch (Exception ex)
         {
-            return AppResult<GetAllStudentAttendanceByIdResult>.CreateFailed(ex, "An error occured when getting all student attendance api");
+            return AppResult<GetAllStudentAttendanceByIdResult>.CreateFailed(ex, "An error occured when getting all completed student attendance api");
         }
     }
+
+    public async Task<AppResult<GetCompletedStudentsResult>> GetCompletedStudents(GetCompletedStudentsArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("StudentAttendance/GetCompletedStudents")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetCompletedStudentsResult>();
+
+            return AppResult<GetCompletedStudentsResult>.CreateSucceeded(result, "Successfully getting get all completed student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, "An error occured when getting all completed student attendance api");
+        }
+    }
+    
 }

@@ -11,4 +11,5 @@ public class DisburseStudentDTO
     public string Name {get; set;}
     public int NumberOfSessions {get; set;}
     public int SessionsAttended {get; set;}
+    public bool IsInclusivePayment {get; set;}
 }

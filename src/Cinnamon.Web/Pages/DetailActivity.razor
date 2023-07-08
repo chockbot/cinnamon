@@ -1,11 +1,13 @@
 ﻿@page "/Explore/{Identifier}"
 @inject IJSRuntime jsRuntime
+@using System.Security.Claims
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @using Cinnamon.Web.Models
 @using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Models.Entities
-@using Cinnamon.Web.Components.Pages
+@using Cinnamon.Web.Components.Pages.Customer.Profile
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
 @inject IOngoingActivitiesHandler ongoingApiHandler
@@ -176,12 +178,51 @@
                             @if (customerDetail != null && customerDetail.IsMaker == true)
                             {
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first profile-container">
-                                    <div class="w-100 shadow d-flex justify-content-center share-link-section" style="background:#F3F6FC">
-                                        <div class="d-flex share-link">
-                                            <p>Share this experience with your friends</p>
-                                            <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
-                                                <img src="images/copytoclipboard.png">
-                                            </button>
+                                    <div class="d-flex">
+                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                        {
+                                            activity.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == activity.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                            if (activity.IsFavorite != false)
+                                            {
+                                                <div class="shadow justify-content-center share-link-section" style="background:#F3F6FC">
+                                                    <div class="d-flex share-link">
+                                                        <p>Add to Favorites</p>
+                                                        <button class="btn btn-copy" @onclick="() =>AddToFavorites(activity)">
+                                                            <img src="@(activity.IsFavorite ? "images/favorites/experience-details-heart-selected.svg" : "images/favorites/experience-details-heart-default.svg")">
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="shadow justify-content-center share-link-section" style="background:#F3F6FC">
+                                                    <div class="d-flex share-link">
+                                                        <p>Add to Favorites</p>
+                                                        <button class="btn btn-copy" @onclick="() =>CreateFavorite(activity)">
+                                                            <img src="images/favorites/experience-details-heart-default.svg">
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <div class="shadow justify-content-center share-link-section" style="background:#F3F6FC">
+                                                <div class="d-flex share-link">
+                                                    <p>Add to Favorites</p>
+                                                    <button class="btn btn-copy" @onclick="() =>signinModal.Show()">
+                                                        <img src="images/favorites/experience-details-heart-default.svg">
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        }
+                                        <div class="shadow d-flex justify-content-center share-link-section" style="background:#F3F6FC">
+                                            <div class="d-flex share-link">
+                                                <p>Share this Activity</p>
+                                                <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
+                                                    <img src="images/copytoclipboard.png">
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
@@ -191,7 +232,7 @@
                                         <div class="m-2 maker-profile-details">
                                             <span class="xp-by">Experience by</span>
                                             <span class="text-capitalize maker-name">@customerDetail.FirstName @customerDetail.LastName</span>
-                                            <a class="view-profile" href="/maker/profile/@(activity.Owner != null && !string.IsNullOrEmpty(activity.Owner.Handler) ? activity.Owner.Handler : activity.CreatedBy.ToString() )">View Profile</a>
+                                            <a class="view-profile" href="/maker/profile/@(activity.Owner != null && !string.IsNullOrEmpty(activity.Owner.Handler) ? activity.Owner.Handler : activity.CreatedBy.ToString() )" target="_blank">View Profile</a>
                                         </div>
                                         <div class="profile-badges">
                                             @if (customerDetail.IsVerified == 2)
@@ -214,7 +255,7 @@
                                                 </Tooltip>
                                                 @*<img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" data-toggle="tooltip" data-placement="top" title="Legitimate experience provider in the platform." />*@
                                             }
-                                            @if (MakerCompletedStudent >= 10 && MakerCompletedStudent < 25)
+                                            @if (MakerCompletedStudent >= 10)
                                             {
                                                 var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@rare.Description">
@@ -222,7 +263,7 @@
                                                 </Tooltip>
                                                 @* <img class="verified-logo" src="@rare.ImgScr" data-toggle="tooltip" data-placement="top" title="@rare.Description" />*@
                                             }
-                                            @if (MakerCompletedStudent >= 25 && MakerCompletedStudent < 100)
+                                            @if (MakerCompletedStudent >= 25)
                                             {
                                                 var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
                                                 <Tooltip Multiline=true Text="@epic.Description">
@@ -339,7 +380,7 @@
                                 </span>
                             }
                         </div>
-                        @if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide))
+                        @if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide) && activity.SpecificsYouWillProvide != NOTHING_PROVIDED)
                         {
                             <hr />
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
@@ -349,7 +390,7 @@
                                 </p>
                             </div>
                         }
-                        @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem))
+                        @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && activity.CustomerBringWithThem != NOTHING_PROVIDED)
                         {
                             <hr />
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
@@ -357,7 +398,7 @@
                                 <p>@((MarkupString)activity.CustomerBringWithThem)</p>
                             </div>
                         }
-                        @if (!string.IsNullOrEmpty(activity.AdditionalRequirements))
+                        @if (!string.IsNullOrEmpty(activity.AdditionalRequirements) && activity.AdditionalRequirements != NOTHING_PROVIDED)
                         {
                             <hr />
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12" style="overflow-wrap:break-word;">
@@ -365,6 +406,62 @@
                                 <p>
                                     @activity.AdditionalRequirements
                                 </p>
+                            </div>
+                        }
+                        @if(activityReviews.Count != 0){
+                            <hr />
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                                <article class="experience-review-wrapper py-3">
+                                    <h3 class="title">Customer Feedbacks</h3>
+                                    @if (activityReviews.Count != 0)
+                                    {
+                                        <div class="d-flex">
+                                            <div class="col-8 d-flex justify-content-start rating-section">
+                                                <div id="star-rating"></div>
+                                                <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
+                                            </div>
+                                            @if (activityReviews.Count > 3)
+                                            {
+                                                <div class="col-4 d-flex justify-content-end">
+                                                    <button class="see-more" @onclick="() => modRef.ShowModal()">See More</button>
+                                                </div>
+                                            }
+                                        </div>
+                                        <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
+                                            <div class="review-wrapper">
+                                                @foreach (var item in top3Reviews)
+                                                {
+                                                    var profile = customerProfiles.Where(a => a.Id == item.CustomerId).FirstOrDefault();
+                                                    <div class="experience-box">
+                                                        <div class="top-content">
+                                                            <div class="experience-content">
+                                                                @*Get Activity Detail*@
+                                                                <div class="xp-body-item d-flex">
+                                                                    <div class="activity-img">
+                                                                        <img class="rounded-2 rounded-circle" src="@profile.ProfilePath" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p class="customer-name">@profile.FirstName @profile.LastName</p>
+                                                                        <Rating Color="Color.Primary" SelectedValue="@item.Rating" MaxValue="5" ReadOnly=true />
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="xp-body-item">
+                                                                    <p class="secondary-caption">@item.Review</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </Div>
+                                    }
+                                    else
+                                    {
+                                        <p class="p-1" style="font-family:'Nunito';font-weight:bold">No reviews yet!</p>
+                                    }
+                                </article>
+
                             </div>
                         }
                         <hr />
@@ -382,27 +479,46 @@
     @* commented first for migration *@
     <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.ToList()" ActivityModel="activity"></SchedulesModal>
 
+    <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating" 
+        CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>
+
+    <ModalLogin @ref="signinModal" />
     <!--Beta Alert-->
     @*<BetaAlert></BetaAlert>*@
 }
 @code {
     IJSObjectReference module;
+    IJSObjectReference moduleRating;
+    private MultipleReviewModal modRef;
+    private ModalLogin signinModal;
     [Parameter]
     public string Identifier { get; set; }
+    public ClaimsPrincipal AuthState { get; set; }
+    public Profile CustomerModel = new Profile();
     public DetailActivityModel Model = new DetailActivityModel();
     public Activity activity = new Activity();
     public List<Activity> activities = new List<Activity>();
+    public List<Activity> MakerActivity = new List<Activity>();
     public CustomerProfile customerDetail = new CustomerProfile();
+    public List<CustomerProfile> customerProfiles = new List<CustomerProfile>();
+    public CustomerProfile reviweeProfile = new CustomerProfile();
     public List<ExperienceType> experienceTypes = new List<ExperienceType>();
     public ExperienceType experience = new ExperienceType();
     public List<Students> enrolledStudents = new List<Students>();
     public List<BadgeList> badges = new List<BadgeList>();
+    public List<Reviews> activityReviews = new List<Reviews>();
+    public List<Reviews> top3Reviews = new List<Reviews>();
     private IAnimation selectedAnimation = Animations.FadeIn;
     private SchedulesModal ModalSched { get; set; }
+    public int SelectedValue { get; set; } = 0;
+    public double AverageRating { get; set; } = 0;
+    public int ReviewCount { get; set; } = 0;
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
     public int MakerOngoingStudennt { get; set; }
     public int MakerCompletedStudent { get; set; }
+    private const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -462,8 +578,6 @@
                         CanAdultsJoin = result.CanAdultsJoin,
                         CreatedBy = result.CreatedBy,
                         MapDetails = result.MapDetails,
-                        IsSetSession = result.IsSetSession,
-                        SessionName = result.SessionName,
                         PinnedLocation = result.PinnedLocation,
                         ActivitySchedules = result.ActivitySchedules.Select(e =>
                         {
@@ -497,6 +611,7 @@
                             Handler = result.Owner.Handler
                         } : null
                     };
+                    MakerActivity.Add(activity);
             }
 
             // Get experience types
@@ -577,6 +692,7 @@
                         };
                 }).ToList();
             }
+
             //Get Maker Activity
             var ActivityList = await activityApiHandler.GetMakerActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetMakerActivitiesArgs
                 {
@@ -601,6 +717,57 @@
             }
             MakerOngoingStudennt = activities.Sum(x => x.OngoingStudents);
             MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
+
+            //Get Reviews of the Activity
+            var reviewsResult = await ongoingApiHandler.GetReviewsByActivityId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByActivityIdArgs
+                {
+                    ActivityId = ActivityListData.Result.Result.ActivityId
+                });
+            if (reviewsResult.Succeeded && reviewsResult.Result != null && reviewsResult.Result.IsSuccess)
+            {
+                activityReviews = reviewsResult.Result.Result.Select(a =>
+                {
+                    return new Reviews
+                        {
+                            Id = a.Id,
+                            CustomerId = a.CustomerId,
+                            MakerId = a.MakerId,
+                            ActivityId = a.ActivityId,
+                            ScheduleId = a.ScheduleId,
+                            StudentId = a.StudentId,
+                            Review = a.Review,
+                            Rating = a.Rating,
+                            ReviewDate = a.ReviewDate
+                        };
+                }).OrderByDescending(a => a.ReviewDate).ToList();
+            }
+            if (activityReviews.Count != 0)
+            {
+                double SumOfRating = activityReviews.Sum(a => a.Rating);
+                double numberOfRatee = activityReviews.Count;
+                AverageRating = (double)SumOfRating / numberOfRatee;
+                SelectedValue = (int)Math.Round(AverageRating);
+                top3Reviews = activityReviews.Take(3).ToList();
+                ReviewCount = activityReviews.Count;
+            }
+
+            //Get Customer Details
+            foreach (var item in activityReviews.GroupBy(a=> a.CustomerId).Select(s=> s.First()).ToList())
+            {
+                var profileResult = await accountApiHandler.GetCustomerById(item.CustomerId);
+                if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
+                {
+                    var result = profileResult.Result.Result;
+                    reviweeProfile = new CustomerProfile
+                        {
+                            Id = result.Id,
+                            FirstName = result.FirstName,
+                            LastName = result.LastName,
+                            ProfilePath = result.ProfileImg
+                        };
+                    customerProfiles.Add(reviweeProfile);
+                }
+            }
         }
         catch (Exception e)
         {
@@ -612,13 +779,18 @@
     {
         if (firstRender)
         {
+            await GetFavorites();
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
+            moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
+            await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Experience Details Page Loaded");
             await InitializeCarouselSwipe();
         }
         else
         {
+            await GetFavorites();
             await InitializeCarouselSwipe();
+            await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
         }
     }
     private async Task InitializeCarouselSwipe()
@@ -629,5 +801,86 @@
     {
         await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));
     }
+    private async Task GetFavorites()
+    {
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
 
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                CustomerModel.Token = token;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                    {
+                        Birthdate = args.Birthdate,
+                        Email = args.Email,
+                        FirstName = args.FirstName,
+                        LastName = args.LastName,
+                        Id = args.Id,
+                        IsMaker = args.IsMaker,
+                        IsVerified = args.IsVerified,
+                    };
+            }
+        }
+
+        if (CustomerModel.CustomerProfile != null)
+        {
+            var customerFavorites = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
+                {
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+            if (customerFavorites.Succeeded && customerFavorites.Result != null && customerFavorites.Result.IsSuccess)
+            {
+                CustomerModel.Favorites = customerFavorites.Result.Result.Select(i =>
+                {
+                    return new Favorite
+                        {
+                            ActivityId = i.ActivityId,
+                            CustomerId = i.CustomerId,
+                            IsFavorite = true
+                        };
+                }).ToList();
+            }
+        }
+    }
+
+    private async Task AddToFavorites(Activity activity)
+    {
+        activity.IsFavorite = !activity.IsFavorite;
+        if (activity.IsFavorite)
+        {
+            //Add to Favorites
+            var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        else
+        {
+            //Delete to Favorites
+            var createFavorite = await activityApiHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        await GetFavorites();
+    }
+
+    private async Task CreateFavorite(Activity activity)
+    {
+        //Add to Favorites
+        var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+            {
+                ActivityId = activity.ActivityId,
+                CustomerId = CustomerModel.CustomerProfile.Id
+            }, CustomerModel.Token);
+        await GetFavorites();
+
+    }
 }

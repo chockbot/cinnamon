@@ -43,7 +43,8 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                 PageIndex = args.PageIndex,
                 CountPerPage = args.CountPerPage,
                 IncludeStudents = args.IncludeStudents,
-                IsDeactivated = args.IsDeactivated
+                IsDeactivated = args.IsDeactivated,
+                IncludeReviews = args.IncludeReviews
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -126,7 +127,9 @@ public class GetPopularActivitiesHandler : IGetPopularActivitiesHandler
                         } : null,
                         IsNew = e.IsNew,
                         OngoingStudents = e.OngoingStudents,
-                        CompletedStudents = e.CompletedStudents
+                        CompletedStudents = e.CompletedStudents,
+                        AverageRating = e.AverageRating,
+                        NumberOfReviews = e.NumberOfReviews
                     };
                 }),
                 ErrorInfo = new Framework.ApiCommand.ApiCore.ErrorInfo

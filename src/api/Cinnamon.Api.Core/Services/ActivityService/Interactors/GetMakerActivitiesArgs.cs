@@ -11,4 +11,5 @@ public class GetMakerActivitiesArgs : IInteractor
     public bool? IncludeCustomer { get; set; }
     public bool? IsActive { get; set; }
     public bool? IncludeStudents { get; set; }
+    public bool? IncludeReviews { get; set; }
 }

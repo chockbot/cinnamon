@@ -15,14 +15,16 @@ public class CreateActivityHandler : ICreateActivityHandler
     private readonly IScheduleData scheduleData;
     private readonly ICustomerData customerData;
     private readonly HtmlSanitizer htmlSanitizer;
+    private readonly IGenerateActivityHandler generateActivityHandler;
 
     public CreateActivityHandler(IHttpContextAccessor httpContext, IActivityData activityData, 
-        IScheduleData scheduleData, ICustomerData customerData)
+        IScheduleData scheduleData, ICustomerData customerData, IGenerateActivityHandler generateActivityHandler)
     {
         this.httpContext = httpContext;
         this.activityData = activityData;
         this.scheduleData = scheduleData;
         this.customerData = customerData;
+        this.generateActivityHandler = generateActivityHandler;
 
         this.htmlSanitizer = new 
             HtmlSanitizer(
@@ -65,38 +67,15 @@ public class CreateActivityHandler : ICreateActivityHandler
                         $"Limit only of {maxWords} for Customer Bring/Specific Provide fields.");
             }
 
-            // create activity unique handler
-            // remove special characters for creating handler name
-            char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
-                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>','.'};
-            var removedCharacters = args.Title.Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            var handlerName = string.Join("-",string.Join("",removedCharacters.Where(s => !string.IsNullOrEmpty(s))).Split(" ").Where(s => !string.IsNullOrEmpty(s))).ToLower();
-
-            var queryActivitiesLikeHandlerName = await activityData.GetAllActivities(new Framework.ApiCommand.ApiData.Activity.Request.GetAllActivities {
-                LikeHandler = handlerName
+            // generate activity handler
+            var generateHandlerRes = await generateActivityHandler.ExecuteAsync(new GenerateActivityHandlerArgs {
+                ActivityName = args.Title
             });
-            if(!queryActivitiesLikeHandlerName.Succeeded || queryActivitiesLikeHandlerName.Result == null || !queryActivitiesLikeHandlerName.Result.IsSuccess)
+            if(!generateHandlerRes.Succeeded || generateHandlerRes.Result == null)
             {
-                return AppResult<CreateActivityResult>.CreateFailed(
-                    new ApplicationException(queryActivitiesLikeHandlerName.Result?.ErrorInfo?.Message), queryActivitiesLikeHandlerName.Message);
+                return AppResult<CreateActivityResult>.CreateFailed(new ApplicationException(generateHandlerRes.Message), generateHandlerRes.Message);
             }
-            var activitiesHandlers = queryActivitiesLikeHandlerName.Result.Result.OrderBy(a => a.Handler);
-            if(activitiesHandlers.Count() > 0)
-            {
-                var splittedLastHandler = activitiesHandlers.Last().Handler.Split("-");
-                if(splittedLastHandler.Count() > 0)
-                {
-                    var lastIdentifier = splittedLastHandler.Last();
-                    if(int.TryParse(lastIdentifier, out int intResult))
-                    {
-                        handlerName = $"{handlerName}-{intResult +1}";
-                    }
-                    else 
-                    {
-                        handlerName = $"{handlerName}-1";
-                    }
-                }
-            }
+            var handlerName = generateHandlerRes.Result.GeneratedHandler;
 
             var activityRes = await activityData.CreateActivity(new Framework.ApiCommand.ApiData.Activity.Request.CreateActivityArgs {
                 ActivityLevel = args.ActivityLevel,
@@ -130,8 +109,6 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
                 Handler = handlerName,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
                 Status = args.Status,
             });
@@ -164,6 +141,10 @@ public class CreateActivityHandler : ICreateActivityHandler
                         UnitPrice = s.UnitPrice,
                         Order = order,
                         IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate,
                     };
                 })
             });
@@ -244,7 +225,11 @@ public class CreateActivityHandler : ICreateActivityHandler
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName =s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 })
 

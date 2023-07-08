@@ -11,11 +11,14 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
 {
     private readonly ICustomerData customerData;
     private readonly IWaitListData waitListData;
+    private readonly IGenerateCustomerHandler generateCustomerHandler;
 
-    public SubmitRegisterHandler(ICustomerData customerData, IWaitListData waitListData)
+    public SubmitRegisterHandler(ICustomerData customerData, IWaitListData waitListData,
+        IGenerateCustomerHandler generateCustomerHandler)
     {
         this.customerData = customerData;
         this.waitListData = waitListData;
+        this.generateCustomerHandler = generateCustomerHandler;
     }
 
     public AppResult<SubmitRegisterResult> Execute(SubmitRegisterArgs args)
@@ -69,38 +72,13 @@ public class SubmitRegisterHandler : ISubmitRegisterHandler
                     new ApplicationException("Email not yet verified"),"Email not yet verified");
             }
 
-            // create customer unique handler
-            // remove special characters for creating handler name
-            char[] separators = new char[]{';',',','\r','\t','\n','`','~','!','@','#','$','%','^','&','*',
-                '(',')','-','_','+','=','\'','{','}','[',']','|','\\',':','?','/','<','>'};
-            var removedCharacters = $"{args.FirstName} {args.LastName}".Split(separators, StringSplitOptions.RemoveEmptyEntries);
-            var handlerName = string.Join("-",string.Join("",removedCharacters.Where(s => !string.IsNullOrEmpty(s))).Split(" ").Where(s => !string.IsNullOrEmpty(s))).ToLower();
-
-            var queryCustomerHandler = await customerData.GetAllCustomers(new Framework.ApiCommand.ApiData.Customer.Request.GetAllCustomersArgs {
-                HandlerLike = handlerName
-            });
-            if(!queryCustomerHandler.Succeeded || queryCustomerHandler.Result == null || !queryCustomerHandler.Result.IsSuccess)
+            // generate unique customer handler
+            var generateHandlerRes = await generateCustomerHandler.ExecuteAsync(new GenerateCustomerHandlerArgs {Handler = $"{args.FirstName} {args.LastName}"});
+            if(!generateHandlerRes.Succeeded || generateHandlerRes.Result == null)
             {
-                return AppResult<SubmitRegisterResult>.CreateFailed(
-                    new ApplicationException(queryCustomerHandler.Result?.ErrorInfo?.Message), queryCustomerHandler.Message);
+                return AppResult<SubmitRegisterResult>.CreateFailed(new ApplicationException(generateHandlerRes.Message), generateHandlerRes.Message);
             }
-            var customerHandlers = queryCustomerHandler.Result.Result.OrderBy(a => a.Handler);
-            if(customerHandlers.Count() > 0)
-            {
-                var splittedLastHandler = customerHandlers.Last().Handler.Split("-");
-                if(splittedLastHandler.Count() > 0)
-                {
-                    var lastIdentifier = splittedLastHandler.Last();
-                    if(int.TryParse(lastIdentifier, out int intResult))
-                    {
-                        handlerName = $"{handlerName}-{intResult +1}";
-                    }
-                    else 
-                    {
-                        handlerName = $"{handlerName}-1";
-                    }
-                }
-            }
+            var handlerName = generateHandlerRes.Result.GeneratedHandler;
 
             // validate birthdate, age between 18 to 120
             var age = DateTime.Today.Year - args.Birthdate.Year;

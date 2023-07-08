@@ -1,0 +1,611 @@
+@layout DashboardLayout
+@page "/maker/dashboard/coupons"
+@using System.Security.Claims
+@using System.ComponentModel.DataAnnotations;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using Cinnamon.Framework.ValidationAttributes;
+@inject IActivityApiHandler activityApiHandler;
+@inject AuthenticationStateProvider AuthenticationStateProvider;
+@inject NavigationManager NavigationManager;
+@attribute [Authorize]
+
+<PageTitle>Coupons | CinnamonPH</PageTitle>
+<SeoMeta Title="Coupons" Subject="Dashboard" Url="/maker/dashboard/coupons" />
+
+<div class="maker-coupons-wrapper">
+    <div class="header">
+        <p class="title">Coupons</p>
+        <button class="create-button" @onclick="CreateCopon">Create New Coupon</button>
+    </div>
+
+    <div class="section-content">
+        <div class="table-list">
+            <Table Shadow="Shadow.Default">
+                <TableHeader>
+                    <TableRow>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Discription
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Code
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Discount
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                From
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                To
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Activity
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Status
+                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                            </Label>
+                        </TableHeaderCell>
+                        <TableHeaderCell>
+                            <Label class="sotring-column">
+                                Action
+                            </Label>
+                        </TableHeaderCell>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
+                    @if(ListCoupons.Coupons != null)
+                    {
+                        @foreach (var item in ListCoupons.Coupons)
+                        {
+                            <TableRow>
+                                <TableRowCell>
+                                    <span class="font-weight-700">@item.Name</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <span>@item.Code</span>
+                                    <span>@item.Discount</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <span>@item.Discount</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <span>@item.From</span>
+                                    <span>@item.To</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <span>@item.To</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <span>@item.ActivityName</span>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <div class="btn-status">
+                                        <button class="check-button" type="button" @onclick="() => UpdateCouponStatus(item)">
+                                            <img class="me-1" alt="check-icon"
+                                                src='@(item.Status == 1 ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")'>
+                                        </button>
+                                        <span>Active</span>
+                                    </div>
+                                </TableRowCell>
+                                <TableRowCell>
+                                    <Button Clicked="() => UpdateCoupon(item)" class="btn-primary font-16" Border="Border.Is0">Update</Button>
+                                </TableRowCell>
+                            </TableRow>   
+                        }
+                    }
+                </TableBody>
+            </Table>
+        </div>
+    </div>
+
+    <Modal @ref="modalRef">
+        <ModalContent Centered>
+            <ModalBody class="pt-5">
+                <Validations Mode="ValidationMode.Manual" Model="Form" @ref="FormValidation">
+                    <Field class="mb-4">
+                        <FieldBody>
+                            @if(ListCoupons.Activities != null)
+                            {
+                                <Select Size="Size.Small" @bind-SelectedValue="Form.ActivityId" Disabled="UserAction == ActionType.Update"
+                                    class='@(ListCoupons.IsSelectedActivityError ? "form-control is-invalid" : "form-control")'>
+                                    @foreach (var item in ListCoupons.Activities)
+                                    {
+                                        <SelectItem Value="item.Id" Disabled="item.Disabled">@item.Name</SelectItem>
+                                    }
+                                </Select>
+                                <div class="invalid-feedback">Select activity to apply</div>
+                            }
+                        </FieldBody>
+                    </Field>
+                    <Validation>
+                        <Field class="mb-3">
+                            <FieldLabel class="font-16">Coupon Description <span class="color-red">*</span></FieldLabel>
+                            <FieldBody>
+                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Validation>
+                        <Field class="mb-3">
+                            <FieldLabel class="font-16">Coupon Code <span class="color-red">*</span></FieldLabel>
+                            <FieldBody>
+                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </FieldBody>
+                        </Field>
+                    </Validation>
+                    <Field class="radio-discount-type mb-3">
+                        <FieldLabel class="mb-1 font-16">Discount Type <span class="color-red">*</span></FieldLabel>
+                        <FieldBody Display="Display.Flex" Flex="Flex.JustifyContent.Center">
+                            <RadioGroup TValue="int" Name="DiscountType" @bind-CheckedValue="Form.DiscountType" Disabled="UserAction == ActionType.Update">
+                                <Radio class="form-check-input font-16" Value="0" Disabled="UserAction == ActionType.Update">Percentage</Radio>
+                                <Radio class="form-check-input font-16" Value="1" Disabled="UserAction == ActionType.Update">Fixed Amount</Radio>
+                            </RadioGroup>
+                        </FieldBody>
+                    </Field>
+                    @if(Form.DiscountType == 0)
+                    {
+                        <Field class="mb-2">
+                            <FieldBody>
+                                <NumericPicker Min="0" class='@(ListCoupons.IsPercentageValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Percentage %" ShowStepButtons="false" Decimals="2" 
+                                    TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
+                                </NumericPicker>
+                                <div class="invalid-feedback">Provide valid value</div>
+                            </FieldBody>
+                        </Field>
+                        <Field class="mb-3">
+                            <FieldBody>
+                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="2" 
+                                    TValue="decimal?" ValueChanged="v => Form.MinimumSpend = v ?? 0" Disabled="UserAction == ActionType.Update">
+                                </NumericPicker>
+                            </FieldBody>
+                        </Field>
+                    }
+                    else if(Form.DiscountType == 1)
+                    {
+                        <Field class="mb-3">
+                            <FieldBody>
+                                <NumericPicker Min="0" class='@(ListCoupons.IsFixedAmountValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Amount" ShowStepButtons="false" Decimals="2" 
+                                    TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
+                                </NumericPicker>
+                                <div class="invalid-feedback">Provide valid value</div>
+                            </FieldBody>
+                        </Field>
+                    }
+                    <div>
+                        <p class="font-16">Effective Date</p>
+                        <div>
+                            <label class="font-14">From <span class="color-red">*</span></label>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is8">
+                                    <Validation @ref="dateFromValidation">
+                                        <Field class="mb-3">
+                                            <FieldBody>
+                                                <DateEdit Size="Size.Small" TValue="DateTime"  @bind-Date="Form.DateFrom">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is4">
+                                    <Field class="mb-3">
+                                        <FieldBody>
+                                            <TimeEdit class='@(dateFromValidation != null && dateFromValidation.Status == ValidationStatus.Error ? "is-invalid" : "is-valid")'
+                                                Size="Size.Small" TValue="TimeSpan" @bind-Time="Form.TimeFrom" />
+                                        </FieldBody>
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </div>
+                        <div>
+                            <label class="font-14">To <span class="color-red">*</span></label>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is8">
+                                    <Validation @ref="dateToValidation">
+                                        <Field class="mb-3">
+                                            <FieldBody>
+                                                <DateEdit Size="Size.Small" TValue="DateTime"  @bind-Date="Form.DateTo">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is4">
+                                    <Field class="mb-3">
+                                        <FieldBody>
+                                            <TimeEdit class='@(dateToValidation != null && dateToValidation.Status == ValidationStatus.Error ? "is-invalid" : "is-valid")' 
+                                                Size="Size.Small" TValue="TimeSpan" @bind-Time="Form.TimeTo" />
+                                        </FieldBody>
+                                    </Field>
+                                </Column>
+                            </Row>
+                        </div>
+                    </div>
+                    <Field class="mt-3">
+                        <FieldBody>
+                            <Button Type="ButtonType.Button" Clicked="UserAction == ActionType.Create ? SubmitCreateCoupon : SubmitUpdateCoupon"
+                                class="btn-primary font-20 w-100" Border="Border.Is0" 
+                                Loading="ListCoupons.IsSubmitting" Disabled="ListCoupons.IsSubmitting">
+                                <LoadingTemplate>
+                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                    Saving Changes
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    @(UserAction == ActionType.Create ? "Create Coupon" : "Update Coupon")
+                                </ChildContent>
+                            </Button>
+                        </FieldBody>
+                    </Field>
+                    <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="ListCoupons.IsShowErrorMessage">
+                        <AlertDescription>@ListCoupons.ErrorMessage</AlertDescription>
+                    </Alert>
+                </Validations>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+</div>
+
+@code
+{
+    private CouponsModel ListCoupons {get; set;} = new();
+    private Modal modalRef;
+    private FormCoupon Form {get; set;} = new();
+    private Validations FormValidation {get; set;}
+    private string Token = string.Empty;
+    private ActionType UserAction = ActionType.Create;
+    private Validation dateFromValidation;
+    private Validation dateToValidation;
+
+    enum ActionType {
+        Create = 0,
+        Update = 1
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            Token= user.FindFirstValue("Token");
+            if (Token == null)
+            {
+                // don't have current user login
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+
+            // fetch activities
+            var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs {
+                IsActive = true
+            }, Token);
+            if(!activityRes.Succeeded || activityRes.Result == null || !activityRes.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            var activities = activityRes.Result.Result.Where(a => a.Status != Framework.Enums.Enums.ActivityStatus.InProgress). OrderBy(a => a.Title);
+
+            var listOfActivities = new List<CouponsModel.Activity>();
+            listOfActivities.Add(new CouponsModel.Activity {Id = -1, Name = "Select Activity", Disabled = true});
+            listOfActivities.Add(new CouponsModel.Activity {Id = 0, Name = "All"});
+            listOfActivities.AddRange(activities.Select(a => new CouponsModel.Activity {Id = a.ActivityId, Name = a.Title}));
+
+            // set default value
+            Form.ActivityId = listOfActivities.First().Id;
+
+            ListCoupons = new CouponsModel {
+                Coupons = Enumerable.Empty<CouponsModel.Coupon>(),
+                Activities = listOfActivities
+            };
+
+            // fetch coupons
+            await FetchCouponCodes();
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
+
+    private async Task FetchCouponCodes()
+    {
+        var couponsRes = await activityApiHandler.GetCoupons(Token);
+        if(couponsRes.Succeeded && couponsRes.Result != null && couponsRes.Result.IsSuccess)
+        {
+            ListCoupons.Coupons = couponsRes.Result.Result.Select(c => {
+                return new CouponsModel.Coupon {
+                    ActivityName = c.AppliedActivity != null ? c.AppliedActivity.Name : "All",
+                    Code = c.Code,
+                    Discount = c.DiscountType == 0 ? $"{c.Amount.ToString("#,##0.00")}% OFF" : $"{c.Amount.ToString("#,##0.00")} OFF",
+                    From = c.FromDate,
+                    Id = c.Id,
+                    Name = c.Name,
+                    Status = c.Status,
+                    To = c.ToDate,
+                    Amount = c.Amount,
+                    DiscountType = c.DiscountType,
+                    MinimumSpend = c.MaximumSpend,
+                    ActivityId = c.ActivityId,
+                };
+            });
+        }
+    }
+
+    private async Task SubmitCreateCoupon()
+    {
+        try
+        {
+            ListCoupons.IsPercentageValueError = (Form.Amount <= 0) || (Form.DiscountType == 0 && Form.Amount > 100);
+            ListCoupons.IsFixedAmountValueError = (Form.Amount <= 0);
+            ListCoupons.IsSelectedActivityError = (Form.ActivityId == -1);
+            bool isFormValidate = await FormValidation.ValidateAll();
+
+            if(!ListCoupons.IsFixedAmountValueError && !ListCoupons.IsPercentageValueError &&
+                !ListCoupons.IsSelectedActivityError && isFormValidate)
+            {
+                ListCoupons.IsSubmitting = true;
+
+                var createRes = await activityApiHandler.CreateCoupon(new Framework.ApiCommand.ApiCore.Activity.Request.CreateCouponArgs {
+                    ActivityId = Form.ActivityId,
+                    Amount = Form.Amount,
+                    Code = Form.Code,
+                    DiscountType = Form.DiscountType,
+                    FromDate = Form.DateFrom,
+                    MaximumSpend = Form.MinimumSpend,
+                    Name = Form.Name,
+                    ToDate = Form.DateTo,
+                }, Token);
+
+                ListCoupons.IsSubmitting = false;
+
+                if(!createRes.Succeeded || createRes.Result == null || !createRes.Result.IsSuccess)
+                {
+                    ListCoupons.ErrorMessage = createRes.Result?.ErrorInfo?.Message ?? createRes.Message;
+                    ListCoupons.IsShowErrorMessage = true;
+                    return;
+                }
+
+                ClearFields();
+
+                await modalRef.Close(CloseReason.None);
+
+                await FetchCouponCodes();
+            }
+        }
+        catch (Exception ex)
+        {
+            ListCoupons.ErrorMessage = "An error occured. Please try again later";
+            ListCoupons.IsShowErrorMessage = true;
+        }
+    }
+
+    private async Task SubmitUpdateCoupon()
+    {
+        try
+        {
+            ListCoupons.IsPercentageValueError = (Form.Amount <= 0) || (Form.DiscountType == 0 && Form.Amount > 100);
+            ListCoupons.IsFixedAmountValueError = (Form.Amount <= 0);
+            ListCoupons.IsSelectedActivityError = (Form.ActivityId == -1);
+            bool isFormValidate = await FormValidation.ValidateAll();
+
+            if(!ListCoupons.IsFixedAmountValueError && !ListCoupons.IsPercentageValueError &&
+                !ListCoupons.IsSelectedActivityError && isFormValidate)
+            {
+                ListCoupons.IsSubmitting = true;
+
+                var updateRes = await activityApiHandler.UpdateCoupon(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateCouponArgs {
+                    DateFrom = Form.DateFrom,
+                    DateTo = Form.DateTo,
+                    Id = Form.Id,
+                    Name = Form.Name
+                }, Token);
+
+                ListCoupons.IsSubmitting = false;
+
+                if(!updateRes.Succeeded || updateRes.Result == null || !updateRes.Result.IsSuccess)
+                {
+                    ListCoupons.ErrorMessage = updateRes.Result?.ErrorInfo?.Message ?? updateRes.Message;
+                    ListCoupons.IsShowErrorMessage = true;
+                    return;
+                }
+
+                ClearFields();
+
+                await modalRef.Close(CloseReason.None);
+
+                await FetchCouponCodes();
+            }
+        }
+        catch (Exception ex)
+        {
+            ListCoupons.ErrorMessage = "An error occured. Please try again later";
+            ListCoupons.IsShowErrorMessage = true;
+        }
+    }
+
+    private void ClearFields()
+    {
+        Form.ActivityId = -1;
+        Form.Amount = 0;
+        Form.Code = string.Empty;
+        Form.MinimumSpend = 0;
+        Form.DiscountType = 0;
+        Form.Name = string.Empty;
+        ListCoupons.IsShowErrorMessage = false;
+        ListCoupons.ErrorMessage = string.Empty;
+        Form.DateFrom = DateTime.Now;
+        Form.TimeFrom = DateTime.Now.TimeOfDay;
+        Form.DateTo = DateTime.Now;
+        Form.TimeTo = DateTime.Now.TimeOfDay;
+        StateHasChanged();
+    }
+
+    public async Task UpdateCouponStatus(CouponsModel.Coupon coupon)
+    {
+        coupon.Status = coupon.Status == 1 ? 0 : 1;
+        var updateRes = await activityApiHandler.UpdateCouponStatus(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateCouponStatusArgs {
+            Id = coupon.Id,
+            Status = coupon.Status
+        }, Token);
+
+        await FetchCouponCodes();
+    }
+
+    private async Task CreateCopon()
+    {
+        UserAction = ActionType.Create;
+        await modalRef.Show();
+    }
+
+    private async Task UpdateCoupon(CouponsModel.Coupon selected)
+    {
+        Form.ActivityId = selected.ActivityId;
+        Form.Amount = selected.Amount;
+        Form.Code = selected.Code;
+        Form.DateFrom = selected.From;
+        Form.DateTo = selected.To;
+        Form.DiscountType = selected.DiscountType;
+        Form.MinimumSpend = selected.MinimumSpend;
+        Form.Name = selected.Name;
+        Form.TimeFrom = selected.From.TimeOfDay;
+        Form.TimeTo = selected.To.TimeOfDay;
+        Form.Id = selected.Id;
+        UserAction = ActionType.Update;
+        await modalRef.Show();
+    }
+    
+
+    public class CouponsModel 
+    {
+        public IEnumerable<Coupon> Coupons {get; set;}
+        public IEnumerable<Activity> Activities {get; set;}
+        public bool IsSubmitting {get; set;}
+        public bool IsPercentageValueError {get; set;}
+        public bool IsFixedAmountValueError {get; set;}
+        public bool IsSelectedActivityError {get; set;}
+        public bool IsShowErrorMessage {get; set;}
+        public string ErrorMessage {get; set;}
+
+        public class Coupon 
+        {
+            public int Id {get; set;}
+            public string Name {get; set;}
+            public string Code {get; set;}
+            public string Discount {get; set;}
+            public DateTime From {get; set;}
+            public DateTime To {get; set;}
+            public string ActivityName {get; set;}
+            public int Status {get; set;}
+            public decimal Amount {get; set;}
+            public int DiscountType {get; set;}
+            public decimal MinimumSpend {get; set;}
+            public int ActivityId {get; set;}
+        }
+
+        public class Activity 
+        {
+            public int Id {get; set;}
+            public string Name {get; set;}
+            public bool Disabled {get; set;}
+        }
+    }
+
+    public class FormCoupon 
+    {
+        public int Id {get; set;}
+
+        [Required]
+        public int ActivityId {get; set;}
+
+        [Required]
+        public string Name {get; set;}
+
+        [Required]
+        [RegularExpression(@"^[a-zA-Z0-9]+$", ErrorMessage = "Some characters are not allowed")]
+        [MaxLength(15, ErrorMessage = "Only allowed 15 characters")]
+        public string Code {get; set;}
+
+        [Required]
+        public int DiscountType {get; set;}
+
+        [Required]
+        public decimal Amount {get; set;}
+
+        [Required]
+        public decimal MinimumSpend {get; set;}
+
+        private DateTime datefrom = DateTime.Now;
+        [Required]
+        [DateOnwards(ErrorMessage = "Past dates now allowed")]
+        public DateTime DateFrom 
+        {
+            get
+            {
+                datefrom = datefrom.Date + TimeFrom;
+                return datefrom;
+            }
+            set 
+            {
+                datefrom = value;
+            }
+        }
+
+        [Required]
+        public TimeSpan TimeFrom {get; set;} = DateTime.Now.TimeOfDay;
+
+        private DateTime dateto = DateTime.Now;
+        [Required]
+        [DateOnwards(ErrorMessage = "Past dates now allowed")]
+        public DateTime DateTo 
+        {
+            get 
+            {
+                dateto = dateto.Date + TimeTo;
+                return dateto;
+            }
+            set 
+            {
+                dateto = value;
+            }
+        }
+
+        [Required]
+        public TimeSpan TimeTo {get; set;} = DateTime.Now.TimeOfDay;
+        
+        [Required]
+        public CouponsModel.Activity SelectedActivity {get; set;}
+    }
+}

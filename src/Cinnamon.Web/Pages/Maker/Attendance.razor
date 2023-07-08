@@ -20,39 +20,65 @@
 <PageTitle>Attendance Management | CinnamonPH</PageTitle>
 <SeoMeta Title="Attendance Management" Subject="Attendance Management" Url="/maker/dashboard/attendance" />
 
+<LoadingIndicator @ref="loadingIndicator">
 <section class="student-attendance mt-5 overflow-hidden">
     <h3 class="title">Check Attendance for Today - @Model.ServerDate.ToString("MMMM dd, yyyy")</h3>
-    <div class="activities-schedule-section schedule-swiper">
-        <div class="swiper-wrapper">
-            @foreach (var schedule in Model.Schedules)
-            {
-                @if (schedule.IsActiveSchedule == true)
-                {
-                    <div class="swiper-slide shadow">
-                        <p class="schedule-title">@schedule.ActivityTitle</p>
-                        <p class="schedule-title">@schedule.ScheduleTitle</p>
-                        <p class="schedule-time">@schedule.ScheduleDescription</p>
-                        <p class="schedule-toggle">
-                            <div class="form-check form-switch">
-                                <span class="active-label">Set Inactive/Active:</span>
-                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(schedule.IsActiveSchedule == true)" @onchange="((e) => UpdateSchedule(e, schedule))">
-                             </div>
-                        </p>
-                        <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
-                            <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                            Select
-                        </Button>
-                    </div>
-                }
-            }
+        <div class="activities-schedule-section schedule-swiper">
+            <Dropdown @ref="dropdown">
+                <DropdownToggle>
+                    Select Activity
+                    @if (selectCount == 0)
+                    {
+                        @string.Empty;
+                    }
+                    else
+                    {
+                        var count = "(" + selectCount + ")";
+                        @count.ToString()
+                        ;
+                    }
+                </DropdownToggle>
+                <DropdownMenu>
+                    @foreach (var activity in Model.Activities)
+                    {
+                        <button class="check-button" type="button" @onclick="() => CheckUnCheckExperience(activity)">
+                            <img class="me-1" src='@(activity.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                            <p class="activity-title">@activity.Title</p>
+                        </button>
+                    }
+                </DropdownMenu>
+            </Dropdown>
+            
+                <div class="swiper-wrapper">
+                    @foreach (var schedule in Model.Schedules)
+                    {
+                        @if (schedule.IsActiveSchedule == true)
+                        {
+                            <div class="swiper-slide shadow">
+                                <p class="schedule-title">@schedule.ActivityTitle</p>
+                                <p class="schedule-title">@schedule.ScheduleTitle</p>
+                                <p class="schedule-time">@schedule.ScheduleDescription</p>
+                                <p class="schedule-toggle">
+                                    <div class="form-check form-switch">
+                                        <span class="active-label">Set Inactive/Active:</span>
+                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@(schedule.IsActiveSchedule == true)" @onchange="((e) => UpdateSchedule(e, schedule))">
+                                    </div>
+                                </p>
+                                <Button class="check-button" Type="ButtonType.Button" Clicked="() => CheckUnCheckSchedule(schedule)">
+                                    <img class="me-1" src='@(schedule.IsSelected ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
+                                    Select
+                                </Button>
+                            </div>
+                        }
+                    }
+                </div>
+                <div class="swiper-scrollbar"></div>
         </div>
-        <div class="swiper-scrollbar"></div>
-    </div>
-    <div class="student-attendance-section">
+        <div class="student-attendance-section">
         <div class="tool-action">
             <Button class="check-button" Type="ButtonType.Button" Clicked="CheckUnCheckAllStudent">
                 <img class="me-1" src='@(Model.IsCheckAllStudent ? "images/Dashboard/rounded-check.png" : "images/Dashboard/rounded-uncheck.png")' alt="check-icon">
-                Select All
+                Check All
             </Button>
             <TextEdit TextChanged="TextSearchChanged" class="search-text" Size="Size.Small" Placeholder="Search" Role="TextRole.Text" />
         </div>
@@ -145,7 +171,7 @@
         </div>
     </div>
 </section>
-
+</LoadingIndicator>
 <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="Model.IsShowErrorMessage" >
     <AlertMessage>
         @Model.ErrorMessage
@@ -156,9 +182,11 @@
 {
     private AttendanceModel Model {get; set;} = new();
     public Activity activity = new Activity();
-
+    public int selectCount = 0;
     // 2 seconds delay
     private Timer checkUncheckAllTimer = new Timer(2000);
+    LoadingIndicator loadingIndicator;
+    Dropdown dropdown;
 
     protected async override Task OnInitializedAsync()
     {
@@ -188,6 +216,28 @@
                 navigationManager.NavigateTo("explore");
                 return;
             }
+            //Get AP Activities
+            var activities = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
+                {
+                    IncludeActivityDescription = true,
+                    IncludeAtivitySchedules = true,
+                }, token);
+            if (!activities.Succeeded || activities.Result == null || !activities.Result.IsSuccess)
+            {
+                Model.IsShowErrorMessage = true;
+                Model.ErrorMessage = "An error occured. Can't find activities. Please try again later.";
+                return;
+            }
+            Model.Activities.AddRange(activities.Result.Result.OrderBy(a => a.Title).Select(s =>
+            {
+                return new AttendanceModel.Activity
+                {
+                    ActivityId = s.ActivityId,
+                    Description = s.Description,
+                    Title = s.Title,
+                    IsSelected = false,
+                };
+            }));
 
             var schedules = await dashboardApiHandler.GetActivitySchedules(token);
             if(!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
@@ -320,6 +370,37 @@
         Model.FilteredAttendance = Model.Attendances;
     }
 
+    private async Task CheckUnCheckExperience(AttendanceModel.Activity activity)
+    {
+        activity.IsSelected = !activity.IsSelected;
+        if (activity.IsSelected)
+        {
+            selectCount++;
+            var selectedExperiences = Model.Schedules.Where(s => s.ActivityId == activity.ActivityId).ToList();
+            foreach (var item in selectedExperiences)
+            {
+                await loadingIndicator.Show();
+                item.IsSelected = false;
+                await CheckUnCheckSchedule(item);
+            }
+            await loadingIndicator.Hide();
+            await dropdown.Hide();
+        }
+        else
+        {
+            selectCount--;
+            var unselectedExperiences = Model.Schedules.Where(s => s.ActivityId == activity.ActivityId).ToList();
+            foreach (var item in unselectedExperiences)
+            {
+                await loadingIndicator.Show();
+                item.IsSelected = true;
+                await CheckUnCheckSchedule(item);
+            }
+            await loadingIndicator.Hide();
+            await dropdown.Hide();
+        }
+    }
+
     private void CheckUnCheckAllStudent()
     {
         Model.IsCheckAllStudent = !Model.IsCheckAllStudent;
@@ -394,6 +475,7 @@
         //    }
         //}
     }
+
     private void SortByName()
     {
         if(!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)

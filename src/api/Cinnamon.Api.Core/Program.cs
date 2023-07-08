@@ -13,6 +13,11 @@ using Cinnamon.Api.Core.Providers;
 using Microsoft.AspNetCore.Http.Features;
 using Quartz;
 using Cinnamon.Api.Core.Services.JobService;
+using Microsoft.AspNetCore.ResponseCompression;
+using Cinnamon.Api.Core.Hubs;
+using Microsoft.Extensions.Options;
+using System.Net;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +27,12 @@ var builder = WebApplication.CreateBuilder(args);
 ApplicationConfig applicationConfig = new ApplicationConfig();
 builder.Configuration.GetSection("Applicationconfig").Bind(applicationConfig);
 builder.Services.AddSingleton(applicationConfig);
+builder.Services.AddSignalR().AddAzureSignalR(builder.Configuration.GetSection("ConnectionStrings:AzureSignalRConnectionString").Value);
+builder.Services.AddResponseCompression(opts =>
+{
+    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
+        new[] { "application/octet-stream" });
+});
 
 // register flurl
 builder.Services.AddSingleton<IFlurlClientFactory,PerBaseUrlFlurlClientFactory>();
@@ -57,6 +68,23 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateIssuer = true,
             ValidateAudience = true
         };
+        opts.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                var accessToken = context.Request.Query["access_token"];
+
+                // If the request is for our hub...
+                var path = context.HttpContext.Request.Path;
+                if (!string.IsNullOrEmpty(accessToken) &&
+                    (path.StartsWithSegments("/hubs/chat")))
+                {
+                    // Read the token out of the query string
+                    context.Token = accessToken;
+                }
+                return Task.CompletedTask;
+            }
+        };
     });
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -79,7 +107,8 @@ builder.Services.AddQuartz(q => {
         q.AddTrigger(opts => opts
             .ForJob(payoutJobkey)
             .WithIdentity("GeneratePayoutHandler-trigger")
-            .WithCronSchedule(applicationConfig.Disbursement.CronString)
+            //.WithCronSchedule(applicationConfig.Disbursement.CronString)
+            .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Disbursement.RunPerHour))
         );
     }
 
@@ -106,6 +135,7 @@ builder.Services.AddQuartz(q => {
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
 var app = builder.Build();
+app.UseResponseCompression();
 app.UseSerilogRequestLogging();
 
 // Configure the HTTP request pipeline.
@@ -126,5 +156,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub", options =>
+{
+    options.TransportMaxBufferSize = 256000;
+    options.ApplicationMaxBufferSize = 256000;
+    options.Transports = (Microsoft.AspNetCore.Http.Connections.HttpTransportType)TransportType.All;
+});
 
 app.Run();

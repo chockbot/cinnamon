@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Cinnamon.Framework.Common;
 
 namespace Cinnamon.Web.Modules.ApiAccess.Handlers;
@@ -15,5 +17,5 @@ public interface IDashboardApiHandler
     Task<AppResult<UpdateAttendanceResult>> UpdateAttendance(UpdateAttendanceArgs args, string token);
     Task<AppResult<GetAllBadgesResult>> GetAllBadge();
     Task<AppResult<GetAllStudentAttendanceResult>> GetAllStudentsAttendance(GetAllStudentAttendanceArgs args, string token);
-
+    Task<AppResult<GetCompletedStudentsResult>> GetCompletedStudents(GetCompletedStudetnsArgs args, string token);
 } 

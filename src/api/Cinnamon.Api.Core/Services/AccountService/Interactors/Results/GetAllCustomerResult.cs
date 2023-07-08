@@ -29,6 +29,13 @@ namespace Cinnamon.Api.Core.Services.AccountService.Interactors.Results
             public DateTime IsOGDate { get; set; }
             public bool IsOF { get; set; }
             public DateTime IsOFDate { get; set; }
+            public CustomerPricing CustomerPricing {get; set;}
+        }
+
+        public class  CustomerPricing 
+        {
+            public decimal Rate {get; set;}
+            public bool IsManualPayment {get; set;}
         }
     }
 }

@@ -35,7 +35,14 @@
     </div>
 </div>
 <div class="header">
-    <p class="title">User Verification Board</p>
+    <div class="col-lg-8">
+        <p class="title">User Verification Board</p>
+    </div>
+    <div class="col-lg-4" style="text-align: right">
+        <div class="search-section"></div>
+        <input class="form-check-input" type="radio" data-id="" name="verification-status" id="with-pending" @onchange='@(()=>CheckboxChanged(true))'> Has Verification Request
+        <input class="form-check-input" type="radio" data-id="" name="verification-status" id="without-pending" @onchange='@(()=>CheckboxChanged(false))'> No Verification Request
+    </div>
 </div>
 <div class="users-section">
     <div class="table-list">
@@ -102,6 +109,7 @@
 
 @code {
     public bool clickButton { get; set; }
+    private bool? hasVerificationRequest { get; set; }
     public ClaimsPrincipal AuthState { get; set; }
     public List<CustomerProfile> customers = new List<CustomerProfile>();
     protected ViewImageModal viewImageModal = new ViewImageModal();
@@ -142,6 +150,11 @@
                 IsOfficial = r.IsOfficial,
                 IsOfficialDate = r.IsOfficialDate,
             }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
+
+        if (hasVerificationRequest.HasValue)
+        {
+            customers = customers.Where(c => c.HasVerificationRequest == (hasVerificationRequest.GetValueOrDefault() ? "Yes" : "No")).ToList();
+        }
 
         Pagination = result.Result.Pagination;
     }
@@ -214,5 +227,11 @@
     {
         currentPage = page;
         await GetAllCustomers(int.Parse(page));
+    }
+
+    private async Task CheckboxChanged(bool hasVerification)
+    {
+        hasVerificationRequest = hasVerification;
+        await GetAllCustomers(1);
     }
 }

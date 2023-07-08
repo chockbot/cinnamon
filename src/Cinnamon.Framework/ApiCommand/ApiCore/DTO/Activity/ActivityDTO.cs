@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.Activity;
 
 public class ActivityDTO 
@@ -33,8 +35,6 @@ public class ActivityDTO
     public int CreatedBy { get; set;}   
     public string MapDetails { get; set; }
     public string Handler {get; set;}
-    public bool IsSetSession { get; set; }
-    public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }
@@ -51,6 +51,8 @@ public class ActivityDTO
     public string RegionName { get; set; } = string.Empty;
     public string BarangayName { get; set; } = string.Empty;
     public bool IsDeactivated { get; set; }
+    public double AverageRating { get; set; }
+    public int NumberOfReviews { get; set; }
 
     public class ActivitySchedule 
     {
@@ -65,6 +67,10 @@ public class ActivityDTO
         public string PriceUnit2 {get; set;}
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 
     public class ActivityImage 

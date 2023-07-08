@@ -3,6 +3,8 @@ using Cinnamon.Api.Core.Services.DashboardService;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,6 +41,16 @@ public class ActivityController : ControllerBase
     private readonly IGetRefundableExperienceHandler getRefundableExperienceHandler;
     private readonly IUpdateActivityScheduleHandler updateActivityScheduleHandler;
     private readonly IDeleteActivityHandler deleteActivityHandler;
+    private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
+    private readonly IProviderCreateCouponHandler providerCreateCouponHandler;
+    private readonly IGetCouponsHandler getCouponsHandler;
+    private readonly IUpdateCouponStatusHandler updateCouponStatusHandler;
+    private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
+    private readonly IUpdateCouponHandler updateCouponHandler;
+
+    private readonly ICreateFavoriteHandler createFavoriteHandler;
+    private readonly IRemoveFavoriteHandler removeFavoriteHandler;
+    private readonly IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler;
     private readonly ILogger _logger;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
@@ -51,7 +63,12 @@ public class ActivityController : ControllerBase
         IUpdateActivityImageOrderHandler updateActivityImageOrderHandler, IGetOwnedActivityByHandler getOwnedActivityByHandler, IGetMakerActivitiesHandler getMakerActivitiesHandler,
         IGetActivityByHandler getActivityByHandler, IGetAllRegionsHandler getAllRegionsHandler, IGetAllCitiesHandler getAllCitiesHandler,
         IGetAllBarangaysHandler getAllBarangaysHandler, IGetPopularActivitiesHandler getPopularActivitiesHandler, ILogger<ActivityController> logger,
-        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, IDeleteActivityHandler deleteActivityHandler)
+        IGetRefundableExperienceHandler getRefundableExperienceHandler, IUpdateActivityScheduleHandler updateActivityScheduleHandler, 
+        IDeleteActivityHandler deleteActivityHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler, 
+        IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
+        IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, 
+        IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler,
+        IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler)
     {
         _logger = logger;
 
@@ -81,6 +98,15 @@ public class ActivityController : ControllerBase
         this.getRefundableExperienceHandler = getRefundableExperienceHandler;
         this.updateActivityScheduleHandler = updateActivityScheduleHandler;
         this.deleteActivityHandler = deleteActivityHandler;
+        this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
+        this.providerCreateCouponHandler = providerCreateCouponHandler;
+        this.getCouponsHandler = getCouponsHandler;
+        this.updateCouponStatusHandler = updateCouponStatusHandler;
+        this.createFavoriteHandler = createFavoriteHandler;
+        this.removeFavoriteHandler = removeFavoriteHandler;
+        this.getFavoritesByCustomerHandler = getFavoritesByCustomerHandler;
+        this.validateCouponCodeHandler = validateCouponCodeHandler;
+        this.updateCouponHandler = updateCouponHandler;
     }
 
     [Route("CreateActivity")]
@@ -103,7 +129,11 @@ public class ActivityController : ControllerBase
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,
@@ -130,8 +160,6 @@ public class ActivityController : ControllerBase
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide ?? string.Empty,
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName ?? string.Empty,
                 PinnedLocation = args.PinnedLocation ?? string.Empty,
                 Status = args.Status
             });
@@ -157,6 +185,10 @@ public class ActivityController : ControllerBase
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
                         IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -184,8 +216,6 @@ public class ActivityController : ControllerBase
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
             }});
         }
         catch (Exception ex)
@@ -228,8 +258,6 @@ public class ActivityController : ControllerBase
                 SpecificsYouWillProvide = args.SpecificsYouWillProvide,
                 SubCategoryId = args.SubCategoryId,
                 Title = args.Title,
-                IsSetSession = args.IsSetSession,
-                SessionName = args.SessionName,
                 PinnedLocation = args.PinnedLocation,
                 IsDeactivated = args.IsDeactivated,
                 IsAdmin = args.IsAdmin,
@@ -247,7 +275,11 @@ public class ActivityController : ControllerBase
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()
@@ -286,10 +318,28 @@ public class ActivityController : ControllerBase
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName,
-                Status = activity.Status
-            }});
+                Status = activity.Status,
+                ActivitySchedules = activity.ActivitySchedules.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                    {
+                        DateTime = s.DateTime,
+                        Name = s.Name,
+                        PerUnit1 = s.PerUnit1,
+                        PerUnit2 = s.PerUnit2,
+                        Price = s.Price,
+                        PriceUnit1 = s.PriceUnit1,
+                        PriceUnit2 = s.PriceUnit2,
+                        UnitPrice = s.UnitPrice,
+                        Order = s.Order,
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
+                    };
+                }),
+            }
+            });
         }
         catch (Exception ex)
         {
@@ -526,8 +576,6 @@ public class ActivityController : ControllerBase
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
@@ -627,8 +675,6 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
@@ -666,7 +712,8 @@ public class ActivityController : ControllerBase
                 IncludeAtivitySchedules = args.IncludeAtivitySchedules ?? false,
                 IsActive = args.IsActive,
                 IncludeCustomer = args.IncludeCustomer,
-                IncludeStudents = args.IncludeStudents ?? false
+                IncludeStudents = args.IncludeStudents ?? false,
+                IncludeReviews = args.IncludeReviews ?? false
             }) ;
 
             if (!result.Succeeded || result.Result == null)
@@ -732,11 +779,11 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,
+                        AverageRating = a.AverageRating,
+                        NumberOfReviews = a.NumberOfReviews,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
@@ -780,7 +827,8 @@ public class ActivityController : ControllerBase
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
                 Status = args.Status,
-                IsAdmin = args.IsAdmin
+                IsAdmin = args.IsAdmin,
+                IncludeReviews = args.IncludeReviews ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -852,8 +900,6 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id,
@@ -865,7 +911,9 @@ public class ActivityController : ControllerBase
                         IsNew = a.IsNew,
                         CompletedStudents = a.CompletedStudents,
                         OngoingStudents = a.OngoingStudents,
-                        IsDeactivated = a.IsDeactivated
+                        IsDeactivated = a.IsDeactivated,
+                        NumberOfReviews = a.NumberOfReviews,
+                        AverageRating = a.AverageRating,
                     };
                 }).AsQueryable()
             });
@@ -917,7 +965,11 @@ public class ActivityController : ControllerBase
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -956,8 +1008,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     PinnedLocation= activity.PinnedLocation,
                     Status = activity.Status,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
@@ -1050,8 +1100,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
@@ -1147,8 +1195,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     PinnedLocation = activity.PinnedLocation,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
@@ -1253,8 +1299,6 @@ public class ActivityController : ControllerBase
                     SubCategoryId = activity.SubCategoryId,
                     Title = activity.Title,
                     Handler = activity.Handler,
-                    IsSetSession = activity.IsSetSession,
-                    SessionName = activity.SessionName,
                     PinnedLocation = activity.PinnedLocation,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
@@ -1408,8 +1452,6 @@ public class ActivityController : ControllerBase
                         SpecificsYouWillProvide = a.SpecificsYouWillProvide,
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = a.Owner.Handler,
                             Id  = a.Owner.Id
@@ -1569,6 +1611,7 @@ public class ActivityController : ControllerBase
                 CountPerPage = args.CountPerPage,
                 IncludeStudents = args.IncludeStudents ?? false,
                 IsDeactivated = args.IsDeactivated,
+                IncludeReviews = args.IncludeReviews ?? false,
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -1640,8 +1683,6 @@ public class ActivityController : ControllerBase
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         Owner = a.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner
                         {
                             Handler = a.Owner.Handler,
@@ -1650,7 +1691,9 @@ public class ActivityController : ControllerBase
                         } : null,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
-                        CompletedStudents = a.CompletedStudents
+                        CompletedStudents = a.CompletedStudents,
+                        NumberOfReviews = a.NumberOfReviews,
+                        AverageRating = a.AverageRating
                     };
                 }).AsQueryable()
             });
@@ -1774,6 +1817,347 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("OwnerPricingInclusive/{id}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(OwnerPricingInclusiveResult), StatusCodes.Status200OK)]
+    [AllowAnonymous]
+    public async Task<IActionResult> OwnerPricingInclusive(int id)
+    {
+        try
+        {
+            var result = await ownerPricingInclusiveHandler.ExecuteAsync(new Services.ActivityService.Interactors.OwnerPricingInclusiveArgs {
+                CustomerId = id
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new OwnerPricingInclusiveResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new OwnerPricingInclusiveResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityOwnerPricingInclusiveDTO {
+                    IsInclusivePricing = result.Result.IsInclusivePricing
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new OwnerPricingInclusiveResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("CreateCoupon")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateCouponResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateCoupon([FromBody] CreateCouponArgs args)
+    {
+        try
+        {
+            var result = await providerCreateCouponHandler.ExecuteAsync(new Services.ActivityService.Interactors.ProviderCreateCouponArgs {
+                ActivityId = args.ActivityId,
+                Amount = args.Amount,
+                Code = args.Code,
+                DiscountType = args.DiscountType,
+                FromDate = args.FromDate,
+                MaximumSpend = args.MaximumSpend,
+                Name = args.Name,
+                ToDate = args.ToDate,
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var created = result.Result;
+
+            return new JsonResult(new CreateCouponResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
+                    ActivityId = created.ActivityId,
+                    Amount = created.Amount,
+                    Code = created.Code,
+                    CustomerId = created.CustomerId,
+                    DiscountType = created.DiscountType,
+                    FromDate = created.FromDate,
+                    Id = created.Id,
+                    IsAdmin = created.IsAdmin,
+                    MaximumSpend = created.MaximumSpend,
+                    Name = created.Name,
+                    Status = created.Status,
+                    ToDate = created.ToDate
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetCoupons")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCouponsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCoupons()
+    {
+        try
+        {
+            var result = await getCouponsHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetCouponsArgs {});
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCouponsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var created = result.Result;
+
+            return new JsonResult(new GetCouponsResult
+            {
+                IsSuccess = true,
+                Result = result.Result.Coupons.Select(c => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
+                        ActivityId = c.ActivityId,
+                        Amount = c.Amount,
+                        AppliedActivity = c.AppliedActivity != null ? new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO.Activity {
+                            Id = c.AppliedActivity.Id,
+                            Name = c.AppliedActivity.Name
+                        } : null,
+                        Code = c.Code,
+                        CustomerId = c.CustomerId,
+                        DiscountType = c.DiscountType,
+                        FromDate = c.FromDate,
+                        Id = c.Id,
+                        IsAdmin = c.IsAdmin,
+                        MaximumSpend = c.MaximumSpend,
+                        Name = c.Name,
+                        Status = c.Status,
+                        ToDate = c.ToDate
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCouponsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateCouponStatus")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateCouponStatusResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateCouponStatus([FromBody] UpdateCouponStatusArgs args)
+    {
+        try
+        {
+            var result = await updateCouponStatusHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateCouponStatusArgs {
+                Id = args.Id,
+                Status = args.Status
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateCouponStatusResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var created = result.Result;
+
+            return new JsonResult(new UpdateCouponStatusResult
+            {
+                IsSuccess = true,
+                Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateCouponStatusResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Favorite/Create")]
+    [HttpPost]
+    [ProducesResponseType(typeof(CreateFavoriteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> CreateFavorite([FromBody] CreateFavoriteArgs args)
+    {
+        try
+        {
+            var result = await createFavoriteHandler.ExecuteAsync(new Services.ActivityService.Interactors.CreateFavoriteArgs
+            {
+                ActivityId = args.ActivityId,
+                CustomerId = args.CustomerId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new CreateFavoriteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new CreateFavoriteResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Favorite.FavoriteDTO
+                {
+                    CustomerId = result.Result.CustomerId,
+                    ActivityId = result.Result.ActivityId,
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new CreateFavoriteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Favorite/Remove")]
+    [HttpPost]
+    [ProducesResponseType(typeof(RemoveFavoriteResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RemoveFavorite([FromBody] RemoveFavoriteArgs args)
+    {
+        try
+        {
+            var result = await removeFavoriteHandler.ExecuteAsync(new Services.ActivityService.Interactors.RemoveFavoriteArgs
+            {
+                ActivityId = args.ActivityId,
+                CustomerId = args.CustomerId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RemoveFavoriteResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new RemoveFavoriteResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Favorite.FavoriteDTO
+                {
+                    CustomerId = result.Result.CustomerId,
+                    ActivityId = result.Result.ActivityId,
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RemoveFavoriteResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Favorite/ByCustomer")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetFavoritesByCustomerResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetFavoritesByCustomer([FromQuery] GetFavoritesByCustomerArgs args)
+    {
+        try
+        {
+            var result = await getFavoritesByCustomerHandler.ExecuteAsync(new Services.ActivityService.Interactors.GetFavoritesByCustomerArgs
+            {
+                CustomerId = args.CustomerId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetFavoritesByCustomerResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetFavoritesByCustomerResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = result.Result.Favorites.Select(f => new Framework.ApiCommand.ApiCore.DTO.Favorite.FavoriteDTO
+                {
+                    ActivityId = f.ActivityId,
+                    CustomerId = f.CustomerId,
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetFavoritesByCustomerResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("ValidateCouponCode")]
+    [HttpPost]
+    [ProducesResponseType(typeof(ValidateCouponCodeResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> ValidateCouponCode([FromBody] ValidateCouponCodeArgs args)
+    {
+        try
+        {
+            var result = await validateCouponCodeHandler.ExecuteAsync(new Services.ActivityService.Interactors.ValidateCouponCodeArgs {
+                ActivityId = args.ActivityId,
+                Amount = args.Amount,
+                CouponCode = args.CouponCode
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var validated = result.Result;
+
+            return new JsonResult(new ValidateCouponCodeResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.ValidatedCouponDTO {
+                    Amount = validated.Amount,
+                    DiscountType = validated.DiscountType,
+                    IsValid = validated.IsValid,
+                    MaximumSpend = validated.MaximumSpend
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("UpdateCoupon")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateCouponResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateCoupon([FromBody] UpdateCouponArgs args)
+    {
+        try
+        {
+            var result = await updateCouponHandler.ExecuteAsync(new Services.ActivityService.Interactors.UpdateCouponArgs {
+                From = args.DateFrom,
+                Id = args.Id,
+                Name = args.Name,
+                To = args.DateTo
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateCouponResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            var updated = result.Result;
+
+            return new JsonResult(new UpdateCouponResult
+            {
+                IsSuccess = true,
+                Result = new Framework.ApiCommand.ApiCore.DTO.Coupon.CouponDTO {
+                    ActivityId = updated.ActivityId,
+                    Amount = updated.Amount,
+                    Code = updated.Code,
+                    CustomerId = updated.CustomerId,
+                    DiscountType = updated.DiscountType,
+                    FromDate = updated.FromDate,
+                    Id = updated.Id,
+                    IsAdmin = updated.IsAdmin,
+                    MaximumSpend = updated.MaximumSpend,
+                    Name = updated.Name,
+                    Status = updated.Status,
+                    ToDate = updated.ToDate
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

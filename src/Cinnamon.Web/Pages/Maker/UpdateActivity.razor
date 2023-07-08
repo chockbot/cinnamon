@@ -593,8 +593,6 @@
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName,
                 PinnedLocation = activity.PinnedLocation,
                 Status = activity.Status
             },
@@ -1101,7 +1099,6 @@
         activity.Remarks                 = ReplaceTemporaryValues(activity.Remarks);
         activity.ScheduleIndicator       = ReplaceTemporaryValues(activity.ScheduleIndicator);
         activity.SpecificsYouWillProvide = ReplaceTemporaryValues(activity.SpecificsYouWillProvide);
-        activity.SessionName             = ReplaceTemporaryValues(activity.SessionName);
         activity.PinnedLocation          = ReplaceTemporaryValues(activity.PinnedLocation);
 
         return activity;
@@ -1154,7 +1151,8 @@
         var listSchedule = new List<Models.Entities.ActivitySchedule>();
         listSchedule.AddRange(activitySchedules.Where(a => a.Id != 0).ToList());
 
-        foreach (var item in newSchedules)        {
+        foreach (var item in newSchedules)
+        {
             listSchedule.Add(item);
         }
 

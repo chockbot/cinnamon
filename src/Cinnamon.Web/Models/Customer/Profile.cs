@@ -8,5 +8,6 @@ public class Profile
     public IList<FamilyMember> FamilyMembers {get; set;}
     public IList<Activity> OwnedActivities {get; set;}
     public IList<Activity> EnrolledActivities {get; set;}
+    public IList<Favorite> Favorites { get; set; }
     public string Token { get; set; }
 }
