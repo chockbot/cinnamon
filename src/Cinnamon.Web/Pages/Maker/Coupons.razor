@@ -19,6 +19,9 @@
     </div>
 
     <div class="section-content">
+        <div class="mb-2">
+            <TextEdit @bind-Text="SearchText" Border="Border.Is0" style="background-color: #F3F6FC;" class="search-coupon" Size="Size.Small" Placeholder="Search" />
+        </div>
         <div class="table-list">
             <Table Shadow="Shadow.Default">
                 <TableHeader>
@@ -75,7 +78,7 @@
                 <TableBody>
                     @if(ListCoupons.Coupons != null)
                     {
-                        @foreach (var item in ListCoupons.Coupons)
+                        @foreach (var item in ListCoupons.Coupons.Where(c => c.Name.ToLower().Contains(SearchText.ToLower())))
                         {
                             <TableRow>
                                 <TableRowCell>
@@ -288,6 +291,7 @@
     private ActionType UserAction = ActionType.Create;
     private Validation dateFromValidation;
     private Validation dateToValidation;
+    private string SearchText {get; set;} = string.Empty;
 
     enum ActionType {
         Create = 0,
