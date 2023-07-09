@@ -262,9 +262,15 @@
                                         }
                                         <div class="d-flex justify-content-between py-1 price-per-head">
                                             <div class="d-flex position-relative">
-                                                <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")' 
-                                                    style="background-color: #F3F6FC; width: 150px;" required 
-                                                    Placeholder="Add coupon" Size="Size.ExtraSmall" @bind-Text="Coupon.CouponCode" />
+                                                <div class="position-relative" style="width: 150px;">
+                                                    <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")' 
+                                                        style='@(Coupon.IsCouponApplied ? "background-color: #F3F6FC; padding-right: 25px" : "background-color: #F3F6FC;")' 
+                                                        required Placeholder="Add coupon" Size="Size.ExtraSmall" @bind-Text="Coupon.CouponCode" />
+                                                    @if(Coupon.IsCouponApplied && Coupon.IsValid)
+                                                    {
+                                                        <img @onclick="RemoveAppliedCoupon" class="remove-coupon-icon" src="images/payment/close.png" alt="remove">
+                                                    }
+                                                </div>
                                                 <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
                                                     class="btn-primary font-12" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
                                                     style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 3px;">
@@ -1213,6 +1219,12 @@
         attendee.IsSelected = isWillAttend;
         ClearCouponDetails();
         StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveAppliedCoupon()
+    {
+        ClearCouponDetails();
         return Task.CompletedTask;
     }
 
