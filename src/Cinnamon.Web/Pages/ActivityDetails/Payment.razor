@@ -49,7 +49,7 @@
                                         @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
                                         {
                                             <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                                <Check TValue="bool" id="@item.Id" @bind-Checked="item.IsSelected" class="mx-2 checkbox-round" /> <label for="@item.Id">@item.Name</label>
+                                                <Check TValue="bool" id="@item.Id" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> <label for="@item.Id">@item.Name</label>
                                             </div>
                                         }
                                     </Column>
@@ -219,7 +219,7 @@
                                                 @Model.SelectedSchedule.UnitPrice @Model.SelectedSchedule.LongPrice x @SelectedAttendeesCount head
                                             </div>
                                             <div>
-                                                @GetTotalPerHeadPrice
+                                                PHP @(GetTotalPerHeadPrice.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                         @if(!IsInclusivePricing)
@@ -229,7 +229,7 @@
                                                     Payment provider fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
                                                 </div>
                                                 <div>
-                                                    @GetConvinienceFee
+                                                    PHP @(GetConvinienceFee.ToString("#,##0.00"))
                                                 </div>
                                             </div>
                                         }
@@ -251,16 +251,46 @@
                                                     <span class="ms-1">Service Fee</span>
                                                 </div>
                                                 <div>
-                                                    PHP @(SelectedAttendeesCount > 0 ? "50.00" : "0.00")
+                                                    PHP @(GetServiceFee.ToString("#,##0.00"))
                                                 </div>
                                             </div>
                                         }
                                         <div class="d-flex justify-content-between py-1 price-per-head">
-                                            <div>
-                                                <TextEdit style="background-color: #F3F6FC;" required Placeholder="Add coupon" Size="Size.ExtraSmall" />
+                                            <div class="d-flex position-relative">
+                                                <div class="position-relative" style="width: 150px;">
+                                                    <TextEdit class='@(Coupon.IsCouponApplied && !Coupon.IsValid ? "is-invalid" : "")' 
+                                                        style='@(Coupon.IsCouponApplied ? "background-color: #F3F6FC; padding-right: 25px" : "background-color: #F3F6FC;")' 
+                                                        required Placeholder="Add coupon" Size="Size.ExtraSmall" @bind-Text="Coupon.CouponCode" />
+                                                    @if(Coupon.IsCouponApplied && Coupon.IsValid)
+                                                    {
+                                                        <img @onclick="RemoveAppliedCoupon" class="remove-coupon-icon" src="images/payment/close.png" alt="remove">
+                                                    }
+                                                </div>
+                                                <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
+                                                    class="btn-primary font-12" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
+                                                    style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 3px;">
+                                                     <LoadingTemplate>
+                                                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                                    </LoadingTemplate>
+                                                    <ChildContent>
+                                                        Apply
+                                                    </ChildContent>
+                                                </Button>
+                                                @if(Coupon.IsCouponApplied && !Coupon.IsValid)
+                                                {
+                                                    <div class="coupon-error-message font-12">
+                                                        <b style="color: #AD0C0C;">Invalid Coupon Code</b>
+                                                        <br>
+                                                        <span class="color-grey-100">
+                                                            This coupon code is not valid. Please try again with another coupon code
+                                                        </span>
+                                                    </div>
+                                                }
                                             </div>
                                             <div>
-                                                PHP 0.00
+                                                <span style='@(GetAppliedCoupon > 0 ? "color: #AD0C0C" : "")'>
+                                                    @(GetAppliedCoupon > 0 ? "-" : "") PHP @(GetAppliedCoupon.ToString("#,##0.00"))
+                                                </span>
                                             </div>
                                         </div>
                                         <div class="d-flex justify-content-between py-1 price-per-head">
@@ -275,16 +305,16 @@
                                                 }
                                             </div>
                                             <div>
-                                                @GetTotalCredit
+                                                PHP @(GetTotalCredit.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                         <hr>
                                         <div class="d-flex justify-content-between py-1 total-payments">
                                             <div>
-                                                Total Payments
+                                                TOTAL PAYMENT
                                             </div>
                                             <div>
-                                                @GetTotalPrice
+                                               PHP @(GetTotalPrice.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                     </div>
@@ -486,16 +516,7 @@
 
     private Models.Forms.CardPaymentModel CardPaymentModel { get; set; } = new();
 
-    private enum CouponAction
-    {
-        NoCoupon = 0,
-        EnteringCoupon = 1,
-        AppliedCoupon = 2
-    }
-
-    private CouponAction couponAction = CouponAction.EnteringCoupon;
-
-    private decimal couponAmount = 50;
+    private CouponDetails Coupon {get; set;} = new ();
 
     private string Token { get; set; }
 
@@ -868,7 +889,7 @@
             var submit = await transactionApiHandler.SubmitPurchaseOrder(new Framework.ApiCommand.ApiCore.Transaction.Request.SubmitPurchaseOrderArgs
                 {
                     ActivityId = Model.Activity.ActivityId,
-                    CouponCode = "temporary coupon code",
+                    CouponCode = Coupon.IsCouponApplied && Coupon.IsValid ? Coupon.CouponCode : string.Empty,
                     NumberOfHeads = SelectedAttendeesCount,
                     ScheduleId = Model.SelectedSchedule.Id,
                     Students = Model.Customer.FamilyMembers.Where(f => f.IsSelected).Select(s =>
@@ -929,79 +950,109 @@
         }
     }
 
-    private string GetTotalPerHeadPrice
+    private decimal GetTotalPerHeadPrice
     {
         get
         {
-            if (SelectedAttendeesCount == 0)
+            decimal result = 0;
+
+            if (SelectedAttendeesCount > 0)
             {
-                return "PHP 0.00";
+                result = Model.SelectedSchedule.Price * SelectedAttendeesCount;
             }
-            return "PHP " + (@Model.SelectedSchedule.Price * SelectedAttendeesCount).ToString("#,##0.00");
+
+            return result;
         }
     }
 
-    private string GetConvinienceFee
+    private decimal GetConvinienceFee
     {
         get
         {
-            if (SelectedAttendeesCount == 0)
+            decimal result = 0;
+
+            if (SelectedAttendeesCount > 0 && !IsInclusivePricing)
             {
-                return "PHP 0.00";
+                result = GetTotalPerHeadPrice * .05m;
             }
-            if(IsInclusivePricing)
-            {
-                return "PHP 0.00";
-            }
-            return "PHP " + ((Model.SelectedSchedule.Price * SelectedAttendeesCount) * .05m).ToString("#,##0.00");
+
+            return result;
         }
     }
 
-    private string GetTotalPrice
+    private decimal GetServiceFee 
     {
         get
         {
-            if (SelectedAttendeesCount == 0)
+            decimal result = 0;
+
+            if(SelectedAttendeesCount > 0 && !IsInclusivePricing)
             {
-                return "PHP 0.00";
+                result = 50;
             }
 
-            decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal paymentProviderFee = IsInclusivePricing ? 0 : subTotal * .05m;
-            decimal discount = 0;
-            decimal serviceFee = IsInclusivePricing ? 0 : 50;
-            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
-
-            if (Model.IsCreditApplied && Model.Customer.TotalCredits > 0)
-            {
-                var creditsBalance = Model.Customer.TotalCredits;
-                overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
-            }
-
-            return $"PHP {overallTotal.ToString("#,##0.00")}";
+            return result;
         }
     }
 
-    private string GetTotalCredit
+    private decimal GetAppliedCoupon
     {
         get
         {
-            if (!(Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
+            decimal result = 0;
+
+            if(Coupon.IsCouponApplied && Coupon.IsValid)
             {
-                return "PHP 0.00";
+                // fixed amount
+                if(Coupon.DiscountType == 1)
+                {
+                    result = Coupon.Amount;
+                }
+                // percentage
+                else if(Coupon.DiscountType == 0)
+                {
+                    decimal percentage = Coupon.Amount / 100;
+                    decimal subTotal = GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee;
+                    result = subTotal * percentage;
+                }
             }
 
-            decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
-            decimal paymentProviderFee = IsInclusivePricing ? 0 : subTotal * .05m;
-            decimal discount = 0;
-            decimal serviceFee = IsInclusivePricing ? 0 : 50;
-            decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
-            decimal creditAmount = 0;
+            return result;
+        }
+    }
 
-            var creditsBalance = Model.Customer.TotalCredits;
-            creditAmount = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
+    private decimal GetTotalCredit
+    {
+        get
+        {
+            decimal result = 0;
+            
+            if ((Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
+            {
+                decimal overallTotal = (GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon;
 
-            return $"PHP {creditAmount.ToString("#,##0.00")}";
+                decimal creditsBalance = Model.Customer.TotalCredits;
+                result = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
+            }
+
+            return result;
+        }
+    }
+
+    private decimal GetTotalPrice
+    {
+        get
+        {
+            decimal result = 0;
+
+            if (SelectedAttendeesCount > 0)
+            {
+                decimal discount = 0;
+                result = ((GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon) - GetTotalCredit;
+                result = result < 0 ? 0 : result;
+            }
+
+            return result;
         }
     }
 
@@ -1031,11 +1082,90 @@
         return new String('*', value.Length - count) + value.Substring(value.Length - count);
     }
 
+    private async Task ValidateCouponCode()
+    {
+        if(!string.IsNullOrEmpty(Coupon.CouponCode) && SelectedAttendeesCount > 0)
+        {
+            Coupon.IsValidating = true;
+
+            decimal subTotal = Model.SelectedSchedule.Price * SelectedAttendeesCount;
+            decimal paymentProviderFee = subTotal * .05m;
+            decimal serviceFee = 50;
+            decimal total = subTotal + paymentProviderFee + serviceFee;
+
+            var validateRes = await activityApiHandler.ValidateCouponCode(new Framework.ApiCommand.ApiCore.Activity.Request.ValidateCouponCodeArgs {
+                ActivityId = ActivityId,
+                Amount = total,
+                CouponCode = Coupon.CouponCode
+            }, Model.Token);
+            if(!validateRes.Succeeded || validateRes.Result == null || !validateRes.Result.IsSuccess)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                RemoveCouponError();
+            }
+            else 
+            {
+                var result = validateRes.Result.Result;
+
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = true;
+                Coupon.Amount = result.Amount;
+                Coupon.DiscountType = result.DiscountType;
+                Coupon.MaximumSpend = result.MaximumSpend;
+            }
+
+            Coupon.IsValidating = false;
+        }
+    }
+
+    private void ClearCouponDetails()
+    {
+        Coupon.IsCouponApplied = false;
+        Coupon.IsValid = false;
+        Coupon.Amount = 0;
+        Coupon.DiscountType = -1;
+        Coupon.MaximumSpend = 0;
+        Coupon.CouponCode = string.Empty;
+    }
+
+    private async Task RemoveCouponError()
+    {
+        await Task.Delay(3000);
+        ClearCouponDetails();
+        StateHasChanged();
+    }
+
+    private Task SelectedAttendeesChanged(FamilyMember attendee, bool isWillAttend)
+    {
+        attendee.IsSelected = isWillAttend;
+        ClearCouponDetails();
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private Task RemoveAppliedCoupon()
+    {
+        ClearCouponDetails();
+        return Task.CompletedTask;
+    }
+
     class PaymentOption
     {
         public string PaymentMethod { get; set; }
         public string PaymentChannel { get; set; }
         public string DisplayName { get; set; }
         public string Code { get; set; }
+    }
+
+    class CouponDetails 
+    {
+        public string CouponCode {get; set;}
+        public bool IsValid {get; set;}
+        public bool IsCouponApplied {get; set;}
+        public int DiscountType {get; set;}
+        public decimal Amount {get; set;}
+        public decimal MaximumSpend {get; set;}
+        public bool IsValidating {get; set;}
     }
 }

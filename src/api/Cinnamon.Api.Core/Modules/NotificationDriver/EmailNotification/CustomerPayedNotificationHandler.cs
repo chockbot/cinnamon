@@ -40,7 +40,8 @@ public class CustomerPayedNotificationHandler : ICustomerPayedNotificationHandle
             var emailBody = helper.GetTemplate(args.CustomerName, args.ExperienceName, 
                 args.CoachName, args.PurchaseDate, args.PayerName, args.Amount, args.ServiceFee,
                 config.FrontendUrl, args.Members, args.ReferenceNumber, args.PaymentMethod, 
-                args.MakerEmail, args.CoachNumber, args.PaymentProviderFee, args.AppliedCredits, args.IsInclusivePayment);
+                args.MakerEmail, args.CoachNumber, args.PaymentProviderFee, args.AppliedCredits, args.IsInclusivePayment,
+                args.DiscountAmount);
             
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {

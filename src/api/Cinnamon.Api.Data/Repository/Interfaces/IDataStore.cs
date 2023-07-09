@@ -31,6 +31,7 @@ public interface IDataStore
     IPayoutLog PayoutLog {get;}
     IAdminUser AdminUser {get; }
     ICustomerPricing CustomerPricing {get; }
+    ICoupon Coupon {get; }
 
     Task EnsureMigrate();
 

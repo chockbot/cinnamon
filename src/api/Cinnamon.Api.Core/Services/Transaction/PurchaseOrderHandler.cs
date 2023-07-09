@@ -21,11 +21,13 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IFinishTransactionHandler finishTransactionHandler;
     private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
+    private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
-        IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler)
+        IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
+        IValidateCouponCodeHandler validateCouponCodeHandler)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -35,6 +37,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.finishTransactionHandler = finishTransactionHandler;
         this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
+        this.validateCouponCodeHandler = validateCouponCodeHandler;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -106,17 +109,51 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
             decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * .05m;
-            var discount = 0;
+            decimal discount = 0;
             decimal serviceFee = IsInclusivePayment ? 0 : 50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
+
+            // validate coupon
+            if(!string.IsNullOrEmpty(args.CouponCode))
+            {
+                var validateCouponRes = await validateCouponCodeHandler.ExecuteAsync(new ActivityService.Interactors.ValidateCouponCodeArgs {
+                    ActivityId = args.ActivityId,
+                    Amount = overallTotal,
+                    CouponCode = args.CouponCode
+                });
+                if(!validateCouponRes.Succeeded || validateCouponRes.Result == null)
+                {
+                    return AppResult<PurchaseOrderResult>.CreateFailed(
+                        new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid request.");
+                }
+                var couopon = validateCouponRes.Result;
+
+                // fixed amount
+                if(couopon.DiscountType == 1)
+                {
+                    discount = couopon.Amount;
+                }
+                // percentage 
+                else if(couopon.DiscountType == 0)
+                {
+                    decimal percentage = couopon.Amount / 100;
+                    discount = overallTotal * percentage;
+                }
+
+                // deduct overall total to discount
+                overallTotal -= discount;
+            }
             
             if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
             {
                 var creditsBalance = customerRes.Result.Result.TotalCredits;
+                creditAmount = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
                 overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
-                creditAmount = subTotal + paymentProviderFee + serviceFee >= creditsBalance ? creditsBalance : subTotal + paymentProviderFee + serviceFee;
             }
+
+            // zero out over all total if less than zero
+            overallTotal = overallTotal < 0 ? 0 : overallTotal;
 
             // serialize students data to use later
             var payloadData = new {

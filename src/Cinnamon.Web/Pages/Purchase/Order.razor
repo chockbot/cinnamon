@@ -92,6 +92,19 @@
                                 </td>
                             </tr>
                         }
+                        @if(Model.PurchaseOrder.CouponAmount.HasValue)
+                        {
+                            <tr>
+                                <td>
+                                    <p class="text-capitalize mb-0 mt-2">Applied Discount: </p>
+                                </td>
+                                <td class="text-end">
+                                    <p class="text-capitalize mb-0 mt-2">
+                                        @(Model.PurchaseOrder.CouponAmount.Value > 0 ? "- " + Model.PurchaseOrder.CouponAmount.Value.ToString("#,##0.00") : "0.00")
+                                    </p>
+                                </td>
+                            </tr>
+                        }
                         <tr>
                             <td>
                                 <p class="text-capitalize mb-0 mt-2">Applied Credits: </p>
@@ -108,7 +121,7 @@
                             </td>
                             <td class="text-end">
                                 <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
-                                    PHP @((Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee - Model.PurchaseOrder.AppliedCreditAmount).ToString("#,##0.00"))
+                                    PHP @GetOverallTotal.ToString("#,##0.00")
                                 </p>
                             </td>
                         </tr>
@@ -234,6 +247,17 @@
         if(firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Payment Confirmation Page Loaded");
+        }
+    }
+
+    private decimal GetOverallTotal 
+    {
+        get
+        {
+            var result = (Model.PurchaseOrder.Total + Model.PurchaseOrder.ConvinienceFee - (Model.PurchaseOrder.CouponAmount ?? 0)) - Model.PurchaseOrder.AppliedCreditAmount;
+            result = result < 0 ? 0 : result;
+
+            return result;
         }
     }
 }

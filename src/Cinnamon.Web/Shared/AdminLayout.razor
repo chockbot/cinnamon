@@ -50,6 +50,11 @@
                             <img class="icon-home" src="images/Dashboard Icon/badge icon.png"> <span class="ms-1 d-sm-inline nav-text">Transactions</span>
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a data-bs-toggle="collapse" class="nav-link align-middle item-link item-link" @onclick="NavigateToCoupons">
+                            <img class="icon-promotion" src="images/Dashboard Icon/promotion.png"> <span class="ms-1 d-sm-inline nav-text">Coupons</span>
+                        </a>
+                    </li>
                 </ul>
             }
         </LayoutSiderContent>
@@ -107,5 +112,10 @@
     private void NavigateToInclusiveTransaction()
     {
         navigationManager.NavigateTo("/admin/inclusive-transactions");
+    }
+    
+    private void NavigateToCoupons()
+    {
+        navigationManager.NavigateTo("/admin/coupons");
     }
 }

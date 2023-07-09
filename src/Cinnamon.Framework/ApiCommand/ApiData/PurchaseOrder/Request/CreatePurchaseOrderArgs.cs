@@ -14,8 +14,7 @@ public class CreatePurchaseOrderArgs
     public decimal Total {get; set;}
     [Required]
     public decimal ConvinienceFee {get; set;}
-    [Required]
-    public string Coupon {get; set;}
+    public string? Coupon {get; set;} = string.Empty;
     [Required]
     public decimal CouponAmount {get; set;}
     [Required]

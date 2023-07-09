@@ -63,6 +63,8 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<CustomerPricing> CustomerPricings {get; set;}
 
+    public DbSet<Coupon> Coupons {get; set;}
+
     #endregion
 
     public ApplicationContext(DbContextOptions<ApplicationContext> opts)
@@ -188,6 +190,12 @@ public class ApplicationContext : IdentityDbContext
 
         // customer pricing
         modelBuilder.Entity<CustomerPricing>().HasOne<Customer>(c => c.Customer);
+        
+        // for coupons
+        modelBuilder.Entity<Coupon>().HasOne(c => c.Activity).WithMany().IsRequired(false);
+        modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);
+        modelBuilder.Entity<Coupon>().HasIndex(c => c.Code);
+        modelBuilder.Entity<Coupon>().HasIndex(new string[] {"Code", "CustomerId", "ActivityId"});
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
