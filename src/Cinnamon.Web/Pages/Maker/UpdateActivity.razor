@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
+@using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Components.Pages.Creation;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Components.Pages;
@@ -14,6 +15,7 @@
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IActivityApiHandler activityApiHandler;
+@inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IAccountApiHandler accountApiHandler;
 @using Cinnamon.Framework.Enums;
 
@@ -374,6 +376,8 @@
 
     private GalleryUpdate galleryComponent { get; set; }
 
+    public List<Students> enrolledStudents = new List<Students>();
+
     private bool isLoading = false;
 
     private bool showErrorMessage = false;
@@ -538,6 +542,23 @@
                 }
             }
         }
+        //Get Ongoing and Completed Students
+        var students = await ongoingApiHandler.GetEnrolledStudents(activityId);
+        if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
+        {
+            enrolledStudents = students.Result.Result.Select(i =>
+            {
+                return new Students
+                    {
+                        ActivityId = i.ActivityId,
+                        Id = i.Id,
+                        Name = i.Name,
+                        NumberOfSessions = i.NumberOfSessions,
+                        SessionsAttended = i.SessionsAttended,
+                        ScheduleId = i.ScheduleId
+                    };
+            }).ToList();
+        }
 
         Model = new ExperienceUpdateModel {
             Activity = new Models.Entities.Activity {
@@ -643,6 +664,7 @@
                 Name = r.Name,
                 CityCode = r.CityCode
                 }) : new List<Models.Entities.Barangay>() : new List<Models.Entities.Barangay>(),
+            EnrolledStudents = enrolledStudents,
             Token = token
         };
 
