@@ -396,7 +396,7 @@
             //Get Schedule Details
             var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
             //Set Session Expiration
-            if (schedule != null && activity.IsSetSession == true && schedule.HasExpiration == 2)
+        if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
             {
                 //Check if first attendance
                 if (studentAttendance.SessionsAttended == 1)
@@ -447,24 +447,24 @@
                     await OnInitializedAsync();
                     StateHasChanged();
                 }
-                @*//Get Schedule Details
+                //Get Schedule Details
                 var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
                 //Set Session Expiration
-                if (schedule != null && activity.IsSetSession == true && schedule.HasExpiration == 2)
+                if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
                 {
                     //Check if first attendance
                     if (studentAttendance.SessionsAttended == 1)
                     {
                         await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
                                 {
-                                    Id = studentAttendance.StudentId,
+                                    Id = studentAttendance.Id,
                                     ScheduleId = studentAttendance.ScheduleId,
                                     SessionName = schedule.SessionName,
                                     ExpirationStartDate = presentDate,
                                     ExpirationEndDate = DateTime.UtcNow
                                 });
                     }
-                }*@
+                }
 
             await loadingIndicator.Hide();
             }
