@@ -1047,7 +1047,15 @@
                 else if(Coupon.DiscountType == 0)
                 {
                     decimal percentage = Coupon.Amount / 100;
-                    decimal subTotal = GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee;
+                    decimal subTotal = 0;
+                    if(IsInclusivePricing)
+                    {
+                        subTotal = GetTotalPerHeadPrice;
+                    }
+                    else 
+                    {
+                        subTotal = GetTotalPerHeadPrice + GetConvinienceFee;
+                    }
                     result = subTotal * percentage;
                 }
             }

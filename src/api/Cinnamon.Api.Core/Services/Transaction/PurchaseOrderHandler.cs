@@ -111,7 +111,6 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * .05m;
             decimal discount = 0;
             decimal serviceFee = IsInclusivePayment ? 0 : 50;
-
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
@@ -139,7 +138,17 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 else if(couopon.DiscountType == 0)
                 {
                     decimal percentage = couopon.Amount / 100;
-                    discount = overallTotal * percentage;
+                    decimal couponSubTotal = 0;
+                    if(IsInclusivePayment)
+                    {
+                        couponSubTotal = subTotal;
+                    }
+                    else 
+                    {
+                        couponSubTotal = subTotal + paymentProviderFee;
+                    }
+
+                    discount = couponSubTotal * percentage;
                 }
 
                 // deduct overall total to discount
