@@ -699,12 +699,12 @@
                 string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle))
                 return false;
 
-            if (schedule.IsSetSession == true)
+            if (schedule.IsSetSession == true && schedule.HasExpiration == 1)
             {
-                if ((string.IsNullOrEmpty(schedule.SessionName) 
+                if ((string.IsNullOrEmpty(schedule.SessionName)
                 || !schedule.StartDate.HasValue))
 
-                return false;
+                    return false;
             }
         }
         return true;
