@@ -25,7 +25,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             "select a.\"Id\" as \"TransactionId\", a.\"ActivityId\", a.\"UnitCount\", a.\"UnitPrice\", " +
                                 "c.\"Name\", c.\"Id\" as \"StudentId\", c.\"NumberOfSessions\", c.\"SessionsAttended\", " +
                                 "d.\"Date\", a.\"IsInclusivePayment\" as \"IsInclusivePayment\", " +
-                                "Row_Number() over (partition by a.\"Id\", c.\"Id\" order by a.\"Id\", c.\"Id\", d.\"Date\" desc) as \"RowCnt\" " +
+                                "Row_Number() over (partition by a.\"Id\", c.\"Id\" order by a.\"Id\", c.\"Id\", d.\"Date\" desc) as \"RowCnt\", " +
+                                "a.\"PerUnitDisburseAmount\", a.\"TotalDisburseAmount\" " +
                             "from public.\"PurchaseOrders\" a " +
                             "join public.\"OngoingActivities\" b " +
                                 "on a.\"Id\" = b.\"PurchaseOrderId\" " +
@@ -38,7 +39,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             ") " +
                             "select \"TransactionId\", \"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", \"ActivityId\", \"StudentId\", " +
                             "\"UnitCount\", \"UnitPrice\", \"Name\", \"NumberOfSessions\", \"SessionsAttended\", " +
-                            "Date(\"Date\" + Interval '2 days') as \"EndDate\", Date(Current_Timestamp) as \"DateNow\" " +
+                            "Date(\"Date\" + Interval '2 days') as \"EndDate\", Date(Current_Timestamp) as \"DateNow\", " +
+                            "\"PerUnitDisburseAmount\", \"TotalDisburseAmount\" " +
                             "from summary sm " +
                             "join public.\"Activities\" ac " +
 	                            "on ac.\"Id\" = sm.\"ActivityId\" " +
@@ -70,7 +72,9 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             UnitPrice = Convert.ToDecimal(item["UnitPrice"]),
                             ActivityId = Convert.ToInt32(item["ActivityId"]),
                             MakerId = Convert.ToInt32(item["MakerId"]),
-                            IsInclusivePayment = Convert.ToBoolean(item["IsInclusivePayment"])
+                            IsInclusivePayment = Convert.ToBoolean(item["IsInclusivePayment"]),
+                            PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
+                            TotalDisburseAmount = Convert.ToDecimal(item["TotalDisburseAmount"])
                         }).ToList();
                     }
                 }
@@ -114,7 +118,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
             string query = "with summary as ( " +
                             "select a.\"Id\" as \"TransactionId\", a.\"ActivityId\", a.\"UnitCount\", a.\"UnitPrice\", " +
                                 "c.\"Name\", c.\"Id\" as \"StudentId\", c.\"NumberOfSessions\", c.\"SessionsAttended\", " +
-                                "a.\"IsInclusivePayment\" as \"IsInclusivePayment\" " +
+                                "a.\"IsInclusivePayment\" as \"IsInclusivePayment\", a.\"PerUnitDisburseAmount\", " +
+                                "a.\"TotalDisburseAmount\" " +
                             "from public.\"PurchaseOrders\" a " +
                             "join public.\"OngoingActivities\" b " +
                                 "on a.\"Id\" = b.\"PurchaseOrderId\" " +
@@ -123,7 +128,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             "where c.\"IsDisbursement\" = false and a.\"Status\" = 1 and a.\"IsInclusivePayment\" = true " +
                             ") " +
                             "select \"TransactionId\",\"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", \"ActivityId\", " +
-                                "\"StudentId\", \"UnitCount\", \"UnitPrice\", \"Name\", \"NumberOfSessions\", \"SessionsAttended\" " +
+                                "\"StudentId\", \"UnitCount\", \"UnitPrice\", \"Name\", \"NumberOfSessions\", \"SessionsAttended\", " +
+                                "\"PerUnitDisburseAmount\", \"TotalDisburseAmount\" " +
                             "from summary sm " +
                             "join public.\"Activities\" ac " +
                                 "on ac.\"Id\" = sm.\"ActivityId\"; ";
@@ -154,7 +160,9 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             UnitPrice = Convert.ToDecimal(item["UnitPrice"]),
                             ActivityId = Convert.ToInt32(item["ActivityId"]),
                             MakerId = Convert.ToInt32(item["MakerId"]),
-                            IsInclusivePayment = Convert.ToBoolean(item["IsInclusivePayment"])
+                            IsInclusivePayment = Convert.ToBoolean(item["IsInclusivePayment"]),
+                            PerUnitDisburseAmount = Convert.ToDecimal(item["PerUnitDisburseAmount"]),
+                            TotalDisburseAmount = Convert.ToDecimal(item["TotalDisburseAmount"])
                         }).ToList();
                     }
                 }
