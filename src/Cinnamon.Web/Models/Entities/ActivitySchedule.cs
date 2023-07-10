@@ -57,7 +57,9 @@ public class ActivitySchedule
     public int Order {get; set;}
     public bool IsActiveSchedule { get; set; } = true;
     public bool IsSetSession { get; set; } = false;
-    public string SessionName { get; set; }
+
+    public string SessionName { get; set; } = string.Empty;
+
     public int HasExpiration { get; set; } = 0;
     public DateTime? StartDate { get; set; }
 

@@ -545,7 +545,7 @@
                        IsSetSession = s.IsSetSession,
                        SessionName = s.SessionName,
                        HasExpiration = s.HasExpiration,
-                       StartDate = s.StartDate
+                       StartDate = s.StartDate ?? DateTime.MinValue
                    };
                }),
             }, Model.Token);
@@ -610,7 +610,7 @@
                             IsSetSession = s.IsSetSession,
                             SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate ?? DateTime.MinValue
                         };
                     }),
                     AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -865,7 +865,6 @@
         var result = new List<Models.Entities.ActivitySchedule>();
 
         bool isSingle = activitySchedules.Count == 1;
-
         foreach (var schedule in activitySchedules)
         {
             if (!(string.IsNullOrEmpty(schedule.Name) ||
@@ -875,7 +874,7 @@
                 schedule.PerUnit1 <= 0 ||
                 string.IsNullOrEmpty(schedule.PriceUnit1) ||
                 schedule.PerUnit2 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit2)))
+                string.IsNullOrEmpty(schedule.PriceUnit2))) 
             {
                 result.Add(schedule);
             }

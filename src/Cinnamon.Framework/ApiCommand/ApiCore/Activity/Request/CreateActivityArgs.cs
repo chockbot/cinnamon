@@ -136,8 +136,14 @@ public class CreateActivityArgs
         public bool IsActiveSchedule { get; set; }
         [Required]
         public bool IsSetSession { get; set; }
+        private string _sessionName;
+
         [Required]
-        public string SessionName { get; set; }
+        public string SessionName 
+        {
+            get { return _sessionName ?? string.Empty; }
+            set { _sessionName = value; }
+        }
         [Required]
         public int HasExpiration { get; set; }
         [Required]
