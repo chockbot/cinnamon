@@ -135,4 +135,4 @@ jobs:
         run: rsync -avz output/Dockerfile.Web cinnamon@${{ secrets.SERVER_IP }}:build-prd/Dockerfile.Web
 
       - name: Run Server Script
-        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker compose down && sudo docker compose --env-file .env up -d'
+        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker compose down && sudo docker compose --env-file .env up -d --build'
