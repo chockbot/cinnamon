@@ -1,7 +1,5 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
-RUN ls /usr/share/zoneinfo && \
-cp /usr/share/zoneinfo/Asia/Manila /etc/localtime && \
-echo "Asia/Manila" >  /etc/timezone
+RUN ls /usr/share/zoneinfo && /usr/share/zoneinfo/Asia/Manila /etc/localtime && echo "Asia/Manila" >  /etc/timezone
 
 WORKDIR /app
 EXPOSE 80
