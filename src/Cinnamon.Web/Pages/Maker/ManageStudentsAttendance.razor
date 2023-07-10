@@ -164,6 +164,7 @@
     private List<StudentAttendance> studentAttendances  = new List<StudentAttendance>();
     private StudentAttendance       studentAttendance   = new StudentAttendance();
     private CustomerProfile         profile             = new CustomerProfile();
+    private List<Schedule>          activitySchedules   = new List<Schedule>();
     public  Activity                activity            = new Activity();
     private bool                    isEditRemarks       = false;
     private string                  remarksLocalState   = string.Empty;
@@ -262,6 +263,31 @@
                     };
             }).ToList();
         }
+
+        //Get Schedules
+        var schedules = await dashboardApiHandler.GetActivitySchedules(token);
+        if (!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
+        {
+            IsShowErrorMessage = true;
+            ErrorMessage = "An error occured. Can't find activity schedules. Please try again later.";
+            return;
+        }
+        activitySchedules.AddRange(schedules.Result.Result.Select(s => {
+                return new Schedule {
+                    ActivityDescription = s.Description,
+                    ActivityTitle = s.Title,
+                    ActivityId = s.ActivityId,
+                    IsSelected = false,
+                    ScheduleDescription = s.ScheduleDescription,
+                    ScheduleId = s.ScheduleId,
+                    ScheduleTitle = s.ScheduleTitle,
+                    IsActiveSchedule = s.IsActiveSchedule,
+                    IsSetSession = s.IsSetSession,
+                    SessionName = s.SessionName,
+                    HasExpiration = s.HasExpiration,
+                    StartDate  = s.StartDate
+                };
+            }));
         await CreateMonth();
     }
     public async Task CreateMonth()
@@ -368,20 +394,10 @@
                 await OnInitializedAsync();
                 StateHasChanged();
             }
-            @*//Get Activity Details
-            var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
-            if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
-            {
-                var result = activityResult.Result.Result;
-                activity = new Activity
-                    {
-                        IsSetSession = result.IsSetSession,
-                        SessionName = result.SessionName,
-                        ActivityId = result.ActivityId
-                    };
-            }
+            //Get Schedule Details
+            var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
             //Set Session Expiration
-            if (activity != null && activity.IsSetSession == true)
+            if (schedule != null && activity.IsSetSession == true && schedule.HasExpiration == 2)
             {
                 //Check if first attendance
                 if (studentAttendance.SessionsAttended == 1)
@@ -390,12 +406,12 @@
                         {
                             Id = studentAttendance.StudentId,
                             ScheduleId = studentAttendance.ScheduleId,
-                            SessionName = activity.SessionName,
+                            SessionName = schedule.SessionName,
                             ExpirationStartDate = presentDate,
                             ExpirationEndDate = DateTime.UtcNow
                         });
                 }
-            }*@
+            }
         //Update Number of Backtracking
         await loadingIndicator.Hide();
     }
@@ -432,34 +448,25 @@
                     await OnInitializedAsync();
                     StateHasChanged();
                 }
-                @*//Get Activity Details
-                var activityResult = await activityApiHandler.GetActivity(studentAttendance.ActivityId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs{});
-                if (activityResult.Succeeded && activityResult.Result != null && activityResult.Result.IsSuccess)
-                {
-                    var result = activityResult.Result.Result;
-                    activity = new Activity
-                        {
-                            IsSetSession = result.IsSetSession,
-                            SessionName = result.SessionName,
-                            ActivityId = result.ActivityId
-                        };
-                }
+                @*//Get Schedule Details
+                var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
                 //Set Session Expiration
-                if (activity != null && activity.IsSetSession == true)
+                if (schedule != null && activity.IsSetSession == true && schedule.HasExpiration == 2)
                 {
                     //Check if first attendance
-                    if (studentAttendance.SessionsAttended == 0)
+                    if (studentAttendance.SessionsAttended == 1)
                     {
                         await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                            {
-                                Id = studentAttendance.StudentId,
-                                ScheduleId = studentAttendance.ScheduleId,
-                                SessionName = activity.SessionName,
-                                ExpirationStartDate = presentDate,
-                                ExpirationEndDate = DateTime.UtcNow
-                            });
+                                {
+                                    Id = studentAttendance.StudentId,
+                                    ScheduleId = studentAttendance.ScheduleId,
+                                    SessionName = schedule.SessionName,
+                                    ExpirationStartDate = presentDate,
+                                    ExpirationEndDate = DateTime.UtcNow
+                                });
                     }
                 }*@
+
             await loadingIndicator.Hide();
             }
             else
@@ -484,5 +491,20 @@
     private Task ShowModal()
     {
         return modalRef.Show();
+    }
+    public class Schedule 
+    {
+        public int ActivityId {get; set;}
+        public string ActivityTitle {get; set;}
+        public string ActivityDescription {get; set;}
+        public int ScheduleId {get; set;}
+        public string ScheduleTitle {get; set;}
+        public string ScheduleDescription {get; set;}
+        public bool IsSelected {get; set;}
+        public bool IsActiveSchedule { get; set;}
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }

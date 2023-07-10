@@ -33,6 +33,10 @@ public class AttendanceModel
         public string ScheduleDescription {get; set;}
         public bool IsSelected {get; set;}
         public bool IsActiveSchedule { get; set;}
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 
     public class StudentAttendance 
