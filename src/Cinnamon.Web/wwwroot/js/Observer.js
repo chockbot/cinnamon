@@ -2,7 +2,7 @@
 
     observer: null,
 
-    Initialize: function (component, observerTargetId) {
+    Initialize: function (component, observerTargetId, containerTargetClass) {
         const options = {
             root: null,
             rootMargin: '0px',
@@ -14,41 +14,17 @@
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
 
-                    if (scrollHeight == 0) {
-                        scrollHeight = $(".conversation-section").prop("scrollHeight");
-                        $(".conversation-section").scrollTop(($(".conversation-section").prop("scrollHeight") * -1) + 1000);
-                        component.invokeMethodAsync('OnIntersection');
-                    }
-                    else {
-                        if (box = "create-conversation-section") {
-                            if (scrollHeight != $(".create-conversation-section").prop("scrollHeight")) {
-                                scrollHeight = $(".create-conversation-section").prop("scrollHeight");
-                                if (window.location.toString().indexOf("profile") != -1 || window.location.toString().indexOf("explore") != -1) {
-                                    $(".create-conversation-section").scrollTop(($(".create-conversation-section").prop("scrollHeight")) + 1000);
-                                }
-                                else {
-                                    $(".create-conversation-section").scrollTop(($(".create-conversation-section").prop("scrollHeight") * -1) + 1000);
-                                }
-                                component.invokeMethodAsync('OnIntersection');
-                            }
-                            else {
-                            }
+                    if (scrollHeight != $(containerTargetClass).prop("scrollHeight")) {
+                        scrollHeight = $(containerTargetClass).prop("scrollHeight");
+
+                        if (window.location.toString().toLowerCase().indexOf(("profile").toLowerCase()) != -1 ||
+                            window.location.toString().toLowerCase().indexOf(("explore").toLowerCase()) != -1) {
+                            $(containerTargetClass).scrollTop(($(containerTargetClass).prop("scrollHeight")) + 1000);
                         }
                         else {
-                            if (scrollHeight != $(".conversation-section").prop("scrollHeight")) {
-                                scrollHeight = $(".conversation-section").prop("scrollHeight");
-                                if (window.location.toString().indexOf("profile") != -1 || window.location.toString().indexOf("explore") != -1) {
-                                    $(".conversation-section").scrollTop(($(".conversation-section").prop("scrollHeight")) + 1000);
-                                }
-                                else {
-                                    $(".conversation-section").scrollTop(($(".conversation-section").prop("scrollHeight") * -1) + 1000);
-                                }
-                                component.invokeMethodAsync('OnIntersection');
-                            }
-                            else {
-                            }
+                            $(containerTargetClass).scrollTop(($(containerTargetClass).prop("scrollHeight") * -1) + 1000);
                         }
-                        
+                        component.invokeMethodAsync('OnIntersection');
                     }
                 }
             });

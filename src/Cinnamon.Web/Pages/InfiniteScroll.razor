@@ -7,6 +7,8 @@
     [Parameter]
     public string ObserverTargetId { get; set; }
     [Parameter]
+    public string ContainerTargetClass { get; set; }
+    [Parameter]
     public EventCallback<bool> ObservableTargetReach { get; set; }
     private DotNetObjectReference<InfiniteScroll> objectRef;
 
@@ -14,7 +16,7 @@
     {
         if(firstRender){
             objectRef = DotNetObjectReference.Create(this);
-            var initResult = await jsRuntime.InvokeAsync<dynamic>("Observer.Initialize", objectRef, ObserverTargetId);
+            var initResult = await jsRuntime.InvokeAsync<dynamic>("Observer.Initialize", objectRef, ObserverTargetId, ContainerTargetClass);
         }
     }
 
