@@ -319,27 +319,7 @@ public class ActivityController : ControllerBase
                 Title = activity.Title,
                 Handler = activity.Handler,
                 Status = activity.Status,
-                ActivitySchedules = activity.ActivitySchedules.Select(s => {
-                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
-                    {
-                        DateTime = s.DateTime,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        PerUnit2 = s.PerUnit2,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
-                        HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
-                    };
-                }),
-            }
-            });
+            }});
         }
         catch (Exception ex)
         {
