@@ -138,7 +138,17 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 else if(couopon.DiscountType == 0)
                 {
                     decimal percentage = couopon.Amount / 100;
-                    discount = overallTotal * percentage;
+                    decimal couponSubTotal = 0;
+                    if(IsInclusivePayment)
+                    {
+                        couponSubTotal = subTotal;
+                    }
+                    else 
+                    {
+                        couponSubTotal = subTotal + paymentProviderFee;
+                    }
+
+                    discount = couponSubTotal * percentage;
                 }
 
                 // deduct overall total to discount
