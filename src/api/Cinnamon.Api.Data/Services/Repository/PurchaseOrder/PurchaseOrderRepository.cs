@@ -18,7 +18,8 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
 
     public async Task<AppResult<PurchaseOrderDTO>> Create(int activityId, int scheduleId, int customerId, 
         decimal total, decimal convinienceFee, string? coupon, decimal? couponAmount, decimal overallTotal, 
-        int status, string payload, decimal creditAmount, decimal unitPrice, int unitCount, bool isInclusivePayment)
+        int status, string payload, decimal creditAmount, decimal unitPrice, int unitCount, bool isInclusivePayment,
+        decimal perUnitDisburseAmount, decimal totalDisburseAmount)
     {
         try
         {
@@ -64,7 +65,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CreditAmount = creditAmount,
                 UnitCount = unitCount,
                 UnitPrice = unitPrice,
-                IsInclusivePayment = isInclusivePayment
+                IsInclusivePayment = isInclusivePayment,
+                PerUnitDisburseAmount = perUnitDisburseAmount,
+                TotalDisburseAmount = totalDisburseAmount
             };
 
             var createdPurchaseOrder = await dataStore.PurchaseOrder.Add(purchaseOrder);
@@ -144,7 +147,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     CreditAmount = p.CreditAmount,
                     UnitCount = p.UnitCount,
                     UnitPrice = p.UnitPrice,
-                    IsInclusivePayment = p.IsInclusivePayment
+                    IsInclusivePayment = p.IsInclusivePayment,
+                    PerUnitDisburseAmount = p.PerUnitDisburseAmount,
+                    TotalDisburseAmount = p.TotalDisburseAmount
                 };
 
                 // include activity details
@@ -204,7 +209,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     CreditAmount = p.CreditAmount,
                     UnitCount = p.UnitCount,
                     UnitPrice = p.UnitPrice,
-                    IsInclusivePayment = p.IsInclusivePayment
+                    IsInclusivePayment = p.IsInclusivePayment,
+                    PerUnitDisburseAmount = p.PerUnitDisburseAmount,
+                    TotalDisburseAmount = p.TotalDisburseAmount
                 };
             });
 
@@ -241,7 +248,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CreditAmount = result.Result.CreditAmount,
                 UnitCount = result.Result.UnitCount,
                 UnitPrice = result.Result.UnitPrice,
-                IsInclusivePayment = result.Result.IsInclusivePayment
+                IsInclusivePayment = result.Result.IsInclusivePayment,
+                PerUnitDisburseAmount = result.Result.PerUnitDisburseAmount,
+                TotalDisburseAmount = result.Result.TotalDisburseAmount
             }, "Successfully get purchase order by id");
         }
         catch (Exception ex)
@@ -317,7 +326,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                 CreditAmount = updated.CreditAmount,
                 UnitCount = updated.UnitCount,
                 UnitPrice = updated.UnitPrice,
-                IsInclusivePayment = updated.IsInclusivePayment
+                IsInclusivePayment = updated.IsInclusivePayment,
+                PerUnitDisburseAmount = updated.PerUnitDisburseAmount,
+                TotalDisburseAmount = updated.TotalDisburseAmount
             }, "Successfully updated purchase order");
         }
         catch (Exception ex)
@@ -350,7 +361,9 @@ public class PurchaseOrderRepository : IPurchaseOrderRepository
                     Status = p.Status,
                     Payload = p.Payload,
                     CreditAmount = p.CreditAmount,
-                    IsInclusivePayment = p.IsInclusivePayment
+                    IsInclusivePayment = p.IsInclusivePayment,
+                    PerUnitDisburseAmount = p.PerUnitDisburseAmount,
+                    TotalDisburseAmount = p.TotalDisburseAmount
                 };
             });
 
