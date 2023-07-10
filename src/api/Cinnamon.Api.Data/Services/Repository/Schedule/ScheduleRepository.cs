@@ -27,6 +27,9 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(checkActivity.Error.Exception, checkActivity.Message);
                 }
+
+                startDate = startDate.SetKindUtc();
+
                 var result = await _dataStore.ActivitySchedule.Add(new Data.Repository.Entities.ActivitySchedule()
                 {
                     ActivityId = ActivityId,
@@ -107,7 +110,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName ?? string.Empty,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate.SetKindUtc()
                     };
                 });
 
@@ -134,7 +137,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         IsSetSession = s.IsSetSession,  
                         SessionName = s.SessionName,    
                         HasExpiration = s.HasExpiration,   
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate.SetKindUtc()
                     };
                 });
 
