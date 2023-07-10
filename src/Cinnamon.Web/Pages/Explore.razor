@@ -309,12 +309,21 @@
                                                                         <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect" />
                                                                         @if (act.OngoingStudents > 0)
                                                                         {
-                                                                            <div class="rounded-pill ongoing-section">
-                                                                                <div class="active-badge" style="text-align:center">
-                                                                                    <span class="pulse"></span>
-                                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                                </div>
-                                                                            </div>
+                                                                            <CustomTooltip MarginLeft="-100">
+                                                                                <TextContent>
+                                                                                    <div class="rounded-pill ongoing-section">
+                                                                                        <div class="active-badge" style="text-align:center">
+                                                                                            <span class="pulse"></span>
+                                                                                            <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </TextContent>
+                                                                                <TooltipContent>
+                                                                                    <span class="color-grey-100">
+                                                                                        Ongoing Students
+                                                                                    </span>
+                                                                                </TooltipContent>
+                                                                            </CustomTooltip> 
                                                                         }
                                                                     </div>
                                                                 }
@@ -442,7 +451,7 @@
                 }
                 @foreach (var act in activities)
                 {
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body" style="margin-bottom:30px">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
                         <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)">
                             <Div ElementId="#b-animate">
                                 <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
@@ -453,12 +462,21 @@
                                                 <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
                                                 @if (act.OngoingStudents > 0)
                                                 {
-                                                    <div class="rounded-pill ongoing-section">
-                                                        <div class="active-badge" style="text-align:center">
-                                                            <span class="pulse"></span>
-                                                            <span class="active-tag-label">@act.OngoingStudents</span>
-                                                        </div>
-                                                    </div>
+                                                    <CustomTooltip MarginLeft="-100">
+                                                        <TextContent>
+                                                            <div class="rounded-pill ongoing-section">
+                                                                <div class="active-badge" style="text-align:center">
+                                                                    <span class="pulse"></span>
+                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                </div>
+                                                            </div>
+                                                        </TextContent>
+                                                        <TooltipContent>
+                                                            <span class="color-grey-100">
+                                                                Ongoing Students
+                                                            </span>
+                                                        </TooltipContent>
+                                                    </CustomTooltip> 
                                                 }
                                             </div>
                                         }
