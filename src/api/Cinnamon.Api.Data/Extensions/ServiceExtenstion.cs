@@ -2,6 +2,7 @@
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Repository;
 using Cinnamon.Api.Data.Services.Repository.ActivityAddress;
+using Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Extensions;
 
@@ -30,9 +31,11 @@ public static class ServiceExtenstion
         services.AddTransient<IFailedLogin, FailedLoginEntity>();
         services.AddTransient<IChatRooms, ChatRoomsEntity>();
         services.AddTransient<IChatHistory, ChatHistoryEntity>();
+        services.AddTransient<IChatMember, ChatMemberEntity>();
         services.AddTransient<IDataStore, DataStore>();
         services.AddTransient<IReviews, ReviewsEntity>();
         services.AddTransient<IFavorite, FavoriteEntity>();
+        services.AddTransient<IChatConnection, ChatConnectionEntity>();
 
         services.AddTransient<Services.Repository.Interfaces.IActivityRepository, Services.Repository.Activity.ActivityRepository>();
         services.AddTransient<Services.Repository.Interfaces.IAddressRepository, Services.Repository.ActivityAddress.AddressRepository>();
@@ -67,6 +70,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.Repository.Interfaces.IReviewsRepository, Services.Repository.Reviews.ReviewsRepository>();
         services.AddTransient<Services.Repository.Interfaces.ICouponRepository, Services.Repository.Coupon.CouponRespository>();
         services.AddTransient<Services.Repository.Interfaces.IFavoriteRepository, Services.Repository.Favorite.FavoriteRepository>();
+        services.AddTransient<Services.Repository.Interfaces.IChatConnectionRepository, Services.Repository.ChatConnection.ChatConnectionRepository>();
 
         return services;
     }

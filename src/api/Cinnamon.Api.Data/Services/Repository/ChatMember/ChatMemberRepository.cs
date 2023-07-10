@@ -47,14 +47,22 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
 
             foreach (var item in result.Result)
             {
+                var chatConnectionresult = await dataStore.ChatConnection.FindAsync(c => c.CustomerId == item.Customer.Id && c.IsConnected, int.MaxValue, 0);
+
+                if (!chatConnectionresult.Succeeded || chatConnectionresult.Result == null)
+                {
+                    return AppResult<IEnumerable<ChatRoomDTO>>.CreateFailed(result.Error.Exception, result.Message);
+                }
+
                 chatMembers.Add(new ChatRoomDTO
                 {
-                    FromUserId      = item.Customer.Id,
-                    FromFirstName   = item.Customer.FirstName,
-                    FromLastName    = item.Customer.LastName,
+                    FromUserId = item.Customer.Id,
+                    FromFirstName = item.Customer.FirstName,
+                    FromLastName = item.Customer.LastName,
                     FromProfilePath = item.Customer.ProfilePath,
                     FromProfileLink = item.Customer.Handler,
-                    ChatMemberType  = (Enums.ChatMemberType)item.ChatMemberType
+                    ChatMemberType = (Enums.ChatMemberType)item.ChatMemberType,
+                    ConnectionIds = chatConnectionresult.Result.Select(c => c.ConnectionId)
                 });
             }
 

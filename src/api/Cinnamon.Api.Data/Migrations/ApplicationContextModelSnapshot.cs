@@ -505,6 +505,47 @@ namespace Cinnamon.Api.Data.Migrations
                     b.ToTable("Barangays");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatConnection", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ChangedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ChangedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("ConnectionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CreatedBy")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsConnected")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("UserAgent")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("ChatConnections");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatHistory", b =>
                 {
                     b.Property<int>("Id")
@@ -2082,6 +2123,17 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Activity");
                 });
 
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatConnection", b =>
+                {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
+                        .WithMany("ChatConnections")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.ChatHistory", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.ChatRoom", "ChatRoom")
@@ -2128,17 +2180,6 @@ namespace Cinnamon.Api.Data.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", b =>
-                {
-                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
-                        .WithOne("CustomerPricing")
-                        .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", "CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Coupon", b =>
                 {
                     b.HasOne("Cinnamon.Api.Data.Repository.Entities.Activity", "Activity")
@@ -2152,6 +2193,17 @@ namespace Cinnamon.Api.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Activity");
+
+                    b.Navigation("Customer");
+                });
+
+            modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", b =>
+                {
+                    b.HasOne("Cinnamon.Api.Data.Repository.Entities.Customer", "Customer")
+                        .WithOne("CustomerPricing")
+                        .HasForeignKey("Cinnamon.Api.Data.Repository.Entities.CustomerPricing", "CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Customer");
                 });
@@ -2370,6 +2422,8 @@ namespace Cinnamon.Api.Data.Migrations
 
             modelBuilder.Entity("Cinnamon.Api.Data.Repository.Entities.Customer", b =>
                 {
+                    b.Navigation("ChatConnections");
+
                     b.Navigation("ChatMembers");
 
                     b.Navigation("CustomerPricing")

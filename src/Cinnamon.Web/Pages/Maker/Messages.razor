@@ -122,7 +122,7 @@
                 <div class="col-lg-6 col-md-6 col-sm-6 col-6 add-message-section">
                     @if (chatRooms.Count > 0 && chatMateChatType == ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.ActivityProvider)
                     {
-                        <img src="images/messages/add-message.png" id="img-add-member" @onclick="(() => GetFormerChatMembersByChatRoomId(selectedChatRoomId))" />
+                        <img src="images/messages/add-message.svg" id="img-add-member" @onclick="(() => GetFormerChatMembersByChatRoomId(selectedChatRoomId))" />
                     }
                 </div>
             </div>
@@ -269,16 +269,16 @@
                                     FromProfilePath = maker.FromProfilePath
                                 };
                                 <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
-                                    <img src="images/messages/personal-message.png" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
+                                    <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
                                 </span>
                             }
-                            <img src="images/messages/chat-profile-info.png" @onclick="(() => DisplayChatProfile(true))" />
+                            <img src="images/messages/chat-profile-info.svg" @onclick="(() => DisplayChatProfile(true))" />
                         </div>
                         <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
                             <div class="row">
                                 <div class="col-lg-1 col-md-1 col-sm-1 col-2">
                                     <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
-                                        <img src="images/messages/back-arrow.png" class="back-to-chatroom" />
+                                        <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
                                     </button>
                                 </div>
                                 <div class="col-lg-10 col-md-10 col-sm-10 col-7 text-center">
@@ -304,17 +304,17 @@
                                             FromProfilePath = maker.FromProfilePath
                                         };
                                         <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
-                                            <img src="images/messages/personal-message.png" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
+                                            <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
                                         </span>
                                     }
-                                    <img src="images/messages/chat-profile-info-mobile.png" @onclick="(() => DisplayChatProfile(true))" />
+                                    <img src="images/messages/chat-profile-info.svg" @onclick="(() => DisplayChatProfile(true))" />
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="conversation-section">
-                    <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
+                    <InfiniteScroll ObserverTargetId="observerTarget" ContainerTargetClass=".conversation-section" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
                         <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
                             <div id="observerTarget"></div>
                            
@@ -460,7 +460,7 @@
             {
                 <div class="row justify-content-center no-message-section text-center">
                     <div class="col-lg-3">
-                        <img src="images/messages/no-message.png" />
+                        <img src="images/messages/no-message.svg" />
                         <div class="divider"></div>
                         <label class="no-message-title">
                             No Message Yet
@@ -478,7 +478,7 @@
                     <div class="row">
                         <div class="col-lg-12 profile-back-button-section">
                             <button type="button" class="border-0 bg-transparent back-button" @onclick="(() => DisplayConversations(true))">
-                                <img src="images/messages/back-arrow.png" class="back-to-conversation"  />
+                                <img src="images/messages/back-arrow.svg" class="back-to-conversation"  />
                             </button>
                         </div>
                     </div>
@@ -537,7 +537,7 @@
                                         @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.ActivityProvider)
                                         {
                                             <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
-                                                <img src="images/messages/chat-icon.png" class="send-private-message-picture" />
+                                                <img src="images/messages/chat-icon.svg" class="send-private-message-picture" />
                                             </button>
                                         }
                                     }
@@ -546,7 +546,7 @@
                                         @if (item.FromUserId != currentUserId && item.ChatMemberType == ChatMemberType.Customer)
                                         {
                                             <button type="button" @onclick="@(() => CreatePrivateMessage(item))" class="border-0 btn-send-private-message">
-                                                <img src="images/messages/chat-icon.png" class="send-private-message-picture" />
+                                                <img src="images/messages/chat-icon.svg" class="send-private-message-picture" />
                                             </button>
                                         }
                                     }
@@ -565,7 +565,7 @@
                             @if (showLeaveGroup)
                             {
                                 <button type="button" class="border-0 leave-button">
-                                    Leave Group <img src="images/messages/leave-group-icon.png" class="send-private-message-picture" />
+                                    Leave Group <img src="images/messages/leave-group-icon.svg" class="send-private-message-picture" />
                                 </button>
                             }
                         </div>
@@ -785,6 +785,16 @@
             {
                 chatRooms.FirstOrDefault(c => c.ChatRoomId == Convert.ToInt32(splitted[0])).FromConnectionId = splitted[1];
                 chatMateConnectionId = splitted[1];
+
+                if (chatMembers.Any(c => c.FromUserId == Convert.ToInt32(splitted[2])))
+                {
+                    var chatMemberDetail = chatMembers.FirstOrDefault(c => c.FromUserId == Convert.ToInt32(splitted[2]));
+
+                    if (!string.IsNullOrEmpty(splitted[1]) && !chatMemberDetail.ConnectionIds.Contains(splitted[1]))
+                    {
+                        chatMemberDetail.ConnectionIds.Add(splitted[1]);
+                    }
+                }
             }
 
             InvokeAsync(() => StateHasChanged());
@@ -845,11 +855,21 @@
 
     private async Task Send()
     {
+        var connectionIds = string.Empty;
+
+        foreach (var item in chatMembers)
+        {
+            foreach (var connectionId in item.ConnectionIds)
+            {
+                connectionIds = connectionIds + "[~~~]" + connectionId;
+            }
+        }
+
         if (hubConnection is not null && !string.IsNullOrEmpty(messageInput.Trim()))
         {
             if (IsConnected)
             {
-                await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}");
+                await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}|{connectionIds}");
             }
             else
             {
@@ -857,7 +877,7 @@
 
                 if (IsConnected)
                 {
-                    await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}");
+                    await hubConnection.SendAsync("SendMessage", $"{selectedChatRoomId}|{currentUserConnectionId}|{currentUserId}|{currentUserLastName}|{currentUserFirstName}|{currentUserProfilePath}|{toUserId}|{messageInput}|{chatMateGroupName}|{(int)chatMateChatType}|{(int)chatHistoryType}|{chatMateChatName}|{connectionIds}");
                 }
             }
         }
@@ -1049,7 +1069,43 @@
             {
                 chatHistories.AddRange(chatHistoryResult);
 
-                chatHistories = chatHistories.OrderBy(c => c.ChatHistoryId).ToList();
+                chatHistories = chatHistories.GroupBy(c => new
+                {
+                    c.ChatHistoryId,
+                    c.ChatRoomId,
+                    c.DateCreated,
+                    c.FromConnectionId,
+                    c.FromUserId,
+                    c.FromFirstName,
+                    c.FromLastName,
+                    c.FromProfilePath,
+                    c.IsViewed,
+                    c.Message,
+                    c.ToConnectionId,
+                    c.ToUserId,
+                    c.ToFirstName,
+                    c.ToLastName,
+                    c.ToProfilePath,
+                    c.ChatHistoryType
+                }).Select(c => new ChatHistory
+                {
+                    ChatHistoryId    = c.Key.ChatHistoryId,
+                    ChatRoomId       = c.Key.ChatRoomId,
+                    DateCreated      = c.Key.DateCreated,
+                    FromConnectionId = c.Key.FromConnectionId,
+                    FromUserId       = c.Key.FromUserId,
+                    FromFirstName    = c.Key.FromFirstName,
+                    FromLastName     = c.Key.FromLastName,
+                    FromProfilePath  = c.Key.FromProfilePath,
+                    IsViewed         = c.Key.IsViewed,
+                    Message          = c.Key.Message,
+                    ToConnectionId   = c.Key.ToConnectionId,
+                    ToUserId         = c.Key.ToUserId,
+                    ToFirstName      = c.Key.ToFirstName,
+                    ToLastName       = c.Key.ToLastName,
+                    ToProfilePath    = c.Key.ToProfilePath,
+                    ChatHistoryType  = c.Key.ChatHistoryType
+                }).OrderBy(c => c.ChatHistoryId).ToList();
             }
             else
             {
@@ -1116,7 +1172,8 @@
                     FromUserId = r.FromUserId,
                     ChatMemberType = r.ChatMemberType,
                     FromProfileLink = r.FromProfileLink,
-                    CommonPrivateChatRoomId = r.CommonPrivateChatRoomId
+                    CommonPrivateChatRoomId = r.CommonPrivateChatRoomId,
+                    ConnectionIds = r.ConnectionIds.ToList()
                 }).ToList();
 
             if (chatMembers.Any())
@@ -1381,6 +1438,35 @@
                     GroupName = string.Empty,
                     ChatName = string.Empty
                 }, Token);
+
+            var fromConnectionResult = await chatApiHandler.GetChatConnectionByCustomer(new Framework.ApiCommand.ApiCore.ChatConnection.Request.GetChatConnectionByCustomerArgs
+                {
+                    CustomerId = currentUserId
+                }, Token);
+
+            var toConnectionResult = await chatApiHandler.GetChatConnectionByCustomer(new Framework.ApiCommand.ApiCore.ChatConnection.Request.GetChatConnectionByCustomerArgs
+                {
+                    CustomerId = toUserId
+                }, Token);
+
+            if ((fromConnectionResult.Succeeded && fromConnectionResult.Result != null && fromConnectionResult.Result.IsSuccess) && (toConnectionResult.Succeeded && toConnectionResult.Result != null && toConnectionResult.Result.IsSuccess))
+            {
+                chatMembers = new List<ChatMember>();
+
+                chatMembers.AddRange(new List<ChatMember>
+                {
+                    new ChatMember
+                    {
+                        FromUserId = currentUserId,
+                        ConnectionIds = fromConnectionResult.Result.Result.Select(c => c.ConnectionId).ToList()
+                    },
+                    new ChatMember
+                    {
+                        FromUserId = toUserId,
+                        ConnectionIds = toConnectionResult.Result.Result.Select(c => c.ConnectionId).ToList()
+                    }
+                });
+            }
 
             if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {

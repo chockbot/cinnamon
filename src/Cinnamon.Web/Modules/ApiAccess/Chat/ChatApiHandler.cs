@@ -2,6 +2,8 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Account.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.AdminUser.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatConnection.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ChatConnection.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatHistory.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.ChatRoom.Request;
@@ -183,6 +185,29 @@ namespace Cinnamon.Web.Modules.ApiAccess.Chat
             catch (Exception ex)
             {
                 return AppResult<GetChatMembersByChatRoomIdResult>.CreateFailed(ex, "An error occured when calling get chat members api");
+            }
+        }
+
+        public async Task<AppResult<GetChatConnectionByCustomerResult>> GetChatConnectionByCustomer(GetChatConnectionByCustomerArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                     .WithOAuthBearerToken(token)
+                     .Request("Chat/ChatConnections")
+                     .SetQueryParams(args)
+                     .GetJsonAsync<GetChatConnectionByCustomerResult>();
+
+                return AppResult<GetChatConnectionByCustomerResult>.CreateSucceeded(result, "Successfully called get chat connections api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetChatConnectionByCustomerResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetChatConnectionByCustomerResult>.CreateFailed(ex, "An error occured when calling get chat connections api");
             }
         }
     }

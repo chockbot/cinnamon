@@ -65,7 +65,8 @@ namespace Cinnamon.Api.Core.Services.ChatService
                         FromProfileLink = c.FromProfileLink,
                         FromUserId = c.FromUserId,
                         ChatMemberType = c.ChatMemberType,
-                        CommonPrivateChatRoomId = c.CommonPrivateChatRoomId
+                        CommonPrivateChatRoomId = c.CommonPrivateChatRoomId,
+                        ConnectionIds = c.ConnectionIds
                     })
                 }, "successfully called GetChatMembersByChatRoomIdHandler");
 

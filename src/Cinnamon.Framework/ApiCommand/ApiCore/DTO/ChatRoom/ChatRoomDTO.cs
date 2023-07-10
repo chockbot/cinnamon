@@ -28,5 +28,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiCore.DTO.ChatRoom
         public string GroupName { get; set; }
         public string ChatName { get; set; }
         public int CommonPrivateChatRoomId { get; set; }
+        public IEnumerable<string> ConnectionIds { get; set; }
     }
 }

@@ -83,6 +83,8 @@ public class DataStore : IDataStore
 
     public IFavorite Favorite => new FavoriteEntity(applicationContext);
 
+    public IChatConnection ChatConnection => new ChatConnectionEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();

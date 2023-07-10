@@ -19,6 +19,9 @@
     </div>
 
     <div class="section-content">
+        <div class="mb-2">
+            <TextEdit @bind-Text="SearchText" Border="Border.Is0" style="background-color: #F3F6FC;" class="search-coupon" Size="Size.Small" Placeholder="Search" />
+        </div>
         <div class="table-list">
             <Table Shadow="Shadow.Default">
                 <TableHeader>
@@ -75,7 +78,7 @@
                 <TableBody>
                     @if(ListCoupons.Coupons != null)
                     {
-                        @foreach (var item in ListCoupons.Coupons)
+                        @foreach (var item in ListCoupons.Coupons.Where(c => c.Name.ToLower().Contains(SearchText.ToLower())))
                         {
                             <TableRow>
                                 <TableRowCell>
@@ -141,7 +144,7 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Coupon Description <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
+                                <TextEdit Placeholder="E.g. - Cinnamon Sale" Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -153,7 +156,7 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Coupon Code <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
+                                <TextEdit Placeholder="E.g. - cnnmn-dscnt-2023" Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -288,6 +291,7 @@
     private ActionType UserAction = ActionType.Create;
     private Validation dateFromValidation;
     private Validation dateToValidation;
+    private string SearchText {get; set;} = string.Empty;
 
     enum ActionType {
         Create = 0,
