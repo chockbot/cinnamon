@@ -58,6 +58,39 @@ button:focus {
     margin: 0 0 -1rem;
 }
 
+.verified-logo img {
+    margin-right: 5px;
+    cursor: pointer;
+}
+
+.badge-name {
+    margin-top: 0.8rem;
+    padding: 4px;
+    margin-right: 2rem;
+    font-family: 'Nunito';
+    font-weight: bold;
+}
+
+.badges-column img {
+    vertical-align: middle;
+    width: 53px;
+    height: 53px;
+    display: flex;
+    margin-left: 2rem;
+}
+
+::deep .badges-column .card-body {
+    display: flex;
+}
+
+::deep .badges-column {
+    width: 100%;
+    background-color: #F3F6FC;
+    padding: 20px;
+    border: none;
+    align-items: center;
+}
+
 /* font sizes */
 .font-12 {
     font-size: 12px !important;
@@ -166,6 +199,26 @@ button:focus {
         text-align: right;
         margin-right: 4rem;
         margin-top: 0.5rem;
+    }
+    .badges-column img, svg {
+        margin-top: auto;
+        margin-bottom: auto;
+        width: 45px;
+        height: 45px;
+        display: flex;
+        margin-left: 0.7rem;
+    }
+
+    ::deep .badges-column {
+        padding: 1px;
+    }
+
+    .badge-name {
+        margin-top: 2rem;
+        padding-left: 3px;
+        margin-right: 0.5rem;
+        font-family: 'Nunito';
+        font-weight: bold;
     }
 }
 @media only screen and (max-width: 576px) {

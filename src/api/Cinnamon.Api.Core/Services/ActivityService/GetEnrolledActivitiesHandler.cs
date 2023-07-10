@@ -115,8 +115,6 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                         SearchTags = e.SearchTags != null ? e.SearchTags.ToList() : Enumerable.Empty<string>().ToList(),
                         IsPublished = e.IsPublished,
                         CreatedBy = e.CreatedBy,
-                        IsSetSession = e.IsSetSession,
-                        SessionName = e.SessionName,
                         OngoingStudents = e.OngoingStudents,
                         CompletedStudents = e.CompletedStudents,
                         ActivitySchedules = e.Schedules != null ? e.Schedules.Select(s => {

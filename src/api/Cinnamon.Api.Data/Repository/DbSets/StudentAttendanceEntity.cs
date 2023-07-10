@@ -60,4 +60,6 @@ public class StudentAttendanceEntity : GenericEntity<StudentAttendance>, IStuden
             return AppResult<IEnumerable<StudentAttendance>>.CreateFailed(ex, "An error occured when updating student attendance");
         }
     }
+
+
 }

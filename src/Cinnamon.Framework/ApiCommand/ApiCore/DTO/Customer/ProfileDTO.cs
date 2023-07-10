@@ -7,6 +7,7 @@ public class ProfileDTO
     public string LastName { get; set; }
     public string Email { get; set; }
     public DateTime Birthdate { get; set; }
+    public string PhoneNumber { get; set; }
     public DateTime DateJoined { get; set; }
     public string About { get; set; }
     public string ProfileImg { get; set; }
@@ -19,4 +20,6 @@ public class ProfileDTO
     public DateTime IsOfficialDate { get; set; }
     public string Handler {get; set;}
     public decimal TotalCredits {get; set;}
+    public string ConnectionId { get; set; }
+
 }

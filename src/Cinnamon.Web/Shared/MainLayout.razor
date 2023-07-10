@@ -1,8 +1,12 @@
-﻿@inherits LayoutComponentBase
+﻿@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager NavigationManager
+@implements IDisposable
+
+@inherits LayoutComponentBase
 
 <PageTitle>Cinnamon</PageTitle>
 
-<div class="page">
+<div class="page app-name-section">
     <main>
         <Header/>
         <article class="content">
@@ -10,3 +14,17 @@
         </article>
     </main>
 </div>
+
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    void LocationChanged(object sender, LocationChangedEventArgs e)
+    {
+    }
+
+    void IDisposable.Dispose()
+    {
+    }
+}

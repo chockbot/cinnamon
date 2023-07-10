@@ -108,8 +108,8 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 NumberOfSessions = schedule.PerUnit2,
                 SessionsAttended = 0,
                 NumberOfBacktracking = numberOfBackTracking,
-                ExpirationEndDate = DateTime.Now,
-                ExpirationStartDate = DateTime.Now,
+                ExpirationEndDate = DateTime.MinValue,
+                ExpirationStartDate = DateTime.MinValue,
                 Students = args.Students.Select(s => {
                     return new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs.StudentDetails {
                         FamilyMemberId = s.FamilyMemberId,

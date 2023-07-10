@@ -14,4 +14,16 @@ public interface IOngoingActivitiesHandler
     Task<AppResult<UpdateOngoingActivityResult>> UpdateActivity(UpdateOngoingActivityArgs args);
 
     Task<AppResult<AddActivityExpirationResult>> AddActivityExpiration(AddActivityExpirationArgs args);
+
+    Task<AppResult<GetCompletedStudentsByIdResult>> GetCompletedStudentsById(GetCompletedStudentsByIdArgs args, string token);
+
+    Task<AppResult<CreateReviewResult>> CreateReview(CreateReviewArgs args, string token);
+
+    Task<AppResult<GetAllStudentsByIdResult>> GetAllStudentsById(GetAllStudentsByIdArgs args, string token);
+
+    Task<AppResult<GetReviewsByMakerIdResult>> GetReviewsByMakerId(GetReviewsByMakerIdArgs args);
+
+    Task<AppResult<GetReviewsByCustomerIdResult>> GetReviewsByCustomerId(GetReviewsByCustomerIdArgs args);
+
+    Task<AppResult<GetReviewsByActivityIdResult>> GetReviewsByActivityId(GetReviewsByActivityIdArgs args);
 }

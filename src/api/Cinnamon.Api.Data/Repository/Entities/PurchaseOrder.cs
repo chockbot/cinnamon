@@ -16,6 +16,7 @@ public class PurchaseOrder : BaseEntity
     public string Payload {get; set;}
     public decimal UnitPrice {get; set;}
     public int UnitCount {get; set;}
+    public bool IsInclusivePayment {get; set;}
 
     public Activity Activity {get; set;}
     public ActivitySchedule Schedule {get; set;}

@@ -6,6 +6,9 @@ using Cinnamon.Framework.ApiCommand.ApiCore.DTO.StudentAttendance;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Badges;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
+using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 
 namespace Cinnamon.Api.Core.Controllers;
 
@@ -23,10 +26,13 @@ public class DashboardController : ControllerBase
     private readonly IUpdateAttendanceHandler updateAttendanceHandler;
     private readonly IGetAllBadgesHandler getAllBadgesHandler;
     private readonly IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler;
+    private readonly IGetCompletedStudentsHandler getCompletedStudentsHandler;
+    
 
     public DashboardController(IGetActivitySchedulesHandler getActivitySchedulesHandler, IGetCurrentDateAttendanceHandler getCurrentDateAttendanceHandler,
         IUpdateStudentAttendanceCurrentDateHandler updateStudentAttendanceHandler,IGetStudentAttendanceHandler getStudentAttendanceHandler, IGetAllStudentAttendanceByIdHandler getAllStudentAttendanceByIdHandler, 
-        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler)
+        ICreateStudentAttendanceHandler createStudentAttendanceHandler,IUpdateAttendanceHandler updateAttendanceHandler, IGetAllBadgesHandler getAllBadgesHandler, IGetAllStudentsAttendanceHandler getAllStudentsAttendanceHandler,
+        IGetCompletedStudentsHandler getCompletedStudentsHandler)
     {
         this.getActivitySchedulesHandler = getActivitySchedulesHandler;
         this.getCurrentDateAttendanceHandler = getCurrentDateAttendanceHandler;
@@ -37,6 +43,9 @@ public class DashboardController : ControllerBase
         this.updateAttendanceHandler = updateAttendanceHandler;
         this.getAllBadgesHandler = getAllBadgesHandler;
         this.getAllStudentsAttendanceHandler = getAllStudentsAttendanceHandler;
+        this.getCompletedStudentsHandler = getCompletedStudentsHandler;
+        
+
     }
 
     [Route("GetActivitySchedules")]
@@ -63,7 +72,11 @@ public class DashboardController : ControllerBase
                             ScheduleId = s.ScheduleId,
                             ScheduleTitle = s.ScheduleTitle,
                             Title = s.Title,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }) 
                 }
@@ -217,8 +230,8 @@ public class DashboardController : ControllerBase
             var result = await getAllStudentAttendanceByIdHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetAllStudentAttendanceByIdArgs
             {
                 StudentId = args.StudentId,
-                ActivityId = args.ActivityId
-                
+                ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -289,6 +302,7 @@ public class DashboardController : ControllerBase
             return new JsonResult(new CreateStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
     [Route("UpdateAttendance")]
     [HttpPost]
     [ProducesResponseType(typeof(UpdateAttendanceResult), StatusCodes.Status202Accepted)]
@@ -394,6 +408,50 @@ public class DashboardController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetAllStudentAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetCompletedStudents")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetCompletedStudentsResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetCompletedStudents([FromQuery] GetCompletedStudetnsArgs args)
+    {
+        try
+        {
+            var result = await getCompletedStudentsHandler.ExecuteAsync(new Services.DashboardService.Interactors.GetCompletedStudentsArgs
+            {
+                ActivityId = args.ActivityIds
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetCompletedStudentsResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+            return new JsonResult(new GetCompletedStudentsResult
+            {
+                IsSuccess = true,
+                Result = result.Result.StudentAttendaces.Select(s => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Student.StudentAttendanceDTO
+                    {
+
+                        ActivityId = s.ActivityId,
+                        Date = s.AttendanceDate,
+                        Id = s.Id,
+                        IsPresent = s.IsPresent,
+                        Name = s.StudentName,
+                        NumberOfSessions = s.NumberOfSessions,
+                        Remarks = s.Remarks,
+                        ScheduleId = s.ScheduleId,
+                        SessionsAttended = s.SessionsAttended,
+                        Status = s.Status,
+                        StudentNo = s.StudentNo,
+                        StudentId = s.StudentId
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetCompletedStudentsResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

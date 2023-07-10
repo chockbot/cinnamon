@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
@@ -563,6 +565,206 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<DeleteActivityResult>.CreateFailed(ex, "An error occured when calling delete activity api");
+        }
+    }
+
+    public async Task<AppResult<OwnerPricingInclusiveResult>> OwnerPricingInclusive(int id)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request($"Activity/OwnerPricingInclusive/{id}")
+                .GetJsonAsync<OwnerPricingInclusiveResult>();
+
+            return AppResult<OwnerPricingInclusiveResult>.CreateSucceeded(result, "Successfully getting owner pricing inclusive identifier api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<OwnerPricingInclusiveResult>.CreateFailed(ex, "An error occured when getting owner pricing inclusive identifier api");
+        }   
+    }
+
+    public async Task<AppResult<GetCouponsResult>> GetCoupons(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/GetCoupons")
+                .GetJsonAsync<GetCouponsResult>();
+
+            return AppResult<GetCouponsResult>.CreateSucceeded(result, "Successfully getting coupons");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCouponsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCouponsResult>.CreateFailed(ex, "An error occured when getting coupons");
+        }
+    }
+
+    public async Task<AppResult<CreateCouponResult>> CreateCoupon(CreateCouponArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateCoupon")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateCouponResult>();
+
+            return AppResult<CreateCouponResult>.CreateSucceeded(result, "Successfully called create coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateCouponResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateCouponResult>.CreateFailed(ex, "An error occured when calling create coupon api");
+        }
+    }
+
+    public async Task<AppResult<UpdateCouponStatusResult>> UpdateCouponStatus(UpdateCouponStatusArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateCouponStatus")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateCouponStatusResult>();
+
+            return AppResult<UpdateCouponStatusResult>.CreateSucceeded(result, "Successfully called create coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateCouponStatusResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateCouponStatusResult>.CreateFailed(ex, "An error occured when calling create coupon api");
+        }
+    }
+
+    public async Task<AppResult<CreateFavoriteResult>> CreateFavorite(CreateFavoriteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/Favorite/Create")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateFavoriteResult>();
+
+            return AppResult<CreateFavoriteResult>.CreateSucceeded(result, "Successfully called create favorite api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateFavoriteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateFavoriteResult>.CreateFailed(ex, "An error occured when calling create favorite api");
+        }
+    }
+
+    public async Task<AppResult<RemoveFavoriteResult>> RemoveFavorite(RemoveFavoriteArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/Favorite/Remove")
+                .PostJsonAsync(args)
+                .ReceiveJson<RemoveFavoriteResult>();
+
+            return AppResult<RemoveFavoriteResult>.CreateSucceeded(result, "Successfully called remove favorite api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<RemoveFavoriteResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<RemoveFavoriteResult>.CreateFailed(ex, "An error occured when calling remove favorite api");
+        }
+    }
+
+    public async Task<AppResult<GetFavoritesByCustomerResult>> GetFavoritesByCustomer(GetFavoritesByCustomerArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .Request("Activity/Favorite/ByCustomer")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetFavoritesByCustomerResult>();
+
+            return AppResult<GetFavoritesByCustomerResult>.CreateSucceeded(result, "Successfully called get favorites api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetFavoritesByCustomerResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetFavoritesByCustomerResult>.CreateFailed(ex, "An error occured when calling get favorites api");
+        }
+    }
+
+    public async Task<AppResult<ValidateCouponCodeResult>> ValidateCouponCode(ValidateCouponCodeArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/ValidateCouponCode")
+                .PostJsonAsync(args)
+                .ReceiveJson<ValidateCouponCodeResult>();
+
+            return AppResult<ValidateCouponCodeResult>.CreateSucceeded(result, "Successfully called validate coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<ValidateCouponCodeResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<ValidateCouponCodeResult>.CreateFailed(ex, "An error occured when calling validate coupon api");
+        }
+    }
+
+    public async Task<AppResult<UpdateCouponResult>> UpdateCoupon(UpdateCouponArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/UpdateCoupon")
+                .PostJsonAsync(args)
+                .ReceiveJson<UpdateCouponResult>();
+
+            return AppResult<UpdateCouponResult>.CreateSucceeded(result, "Successfully called update coupon api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<UpdateCouponResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<UpdateCouponResult>.CreateFailed(ex, "An error occured when calling update coupon api");
         }
     }
 }

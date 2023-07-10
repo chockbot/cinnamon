@@ -526,8 +526,6 @@
                 SearchTags = Model.Activity.SearchTags,
                 SkillLevel = "No experience",
                 SpecificsYouWillProvide = ReplaceEmptyValue(Model.Activity.SpecificsYouWillProvide, NOTHING_PROVIDED),
-                IsSetSession = Model.Activity.IsSetSession,
-                SessionName = ReplaceEmptyValue(Model.Activity.SessionName, NOTHING_PROVIDED),
                 PinnedLocation = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
                 Status = Enums.ActivityStatus.InProgress,
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
@@ -543,7 +541,11 @@
                        PriceUnit2 = s.PriceUnit2,
                        UnitPrice = s.UnitPrice,
                        Order = s.Order,
-                       IsActiveSchedule = s.IsActiveSchedule
+                       IsActiveSchedule = s.IsActiveSchedule,
+                       IsSetSession = s.IsSetSession,
+                       SessionName = s.SessionName,
+                       HasExpiration = s.HasExpiration,
+                       StartDate = s.StartDate ?? DateTime.MinValue
                    };
                }),
             }, Model.Token);
@@ -564,6 +566,7 @@
 
         return;
     }
+
     private async Task OnNextClick(int index = 0)
     {
         // for submit action
@@ -603,7 +606,11 @@
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName ?? "N/A",
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate ?? DateTime.MinValue
                         };
                     }),
                     AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -630,8 +637,6 @@
                     SpecificsYouWillProvide = Model.Activity.SpecificsYouWillProvide,
                     SubCategoryId = Model.Activity.SubCategoryId,
                     Title = Model.Activity.Title,
-                    IsSetSession = Model.Activity.IsSetSession,
-                    SessionName = Model.Activity.SessionName,
                     PinnedLocation = Model.Activity.PinnedLocation,
                     Status = Enums.ActivityStatus.Submitted
                 }, Model.Token);
@@ -860,7 +865,6 @@
         var result = new List<Models.Entities.ActivitySchedule>();
 
         bool isSingle = activitySchedules.Count == 1;
-
         foreach (var schedule in activitySchedules)
         {
             if (!(string.IsNullOrEmpty(schedule.Name) ||
@@ -870,7 +874,7 @@
                 schedule.PerUnit1 <= 0 ||
                 string.IsNullOrEmpty(schedule.PriceUnit1) ||
                 schedule.PerUnit2 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit2)))
+                string.IsNullOrEmpty(schedule.PriceUnit2))) 
             {
                 result.Add(schedule);
             }

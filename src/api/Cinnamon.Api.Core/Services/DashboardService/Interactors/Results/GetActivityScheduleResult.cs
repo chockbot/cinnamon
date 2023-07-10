@@ -13,5 +13,9 @@ public class GetActivityScheduleResult
         public string ScheduleTitle {get; set;}
         public string ScheduleDescription {get; set; }
         public bool IsActiveSchedule { get; set; }
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }

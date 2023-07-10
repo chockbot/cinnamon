@@ -56,6 +56,12 @@ public class ActivitySchedule
     public int TempId {get; set;}
     public int Order {get; set;}
     public bool IsActiveSchedule { get; set; } = true;
+    public bool IsSetSession { get; set; } = false;
+
+    public string SessionName { get; set; } = string.Empty;
+
+    public int HasExpiration { get; set; } = 0;
+    public DateTime? StartDate { get; set; }
 
     public long LongPrice { 
         get{
@@ -78,4 +84,5 @@ public class ActivitySchedule
         string pattern = @"(\(?\d{3}\)?-? *\d{3}-? *-?\d{4})";
         return Regex.Replace(input, pattern, m => new string('*', m.Length));
     }
+    
 }

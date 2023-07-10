@@ -32,8 +32,10 @@ public class GetAllStudentAttendanceByIdHandler: IGetAllStudentAttendanceByIdHan
         {
             var attendance = await studentAttendanceData.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiData.StudentAttendance.Request.GetAllStudentAttendanceByIdArgs
             {
-                IsIncludeStudent =true,
-                Id = args.StudentId,
+                IsIncludeStudent = true,
+                Id               = args.StudentId,
+                ScheduleIds      = new int[] { args.ScheduleId },
+                ActivityId       = args.ActivityId 
             });
             if (!attendance.Succeeded || attendance.Result == null || !attendance.Result.IsSuccess)
             {

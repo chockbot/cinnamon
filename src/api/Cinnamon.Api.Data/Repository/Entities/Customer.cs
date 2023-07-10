@@ -27,6 +27,13 @@ public class Customer : BaseEntity
     public string Handler {get; set;}
     public decimal TotalCredits {get; set;}
     public bool HasAcceptedTerms { get; set; }
+    public string? ConnectionId { get; set; }
     public virtual IList<FamilyMember> FamilyMembers {get; set;}
     public virtual IList<OngoingActivity> OngoingActivities { get; set;}
+    public virtual CustomerPricing CustomerPricing {get; set;}
+    public virtual IList<ChatMember> ChatMembers {get; set; }
+    public virtual IList<ChatHistory> FromChatHistories {get; set; }
+    public virtual IList<ChatHistory> ToChatHistories { get; set; }
+    public virtual IList<ChatConnection> ChatConnections { get; set; }
+
 }

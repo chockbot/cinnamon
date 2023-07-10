@@ -22,11 +22,11 @@ public class ActivityRepository : IActivityRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price, 
+    public async Task<AppResult<ActivityDTO>> CreateActivityAsync(int experienceTypeId, int customerId, string title, string description, string price,
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
-        string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel, 
+        string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel,
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler, bool IsSetSession, string SessionName, string pinnedLocation, Enums.ActivityStatus status)
+        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, Enums.ActivityStatus status)
     {
         try
         {
@@ -73,8 +73,6 @@ public class ActivityRepository : IActivityRepository
                 SubCategoryId = subCategoryId,
                 Handler = handler,
                 IsNew = true,
-                IsSetSession = IsSetSession,
-                SessionName = SessionName,
                 Guid = Guid.NewGuid().ToString(),
                 Status = (int)status
             };
@@ -225,8 +223,7 @@ public class ActivityRepository : IActivityRepository
                 SpecificsYouWillProvide = specificsYouWillProvide,
                 Title = title,
                 Handler = handler,
-                IsSetSession = IsSetSession,
-                SessionName = SessionName
+                
             };
 
             return AppResult<ActivityDTO>.CreateSucceeded(createdActivityDTO, "Activity successfully created");
@@ -275,8 +272,6 @@ public class ActivityRepository : IActivityRepository
                 ExperienceTypeId = activity.ExperienceTypeId,
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
             };
 
             // address fields
@@ -386,7 +381,8 @@ public class ActivityRepository : IActivityRepository
         int experienceCategoryId, string searchValue, bool? isDeactivated, Enums.ActivityStatus? status,
         bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false,
         bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, string? likeHandler = null,
-        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
+        bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, 
+        bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false)
     {
         try
         {
@@ -401,6 +397,7 @@ public class ActivityRepository : IActivityRepository
             if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
             if (includeSubCategories) includes.Add(a => a.SubCategory);
             if (includeStudents) includes.Add(a => a.Students);
+            if (includeReviews) includes.Add(a => a.Reviews);
 
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -438,8 +435,6 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
                     IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
-                    IsSetSession         = a.IsSetSession,
-                    SessionName          = a.SessionName,
                     IsDeactivated        = a.IsDeactivated,
                     Status               = (Enums.ActivityStatus)a.Status
                 };
@@ -491,7 +486,11 @@ public class ActivityRepository : IActivityRepository
                             UnitPrice = s.UnitPrice,
                             PerUnit2 = s.PerUnit2,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate,
                         };
                     }).ToList();
                 }
@@ -556,6 +555,16 @@ public class ActivityRepository : IActivityRepository
                     activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
                 }
 
+                // reviews
+                if (includeReviews && a.Reviews != null)
+                {
+                    var reviews = a.Reviews;
+                    double sumOfRating = reviews.Sum(a => a.Rating);
+                    int numberOfRatee = reviews.Count;
+                    activityDTO.NumberOfReviews = numberOfRatee;
+                    activityDTO.AverageRating = Math.Round(sumOfRating / numberOfRatee, 1);
+                }
+
                 return activityDTO;
             });
 
@@ -594,8 +603,6 @@ public class ActivityRepository : IActivityRepository
                     ExperienceTypeId = a.ExperienceTypeId,
                     MapDetails = a.MapDetails,
                     Handler = a.Handler,
-                    IsSetSession = a.IsSetSession,
-                    SessionName = a.SessionName
                 };
             });
 
@@ -647,9 +654,7 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName,
-                Status = (Enums.ActivityStatus)activity.Status
+                Status = (Enums.ActivityStatus)activity.Status,
             };
 
             // address fields
@@ -698,7 +703,11 @@ public class ActivityRepository : IActivityRepository
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }).ToList();
             }
@@ -801,8 +810,6 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
             };
 
             // address fields
@@ -851,7 +858,11 @@ public class ActivityRepository : IActivityRepository
                         UnitPrice = s.UnitPrice,
                         PerUnit2 = s.PerUnit2,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }).ToList();
             }
@@ -913,11 +924,12 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<ActivityDTO>> UpdateActivityAsync(int activityId,int? experienceTypeId, string? title, string? description, string? price, 
+    public async Task<AppResult<ActivityDTO>> UpdateActivityAsync(int activityId, int? experienceTypeId, string? title, string? description, string? price,
         string? scheduleIndicator, string? remarks, bool? isPublished, string? address1, string? address2, string? district, string? city, string? subdivision, string? region,
-        string? barangay, string? postalcode,string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel, 
-        string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4, 
-        string? searchtag5, int? experienceCategoryId, int? subCategoryId, bool? IsSetSession, string? SessionName, string pinnedLocation, bool? isDeactivated, Enums.ActivityStatus? status)
+        string? barangay, string? postalcode, string? specificsYouWillProvide, string? customerBringWithThem, string? additionalRequirements, string? activityLevel,
+        string? skillLevel, int? minimumAge, bool? canAdultsJoin, string? searchtag1, string? searhtag2, string? searchtag3, string? searchtag4,
+        string? searchtag5, int? experienceCategoryId, int? subCategoryId, string pinnedLocation,
+        bool? isDeactivated, Enums.ActivityStatus? status, string? handler)
     {
         try
         {
@@ -974,10 +986,9 @@ public class ActivityRepository : IActivityRepository
             activity.ScheduleIndicator = scheduleIndicator ?? activity.ScheduleIndicator;
             activity.Remarks = remarks ?? activity.Remarks;
             activity.IsPublished = isPublished ?? activity.IsPublished;
-            activity.SessionName = SessionName ?? activity.SessionName;
-            activity.IsSetSession = IsSetSession ?? activity.IsSetSession;
             activity.IsDeactivated = isDeactivated ?? activity.IsDeactivated;
             activity.Status = status.HasValue ? (int)status.GetValueOrDefault() : activity.Status;
+            activity.Handler = handler ?? activity.Handler;
 
             var updatedActivity = await dataStore.Activity.Update(activity);
             if (!updatedActivity.Succeeded)
@@ -1145,8 +1156,6 @@ public class ActivityRepository : IActivityRepository
                 ExperienceCategoryId = activity.ExperienceCategoryId ?? 0,
                 SubCategoryId = activity.SubCategoryId ?? 0,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName
             }, "Successfully updated activity details");
 
         }
@@ -1156,7 +1165,7 @@ public class ActivityRepository : IActivityRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false)
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetPopularActivitiesAsync(int? customerId, bool? isActive, int? count, int? skip, bool? isDeactivated, bool includeAddres = false, bool includeDescription = false, bool includeSearchTags = false, bool includeSchedules = false, bool includeImages = false, IEnumerable<int>? ids = null, bool includeCustomer = false, bool includeExperienceTypes = false, bool includeExperienceCategories = false, bool includeSubCategories = false, bool includeStudents = false, bool includeReviews = false)
     {
         try
         {
@@ -1171,6 +1180,7 @@ public class ActivityRepository : IActivityRepository
             if (includeExperienceCategories) includes.Add(a => a.ExperienceCategory);
             if (includeSubCategories) includes.Add(a => a.SubCategory);
             if (includeStudents) includes.Add(a => a.Students);
+            if (includeReviews) includes.Add(a => a.Reviews);
 
             Expression<Func<Entities.Activity, bool>> filter =
                 a => (ids != null ? ids.Contains(a.Id) : true) &&
@@ -1205,8 +1215,6 @@ public class ActivityRepository : IActivityRepository
                     ExperienceCategory   = a.ExperienceCategory?.Category,
                     SubCategory          = a.SubCategory?.SubCatergory,
                     IsNew                = (DateTime.UtcNow - a.CreatedOn).Days <= 30,
-                    IsSetSession         = a.IsSetSession,
-                    SessionName          = a.SessionName
                 };
 
                 // address fields
@@ -1256,7 +1264,11 @@ public class ActivityRepository : IActivityRepository
                             UnitPrice = s.UnitPrice,
                             PerUnit2 = s.PerUnit2,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }).ToList();
                 }
@@ -1319,6 +1331,16 @@ public class ActivityRepository : IActivityRepository
                     var students = a.Students;
                     activityDTO.CompletedStudents = students.Count(a => a.SessionsAttended >= a.NumberOfSessions);
                     activityDTO.OngoingStudents = students.Count(a => a.SessionsAttended < a.NumberOfSessions);
+                }
+
+                // reviews
+                if (includeReviews && a.Reviews != null)
+                {
+                    var reviews = a.Reviews;
+                    double sumOfRating = reviews.Sum(a => a.Rating);
+                    int numberOfRatee = reviews.Count;
+                    activityDTO.NumberOfReviews = numberOfRatee;
+                    activityDTO.AverageRating = Math.Round(sumOfRating / numberOfRatee, 1);
                 }
 
                 return activityDTO;
