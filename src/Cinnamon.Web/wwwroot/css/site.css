@@ -1828,3 +1828,35 @@ input::-ms-clear {
 .purchase-order-page .modal-backdrop {
   height: 100%;
 }
+
+.swiper-slide-popular .custom-tooltip,
+.explore-activity-item .custom-tooltip {
+  position: static !important;
+  display: block !important;
+}
+
+.swiper-slide-popular .custom-tooltip .custom-tooltiptext,
+.explore-activity-item .custom-tooltip .custom-tooltiptext {
+  right: 10px !important;
+  bottom: 45px !important;
+  width: 120px !important;
+  margin-left: 0 !important;
+  font-size: 12px !important;
+  border: 0 !important;
+  padding: 5px !important;
+  left: unset !important;
+}
+
+@media only screen and (max-width: 600px) {
+  .swiper-slide-popular .custom-tooltip .custom-tooltiptext,
+  .explore-activity-item .custom-tooltip .custom-tooltiptext {
+    bottom: 50px !important;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  .swiper-slide-popular .custom-tooltip .custom-tooltiptext,
+  .explore-activity-item .custom-tooltip .custom-tooltiptext {
+    bottom: 50px !important;
+  }
+}
