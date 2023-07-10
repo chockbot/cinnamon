@@ -50,7 +50,7 @@ jobs:
           Applicationconfig.FrontendUrl: "https://dev.cinnamon.ph/"
           Applicationconfig.Sitemap.RunSitemap: false
           ConnectionStrings.AzureSignalRConnectionString: ${{ env.SIGNALR_DEV_URL }}
-          
+
       # substitute web blazor server environemnt variables
       - name: App Settings Variables Substitution for Web Blazor
         uses: microsoft/variable-substitution@v1
@@ -125,4 +125,4 @@ jobs:
         run: rsync -avz output/Dockerfile.Web cinnamon@${{ secrets.SERVER_IP }}:build-dev/Dockerfile.Web
 
       - name: Run Server Script
-        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-dev && sudo docker compose down && sudo docker compose up -d'
+        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-dev && sudo docker compose down && sudo docker compose up -d --build'
