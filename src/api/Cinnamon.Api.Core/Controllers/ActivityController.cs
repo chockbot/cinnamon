@@ -105,9 +105,9 @@ public class ActivityController : ControllerBase
                         Order = s.Order,
                         IsActiveSchedule = s.IsActiveSchedule,
                         IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
+                        SessionName = s.SessionName ?? string.Empty,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate ?? DateTime.MinValue,
                     };
                 }),
                 AdditionalRequirements = args.AdditionalRequirements ?? string.Empty,

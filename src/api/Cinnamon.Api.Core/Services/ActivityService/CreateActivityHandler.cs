@@ -163,9 +163,9 @@ public class CreateActivityHandler : ICreateActivityHandler
                         Order = order,
                         IsActiveSchedule = s.IsActiveSchedule,
                         IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
+                        SessionName = s.SessionName ?? string.Empty,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate,
+                        StartDate = s.StartDate ?? DateTime.MinValue,
                     };
                 })
             });
