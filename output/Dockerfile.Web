@@ -1,6 +1,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
-ENV TZ="Asia/Manila"
-RUN date
+RUN ls /usr/share/zoneinfo && \
+cp /usr/share/zoneinfo/Asia/Manila /etc/localtime && \
+echo "Asia/Manila" >  /etc/timezone
+
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
