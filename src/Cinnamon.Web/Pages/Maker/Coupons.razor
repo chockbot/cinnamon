@@ -144,7 +144,7 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Coupon Description <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
+                                <TextEdit Placeholder="E.g. - Cinnamon Sale" Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -156,7 +156,7 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Coupon Code <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
+                                <TextEdit Placeholder="E.g. - cnnmn-dscnt-2023" Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
