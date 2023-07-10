@@ -43,8 +43,6 @@ public class ActivityDTO
     public string ExperienceCategory { get; set; }
     public string SubCategory { get; set; }
     public bool IsNew { get; set; }
-    public bool IsSetSession { get; set; }
-    public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
     public int OngoingStudents { get; set; }
     public int CompletedStudents { get; set; }

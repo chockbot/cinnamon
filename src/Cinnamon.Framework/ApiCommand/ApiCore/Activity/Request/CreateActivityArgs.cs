@@ -136,6 +136,7 @@ public class CreateActivityArgs
         public bool IsActiveSchedule { get; set; }
         [Required]
         public bool IsSetSession { get; set; }
+
         private string _sessionName;
 
         [Required]

@@ -52,7 +52,7 @@ public class GetOwnedActivityByHandlerResult
         public bool IsSetSession { get; set; }
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 }
 
     public class ActivityImage 

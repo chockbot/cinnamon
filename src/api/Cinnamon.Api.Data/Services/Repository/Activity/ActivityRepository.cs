@@ -654,7 +654,7 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
-                Status = (Enums.ActivityStatus)activity.Status
+                Status = (Enums.ActivityStatus)activity.Status,
             };
 
             // address fields

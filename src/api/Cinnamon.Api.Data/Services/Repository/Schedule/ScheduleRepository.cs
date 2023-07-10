@@ -27,6 +27,9 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 {
                     return AppResult<ScheduleDTO>.CreateFailed(checkActivity.Error.Exception, checkActivity.Message);
                 }
+
+                startDate = startDate.SetKindUtc();
+
                 var result = await _dataStore.ActivitySchedule.Add(new Data.Repository.Entities.ActivitySchedule()
                 {
                     ActivityId = ActivityId,
@@ -107,7 +110,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName ?? string.Empty,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate.SetKindUtc()
                     };
                 });
 
@@ -134,7 +137,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         IsSetSession = s.IsSetSession,  
                         SessionName = s.SessionName,    
                         HasExpiration = s.HasExpiration,   
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate.SetKindUtc()
                     };
                 });
 
@@ -267,11 +270,10 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 {
                     return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException("No schedules to update"), "No schedules to update");
                 }
-
                 var scheduleToUpdate = args.Select(s => {
                     return new Entities.ActivitySchedule {
-                        DateTime = s.DateTime,
                         Id = s.Id,
+                        DateTime = s.DateTime,
                         Name = s.Name,
                         PerUnit1 = s.PerUnit1,
                         PerUnit2 = s.PerUnit2,
@@ -285,7 +287,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate.SetKindUtc(),
                     };
                 });
 
@@ -313,7 +315,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                             IsSetSession= s.IsSetSession,
                             HasExpiration= s.HasExpiration,
                             SessionName = s.SessionName,
-                            StartDate= s.StartDate
+                            StartDate= s.StartDate.SetKindUtc(),
                         };
                     }), "Successfully update many schedules"
                 );

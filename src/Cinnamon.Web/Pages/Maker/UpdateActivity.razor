@@ -556,7 +556,11 @@
                         UnitPrice = s.UnitPrice,
                         TempId = s.Id,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }).ToList(),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -594,7 +598,7 @@
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 PinnedLocation = activity.PinnedLocation,
-                Status = activity.Status
+                Status = activity.Status,
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -743,7 +747,11 @@
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate,
                     };
                 }),
                 AdditionalRequirements  = ReplaceEmptyValue(Model.Activity.AdditionalRequirements, NOTHING_PROVIDED),
@@ -772,8 +780,6 @@
                 Title                   = ReplaceEmptyValue(Model.Activity.Title, NOTHING_PROVIDED),
                 ActivityId              = Model.Activity.ActivityId,
                 DeletedScheduleIds      = Model.DeletedScheduleIds,
-                IsSetSession            = Model.Activity.IsSetSession,
-                SessionName             = ReplaceEmptyValue(Model.Activity.SessionName, NOTHING_PROVIDED),
                 PinnedLocation          = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
                 Status                  = Enums.ActivityStatus.InProgress,
             }, Model.Token);
@@ -854,7 +860,11 @@
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName ?? "N/A",
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate ?? DateTime.MinValue,
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -883,8 +893,6 @@
                 Title = Model.Activity.Title,
                 ActivityId = Model.Activity.ActivityId,
                 DeletedScheduleIds = Model.DeletedScheduleIds,
-                IsSetSession = Model.Activity.IsSetSession,
-                SessionName = Model.Activity.SessionName,
                 PinnedLocation = Model.Activity.PinnedLocation,
                 Status = Enums.ActivityStatus.Submitted
             }, Model.Token);
