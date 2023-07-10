@@ -34,7 +34,7 @@
             </div>
             <div class="modal-body">
                 <div class="create-conversation-section">
-                    <InfiniteScroll ObserverTargetId="feedback-observerTarget" ObservableTargetReach="(e)=> GetReviews(false, true)">
+                    <InfiniteScroll ObserverTargetId="feedback-observerTarget" ContainerTargetClass=".create-conversation-section" ObservableTargetReach="(e)=> GetReviews(false, true)">
                         @foreach (var item in ReviewsHistory)
                         {
                             @if (CustomerProfiles != null)

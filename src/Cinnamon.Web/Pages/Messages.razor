@@ -314,7 +314,7 @@
                 </div>
             </div>
             <div class="conversation-section">
-                <InfiniteScroll ObserverTargetId="observerTarget" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
+                <InfiniteScroll ObserverTargetId="observerTarget" ContainerTargetClass=".conversation-section" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
                     <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
                         <div id="observerTarget"></div>
 
