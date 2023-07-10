@@ -63,7 +63,11 @@ public class DashboardController : ControllerBase
                             ScheduleId = s.ScheduleId,
                             ScheduleTitle = s.ScheduleTitle,
                             Title = s.Title,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }) 
                 }
