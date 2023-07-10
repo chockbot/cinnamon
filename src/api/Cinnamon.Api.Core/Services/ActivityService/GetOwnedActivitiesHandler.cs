@@ -96,8 +96,6 @@ public class GetOwnedActivitiesHandler : IGetOwnedActivitiesHandler
                         SubCategoryId = a.SubCategoryId,
                         Title = a.Title,
                         Handler = a.Handler,
-                        IsSetSession = a.IsSetSession,
-                        SessionName = a.SessionName,
                         IsNew = a.IsNew,
                         OngoingStudents = a.OngoingStudents,
                         CompletedStudents = a.CompletedStudents,

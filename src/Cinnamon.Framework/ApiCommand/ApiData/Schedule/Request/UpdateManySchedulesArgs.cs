@@ -26,6 +26,6 @@ public class UpdateManySchedulesArgs
         public bool? IsSetSession { get; set; } = false;
         public string? SessionName { get; set; }
         public int? HasExpiration { get; set; } = 0;
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
     }    
 }

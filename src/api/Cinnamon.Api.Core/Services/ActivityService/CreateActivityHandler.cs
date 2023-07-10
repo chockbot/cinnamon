@@ -212,8 +212,6 @@ public class CreateActivityHandler : ICreateActivityHandler
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
                 Handler = activity.Handler,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName,
                 ActivitySchedules = createdSchedules.Result.Result.Select(s => {
                     return new CreateActivityResult.ActivitySchedule {
                         DateTime = s.DateTime,
