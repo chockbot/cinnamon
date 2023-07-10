@@ -98,8 +98,6 @@ public class GetAllActivitiesHandler:IGetAllActivitiesHandler
                         CreatedBy               = e.CreatedBy,
                         MapDetails              = e.MapDetails,
                         Handler                 = e.Handler,
-                        IsSetSession            = e.IsSetSession,
-                        SessionName             = e.SessionName,
                         IsDeactivated           = e.IsDeactivated,
                         ActivitySchedules       = e.Schedules != null ? e.Schedules.Select(s => {
                             return new GetAllActivitiesResult.Activity.ActivitySchedule

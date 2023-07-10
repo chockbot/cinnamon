@@ -210,7 +210,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 IsSetSession = s.IsSetSession,
                                 SessionName = s.SessionName,
                                 HasExpiration = s.HasExpiration,
-                                StartDate = s.StartDate
+                                StartDate = s.StartDate,
                             };
                         })
                     });
@@ -243,7 +243,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 Order = s.Order,
                                 IsActiveSchedule = s.IsActiveSchedule,
                                 IsSetSession = s.IsSetSession,
-                                SessionName = s.SessionName,
+                                SessionName = s.SessionName ?? string.Empty,
                                 HasExpiration = s.HasExpiration,
                                 StartDate = s.StartDate
                             };

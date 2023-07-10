@@ -56,6 +56,6 @@ public class UpdateActivityArgs : IInteractor
         public bool IsSetSession { get; set; }
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 }
