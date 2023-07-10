@@ -365,12 +365,21 @@
                                                                     </a>
                                                                     @if (act.OngoingStudents > 0)
                                                                     {
-                                                                        <div class="rounded-pill ongoing-section">
-                                                                            <div class="active-badge" style="text-align:center">
-                                                                                <span class="pulse"></span>
-                                                                                <span class="active-tag-label">@act.OngoingStudents</span>
-                                                                            </div>
-                                                                        </div>
+                                                                        <CustomTooltip MarginLeft="-100">
+                                                                            <TextContent>
+                                                                                <div class="rounded-pill ongoing-section">
+                                                                                    <div class="active-badge" style="text-align:center">
+                                                                                        <span class="pulse"></span>
+                                                                                        <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </TextContent>
+                                                                            <TooltipContent>
+                                                                                <span class="color-grey-100">
+                                                                                    Ongoing Students
+                                                                                </span>
+                                                                            </TooltipContent>
+                                                                        </CustomTooltip>
                                                                     }
                                                                     @if(CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
                                                                     {
@@ -528,7 +537,7 @@
                 }
                 @foreach (var act in activities)
                 {
-                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body" style="margin-bottom:30px">
+                    <div class="col-xl-3 col-lg-3 col-md-4 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
                         <Div ElementId="#b-animate">
                             <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
                                 <div class="card activities-card">
@@ -540,12 +549,21 @@
                                             </a>
                                             @if (act.OngoingStudents > 0)
                                             {
-                                                <div class="rounded-pill ongoing-section">
-                                                    <div class="active-badge" style="text-align:center">
-                                                        <span class="pulse"></span>
-                                                        <span class="active-tag-label">@act.OngoingStudents</span>
-                                                    </div>
-                                                </div>
+                                                <CustomTooltip MarginLeft="-100">
+                                                    <TextContent>
+                                                        <div class="rounded-pill ongoing-section">
+                                                            <div class="active-badge" style="text-align:center">
+                                                                <span class="pulse"></span>
+                                                                <span class="active-tag-label">@act.OngoingStudents</span>
+                                                            </div>
+                                                        </div>
+                                                    </TextContent>
+                                                    <TooltipContent>
+                                                        <span class="color-grey-100">
+                                                            Ongoing Students
+                                                        </span>
+                                                    </TooltipContent>
+                                                </CustomTooltip>
                                             }
                                             @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
                                             {
