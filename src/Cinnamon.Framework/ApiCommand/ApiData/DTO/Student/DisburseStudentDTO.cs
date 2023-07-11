@@ -12,4 +12,6 @@ public class DisburseStudentDTO
     public int NumberOfSessions {get; set;}
     public int SessionsAttended {get; set;}
     public bool IsInclusivePayment {get; set;}
+    public decimal PerUnitDisburseAmount {get; set;}
+    public decimal TotalDisburseAmount {get; set;}
 }
