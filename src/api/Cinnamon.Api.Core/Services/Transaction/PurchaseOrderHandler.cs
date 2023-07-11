@@ -22,12 +22,13 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IFinishTransactionHandler finishTransactionHandler;
     private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
     private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
+    private readonly ICustomerPricingData customerPricingData;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
-        IValidateCouponCodeHandler validateCouponCodeHandler)
+        IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -38,6 +39,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.finishTransactionHandler = finishTransactionHandler;
         this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
         this.validateCouponCodeHandler = validateCouponCodeHandler;
+        this.customerPricingData = customerPricingData;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -114,6 +116,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
+            decimal perUnitDisburseAmount = activitySchedule.Price;
+            decimal totalDisburseAmount = subTotal;
+
             // validate coupon
             if(!string.IsNullOrEmpty(args.CouponCode))
             {
@@ -129,10 +134,13 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 }
                 var couopon = validateCouponRes.Result;
 
+                decimal disbursementDisccount = 0;
+
                 // fixed amount
                 if(couopon.DiscountType == 1)
                 {
                     discount = couopon.Amount;
+                    disbursementDisccount = couopon.Amount;
                 }
                 // percentage 
                 else if(couopon.DiscountType == 0)
@@ -149,10 +157,34 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     }
 
                     discount = couponSubTotal * percentage;
+                    disbursementDisccount = subTotal * percentage;
                 }
+
+                // deduct from disbursement amount
+                perUnitDisburseAmount -= (disbursementDisccount / args.NumberOfHeads);
+                totalDisburseAmount -= disbursementDisccount;
 
                 // deduct overall total to discount
                 overallTotal -= discount;
+            }
+            
+            // disbursement for inclusive pricing
+            if(IsInclusivePayment)
+            {
+                var customerPricingRes = await customerPricingData.GetCustomerPricingByCustomerId(activityRes.Result.Owner?.Id ?? 0);
+                if(!customerPricingRes.Succeeded || customerPricingRes.Result == null || !customerPricingRes.Result.IsSuccess)
+                {
+                    return AppResult<PurchaseOrderResult>.CreateFailed(
+                        new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid request.");
+                }
+                var customerPricing = customerPricingRes.Result.Result;
+
+                decimal amountToDeduct = 0;
+                var percentage = customerPricing.Rate / 100;
+                amountToDeduct = percentage * perUnitDisburseAmount;
+
+                perUnitDisburseAmount -= amountToDeduct;
+                totalDisburseAmount -= (amountToDeduct * args.NumberOfHeads);
             }
             
             if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
@@ -199,7 +231,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 CreditAmount = creditAmount,
                 UnitCount = args.Students.Count(),
                 UnitPrice = activitySchedule.Price,
-                IsInclusivePayment = IsInclusivePayment
+                IsInclusivePayment = IsInclusivePayment,
+                PerUnitDisburseAmount = perUnitDisburseAmount,
+                TotalDisburseAmount = totalDisburseAmount
             });
 
             if(!result.Succeeded || result.Result == null)

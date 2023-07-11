@@ -30,4 +30,8 @@ public class CreatePurchaseOrderArgs
     public int UnitCount {get; set;}
     [Required]
     public bool IsInclusivePayment {get; set;}
+    [Required]
+    public decimal PerUnitDisburseAmount {get; set;}
+    [Required]
+    public decimal TotalDisburseAmount {get; set;}
 }
