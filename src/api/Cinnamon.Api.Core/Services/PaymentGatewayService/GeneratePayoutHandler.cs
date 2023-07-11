@@ -100,7 +100,8 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                     }
                     var account = cachedPayoutAccounts[transaction.MakerId];
 
-                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, transaction.PerUnitDisburseAmount, transaction.TransactionId, 
+                    var amountToDisburse = transaction.PerUnitDisburseAmount > 0 ? transaction.PerUnitDisburseAmount : 0;
+                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, amountToDisburse, transaction.TransactionId, 
                         account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
                 }
             }
@@ -155,8 +156,9 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
 
                         // var totalAmount = transaction.UnitPrice - amountToDeduct;
                         var account = cachedPayoutAccounts[transaction.MakerId];
-
-                        generatePayoutHelper.AddCustomerSummary(transaction.MakerId, transaction.PerUnitDisburseAmount, transaction.TransactionId, 
+                        var amountToDisburse = transaction.PerUnitDisburseAmount > 0 ? transaction.PerUnitDisburseAmount : 0;
+                        
+                        generatePayoutHelper.AddCustomerSummary(transaction.MakerId, amountToDisburse, transaction.TransactionId, 
                             account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
                     }
                 }
