@@ -125,7 +125,11 @@
 
     <Modal @ref="modalRef">
         <ModalContent Centered>
-            <ModalBody class="pt-5">
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">@(UserAction == ActionType.Create ? "Create" : "Update") Coupon</p>
+                <button type="button" style="top: 22px; right: 20px;" class="btn-close position-absolute" @onclick="CloseModal" />
+            </ModalHeader>
+            <ModalBody class="pt-3">
                 <Validations Mode="ValidationMode.Manual" Model="Form" @ref="FormValidation">
                     <Field class="mb-4">
                         <FieldLabel class="font-16">Select Coupon Application<span class="color-red">*</span></FieldLabel>
@@ -515,6 +519,11 @@
         await modalRef.Show();
     }
     
+    private async Task CloseModal()
+    {
+        await modalRef.Close(CloseReason.UserClosing);
+        ClearFields();
+    }
 
     public class CouponsModel 
     {
