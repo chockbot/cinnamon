@@ -50,6 +50,9 @@ public class AddActivityExpirationHandler: IAddActivityExpirationHandler
                 case "2 Months":
                     args.ExpirationEndDate = args.ExpirationStartDate.AddMonths(2);
                     break;
+                case "3 Months":
+                    args.ExpirationEndDate = args.ExpirationStartDate.AddMonths(3);
+                    break;
                 default:
                     break;
             }
