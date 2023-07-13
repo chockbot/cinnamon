@@ -574,7 +574,7 @@
 
         private DateTime datefrom = DateTime.Now;
         [Required]
-        [DateOnwards(ErrorMessage = "Past dates now allowed")]
+        [DateOnwards(ErrorMessage = "Past dates not allowed")]
         public DateTime DateFrom 
         {
             get
@@ -593,7 +593,7 @@
 
         private DateTime dateto = DateTime.Now;
         [Required]
-        [DateOnwards(ErrorMessage = "Past dates now allowed")]
+        [DateOnwards(ErrorMessage = "Past dates not allowed")]
         public DateTime DateTo 
         {
             get 
