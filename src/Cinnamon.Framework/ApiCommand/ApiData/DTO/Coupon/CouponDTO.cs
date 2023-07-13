@@ -15,6 +15,7 @@ public class CouponDTO
     public int Status {get; set;}
     public bool IsAdmin {get; set;}
     public Activity? ActivityApplied {get; set;}
+    public DateTime DateCreated {get; set;}
 
     public class Activity 
     {

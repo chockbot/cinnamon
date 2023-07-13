@@ -100,7 +100,8 @@ public class CreateCouponHandler : ICreateCouponHandler
                 MaximumSpend = created.MaximumSpend,
                 Name = created.Name,
                 Status = created.Status,
-                ToDate = created.To
+                ToDate = created.To,
+                DateCreated = created.DateCreated
             }, "Coupon code successfully created.");
         }
         catch (Exception ex)

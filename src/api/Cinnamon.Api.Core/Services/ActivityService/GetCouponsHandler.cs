@@ -65,7 +65,8 @@ public class GetCouponsHandler : IGetCouponsHandler
                         MaximumSpend = c.MaximumSpend,
                         Name = c.Name,
                         Status = c.Status,
-                        ToDate = c.To
+                        ToDate = c.To,
+                        DateCreated = c.DateCreated
                     };
                 })
             }, "Successfully get all coupon codes");
