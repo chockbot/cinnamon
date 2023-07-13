@@ -98,7 +98,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             DateTime startExpiration = DateTime.MinValue; 
             if (schedule.HasExpiration == 1 && schedule.IsSetSession == true)
             {
-                startExpiration = schedule.StartDate.Value;
+                startExpiration = schedule.StartDate ?? DateTime.MinValue;
                 switch (schedule.SessionName)
                 {
                     case "2 Weeks":
@@ -112,6 +112,9 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                         break;
                     case "2 Months":
                         endExpiration = startExpiration.AddMonths(2);
+                        break;
+                    case "3 Months":
+                        endExpiration = startExpiration.AddMonths(3);
                         break;
                     default:
                         break;
