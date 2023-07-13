@@ -28,7 +28,7 @@
                     <TableRow>
                         <TableHeaderCell>
                             <Label class="sotring-column">
-                                Discription
+                                Description
                                 <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
                             </Label>
                         </TableHeaderCell>
@@ -178,7 +178,7 @@
                     {
                         <Field class="mb-2">
                             <FieldBody>
-                                <NumericPicker Min="0" class='@(ListCoupons.IsPercentageValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Percentage %" ShowStepButtons="false" Decimals="2" 
+                                <NumericPicker Min="0" class='@(ListCoupons.IsPercentageValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Percentage %" ShowStepButtons="false" Decimals="0" 
                                     TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                                 <div class="invalid-feedback">Provide valid value</div>
@@ -186,7 +186,7 @@
                         </Field>
                         <Field class="mb-3">
                             <FieldBody>
-                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="2" 
+                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="0" 
                                     TValue="decimal?" ValueChanged="v => Form.MinimumSpend = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                             </FieldBody>
@@ -196,7 +196,7 @@
                     {
                         <Field class="mb-3">
                             <FieldBody>
-                                <NumericPicker Min="0" class='@(ListCoupons.IsFixedAmountValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Amount" ShowStepButtons="false" Decimals="2" 
+                                <NumericPicker Min="0" class='@(ListCoupons.IsFixedAmountValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Amount" ShowStepButtons="false" Decimals="0" 
                                     TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                                 <div class="invalid-feedback">Provide valid value</div>
