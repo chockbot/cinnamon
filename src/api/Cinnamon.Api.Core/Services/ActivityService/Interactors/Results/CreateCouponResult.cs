@@ -14,4 +14,5 @@ public class CreateCouponResult
     public DateTime FromDate {get; set;}
     public DateTime ToDate {get; set;}
     public int Status {get; set;}
+    public DateTime DateCreated {get; set;}
 }

@@ -54,7 +54,9 @@ public class CouponRespository : ICouponRepository
                 MaximumSpend = created.MaximumSpend,
                 Name = created.Name,
                 Status = created.Status,
-                To = created.To
+                To = created.To,
+                DateCreated = created.CreatedOn,
+                IsAdmin = created.IsAdmin
             }, "Successfully created coupon");
         }
         catch (Exception ex)
@@ -96,7 +98,8 @@ public class CouponRespository : ICouponRepository
                     Name = c.Name,
                     Status = c.Status,
                     To = c.To,
-                    IsAdmin = c.IsAdmin
+                    IsAdmin = c.IsAdmin,
+                    DateCreated = c.CreatedOn
                 };
             }), "Successfully get coupons");
         }
@@ -130,6 +133,8 @@ public class CouponRespository : ICouponRepository
                     Name = c.Name,
                     Status = c.Status,
                     To = c.To,
+                    DateCreated = c.CreatedOn,
+                    IsAdmin = c.IsAdmin
                 };
             }), "Successfully get coupons");
         }
@@ -161,7 +166,9 @@ public class CouponRespository : ICouponRepository
                 MaximumSpend = coupon.MaximumSpend,
                 Name = coupon.Name,
                 Status = coupon.Status,
-                To = coupon.To
+                To = coupon.To,
+                DateCreated = coupon.CreatedOn,
+                IsAdmin = coupon.IsAdmin
             }, "Successfully get coupon code by id");
         }
         catch (Exception ex)
@@ -252,6 +259,8 @@ public class CouponRespository : ICouponRepository
                 Name = updated.Name,
                 Status = updated.Status,
                 To = updated.To,
+                DateCreated = updated.CreatedOn,
+                IsAdmin = updated.IsAdmin
             }, "Successfully update coupon code");
         }
         catch (Exception ex)
@@ -282,7 +291,9 @@ public class CouponRespository : ICouponRepository
                 MaximumSpend = coupon.MaximumSpend,
                 Name = coupon.Name,
                 Status = coupon.Status,
-                To = coupon.To
+                To = coupon.To,
+                DateCreated = coupon.CreatedOn,
+                IsAdmin = coupon.IsAdmin
             }, "Successfully get coupon code by id");
         }
         catch (Exception ex)

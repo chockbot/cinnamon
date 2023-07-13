@@ -1830,7 +1830,8 @@ public class ActivityController : ControllerBase
                     MaximumSpend = created.MaximumSpend,
                     Name = created.Name,
                     Status = created.Status,
-                    ToDate = created.ToDate
+                    ToDate = created.ToDate,
+                    DateCreated = created.DateCreated
                 }
             });
         }
@@ -1876,7 +1877,8 @@ public class ActivityController : ControllerBase
                         MaximumSpend = c.MaximumSpend,
                         Name = c.Name,
                         Status = c.Status,
-                        ToDate = c.ToDate
+                        ToDate = c.ToDate,
+                        DateCreated = c.DateCreated
                     };
                 })
             });
@@ -1989,7 +1991,8 @@ public class ActivityController : ControllerBase
                     MaximumSpend = updated.MaximumSpend,
                     Name = updated.Name,
                     Status = updated.Status,
-                    ToDate = updated.ToDate
+                    ToDate = updated.ToDate,
+                    DateCreated = updated.DateCreated
                 }
             });
         }

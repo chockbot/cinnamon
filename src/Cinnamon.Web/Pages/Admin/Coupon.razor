@@ -79,7 +79,9 @@
                 <TableBody>
                     @if(ListCoupons.Coupons != null)
                     {
-                        @foreach (var item in ListCoupons.Coupons.Where(c => c.Name.ToLower().Contains(SearchText.ToLower())))
+                        @foreach (var item in ListCoupons.Coupons
+                            .Where(c => c.Name.ToLower().Contains(SearchText.ToLower()))
+                            .OrderByDescending(c => c.DateCreated))
                         {
                             <TableRow>
                                 <TableRowCell>
@@ -366,6 +368,7 @@
                     DiscountType = c.DiscountType,
                     MinimumSpend = c.MaximumSpend,
                     ActivityId = c.ActivityId,
+                    DateCreated = c.DateCreated
                 };
             });
         }
@@ -541,6 +544,7 @@
             public int DiscountType {get; set;}
             public decimal MinimumSpend {get; set;}
             public int ActivityId {get; set;}
+            public DateTime DateCreated {get; set;}
         }
 
         public class Activity 

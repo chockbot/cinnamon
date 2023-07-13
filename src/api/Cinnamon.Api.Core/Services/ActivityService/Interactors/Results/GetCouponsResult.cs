@@ -19,6 +19,7 @@ public class GetCouponsResult
         public DateTime ToDate {get; set;}
         public int Status {get; set;}
         public Activity? AppliedActivity {get; set;}
+        public DateTime DateCreated {get; set;}
 
         public class Activity 
         {
