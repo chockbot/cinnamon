@@ -35,7 +35,7 @@ public class MakerEnrolledNotificationHelper
                 <tr>
                     <td style='width: 50%'>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Payment Provider Fee: </span>
+                        <span style='color: #717171'>Service Fee: </span>
                         </p>
                     </td>
                     <td style='text-align: right; width: 50%'>
@@ -52,7 +52,7 @@ public class MakerEnrolledNotificationHelper
                 <tr>
                     <td style='width: 50%'>
                         <p style='font-size: 16px; margin: 0; margin-top: 1rem'>
-                        <span style='color: #717171'>Service Fee: </span>
+                        <span style='color: #717171'>Handling Fee: </span>
                         </p>
                     </td>
                     <td style='text-align: right; width: 50%'>
