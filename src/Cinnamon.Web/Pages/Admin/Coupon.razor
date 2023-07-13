@@ -79,7 +79,9 @@
                 <TableBody>
                     @if(ListCoupons.Coupons != null)
                     {
-                        @foreach (var item in ListCoupons.Coupons.Where(c => c.Name.ToLower().Contains(SearchText.ToLower())))
+                        @foreach (var item in ListCoupons.Coupons
+                            .Where(c => c.Name.ToLower().Contains(SearchText.ToLower()))
+                            .OrderByDescending(c => c.DateCreated))
                         {
                             <TableRow>
                                 <TableRowCell>
@@ -146,7 +148,7 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Coupon Description <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
+                                <TextEdit Placeholder="E.g. - Cinnamon Sale" Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Name">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -158,7 +160,7 @@
                         <Field class="mb-3">
                             <FieldLabel class="font-16">Coupon Code <span class="color-red">*</span></FieldLabel>
                             <FieldBody>
-                                <TextEdit Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
+                                <TextEdit Placeholder="E.g. - CINNAMONDISCOUNT2023" Size="Size.Small" Role="TextRole.Text" @bind-Text="Form.Code" Disabled="UserAction == ActionType.Update">
                                     <Feedback>
                                         <ValidationError />
                                     </Feedback>
@@ -179,7 +181,7 @@
                     {
                         <Field class="mb-2">
                             <FieldBody>
-                                <NumericPicker Min="0" class='@(ListCoupons.IsPercentageValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Percentage %" ShowStepButtons="false" Decimals="2" 
+                                <NumericPicker Min="0" class='@(ListCoupons.IsPercentageValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Percentage %" ShowStepButtons="false" Decimals="0" 
                                     TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                                 <div class="invalid-feedback">Provide valid value</div>
@@ -187,7 +189,7 @@
                         </Field>
                         <Field class="mb-3">
                             <FieldBody>
-                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="2" 
+                                <NumericPicker Size="Size.Small" Min="0" Placeholder="Minimum Spend" ShowStepButtons="false" Decimals="0" 
                                     TValue="decimal?" ValueChanged="v => Form.MinimumSpend = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                             </FieldBody>
@@ -197,7 +199,7 @@
                     {
                         <Field class="mb-3">
                             <FieldBody>
-                                <NumericPicker Min="0" class='@(ListCoupons.IsFixedAmountValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Amount" ShowStepButtons="false" Decimals="2" 
+                                <NumericPicker Min="0" class='@(ListCoupons.IsFixedAmountValueError ? "is-invalid" : "")' Size="Size.Small" Placeholder="Amount" ShowStepButtons="false" Decimals="0" 
                                     TValue="decimal?" ValueChanged="v => Form.Amount = v ?? 0" Disabled="UserAction == ActionType.Update">
                                 </NumericPicker>
                                 <div class="invalid-feedback">Provide valid value</div>
@@ -323,7 +325,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var activities = activityRes.Result.Result;
+            var activities = activityRes.Result.Result.Where(a => a.Status != Framework.Enums.Enums.ActivityStatus.InProgress).OrderBy(a => a.Title);
 
             var listOfActivities = new List<CouponsModel.Activity>();
             listOfActivities.Add(new CouponsModel.Activity {Id = -1, Name = "Select Activity", Disabled = true});
@@ -366,6 +368,7 @@
                     DiscountType = c.DiscountType,
                     MinimumSpend = c.MaximumSpend,
                     ActivityId = c.ActivityId,
+                    DateCreated = c.DateCreated
                 };
             });
         }
@@ -541,6 +544,7 @@
             public int DiscountType {get; set;}
             public decimal MinimumSpend {get; set;}
             public int ActivityId {get; set;}
+            public DateTime DateCreated {get; set;}
         }
 
         public class Activity 

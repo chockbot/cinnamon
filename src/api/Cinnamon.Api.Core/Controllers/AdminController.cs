@@ -183,7 +183,8 @@ namespace Cinnamon.Api.Core.Controllers
                         MaximumSpend = created.MaximumSpend,
                         Name = created.Name,
                         Status = created.Status,
-                        ToDate = created.ToDate
+                        ToDate = created.ToDate,
+                        DateCreated = created.DateCreated
                     }
                 });
             }

@@ -98,6 +98,7 @@ public class CreateCouponHandler : ICreateCouponHandler
                 Name = created.Name,
                 Status = created.Status,
                 ToDate = created.ToDate,
+                DateCreated = created.DateCreated
             }, "Successfully create coupon code");
         }
         catch (Exception ex)

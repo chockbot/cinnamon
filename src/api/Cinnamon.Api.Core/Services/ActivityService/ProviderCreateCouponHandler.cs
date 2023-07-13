@@ -83,7 +83,8 @@ public class ProviderCreateCouponHandler : IProviderCreateCouponHandler
                 MaximumSpend = created.MaximumSpend,
                 Name = created.Name,
                 Status = created.Status,
-                ToDate = created.ToDate
+                ToDate = created.ToDate,
+                DateCreated = created.DateCreated
             }, "Successfully create coupon code");
         }
         catch (Exception ex)

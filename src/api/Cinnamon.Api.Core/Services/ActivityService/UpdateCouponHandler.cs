@@ -75,7 +75,8 @@ public class UpdateCouponHandler : IUpdateCouponHandler
                 MaximumSpend = updatedCoupon.MaximumSpend,
                 Name = updatedCoupon.Name,
                 Status = updatedCoupon.Status,
-                ToDate = updatedCoupon.To
+                ToDate = updatedCoupon.To,
+                DateCreated = updatedCoupon.DateCreated
             }, "Successfully update coupon");
         }
         catch (Exception ex)
