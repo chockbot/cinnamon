@@ -59,6 +59,9 @@
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
                                 </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
+                                </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
                                     @if (hasNewMessages)
@@ -128,6 +131,9 @@
                             {
                                 <li class="dropdown-item">
                                     <NavButton OnClick="NavigateToDashboard" Text="Manage Experiences" />
+                                </li>
+                                <li class="dropdown-item">
+                                    <NavButton OnClick="NavigateToAttendance" Text="Check Attendance" />
                                 </li>
                                 <li class="dropdown-item messages-item">
                                     <NavButton OnClick="NavigateToMessages" Text="Messages" />
@@ -250,6 +256,10 @@
     private void NavigateToDashboard()
     {
         NavigationManager.NavigateTo("/maker/dashboard");
+    }
+    private void NavigateToAttendance()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/attendance");
     }
 
     private void NavigateToAccount()
