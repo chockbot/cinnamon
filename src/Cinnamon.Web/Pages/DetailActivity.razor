@@ -32,7 +32,7 @@
     <Div ElementId="#b-animate">
         <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
             <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
-                <div class="section-1 d-flex flex-column pb-4 border-bottom col-lg-10 justify-content-center col-md-10 justify-content-center col-sm-12 justify-content-center col-12 justify-content-center">
+                <div class="section-1 d-flex flex-column pb-2 border-bottom col-lg-10 justify-content-center col-md-10 justify-content-center col-sm-12 justify-content-center col-12 justify-content-center">
                     <div class="activity-image-container text-center d-flex flex-column" style="border-radius:10px;">
                         <div class="images-gallery order-lg-last order-md-last order-sm-first d-flex gap-3">
                             <div class="detail-md">
@@ -154,7 +154,7 @@
                     </div>
                 </div>
 
-                <div class="description-container py-4 d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12">
+                <div class="description-container py-2 d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12">
                     <div class="flex-fill col-lg-12 col-md-12 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last d-flex flex-column">
                         <div class="col-12 d-flex flex-lg-row flex-md-row flex-sm-column flex-column">
                             <div class="pe-3 mt-lg-0 mt-md-0 mt-3 mt-sm-3 col-lg-8 col-md-8 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last">
@@ -178,53 +178,43 @@
                             @if (customerDetail != null && customerDetail.IsMaker == true)
                             {
                                 <div class="col-lg-4 col-md-4 col-sm-12 col-12 order-sm-first order-md-last order-lg-last order-first profile-container">
+                                    @*Favorite & ShareLink*@
                                     <div class="d-flex">
-                                        @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
-                                        {
-                                            activity.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == activity.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
-                                            if (activity.IsFavorite != false)
+                                        <div class="col-6 favorite-link">
+                                            @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
                                             {
-                                                <div class="shadow justify-content-center share-link-section" style="background:#F3F6FC">
-                                                    <div class="d-flex share-link">
-                                                        <p>Add to Favorites</p>
-                                                        <button class="btn btn-copy" @onclick="() =>AddToFavorites(activity)">
-                                                            <img src="@(activity.IsFavorite ? "images/favorites/experience-details-heart-selected.svg" : "images/favorites/experience-details-heart-default.svg")">
-                                                        </button>
-                                                    </div>
-                                                </div>
+                                                activity.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == activity.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                                if (activity.IsFavorite != false)
+                                                {
+                                                    <button class="btn btn-copy w-100" @onclick="() =>AddToFavorites(activity)">
+                                                        <img src="@(activity.IsFavorite ? "images/favorites/experience-details-heart-selected.svg" : "images/favorites/experience-details-heart-default.svg")">
+                                                    </button>
+                                                }
+                                                else
+                                                {
+                                                    <button class="btn btn-copy w-100" @onclick="() =>CreateFavorite(activity)">
+                                                        <img src="images/favorites/experience-details-heart-default.svg">
+                                                    </button>
+                                                }
                                             }
                                             else
                                             {
-                                                <div class="shadow justify-content-center share-link-section" style="background:#F3F6FC">
-                                                    <div class="d-flex share-link">
-                                                        <p>Add to Favorites</p>
-                                                        <button class="btn btn-copy" @onclick="() =>CreateFavorite(activity)">
-                                                            <img src="images/favorites/experience-details-heart-default.svg">
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            }
-                                        }
-                                        else
-                                        {
-                                            <div class="shadow justify-content-center share-link-section" style="background:#F3F6FC">
-                                                <div class="d-flex share-link">
-                                                    <p>Add to Favorites</p>
-                                                    <button class="btn btn-copy" @onclick="() =>signinModal.Show()">
-                                                        <img src="images/favorites/experience-details-heart-default.svg">
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        }
-                                        <div class="shadow d-flex justify-content-center share-link-section" style="background:#F3F6FC">
-                                            <div class="d-flex share-link">
-                                                <p>Share this Activity</p>
-                                                <button class="btn btn-copy" @onclick="() => CopyToClipboard()">
-                                                    <img src="images/copytoclipboard.png">
+                                                <button class="btn btn-copy w-100" @onclick="() =>signinModal.Show()">
+                                                    <img src="images/favorites/experience-details-heart-default.svg">
                                                 </button>
-                                            </div>
+                                            }
+                                        </div>
+                                        <div class="col-6">
+                                            <button class="btn btn-copy w-100" @onclick="() => CopyToClipboard()">
+                                                <img src="images/copytoclipboard.svg">
+                                            </button>
                                         </div>
                                     </div>
+                                    
+
+
+
+                                    @*Customer Profile*@
                                     <div class="w-100 shadow rounded-3 d-flex" style="background:#F3F6FC">
                                         <div class="maker-pic">
                                             <img class="rounded-2 rounded-circle m-3" src="@customerDetail.ProfilePath" />
@@ -309,16 +299,16 @@
 
                             @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
                             {
-                                var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count();
-                                if (activeSchedule > 0)
+                                var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
+                                if (activeSchedule.Count > 0)
                                 {
                                     <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
-                                        @for (int x = 0; x < activity.ActivitySchedules.Count; x++)
+                                        @for (int x = 0; x < activeSchedule.Count; x++)
                                         {
-                                            @if (x <= 3)
+                                            @if (x <= 4)
                                             {
-                                                <div class="col-md-3 col-lg-3 col-sm-6 col-6">
-                                                    <CarouselItemSchedule ScheduleModel="@activity.ActivitySchedules.ElementAt(x)" ActivityModel="activity"></CarouselItemSchedule>
+                                                <div class="col-md-3 col-lg-3 col-sm-12 col-12">
+                                                    <CarouselItemSchedule ScheduleModel="@activeSchedule.ElementAt(x)" ActivityModel="activity"></CarouselItemSchedule>
                                                 </div>
                                             }
                                             else
@@ -348,7 +338,7 @@
 
                         @*Map Details*@
                         <hr />
-                        <div class="d-flex flex-column align-it3ems-start col-lg-6 col-md-6 col-sm-12 col-12">
+                        <div class="d-flex flex-column align-items-start col-lg-6 col-md-6 col-sm-12 col-12">
                             <label class="fw-bold mb-3 detail-label">Where you’ll be</label>
                             @if (string.IsNullOrEmpty(activity.MapDetails))
                             {
@@ -477,7 +467,7 @@
         </Animate>
     </Div>
     @* commented first for migration *@
-    <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.ToList()" ActivityModel="activity"></SchedulesModal>
+    <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></SchedulesModal>
 
     <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating" 
         CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>

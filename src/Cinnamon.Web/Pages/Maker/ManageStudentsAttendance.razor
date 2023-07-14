@@ -188,35 +188,35 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+    var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        var token = user.FindFirstValue("Token");
-        Token = token;
-        if (token == null)
-        {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-        if((!profileResult.Succeeded || profileResult.Result == null) || (profileResult.Succeeded && !profileResult.Result.IsSuccess))
-        {
-            // an error occured
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        if(!profileResult.Result.Result.IsMaker)
-        {
-            // should not able to access the page
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
+    var token = user.FindFirstValue("Token");
+    Token = token;
+    if (token == null)
+    {
+        // don't have current user login
+        NavigationManager.NavigateTo("explore");
+        return;
+    }
+    var profileResult = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+    if((!profileResult.Succeeded || profileResult.Result == null) || (profileResult.Succeeded && !profileResult.Result.IsSuccess))
+    {
+        // an error occured
+        NavigationManager.NavigateTo("explore");
+        return;
+    }
+    if(!profileResult.Result.Result.IsMaker)
+    {
+        // should not able to access the page
+        NavigationManager.NavigateTo("explore");
+        return;
+    }
 
-        //Get Student Attendance Details
-        var result = await ongoingApiHandler.GetOngoingActivityById(Id);
-        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-        {
-            student = new Students
+    //Get Student Attendance Details
+    var result = await ongoingApiHandler.GetOngoingActivityById(Id);
+    if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+    {
+        student = new Students
                     {
                         Id                   = result.Result.Result.Id,
                         CustomerId           = result.Result.Result.CustomerId,
@@ -228,29 +228,29 @@
                         SessionsAttended     = result.Result.Result.SessionsAttended,
                         NumberOfBacktracking = result.Result.Result.NumberOfBacktracking
                     };
-        }
-        //Get Parent Name
-        var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
-        if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
-        {
-            profile = new CustomerProfile
+    }
+    //Get Parent Name
+    var customer = await accountApiHandler.GetCustomerById(student.CustomerId);
+    if (customer.Succeeded && customer.Result != null && customer.Result.IsSuccess)
+    {
+        profile = new CustomerProfile
                                 {
                                     FirstName = customer.Result.Result.FirstName,
                                     LastName  = customer.Result.Result.LastName
                                 };
-        }
-        //Get Student Attendance
-        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+    }
+    //Get Student Attendance
+    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                 {
                     StudentId = student.Id,
                     ActivityId =student.ActivityId,
                     ScheduleId = student.ScheduleId
                 }, token);
-        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+    {
+        studentAttendances = attendance.Result.Result.Select(a =>
         {
-            studentAttendances = attendance.Result.Result.Select(a =>
-            {
-                return new StudentAttendance
+            return new StudentAttendance
                     {
                         Id = a.Id,
                         Date = a.Date,
@@ -261,19 +261,19 @@
                         ScheduleId = a.ScheduleId,
                         StudentId = a.StudentId
                     };
-            }).ToList();
-        }
+        }).ToList();
+    }
 
-        //Get Schedules
-        var schedules = await dashboardApiHandler.GetActivitySchedules(token);
-        if (!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
-        {
-            IsShowErrorMessage = true;
-            ErrorMessage = "An error occured. Can't find activity schedules. Please try again later.";
-            return;
-        }
-        activitySchedules.AddRange(schedules.Result.Result.Select(s => {
-                return new Schedule {
+    //Get Schedules
+    var schedules = await dashboardApiHandler.GetActivitySchedules(token);
+    if (!schedules.Succeeded || schedules.Result == null || !schedules.Result.IsSuccess)
+    {
+        IsShowErrorMessage = true;
+        ErrorMessage = "An error occured. Can't find activity schedules. Please try again later.";
+        return;
+    }
+    activitySchedules.AddRange(schedules.Result.Result.Select(s => {
+        return new Schedule {
                     ActivityDescription = s.Description,
                     ActivityTitle = s.Title,
                     ActivityId = s.ActivityId,
@@ -287,122 +287,120 @@
                     HasExpiration = s.HasExpiration,
                     StartDate  = s.StartDate
                 };
-            }));
-        await CreateMonth();
+    }));
+    await CreateMonth();
     }
     public async Task CreateMonth()
     {
-        if(monthsAway <= 2 && monthsAway >= -2)
+    if(monthsAway <= 2 && monthsAway >= -2)
+    {
+        if(monthsAway == 2)
         {
-            if(monthsAway == 2)
-            {
-                disableButtonRight = true;
-            }else if(monthsAway == -2){
-                disableButtonLeft = true;
-            }
-            else{
-                disableButtonRight = false;
-                disableButtonLeft = false;
-            }
-            var tempDate = DateTime.Now.AddMonths(monthsAway);
-            month = tempDate.Month;
-            year = tempDate.Year;
+            disableButtonRight = true;
+        }else if(monthsAway == -2){
+            disableButtonLeft = true;
+        }
+        else{
+            disableButtonRight = false;
+            disableButtonLeft = false;
+        }
+        var tempDate = DateTime.Now.AddMonths(monthsAway);
+        month = tempDate.Month;
+        year = tempDate.Year;
 
-            DateTime monthStart = new DateTime(year, month, 1);
-            monthEnd = monthStart.AddMonths(1).AddDays(-1);
-            monthName = monthStart.Month switch
-            {
-                1 => "January",
-                2 => "February",
-                3 => "March",
-                4 => "April",
-                5 => "May",
-                6 => "June",
-                7 => "July",
-                8 => "August",
-                9 => "September",
-                10 => "October",
-                11 => "November",
-                12 => "December",
-                _ => ""
-            };
-            numDummyColumn = (int)monthStart.DayOfWeek;
-        } 
+        DateTime monthStart = new DateTime(year, month, 1);
+        monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        monthName = monthStart.Month switch
+        {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            _ => ""
+        };
+        numDummyColumn = (int)monthStart.DayOfWeek;
+    } 
     }
     private void NavigateToManageStudent()
     {
-        NavigationManager.NavigateTo("/maker/dashboard/managestudents");
+    NavigationManager.NavigateTo("/maker/dashboard/managestudents");
     }
     private void OnEditRemarksClick()
     {
-        isEditRemarks = !isEditRemarks;
-        if (isEditRemarks)
-        {
-            remarksLocalState = student.Remarks;
-        }
-        else 
-        {
-            remarksLocalState = string.Empty;
-        }
+    isEditRemarks = !isEditRemarks;
+    if (isEditRemarks)
+    {
+        remarksLocalState = student.Remarks;
+    }
+    else 
+    {
+        remarksLocalState = string.Empty;
+    }
     }
     private async Task SaveAboutClick()
     {
-        if (isEditRemarks)
-        {
-            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+    if (isEditRemarks)
+    {
+        var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
                     {
                         Id = Id,
                         Remarks = remarksLocalState,
                     });
 
-            if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
-            }
+        if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            student.Remarks = string.IsNullOrEmpty(result.Result.Result.Remarks) ? string.Empty : result.Result.Result.Remarks;
         }
-        isEditRemarks = false;
+    }
+    isEditRemarks = false;
         }
     private async void UpdateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
-        try
-        {
-            await loadingIndicator.Show();
+    try
+    {
+        await loadingIndicator.Show();
 
-            studentAttendance.IsPresent = !studentAttendance.IsPresent;
-            if (studentAttendance.IsPresent)
-            {
-                studentAttendance.SessionsAttended += 1;
-            }
-            else
-            {
-                studentAttendance.SessionsAttended -= 1;
-            }
-            var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
+        studentAttendance.IsPresent = !studentAttendance.IsPresent;
+        if (studentAttendance.IsPresent)
+        {
+            studentAttendance.SessionsAttended += 1;
+        }
+        else
+        {
+            studentAttendance.SessionsAttended -= 1;
+        }
+        var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
                         {
                             Id = studentAttendance.Id,
                             Date = studentAttendance.Date,
                             IsPresent = studentAttendance.IsPresent
                         }, token);
 
-            if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
-            {
-                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                            {
-                                Id = studentAttendance.StudentId,
-                                SessionsAttended = studentAttendance.SessionsAttended,
-                            });
-                await OnInitializedAsync();
-                StateHasChanged();
-            }
-            //Get Schedule Details
-            var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
-            //Set Session Expiration
+        if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
+        {
+            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                    {
+                        Id = studentAttendance.StudentId,
+                        SessionsAttended = studentAttendance.SessionsAttended,
+                    });
+        }
+        //Get Schedule Details
+        var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
+        //Set Session Expiration
         if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
+        {
+            //Check if first attendance
+            if (studentAttendance.SessionsAttended == 1)
             {
-                //Check if first attendance
-                if (studentAttendance.SessionsAttended == 1)
-                {
-                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
                         {
                             Id = studentAttendance.StudentId,
                             ScheduleId = studentAttendance.ScheduleId,
@@ -410,9 +408,11 @@
                             ExpirationStartDate = presentDate,
                             ExpirationEndDate = DateTime.UtcNow
                         });
-                }
             }
+        }
         //Update Number of Backtracking
+        await OnInitializedAsync();
+        StateHasChanged();
         await loadingIndicator.Hide();
     }
     catch (Exception ex)
@@ -423,51 +423,52 @@
     }
     }
 
-    private async void CreateAttendance(Students studentAttendance, string token, DateTime presentDate)
+    private async void CreateAttendance(Students student, string token, DateTime presentDate)
     {
-        try
+    try
+    {
+        await loadingIndicator.Show();
+        if (student.NumberOfBacktracking != 0)
         {
-            await loadingIndicator.Show();
-            if (studentAttendance.NumberOfBacktracking != 0)
-            {
-                var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
+            var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
                         {
                             AttendanceDate = presentDate,
                             IsPresent = true,
-                            StudentId = studentAttendance.Id
+                            StudentId = student.Id
                         }, token);
 
-                if (create.Succeeded && create.Result.IsSuccess)
+            if (create.Succeeded && create.Result.IsSuccess)
+            {
+                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                        {
+                            Id = student.Id,
+                            SessionsAttended = student.SessionsAttended + 1,
+                            NumberOfBacktracking = student.NumberOfBacktracking - 1
+                        });
+                student.SessionsAttended = result.Result.Result.SessionsAttended;
+            }
+            //Get Schedule Details
+            var schedule = activitySchedules.Where(a => a.ScheduleId == student.ScheduleId).FirstOrDefault();
+            //Set Session Expiration
+            if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
+            {
+                //Check if first attendance
+                if (student.SessionsAttended == 1)
                 {
-                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                    student.ExpirationDateStart = presentDate;
+                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
                             {
-                                Id = studentAttendance.Id,
-                                SessionsAttended = studentAttendance.SessionsAttended + 1,
-                                NumberOfBacktracking = studentAttendance.NumberOfBacktracking - 1
+                                Id = student.Id,
+                                ScheduleId = student.ScheduleId,
+                                SessionName = schedule.SessionName,
+                                ExpirationStartDate = student.ExpirationDateStart,
+                                ExpirationEndDate = student.ExpirationDateEnd
                             });
-                    await OnInitializedAsync();
-                    StateHasChanged();
-                }
-                //Get Schedule Details
-                var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
-                //Set Session Expiration
-                if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
-                {
-                    //Check if first attendance
-                    if (studentAttendance.SessionsAttended == 1)
-                    {
-                        await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                                {
-                                    Id = studentAttendance.Id,
-                                    ScheduleId = studentAttendance.ScheduleId,
-                                    SessionName = schedule.SessionName,
-                                    ExpirationStartDate = presentDate,
-                                    ExpirationEndDate = DateTime.UtcNow
-                                });
                     }
                 }
-
-            await loadingIndicator.Hide();
+                await OnInitializedAsync();
+                StateHasChanged();
+                await loadingIndicator.Hide();
             }
             else
             {

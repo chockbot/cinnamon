@@ -87,13 +87,13 @@ body {
 }
 
 .student-attendance .activities-schedule-section .swiper-slide {
-  border: 2px solid #343d4c;
-  border-radius: 10px;
-  padding: 1rem;
-  text-align: center;
-  width: 300px;
-  height: auto;
-  position: relative;
+    border: 2px solid #343d4c;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    width: 300px;
+    height: auto;
+    position: relative;
 }
 
 .student-attendance .activities-schedule-section .swiper-slide .schedule-title {
@@ -102,10 +102,15 @@ body {
   text-transform: capitalize;
 }
 
-.student-attendance .activities-schedule-section .swiper-slide .schedule-time {
-  font-size: 16px;
-  text-align: center;
-}
+    .student-attendance .activities-schedule-section .swiper-slide .schedule-time {
+        font-size: 16px;
+        text-align: center;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* number of lines to show */
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
 
 .student-attendance .activities-schedule-section .swiper-slide .schedule-toggle {
     margin-bottom: 4rem;

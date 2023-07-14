@@ -210,6 +210,9 @@ public class StudentRepository: IStudentRepository
             }
             var student = studentRes.Result;
 
+            ExpirationStartDate = ExpirationStartDate.SetKindUtc();
+            ExpirationEndDate = ExpirationEndDate.SetKindUtc();
+
             student.Name = name ?? student.Name;
             student.StudentNo = studentNo ?? student.StudentNo;
             student.NumberOfSessions = numberOfSessions ?? student.NumberOfSessions;
