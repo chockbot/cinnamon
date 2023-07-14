@@ -617,13 +617,33 @@
                 Token = token
             };
 
-        if (string.IsNullOrEmpty(profile.ConnectionId))
+        if (hubConnection.State == HubConnectionState.Disconnected)
         {
-            await hubConnection.StartAsync();
-
-            if (IsConnected)
+            try
             {
-                hubConnection.Closed += ConnectWithRetryAsync;
+                await hubConnection.StartAsync();
+            }
+            catch (Exception ex)
+            {
+                await Task.Delay(new Random().Next(0, 5) * 1000);
+
+                while (true)
+                {
+                    try
+                    {
+                        await hubConnection.StartAsync();
+
+                        break;
+                    }
+                    catch (ObjectDisposedException e)
+                    {
+                        await Task.Delay(new Random().Next(0, 5) * 1000);
+                    }
+                    catch
+                    {
+                        await Task.Delay(new Random().Next(0, 5) * 1000);
+                    }
+                }
             }
         }
     }
@@ -1125,37 +1145,6 @@
         return new String('*', value.Length - count) + value.Substring(value.Length - count);
     }
 
-    public async Task<bool> ConnectWithRetryAsync(Exception ex)
-    {
-        await Task.Delay(new Random().Next(0, 5) * 1000);
-
-        logger.LogInformation($"connection was closed on UserId {Model.Customer.Id}-{Model.Customer.FirstName}-{Model.Customer.LastName}");
-
-        while (true)
-        {
-            try
-            {
-                logger.LogInformation($"reconnecting UserId {Model.Customer.Id}-{Model.Customer.FirstName}-{Model.Customer.LastName}");
-
-                await hubConnection.StartAsync();
-                System.Diagnostics.Debug.Assert(hubConnection.State == HubConnectionState.Connected);
-
-                logger.LogInformation($"successfully reconnected UserId {Model.Customer.Id}-{Model.Customer.FirstName}-{Model.Customer.LastName}");
-
-                return true;
-            }
-            catch (ObjectDisposedException e)
-            {
-                return false;
-            }
-            catch
-            {
-                System.Diagnostics.Debug.Assert(hubConnection.State == HubConnectionState.Disconnected);
-                await Task.Delay(5000);
-            }
-        }
-    }
-
     void LocationChanged(object sender, LocationChangedEventArgs e)
     {
     }
@@ -1164,8 +1153,6 @@
     {
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
-        hubConnection.Closed -= ConnectWithRetryAsync;
-
     }
 
     private async Task ValidateCouponCode()

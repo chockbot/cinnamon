@@ -56,7 +56,8 @@
             <div class="modal-body">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                     <div class="input-group border rounded-pill p-1">
-                        <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="addMemberSearchValue" @oninput="HandleInputAddMember" class="form-control bg-none border-0">
+                        <div id="add-members-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search Members">
+                        </div>
                         <div class="input-group-append border-0">
                             <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
                         </div>
@@ -132,7 +133,8 @@
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                         <div class="input-group border rounded-pill p-1">
-                            <input type="text" placeholder="Search" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue" @oninput="HandleInput" class="form-control bg-none border-0">
+                            <div id="chatroom-search-input" contenteditable="true" role="textbox" spellcheck="true" tabindex="0" style="" data-lexical-editor="true" data-text="Search Chatrooms">
+                            </div>
                             <div class="input-group-append border-0">
                                 <button id="button-addon3" type="button" class="btn btn-link text-success" style="border-radius:50%"><i class="fa fa-search"></i></button>
                             </div>
@@ -313,115 +315,118 @@
                     </div>
                 </div>
             </div>
-            <div class="conversation-section">
-                <InfiniteScroll ObserverTargetId="observerTarget" ContainerTargetClass=".conversation-section" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
-                    <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
-                        <div id="observerTarget"></div>
-
-                        @if (chatHistories.Count == 0)
-                        {
-                            <div class="row justify-content-center no-message-section text-center">
-                                <div class="col-lg-5">
-                                    <img src="images/messages/speech-bubble.svg" />
-                                    <div class="divider"></div>
-                                    <label class="no-conversation-title">
-                                        No Conversation Yet
-                                    </label>
-                                    <label class="no-conversation-sub-title">
-                                        You didn’t made any conversation yet, say something to this person.
-                                    </label>
-                                </div>
-                            </div>
-                        }
-                        @if (isLoading)
-                        {
-                            <div class="loading-section d-flex flex-row justify-content-center">
-                                <div class="spinner-border">
-                                </div>
-                            </div>
-                        }
-                        @foreach (var chat in chatHistories)
-                        {
-                            if (chat.ChatHistoryType == ChatHistoryType.Message)
+            @if (chatHistories.Count == 0)
+            {
+                <div class="row justify-content-center no-message-section text-center">
+                    <div class="col-lg-5">
+                        <img src="images/messages/speech-bubble.svg" />
+                        <div class="divider"></div>
+                        <label class="no-conversation-title">
+                            No Conversation Yet
+                        </label>
+                        <label class="no-conversation-sub-title">
+                            You didn’t made any conversation yet, say something to this person.
+                        </label>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="conversation-section">
+                    <InfiniteScroll ObserverTargetId="observerTarget" ContainerTargetClass=".conversation-section" ObservableTargetReach="(e)=> GetChatHistoryByChatRoomId(selectedChatRoomId, false, true)">
+                        <ul class="list-unstyled d-flex flex-column" id="chat-history-list">
+                            <div id="observerTarget"></div>
+                            @if (isLoading)
                             {
-                                if (lastMessageDateCreated.HasValue)
+                                <div class="loading-section d-flex flex-row justify-content-center">
+                                    <div class="spinner-border">
+                                    </div>
+                                </div>
+                            }
+                            @foreach (var chat in chatHistories)
+                            {
+                                if (chat.ChatHistoryType == ChatHistoryType.Message)
                                 {
-                                    TimeSpan ts = chat.DateCreated - lastMessageDateCreated.GetValueOrDefault();
-
-                                    if (ts.Days > 1)
+                                    if (lastMessageDateCreated.HasValue)
                                     {
+                                        TimeSpan ts = chat.DateCreated - lastMessageDateCreated.GetValueOrDefault();
+
+                                        if (ts.Days > 1)
+                                        {
+                                            <li class="d-flex flex-row justify-content-center list-item-days">
+                                                <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                                <div class="chat-date-time">
+                                                    @chat.DateCreated.ToString("MMMM dd, yyyy, hh:mm tt")
+                                                </div>
+                                            </li>
+                                        }
+                                        else if (ts.Minutes > 2)
+                                        {
+                                            <li class="d-flex flex-row justify-content-center list-item-minutes">
+                                                <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                                <div class="chat-date-time">
+                                                    @chat.DateCreated.ToString("dddd, hh:mm tt")
+                                                </div>
+                                            </li>
+                                        }
+
+                                        lastMessageDateCreated = chat.DateCreated;
+                                    }
+                                    else
+                                    {
+
+                                        lastMessageDateCreated = chat.DateCreated;
+
                                         <li class="d-flex flex-row justify-content-center list-item-days">
                                             <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
                                             <div class="chat-date-time">
-                                                @chat.DateCreated.ToString("MMMM dd, yyyy, hh:mm tt")
+                                                @lastMessageDateCreated.GetValueOrDefault().ToString("MMMM dd, yyyy, hh:mm tt")
                                             </div>
                                         </li>
                                     }
-                                    else if (ts.Minutes > 2)
+                                    @if (chat.FromUserId == currentUserId)
                                     {
-                                        <li class="d-flex flex-row justify-content-center list-item-minutes">
+                                        <li class="d-flex flex-row justify-content-end">
                                             <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                            <div class="chat-date-time">
-                                                @chat.DateCreated.ToString("dddd, hh:mm tt")
-                                            </div>
+                                            <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="left">
+                                                <div class="self-message">
+                                                    @chat.Message
+                                                </div>
+                                            </span>
+                                            <img src="@chat.FromProfilePath" class="chat-profile-picture">
                                         </li>
                                     }
-
-                                    lastMessageDateCreated = chat.DateCreated;
+                                    else
+                                    {
+                                        <li class="d-flex flex-row">
+                                            <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
+                                            <img src="@chat.FromProfilePath" class="chat-profile-picture">
+                                            <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="right">
+                                                <div class="sender-name">
+                                                    @chat.FromFirstName
+                                                </div>
+                                                <div class="sender-message">
+                                                    @chat.Message
+                                                </div>
+                                            </span>
+                                        </li>
+                                    }
                                 }
                                 else
                                 {
-
-                                    lastMessageDateCreated = chat.DateCreated;
-
-                                    <li class="d-flex flex-row justify-content-center list-item-days">
-                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                        <div class="chat-date-time">
-                                            @lastMessageDateCreated.GetValueOrDefault().ToString("MMMM dd, yyyy, hh:mm tt")
+                                    <li class="d-flex flex-row justify-content-center list-item-minutes">
+                                        <div class="sender-name">
+                                            @chat.Message
                                         </div>
                                     </li>
                                 }
-                                @if (chat.FromUserId == currentUserId)
-                                {
-                                    <li class="d-flex flex-row justify-content-end">
-                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                        <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="left">
-                                            <div class="self-message">
-                                                @chat.Message
-                                            </div>
-                                        </span>
-                                        <img src="@chat.FromProfilePath" class="chat-profile-picture">
-                                    </li>
-                                }
-                                else
-                                {
-                                    <li class="d-flex flex-row">
-                                        <input type="hidden" value="@chat.DateCreated" id="chat-history-date-created" />
-                                        <img src="@chat.FromProfilePath" class="chat-profile-picture">
-                                        <span data-toggle="tooltip" title="" data-bs-toggle="tooltip" data-bs-placement="right">
-                                            <div class="sender-name">
-                                                @chat.FromFirstName
-                                            </div>
-                                            <div class="sender-message">
-                                                @chat.Message
-                                            </div>
-                                        </span>
-                                    </li>
-                                }
                             }
-                            else
-                            {
-                                <li class="d-flex flex-row justify-content-center list-item-minutes">
-                                    <div class="sender-name">
-                                        @chat.Message
-                                    </div>
-                                </li>
-                            }
-                        }
-                    </ul>
+                        </ul>
 
-                </InfiniteScroll>
-            </div>
+                    </InfiniteScroll>
+                </div>
+
+            }
             <div class="typing-status-section">
                 @if (chatRooms.Count > 0)
                 {
@@ -561,7 +566,7 @@
                         <span class="fa fa-arrow-circle-left"></span> Stop
                     </button>*@
                 </div>
-                @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat)
+                @if (chatMateChatType == Framework.Enums.Enums.ChatType.GroupChat && currentUserChatMemberType == ChatMemberType.Customer)
                 {
                     <div class="col-lg-12 profile-settings-section">
                         @if (showLeaveGroup)
@@ -924,18 +929,6 @@
         }
     }
 
-    private void HandleInput(ChangeEventArgs e)
-    {
-        searchValue = e.Value.ToString().ToLower().Trim();
-        StateHasChanged();
-    }
-
-    private void HandleInputAddMember(ChangeEventArgs e)
-    {
-        addMemberSearchValue = e.Value.ToString().ToLower().Trim();
-        StateHasChanged();
-    }
-
     private async Task HandleKeyDown(KeyboardEventArgs e)
     {
         if (e.Key == "Enter" && !string.IsNullOrEmpty(messageInput))
@@ -978,7 +971,7 @@
                 currentUserLastName     = args.LastName;
                 currentUserProfilePath  = args.ProfileImg;
 
-                if (string.IsNullOrEmpty(args.ConnectionId))
+                if (hubConnection.State == HubConnectionState.Disconnected)
                 {
                     try
                     {
@@ -986,6 +979,27 @@
                     }
                     catch (Exception ex)
                     {
+                        await Task.Delay(new Random().Next(0, 5) * 1000);
+
+                        while (true)
+                        {
+                            try
+                            {
+                                await hubConnection.StartAsync();
+
+                                logger.LogInformation($"successfully reconnected UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
+
+                                break;
+                            }
+                            catch (ObjectDisposedException e)
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                            catch
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                        }
                     }
                 }
 
@@ -1278,7 +1292,7 @@
             chatRooms.Add(new ChatRoom
                 {
                     ChatRoomId = chatRoomId,
-                    DateCreated = DateTime.UtcNow,
+                    DateCreated = DateTime.Now,
                     FromConnectionId = toCustomerResult.Result.Result.ConnectionId,
                     FromUserId = chatMember.FromUserId,
                     FromFirstName = chatMember.FromFirstName,
@@ -1299,38 +1313,6 @@
         await GetChatHistoryByChatRoomId(chatRoomId, true, false);
 
         chatRooms = chatRooms.OrderByDescending(c => c.DateCreated).ToList();
-    }
-
-    public async Task<bool> ConnectWithRetryAsync(Exception ex)
-    {
-        await Task.Delay(new Random().Next(0, 5) * 1000);
-
-        logger.LogInformation($"connection was closed on UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
-
-        while (true)
-        {
-            try
-            {
-                logger.LogInformation($"reconnecting UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
-
-                await hubConnection.StartAsync();
-                Debug.Assert(hubConnection.State == HubConnectionState.Connected);
-
-                logger.LogInformation($"successfully reconnected UserId {currentUserId}-{currentUserFirstName}-{currentUserLastName}");
-
-                return true;
-            }
-            catch (ObjectDisposedException e)
-            {
-                Debug.Assert(hubConnection.State == HubConnectionState.Disconnected);
-                await Task.Delay(5000);
-            }
-            catch
-            {
-                Debug.Assert(hubConnection.State == HubConnectionState.Disconnected);
-                await Task.Delay(5000);
-            }
-        }
     }
 
     private async Task AddMemberToGroup()
@@ -1376,7 +1358,6 @@
     {
         // Unsubscribe from the event when our component is disposed
         NavigationManager.LocationChanged -= LocationChanged;
-        hubConnection.Closed -= ConnectWithRetryAsync;
         timer?.DisposeAsync();
     }
 
@@ -1444,6 +1425,20 @@
         {
             await Send();
         }
+    }
+
+    [JSInvokable]
+    public async Task HandleInput(string query)
+    {
+        searchValue = query.Trim();
+        StateHasChanged();
+    }
+
+    [JSInvokable]
+    public async Task HandleInputAddMember(string query)
+    {
+        addMemberSearchValue = query.Trim();
+        StateHasChanged();
     }
 
     [JSInvokable]

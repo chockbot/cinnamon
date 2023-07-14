@@ -74,7 +74,7 @@ namespace Cinnamon.Api.Core.Hubs
 
                     foreach (var connectionId in connectionIds)
                     {
-                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}|{(int)chatHistoryType}");
+                        await Clients.Client(connectionId).SendAsync("ReceiveMessage", $"{chatRoomId}|{DateTime.Now}|{fromUser.ConnectionId}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{toUser.ConnectionId}|{toUser.Id}|{toUser.FirstName}|{toUser.LastName}|{toUser.ProfileImg}|{(int)chatType}|{(int)chatHistoryType}");
                     }
 
                     await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
@@ -94,7 +94,7 @@ namespace Cinnamon.Api.Core.Hubs
             {
                 if (!string.IsNullOrEmpty(groupName))
                 {
-                    await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{groupName}|{(int)chatType}|{(int)chatHistoryType}|{false}|{chatName}");
+                    await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.Now}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{messageInput}|{groupName}|{(int)chatType}|{(int)chatHistoryType}|{false}|{chatName}");
                     
                     await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
                     {
@@ -140,7 +140,7 @@ namespace Cinnamon.Api.Core.Hubs
             string toFirstName = splitted[7];
             string toLastName = splitted[8];
 
-            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} added {toFirstName} {toLastName} to the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{false}|{chatName}");
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.Now}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} added {toFirstName} {toLastName} to the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{false}|{chatName}");
 
             await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
             {
@@ -167,7 +167,7 @@ namespace Cinnamon.Api.Core.Hubs
             string fromProfilePath = splitted[5];
             string chatName        = splitted[6];
 
-            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} has joined the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{false}|{chatName}");
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.Now}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} has joined the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{false}|{chatName}");
 
             await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
             {
@@ -205,7 +205,7 @@ namespace Cinnamon.Api.Core.Hubs
             string fromLastName    = splitted[4];
             string fromProfilePath = splitted[5];
 
-            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.UtcNow}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} has left the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{true}|{string.Empty}");
+            await Clients.Group(groupName).SendAsync("ReceiveGroupMessage", $"{chatRoomId}|{DateTime.Now}|{fromUserId}|{fromFirstName}|{fromLastName}|{fromProfilePath}|{false}|{fromFirstName} {fromLastName} has left the group.|{groupName}|{(int)ChatType.GroupChat}|{(int)ChatHistoryType.Notification}|{true}|{string.Empty}");
 
             await createChatHistoryHandler.ExecuteAsync(new Services.ChatService.Interactors.CreateChatHistoryArgs
             {

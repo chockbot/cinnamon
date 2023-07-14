@@ -792,9 +792,34 @@
 
                 await GetChatRoomsByUserId();
 
-                if (string.IsNullOrEmpty(args.ConnectionId))
+                if (hubConnection.State == HubConnectionState.Disconnected)
                 {
-                    await hubConnection.StartAsync();
+                    try
+                    {
+                        await hubConnection.StartAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        await Task.Delay(new Random().Next(0, 5) * 1000);
+
+                        while (true)
+                        {
+                            try
+                            {
+                                await hubConnection.StartAsync();
+
+                                break;
+                            }
+                            catch (ObjectDisposedException e)
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                            catch
+                            {
+                                await Task.Delay(new Random().Next(0, 5) * 1000);
+                            }
+                        }
+                    }
                 }
             }
         }
