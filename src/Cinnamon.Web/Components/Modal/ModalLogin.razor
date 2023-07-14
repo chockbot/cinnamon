@@ -10,7 +10,7 @@
 @inject IAdminApiHandler adminApiHandler;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 
-<Modal @ref="Model.EmailModal" class="modal-email">
+<Modal @ref="Model.EmailModal" class="modal-email modal-account-credential">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
             <p class="col-12 modal-title font-20 m-0">Log In / Sign Up</p>
@@ -68,7 +68,7 @@
     </ModalContent>
 </Modal>
 
-<Modal @ref="Model.PasswordModal">
+<Modal @ref="Model.PasswordModal" class="modal-account-credential">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
             <p class="col-12 modal-title font-20 m-0">Log In / Sign Up</p>
@@ -144,7 +144,7 @@
     </ModalContent>
 </Modal>
 
-<Modal @ref="Model.VerificationModal" Closed="VerificationModalClosed">
+<Modal @ref="Model.VerificationModal" Closed="VerificationModalClosed" class="modal-account-credential">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
             <p class="col-12 modal-title font-20 m-0">Verification Email</p>
@@ -175,7 +175,7 @@
     </ModalContent>
 </Modal>
 
-<Modal @ref="Model.ForgotPasswordModal" class="modal-forgot-password">
+<Modal @ref="Model.ForgotPasswordModal" class="modal-forgot-password modal-account-credential">
     <ModalContent>
         <ModalHeader Style="@modalHeaderStyle" class="py-2 px-4 border-0-solid border-bottom-1-solid border-color-grey-200">
             <p class="col-12 modal-title font-20 m-0">Forgot Password?</p>
