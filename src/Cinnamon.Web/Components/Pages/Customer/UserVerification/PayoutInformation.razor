@@ -15,7 +15,7 @@
                 <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Payout Information</p>
                 <p class="font-16 color-grey-100">Please provide your bank details. This will let you receive funds to your bank account.</p>
             </div>
-            @if(IsExpandPayemntInfo)
+            @* @if(IsExpandPayemntInfo)
             {
                 <Button Clicked="SaveForLater" Loading="IsSaveforLaterSubmitting" Disabled="IsSaveforLaterSubmitting" 
                     class="bg-green-100 color-white-100 hover-color-white">
@@ -27,7 +27,7 @@
                         Save for later
                     </ChildContent>
                 </Button>
-            }
+            } *@
         </div>
 
         <div class="mt-5">
@@ -79,13 +79,13 @@
             </Row>
         </div>
         
-        <div class="text-center mt-5">
+        <div class="text-end mt-5 m-d-flex">
             <Button Type="ButtonType.Button" Clicked="BackPage" 
-                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
+                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white m-width-50 m-margin-right-5" Border="Border.Is0">
                 Back
             </Button>
             <Button Type="ButtonType.Button" Clicked="NextPage"
-                class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0"
+                class="btn-primary font-20 min-width-130 ms-1 m-width-50 m-margin-left-5" Border="Border.Is0"
                 Disabled="IsFinalSubmitting" Loading="IsFinalSubmitting">
                 <LoadingTemplate>
                     <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
