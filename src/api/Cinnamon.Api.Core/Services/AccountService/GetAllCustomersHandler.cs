@@ -66,7 +66,8 @@ namespace Cinnamon.Api.Core.Services.AccountService
                     IsOG             = c.IsOG,
                     IsOGDate         = c.IsOGObtainedDate,
                     IsOF             = c.IsOfficial,
-                    IsOFDate         = c.IsOfficialObtainedDate
+                    IsOFDate         = c.IsOfficialObtainedDate,
+                    IsAccountBan     = c.IsAccountBan
                 }),
                 Pagination = new Framework.ApiCommand.ApiCore.Pagination
                 {

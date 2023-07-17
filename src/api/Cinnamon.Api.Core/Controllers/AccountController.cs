@@ -53,6 +53,7 @@ public class AccountController : ControllerBase
     private readonly IUpdateCustomerProfileHandler updateCustomerProfileHandler;
     private readonly IUpdateRequestRefundHandler updateRequestRefundHandler;
     private readonly IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler;
+    private readonly IBlockedAccountHandler blockedAccountHandler;
 
     #endregion
 
@@ -72,7 +73,8 @@ public class AccountController : ControllerBase
         IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
         IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, 
         IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, 
-        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler)
+        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler,
+        IBlockedAccountHandler blockedAccountHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -108,6 +110,7 @@ public class AccountController : ControllerBase
         this.updateCustomerProfileHandler = updateCustomerProfileHandler;
         this.updateRequestRefundHandler = updateRequestRefundHandler;
         this.accountSubmitVerifiedHandler = accountSubmitVerifiedHandler;
+        this.blockedAccountHandler = blockedAccountHandler;
     }
 
     #endregion
@@ -1259,7 +1262,8 @@ public class AccountController : ControllerBase
                         IsOG             = c.IsOG,
                         IsOGDate         = c.IsOGDate,
                         IsOfficial       = c.IsOF,
-                        IsOfficialDate   = c.IsOFDate
+                        IsOfficialDate   = c.IsOFDate,
+                        IsAccountBan     = c.IsAccountBan
                     };
                 }),
                 IsSuccess = true,
@@ -1380,6 +1384,35 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new SubmitAccountVerifiedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("BlockAccount")]
+    [HttpPost]
+    [ProducesResponseType(typeof(BlockedAccountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> BlockAccount([FromBody] BlockedAccountArgs args)
+    {
+        try
+        {
+            var result = await blockedAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.BlockedAccountArgs {
+                Id = args.CustomerId,
+                IsBlock = args.IsBlock
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new BlockedAccountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new BlockedAccountResult
+            {
+               IsSuccess= true,
+               Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new BlockedAccountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
