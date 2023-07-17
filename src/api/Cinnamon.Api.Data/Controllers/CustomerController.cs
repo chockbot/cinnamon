@@ -229,7 +229,7 @@ public class CustomerController : ControllerBase
             var result = await customerRepository.Update(args.CustomerId, args.FirstName, args.LastName, args.Email,
                 args.Birthdate, args.PhoneNumber, args.About, args.ProfilePath, args.IsMaker, args.ExternalLogin, 
                 args.IsVerified,args.IsVerifiedDate , args.FrontIdImagePath, args.BackIdImagePath, args.TotalCredits, 
-                args.IsOG, args.IsOGDate, args.IsOF, args.IsOFDate, args.ConnectionId, args.Handler, args.IsAccountBan);
+                args.IsOG, args.IsOGDate, args.IsOF, args.IsOFDate, args.ConnectionId, args.IsAccountBan, args.Handler);
 
             if (!result.Succeeded || result.Result == null)
             {
