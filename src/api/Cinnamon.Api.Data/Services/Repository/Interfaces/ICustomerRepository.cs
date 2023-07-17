@@ -17,7 +17,8 @@ public interface ICustomerRepository
     Task<AppResult<CustomerDTO>> CheckLogin(string email, string password);
     Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified, DateTime? isVerifiedDate, 
-        string? frontIdImagePath, string? backIdImageParh, decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate);
+        string? frontIdImagePath, string? backIdImageParh, decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate,
+        bool? isAccountBan);
     Task<AppResult<GovernmentIDsDTO>> GetGovermentId(int customerID);
     Task<AppResult<ProfilePictureDTO>> GetProfilePicture(int customerID);
     Task<AppResult<CustomerDTO>> GetByHandlerAsync(string handler);

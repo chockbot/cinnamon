@@ -27,6 +27,7 @@ public class Customer : BaseEntity
     public string Handler {get; set;}
     public decimal TotalCredits {get; set;}
     public bool HasAcceptedTerms { get; set; }
+    public bool IsAccountBan { get; set; }
     public virtual IList<FamilyMember> FamilyMembers {get; set;}
     public virtual IList<OngoingActivity> OngoingActivities { get; set;}
 }

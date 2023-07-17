@@ -23,4 +23,5 @@ public class CustomerDTO
     public string FrontIdImagePath {get; set; }
     public string BackIdImagePath { get; set; }
     public decimal TotalCredits {get; set;}
+    public bool IsAccountBan { get; set; }
 }

@@ -25,4 +25,5 @@ public class UpdateCustomerArgs
     public DateTime? IsOGDate { get; set; }
     public bool? IsOF { get; set; }
     public DateTime? IsOFDate { get; set; }
+    public bool? IsAccountBan { get; set; }
 }

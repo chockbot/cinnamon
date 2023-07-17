@@ -111,7 +111,8 @@ public class CustomerRepository : ICustomerRepository
                 ProfileImg = validCustomer.ProfilePath,
                 DateJoined = validCustomer.DateJoined,
                 Handler = validCustomer.Handler,
-                TotalCredits = validCustomer.TotalCredits
+                TotalCredits = validCustomer.TotalCredits,
+                IsAccountBan = validCustomer.IsAccountBan
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customer, "Success checking login credential");
@@ -175,7 +176,8 @@ public class CustomerRepository : ICustomerRepository
                 IsMaker = createdCustomer.IsMaker,
                 Id = createdCustomer.Id,
                 ProfileImg = createdCustomer.ProfilePath,
-                Handler = createdCustomer.Handler
+                Handler = createdCustomer.Handler,
+                IsAccountBan = createdCustomer.IsAccountBan
 
             }, "Successfully created customer data");
         }
@@ -256,7 +258,8 @@ public class CustomerRepository : ICustomerRepository
                     Handler = c.Handler,
                     BackIdImagePath = c.BackIdImagePath,
                     FrontIdImagePath = c.FrontIdImagePath,
-                    TotalCredits = c.TotalCredits
+                    TotalCredits = c.TotalCredits,
+                    IsAccountBan = c.IsAccountBan
                 };
             });
 
@@ -300,7 +303,8 @@ public class CustomerRepository : ICustomerRepository
                     IsOfficialObtainedDate = c.IsOfficialDate,
                     ProfileImg = c.ProfilePath,
                     Handler =c.Handler,
-                    TotalCredits = c.TotalCredits
+                    TotalCredits = c.TotalCredits,
+                    IsAccountBan = c.IsAccountBan
                 };
             });
 
@@ -338,7 +342,8 @@ public class CustomerRepository : ICustomerRepository
                 IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler,
-                TotalCredits = result.Result.TotalCredits
+                TotalCredits = result.Result.TotalCredits,
+                IsAccountBan = result.Result.IsAccountBan
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by email");
@@ -379,7 +384,8 @@ public class CustomerRepository : ICustomerRepository
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler,
                 TotalCredits = result.Result.TotalCredits,
-                PhoneNumber = result.Result.PhoneNumber
+                PhoneNumber = result.Result.PhoneNumber,
+                IsAccountBan = result.Result.IsAccountBan
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by id");
@@ -416,7 +422,8 @@ public class CustomerRepository : ICustomerRepository
                 IsOfficial = result.Result.IsOfficialPartner,
                 ProfileImg = result.Result.ProfilePath,
                 Handler = result.Result.Handler,
-                TotalCredits = result.Result.TotalCredits
+                TotalCredits = result.Result.TotalCredits,
+                IsAccountBan = result.Result.IsAccountBan
             };
 
             return AppResult<CustomerDTO>.CreateSucceeded(customerDTO, "Successfully getting customer by handler");
@@ -470,7 +477,7 @@ public class CustomerRepository : ICustomerRepository
     }
     public async Task<AppResult<CustomerDTO>> Update(int customerId, string? firstname, string? lastname, string? email, DateTime? birthdate, string? phoneNumber,
         string? about, string? profilePath, bool? ismaker, bool? externalLogin, int? isVerified,DateTime? isVerifiedDate, string? frontIdImagePath, string? backIdImageParh,
-        decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate)
+        decimal? totalCredits, bool? isOG, DateTime? isOGDate, bool? isOF, DateTime? isOfficialDate, bool? isAccountBan)
     {
         try
         {
@@ -498,7 +505,8 @@ public class CustomerRepository : ICustomerRepository
             customer.IsOG = isOG ?? customer.IsOG;
             customer.IsOGDate = isOGDate ?? customer.IsOGDate;
             customer.IsOfficialPartner = isOF ?? customer.IsOfficialPartner;
-            customer.IsOfficialDate = isOfficialDate ?? customer.IsOfficialDate;    
+            customer.IsOfficialDate = isOfficialDate ?? customer.IsOfficialDate;
+            customer.IsAccountBan = isAccountBan ?? customer.IsAccountBan;
 
             var updatedCustomerRes = await dataStore.Customer.Update(customer);
             if (!updatedCustomerRes.Succeeded)
@@ -526,6 +534,8 @@ public class CustomerRepository : ICustomerRepository
                 IsOGObtainedDate = customer.IsOGDate,
                 IsOfficial = customer.IsOfficialPartner,
                 IsOfficialObtainedDate = customer.IsOGDate,
+                IsAccountBan = customer.IsAccountBan
+                
             }, "Successfully updated customer data");
         }
         catch (Exception ex)
