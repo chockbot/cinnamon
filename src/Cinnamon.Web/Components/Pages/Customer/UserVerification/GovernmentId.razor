@@ -13,16 +13,6 @@
                 <p class="text-capitalize font-32 font-weight-700 color-black-100 mb-0">Lets upload your Government ID</p>
                 <p class="font-16 color-grey-100">Your ID will be handled according to our Privacy Policy and won’t be shared with the Activity Provider.</p>
             </div>
-            <Button Clicked="SaveForLater"  Loading="IsSaveforLaterSubmitting" Disabled="IsSaveforLaterSubmitting" 
-                class="bg-green-100 color-white-100 hover-color-white">
-                <LoadingTemplate>
-                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
-                    Saving Changes
-                </LoadingTemplate>
-                <ChildContent>
-                    Save for later
-                </ChildContent>
-            </Button>
         </div>
 
         <div class="government-id mt-5">
@@ -97,21 +87,33 @@
                 </Column>
             </Row>
         </div>
-        <div class="text-center mt-5">
+        <div class="text-end mt-5">
             <Button Type="ButtonType.Button" Clicked="BackPage"
-                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white" Border="Border.Is0">
+                class="font-20 min-width-130 me-1 bg-grey-200 color-white-100 hover-color-white m-width-100" Border="Border.Is0">
                 Back
             </Button>
-            <Button Clicked="Submit" Disabled="IsSavingChanges" Loading="IsSavingChanges" Type="ButtonType.Button" 
-                class="btn-primary font-20 min-width-130 ms-1" Border="Border.Is0">
-                <LoadingTemplate>
-                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
-                    Saving Changes
-                </LoadingTemplate>
-                <ChildContent>
-                    Continue
-                </ChildContent>
-            </Button>
+            <div class="d-inline m-d-flex m-margin-top-10">
+                <Button Clicked="Submit" Disabled="IsSavingChanges" Loading="IsSavingChanges" Type="ButtonType.Button" 
+                    class="btn-primary font-20 min-width-130 me-1 m-width-50 m-margin-right-5" Border="Border.Is0">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        Saving Changes
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Continue
+                    </ChildContent>
+                </Button>
+                <Button Clicked="SaveForLater"  Loading="IsSaveforLaterSubmitting" Disabled="IsSaveforLaterSubmitting" 
+                    class="bg-green-100 color-white-100 hover-color-white font-20 min-width-130 m-width-50 m-margin-left-5">
+                    <LoadingTemplate>
+                        <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        Saving Changes
+                    </LoadingTemplate>
+                    <ChildContent>
+                        Save for later
+                    </ChildContent>
+                </Button>
+            </div>
         </div>
         @if(!string.IsNullOrEmpty(ErrorMessage))
         {
