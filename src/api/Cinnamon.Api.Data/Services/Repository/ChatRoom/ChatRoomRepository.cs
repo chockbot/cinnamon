@@ -78,7 +78,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ChatRoom
                         var existingChatrooms = chatMemberToResult.Result.Select(c => c.ChatRoomId);
 
                         var chatroom = await dataStore.ChatRooms.FindFirstAsync(c => existingChatrooms.Contains(c.Id) && c.ChatType == (int)Enums.ChatType.GroupChat);
-                        if (chatroom == null)
+                        if (chatroom == null || chatroom.Result == null)
                         {
                             return await CreateChatRoom(fromUserId, toUserId, chatType, groupName, chatName);
                         }
