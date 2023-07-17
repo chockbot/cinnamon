@@ -275,43 +275,47 @@
                         }
                         <img src="images/messages/chat-profile-info.svg" />
                     </div>
-                    <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none">
-                        <div class="row">
-                            <div class="col-lg-1 col-md-1 col-sm-1 col-2">
-                                <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
-                                    <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
-                                </button>
-                            </div>
-                             <div class="col-lg-10 col-md-10 col-sm-10 col-7 text-center">
-                                <div class="chat-profile-name">
-                                    @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
-                                    {
-                                        @chatMateFullName
-                                    }
-                                    else
-                                    {
-                                        @chatMateChatName
-                                    }
-                                </div>
-                            </div>
-                            <div class="col-lg-1 col-md-1 col-sm-1 col-3 chat-profile-info-icon-section">
-                                @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
-                                {
-                                    var details = new ChatMember
-                                    {
-                                        FromUserId = maker.FromUserId,
-                                        FromFirstName = maker.FromFirstName,
-                                        FromLastName = maker.FromLastName,
-                                        FromProfilePath = maker.FromProfilePath
-                                    };
+                    <div class="col-lg-12 d-block d-sm-none d-md-none d-lg-none d-xl-none" style="padding: 0px;">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <button type="button" class="border-0 bg-transparent back-button" @onclick="DisplayChatRooms">
+                                            <img src="images/messages/back-arrow.svg" class="back-to-chatroom" />
+                                        </button>
+                                    </td>
+                                    <td>
+                                        <div class="chat-profile-name text-center">
+                                            @if (chatMateChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
+                                            {
+                                                @chatMateFullName
+                                            }
+                                            else
+                                            {
+                                                @chatMateChatName
+                                            }
+                                        </div>
+                                    </td>
+                                    <td class="chat-profile-info-icon-section">
+                                        @if (maker.FromUserId != currentUserId && chatMateChatType == ChatType.GroupChat)
+                                        {
+                                            var details = new ChatMember
+                                            {
+                                                FromUserId = maker.FromUserId,
+                                                FromFirstName = maker.FromFirstName,
+                                                FromLastName = maker.FromLastName,
+                                                FromProfilePath = maker.FromProfilePath
+                                            };
 
-                                    <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
-                                        <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
-                                    </span>
-                                }
-                                <img src="images/messages/chat-profile-info.svg" @onclick="DisplayChatProfile" />
-                            </div>
-                        </div>
+                                            <span data-toggle="tooltip" title="Message Activity Provider" data-bs-toggle="tooltip" data-bs-placement="left">
+                                                <img src="images/messages/personal-message.svg" class="personal-message-icon" @onclick="(() => CreatePrivateMessage(details))" />
+                                            </span>
+                                        }
+                                        <img src="images/messages/chat-profile-info.svg" @onclick="DisplayChatProfile" />
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
