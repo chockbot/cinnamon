@@ -149,7 +149,7 @@
             if (fromScroll)
             {
                 ReviewsHistory.AddRange(reviews);
-                ReviewsHistory = ReviewsHistory.OrderBy(c => c.ReviewDate).ToList();
+                ReviewsHistory = ReviewsHistory.OrderByDescending(c => c.ReviewDate).ToList();
             }
             else
             {

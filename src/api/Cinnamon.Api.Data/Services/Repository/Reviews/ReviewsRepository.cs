@@ -1,4 +1,5 @@
-﻿using Cinnamon.Api.Data.Repository.Interfaces;
+﻿using Cinnamon.Api.Data.Extensions;
+using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Reviews;
 using Cinnamon.Framework.Common;
@@ -16,10 +17,12 @@ public class ReviewsRepository: IReviewsRepository
         this.dataStore = dataStore;
     }
 
-    public async Task<AppResult<ReviewsDTO>> CreateExperienceCategoryAsync(int CustomerId, int MakerId, int ActivityId, int ScheduleId, int StudentId, int Rating, string Review, DateTime ReviewDate)
+    public async Task<AppResult<ReviewsDTO>> CreateReviewAsync(int CustomerId, int MakerId, int ActivityId, int ScheduleId, int StudentId, int Rating, string Review, DateTime ReviewDate)
     {
         try
         {
+            ReviewDate = ReviewDate.SetKindUtc();
+
             var review = new Entities.Reviews
             {
                 CustomerId = CustomerId,
@@ -152,7 +155,7 @@ public class ReviewsRepository: IReviewsRepository
         }
     }
 
-    public async Task<AppResult<ReviewsDTO>> UpdateExperienceCategoryAsync(int Id, int? CustomerId, int? MakerId, int? ActivityId, int? ScheduleId, int? StudentId, int? Rating, string? Review, DateTime? ReviewDate)
+    public async Task<AppResult<ReviewsDTO>> UpdateReviewAsync(int Id, int? CustomerId, int? MakerId, int? ActivityId, int? ScheduleId, int? StudentId, int? Rating, string? Review, DateTime? ReviewDate)
     {
         try
         {
@@ -162,6 +165,7 @@ public class ReviewsRepository: IReviewsRepository
             {
                 return AppResult<ReviewsDTO>.CreateFailed(new ApplicationException("Can't find review to update"), "Can't find review to update");
             }
+            ReviewDate = ReviewDate.SetKindUtc();
 
             var reviewActivity = reviewRes.Result;
             reviewActivity.CustomerId = CustomerId ?? reviewActivity.CustomerId;

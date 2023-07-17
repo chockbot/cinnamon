@@ -582,7 +582,11 @@
                                 PriceUnit1 = e.PriceUnit1,
                                 PriceUnit2 = e.PriceUnit2,
                                 UnitPrice = e.UnitPrice,
-                                IsActiveSchedule = e.IsActiveSchedule
+                                IsActiveSchedule = e.IsActiveSchedule,
+                                IsSetSession = e.IsSetSession,
+                                SessionName = e.SessionName,
+                                HasExpiration = e.HasExpiration,
+                                StartDate = e.StartDate
                             };
                         }).ToList(),
                         Images = result.Images.Select(i =>
@@ -738,7 +742,7 @@
                 double numberOfRatee = activityReviews.Count;
                 AverageRating = (double)SumOfRating / numberOfRatee;
                 SelectedValue = (int)Math.Round(AverageRating);
-                top3Reviews = activityReviews.Take(3).ToList();
+                top3Reviews = activityReviews.Take(3).OrderByDescending(a => a.ReviewDate).ToList();
                 ReviewCount = activityReviews.Count;
             }
 

@@ -1139,7 +1139,11 @@ public class ActivityController : ControllerBase
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName  = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1243,7 +1247,11 @@ public class ActivityController : ControllerBase
                             PriceUnit2 = s.PriceUnit2,
                             UnitPrice = s.UnitPrice,
                             Order = s.Order,
-                            IsActiveSchedule = s.IsActiveSchedule
+                            IsActiveSchedule = s.IsActiveSchedule,
+                            IsSetSession = s.IsSetSession,
+                            SessionName  = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,

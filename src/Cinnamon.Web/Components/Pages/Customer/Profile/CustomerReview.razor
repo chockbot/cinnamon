@@ -76,7 +76,7 @@
         }
         if (reviews.Count != 0)
         {
-            top3Reviews = reviews.Take(3).ToList();
+            top3Reviews = reviews.Take(3).OrderByDescending(a => a.ReviewDate).ToList();
         }
     }
 }
