@@ -99,6 +99,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IGenerateCustomerHandler, Services.AccountService.GenerateCustomerHandler>();
         services.AddTransient<Services.AccountService.Handlers.IVerifyUserNotificationHandler, Services.AccountService.VerifyUserNotificationHandler>();
 
+        services.AddTransient<Services.AccountService.Handlers.IBlockedAccountHandler, Services.AccountService.BlockedAccountHandler>();
+
         // activity services
         services.AddTransient<Services.ActivityService.Handlers.ICreateActivityHandler, Services.ActivityService.CreateActivityHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetExperienceTypesHandler, Services.ActivityService.GetExperienceTypesHandler>();

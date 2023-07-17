@@ -67,6 +67,9 @@
                     <TableHeaderCell>
                         Approve/Reject
                     </TableHeaderCell>
+                    <TableHeaderCell>
+                        Ban Account
+                    </TableHeaderCell>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -83,6 +86,11 @@
                         <TableRowCell class="name-body">
                             <div class="form-check form-switch">
                                 <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="@item.IsChecked" @onchange="((e) => HandleCheckedChanged(e, item))">
+                            </div>
+                        </TableRowCell>
+                        <TableRowCell class="name-body">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" checked="@item.IsAccountBan" @onchange="((e) => OnBlockedChanged(e, item))">
                             </div>
                         </TableRowCell>
                     </TableRow>
@@ -149,6 +157,8 @@
                 IsOGDate = r.IsOGDate,
                 IsOfficial = r.IsOfficial,
                 IsOfficialDate = r.IsOfficialDate,
+                IsAccountBan = r.IsAccountBan
+
             }).OrderBy(r => r.FirstName).ThenBy(r => r.LastName).ToList();
 
         if (hasVerificationRequest.HasValue)
@@ -220,6 +230,24 @@
             StateHasChanged();
         }
     }
+
+    private async Task OnBlockedChanged(ChangeEventArgs e, CustomerProfile account)
+    {
+        if(e.Value == null) return;
+
+        account.IsAccountBan = (bool)e.Value;
+
+        var result = await accountApiHandler.BlockAccount(new Framework.ApiCommand.ApiCore.Account.Request.BlockedAccountArgs {
+            CustomerId = account.Id,
+            IsBlock = account.IsAccountBan
+        }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            StateHasChanged();
+        }
+    }
+
     private bool IsActive(string page)
         => currentPage == page;
 

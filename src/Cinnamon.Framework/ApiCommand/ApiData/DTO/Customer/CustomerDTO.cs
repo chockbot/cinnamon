@@ -31,4 +31,5 @@ public class CustomerDTO
         public decimal Rate {get; set;}
         public bool IsManualPayment {get; set;}
     }
+    public bool IsAccountBan { get; set; }
 }
