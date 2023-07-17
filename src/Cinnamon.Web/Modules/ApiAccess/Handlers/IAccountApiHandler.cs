@@ -41,4 +41,5 @@ public interface IAccountApiHandler
     Task<AppResult<UpdateRequestRefundResult>> UpdateRefundRequest(UpdateRequestRefundArgs args, string token);
     Task<AppResult<SubmitAccountVerifiedResult>> SubmitAccountVerified(string token);
     Task<AppResult<VerifyUserNotificationResult>> NotifyCustomerVerification(VerifyUserNotificationArgs args, string token);
+    Task<AppResult<BlockedAccountResult>> BlockAccount(BlockedAccountArgs args, string token);
 } 

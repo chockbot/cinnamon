@@ -802,4 +802,26 @@ public class AccountApiHandler : IAccountApiHandler
             return AppResult<VerifyUserNotificationResult>.CreateFailed(ex, "An error occured when calling notify customer verification api");
         }
     }
+
+    public async Task<AppResult<BlockedAccountResult>> BlockAccount(BlockedAccountArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Account/BlockAccount")
+                .PostJsonAsync(args)
+                .ReceiveJson<BlockedAccountResult>();
+
+            return AppResult<BlockedAccountResult>.CreateSucceeded(result, "Successfully called submit block account api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<BlockedAccountResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<BlockedAccountResult>.CreateFailed(ex, "An error occured when calling submit block account api");
+        }
+    }
 }

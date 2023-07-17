@@ -55,6 +55,7 @@ public class AccountController : ControllerBase
     private readonly IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler;
     private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
     private readonly IVerifyUserNotificationHandler verifyUserNotificationHandler;
+    private readonly IBlockedAccountHandler blockedAccountHandler;
 
     #endregion
 
@@ -74,7 +75,9 @@ public class AccountController : ControllerBase
         IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
         IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler,
         IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler,
-        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler)
+        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
+        IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
+        IBlockedAccountHandler blockedAccountHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -112,6 +115,7 @@ public class AccountController : ControllerBase
         this.accountSubmitVerifiedHandler = accountSubmitVerifiedHandler;
         this.updateConnectionIdHandler = updateConnectionIdHandler;
         this.verifyUserNotificationHandler = verifyUserNotificationHandler;
+        this.blockedAccountHandler = blockedAccountHandler;
     }
 
     #endregion
@@ -1273,7 +1277,8 @@ public class AccountController : ControllerBase
                         CustomerPricing = new CustomerPricingDTO {
                             Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
                             IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false
-                        }
+                        },
+                        IsAccountBan     = c.IsAccountBan
                     };
                 }),
                 IsSuccess = true,
@@ -1458,6 +1463,35 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new VerifyUserNotificationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("BlockAccount")]
+    [HttpPost]
+    [ProducesResponseType(typeof(BlockedAccountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> BlockAccount([FromBody] BlockedAccountArgs args)
+    {
+        try
+        {
+            var result = await blockedAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.BlockedAccountArgs {
+                Id = args.CustomerId,
+                IsBlock = args.IsBlock
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new BlockedAccountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new BlockedAccountResult
+            {
+               IsSuccess= true,
+               Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new BlockedAccountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

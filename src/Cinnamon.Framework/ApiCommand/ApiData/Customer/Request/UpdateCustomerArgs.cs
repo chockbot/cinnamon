@@ -27,4 +27,5 @@ public class UpdateCustomerArgs
     public DateTime? IsOFDate { get; set; }
     public string? ConnectionId { get; set; }
     public string? Handler {get; set;}
+    public bool? IsAccountBan { get; set; }
 }

@@ -71,7 +71,8 @@ namespace Cinnamon.Api.Core.Services.AccountService
                     CustomerPricing = new GetAllCustomerResult.CustomerPricing {
                         Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
                         IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false,
-                    }
+                    },
+                    IsAccountBan     = c.IsAccountBan
                 }),
                 Pagination = new Framework.ApiCommand.ApiCore.Pagination
                 {
