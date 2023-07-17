@@ -92,7 +92,7 @@ public class ReviewController : ControllerBase
     {
         try
         {
-            var result = await reviews.CreateExperienceCategoryAsync(args.CustomerId, args.MakerId, args.ActivityId, args.ScheduleId, args.StudentId, args.Rating, args.Review, args.ReviewDate);
+            var result = await reviews.CreateReviewAsync(args.CustomerId, args.MakerId, args.ActivityId, args.ScheduleId, args.StudentId, args.Rating, args.Review, args.ReviewDate);
             if (!result.Succeeded || result.Result == null)
             {
                 return new JsonResult(new CreatedReviewResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
@@ -114,7 +114,7 @@ public class ReviewController : ControllerBase
     {
         try
         {
-            var result = await reviews.UpdateExperienceCategoryAsync(args.Id, args.CustomerId, args.MakerId, args.ActivityId, args.ScheduleId, args.StudentId, args.Rating, args.Review, args.ReviewDate);
+            var result = await reviews.UpdateReviewAsync(args.Id, args.CustomerId, args.MakerId, args.ActivityId, args.ScheduleId, args.StudentId, args.Rating, args.Review, args.ReviewDate);
 
             if (!result.Succeeded || result.Result == null)
             {

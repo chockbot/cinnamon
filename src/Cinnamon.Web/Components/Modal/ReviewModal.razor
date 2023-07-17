@@ -13,7 +13,7 @@
 {
     foreach (var item in studentAttendances)
     {
-        <Modal @ref="item.ModalRef" class="review-modal" Padding="Padding.Is0" ShowBackdrop=@Showbackdrop>
+        <Modal @ref="item.ModalRef" class="customer-review-modal" Padding="Padding.Is0">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -32,11 +32,10 @@
                             <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
                                 <MemoEdit Placeholder="Additional Comments" @bind-Text=ReviewText/>
                             </div>
-                            <Button @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
+                            <Button @onclick="() => item.ModalRef.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now">
                                 Not Now
                             </Button>
-                            <Button Clicked="() => SubmitReview(item, activities.Where(a => a.Id == item.ActivityId).First())" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
-                            Border="Border.Is0">
+                            <Button Clicked="() => SubmitReview(item, activities.Where(a => a.Id == item.ActivityId).First())" class="d-inline-block btn-primary">
                                 Submit Review
                             </Button>
                         </div>
@@ -70,11 +69,9 @@
 
     public string token { get; set; }
 
-    public string ReviewText { get; set; } = string.Empty;
+    public string ReviewText { get; set; }
 
     public int SelectedValue = 0;
-
-    public bool Showbackdrop { get; set; } = false;
 
     public bool IsShowErrorMessage { get; set; }
 
@@ -181,7 +178,7 @@
     {
         for (int i = 0; i < studentAttendances.Count; i++)
         {
-            
+            studentAttendances[i].ModalRef.ShowBackdrop = (i == 0) ? true : false;
             await studentAttendances[i].ModalRef.Show();
         }
     }
@@ -208,7 +205,7 @@
                         ScheduleId = studentAttendance.ScheduleId,
                         StudentId = studentAttendance.StudentId,
                         Rating = SelectedValue,
-                        Review = ReviewText,
+                        Review = string.IsNullOrEmpty(ReviewText) ? "No additional comment." : ReviewText,
                         ReviewDate = DateTime.UtcNow
                     }, token);
 

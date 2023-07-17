@@ -96,7 +96,7 @@ Activities="Activities" CustomerProfiles="customerProfiles" MakerProfile="Profil
             double numberOfRatee = reviews.Count;
             AverageRating = (double)SumOfRating / numberOfRatee;
             SelectedValue = (int)Math.Round(AverageRating);
-            top3Reviews = reviews.Take(3).ToList();
+            top3Reviews = reviews.Take(3).OrderByDescending(a => a.ReviewDate).ToList();
         }
         //Get Customer Details
         foreach (var item in reviews.GroupBy(g => g.CustomerId).Select(s => s.First()).ToList())

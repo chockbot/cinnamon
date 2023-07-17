@@ -738,7 +738,7 @@
                 double numberOfRatee = activityReviews.Count;
                 AverageRating = (double)SumOfRating / numberOfRatee;
                 SelectedValue = (int)Math.Round(AverageRating);
-                top3Reviews = activityReviews.Take(3).ToList();
+                top3Reviews = activityReviews.Take(3).OrderByDescending(a => a.ReviewDate).ToList();
                 ReviewCount = activityReviews.Count;
             }
 
