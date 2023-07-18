@@ -83,12 +83,12 @@
                                 <label for="title" class="expiration-title">Activity Expiration</label>
                             </div>
                             <hr>
-                            <div class="col-lg-5 col-6 justify-content-start">
+                            <div class="col-lg-5 col-9 justify-content-start">
                                 <label class="fw-bold title-description">
                                     Set Activity Expiration
                                 </label>
                             </div>
-                            <div class="col-lg-7 col-6 justify-content-start toggle-expiration">
+                            <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
                                 </div>
@@ -134,7 +134,7 @@
 
                                 <div class="form-check at-start">
 
-                                    <input class="form-check-input" type="radio" name="experience-type" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                                    <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
                                     <label class="form-check-label" for="at-start">
                                         At the start of
                                     </label>
@@ -161,7 +161,7 @@
 
                                 <div class="form-check first-attendance d-flex">
 
-                                    <input class="form-check-input" type="radio" name="experience-type" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                                    <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
                                     <label class="form-check-label" for="first-attendance">
                                         Start of first attendance
                                     </label>
@@ -360,12 +360,12 @@
                     <label for="title" class="expiration-title">Activity Expiration</label>
                 </div>
                 <hr>
-                <div class="col-lg-5 col-6 justify-content-start">
+                <div class="col-lg-5 col-9 justify-content-start">
                     <label class="fw-bold title-description">
                         Set Activity Expiration
                     </label>
                 </div>
-                <div class="col-lg-7 col-6 justify-content-start toggle-expiration">
+                <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
                     <div class="form-check form-switch">
                         <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
                     </div>
@@ -412,7 +412,7 @@
 
                     <div class="form-check at-start">
 
-                        <input class="form-check-input" type="radio" name="experience-type" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                        <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
                         <label class="form-check-label" for="at-start">
                             At the start of
                         </label>
@@ -439,7 +439,7 @@
 
                     <div class="form-check first-attendance d-flex">
 
-                        <input class="form-check-input" type="radio" name="experience-type" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                        <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
                         <label class="form-check-label" for="first-attendance">
                             Start of first attendance
                         </label>
