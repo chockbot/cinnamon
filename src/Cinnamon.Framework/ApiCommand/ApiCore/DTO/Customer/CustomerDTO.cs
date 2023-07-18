@@ -24,4 +24,5 @@ public class CustomerDTO
     public string BackIdImagePath { get; set; }
     public string? ConnectionId { get; set; }
     public CustomerPricingDTO CustomerPricing {get; set;}
+    public bool IsAccountBan { get; set; }
 }
