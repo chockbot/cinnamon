@@ -61,11 +61,33 @@
 
                     if (attendance != null && schedule != null)
                     {
-                        <div class="xp-body-item">
-                            <p class="secondary-caption">
-                                Completed @attendance.Date.ToString("MMMM dd, yyyy")
-                            </p>
-                        </div>
+                        switch (schedule.HasExpiration)
+                        {
+                            case 0:
+                                <div class="xp-body-item">
+                                    <p class="secondary-caption">
+                                        Completed @attendance.Date.ToString("MMMM dd, yyyy")
+                                    </p>
+                                </div>
+                            break;
+                            case 1:
+                                <div class="xp-body-item">
+                                    <p class="secondary-caption">
+                                        Completed @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    </p>
+                                </div>
+                            break;
+                            case 2:
+                                <div class="xp-body-item">
+                                    <p class="secondary-caption">
+                                        Completed @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    </p>
+                                </div>
+                            break;
+
+                            default:
+                            break;
+                        } 
                     }
                 }
             </div>
