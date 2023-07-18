@@ -130,7 +130,11 @@ public class GetEnrolledActivitiesHandler : IGetEnrolledActivitiesHandler
                                 UnitPrice = s.UnitPrice,
                                 Id = s.Id,
                                 Order = s.Order,
-                                IsActiveSchedule = s.IsActiveSchedule
+                                IsActiveSchedule = s.IsActiveSchedule,
+                                IsSetSession = s.IsSetSession,
+                                SessionName = s.SessionName,
+                                HasExpiration = s.HasExpiration,
+                                StartDate = s.StartDate
                             };
                         }) : Enumerable.Empty<GetEnrolledActivitiesResult.ActivitySchedule>(),
                         Images = e.Images != null ? e.Images.OrderBy(i => i.Order).Select(i => {
