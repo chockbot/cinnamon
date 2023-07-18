@@ -15,13 +15,15 @@ public class ResetPasswordHandler : IResetPasswordHandler
     private readonly ICustomerData customerData;
     private readonly IResetPasswordData resetPasswordData;
     private readonly IResetPasswordNotificationHandler resetPasswordNotificationHandler;
+    private readonly IIsAccountBlockedHandler isAccountBlockedHandler;
 
     public ResetPasswordHandler(ICustomerData customerData, IResetPasswordData resetPasswordData,
-        IResetPasswordNotificationHandler resetPasswordNotificationHandler)
+        IResetPasswordNotificationHandler resetPasswordNotificationHandler, IIsAccountBlockedHandler isAccountBlockedHandler)
     {
         this.customerData = customerData;
         this.resetPasswordData = resetPasswordData;
         this.resetPasswordNotificationHandler = resetPasswordNotificationHandler;
+        this.isAccountBlockedHandler = isAccountBlockedHandler;
     }
 
     public AppResult<ResetPasswordResult> Execute(ResetPasswordArgs args)
@@ -45,6 +47,18 @@ public class ResetPasswordHandler : IResetPasswordHandler
             if(!customerRes.Succeeded || customerRes.Result == null || !customerRes.Result.IsSuccess)
             {
                 return AppResult<ResetPasswordResult>.CreateFailed(new ApplicationException("Invalid email provided"), "Invalid email provided");
+            }
+
+            // check account if blocked
+            var checkAccountBlocked = await isAccountBlockedHandler.ExecuteAsync(new IsAccountBlockedArgs {Email = args.Email});
+            if(!checkAccountBlocked.Succeeded || checkAccountBlocked.Result == null)
+            {
+                return AppResult<ResetPasswordResult>.CreateFailed(new ApplicationException(checkAccountBlocked.Message), checkAccountBlocked.Message);
+            }
+
+            if(checkAccountBlocked.Result.IsAccountBlocked)
+            {
+                return AppResult<ResetPasswordResult>.CreateFailed(new ApplicationException("Your account blocked by the administrator. Please contact support"), "Your account blocked by the administrator. Please contact support");
             }
 
             // generated token

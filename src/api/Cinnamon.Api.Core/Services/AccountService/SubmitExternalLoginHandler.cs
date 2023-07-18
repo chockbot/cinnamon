@@ -17,12 +17,15 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
     private readonly ICustomerData customerData;
     private readonly IExternalLoginTokenData externalLoginTokenData;
     private readonly ApplicationConfig applicationConfig;
+    private readonly IIsAccountBlockedHandler isAccountBlockedHandler;
 
-    public SubmitExternalLoginHandler(ICustomerData customerData, ApplicationConfig applicationConfig, IExternalLoginTokenData externalLoginTokenData)
+    public SubmitExternalLoginHandler(ICustomerData customerData, ApplicationConfig applicationConfig, 
+        IExternalLoginTokenData externalLoginTokenData, IIsAccountBlockedHandler isAccountBlockedHandler)
     {
         this.customerData = customerData;
         this.externalLoginTokenData = externalLoginTokenData;
         this.applicationConfig = applicationConfig;
+        this.isAccountBlockedHandler = isAccountBlockedHandler;
     }
 
     public AppResult<ExternalLoginResult> Execute(ExternalLoginArgs args)
@@ -66,6 +69,18 @@ public class SubmitExternalLoginHandler : IExternalLoginHandler
             }
 
             var customerAccount = accountRes.Result.Result;
+
+            // check if account is blocked
+            var checkAccountBlocked = await isAccountBlockedHandler.ExecuteAsync(new IsAccountBlockedArgs {Email = customerAccount.Email});
+            if(!checkAccountBlocked.Succeeded || checkAccountBlocked.Result == null)
+            {
+                return AppResult<ExternalLoginResult>.CreateFailed(new ApplicationException(checkAccountBlocked.Message), checkAccountBlocked.Message);
+            }
+
+            if(checkAccountBlocked.Result.IsAccountBlocked)
+            {
+                return AppResult<ExternalLoginResult>.CreateFailed(new ApplicationException("Your account blocked by the administrator. Please contact support"), "Your account blocked by the administrator. Please contact support");
+            }
 
             var claims = new [] {
                 new Claim(JwtRegisteredClaimNames.Sub, customerAccount.Email),
