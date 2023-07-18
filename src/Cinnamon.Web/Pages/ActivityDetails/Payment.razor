@@ -284,10 +284,10 @@
                                                 @if(Coupon.IsCouponApplied && !Coupon.IsValid)
                                                 {
                                                     <div class="coupon-error-message font-12">
-                                                        <b style="color: #AD0C0C;">Invalid Coupon Code</b>
+                                                        <b style="color: #AD0C0C;">@Coupon.ErrorTitle</b>
                                                         <br>
                                                         <span class="color-grey-100">
-                                                            This coupon code is not valid. Please try again with another coupon code
+                                                            @Coupon.ErrorDescription
                                                         </span>
                                                     </div>
                                                 }
@@ -1097,7 +1097,7 @@
         get
         {
             decimal result = 0;
-            
+
             if ((Model.IsCreditApplied && Model.Customer.TotalCredits > 0))
             {
                 decimal overallTotal = (GetTotalPerHeadPrice + GetConvinienceFee + GetServiceFee) - GetAppliedCoupon;
@@ -1165,6 +1165,20 @@
 
     private async Task ValidateCouponCode()
     {
+        Coupon.ErrorDescription = string.Empty;
+        Coupon.ErrorTitle = string.Empty;
+
+        if(SelectedAttendeesCount == 0)
+        {
+            Coupon.IsCouponApplied = true;
+            Coupon.IsValid = false;
+            Coupon.ErrorTitle = "Wrong Application of Code";
+            Coupon.ErrorDescription = "Please make sure you have selected an enrollee first";
+
+            RemoveCouponError();
+            return;
+        }
+
         if(!string.IsNullOrEmpty(Coupon.CouponCode) && SelectedAttendeesCount > 0)
         {
             Coupon.IsValidating = true;
@@ -1179,10 +1193,23 @@
                 Amount = total,
                 CouponCode = Coupon.CouponCode
             }, Model.Token);
-            if(!validateRes.Succeeded || validateRes.Result == null || !validateRes.Result.IsSuccess)
+
+            if(!validateRes.Succeeded || validateRes.Result == null)
             {
                 Coupon.IsCouponApplied = true;
                 Coupon.IsValid = false;
+                Coupon.ErrorTitle = "External Error Occured";
+                Coupon.ErrorDescription = "An error occured when trying to validate coupon code";
+
+                RemoveCouponError();
+            }
+            else if (validateRes.Succeeded && validateRes.Result != null && !validateRes.Result.IsSuccess)
+            {
+                Coupon.IsCouponApplied = true;
+                Coupon.IsValid = false;
+                Coupon.ErrorTitle = validateRes.Result.ErrorInfo.Message;
+                Coupon.ErrorDescription = validateRes.Result.ErrorInfo.Description;
+
                 RemoveCouponError();
             }
             else 
@@ -1248,5 +1275,8 @@
         public decimal Amount {get; set;}
         public decimal MaximumSpend {get; set;}
         public bool IsValidating {get; set;}
+
+        public string ErrorTitle {get; set;}
+        public string ErrorDescription { get; set; }
     }
 }
