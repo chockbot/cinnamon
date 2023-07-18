@@ -17,14 +17,16 @@ public class SubmitLoginHandler : ISubmitLoginHandler
     private readonly ApplicationConfig applicationConfig;
     private readonly IFailedLoginData failedLoginData;
     private readonly IBannedAccountHandler bannedAccountHandler;
+    private readonly IIsAccountBlockedHandler isAccountBlockedHandler;
 
     public SubmitLoginHandler(ICustomerData customerData, ApplicationConfig applicationConfig, 
-        IBannedAccountHandler bannedAccountHandler, IFailedLoginData failedLoginData)
+        IBannedAccountHandler bannedAccountHandler, IFailedLoginData failedLoginData, IIsAccountBlockedHandler isAccountBlockedHandler)
     {
         this.customerData = customerData;
         this.applicationConfig = applicationConfig;
         this.bannedAccountHandler = bannedAccountHandler;
         this.failedLoginData = failedLoginData;
+        this.isAccountBlockedHandler = isAccountBlockedHandler;
     }
 
     public AppResult<SubmitLoginResult> Execute(SubmitLoginArgs args)
@@ -52,6 +54,18 @@ public class SubmitLoginHandler : ISubmitLoginHandler
             {
                 return AppResult<SubmitLoginResult>.CreateFailed(
                     new ApplicationException("An error occured when trying to access api"), "An error occured when trying to access api");
+            }
+
+            // check account if blocked
+            var checkAccountBlocked = await isAccountBlockedHandler.ExecuteAsync(new IsAccountBlockedArgs {Email = args.Email});
+            if(!checkAccountBlocked.Succeeded || checkAccountBlocked.Result == null)
+            {
+                return AppResult<SubmitLoginResult>.CreateFailed(new ApplicationException(checkAccountBlocked.Message), checkAccountBlocked.Message);
+            }
+
+            if(checkAccountBlocked.Result.IsAccountBlocked)
+            {
+                return AppResult<SubmitLoginResult>.CreateFailed(new ApplicationException("Your account blocked by the administrator. Please contact support"), "Your account blocked by the administrator. Please contact support");
             }
 
             // check banned account
