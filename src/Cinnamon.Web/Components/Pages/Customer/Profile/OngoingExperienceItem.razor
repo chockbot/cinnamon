@@ -151,7 +151,7 @@
     </Modal>
 
     @*Modal Review*@
-    <Modal @ref="modref" class="review-modal" Padding="Padding.Is0">
+    <Modal @ref="modref" class="customer-review-modal" Padding="Padding.Is0">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -173,11 +173,10 @@
                             <div class="textarea-container col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center">
                                 <MemoEdit Placeholder="Additional Comments" @bind-Text=ReviewText />
                             </div>
-                            <Button @onclick="() => modref.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now" style="font-size: 16px; font-weight: 700;">
+                            <Button @onclick="() => modref.Close(CloseReason.UserClosing)" class="d-inline-block btn-not-now">
                                 Not Now
                             </Button>
-                            <Button Clicked="() => SubmitReview(item, activity)" class="d-inline-block btn-primary" style="font-size: 16px; font-weight: 700;"
-                            Border="Border.Is0">
+                            <Button Clicked="() => SubmitReview(item, activity)" class="d-inline-block btn-primary">
                                 Submit Review
                             </Button>
                         </div>
