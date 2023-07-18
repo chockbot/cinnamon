@@ -522,7 +522,11 @@
                         return new ActivitySchedule
                         {
                             Id = s.Id,
-                            Name = s.Name
+                            Name = s.Name,
+                            IsSetSession = s.IsSetSession,
+                            SessionName = s.SessionName,
+                            HasExpiration = s.HasExpiration,
+                            StartDate = s.StartDate
                         };
                     }).ToList(),
                     Owner = a.Owner != null ? new CustomerProfile

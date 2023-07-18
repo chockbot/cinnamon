@@ -94,15 +94,30 @@
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
-                                <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
+                                <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance. </small>
                             </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
                                 <label class="fw-bold title-description">
                                     Set expiration period
                                 </label>
                                 <div>
-                                    <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers.</small>
+                                    <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
                                 </div>
+                                @if (scheduleModel.IsSetSession == false)
+                                {
+                                    scheduleModel.SessionName = null;
+                                    scheduleModel.HasExpiration = 0;
+                                    scheduleModel.StartDate = null;
+                                    <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
+                                        <option disabled selected>Select Period</option>
+                                        @foreach (var sessionPeriod in Model.SessionPeriods)
+                                        {
+                                            <option value="@sessionPeriod">@sessionPeriod</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
                                     <select class="form-control session-period @RequiredCheck(scheduleModel.SessionName)" @bind="scheduleModel.SessionName">
                                         <option disabled selected>Select Period</option>
                                         @foreach (var sessionPeriod in Model.SessionPeriods)
@@ -110,80 +125,50 @@
                                             <option value="@sessionPeriod">@sessionPeriod</option>
                                         }
                                     </select>
-                                </div>
+                                }
+                            </div>
                             <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
                                 <label class="fw-bold title-description">
                                     Define start of expiration
                                 </label>
-                                <div class="form-check at-start d-flex">
-                                     @if (scheduleModel.IsSetSession == false)
-                                     {
-                                         scheduleModel.SessionName = null;
-                                         scheduleModel.StartDate = null;
-                                         scheduleModel.HasExpiration = 0;
 
-                                         <input class="form-check-input" type="radio" name="experience-type" id="at-start" value="1" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" disabled>
-                                         <label class="form-check-label" for="at-start">
-                                             At the start of
-                                        </label>
-                                    }
-                                    else
+                                <div class="form-check at-start">
+
+                                    <input class="form-check-input" type="radio" name="experience-type" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                                    <label class="form-check-label" for="at-start">
+                                        At the start of
+                                    </label>
+
+                                    @if (scheduleModel.HasExpiration == 1)
                                     {
-                                        @if (scheduleModel.HasExpiration == 1)
-                                        {
-                                            <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" value="1" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" checked>
-                                            <label class="form-check-label" for="at-start">
-                                                At the start of
-                                            </label>
-                                            <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        }
-                                        else
-                                        {
-                                            <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" value="1" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
-                                            <label class="form-check-label" for="at-start">
-                                                At the start of
-                                            </label>
-                                            <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" Disabled>
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
                                         </DateEdit>
-                                        }
-                                    }
-                                </div>
-                                <div class="form-check first-attendance d-flex">
-                                    @if (scheduleModel.IsSetSession == false)
-                                    {
-                                        scheduleModel.SessionName = null;
-                                        scheduleModel.StartDate = null;
-                                        scheduleModel.HasExpiration = 0;
-
-                                        <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" disabled>
-                                        <label class="form-check-label" for="first-attendance">
-                                            Start of first attendance
-                                        </label>
-                                    }
-                                    @if (scheduleModel.HasExpiration == 2)
-                                    {
-                                        <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" checked>
-                                        <label class="form-check-label" for="first-attendance">
-                                            Start of first attendance
-                                        </label>
                                     }
                                     else
                                     {
-                                        <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
-                                        <label class="form-check-label" for="first-attendance">
-                                            Start of first attendance
-                                        </label>
-                                    }
-                                   
+                                        <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                            <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </DateEdit>
+                                        </Tooltip>
+                                    }     
                                 </div>
-                                @if (scheduleModel.HasExpiration == 2)
+
+                                <div class="form-check first-attendance d-flex">
+
+                                    <input class="form-check-input" type="radio" name="experience-type" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                                    <label class="form-check-label" for="first-attendance">
+                                        Start of first attendance
+                                    </label>
+
+                                </div>
+
+                                @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
                                 {
                                     <div class="attendance-note">
                                         <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
@@ -285,7 +270,7 @@
                                                 break;
                                         }
                                         break;
-                                        case "3 Months":
+                                    case "3 Months":
                                         frequency = scheduleModel.StartDate.Value.AddMonths(3);
                                         switch (frequency.Day)
                                         {
@@ -420,82 +405,47 @@
                     }
                 </div>
                 <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+
                     <label class="fw-bold title-description">
                         Define start of expiration
                     </label>
-                    <div class="form-check at-start d-flex">
-                        @if (scheduleModel.IsSetSession == false)
-                        {
-                            scheduleModel.SessionName = null;
-                            scheduleModel.StartDate = null;
-                            scheduleModel.HasExpiration = 0;
-                        
-                            <input class="form-check-input" type="radio" name="experience-type" id="at-start" value="1" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" disabled>
-                            <label class="form-check-label" for="at-start">
-                                At the start of
-                            </label>
-                        }
-                        else
-                        {
-                            @if (scheduleModel.HasExpiration == 1 && scheduleModel.SessionName != null)
-                            {
-                                <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" value="1" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" checked>
-                                <label class="form-check-label" for="at-start">
-                                    At the start of
-                                </label>
-                                <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
-                                    <Feedback>
-                                        <ValidationError />
-                                    </Feedback>
-                                </DateEdit>
-                            }
-                            else
-                            {
-                                <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" value="1" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
-                                <label class="form-check-label" for="at-start">
-                                    At the start of
-                                </label>
-                                <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
-                                <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" Disabled>
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </DateEdit>
-                                </Tooltip>
-                            }
-                        }
-                            
-                    </div>
-                    <div class="form-check first-attendance d-flex">
-                        @if (scheduleModel.IsSetSession == false)
-                        {
-                            scheduleModel.SessionName = null;
-                            scheduleModel.StartDate = null;
-                            scheduleModel.HasExpiration = 0;
 
-                            <input class="form-check-input" type="radio" name="experience-type" id="first-attendance" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" disabled>
-                            <label class="form-check-label" for="first-attendance">
-                                Start of first attendance
-                            </label>
+                    <div class="form-check at-start">
+
+                        <input class="form-check-input" type="radio" name="experience-type" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                        <label class="form-check-label" for="at-start">
+                            At the start of
+                        </label>
+
+                        @if (scheduleModel.HasExpiration == 1)
+                        {
+                            <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </DateEdit>
                         }
                         else
                         {
-                            @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
-                            {
-                                <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" checked>
-                                <label class="form-check-label" for="first-attendance">
-                                    Start of first attendance
-                                </label>
-                            }
-                            else
-                            {
-                                <input class="form-check-input" type="radio" name="experience-type" id="@scheduleModel.Id" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
-                                <label class="form-check-label" for="first-attendance">
-                                    Start of first attendance
-                                </label>
-                            }
+                            <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                            <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                <Feedback>
+                                    <ValidationError />
+                                </Feedback>
+                            </DateEdit>
+                        </Tooltip>
                         }
                     </div>
+
+                    <div class="form-check first-attendance d-flex">
+
+                        <input class="form-check-input" type="radio" name="experience-type" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                        <label class="form-check-label" for="first-attendance">
+                            Start of first attendance
+                        </label>
+
+                    </div>
+
                     @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
                     {
                         <div class="attendance-note">
@@ -503,7 +453,6 @@
                         </div>
                     }
                 </div>
-
                 @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
                 {
                     string ordinal = "";
@@ -598,7 +547,7 @@
                                     break;
                             }
                             break;
-                            case "3 Months":
+                        case "3 Months":
                             frequency = scheduleModel.StartDate.Value.AddMonths(3);
                             switch (frequency.Day)
                             {
@@ -624,7 +573,7 @@
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
                         <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
                     </div>
-                } 
+                }
             }
             <div class="form-group">
                 <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>

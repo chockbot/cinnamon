@@ -93,7 +93,8 @@
                                     <center>
                                         @if(item.SessionsAttended >= item.NumberOfSessions)
                                         {
-                                            var result = Attendances.item.Where(s=> s.StudentId == item.Id && s.IsPresent == true).ToList();
+                                            var result = Attendances.item.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
+                                            && s.ActivityId == item.ActivityId && s.IsPresent == true).ToList();
                                             var attendance = result.OrderBy(a => a.Date).LastOrDefault();
                                             if (attendance != null)
                                             {
@@ -266,122 +267,7 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-
             await GetStudents();
-
-            ////Get Owned Activities
-            //var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
-            //{
-            //    IncludeAtivitySchedules = true    
-            //}, token);
-            //if (activityRes.Succeeded && activityRes.Result != null && activityRes.Result.IsSuccess)
-            //{
-            //    Model.activities = activityRes.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
-            //    {
-            //        // map only required fields
-            //        return new Activity
-            //            {
-            //                ActivityId = a.ActivityId,
-            //                IsPublished = a.IsPublished,
-            //                Title = a.Title
-            //            };
-            //    }).ToList();
-
-            //    foreach (var activityResult in activityRes.Result.Result)
-            //    {
-            //        foreach (var activitySchedule in activityResult.ActivitySchedules)
-            //        {
-            //            Model.activitySchedules.Add(new ActivitySchedule
-            //            {
-            //                Id               = activitySchedule.Id,
-            //                IsActiveSchedule = activitySchedule.IsActiveSchedule,
-            //                ActivityId       = activityResult.ActivityId,
-            //                Name             = activitySchedule.Name,
-            //                DateTime         = activitySchedule.DateTime,
-            //                UnitPrice        = activitySchedule.UnitPrice,
-            //                PerUnit1         = activitySchedule.PerUnit1,
-            //                PerUnit2         = activitySchedule.PerUnit2,
-            //                PriceUnit1       = activitySchedule.PriceUnit1,
-            //                PriceUnit2       = activitySchedule.PriceUnit2,
-            //                Price            = activitySchedule.Price
-            //            });
-            //        }
-            //    }
-            //}
-            ////Get Enrolled Experience
-            //foreach (var item in Model.activities)
-            //{
-            //    var student = await ongoingApiHandler.GetEnrolledStudents(item.ActivityId);
-            //    if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
-            //    {
-            //        Model.students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
-            //        {
-            //            return new Students
-            //                {
-            //                    ActivityId = a.ActivityId,
-            //                    CustomerId = a.CustomerId,
-            //                    Id = a.Id,
-            //                    Name = a.Name,
-            //                    NumberOfSessions = a.NumberOfSessions,
-            //                    Remarks = a.Remarks,
-            //                    ScheduleId = a.ScheduleId,
-            //                    SessionsAttended = a.SessionsAttended,
-            //                    Status = a.Status,
-            //                    StudentNo = a.StudentNo
-            //                };
-            //        }).ToList();
-            //    }
-            //    students.item.AddRange(Model.students);
-            //}
-            //var query = from item in students.item
-            //            join item1 in Model.activities on item.ActivityId equals item1.ActivityId
-            //            orderby item.Id
-            //            select new ManageStudentsData
-            //                {
-            //                    Id = item.Id,
-            //                    ActivityId = item.ActivityId,
-            //                    Title = item1.Title,
-            //                    CustomerId = item.CustomerId,
-            //                    Name = item.Name,
-            //                    NumberOfSessions = item.NumberOfSessions,
-            //                    SessionsAttended = item.SessionsAttended,
-            //                    Remarks = item.Remarks,
-            //                    StudentNo = item.StudentNo,
-            //                    Status = item.Status,
-            //                    ScheduleId = item.ScheduleId
-            //                };
-            ////List DataGrid Content
-            //Model.manageStudents = query.ToList();
-            //Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
-            ////Get Student Attendance 
-            //foreach (var item in Model.FilteredStudents)
-            //{
-            //    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-            //        {
-            //            StudentId = item.Id,
-            //            ActivityId = item.ActivityId,
-            //            ScheduleId = item.ScheduleId
-
-            //        }, token);
-            //    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-            //    {
-            //        studentAttendances = attendance.Result.Result.Select(a =>
-            //        {
-            //            return new StudentAttendance
-            //                {
-            //                    Id = a.Id,
-            //                    Date = a.Date,
-            //                    IsPresent = a.IsPresent,
-            //                    ActivityId = a.ActivityId,
-            //                    NumberOfSessions = a.NumberOfSessions,
-            //                    SessionsAttended = a.SessionsAttended,
-            //                    ScheduleId = a.ScheduleId,
-            //                    StudentId = a.StudentId
-            //                };
-            //        }).ToList();
-            //        Attendances.item.AddRange(studentAttendances);
-            //    }
-            //}
         }
         catch (Exception)
         {

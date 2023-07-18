@@ -715,7 +715,11 @@
                         PriceUnit2 = e.PriceUnit2,
                         UnitPrice = e.UnitPrice,
                         Order = e.Order,
-                        IsActiveSchedule = e.IsActiveSchedule
+                        IsActiveSchedule = e.IsActiveSchedule,
+                        IsSetSession = e.IsSetSession,
+                        SessionName = e.SessionName,
+                        HasExpiration = e.HasExpiration,
+                        StartDate = e.StartDate
                     };
                 }).ToList(),
                 Images = result.Images.Select(i =>
@@ -819,6 +823,10 @@
                 PriceUnit1 = selectedSchedule.PriceUnit1,
                 PriceUnit2 = selectedSchedule.PriceUnit2,
                 UnitPrice = selectedSchedule.UnitPrice,
+                IsSetSession = selectedSchedule.IsSetSession,
+                SessionName = selectedSchedule.SessionName,
+                HasExpiration = selectedSchedule.HasExpiration,
+                StartDate = selectedSchedule.StartDate
             };
     }
 

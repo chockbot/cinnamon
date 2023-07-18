@@ -14,6 +14,7 @@
 
 @foreach (var item in students)
 {
+    var schedule = Activity.ActivitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault();
     <div class="experience-box">
         <div class="top-content">
             <div class="experience-content">
@@ -31,14 +32,41 @@
                         <div class="progress-bar bg-success" aria-valuemin="0" aria-valuemax="100" style="width:@(GetPercentage(item.SessionsAttended,item.NumberOfSessions))%;min-width:5px"></div>
                     </div>
                 </div>
-                @if (Activity.IsSetSession)
+                @if (ActivityItemType == ItemType.Ongoing)
                 {
-                    <div class="xp-body-item">
-                        <p class="secondary-caption">
-                            Consume in : @Activity.SessionName <br>
-                            Expiring in : @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                        </p>
-                    </div>
+                    if (schedule != null && schedule.IsSetSession)
+                    {
+                        if (item.ExpirationDateEnd.Year == 0001)
+                        {
+                            <div class="xp-body-item">
+                                <p class="secondary-caption">
+                                </p>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="xp-body-item">
+                                <p class="secondary-caption">
+                                    Expires on - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                </p>
+                            </div>
+                        }
+                    }
+                }
+                else
+                {
+                    var result = Attendances.item.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
+                    && s.ActivityId == item.ActivityId && s.IsPresent == true).ToList();
+                    var attendance = result.OrderBy(a => a.Date).LastOrDefault();
+
+                    if (attendance != null && schedule != null)
+                    {
+                        <div class="xp-body-item">
+                            <p class="secondary-caption">
+                                Completed @attendance.Date.ToString("MMMM dd, yyyy")
+                            </p>
+                        </div>
+                    }
                 }
             </div>
             <div class="experience-header">
@@ -203,6 +231,8 @@
     public ActivitySchedule Schedule = new ActivitySchedule();
     public Activity activity = new Activity();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
+    private List<StudentAttendance> attendanceList = new List<StudentAttendance>();
+    private GetAttendance Attendances = new GetAttendance();
     public string monthName = "";
     public DateTime monthEnd;
     public int monthsAway = 0;
@@ -235,61 +265,89 @@
     }
     private string GetImage()
     {
-        if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
-        return string.Empty;
+    if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
+    return string.Empty;
     }
     protected override async Task OnInitializedAsync()
     {
+    var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-
-        var token = user.FindFirstValue("Token");
-        Token = token;
-        if (token == null)
-        {
-            // don't have current user login
-            NavigationManager.NavigateTo("explore");
-            return;
-        }
-        // Get All Ongoing Activities of the Customer
-        var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
-        {
-            CustomerId = Profile.Id
-        }, Token);
-        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+    var token = user.FindFirstValue("Token");
+    Token = token;
+    if (token == null)
+    {
+        // don't have current user login
+        NavigationManager.NavigateTo("explore");
+        return;
+    }
+    // Get All Ongoing Activities of the Customer
+    var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
             {
-                students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+                CustomerId = Profile.Id
+            }, Token);
+    if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+    {
+        students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+        {
+            return new Students
+                    {
+                        ActivityId = a.ActivityId,
+                        CustomerId = a.CustomerId,
+                        Id = a.Id,
+                        Name = a.Name,
+                        NumberOfSessions = a.NumberOfSessions,
+                        Remarks = a.Remarks,
+                        ScheduleId = a.ScheduleId,
+                        SessionsAttended = a.SessionsAttended,
+                        Status = a.Status,
+                        StudentNo = a.StudentNo,
+                        ExpirationDateStart = a.ExpirationStartDate,
+                        ExpirationDateEnd = a.ExpirationEndDate,
+                        HasReview = a.HasReview
+                    };
+        }).ToList();
+    }
+    // Get All Students Attendance
+    foreach(var item in students)
+    {
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                 {
-                    return new Students
-                            {
-                                ActivityId = a.ActivityId,
-                                CustomerId = a.CustomerId,
-                                Id = a.Id,
-                                Name = a.Name,
-                                NumberOfSessions = a.NumberOfSessions,
-                                Remarks = a.Remarks,
-                                ScheduleId = a.ScheduleId,
-                                SessionsAttended = a.SessionsAttended,
-                                Status = a.Status,
-                                StudentNo = a.StudentNo,
-                                ExpirationDateStart = a.ExpirationStartDate,
-                                ExpirationDateEnd = a.ExpirationEndDate,
-                                HasReview = a.HasReview
-                            };
-                }).ToList();
-            }
-        students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
+                    StudentId = item.Id,
+                    ActivityId = item.ActivityId,
+                    ScheduleId = item.ScheduleId
 
-        if(ActivityItemType == ItemType.Ongoing)
+                }, token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
-            students = students.Where(s => s.SessionsAttended < s.NumberOfSessions).ToList();
+            attendanceList = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                        {
+                            Id = a.Id,
+                            Date = a.Date,
+                            IsPresent = a.IsPresent,
+                            ActivityId = a.ActivityId,
+                            NumberOfSessions = a.NumberOfSessions,
+                            SessionsAttended = a.SessionsAttended,
+                            ScheduleId = a.ScheduleId,
+                            StudentId = a.StudentId
+                        };
+            }).ToList();
+            Attendances.item.AddRange(attendanceList);
         }
-        else 
-        {
-            students = students.Where(s => s.SessionsAttended >= s.NumberOfSessions).ToList();
-        }
+    }
+    students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
 
-        await CreateMonth();
+    if(ActivityItemType == ItemType.Ongoing)
+    {
+        students = students.Where(s => s.SessionsAttended < s.NumberOfSessions).ToList();
+    }
+    else 
+    {
+        students = students.Where(s => s.SessionsAttended >= s.NumberOfSessions).ToList();
+    }
+
+    await CreateMonth();
     }
 
     public double GetPercentage(double session, double total)
@@ -335,171 +393,177 @@
         };
         numDummyColumn = (int)monthStart.DayOfWeek;
     }
+
     }
 
     public async Task CreateCalendar(Students student)
     {
-        studentAttendances.Clear();
-        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+    studentAttendances.Clear();
+    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                     {
                         StudentId = student.Id,
                         ActivityId = student.ActivityId,
                         ScheduleId = student.ScheduleId,
                     }, Token);
-        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+    {
+        studentAttendances = attendance.Result.Result.Select(a =>
         {
-            studentAttendances = attendance.Result.Result.Select(a =>
-            {
-                return new StudentAttendance
-                            {
-                                Id = a.Id,
-                                Date = a.Date,
-                                IsPresent = a.IsPresent,
-                                ActivityId = a.ActivityId,
-                                NumberOfSessions = a.NumberOfSessions,
-                                SessionsAttended = a.SessionsAttended,
-                                ScheduleId = a.ScheduleId,
-                                StudentId = a.StudentId,
-                                Name = a.Name,
-                            };
-            }).ToList();
-        }
-        selectedName = student.Name;
-        await modalRef.Show();
+            return new StudentAttendance
+                    {
+                        Id = a.Id,
+                        Date = a.Date,
+                        IsPresent = a.IsPresent,
+                        ActivityId = a.ActivityId,
+                        NumberOfSessions = a.NumberOfSessions,
+                        SessionsAttended = a.SessionsAttended,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId,
+                        Name = a.Name,
+                };
+        }).ToList();
     }
+    selectedName = student.Name;
+    await modalRef.Show();
+        }
 
     public async Task OpenReviewModal(Students student)
-    {
-        studentAttendances.Clear();
-        
-        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-                    {
-                        StudentId = student.Id,
-                        ActivityId = student.ActivityId,
-                        ScheduleId = student.ScheduleId
-                    }, Token);
-        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
-            studentAttendances = attendance.Result.Result.Select(a =>
-            {
-                return new StudentAttendance
-                            {
-                                Id = a.Id,
-                                Date = a.Date,
-                                IsPresent = a.IsPresent,
-                                ActivityId = a.ActivityId,
-                                NumberOfSessions = a.NumberOfSessions,
-                                SessionsAttended = a.SessionsAttended,
-                                ScheduleId = a.ScheduleId,
-                                StudentId = a.StudentId,
-                                Name = a.Name,
-                                HasReview = a.HasReview
-                            };
-            }).ToList();
-        }
-        selectedName = student.Name;
-        //Get Activity
-        var resultId = studentAttendances.FirstOrDefault().ActivityId;
-        var ActivityListData = await activityApiHandler.GetActivity(resultId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
-                {
-                    IncludeActivityDescription = true,
-                    IncludeActivityImages = true,
-                    IncludeAtivitySchedules = true,
-                    IncludeCustomer = true
-                });
-            if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
-            {
-                var result = ActivityListData.Result.Result;
-                activity = new Activity
-                {
-                    Id = result.ActivityId,
-                    Title = result.Title,
-                    Description = result.Description,
-                    Images = result.Images.Select(i =>
-                    {
-                        return new ActivityImage
+    studentAttendances.Clear();
+
+    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                         {
-                            Id = i.Id,
-                            ImageSrc = i.ImageSrc,
-                            Name = i.Name
-                        };
-                    }).ToList(),
-                    Owner = result.Owner != null ? new CustomerProfile
+                            StudentId = student.Id,
+                            ActivityId = student.ActivityId,
+                            ScheduleId = student.ScheduleId
+                        }, Token);
+    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+    {
+        studentAttendances = attendance.Result.Result.Select(a =>
+        {
+            return new StudentAttendance
+                                {
+                                    Id = a.Id,
+                                    Date = a.Date,
+                                    IsPresent = a.IsPresent,
+                                    ActivityId = a.ActivityId,
+                                    NumberOfSessions = a.NumberOfSessions,
+                                    SessionsAttended = a.SessionsAttended,
+                                    ScheduleId = a.ScheduleId,
+                                    StudentId = a.StudentId,
+                                    Name = a.Name,
+                                    HasReview = a.HasReview
+                                };
+        }).ToList();
+    }
+    selectedName = student.Name;
+    //Get Activity
+    var resultId = studentAttendances.FirstOrDefault().ActivityId;
+    var ActivityListData = await activityApiHandler.GetActivity(resultId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
                     {
-                        // map only required fields
-                        Id = result.Owner.Id,
-                        Handler = result.Owner.Handler
-                    } : null
-                };
-            }
-            await modref.Show();
+                        IncludeActivityDescription = true,
+                        IncludeActivityImages = true,
+                        IncludeAtivitySchedules = true,
+                        IncludeCustomer = true
+                    });
+    if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+    {
+        var result = ActivityListData.Result.Result;
+        activity = new Activity
+                    {
+                        Id = result.ActivityId,
+                        Title = result.Title,
+                        Description = result.Description,
+                        Images = result.Images.Select(i =>
+                        {
+                            return new ActivityImage
+                            {
+                                Id = i.Id,
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name
+                            };
+                        }).ToList(),
+                        Owner = result.Owner != null ? new CustomerProfile
+                        {
+                            // map only required fields
+                            Id = result.Owner.Id,
+                            Handler = result.Owner.Handler
+                        } : null
+                    };
+    }
+    await modref.Show();
     }
 
     public async Task SubmitReview(StudentAttendance studentAttendance, Activity activity)
     {
-        try
-        {
-            if (SelectedValue == 0)
-            {
-                IsShowErrorMessage = true;
-                ErrorMessage = "Review rating is required. Please try again";
-                StateHasChanged();
-                await Task.Delay(2000);
-                IsShowErrorMessage = false;
-            }
-            else
-            {
-                var create = await ongoingApiHandler.CreateReview(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.CreateReviewArgs
-                    {
-                        CustomerId = Profile.Id,
-                        MakerId = activity.Owner.Id,
-                        ActivityId = studentAttendance.ActivityId,
-                        ScheduleId = studentAttendance.ScheduleId,
-                        StudentId = studentAttendance.StudentId,
-                        Rating = SelectedValue,
-                        Review = ReviewText,
-                        ReviewDate = DateTime.UtcNow
-                    }, Token);
-
-                if (create.Succeeded && create.Result != null && create.Result.IsSuccess)
-                {
-                    //Update Student Table Has Review
-                    var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                        {
-                            Id = studentAttendance.StudentId,
-                            HasReview = true
-                        });
-                    if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
-                    {
-                        IsShowErrorMessage = true;
-                        ErrorMessage = "An error occured. Please try again later.";
-                        return;
-                    }
-                    else
-                    {
-                        SelectedValue = 0;
-                        ReviewText = string.Empty;
-                        await modref.Close(CloseReason.UserClosing);
-                        StateHasChanged();
-                        NavigationManager.NavigateTo("/customer/profile", true);
-                    }
-                }
-            }
-        }
-        catch (Exception)
+    try
+    {
+        if (SelectedValue == 0)
         {
             IsShowErrorMessage = true;
-            ErrorMessage = "An error occured. Please try again later.";
+            ErrorMessage = "Review rating is required. Please try again";
             StateHasChanged();
             await Task.Delay(2000);
             IsShowErrorMessage = false;
         }
-        
+        else
+        {
+            var create = await ongoingApiHandler.CreateReview(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.CreateReviewArgs
+                        {
+                            CustomerId = Profile.Id,
+                            MakerId = activity.Owner.Id,
+                            ActivityId = studentAttendance.ActivityId,
+                            ScheduleId = studentAttendance.ScheduleId,
+                            StudentId = studentAttendance.StudentId,
+                            Rating = SelectedValue,
+                            Review = ReviewText,
+                            ReviewDate = DateTime.UtcNow
+                        }, Token);
+
+            if (create.Succeeded && create.Result != null && create.Result.IsSuccess)
+            {
+                //Update Student Table Has Review
+                var update = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                            {
+                                Id = studentAttendance.StudentId,
+                                HasReview = true
+                            });
+                if ((!update.Succeeded || update.Result == null) || (update.Succeeded && !update.Result.IsSuccess))
+                {
+                    IsShowErrorMessage = true;
+                    ErrorMessage = "An error occured. Please try again later.";
+                    return;
+                }
+                else
+                {
+                    SelectedValue = 0;
+                    ReviewText = string.Empty;
+                    await modref.Close(CloseReason.UserClosing);
+                    StateHasChanged();
+                    NavigationManager.NavigateTo("/customer/profile", true);
+                }
+            }
+        }
+    }
+    catch (Exception)
+    {
+        IsShowErrorMessage = true;
+        ErrorMessage = "An error occured. Please try again later.";
+        StateHasChanged();
+        await Task.Delay(2000);
+        IsShowErrorMessage = false;
+    }
+
     }
 
     private async Task HideModal()
     {
-        await modalRef.Hide();
+    await modalRef.Hide();
+    }
+
+    public class GetAttendance
+    {
+        public List<StudentAttendance> item = new List<StudentAttendance>();
     }
 }
 
