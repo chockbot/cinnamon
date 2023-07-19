@@ -173,7 +173,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetAllStudentsByIdHandler, Services.OnGoingActivityService.GetAllStudentsByIdHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByMakerIdHandler, Services.OnGoingActivityService.GetReviewsByMakerIdHandler>();
         services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByCustomerIdHandler, Services.OnGoingActivityService.GetReviewsByCustomerIdHandler>();
-        services.AddTransient < Services.OnGoingActivityService.Handlers.IGetReviewsByActivityIdHandler, Services.OnGoingActivityService.GetReviewsByActivityIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetReviewsByActivityIdHandler, Services.OnGoingActivityService.GetReviewsByActivityIdHandler>();
+        services.AddTransient<Services.OnGoingActivityService.Handlers.IGetStudentLastAttendanceHandler, Services.OnGoingActivityService.GetStudentLastAttendanceHandler>();
 
         //system
         services.AddTransient<Services.SystemService.Handlers.IGetSystemDateHandler, Services.SystemService.GetSystemDateHandler>();

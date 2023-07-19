@@ -203,8 +203,28 @@ public class StudentAttendanceData : IStudentAttendanceData
         }
         catch (Exception ex)
         {
-            return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, "An error occured when getting all completed student attendance api");
+            return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, "An error occured when getting student last attendance api");
         }
     }
-    
+
+    public async Task<AppResult<GetStudentLastAttendanceResult>> GetStudentLastAttendance(GetStudentLastAttendanceArgs args)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("StudentAttendance/GetStudentLastAttendance")
+                            .SetQueryParams(args)
+                            .GetJsonAsync<GetStudentLastAttendanceResult>();
+
+            return AppResult<GetStudentLastAttendanceResult>.CreateSucceeded(result, "Successfully getting student last attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetStudentLastAttendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetStudentLastAttendanceResult>.CreateFailed(ex, "An error occured when getting student last attendance api");
+        }
+    }
 }
