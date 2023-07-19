@@ -44,33 +44,38 @@ public class ValidateCouponCodeHandler : IValidateCouponCodeHandler
             });
             if(!couponRes.Succeeded || couponRes.Result == null || !couponRes.Result.IsSuccess)
             {
-                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid coupon code."), "Invalid coupon code.");
+                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid Coupon Code"), 
+                    "Invalid Coupon Code", errorDesc: "This coupon code is not valid. Please try again with another one.");
             }
             var coupon = couponRes.Result.Result;
 
             // inactive coupon code
             if(coupon.Status == 0)
             {
-                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid coupon code."), "Invalid coupon code.");
+                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid Coupon Code"), 
+                    "Invalid Coupon Code", errorDesc: "This coupon code is not valid. Please try again with another one.");
             }
 
             // maximum spend not fulfilled
             if(coupon.DiscountType == 0 && coupon.MaximumSpend > args.Amount)
             {
-                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid coupon code."), "Invalid coupon code.");
+                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Minimum Spend Required"), 
+                    "Minimum Spend Required", errorDesc: $"Minimum amount of {coupon.MaximumSpend.ToString("#,##0.00")} to use this coupon code");
             }
 
             // coupon code already expired
             DateTime now = DateTime.Now;
             if(!(coupon.From <= now && coupon.To >= now))
             {
-                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid coupon code."), "Invalid coupon code.");
+                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Expired Coupon Code"), 
+                    "Expired Coupon Code", errorDesc: "This coupon code is expired or used already.");
             }
 
             // coupon code not applicable to selected activity
             if(coupon.ActivityId != 0 && coupon.ActivityId != args.ActivityId)
             {
-                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid coupon code."), "Invalid coupon code.");
+                return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid Coupon Code"), 
+                    "Invalid Coupon Code", errorDesc: "This coupon code is not valid. Please try again with another one.");
             }
 
             // if activity id = 0 means applied to all
@@ -82,7 +87,8 @@ public class ValidateCouponCodeHandler : IValidateCouponCodeHandler
                 });
                 if(!customerRes.Succeeded || customerRes.Result == null)
                 {
-                    return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid coupon code."), "Invalid coupon code.");
+                    return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid Coupon Code"), 
+                        "Invalid Coupon Code", errorDesc: "This coupon code is not valid. Please try again with another one.");
                 }
                 var customer = customerRes.Result;
 
@@ -105,7 +111,8 @@ public class ValidateCouponCodeHandler : IValidateCouponCodeHandler
                     });
                     if(!activityRes.Succeeded || activityRes.Result == null)
                     {
-                        return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid coupon code."), "Invalid coupon code.");
+                        return AppResult<ValidateCouponCodeResult>.CreateFailed(new ApplicationException("Invalid Coupon Code"), 
+                            "Invalid Coupon Code", errorDesc: "This coupon code is not valid. Please try again with another one.");
                     }
                 }
             }

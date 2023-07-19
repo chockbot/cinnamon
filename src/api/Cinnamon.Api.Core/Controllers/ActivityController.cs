@@ -2092,7 +2092,7 @@ public class ActivityController : ControllerBase
             });
             if (!result.Succeeded || result.Result == null)
             {
-                return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                return new JsonResult(new ValidateCouponCodeResult { ErrorInfo = new ErrorInfo { Message = result.Message, Description = result.Error.Description } });
             }
 
             var validated = result.Result;
