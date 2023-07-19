@@ -93,12 +93,12 @@
                                     <center>
                                         @if(item.SessionsAttended >= item.NumberOfSessions)
                                         {
-                                            var result = Attendances.item.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
-                                            && s.ActivityId == item.ActivityId && s.IsPresent == true).ToList();
-                                            var attendance = result.OrderBy(a => a.Date).LastOrDefault();
-                                            if (attendance != null)
+                                            var result = studentAttendances.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
+                                            && s.ActivityId == item.ActivityId).LastOrDefault();
+                                            if (result != null)
                                             {
-                                                @attendance.Date.ToString("MMMM dd, yyyy");
+                                                @result.Date.ToString("MMMM dd, yyyy")
+                                                ;
                                             }
                                         }
                                         else
@@ -236,7 +236,7 @@
     public Table tableStudents;
     private List<ActivitySchedule> activitySchedules = new List<ActivitySchedule>();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
-    private GetAttendance Attendances = new GetAttendance();
+    private StudentAttendance studnetAttendance = new StudentAttendance();
     private GetStudent students = new GetStudent();
     string token = string.Empty;
     private bool isLoading = false;
@@ -341,7 +341,7 @@
             Model.activitySchedules.Clear();
             Model.studentAttendances.Clear();
             Model.students.Clear();
-            Attendances.item.Clear();
+            studentAttendances.Clear();
             students.item.Clear();
             await GetStudents();
             //Hide Loading
@@ -440,30 +440,26 @@
         //Get Student Attendance
         foreach (var item in Model.FilteredStudents)
         {
-            var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
                 {
-                    StudentId = item.Id,
+                    Id = item.Id,
                     ActivityId = item.ActivityId,
                     ScheduleId = item.ScheduleId
-
                 }, token);
+
             if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
             {
-                studentAttendances = attendance.Result.Result.Select(a =>
-                {
-                    return new StudentAttendance
-                        {
-                            Id = a.Id,
-                            Date = a.Date,
-                            IsPresent = a.IsPresent,
-                            ActivityId = a.ActivityId,
-                            NumberOfSessions = a.NumberOfSessions,
-                            SessionsAttended = a.SessionsAttended,
-                            ScheduleId = a.ScheduleId,
-                            StudentId = a.StudentId
-                        };
-                }).ToList();
-                Attendances.item.AddRange(studentAttendances);
+                var result = attendance.Result.Result;
+                studnetAttendance = new StudentAttendance
+                    {
+                        Id = result.Id,
+                        Date = result.Date,
+                        IsPresent = result.IsPresent,
+                        StudentId = result.StudentId,
+                        ScheduleId = result.ScheduleId,
+                        ActivityId = result.ActivityId
+                    };
+                studentAttendances.Add(studnetAttendance);
             }
         }
     }
@@ -515,11 +511,6 @@
     private void ViewSchedule()
     {
         modalRefViewSchedule.Show();
-    }
-
-    public class GetAttendance
-    {
-        public List<StudentAttendance> item = new List<StudentAttendance>();    
     }
 
     public class GetStudent

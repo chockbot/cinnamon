@@ -337,4 +337,26 @@ public class StudentAttendanceController : ControllerBase
         }
     }
 
+    [Route("GetStudentLastAttendance")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStudentLastAttendanceResult), StatusCodes.Status200OK)]
+
+    public async Task<IActionResult> GetStudentLastAttendance([FromQuery] GetStudentLastAttendanceArgs args)
+    {
+        try
+        {
+            var result = await studentAttendanceRepository.GetLastStudentAttendance(args.Id, args.ActivityId, args.ScheduleId);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetStudentLastAttendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new GetStudentLastAttendanceResult { IsSuccess = true, Result = result.Result });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetStudentLastAttendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

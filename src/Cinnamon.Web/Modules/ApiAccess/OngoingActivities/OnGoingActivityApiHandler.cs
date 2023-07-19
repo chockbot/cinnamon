@@ -247,4 +247,25 @@ public class OnGoingActivityApiHandler : IOngoingActivitiesHandler
             return AppResult<GetReviewsByActivityIdResult>.CreateFailed(ex, "An error occured when getting reviews by activity id api");
         }
     }
+    public async Task<AppResult<GetStudentLastAtendanceResult>> GetStudentLastAttendance(GetStudentLastAttendanceArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("OnGoingActivities/GetStudentLastAttendance")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetStudentLastAtendanceResult>();
+
+            return AppResult<GetStudentLastAtendanceResult>.CreateSucceeded(result, "Successfully getting reviews by activity id api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetStudentLastAtendanceResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetStudentLastAtendanceResult>.CreateFailed(ex, "An error occured when getting reviews by activity id api");
+        }
+    }
 }

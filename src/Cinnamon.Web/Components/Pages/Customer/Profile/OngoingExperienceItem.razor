@@ -55,18 +55,17 @@
                 }
                 else
                 {
-                    var result = Attendances.item.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
-                    && s.ActivityId == item.ActivityId && s.IsPresent == true).ToList();
-                    var attendance = result.OrderBy(a => a.Date).LastOrDefault();
+                    var result = attendanceList.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
+                    && s.ActivityId == item.ActivityId).LastOrDefault();
 
-                    if (attendance != null && schedule != null)
+                    if (result != null && schedule != null)
                     {
                         switch (schedule.HasExpiration)
                         {
                             case 0:
                                 <div class="xp-body-item">
                                     <p class="secondary-caption">
-                                        Completed @attendance.Date.ToString("MMMM dd, yyyy")
+                                        Completed @result.Date.ToString("MMMM dd, yyyy")
                                     </p>
                                 </div>
                             break;
@@ -254,7 +253,7 @@
     public Activity activity = new Activity();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     private List<StudentAttendance> attendanceList = new List<StudentAttendance>();
-    private GetAttendance Attendances = new GetAttendance();
+    private StudentAttendance studentAttendance = new StudentAttendance();
     public string monthName = "";
     public DateTime monthEnd;
     public int monthsAway = 0;
@@ -287,61 +286,144 @@
     }
     private string GetImage()
     {
-    if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
-    return string.Empty;
+        if (Activity.Images.Count > 0) return Activity.Images[0].ImageSrc;
+        return string.Empty;
     }
     protected override async Task OnInitializedAsync()
     {
-    var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
 
-    var token = user.FindFirstValue("Token");
-    Token = token;
-    if (token == null)
-    {
-        // don't have current user login
-        NavigationManager.NavigateTo("explore");
-        return;
-    }
-    // Get All Ongoing Activities of the Customer
-    var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
-            {
-                CustomerId = Profile.Id
-            }, Token);
-    if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
-    {
-        students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+        var token = user.FindFirstValue("Token");
+        Token = token;
+        if (token == null)
         {
-            return new Students
-                    {
-                        ActivityId = a.ActivityId,
-                        CustomerId = a.CustomerId,
-                        Id = a.Id,
-                        Name = a.Name,
-                        NumberOfSessions = a.NumberOfSessions,
-                        Remarks = a.Remarks,
-                        ScheduleId = a.ScheduleId,
-                        SessionsAttended = a.SessionsAttended,
-                        Status = a.Status,
-                        StudentNo = a.StudentNo,
-                        ExpirationDateStart = a.ExpirationStartDate,
-                        ExpirationDateEnd = a.ExpirationEndDate,
-                        HasReview = a.HasReview
-                    };
-        }).ToList();
-    }
-    // Get All Students Attendance
-    foreach(var item in students)
-    {
-        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+            // don't have current user login
+            NavigationManager.NavigateTo("explore");
+            return;
+        }
+        // Get All Ongoing Activities of the Customer
+        var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
                 {
-                    StudentId = item.Id,
-                    ActivityId = item.ActivityId,
-                    ScheduleId = item.ScheduleId
+                    CustomerId = Profile.Id
+                }, Token);
+        if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
+        {
+            students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
+            {
+                return new Students
+                        {
+                            ActivityId = a.ActivityId,
+                            CustomerId = a.CustomerId,
+                            Id = a.Id,
+                            Name = a.Name,
+                            NumberOfSessions = a.NumberOfSessions,
+                            Remarks = a.Remarks,
+                            ScheduleId = a.ScheduleId,
+                            SessionsAttended = a.SessionsAttended,
+                            Status = a.Status,
+                            StudentNo = a.StudentNo,
+                            ExpirationDateStart = a.ExpirationStartDate,
+                            ExpirationDateEnd = a.ExpirationEndDate,
+                            HasReview = a.HasReview
+                        };
+            }).ToList();
+        }
+        // Get All Students Attendance
+        foreach(var item in students)
+        {
+            var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
+            {
+                Id = item.Id,
+                ActivityId = item.ActivityId,
+                ScheduleId = item.ScheduleId
+            }, token);
 
-                }, token);
+            if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+            {
+                var result = attendance.Result.Result;
+                studentAttendance = new StudentAttendance
+                {
+                    Id              = result.Id,
+                    Date            = result.Date,
+                    IsPresent       = result.IsPresent,
+                    StudentId       = result.StudentId,
+                    ScheduleId      = result.ScheduleId,
+                    ActivityId      = result.ActivityId
+                };
+                attendanceList.Add(studentAttendance);
+            }
+        }
+            students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
+
+        if(ActivityItemType == ItemType.Ongoing)
+        {
+            students = students.Where(s => s.SessionsAttended < s.NumberOfSessions).ToList();
+        }
+        else 
+        {
+            students = students.Where(s => s.SessionsAttended >= s.NumberOfSessions).ToList();
+        }
+
+        await CreateMonth();
+    }
+
+    public double GetPercentage(double session, double total)
+    {
+        return Math.Round(session / total * 100);
+    }
+
+    public async Task CreateMonth()
+    {
+        if (monthsAway <= 2 && monthsAway >= -2)
+        {
+            if(monthsAway == 2)
+            {
+                disableButtonRight = true;
+            }else if(monthsAway == -2){
+                disableButtonLeft = true;
+            }
+            else{
+                disableButtonRight = false;
+                disableButtonLeft = false;
+            }
+            var tempDate = DateTime.Now.AddMonths(monthsAway);
+            month = tempDate.Month;
+            year = tempDate.Year;
+
+            DateTime monthStart = new DateTime(year, month, 1);
+            monthEnd = monthStart.AddMonths(1).AddDays(-1);
+            monthName = monthStart.Month switch
+            {
+                1 => "January",
+                2 => "February",
+                3 => "March",
+                4 => "April",
+                5 => "May",
+                6 => "June",
+                7 => "July",
+                8 => "August",
+                9 => "September",
+                10 => "October",
+                11 => "November",
+                12 => "December",
+                _ => ""
+            };
+            numDummyColumn = (int)monthStart.DayOfWeek;
+        }
+    }
+
+    public async Task CreateCalendar(Students student)
+    {
+        studentAttendances.Clear();
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
+                        {
+                            StudentId = student.Id,
+                            ActivityId = student.ActivityId,
+                            ScheduleId = student.ScheduleId,
+                        }, Token);
         if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
-            attendanceList = attendance.Result.Result.Select(a =>
+            studentAttendances = attendance.Result.Result.Select(a =>
             {
                 return new StudentAttendance
                         {
@@ -352,173 +434,85 @@
                             NumberOfSessions = a.NumberOfSessions,
                             SessionsAttended = a.SessionsAttended,
                             ScheduleId = a.ScheduleId,
-                            StudentId = a.StudentId
-                        };
+                            StudentId = a.StudentId,
+                            Name = a.Name,
+                    };
             }).ToList();
-            Attendances.item.AddRange(attendanceList);
         }
+        selectedName = student.Name;
+        await modalRef.Show();
     }
-    students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
-
-    if(ActivityItemType == ItemType.Ongoing)
-    {
-        students = students.Where(s => s.SessionsAttended < s.NumberOfSessions).ToList();
-    }
-    else 
-    {
-        students = students.Where(s => s.SessionsAttended >= s.NumberOfSessions).ToList();
-    }
-
-    await CreateMonth();
-    }
-
-    public double GetPercentage(double session, double total)
-    {
-    return Math.Round(session / total * 100);
-    }
-
-    public async Task CreateMonth()
-    {
-    if (monthsAway <= 2 && monthsAway >= -2)
-    {
-        if(monthsAway == 2)
-        {
-            disableButtonRight = true;
-        }else if(monthsAway == -2){
-            disableButtonLeft = true;
-        }
-        else{
-            disableButtonRight = false;
-            disableButtonLeft = false;
-        }
-        var tempDate = DateTime.Now.AddMonths(monthsAway);
-        month = tempDate.Month;
-        year = tempDate.Year;
-
-        DateTime monthStart = new DateTime(year, month, 1);
-        monthEnd = monthStart.AddMonths(1).AddDays(-1);
-        monthName = monthStart.Month switch
-        {
-            1 => "January",
-            2 => "February",
-            3 => "March",
-            4 => "April",
-            5 => "May",
-            6 => "June",
-            7 => "July",
-            8 => "August",
-            9 => "September",
-            10 => "October",
-            11 => "November",
-            12 => "December",
-            _ => ""
-        };
-        numDummyColumn = (int)monthStart.DayOfWeek;
-    }
-
-    }
-
-    public async Task CreateCalendar(Students student)
-    {
-    studentAttendances.Clear();
-    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-                    {
-                        StudentId = student.Id,
-                        ActivityId = student.ActivityId,
-                        ScheduleId = student.ScheduleId,
-                    }, Token);
-    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-    {
-        studentAttendances = attendance.Result.Result.Select(a =>
-        {
-            return new StudentAttendance
-                    {
-                        Id = a.Id,
-                        Date = a.Date,
-                        IsPresent = a.IsPresent,
-                        ActivityId = a.ActivityId,
-                        NumberOfSessions = a.NumberOfSessions,
-                        SessionsAttended = a.SessionsAttended,
-                        ScheduleId = a.ScheduleId,
-                        StudentId = a.StudentId,
-                        Name = a.Name,
-                };
-        }).ToList();
-    }
-    selectedName = student.Name;
-    await modalRef.Show();
-        }
 
     public async Task OpenReviewModal(Students student)
-        {
-    studentAttendances.Clear();
+    {
+        studentAttendances.Clear();
 
-    var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-                        {
-                            StudentId = student.Id,
-                            ActivityId = student.ActivityId,
-                            ScheduleId = student.ScheduleId
-                        }, Token);
-    if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
-    {
-        studentAttendances = attendance.Result.Result.Select(a =>
-        {
-            return new StudentAttendance
-                                {
-                                    Id = a.Id,
-                                    Date = a.Date,
-                                    IsPresent = a.IsPresent,
-                                    ActivityId = a.ActivityId,
-                                    NumberOfSessions = a.NumberOfSessions,
-                                    SessionsAttended = a.SessionsAttended,
-                                    ScheduleId = a.ScheduleId,
-                                    StudentId = a.StudentId,
-                                    Name = a.Name,
-                                    HasReview = a.HasReview
-                                };
-        }).ToList();
-    }
-    selectedName = student.Name;
-    //Get Activity
-    var resultId = studentAttendances.FirstOrDefault().ActivityId;
-    var ActivityListData = await activityApiHandler.GetActivity(resultId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
-                    {
-                        IncludeActivityDescription = true,
-                        IncludeActivityImages = true,
-                        IncludeAtivitySchedules = true,
-                        IncludeCustomer = true
-                    });
-    if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
-    {
-        var result = ActivityListData.Result.Result;
-        activity = new Activity
-                    {
-                        Id = result.ActivityId,
-                        Title = result.Title,
-                        Description = result.Description,
-                        Images = result.Images.Select(i =>
-                        {
-                            return new ActivityImage
+        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
                             {
-                                Id = i.Id,
-                                ImageSrc = i.ImageSrc,
-                                Name = i.Name
-                            };
-                        }).ToList(),
-                        Owner = result.Owner != null ? new CustomerProfile
+                                StudentId = student.Id,
+                                ActivityId = student.ActivityId,
+                                ScheduleId = student.ScheduleId
+                            }, Token);
+        if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
+        {
+            studentAttendances = attendance.Result.Result.Select(a =>
+            {
+                return new StudentAttendance
+                                    {
+                                        Id = a.Id,
+                                        Date = a.Date,
+                                        IsPresent = a.IsPresent,
+                                        ActivityId = a.ActivityId,
+                                        NumberOfSessions = a.NumberOfSessions,
+                                        SessionsAttended = a.SessionsAttended,
+                                        ScheduleId = a.ScheduleId,
+                                        StudentId = a.StudentId,
+                                        Name = a.Name,
+                                        HasReview = a.HasReview
+                                    };
+            }).ToList();
+        }
+        selectedName = student.Name;
+        //Get Activity
+        var resultId = studentAttendances.FirstOrDefault().ActivityId;
+        var ActivityListData = await activityApiHandler.GetActivity(resultId, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
                         {
-                            // map only required fields
-                            Id = result.Owner.Id,
-                            Handler = result.Owner.Handler
-                        } : null
-                    };
-    }
-    await modref.Show();
+                            IncludeActivityDescription = true,
+                            IncludeActivityImages = true,
+                            IncludeAtivitySchedules = true,
+                            IncludeCustomer = true
+                        });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        {
+            var result = ActivityListData.Result.Result;
+            activity = new Activity
+                        {
+                            Id = result.ActivityId,
+                            Title = result.Title,
+                            Description = result.Description,
+                            Images = result.Images.Select(i =>
+                            {
+                                return new ActivityImage
+                                {
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name
+                                };
+                            }).ToList(),
+                            Owner = result.Owner != null ? new CustomerProfile
+                            {
+                                // map only required fields
+                                Id = result.Owner.Id,
+                                Handler = result.Owner.Handler
+                            } : null
+                        };
+        }
+        await modref.Show();
     }
 
     public async Task SubmitReview(StudentAttendance studentAttendance, Activity activity)
     {
-    try
+        try
     {
         if (SelectedValue == 0)
         {
@@ -575,17 +569,11 @@
         await Task.Delay(2000);
         IsShowErrorMessage = false;
     }
-
     }
 
     private async Task HideModal()
     {
-    await modalRef.Hide();
-    }
-
-    public class GetAttendance
-    {
-        public List<StudentAttendance> item = new List<StudentAttendance>();
+        await modalRef.Hide();
     }
 }
 
