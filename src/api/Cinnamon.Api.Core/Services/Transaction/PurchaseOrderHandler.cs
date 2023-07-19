@@ -23,12 +23,14 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
     private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
     private readonly ICustomerPricingData customerPricingData;
+    private readonly ILogger logger;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
         IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
-        IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData)
+        IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData,
+        ILogger<PurchaseOrderHandler> logger)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -40,6 +42,7 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
         this.validateCouponCodeHandler = validateCouponCodeHandler;
         this.customerPricingData = customerPricingData;
+        this.logger = logger;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -92,6 +95,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             });
             if(!checkInclusiveRes.Succeeded || checkInclusiveRes.Result == null)
             {
+                logger.LogError("Error in purchase order handler");
+                logger.LogError(checkInclusiveRes.Error.Description);
+                logger.LogError(checkInclusiveRes.Message);
                 return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
             }
 

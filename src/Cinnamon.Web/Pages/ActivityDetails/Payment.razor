@@ -961,7 +961,7 @@
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
-                logger.LogError("Error Paymeny Page");
+                logger.LogError("Error Payment Page");
                 logger.LogError(submit.Message);
                 logger.LogError(submit.Error?.Description);
                 logger.LogError(submit.Result?.ErrorInfo.Message);
