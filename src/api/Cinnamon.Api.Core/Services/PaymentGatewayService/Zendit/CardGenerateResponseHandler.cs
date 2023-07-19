@@ -119,7 +119,7 @@ public class CardGenerateResponseHandler : IGenerateResponseHandler, ICardDriver
                 .PostJsonAsync(paymentRequest)
                 .ReceiveJson<RequestPaymentResult>();
 
-            await Task.Delay(2000);
+            await Task.Delay(3000);
 
             /* request payment api
             *  this is the main transaction payment
