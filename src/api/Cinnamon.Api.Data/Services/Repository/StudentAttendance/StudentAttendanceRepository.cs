@@ -457,4 +457,48 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
             return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when getting all student attendance");
         }
     }
+
+    public async Task<AppResult<StudentAttendanceDTO>> GetLastStudentAttendance(int id, int activityId, int scheduleId, bool? includeStudent = false)
+    {
+        try
+        {
+           
+            var result = await dataStore.StudentAttendance.GetLastStudentAttendance(id,activityId,scheduleId);
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<StudentAttendanceDTO>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var studentAttendance = result.Result;
+
+            var studendDTO = new StudentAttendanceDTO
+            {
+                Date = studentAttendance.Date,
+                Id = studentAttendance.Id,
+                IsPresent = studentAttendance.IsPresent,
+                StudentId = studentAttendance.StudentId
+            };
+
+            var student = studentAttendance.Student;
+            studendDTO.Student = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO
+            {
+                ActivityId = student.ActivityId,
+                CustomerId = student.CustomerId,
+                Id = student.Id,
+                Name = student.Name,
+                NumberOfSessions = student.NumberOfSessions,
+                Remarks = student.Remarks,
+                ScheduleId = student.ScheduleId,
+                SessionsAttended = student.SessionsAttended,
+                Status = student.Status,
+                StudentNo = student.StudentNo
+            };
+
+            return AppResult<StudentAttendanceDTO>.CreateSucceeded(studendDTO, "Successfully get student attendance");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<StudentAttendanceDTO>.CreateFailed(ex, "An error occured when getting the student attendance");
+        }
+    }
 }

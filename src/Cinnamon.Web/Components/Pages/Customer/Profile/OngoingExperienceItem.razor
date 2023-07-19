@@ -55,18 +55,17 @@
                 }
                 else
                 {
-                    var result = Attendances.item.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
-                    && s.ActivityId == item.ActivityId && s.IsPresent == true).ToList();
-                    var attendance = result.OrderBy(a => a.Date).LastOrDefault();
+                    var result = attendanceList.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
+                    && s.ActivityId == item.ActivityId).LastOrDefault();
 
-                    if (attendance != null && schedule != null)
+                    if (result != null && schedule != null)
                     {
                         switch (schedule.HasExpiration)
                         {
                             case 0:
                                 <div class="xp-body-item">
                                     <p class="secondary-caption">
-                                        Completed @attendance.Date.ToString("MMMM dd, yyyy")
+                                        Completed @result.Date.ToString("MMMM dd, yyyy")
                                     </p>
                                 </div>
                             break;
@@ -254,7 +253,7 @@
     public Activity activity = new Activity();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     private List<StudentAttendance> attendanceList = new List<StudentAttendance>();
-    private GetAttendance Attendances = new GetAttendance();
+    private StudentAttendance studentAttendance = new StudentAttendance();
     public string monthName = "";
     public DateTime monthEnd;
     public int monthsAway = 0;
@@ -332,33 +331,29 @@
     // Get All Students Attendance
     foreach(var item in students)
     {
-        var attendance = await dashboardApiHandler.GetAllStudentAttendanceById(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetAllStudentAttendanceByIdArgs
-                {
-                    StudentId = item.Id,
-                    ActivityId = item.ActivityId,
-                    ScheduleId = item.ScheduleId
+        var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
+        {
+            Id = item.Id,
+            ActivityId = item.ActivityId,
+            ScheduleId = item.ScheduleId
+        }, token);
 
-                }, token);
         if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
         {
-            attendanceList = attendance.Result.Result.Select(a =>
+            var result = attendance.Result.Result;
+            studentAttendance = new StudentAttendance
             {
-                return new StudentAttendance
-                        {
-                            Id = a.Id,
-                            Date = a.Date,
-                            IsPresent = a.IsPresent,
-                            ActivityId = a.ActivityId,
-                            NumberOfSessions = a.NumberOfSessions,
-                            SessionsAttended = a.SessionsAttended,
-                            ScheduleId = a.ScheduleId,
-                            StudentId = a.StudentId
-                        };
-            }).ToList();
-            Attendances.item.AddRange(attendanceList);
+                Id              = result.Id,
+                Date            = result.Date,
+                IsPresent       = result.IsPresent,
+                StudentId       = result.StudentId,
+                ScheduleId      = result.ScheduleId,
+                ActivityId      = result.ActivityId
+            };
+            attendanceList.Add(studentAttendance);
         }
     }
-    students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
+        students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
 
     if(ActivityItemType == ItemType.Ongoing)
     {
@@ -581,11 +576,6 @@
     private async Task HideModal()
     {
     await modalRef.Hide();
-    }
-
-    public class GetAttendance
-    {
-        public List<StudentAttendance> item = new List<StudentAttendance>();
     }
 }
 

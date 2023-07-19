@@ -2,6 +2,7 @@ using Cinnamon.Api.Data.Repository.Entities;
 using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Framework.Common;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace Cinnamon.Api.Data.Repository.DbSets;
 
@@ -61,5 +62,26 @@ public class StudentAttendanceEntity : GenericEntity<StudentAttendance>, IStuden
         }
     }
 
+    public async Task<AppResult<StudentAttendance>> GetLastStudentAttendance(int id, int activityId, int scheduleId)
+    {
+        try
+        {
+            
+            var studentAttendance = await applicationContext.StudentAttendances
+                                            .Where(a => a.StudentId == id && a.Student.ScheduleId == scheduleId 
+                                             && a.Student.ActivityId == activityId && a.IsPresent == true)
+                                            .Include(s => s.Student)
+                                            .OrderBy(a => a.Date)
+                                            .LastOrDefaultAsync();
 
+            await applicationContext.SaveChangesAsync();
+
+            return AppResult<StudentAttendance>.CreateSucceeded(studentAttendance, "Successfully updated student attendance");
+
+        }
+        catch (Exception ex)
+        {
+            return AppResult<StudentAttendance>.CreateFailed(ex, "An error occured when updating student attendance");
+        }
+    }
 }

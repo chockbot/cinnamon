@@ -1,4 +1,5 @@
-﻿using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
+﻿using Cinnamon.Api.Core.Services.OnGoingActivityService;
+using Cinnamon.Api.Core.Services.OnGoingActivityService.Handlers;
 using Cinnamon.Framework.ApiCommand.ApiCore;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Reviews;
 using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
@@ -25,10 +26,12 @@ public class OnGoingActivitiesController : ControllerBase
     private readonly IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler;
     private readonly IGetReviewsByActivityIdHandler getReviewsByActivityIdHandler;
     private readonly IGetReviewsByCustomerIdHandler getReviewsByCustomerIdHandler;
+    private readonly IGetStudentLastAttendanceHandler getStudentLastAttendanceHandler;
     public OnGoingActivitiesController(IGetAllOngoingActivitiesHandler getAllOngoingActivitiesHandler, IGetOngoingActivityByIdHandler getOngoingActivityByIdHandler,
         IUpdateOngoingActivityHadler updateOngoingActivityHadler, IAddActivityExpirationHandler addActivityExpirationHandler, IGetEnrolledStudentsHandler getEnrolledStudentsHandler, 
         IGetCompletedStudentsByIdHandler getCompletedStudentsByIdHandler, ICreateReviewHandler createReviewHandler, IGetAllStudentsByIdHandler getAllStudentsByIdHandler,
-        IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler, IGetReviewsByActivityIdHandler getReviewsByActivityIdHandler, IGetReviewsByCustomerIdHandler getReviewsByCustomerIdHandler)
+        IGetReviewsByMakerIdHandler getReviewsByMakerIdHandler, IGetReviewsByActivityIdHandler getReviewsByActivityIdHandler, IGetReviewsByCustomerIdHandler getReviewsByCustomerIdHandler,
+        IGetStudentLastAttendanceHandler getStudentLastAttendanceHandler)
     {
         this.getAllOngoingActivitiesHandler   = getAllOngoingActivitiesHandler;   
         this.getOngoingActivityByIdHandler    = getOngoingActivityByIdHandler;
@@ -41,6 +44,7 @@ public class OnGoingActivitiesController : ControllerBase
         this.getReviewsByMakerIdHandler       = getReviewsByMakerIdHandler;
         this.getReviewsByActivityIdHandler    = getReviewsByActivityIdHandler;
         this.getReviewsByCustomerIdHandler    = getReviewsByCustomerIdHandler;
+        this.getStudentLastAttendanceHandler  = getStudentLastAttendanceHandler;
     }
 
     [Route("GetAllOnGoingActivities")]
@@ -506,7 +510,8 @@ public class OnGoingActivitiesController : ControllerBase
                 IsSuccess = true,
                 Pagination = result.Result.Pagination,
                 ErrorInfo = result.Result.ErrorInfo,
-                Result = result.Result.Review.Select(s => {
+                Result = result.Result.Review.Select(s =>
+                {
                     return new Framework.ApiCommand.ApiCore.DTO.Reviews.ReviewsDTO
                     {
                         Id = s.Id,
@@ -525,6 +530,47 @@ public class OnGoingActivitiesController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new GetReviewsByActivityIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("GetStudentLastAttendance")]
+    [HttpGet]
+    [ProducesResponseType(typeof(GetStudentLastAtendanceResult), StatusCodes.Status200OK)]
+
+    public async Task<IActionResult> GetStudentLastAttendance([FromQuery] GetStudentLastAttendanceArgs args)
+    {
+        try
+        {
+            var result = await getStudentLastAttendanceHandler.ExecuteAsync(new Services.OnGoingActivityService.Interactors.GetStudentLastAttendanceArgs
+            {
+                Id = args.Id,
+                ActivityId = args.ActivityId,
+                ScheduleId = args.ScheduleId,
+            });
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new GetStudentLastAtendanceResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            var objResult = result.Result;
+
+            return new JsonResult(new GetStudentLastAtendanceResult
+            {
+                Result = new StudentAttendanceDTO
+                {
+                    Id          = objResult.Id,
+                    StudentId   = objResult.StudentId,
+                    Date        = objResult.AttendanceDate,
+                    IsPresent   = objResult.IsPresent,
+                    ScheduleId  = objResult.ScheduleId,
+                    ActivityId  = objResult.ActivityId,
+                },
+                IsSuccess = true,
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new GetStudentLastAtendanceResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }
