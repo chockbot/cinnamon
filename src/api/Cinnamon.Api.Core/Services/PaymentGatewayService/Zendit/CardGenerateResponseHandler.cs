@@ -16,8 +16,9 @@ public class CardGenerateResponseHandler : IGenerateResponseHandler, ICardDriver
     private readonly ApplicationConfig applicationConfig;
     private readonly IFlurlClient flurlClient;
     private readonly IFlurlClient paymentMethodClient;
+    private readonly ILogger logger;
 
-    public CardGenerateResponseHandler(ApplicationConfig applicationConfig, IFlurlClientFactory flurlFac)
+    public CardGenerateResponseHandler(ApplicationConfig applicationConfig, IFlurlClientFactory flurlFac, ILogger<CardGenerateResponseHandler> logger)
     {
         this.applicationConfig = applicationConfig;
         var paymentUrl = applicationConfig.Payment.Accounts.First().Settings.First(s => s.Name == "PaymentUrl").Value;
@@ -25,6 +26,7 @@ public class CardGenerateResponseHandler : IGenerateResponseHandler, ICardDriver
 
         var paymentMethodUrl = applicationConfig.Payment.Accounts.First().Settings.First(s => s.Name == "CreatePaymentMethodUrl").Value;
         paymentMethodClient = flurlFac.Get(paymentMethodUrl);
+        this.logger = logger;
     }
     
     public AppResult<GenerateResponseResult> Execute(GenerateResponseArgs args)
@@ -170,10 +172,17 @@ public class CardGenerateResponseHandler : IGenerateResponseHandler, ICardDriver
                 return AppResult<GenerateResponseResult>.CreateFailed(ex, "The direct debit account being attempted to be linked has reached the maximum linking allowed by the partner channel.");
             }
 
+            logger.LogError("Error in card generate handler");
+            logger.LogError(error.message);
+            logger.LogError(error.error_code);
+
             return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured. Please try again later.");
         }
         catch (Exception ex)
         {
+            logger.LogError("Error in card generate handler");
+            logger.LogError(ex.Message);
+
             return AppResult<GenerateResponseResult>.CreateFailed(ex, $"An error occured. Please try again later.");
         }
     }
