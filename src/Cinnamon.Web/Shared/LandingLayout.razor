@@ -1,0 +1,32 @@
+﻿@inherits LayoutComponentBase
+@using Cinnamon.Web.Components
+
+<PageTitle>Cinnamon</PageTitle>
+
+<div class="page app-name-section">
+    <main>
+        <div class="top-row px-4 d-flex">
+            <div class="app-name col-lg-3 col-md-2 col-sm-10 col-10">
+                <a href="/explore" class="app-name">@Resources.App.appName</a>
+            </div>
+            <div class="login-button col-lg-9 col-md-10 justify-content-end text-center">
+                <button class="btn-login" @onclick="() => signinModal.Show()">
+                    Login | Signup
+                </button>
+            </div>
+            <div class="login-icon-sm col-sm-2 col-2 justify-content-end text-center">
+                <a class="button" @onclick="() => signinModal.Show()">
+                    <img src="images/loginlogo.png" class="img-icon-login">
+                </a>
+            </div>
+        </div>
+        <article class="content">
+            @Body
+        </article>
+    </main>
+</div>
+<ModalLogin @ref="signinModal" />
+@code
+{
+    private ModalLogin signinModal;
+}
