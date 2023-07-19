@@ -44,7 +44,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             "from summary sm " +
                             "join public.\"Activities\" ac " +
 	                            "on ac.\"Id\" = sm.\"ActivityId\" " +
-                            "where \"RowCnt\" = 1 ";
+                            "where \"RowCnt\" = 1 and Date(\"Date\" + Interval '2 days') <= Date(Current_Timestamp) ";
 
             IList<DisburseStudentDTO> listResult = new List<DisburseStudentDTO>();
             
