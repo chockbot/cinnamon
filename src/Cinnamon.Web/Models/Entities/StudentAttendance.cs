@@ -1,4 +1,6 @@
-﻿namespace Cinnamon.Web.Models.Entities;
+﻿using Blazorise;
+
+namespace Cinnamon.Web.Models.Entities;
 
 public class StudentAttendance
 {
@@ -12,4 +14,9 @@ public class StudentAttendance
     public string ActivityName { get; set; }
     public int NumberOfSessions { get; set; }
     public int SessionsAttended { get; set; }
+    public bool HasReview { get; set; }
+
+    // Extra properties
+    public Modal ModalRef { get; set; } = new Modal();
+    public List<Activity> activities { get; set; } = new List<Activity>();
 }

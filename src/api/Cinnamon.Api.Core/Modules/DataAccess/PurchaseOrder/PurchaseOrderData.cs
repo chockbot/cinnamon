@@ -31,6 +31,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
             }
             catch (FlurlHttpException ex)
             {
+                var error = await ex.GetResponseJsonAsync();
                 return AppResult<CreatePurchaseOrderResult>.CreateFailed(ex, ex.Message);
             }
             catch (Exception ex)
@@ -139,6 +140,27 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.PurchaseOrder
             catch (Exception ex)
             {
                 return AppResult<UpdatePurchaseOrdersStatusResult>.CreateFailed(ex, "An error occured when posting update purchase order api");
+            }
+        }
+
+        public async Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAllInclusiveTransactionArgs args)
+        {
+            try
+            {
+                var result = await _flurlClient
+                                .Request("PurchaseOrder/GetAllInclusiveTransactions")
+                                .SetQueryParams(args)
+                                .GetJsonAsync<GetAllInclusiveTransactionResult>();
+
+                return AppResult<GetAllInclusiveTransactionResult>.CreateSucceeded(result, "Successfully getting get all PurchaseOrder api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                return AppResult<GetAllInclusiveTransactionResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAllInclusiveTransactionResult>.CreateFailed(ex, "An error occured when getting all PurchaseOrder api");
             }
         }
     }

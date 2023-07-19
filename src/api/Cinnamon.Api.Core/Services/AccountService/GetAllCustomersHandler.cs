@@ -33,7 +33,8 @@ namespace Cinnamon.Api.Core.Services.AccountService
             {
                 SearchValue = args.SearchValue,
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex
+                PageIndex = args.PageIndex,
+                IsOfficialPartner = args.IsOfficialPartner
             });
             if (!result.Succeeded || result.Result == null)
             {
@@ -66,7 +67,12 @@ namespace Cinnamon.Api.Core.Services.AccountService
                     IsOG             = c.IsOG,
                     IsOGDate         = c.IsOGObtainedDate,
                     IsOF             = c.IsOfficial,
-                    IsOFDate         = c.IsOfficialObtainedDate
+                    IsOFDate         = c.IsOfficialObtainedDate,
+                    CustomerPricing = new GetAllCustomerResult.CustomerPricing {
+                        Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
+                        IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false,
+                    },
+                    IsAccountBan     = c.IsAccountBan
                 }),
                 Pagination = new Framework.ApiCommand.ApiCore.Pagination
                 {

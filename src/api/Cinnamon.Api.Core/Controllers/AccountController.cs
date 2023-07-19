@@ -53,6 +53,9 @@ public class AccountController : ControllerBase
     private readonly IUpdateCustomerProfileHandler updateCustomerProfileHandler;
     private readonly IUpdateRequestRefundHandler updateRequestRefundHandler;
     private readonly IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler;
+    private readonly IUpdateConnectionIdHandler updateConnectionIdHandler;
+    private readonly IVerifyUserNotificationHandler verifyUserNotificationHandler;
+    private readonly IBlockedAccountHandler blockedAccountHandler;
 
     #endregion
 
@@ -70,9 +73,11 @@ public class AccountController : ControllerBase
         IGetExternalLoginDetailHandler getExternalLoginDetailHandler, IGetCustomerByHandler getCustomerByHandler,
         IResetPasswordHandler resetPasswordHandler, IVerifyResetPasswordHandler verifyResetPasswordHandler,
         IRequestRefundHandler requestRefundHandler, IGetRequestRefundHandler getRequestRefundHandler, IDeleteProfilePictureHandler deleteProfilePictureHandler,
-        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler, 
-        IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler, 
-        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler)
+        IGetPayoutAccountHandler getPayoutAccountHandler, ICreateUpdatePayoutAccountHandler createUpdatePayoutAccountHandler,
+        IGetAllCustomersHandler getAllCustomersHandler, IUpdateCustomerProfileHandler updateCustomerProfileHandler,
+        IUpdateRequestRefundHandler updateRequestRefundHandler, IAccountSubmitVerifiedHandler accountSubmitVerifiedHandler, 
+        IUpdateConnectionIdHandler updateConnectionIdHandler, IVerifyUserNotificationHandler verifyUserNotificationHandler,
+        IBlockedAccountHandler blockedAccountHandler)
     {
         this.submitRegisterHandler = submitRegisterHandler;
         this.submitWaitlistHandler = submitWaitlistHandler;
@@ -108,6 +113,9 @@ public class AccountController : ControllerBase
         this.updateCustomerProfileHandler = updateCustomerProfileHandler;
         this.updateRequestRefundHandler = updateRequestRefundHandler;
         this.accountSubmitVerifiedHandler = accountSubmitVerifiedHandler;
+        this.updateConnectionIdHandler = updateConnectionIdHandler;
+        this.verifyUserNotificationHandler = verifyUserNotificationHandler;
+        this.blockedAccountHandler = blockedAccountHandler;
     }
 
     #endregion
@@ -376,6 +384,7 @@ public class AccountController : ControllerBase
                     Id = profile.Id,
                     About = profile.About,
                     Birthdate = profile.Birthdate,
+                    PhoneNumber = profile.PhoneNumber,
                     DateJoined = profile.DateJoined,
                     IsVerified = profile.IsVerified,
                     IsVerifiedDate = profile.IsVerifiedDate,
@@ -385,7 +394,8 @@ public class AccountController : ControllerBase
                     IsOGDate = profile.IsOGDate,
                     ProfileImg = profile.ProfileImagePath,
                     Handler = profile.Handler,
-                    TotalCredits = profile.TotalCredits
+                    TotalCredits = profile.TotalCredits,
+                    ConnectionId = profile.ConnectionId
                 },
                 IsSuccess = true
             });
@@ -593,7 +603,8 @@ public class AccountController : ControllerBase
                 Birthdate = args.Datebirth,
                 FirstName = args.FirstName,
                 LastName = args.LastName,
-                VerifiedBadge = args.VerifiedBadge
+                VerifiedBadge = args.VerifiedBadge,
+                PhoneNumber = args.PhoneNumber
             });
 
             if(!result.Succeeded || result.Result == null)
@@ -607,6 +618,7 @@ public class AccountController : ControllerBase
                     Birthdate = result.Result.Birthdate,
                     FirstName = result.Result.FirstName,
                     LastName = result.Result.LastName,
+                    PhoneNumber = result.Result.PhoneNumber
                 },
                 IsSuccess = true
             });
@@ -769,6 +781,7 @@ public class AccountController : ControllerBase
                     DateJoined = objResult.DateJoined,
                     Email = objResult.Email,
                     PhoneNumber = objResult.PhoneNumber,
+                    ConnectionId = objResult.ConnectionId
                 },
                 IsSuccess = true,
             });
@@ -1230,7 +1243,8 @@ public class AccountController : ControllerBase
             {
                 SearchValue = string.IsNullOrEmpty(args.SearchValue) ? string.Empty : args.SearchValue,
                 CountPerPage = args.CountPerPage,
-                PageIndex = args.PageIndex
+                PageIndex = args.PageIndex,
+                IsOfficialPartner = args.IsOfficialPartner
             });
 
             if (!result.Succeeded || result.Result == null)
@@ -1259,7 +1273,12 @@ public class AccountController : ControllerBase
                         IsOG             = c.IsOG,
                         IsOGDate         = c.IsOGDate,
                         IsOfficial       = c.IsOF,
-                        IsOfficialDate   = c.IsOFDate
+                        IsOfficialDate   = c.IsOFDate,
+                        CustomerPricing = new CustomerPricingDTO {
+                            Rate = c.CustomerPricing != null ? c.CustomerPricing.Rate : 0,
+                            IsManualPayment = c.CustomerPricing != null ? c.CustomerPricing.IsManualPayment : false
+                        },
+                        IsAccountBan     = c.IsAccountBan
                     };
                 }),
                 IsSuccess = true,
@@ -1380,6 +1399,99 @@ public class AccountController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new SubmitAccountVerifiedResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Customer/ConnectionId/Update")]
+    [HttpPost]
+    [ProducesResponseType(typeof(UpdateConnectionIdResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> UpdateConnectionId([FromBody] UpdateConnectionIdArgs args)
+    {
+        try
+        {
+            var result = await updateConnectionIdHandler.ExecuteAsync(new Services.AccountService.Interactors.UpdateConnectionIdArgs
+            {
+                ConnectionId = args.ConnectionId
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new UpdateConnectionIdResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new UpdateConnectionIdResult
+            {
+                Result = new CustomerDTO
+                {
+                    Id = result.Result.CustomerId,
+                    ConnectionId = result.Result.ConnectionId
+                },
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new UpdateConnectionIdResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("Customer/Verification/Send")]
+    [HttpPost]
+    [ProducesResponseType(typeof(VerifyUserNotificationResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> NotifyCustomerVerification([FromBody] VerifyUserNotificationArgs args)
+    {
+        try
+        {
+            var result = await verifyUserNotificationHandler.ExecuteAsync(new Services.AccountService.Interactors.VerifyUserNotificationArgs
+            {
+                Email = args.Email,
+                BankDetails = args.BankDetails,
+                IdAttached = args.IdAttached
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new VerifyUserNotificationResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new VerifyUserNotificationResult
+            {
+                Result = result.Succeeded,
+                IsSuccess = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new VerifyUserNotificationResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("BlockAccount")]
+    [HttpPost]
+    [ProducesResponseType(typeof(BlockedAccountResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> BlockAccount([FromBody] BlockedAccountArgs args)
+    {
+        try
+        {
+            var result = await blockedAccountHandler.ExecuteAsync(new Services.AccountService.Interactors.BlockedAccountArgs {
+                Id = args.CustomerId,
+                IsBlock = args.IsBlock
+            });
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new BlockedAccountResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new BlockedAccountResult
+            {
+               IsSuccess= true,
+               Result = true
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new BlockedAccountResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

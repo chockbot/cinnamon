@@ -5,7 +5,8 @@
 @inject NavigationManager NavigationManager
 
 @if(ActivityModel != null){
-    @if(ScheduleModel.IsActiveSchedule == true){
+    @if(ScheduleModel.IsActiveSchedule == true)
+    {
         <div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between">
             <span class="fw-bold schedule-name">@ScheduleModel.Name</span>
             @*<br />*@
@@ -16,11 +17,11 @@
             <div class="schedule-text">
                 ₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
             </div>
-            @if (ActivityModel.IsSetSession == true)
+            @if (ScheduleModel.IsSetSession == true)
             {
                 @*<br />*@
                 <div class="schedule-text">
-                    Consume in - @ActivityModel.SessionName
+                    Consume in - @ScheduleModel.SessionName
                 </div>
             }
             @*<br />*@

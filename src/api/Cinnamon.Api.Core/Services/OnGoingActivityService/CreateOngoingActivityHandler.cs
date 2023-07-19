@@ -10,17 +10,19 @@ namespace Cinnamon.Api.Core.Services.OngoingActivityService;
 public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
 {
     private readonly IActivityData activityData;
+    private readonly IScheduleData scheduleData;
     private readonly IOngoingActivitiesData ongoingActivitiesData;
     private readonly IStudentData studentData;
     private readonly IFamilyMemberData familyMemberData;
 
     public CreateOngoingActivityHandler(IActivityData activityData,IOngoingActivitiesData ongoingActivitiesData,
-        IStudentData studentData, IFamilyMemberData familyMemberData)
+        IStudentData studentData, IFamilyMemberData familyMemberData, IScheduleData scheduleData)
     {
         this.activityData = activityData;
         this.ongoingActivitiesData = ongoingActivitiesData;
         this.studentData = studentData;
         this.familyMemberData = familyMemberData;
+        this.scheduleData = scheduleData;
     }
 
     public AppResult<CreateOngoingActivityResult> Execute(CreateOngoingActivityArgs args)
@@ -50,6 +52,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 new Framework.ApiCommand.ApiData.Activity.Request.GetActivityArgs {
                 IncludeSchedules = true
             });
+
             if(!activityRes.Succeeded || activityRes.Result == null || !activityRes.Result.IsSuccess)
             {
                 return AppResult<CreateOngoingActivityResult>.CreateFailed(
@@ -89,6 +92,34 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 return AppResult<CreateOngoingActivityResult>.CreateFailed(
                     new ApplicationException(createOngoingActivityRes.Result.ErrorInfo?.Message), "An error occured in CreateOngoingActivityHandler");
             }
+
+            //Check if Schedule has Start Expiration Date
+            DateTime endExpiration = DateTime.MinValue;
+            DateTime startExpiration = DateTime.MinValue; 
+            if (schedule.HasExpiration == 1 && schedule.IsSetSession == true)
+            {
+                startExpiration = schedule.StartDate ?? DateTime.MinValue;
+                switch (schedule.SessionName)
+                {
+                    case "2 Weeks":
+                        endExpiration = startExpiration.AddDays(14);
+                        break;
+                    case "3 Weeks":
+                        endExpiration = startExpiration.AddDays(21);
+                        break;
+                    case "1 Month":
+                        endExpiration = startExpiration.AddMonths(1);
+                        break;
+                    case "2 Months":
+                        endExpiration = startExpiration.AddMonths(2);
+                        break;
+                    case "3 Months":
+                        endExpiration = startExpiration.AddMonths(3);
+                        break;
+                    default:
+                        break;
+                }
+            }
             //Get Number of Backtracking
             double quotient = (double)schedule.PerUnit2 / 2;
             int numberOfBackTracking = 0;
@@ -108,8 +139,8 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
                 NumberOfSessions = schedule.PerUnit2,
                 SessionsAttended = 0,
                 NumberOfBacktracking = numberOfBackTracking,
-                ExpirationEndDate = DateTime.Now,
-                ExpirationStartDate = DateTime.Now,
+                ExpirationEndDate = endExpiration,
+                ExpirationStartDate = startExpiration,
                 Students = args.Students.Select(s => {
                     return new Framework.ApiCommand.ApiData.Student.Request.CreateManyStudentArgs.StudentDetails {
                         FamilyMemberId = s.FamilyMemberId,

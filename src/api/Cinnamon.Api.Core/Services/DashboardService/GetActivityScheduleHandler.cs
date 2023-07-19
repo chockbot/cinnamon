@@ -40,7 +40,7 @@ public class GetActivityScheduleHandler : IGetActivitySchedulesHandler
             }
 
             IList<GetActivityScheduleResult.ActivitySchedule> schedules = new List<GetActivityScheduleResult.ActivitySchedule>();
-            foreach(var activity in result.Result.Activities)
+            foreach(var activity in result.Result.Activities.Where(s => s.Status != Framework.Enums.Enums.ActivityStatus.InProgress))
             {
                 foreach(var schedule in activity.ActivitySchedules)
                 {
@@ -51,7 +51,11 @@ public class GetActivityScheduleHandler : IGetActivitySchedulesHandler
                         ScheduleTitle = schedule.Name,
                         ScheduleDescription = schedule.DateTime,
                         ScheduleId = schedule.Id,
-                        IsActiveSchedule = schedule.IsActiveSchedule
+                        IsActiveSchedule = schedule.IsActiveSchedule,
+                        IsSetSession = schedule.IsSetSession,
+                        SessionName = schedule.SessionName,
+                        HasExpiration = schedule.HasExpiration, 
+                        StartDate = schedule.StartDate
                     });
                 }
             }

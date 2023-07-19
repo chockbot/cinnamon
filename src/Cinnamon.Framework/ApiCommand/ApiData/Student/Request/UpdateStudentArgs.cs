@@ -15,4 +15,5 @@ public class UpdateStudentArgs
     public string? Status {get; set;}
     public DateTime? ExpirationStartDate { get; set; }
     public DateTime? ExpirationEndDate { get; set; }
+    public bool? HasReview { get; set; }
 }

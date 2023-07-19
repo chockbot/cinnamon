@@ -7,7 +7,8 @@ on:
 env:
   FLAG_ENV: Production
   BASE_URL: "https://cinnamon.ph"
-
+  CHATHUB_PROD_URL: "https://cinnamon.ph/chathub"
+  SIGNALR_PROD_URL: "Endpoint=https://sigr-cinnamon-prod.service.signalr.net;AccessKey=RgvXsUzBiBrivFf7tK4Zf07fFIboytKDQKBP6MTbOYU=;Version=1.0;"
 # This allows a subsequently queued workflow run to interrupt previous runs
 concurrency:
   group: "${{ github.workflow }} @ ${{ github.event.pull_request.head.label || github.head_ref || github.ref }}"
@@ -50,7 +51,8 @@ jobs:
           Applicationconfig.Disbursement.CronString: "0 1 0 ? * TUE,FRI"
           Applicationconfig.FrontendUrl: "https://cinnamon.ph/"
           Applicationconfig.Sitemap.RunSitemap: true
-
+          ConnectionStrings.AzureSignalRConnectionString: ${{ env.SIGNALR_PROD_URL }}
+          
       # substitute web blazor server environemnt variables
       - name: App Settings Variables Substitution for Web Blazor
         uses: microsoft/variable-substitution@v1
@@ -59,7 +61,7 @@ jobs:
         env:
           AppConfig.Environment: ${{ env.FLAG_ENV }}
           AppConfig.BaseUrl: ${{ env.BASE_URL }}
-
+          AppConfig.ChatHubUrl: ${{ env.CHATHUB_PROD_URL }}
       # copy sitemaps and robots.txt
       - name: Copy required files
         run: |
@@ -135,4 +137,4 @@ jobs:
         run: rsync -avz output/Dockerfile.Web cinnamon@${{ secrets.SERVER_IP }}:build-prd/Dockerfile.Web
 
       - name: Run Server Script
-        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker compose down && sudo docker compose --env-file .env up -d'
+        run: ssh cinnamon@${{ secrets.SERVER_IP }} 'cd build-prd && sudo docker compose down && sudo docker compose --env-file .env up -d --build'

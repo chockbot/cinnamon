@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.WebUtilities;
 @using Cinnamon.Web.Components.Pages.Maker.UpdateActivity;
 @using Cinnamon.Web.Models;
+@using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Components.Pages.Creation;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Components.Pages;
@@ -14,6 +15,7 @@
 @inject IJSRuntime jsRuntime
 @inject AuthenticationStateProvider AuthenticationStateProvider;
 @inject IActivityApiHandler activityApiHandler;
+@inject IOngoingActivitiesHandler ongoingApiHandler
 @inject IAccountApiHandler accountApiHandler;
 @using Cinnamon.Framework.Enums;
 
@@ -374,6 +376,8 @@
 
     private GalleryUpdate galleryComponent { get; set; }
 
+    public List<Students> enrolledStudents = new List<Students>();
+
     private bool isLoading = false;
 
     private bool showErrorMessage = false;
@@ -538,6 +542,23 @@
                 }
             }
         }
+        //Get Ongoing and Completed Students
+        var students = await ongoingApiHandler.GetEnrolledStudents(activityId);
+        if (students.Succeeded && students.Result != null && students.Result.IsSuccess)
+        {
+            enrolledStudents = students.Result.Result.Select(i =>
+            {
+                return new Students
+                    {
+                        ActivityId = i.ActivityId,
+                        Id = i.Id,
+                        Name = i.Name,
+                        NumberOfSessions = i.NumberOfSessions,
+                        SessionsAttended = i.SessionsAttended,
+                        ScheduleId = i.ScheduleId
+                    };
+            }).ToList();
+        }
 
         Model = new ExperienceUpdateModel {
             Activity = new Models.Entities.Activity {
@@ -556,7 +577,11 @@
                         UnitPrice = s.UnitPrice,
                         TempId = s.Id,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName,
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate
                     };
                 }).ToList(),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -593,10 +618,8 @@
                 SpecificsYouWillProvide = activity.SpecificsYouWillProvide,
                 SubCategoryId = activity.SubCategoryId,
                 Title = activity.Title,
-                IsSetSession = activity.IsSetSession,
-                SessionName = activity.SessionName,
                 PinnedLocation = activity.PinnedLocation,
-                Status = activity.Status
+                Status = activity.Status,
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -641,6 +664,7 @@
                 Name = r.Name,
                 CityCode = r.CityCode
                 }) : new List<Models.Entities.Barangay>() : new List<Models.Entities.Barangay>(),
+            EnrolledStudents = enrolledStudents,
             Token = token
         };
 
@@ -745,7 +769,11 @@
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName ?? "N/A",
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate ?? DateTime.MinValue,
                     };
                 }),
                 AdditionalRequirements  = ReplaceEmptyValue(Model.Activity.AdditionalRequirements, NOTHING_PROVIDED),
@@ -774,8 +802,6 @@
                 Title                   = ReplaceEmptyValue(Model.Activity.Title, NOTHING_PROVIDED),
                 ActivityId              = Model.Activity.ActivityId,
                 DeletedScheduleIds      = Model.DeletedScheduleIds,
-                IsSetSession            = Model.Activity.IsSetSession,
-                SessionName             = ReplaceEmptyValue(Model.Activity.SessionName, NOTHING_PROVIDED),
                 PinnedLocation          = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
                 Status                  = Enums.ActivityStatus.InProgress,
             }, Model.Token);
@@ -856,7 +882,11 @@
                         PriceUnit2 = s.PriceUnit2,
                         UnitPrice = s.UnitPrice,
                         Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule
+                        IsActiveSchedule = s.IsActiveSchedule,
+                        IsSetSession = s.IsSetSession,
+                        SessionName = s.SessionName ?? "N/A",
+                        HasExpiration = s.HasExpiration,
+                        StartDate = s.StartDate ?? DateTime.MinValue,
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -885,8 +915,6 @@
                 Title = Model.Activity.Title,
                 ActivityId = Model.Activity.ActivityId,
                 DeletedScheduleIds = Model.DeletedScheduleIds,
-                IsSetSession = Model.Activity.IsSetSession,
-                SessionName = Model.Activity.SessionName,
                 PinnedLocation = Model.Activity.PinnedLocation,
                 Status = Enums.ActivityStatus.Submitted
             }, Model.Token);
@@ -1101,7 +1129,6 @@
         activity.Remarks                 = ReplaceTemporaryValues(activity.Remarks);
         activity.ScheduleIndicator       = ReplaceTemporaryValues(activity.ScheduleIndicator);
         activity.SpecificsYouWillProvide = ReplaceTemporaryValues(activity.SpecificsYouWillProvide);
-        activity.SessionName             = ReplaceTemporaryValues(activity.SessionName);
         activity.PinnedLocation          = ReplaceTemporaryValues(activity.PinnedLocation);
 
         return activity;
@@ -1154,7 +1181,8 @@
         var listSchedule = new List<Models.Entities.ActivitySchedule>();
         listSchedule.AddRange(activitySchedules.Where(a => a.Id != 0).ToList());
 
-        foreach (var item in newSchedules)        {
+        foreach (var item in newSchedules)
+        {
             listSchedule.Add(item);
         }
 

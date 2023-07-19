@@ -20,11 +20,15 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
     private readonly IRequestPaymentHandler requestPaymentHandler;
     private readonly IJsonSerializationProvider jsonSerializationProvider;
     private readonly IFinishTransactionHandler finishTransactionHandler;
+    private readonly IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler;
+    private readonly IValidateCouponCodeHandler validateCouponCodeHandler;
+    private readonly ICustomerPricingData customerPricingData;
 
     public PurchaseOrderHandler(IPurchaseOrderData purchaseOrderData, IHttpContextAccessor httpContext,
         IGetActivityHandler getActivityHandler, ICustomerData customerData,
         IRequestPaymentHandler requestPaymentHandler, IJsonSerializationProvider jsonSerializationProvider,
-        IFinishTransactionHandler finishTransactionHandler)
+        IFinishTransactionHandler finishTransactionHandler, IOwnerPricingInclusiveHandler ownerPricingInclusiveHandler,
+        IValidateCouponCodeHandler validateCouponCodeHandler, ICustomerPricingData customerPricingData)
     {
         this.purchaseOrderData = purchaseOrderData;
         this.httpContext = httpContext;
@@ -33,6 +37,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
         this.requestPaymentHandler = requestPaymentHandler;
         this.jsonSerializationProvider = jsonSerializationProvider;
         this.finishTransactionHandler = finishTransactionHandler;
+        this.ownerPricingInclusiveHandler = ownerPricingInclusiveHandler;
+        this.validateCouponCodeHandler = validateCouponCodeHandler;
+        this.customerPricingData = customerPricingData;
     }
 
     public AppResult<PurchaseOrderResult> Execute(PurchaseOrderArgs args)
@@ -79,6 +86,17 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("Invalid schedule id provided"), "Invalid schedule id provided");
             }
 
+            // check if inclusive payment
+            var checkInclusiveRes = await ownerPricingInclusiveHandler.ExecuteAsync(new ActivityService.Interactors.OwnerPricingInclusiveArgs {
+                CustomerId = activityRes.Result.Owner?.Id ?? 0
+            });
+            if(!checkInclusiveRes.Succeeded || checkInclusiveRes.Result == null)
+            {
+                return AppResult<PurchaseOrderResult>.CreateFailed(new ApplicationException("An error occured. Please try again"), "An error occured. Please try again");
+            }
+
+            bool IsInclusivePayment = checkInclusiveRes.Result.IsInclusivePricing;
+
             // check customer id
             var customerRes = await customerData.GetCustomerById(id);
             if(!customerRes.Succeeded || customerRes.Result == null)
@@ -92,18 +110,92 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             }
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
-            decimal paymentProviderFee = subTotal * .05m;
-            var discount = 0;
-            decimal serviceFee = 50;
+            decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * .05m;
+            decimal discount = 0;
+            decimal serviceFee = IsInclusivePayment ? 0 : 50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
+
+            decimal perUnitDisburseAmount = activitySchedule.Price;
+            decimal totalDisburseAmount = subTotal;
+
+            // validate coupon
+            if(!string.IsNullOrEmpty(args.CouponCode))
+            {
+                var validateCouponRes = await validateCouponCodeHandler.ExecuteAsync(new ActivityService.Interactors.ValidateCouponCodeArgs {
+                    ActivityId = args.ActivityId,
+                    Amount = overallTotal,
+                    CouponCode = args.CouponCode
+                });
+                if(!validateCouponRes.Succeeded || validateCouponRes.Result == null)
+                {
+                    return AppResult<PurchaseOrderResult>.CreateFailed(
+                        new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid request.");
+                }
+                var couopon = validateCouponRes.Result;
+
+                decimal disbursementDisccount = 0;
+
+                // fixed amount
+                if(couopon.DiscountType == 1)
+                {
+                    discount = couopon.Amount;
+                    disbursementDisccount = couopon.Amount;
+                }
+                // percentage 
+                else if(couopon.DiscountType == 0)
+                {
+                    decimal percentage = couopon.Amount / 100;
+                    decimal couponSubTotal = 0;
+                    if(IsInclusivePayment)
+                    {
+                        couponSubTotal = subTotal;
+                    }
+                    else 
+                    {
+                        couponSubTotal = subTotal + paymentProviderFee;
+                    }
+
+                    discount = couponSubTotal * percentage;
+                    disbursementDisccount = subTotal * percentage;
+                }
+
+                // deduct from disbursement amount
+                perUnitDisburseAmount -= (disbursementDisccount / args.NumberOfHeads);
+                totalDisburseAmount -= disbursementDisccount;
+
+                // deduct overall total to discount
+                overallTotal -= discount;
+            }
+            
+            // disbursement for inclusive pricing
+            if(IsInclusivePayment)
+            {
+                var customerPricingRes = await customerPricingData.GetCustomerPricingByCustomerId(activityRes.Result.Owner?.Id ?? 0);
+                if(!customerPricingRes.Succeeded || customerPricingRes.Result == null || !customerPricingRes.Result.IsSuccess)
+                {
+                    return AppResult<PurchaseOrderResult>.CreateFailed(
+                        new ApplicationException(customerRes.Result.ErrorInfo?.Message), "Invalid request.");
+                }
+                var customerPricing = customerPricingRes.Result.Result;
+
+                decimal amountToDeduct = 0;
+                var percentage = customerPricing.Rate / 100;
+                amountToDeduct = percentage * perUnitDisburseAmount;
+
+                perUnitDisburseAmount -= amountToDeduct;
+                totalDisburseAmount -= (amountToDeduct * args.NumberOfHeads);
+            }
             
             if(args.IsCreditsApplied && customerRes.Result.Result.TotalCredits > 0)
             {
                 var creditsBalance = customerRes.Result.Result.TotalCredits;
+                creditAmount = overallTotal >= creditsBalance ? creditsBalance : overallTotal;
                 overallTotal = overallTotal >= creditsBalance ? overallTotal - creditsBalance : 0;
-                creditAmount = subTotal + paymentProviderFee + serviceFee >= creditsBalance ? creditsBalance : subTotal + paymentProviderFee + serviceFee;
             }
+
+            // zero out over all total if less than zero
+            overallTotal = overallTotal < 0 ? 0 : overallTotal;
 
             // serialize students data to use later
             var payloadData = new {
@@ -118,7 +210,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Fees = new {
                     PaymentProviderFee = paymentProviderFee,
                     ServiceFee = serviceFee
-                }
+                },
+                IsInclusivePayment
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 
@@ -137,7 +230,10 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                 Payload = serializedPayload,
                 CreditAmount = creditAmount,
                 UnitCount = args.Students.Count(),
-                UnitPrice = activitySchedule.Price
+                UnitPrice = activitySchedule.Price,
+                IsInclusivePayment = IsInclusivePayment,
+                PerUnitDisburseAmount = perUnitDisburseAmount,
+                TotalDisburseAmount = totalDisburseAmount
             });
 
             if(!result.Succeeded || result.Result == null)

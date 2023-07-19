@@ -26,5 +26,13 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request
         public int Order {get; set;}
         [Required]
         public bool IsActiveSchedule { get; set; }
+        [Required]
+        public bool IsSetSession { get; set; } = false;
+        [Required]
+        public string SessionName { get; set; }
+        [Required]
+        public int HasExpiration { get; set; } = 0;
+        [Required]
+        public DateTime StartDate { get; set; }
     }
 }

@@ -17,6 +17,8 @@ services:
       context: .
       dockerfile: Dockerfile.Core
     restart: always
+    ports:
+      - "3000:80"
     volumes:
       - ./src-core:/app
       - ./src-web:/web-app

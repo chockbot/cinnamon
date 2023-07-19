@@ -16,6 +16,7 @@ public class UpdateOngoingActivityArgs : IInteractor
     public string? Status { get; set; }
     public DateTime? ExpirationStartDate { get; set; }
     public DateTime? ExpirationEndDate { get; set; }
+    public bool? HasReview { get; set; }
 
 
 }

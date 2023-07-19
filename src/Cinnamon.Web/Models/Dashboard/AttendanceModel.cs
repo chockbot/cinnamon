@@ -1,3 +1,5 @@
+using Cinnamon.Web.Models.Entities;
+
 namespace Cinnamon.Web.Models.Dashboard;
 
 public class AttendanceModel 
@@ -5,6 +7,7 @@ public class AttendanceModel
     public List<Schedule> Schedules {get; set;} = new();
     public List<StudentAttendance> Attendances {get; set;} = new();
     public List<StudentAttendance> FilteredAttendance {get; set;} = new();
+    public List<Activity> Activities { get; set;} = new();
     public bool IsShowErrorMessage {get; set;}
     public string ErrorMessage {get; set;}
     public bool IsCheckAllStudent {get; set;}
@@ -30,6 +33,10 @@ public class AttendanceModel
         public string ScheduleDescription {get; set;}
         public bool IsSelected {get; set;}
         public bool IsActiveSchedule { get; set;}
+        public bool IsSetSession { get; set; }
+        public string SessionName { get; set; }
+        public int HasExpiration { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 
     public class StudentAttendance 
@@ -44,6 +51,20 @@ public class AttendanceModel
         public int SessionsAttended {get; set;}
         public DateTime ExpirationDateStart { get; set; }
         public DateTime ExpirationDateEnd { get; set; }
+    }
+    public class Activity
+    {
+        public bool IsSelected { get; set; }
+        public int ActivityId { get; set; }
+        public int ExperienceTypeId { get; set; }
+        public int ExperienceCategoryId { get; set; }
+        public int SubCategoryId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+
+        public List<ActivitySchedule> ActivitySchedules { get; set; } = new List<ActivitySchedule>();
+
+
     }
 }
 

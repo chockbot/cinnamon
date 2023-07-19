@@ -1,0 +1,82 @@
+﻿@namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Models.Entities
+@using System.Security.Claims
+@using Cinnamon.Web.Modules.ApiAccess.Handlers
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IActivityApiHandler activityApiHandler
+@inject IOngoingActivitiesHandler ongoingApiHandler
+@inject IAccountApiHandler accountApiHandler
+@inject NavigationManager NavigationManager
+
+<article class="experience-review-wrapper py-3">
+    <h3 class="title">Your Reviews</h3>
+    @if (reviews.Count != 0)
+    {
+        <div class="d-flex">
+            @if (reviews.Count > 3)
+            {
+                <div class="col-12 d-flex justify-content-end">
+                    <button class="see-more" @onclick="() => modRef.ShowModal()">See More</button>
+                </div>
+            }
+        </div>
+        <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
+            <div class="review-wrapper">
+                @foreach (var item in top3Reviews)
+                {
+                    <CustomerReviewItem Review="item" Profile="Profile"/>
+                }
+            </div>
+        </Div>
+    }
+    else
+    {
+        <p class="p-1" style="font-family:'Nunito';font-weight:bold">No reviews yet!</p>
+    }
+</article>
+
+<ModalCustomerReviews @ref=modRef Profile="Profile" Activities="Activities" ReviewsCount="reviews.Count"></ModalCustomerReviews>
+
+@code {
+    [Parameter]
+    public Models.Entities.CustomerProfile Profile { get; set; }
+
+    [Parameter]
+    public IEnumerable<Activity> Activities { get; set; }
+
+    private ModalCustomerReviews modRef;
+
+    public List<Reviews> reviews = new List<Reviews>();
+
+    public List<Reviews> top3Reviews = new List<Reviews>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var reviewsResult = await ongoingApiHandler.GetReviewsByCustomerId(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetReviewsByCustomerIdArgs
+            {
+                CustomerId = Profile.Id
+            });
+        if (reviewsResult.Succeeded && reviewsResult.Result != null && reviewsResult.Result.IsSuccess)
+        {
+            reviews = reviewsResult.Result.Result.Select(a =>
+            {
+                return new Reviews
+                    {
+                        Id = a.Id,
+                        CustomerId = a.CustomerId,
+                        MakerId = a.MakerId,
+                        ActivityId = a.ActivityId,
+                        ScheduleId = a.ScheduleId,
+                        StudentId = a.StudentId,
+                        Review = a.Review,
+                        Rating = a.Rating,
+                        ReviewDate = a.ReviewDate
+                    };
+            }).OrderByDescending(a => a.ReviewDate).ToList();
+        }
+        if (reviews.Count != 0)
+        {
+            top3Reviews = reviews.Take(3).OrderByDescending(a => a.ReviewDate).ToList();
+        }
+    }
+}

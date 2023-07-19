@@ -350,9 +350,69 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
 
             Expression<Func<Entities.StudentAttendance, bool>> filter =
                 a =>(a.StudentId == id ) &&
-                    (activityId == activityId) &&
+                    (a.Student.ActivityId == activityId) &&
                     (date.HasValue ? a.Date == date.Value.Date.SetKindUtc() : true) &&
                     (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true);
+
+            var result = await dataStore.StudentAttendance.FindAsync(filter, count, skip, includes);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var studentAttendances = result.Result;
+
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateSucceeded(studentAttendances.Select(s =>
+            {
+                var studentAttendance = new StudentAttendanceDTO
+                {
+                    Date = s.Date,
+                    Id = s.Id,
+                    IsPresent = s.IsPresent,
+                    StudentId = s.StudentId
+                };
+
+                if (includeStudent.HasValue && includeStudent.Value)
+                {
+                    var student = s.Student;
+                    studentAttendance.Student = new Framework.ApiCommand.ApiData.DTO.Student.StudentDTO
+                    {
+                        ActivityId = student.ActivityId,
+                        CustomerId = student.CustomerId,
+                        Id = student.Id,
+                        Name = student.Name,
+                        NumberOfSessions = student.NumberOfSessions,
+                        Remarks = student.Remarks,
+                        ScheduleId = student.ScheduleId,
+                        SessionsAttended = student.SessionsAttended,
+                        Status = student.Status,
+                        StudentNo = student.StudentNo,
+                        HasReview = student.HasReview
+                    };
+                }
+
+                return studentAttendance;
+            }), "Successfully get student attendances");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentAttendanceDTO>>.CreateFailed(ex, "An error occured when getting all student attendance");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<StudentAttendanceDTO>>> GetCompletedStudents(int? count, int? skip, bool? includeStudent = false, IEnumerable<int>? activityIds = null, IEnumerable<int>? scheduleIds = null)
+    {
+        try
+        {
+            var includes = new List<Expression<Func<Entities.StudentAttendance, object>>>();
+            if (includeStudent.HasValue && includeStudent.Value)
+            {
+                includes.Add(s => s.Student);
+            }
+
+            Expression<Func<Entities.StudentAttendance, bool>> filter =
+                a =>(activityIds != null ? activityIds.Contains(a.Student.ActivityId) : true) &&
+                    (scheduleIds != null ? scheduleIds.Contains(a.Student.ScheduleId) : true) &&
+                    (a.Student.SessionsAttended >= a.Student.NumberOfSessions);
 
             var result = await dataStore.StudentAttendance.FindAsync(filter, count, skip, includes);
             if (!result.Succeeded || result.Result == null)

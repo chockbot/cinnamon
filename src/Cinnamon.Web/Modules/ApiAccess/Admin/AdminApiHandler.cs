@@ -41,5 +41,74 @@ namespace Cinnamon.Web.Modules.ApiAccess.Admin
                 return AppResult<GetAdminUserByEmailResult>.CreateFailed(ex, "An error occured when calling get admin user by email api");
             }
         }
+
+        public async Task<AppResult<UpdateCustomerPricingResult>> CustomerPricing(UpdateCustomerPricingArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/CustomerPricing")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<UpdateCustomerPricingResult>();
+
+                return AppResult<UpdateCustomerPricingResult>.CreateSucceeded(result, "Successfully post customer pricing api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<UpdateCustomerPricingResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<UpdateCustomerPricingResult>.CreateFailed(ex, "An error occured when posting customer pricing api");
+            }
+        }
+
+        public async Task<AppResult<GetAllInclusiveTransactionResult>> GetAllInclusiveTransactions(GetAllInclusiveTransactionArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Admin/GetAllInclusiveTransactions")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetAllInclusiveTransactionResult>();
+
+                return AppResult<GetAllInclusiveTransactionResult>.CreateSucceeded(result, "Successfully called get admin inclusive transactiond api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<GetAllInclusiveTransactionResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<GetAllInclusiveTransactionResult>.CreateFailed(ex, "An error occured when calling get admin inclusive transactiond api");
+            }
+        }
+
+        public async Task<AppResult<AdminCreateCouponResult>> CreateCoupon(AdminCreateCouponArgs args, string token)
+        {
+            try
+            {
+                var result = await flurlClient
+                    .WithOAuthBearerToken(token)
+                    .Request("Admin/CreateCoupon")
+                    .PostJsonAsync(args)
+                    .ReceiveJson<AdminCreateCouponResult>();
+
+                return AppResult<AdminCreateCouponResult>.CreateSucceeded(result, "Successfully called create coupon api");
+            }
+            catch (FlurlHttpException ex)
+            {
+                var error = await ex.GetResponseJsonAsync();
+                return AppResult<AdminCreateCouponResult>.CreateFailed(ex, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<AdminCreateCouponResult>.CreateFailed(ex, "An error occured when calling create coupon api");
+            }
+        }
     }
 }

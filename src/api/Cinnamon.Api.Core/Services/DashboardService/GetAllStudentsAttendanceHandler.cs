@@ -1,6 +1,4 @@
 ﻿using Cinnamon.Api.Core.Modules.DataAccess.Handlers;
-using Cinnamon.Api.Core.Modules.DataAccess.Student;
-using Cinnamon.Api.Core.Services.ActivityService.Handlers;
 using Cinnamon.Api.Core.Services.DashboardService.Handlers;
 using Cinnamon.Api.Core.Services.DashboardService.Interactors;
 using Cinnamon.Api.Core.Services.DashboardService.Interactors.Results;

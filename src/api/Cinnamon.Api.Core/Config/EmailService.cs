@@ -9,4 +9,5 @@ public class EmailService
     public string DirectoryTenantId {get; set;}
     public string Resource {get; set;}
     public string Email { get; set; }
+    public string AdminEmail { get; set; }
 }

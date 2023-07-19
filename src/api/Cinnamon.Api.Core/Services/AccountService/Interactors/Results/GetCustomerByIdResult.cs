@@ -16,4 +16,5 @@ public class GetCustomerByIdResult
     public bool IsOfficial { get; set; }
     public bool ExternalLogin { get; set; }
     public DateTime DateJoined { get; set; }
+    public string? ConnectionId { get; set; }
 }

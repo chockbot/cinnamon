@@ -14,8 +14,7 @@ public class CreatePurchaseOrderArgs
     public decimal Total {get; set;}
     [Required]
     public decimal ConvinienceFee {get; set;}
-    [Required]
-    public string Coupon {get; set;}
+    public string? Coupon {get; set;} = string.Empty;
     [Required]
     public decimal CouponAmount {get; set;}
     [Required]
@@ -29,4 +28,10 @@ public class CreatePurchaseOrderArgs
     public decimal UnitPrice {get; set;}
     [Required]
     public int UnitCount {get; set;}
+    [Required]
+    public bool IsInclusivePayment {get; set;}
+    [Required]
+    public decimal PerUnitDisburseAmount {get; set;}
+    [Required]
+    public decimal TotalDisburseAmount {get; set;}
 }

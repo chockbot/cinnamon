@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Dashboard.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.OnGoingActivities.Response;
 using Cinnamon.Framework.Common;
 using Cinnamon.Web.Modules.ApiAccess.Handlers;
 using Flurl.Http;
@@ -208,6 +210,27 @@ public class DashboardApiHandler : IDashboardApiHandler
         catch (Exception ex)
         {
             return AppResult<GetAllStudentAttendanceResult>.CreateFailed(ex, "An error occured when getting student attendance api");
+        }
+    }
+    public async Task<AppResult<GetCompletedStudentsResult>> GetCompletedStudents(GetCompletedStudetnsArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Dashboard/GetCompletedStudents")
+                .SetQueryParams(args)
+                .GetJsonAsync<GetCompletedStudentsResult>();
+
+            return AppResult<GetCompletedStudentsResult>.CreateSucceeded(result, "Successfully getting student attendance api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetCompletedStudentsResult>.CreateFailed(ex, "An error occured when getting student attendance api");
         }
     }
 }

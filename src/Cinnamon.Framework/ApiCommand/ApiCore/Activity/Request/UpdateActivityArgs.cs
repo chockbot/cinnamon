@@ -31,8 +31,6 @@ public class UpdateActivityArgs
     public string? SkillLevel {get; set;}
     public int? MinimumAge {get; set;}
     public bool? CanAdultsJoin {get; set;}
-    public bool? IsSetSession { get; set; }
-    public string? SessionName { get; set; }
     public string? PinnedLocation { get; set; }
     public bool? IsDeactivated { get; set; }
     public bool? IsAdmin { get; set; }
@@ -56,6 +54,15 @@ public class UpdateActivityArgs
         public string? PriceUnit2 {get; set;}
         public int Order {get; set;}
         public bool IsActiveSchedule { get; set; }
+        public bool IsSetSession { get; set; }
+        private string _sessionName;
+        public string SessionName
+        {
+            get { return _sessionName ?? string.Empty; }
+            set { _sessionName = value; }
+        }
+        public int HasExpiration { get; set; }
+        public DateTime? StartDate { get; set; }
     }
 
     public IFormFile? Image1 { get; set; }

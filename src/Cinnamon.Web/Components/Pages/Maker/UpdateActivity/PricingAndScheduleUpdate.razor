@@ -48,6 +48,10 @@
                                     <div class="form-group">
                                         <div class="form-check form-switch">
                                             <div class="row">
+                                                <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                                    <label for="title" class="pricing-title">Pricing & Schedule</label>
+                                                </div>
+                                                <hr>
                                                 <div class="col-lg-4 col-8">
                                                     <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                                 </div>
@@ -76,12 +80,447 @@
                                         <label for="title" class="form-control-label label-top-margin">Session/s</label>
                                         <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                                     </div>
+                                    @*Expiration Section*@
+                                    @if (Model.EnrolledStudents.Where(s => s.ScheduleId == scheduleModel.Id && s.NumberOfSessions > s.SessionsAttended).ToList().Count == 0)
+                                    {
+                                        <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                            <label for="title" class="expiration-title">Activity Expiration</label>
+                                        </div>
+                                        <hr>
+                                        <div class="col-lg-5 col-9 justify-content-start">
+                                            <label class="fw-bold title-description">
+                                                Set Activity Expiration
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                            <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance. </small>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                            <label class="fw-bold title-description">
+                                                Set expiration period
+                                            </label>
+                                            <div>
+                                                <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                            </div>
+                                            @if (scheduleModel.IsSetSession == false)
+                                            {
+                                                scheduleModel.SessionName = null;
+                                                scheduleModel.HasExpiration = 0;
+                                                scheduleModel.StartDate = null;
+                                                <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
+                                                    <option disabled selected>Select Period</option>
+                                                    @foreach (var sessionPeriod in Model.SessionPeriods)
+                                                    {
+                                                        <option value="@sessionPeriod">@sessionPeriod</option>
+                                                    }
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select class="form-control session-period @RequiredCheck(scheduleModel.SessionName)" @bind="scheduleModel.SessionName">
+                                                    <option disabled selected>Select Period</option>
+                                                    @foreach (var sessionPeriod in Model.SessionPeriods)
+                                                    {
+                                                        <option value="@sessionPeriod">@sessionPeriod</option>
+                                                    }
+                                                </select>
+                                            }
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+
+                                            <label class="fw-bold title-description">
+                                                Define start of expiration
+                                            </label>
+
+                                            <div class="form-check at-start">
+
+                                                <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                                                <label class="form-check-label" for="at-start">
+                                                    At the start of
+                                                </label>
+
+                                                @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                                {
+                                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </DateEdit>
+                                                }
+                                                else
+                                                {
+                                                    scheduleModel.StartDate = null;
+                                                    <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                                    <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </DateEdit>
+                                                    </Tooltip>
+                                                }
+                                            </div>
+
+                                            <div class="form-check first-attendance d-flex">
+
+                                                <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                                                <label class="form-check-label" for="first-attendance">
+                                                    Start of first attendance
+                                                </label>
+
+                                            </div>
+
+                                            @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
+                                            {
+                                                <div class="attendance-note">
+                                                    <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                                </div>
+                                            }
+                                        </div>
+                                        @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                                        {
+                                            string ordinal = "";
+                                            DateTime frequency = DateTime.Now;
+                                            switch (scheduleModel.SessionName)
+                                            {
+                                                case "2 Weeks":
+                                                    frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "3 Weeks":
+                                                    frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "1 Month":
+                                                    frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "2 Months":
+                                                    frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "3 Months":
+                                                    frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                            }
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                            <label for="title" class="expiration-title">Activity Expiration</label>
+                                        </div>
+                                        <hr>
+                                        <div class="col-lg-12 col-12 justify-content-start">
+                                            <label class="fw-bold title-description-note">
+                                                Note: Unable to edit due to enrolled students.
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-5 col-9 justify-content-start">
+                                            <label class="fw-bold title-description">
+                                                Set Activity Expiration
+                                            </label>
+                                        </div>
+                                        <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                            <div class="form-check form-switch">
+                                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession" disabled>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                            <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                            <label class="fw-bold title-description">
+                                                Set expiration period
+                                            </label>
+                                            <div>
+                                                <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                            </div>
+                                            <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled>
+                                                <option disabled selected>Select Period</option>
+                                                @foreach (var sessionPeriod in Model.SessionPeriods)
+                                                {
+                                                    <option value="@sessionPeriod">@sessionPeriod</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+                                            <label class="fw-bold title-description">
+                                                Define start of expiration
+                                            </label>
+                                            <div class="form-check at-start">
+
+                                                <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" disabled>
+                                                <label class="form-check-label" for="at-start">
+                                                    At the start of
+                                                </label>
+
+                                                @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                                {
+                                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </DateEdit>
+                                                }
+                                                else
+                                                {
+                                                    scheduleModel.StartDate = null;
+                                                    <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                                    <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                                        <Feedback>
+                                                            <ValidationError />
+                                                        </Feedback>
+                                                    </DateEdit>
+                                                </Tooltip>
+                                                }
+                                            </div>
+
+                                            <div class="form-check first-attendance d-flex">
+
+                                                <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" disabled>
+                                                <label class="form-check-label" for="first-attendance">
+                                                    Start of first attendance
+                                                </label>
+
+                                            </div>
+
+                                            @if (scheduleModel.HasExpiration == 2 && (scheduleModel.SessionName != null || scheduleModel.SessionName != "N/A"))
+                                            {
+                                                <div class="attendance-note">
+                                                    <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                                        {
+                                            string ordinal = "";
+                                            DateTime frequency = DateTime.Now;
+                                            switch (scheduleModel.SessionName)
+                                            {
+                                                case "2 Weeks":
+                                                    frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "3 Weeks":
+                                                    frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "1 Month":
+                                                    frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "2 Months":
+                                                    frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+                                                case "3 Months":
+                                                    frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
+
+                                            }
+                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                                <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                            </div>
+                                        }
+                                    }
                                 </div>
                             </div>
                         </div>
                     </div>
                 }
             </div>
+
             <div class="pricing-schedule">
                 <div class="row">
                     @foreach (var scheduleModel in newSchedules)
@@ -89,6 +528,10 @@
                         <div class="form-group">
                             <div class="form-check form-switch">
                                 <div class="row">
+                                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                        <label for="title" class="pricing-title">Pricing & Schedule</label>
+                                    </div>
+                                    <hr>
                                     <div class="col-lg-4 col-8">
                                         <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                     </div>
@@ -129,6 +572,440 @@
                             <label for="title" class="form-control-label label-top-margin">Session/s</label>
                             <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                         </div>
+                        @*Expiration Section*@
+                        @if (Model.EnrolledStudents.Where(s => s.ScheduleId == scheduleModel.Id && s.NumberOfSessions > s.SessionsAttended).ToList().Count == 0)
+                        {
+                            <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                <label for="title" class="expiration-title">Activity Expiration</label>
+                            </div>
+                            <hr>
+                            <div class="col-lg-5 col-9 justify-content-start">
+                                <label class="fw-bold title-description">
+                                    Set Activity Expiration
+                                </label>
+                            </div>
+                            <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance. </small>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                <label class="fw-bold title-description">
+                                    Set expiration period
+                                </label>
+                                <div>
+                                    <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                </div>
+                                @if (scheduleModel.IsSetSession == false)
+                                {
+                                    scheduleModel.SessionName = null;
+                                    scheduleModel.HasExpiration = 0;
+                                    scheduleModel.StartDate = null;
+                                    <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
+                                        <option disabled selected>Select Period</option>
+                                        @foreach (var sessionPeriod in Model.SessionPeriods)
+                                        {
+                                            <option value="@sessionPeriod">@sessionPeriod</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="form-control session-period @RequiredCheck(scheduleModel.SessionName)" @bind="scheduleModel.SessionName">
+                                        <option disabled selected>Select Period</option>
+                                        @foreach (var sessionPeriod in Model.SessionPeriods)
+                                        {
+                                            <option value="@sessionPeriod">@sessionPeriod</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+
+                                <label class="fw-bold title-description">
+                                    Define start of expiration
+                                </label>
+
+                                <div class="form-check at-start">
+
+                                    <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                                    <label class="form-check-label" for="at-start">
+                                        At the start of
+                                    </label>
+
+                                    @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                    {
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    }
+                                    else
+                                    {
+                                        scheduleModel.StartDate = null;
+                                        <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                        <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </Tooltip>
+                                    }
+                                </div>
+
+                                <div class="form-check first-attendance d-flex">
+
+                                    <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                                    <label class="form-check-label" for="first-attendance">
+                                        Start of first attendance
+                                    </label>
+
+                                </div>
+
+                                @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
+                                {
+                                    <div class="attendance-note">
+                                        <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                    </div>
+                                }
+                            </div>
+                            @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                            {
+                                string ordinal = "";
+                                DateTime frequency = DateTime.Now;
+                                switch (scheduleModel.SessionName)
+                                {
+                                    case "2 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "1 Month":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "2 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                }
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                    <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                <label for="title" class="expiration-title">Activity Expiration</label>
+                            </div>
+                            <hr>
+                            <div class="col-lg-12 col-12 justify-content-start">
+                                <label class="fw-bold title-description-note">
+                                    Note: Unable to edit due to enrolled students.
+                                </label>
+                            </div>
+                            <div class="col-lg-5 col-9 justify-content-start">
+                                <label class="fw-bold title-description">
+                                    Set Activity Expiration
+                                </label>
+                            </div>
+                            <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession" disabled>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                <label class="fw-bold title-description">
+                                    Set expiration period
+                                </label>
+                                <div>
+                                    <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                </div>
+                                <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled>
+                                    <option disabled selected>Select Period</option>
+                                    @foreach (var sessionPeriod in Model.SessionPeriods)
+                                    {
+                                        <option value="@sessionPeriod">@sessionPeriod</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+                                <label class="fw-bold title-description">
+                                    Define start of expiration
+                                </label>
+                                <div class="form-check at-start">
+
+                                    <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" disabled>
+                                    <label class="form-check-label" for="at-start">
+                                        At the start of
+                                    </label>
+
+                                    @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                    {
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    }
+                                    else
+                                    {
+                                        scheduleModel.StartDate = null;
+                                        <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                        <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </Tooltip>
+                                    }
+                                </div>
+
+                                <div class="form-check first-attendance d-flex">
+
+                                    <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" disabled>
+                                    <label class="form-check-label" for="first-attendance">
+                                        Start of first attendance
+                                    </label>
+
+                                </div>
+
+                                @if (scheduleModel.HasExpiration == 2 && (scheduleModel.SessionName != null || scheduleModel.SessionName != "N/A"))
+                                {
+                                    <div class="attendance-note">
+                                        <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                            {
+                                string ordinal = "";
+                                DateTime frequency = DateTime.Now;
+                                switch (scheduleModel.SessionName)
+                                {
+                                    case "2 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "1 Month":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "2 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+
+                                }
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                    <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                </div>
+                            }
+                        }
                     }
                     <div class="form-group">
                         <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
@@ -145,6 +1022,9 @@
                         <div class="form-group">
                             <div class="form-check form-switch">
                                 <div class="row">
+                                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                        <label for="title" class="pricing-title">Pricing & Schedule</label>
+                                    </div>
                                     <div class="col-lg-4 col-8">
                                         <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                     </div>
@@ -185,6 +1065,440 @@
                             <label for="title" class="form-control-label label-top-margin">Session/s</label>
                             <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                         </div>
+                        @*Expiration Section*@
+                        @if (Model.EnrolledStudents.Where(s => s.ScheduleId == scheduleModel.Id && s.NumberOfSessions > s.SessionsAttended).ToList().Count == 0)
+                        {
+                            <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                <label for="title" class="expiration-title">Activity Expiration</label>
+                            </div>
+                            <hr>
+                            <div class="col-lg-5 col-9 justify-content-start">
+                                <label class="fw-bold title-description">
+                                    Set Activity Expiration
+                                </label>
+                            </div>
+                            <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance. </small>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                <label class="fw-bold title-description">
+                                    Set expiration period
+                                </label>
+                                <div>
+                                    <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                </div>
+                                @if (scheduleModel.IsSetSession == false)
+                                {
+                                    scheduleModel.SessionName = null;
+                                    scheduleModel.HasExpiration = 0;
+                                    scheduleModel.StartDate = null;
+                                    <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
+                                        <option disabled selected>Select Period</option>
+                                        @foreach (var sessionPeriod in Model.SessionPeriods)
+                                        {
+                                            <option value="@sessionPeriod">@sessionPeriod</option>
+                                        }
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select class="form-control session-period @RequiredCheck(scheduleModel.SessionName)" @bind="scheduleModel.SessionName">
+                                        <option disabled selected>Select Period</option>
+                                        @foreach (var sessionPeriod in Model.SessionPeriods)
+                                        {
+                                            <option value="@sessionPeriod">@sessionPeriod</option>
+                                        }
+                                    </select>
+                                }
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+
+                                <label class="fw-bold title-description">
+                                    Define start of expiration
+                                </label>
+
+                                <div class="form-check at-start">
+
+                                    <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                                    <label class="form-check-label" for="at-start">
+                                        At the start of
+                                    </label>
+
+                                    @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                    {
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    }
+                                    else
+                                    {
+                                        scheduleModel.StartDate = null;
+                                        <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                        <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </Tooltip>
+                                    }
+                                </div>
+
+                                <div class="form-check first-attendance d-flex">
+
+                                    <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                                    <label class="form-check-label" for="first-attendance">
+                                        Start of first attendance
+                                    </label>
+
+                                </div>
+
+                                @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
+                                {
+                                    <div class="attendance-note">
+                                        <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                    </div>
+                                }
+                            </div>
+                            @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                            {
+                                string ordinal = "";
+                                DateTime frequency = DateTime.Now;
+                                switch (scheduleModel.SessionName)
+                                {
+                                    case "2 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "1 Month":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "2 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                }
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                    <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                <label for="title" class="expiration-title">Activity Expiration</label>
+                            </div>
+                            <hr>
+                            <div class="col-lg-12 col-12 justify-content-start">
+                                <label class="fw-bold title-description-note">
+                                    Note: Unable to edit due to enrolled students.
+                                </label>
+                            </div>
+                            <div class="col-lg-5 col-9 justify-content-start">
+                                <label class="fw-bold title-description">
+                                    Set Activity Expiration
+                                </label>
+                            </div>
+                            <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                <div class="form-check form-switch">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession" disabled>
+                                </div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                <label class="fw-bold title-description">
+                                    Set expiration period
+                                </label>
+                                <div>
+                                    <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                </div>
+                                <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled>
+                                    <option disabled selected>Select Period</option>
+                                    @foreach (var sessionPeriod in Model.SessionPeriods)
+                                    {
+                                        <option value="@sessionPeriod">@sessionPeriod</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+                                <label class="fw-bold title-description">
+                                    Define start of expiration
+                                </label>
+                                <div class="form-check at-start">
+
+                                    <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" disabled>
+                                    <label class="form-check-label" for="at-start">
+                                        At the start of
+                                    </label>
+
+                                    @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                    {
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    }
+                                    else
+                                    {
+                                        scheduleModel.StartDate = null;
+                                        <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                        <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </Tooltip>
+                                    }
+                                </div>
+
+                                <div class="form-check first-attendance d-flex">
+
+                                    <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" disabled>
+                                    <label class="form-check-label" for="first-attendance">
+                                        Start of first attendance
+                                    </label>
+
+                                </div>
+
+                                @if (scheduleModel.HasExpiration == 2 && (scheduleModel.SessionName != null || scheduleModel.SessionName != "N/A"))
+                                {
+                                    <div class="attendance-note">
+                                        <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                    </div>
+                                }
+                            </div>
+
+                            @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                            {
+                                string ordinal = "";
+                                DateTime frequency = DateTime.Now;
+                                switch (scheduleModel.SessionName)
+                                {
+                                    case "2 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Weeks":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "1 Month":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "2 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+                                    case "3 Months":
+                                        frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
+
+                                }
+                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                    <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                </div>
+                            }
+                        }
                     }
                     <div class="form-group">
                         <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
@@ -193,6 +1507,7 @@
             </div>
         }
     }
+
     else
     {
         <div class="accordion" id="activitySchedules">
@@ -226,6 +1541,10 @@
                                 <div class="form-group">
                                     <div class="form-check form-switch">
                                         <div class="row">
+                                            <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                                <label for="title" class="pricing-title">Pricing & Schedule</label>
+                                            </div>
+                                            <hr>
                                             <div class="col-lg-4 col-8">
                                                 <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                             </div>
@@ -254,12 +1573,447 @@
                                     <label for="title" class="form-control-label label-top-margin">Session/s</label>
                                     <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                                 </div>
+                                @*Expiration Section*@
+                                @if (Model.EnrolledStudents.Where(s => s.ScheduleId == scheduleModel.Id && s.NumberOfSessions > s.SessionsAttended).ToList().Count == 0)
+                                {
+                                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                        <label for="title" class="expiration-title">Activity Expiration</label>
+                                    </div>
+                                    <hr>
+                                    <div class="col-lg-5 col-9 justify-content-start">
+                                        <label class="fw-bold title-description">
+                                            Set Activity Expiration
+                                        </label>
+                                    </div>
+                                    <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                        <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance. </small>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                        <label class="fw-bold title-description">
+                                            Set expiration period
+                                        </label>
+                                        <div>
+                                            <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                        </div>
+                                        @if (scheduleModel.IsSetSession == false)
+                                        {
+                                            scheduleModel.SessionName = null;
+                                            scheduleModel.HasExpiration = 0;
+                                            scheduleModel.StartDate = null;
+                                            <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
+                                                <option disabled selected>Select Period</option>
+                                                @foreach (var sessionPeriod in Model.SessionPeriods)
+                                                {
+                                                    <option value="@sessionPeriod">@sessionPeriod</option>
+                                                }
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select class="form-control session-period @RequiredCheck(scheduleModel.SessionName)" @bind="scheduleModel.SessionName">
+                                                <option disabled selected>Select Period</option>
+                                                @foreach (var sessionPeriod in Model.SessionPeriods)
+                                                {
+                                                    <option value="@sessionPeriod">@sessionPeriod</option>
+                                                }
+                                            </select>
+                                        }
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+
+                                        <label class="fw-bold title-description">
+                                            Define start of expiration
+                                        </label>
+
+                                        <div class="form-check at-start">
+
+                                            <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                                            <label class="form-check-label" for="at-start">
+                                                At the start of
+                                            </label>
+
+                                            @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                            {
+                                                <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            }
+                                            else
+                                            {
+                                                scheduleModel.StartDate = null;
+                                                <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                                <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Tooltip>
+                                            }
+                                        </div>
+
+                                        <div class="form-check first-attendance d-flex">
+
+                                            <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                                            <label class="form-check-label" for="first-attendance">
+                                                Start of first attendance
+                                            </label>
+
+                                        </div>
+
+                                        @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
+                                        {
+                                            <div class="attendance-note">
+                                                <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                            </div>
+                                        }
+                                    </div>
+                                    @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                                    {
+                                        string ordinal = "";
+                                        DateTime frequency = DateTime.Now;
+                                        switch (scheduleModel.SessionName)
+                                        {
+                                            case "2 Weeks":
+                                                frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "3 Weeks":
+                                                frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "1 Month":
+                                                frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "2 Months":
+                                                frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "3 Months":
+                                                frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                        }
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                            <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                        <label for="title" class="expiration-title">Activity Expiration</label>
+                                    </div>
+                                    <hr>
+                                    <div class="col-lg-12 col-12 justify-content-start">
+                                        <label class="fw-bold title-description-note">
+                                            Note: Unable to edit due to enrolled students.
+                                        </label>
+                                    </div>
+                                    <div class="col-lg-5 col-9 justify-content-start">
+                                        <label class="fw-bold title-description">
+                                            Set Activity Expiration
+                                        </label>
+                                    </div>
+                                    <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession" disabled>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                                        <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                                        <label class="fw-bold title-description">
+                                            Set expiration period
+                                        </label>
+                                        <div>
+                                            <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                                        </div>
+                                        <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled>
+                                            <option disabled selected>Select Period</option>
+                                            @foreach (var sessionPeriod in Model.SessionPeriods)
+                                            {
+                                                <option value="@sessionPeriod">@sessionPeriod</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+                                        <label class="fw-bold title-description">
+                                            Define start of expiration
+                                        </label>
+                                        <div class="form-check at-start">
+
+                                            <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" disabled>
+                                            <label class="form-check-label" for="at-start">
+                                                At the start of
+                                            </label>
+
+                                            @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                            {
+                                                <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            }
+                                            else
+                                            {
+                                                scheduleModel.StartDate = null;
+                                                <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                                <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </DateEdit>
+                                            </Tooltip>
+                                            }
+                                        </div>
+
+                                        <div class="form-check first-attendance d-flex">
+
+                                            <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" disabled>
+                                            <label class="form-check-label" for="first-attendance">
+                                                Start of first attendance
+                                            </label>
+
+                                        </div>
+
+                                        @if (scheduleModel.HasExpiration == 2 && (scheduleModel.SessionName != null || scheduleModel.SessionName != "N/A"))
+                                        {
+                                            <div class="attendance-note">
+                                                <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                            </div>
+                                        }
+                                    </div>
+
+                                    @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                                    {
+                                        string ordinal = "";
+                                        DateTime frequency = DateTime.Now;
+                                        switch (scheduleModel.SessionName)
+                                        {
+                                            case "2 Weeks":
+                                                frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "3 Weeks":
+                                                frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "1 Month":
+                                                frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "2 Months":
+                                                frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+                                            case "3 Months":
+                                                frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
+
+                                        }
+                                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                            <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                                        </div>
+                                    }
+                                }
                             </div>
                         </div>
                     </div>
                 </div>
             }
         </div>
+
         <div class="pricing-schedule">
             <div class="row">
                 @foreach (var scheduleModel in newSchedules)
@@ -267,6 +2021,10 @@
                     <div class="form-group">
                         <div class="form-check form-switch">
                             <div class="row">
+                                <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                                    <label for="title" class="pricing-title">Pricing & Schedule</label>
+                                </div>
+                                <hr>
                                 <div class="col-lg-4 col-8">
                                     <label for="title" class="form-control-label">Set Inactive/Active:</label>
                                 </div>
@@ -307,6 +2065,440 @@
                         <label for="title" class="form-control-label label-top-margin">Session/s</label>
                         <input class="form-control unit-input @RequiredCheck(scheduleModel.PerUnit2)" id="unit2-input" required @bind="scheduleModel.PerUnit2" type="number" min="1" maxlength="2" oninput="javascript: if (this.value.length > this.maxLength) this.value = this.value.slice(0, this.maxLength);" />
                     </div>
+                    @*Expiration Section*@
+                    @if (Model.EnrolledStudents.Where(s => s.ScheduleId == scheduleModel.Id && s.NumberOfSessions > s.SessionsAttended).ToList().Count == 0)
+                    {
+                        <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                            <label for="title" class="expiration-title">Activity Expiration</label>
+                        </div>
+                        <hr>
+                        <div class="col-lg-5 col-9 justify-content-start">
+                            <label class="fw-bold title-description">
+                                Set Activity Expiration
+                            </label>
+                        </div>
+                        <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                            <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance. </small>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                            <label class="fw-bold title-description">
+                                Set expiration period
+                            </label>
+                            <div>
+                                <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                            </div>
+                            @if (scheduleModel.IsSetSession == false)
+                            {
+                                scheduleModel.SessionName = null;
+                                scheduleModel.HasExpiration = 0;
+                                scheduleModel.StartDate = null;
+                                <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled="true">
+                                    <option disabled selected>Select Period</option>
+                                    @foreach (var sessionPeriod in Model.SessionPeriods)
+                                    {
+                                        <option value="@sessionPeriod">@sessionPeriod</option>
+                                    }
+                                </select>
+                            }
+                            else
+                            {
+                                <select class="form-control session-period @RequiredCheck(scheduleModel.SessionName)" @bind="scheduleModel.SessionName">
+                                    <option disabled selected>Select Period</option>
+                                    @foreach (var sessionPeriod in Model.SessionPeriods)
+                                    {
+                                        <option value="@sessionPeriod">@sessionPeriod</option>
+                                    }
+                                </select>
+                            }
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+
+                            <label class="fw-bold title-description">
+                                Define start of expiration
+                            </label>
+
+                            <div class="form-check at-start">
+
+                                <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))">
+                                <label class="form-check-label" for="at-start">
+                                    At the start of
+                                </label>
+
+                                @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                {
+                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
+                                }
+                                else
+                                {
+                                    scheduleModel.StartDate = null;
+                                    <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                    <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
+                                </Tooltip>
+                                }
+                            </div>
+
+                            <div class="form-check first-attendance d-flex">
+
+                                <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))">
+                                <label class="form-check-label" for="first-attendance">
+                                    Start of first attendance
+                                </label>
+
+                            </div>
+
+                            @if (scheduleModel.HasExpiration == 2 && scheduleModel.SessionName != null)
+                            {
+                                <div class="attendance-note">
+                                    <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                </div>
+                            }
+                        </div>
+                        @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                        {
+                            string ordinal = "";
+                            DateTime frequency = DateTime.Now;
+                            switch (scheduleModel.SessionName)
+                            {
+                                case "2 Weeks":
+                                    frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "3 Weeks":
+                                    frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "1 Month":
+                                    frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "2 Months":
+                                    frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "3 Months":
+                                    frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                            }
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                            <label for="title" class="expiration-title">Activity Expiration</label>
+                        </div>
+                        <hr>
+                        <div class="col-lg-12 col-12 justify-content-start">
+                            <label class="fw-bold title-description-note">
+                                Note: Unable to edit due to enrolled students.
+                            </label>
+                        </div>
+                        <div class="col-lg-5 col-9 justify-content-start">
+                            <label class="fw-bold title-description">
+                                Set Activity Expiration
+                            </label>
+                        </div>
+                        <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession" disabled>
+                            </div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
+                            <small class="form-text text-muted sub-details">Set your activity expiration to automatically manage your sessions for a specific timeframe. You can "Start on a specific date" (3rd day of the month, etc), or at the start of your customers first attendance.</small>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block set-expiration">
+                            <label class="fw-bold title-description">
+                                Set expiration period
+                            </label>
+                            <div>
+                                <small class="form-text text-muted sub-details">Select how LONG your sessions should be consumed by your customers. </small>
+                            </div>
+                            <select class="form-control session-period" @bind="scheduleModel.SessionName" disabled>
+                                <option disabled selected>Select Period</option>
+                                @foreach (var sessionPeriod in Model.SessionPeriods)
+                                {
+                                    <option value="@sessionPeriod">@sessionPeriod</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12 col-12 d-block expiration-start">
+                            <label class="fw-bold title-description">
+                                Define start of expiration
+                            </label>
+                            <div class="form-check at-start">
+
+                                <input class="form-check-input" type="radio" name="at-start-@scheduleModel.Id" id="at-start-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 1 ? true : false)" @onchange="@(()=>CheckboxChanged(1,scheduleModel))" disabled>
+                                <label class="form-check-label" for="at-start">
+                                    At the start of
+                                </label>
+
+                                @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
+                                {
+                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
+                                }
+                                else
+                                {
+                                    scheduleModel.StartDate = null;
+                                    <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
+                                    <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
+                                </Tooltip>
+                                }
+                            </div>
+
+                            <div class="form-check first-attendance d-flex">
+
+                                <input class="form-check-input" type="radio" name="first-attendance-@scheduleModel.Id" id="first-attendance-@scheduleModel.Id" checked="@(scheduleModel.HasExpiration == 2 ? true : false)" @onchange="@(()=>CheckboxChanged(2,scheduleModel))" disabled>
+                                <label class="form-check-label" for="first-attendance">
+                                    Start of first attendance
+                                </label>
+
+                            </div>
+
+                            @if (scheduleModel.HasExpiration == 2 && (scheduleModel.SessionName != null || scheduleModel.SessionName != "N/A"))
+                            {
+                                <div class="attendance-note">
+                                    <small class="form-text text-muted sub-details">Note: Check the first date that the student will attend for us to set the desired expiration date of the student.</small>
+                                </div>
+                            }
+                        </div>
+
+                        @if (scheduleModel.HasExpiration == 1 && scheduleModel.StartDate != null)
+                        {
+                            string ordinal = "";
+                            DateTime frequency = DateTime.Now;
+                            switch (scheduleModel.SessionName)
+                            {
+                                case "2 Weeks":
+                                    frequency = scheduleModel.StartDate.Value.AddDays(14);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "3 Weeks":
+                                    frequency = scheduleModel.StartDate.Value.AddDays(21);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "1 Month":
+                                    frequency = scheduleModel.StartDate.Value.AddMonths(1);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "2 Months":
+                                    frequency = scheduleModel.StartDate.Value.AddMonths(2);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+                                case "3 Months":
+                                    frequency = scheduleModel.StartDate.Value.AddMonths(3);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
+
+                            }
+                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-center expiration-period-note">
+                                <small class="form-text text-muted sub-details">Expiration period is @scheduleModel.SessionName and the cutoff is every @frequency.Day@ordinal day of the month.</small>
+                            </div>
+                        }
+                    }
                 }
                 <div class="form-group">
                     <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add More Schedule</button>
@@ -324,7 +2516,10 @@
     ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
 
     List<ActivitySchedule> existingSchedules = new List<ActivitySchedule>();
+
     List<ActivitySchedule> newSchedules = new List<ActivitySchedule>();
+
+    DateTime? selectedDate = null;
 
     protected override async Task OnInitializedAsync()
     {
@@ -375,6 +2570,15 @@
         return "";
     }
 
+    private string RequiredCheck(DateTime? value)
+    {
+        if (Model.ExperienceHasError && !value.HasValue)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
     private string RequiredCheck(int? value)
     {
         if (Model.ExperienceHasError && (value == null || value.Value == 0))
@@ -414,8 +2618,19 @@
                 string.IsNullOrEmpty(schedule.PriceUnit1) ||
                 schedule.PerUnit2 <= 0 ||
                 string.IsNullOrEmpty(schedule.PriceUnit2)) && (schedule.IsActiveSchedule || isSingle)) return false;
+            if (schedule.IsSetSession == true && schedule.HasExpiration == 1)
+            {
+                if ((string.IsNullOrEmpty(schedule.SessionName)
+                || !schedule.StartDate.HasValue))
+
+                    return false;
+            }
         }
         return true;
+    }
+    private void CheckboxChanged(int val, ActivitySchedule schedule)
+    {
+        schedule.HasExpiration = val;
     }
 
     private void AddSchedule()

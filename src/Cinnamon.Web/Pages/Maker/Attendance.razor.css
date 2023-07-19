@@ -1,3 +1,12 @@
+body {
+    min-height: 100%;
+}
+
+::deep button:focus {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
 .student-attendance {
   font-family: "Nunito";
   font-size: 20px;
@@ -12,8 +21,64 @@
   font-weight: 700;
 }
 
-.student-attendance .activities-schedule-section {
-  position: relative;
+    .student-attendance .activities-schedule-section {
+        margin-top: 2rem;
+        position: relative;
+    }
+
+::deep .dropdown .btn {
+    width: 300px;
+    height: 40px;
+    background-color: #F3F6FC;
+    color: #FFA942;
+    text-align: left;
+    border-radius: 10px;
+}
+
+::deep .dropdown-toggle {
+    background-color: #F3F6FC;
+    color: #FFA942;
+    text-align: left;
+}
+
+::deep .dropdown-menu {
+    width: 420px;
+    border-radius: 10px;
+    padding: 10px;
+    max-height: 400px;
+    overflow: auto;
+}
+
+.check-button {
+    width: 390px;
+    background-color: white;
+    border: none;
+    text-align: left;
+    
+}
+
+::deep .dropdown-menu .check-button img {
+    margin-top: 0.1rem;
+    float: left;
+}
+
+.activity-title {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+    color: #717171;
+    padding: 5px;
+    margin-left: 2rem;
+    text-align: left;
+}
+
+.swiper-wrapper .schedule-title {
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 400;
+    color: #717171;
+    text-align: center;
 }
 
 .student-attendance .activities-schedule-section .swiper-wrapper {
@@ -22,13 +87,13 @@
 }
 
 .student-attendance .activities-schedule-section .swiper-slide {
-  border: 2px solid #343d4c;
-  border-radius: 10px;
-  padding: 1rem;
-  text-align: center;
-  width: 300px;
-  height: auto;
-  position: relative;
+    border: 2px solid #343d4c;
+    border-radius: 10px;
+    padding: 1rem;
+    text-align: center;
+    width: 300px;
+    height: auto;
+    position: relative;
 }
 
 .student-attendance .activities-schedule-section .swiper-slide .schedule-title {
@@ -37,9 +102,15 @@
   text-transform: capitalize;
 }
 
-.student-attendance .activities-schedule-section .swiper-slide .schedule-time {
-  font-size: 16px;
-}
+    .student-attendance .activities-schedule-section .swiper-slide .schedule-time {
+        font-size: 16px;
+        text-align: center;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3; /* number of lines to show */
+        line-clamp: 3;
+        -webkit-box-orient: vertical;
+    }
 
 .student-attendance .activities-schedule-section .swiper-slide .schedule-toggle {
     margin-bottom: 4rem;
@@ -87,9 +158,23 @@
 
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .student-attendance .activities-schedule-section {
-    margin-top: -10px;
+    margin-top: 2rem;
   }
+    ::deep .dropdown .btn {
+        width: 100%;
+    }
 
+    ::deep .dropdown-menu {
+        width: 90%;
+    }
+
+    .check-button {
+        width: 95%;
+    }
+
+    .swiper-slide .schedule-title {
+        text-align: center;
+    }
   .student-attendance .title {
     font-size: 20px;
     margin-bottom: 0;
@@ -144,6 +229,21 @@
         margin-top: 8px;
     }
 }
+::deep th.sessions-attended-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+::deep th.present-header {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: var(--primary);
+    border: none;
+}
+
 
     ::deep th.sessions-attended-header {
         text-align: center;

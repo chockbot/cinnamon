@@ -9,5 +9,6 @@ namespace Cinnamon.Api.Core.Services.AccountService.Interactors
         public int? CountPerPage { get; set; }
         public string? HandlerLike { get; set; }
         public string SearchValue { get; set; }
+        public bool? IsOfficialPartner {get; set;}
     }
 }

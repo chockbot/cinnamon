@@ -19,7 +19,7 @@ public class StudentRepository: IStudentRepository
 
     public async Task<AppResult<StudentDTO>> Create(int customerId, int familyMemberId, int activityId, int scheduleId, 
         string name, string studentNo, int numberOfSessions, int sessionsAttended, int numberOfBacktracking, DateTime ExpirationStartDate, DateTime ExpirationEndDate, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false)
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false, bool hasReview = false)
     {
         try
         {
@@ -41,7 +41,8 @@ public class StudentRepository: IStudentRepository
                 ExpirationDateStart = ExpirationStartDate,
                 ExpirationDateEnd = ExpirationEndDate,
                 OngoingActivityId = ongoingActivityId,
-                IsDisbursement = isDisbursement
+                IsDisbursement = isDisbursement,
+                HasReview = hasReview
             };
 
             var createdStudent = await dataStore.Student.Add(student);
@@ -65,7 +66,8 @@ public class StudentRepository: IStudentRepository
                 StudentNo = newStudent.StudentNo,
                 ExpirationStartDate = newStudent.ExpirationDateStart,
                 ExpirationEndDate = newStudent.ExpirationDateEnd,
-                IsDisbursement = newStudent.IsDisbursement
+                IsDisbursement = newStudent.IsDisbursement,
+                HasReview = newStudent.HasReview,
             }, "Successfully creation student");
         }
         catch (Exception ex)
@@ -104,7 +106,8 @@ public class StudentRepository: IStudentRepository
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
                     ExpirationEndDate = s.ExpirationDateEnd,
-                    IsDisbursement = s.IsDisbursement
+                    IsDisbursement = s.IsDisbursement,
+                    HasReview = s.HasReview,
                 };
 
                 return studentDto;
@@ -143,7 +146,8 @@ public class StudentRepository: IStudentRepository
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
                     ExpirationEndDate = s.ExpirationDateEnd,
-                    IsDisbursement = s.IsDisbursement
+                    IsDisbursement = s.IsDisbursement,
+                    HasReview = s.HasReview
                 };
 
                 return studentDto;
@@ -182,7 +186,8 @@ public class StudentRepository: IStudentRepository
                 StudentNo = student.StudentNo,
                 ExpirationStartDate = student.ExpirationDateStart,
                 ExpirationEndDate = student.ExpirationDateEnd,
-                IsDisbursement = student.IsDisbursement
+                IsDisbursement = student.IsDisbursement,
+                HasReview = student.HasReview,  
             };
 
             return AppResult<StudentDTO>.CreateSucceeded(studentDto, "Successfully get student");
@@ -194,7 +199,7 @@ public class StudentRepository: IStudentRepository
     }
 
     public async Task<AppResult<StudentDTO>> Update(int studendId, string? name, string? studentNo, int? numberOfSessions, 
-        int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? ExpirationStartDate, DateTime? ExpirationEndDate)
+        int? sessionsAttended, int? numberOfBacktracking, string? remarks, string? status, DateTime? ExpirationStartDate, DateTime? ExpirationEndDate, bool? hasReview)
     {
         try
         {
@@ -205,6 +210,9 @@ public class StudentRepository: IStudentRepository
             }
             var student = studentRes.Result;
 
+            ExpirationStartDate = ExpirationStartDate.SetKindUtc();
+            ExpirationEndDate = ExpirationEndDate.SetKindUtc();
+
             student.Name = name ?? student.Name;
             student.StudentNo = studentNo ?? student.StudentNo;
             student.NumberOfSessions = numberOfSessions ?? student.NumberOfSessions;
@@ -214,6 +222,7 @@ public class StudentRepository: IStudentRepository
             student.Status = status ?? student.Status;
             student.ExpirationDateStart = ExpirationStartDate ?? student.ExpirationDateStart;
             student.ExpirationDateEnd = ExpirationEndDate ?? student.ExpirationDateEnd;
+            student.HasReview = hasReview ?? student.HasReview;
 
             var updatedStudentRes = await dataStore.Student.Update(student);
             if(!updatedStudentRes.Succeeded || updatedStudentRes.Result == null)
@@ -235,7 +244,8 @@ public class StudentRepository: IStudentRepository
                 Status = updatedStudent.Status,
                 StudentNo = updatedStudent.StudentNo,
                 ExpirationStartDate = updatedStudent.ExpirationDateStart,
-                ExpirationEndDate = updatedStudent.ExpirationDateEnd    
+                ExpirationEndDate = updatedStudent.ExpirationDateEnd,
+                HasReview = updatedStudent.HasReview,
             };
 
             return AppResult<StudentDTO>.CreateSucceeded(studentDto, "Successfully updated student information");
@@ -248,7 +258,7 @@ public class StudentRepository: IStudentRepository
 
     public async Task<AppResult<IEnumerable<StudentDTO>>> Create(int customerId, int activityId, int scheduleId,int numberOfSessions, 
         int sessionsAttended, int numberOfBacktracking, DateTime ExpirationStartDate, DateTime ExpirationEndDate, IEnumerable<CreateManyStudentDTO> familyMembers, 
-        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false)
+        int ongoingActivityId, string remarks = "", string status = "ACTIVE", bool isDisbursement = false, bool hasReview = false)
     {
         try
         {
@@ -279,7 +289,8 @@ public class StudentRepository: IStudentRepository
                     ExpirationDateStart = ExpirationStartDate,
                     ExpirationDateEnd = ExpirationEndDate,
                     OngoingActivityId = ongoingActivityId,
-                    IsDisbursement = isDisbursement
+                    IsDisbursement = isDisbursement,
+                    HasReview = hasReview,
                 };
             });
 
@@ -304,7 +315,8 @@ public class StudentRepository: IStudentRepository
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
                     ExpirationEndDate = s.ExpirationDateEnd,
-                    IsDisbursement = s.IsDisbursement
+                    IsDisbursement = s.IsDisbursement,
+                    HasReview = s.HasReview
                 };
             });
 
@@ -342,7 +354,8 @@ public class StudentRepository: IStudentRepository
                     StudentNo = s.StudentNo,
                     ExpirationStartDate = s.ExpirationDateStart,
                     ExpirationEndDate = s.ExpirationDateEnd,
-                    IsDisbursement = s.IsDisbursement
+                    IsDisbursement = s.IsDisbursement,
+                    HasReview = s.HasReview
                 };
 
                 return studentDto;
@@ -356,11 +369,11 @@ public class StudentRepository: IStudentRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse()
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive)
     {
         try
         {
-            var result = await dataStore.Student.GetAllStudentsToDisburse();
+            var result = isInclusive ? await dataStore.Student.GetAllInclusiveStudentsToDisburse() : await dataStore.Student.GetAllStudentsToDisburse();
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -401,6 +414,89 @@ public class StudentRepository: IStudentRepository
         catch (Exception ex)
         {
             return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when updating students disbursement status");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<StudentDTO>>> GetCompletedStudentsById(int? customerId, int? count, int? skip)
+    {
+        try
+        {
+            Expression<Func<Entities.Student, bool>> filter = a => (a.CustomerId == customerId) && (a.SessionsAttended >= a.NumberOfSessions) 
+            && (a.HasReview == false);
+            var result = await dataStore.Student.FindAsync(filter, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var students = result.Result.Select(s => {
+                var studentDto = new StudentDTO
+                {
+                    ActivityId = s.ActivityId,
+                    CustomerId = s.CustomerId,
+                    Id = s.Id,
+                    Name = s.Name,
+                    NumberOfSessions = s.NumberOfSessions,
+                    NumberOfBackTracking = s.NumberOfBacktracking,
+                    Remarks = s.Remarks,
+                    ScheduleId = s.ScheduleId,
+                    SessionsAttended = s.SessionsAttended,
+                    Status = s.Status,
+                    StudentNo = s.StudentNo,
+                    ExpirationStartDate = s.ExpirationDateStart,
+                    ExpirationEndDate = s.ExpirationDateEnd,
+                    IsDisbursement = s.IsDisbursement,
+                    HasReview = s.HasReview,
+                };
+
+                return studentDto;
+            });
+
+            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(students, "Successfully get students");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when getting students");
+        }
+    }
+
+    public async Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentsById(int? customerId, int? count, int? skip)
+    {
+        try
+        {
+            Expression<Func<Entities.Student, bool>> filter = a => (a.CustomerId == customerId);
+            var result = await dataStore.Student.FindAsync(filter, count, skip);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
+            }
+            var students = result.Result.Select(s => {
+                var studentDto = new StudentDTO
+                {
+                    ActivityId = s.ActivityId,
+                    CustomerId = s.CustomerId,
+                    Id = s.Id,
+                    Name = s.Name,
+                    NumberOfSessions = s.NumberOfSessions,
+                    NumberOfBackTracking = s.NumberOfBacktracking,
+                    Remarks = s.Remarks,
+                    ScheduleId = s.ScheduleId,
+                    SessionsAttended = s.SessionsAttended,
+                    Status = s.Status,
+                    StudentNo = s.StudentNo,
+                    ExpirationStartDate = s.ExpirationDateStart,
+                    ExpirationEndDate = s.ExpirationDateEnd,
+                    IsDisbursement = s.IsDisbursement,
+                    HasReview = s.HasReview,
+                };
+
+                return studentDto;
+            });
+
+            return AppResult<IEnumerable<StudentDTO>>.CreateSucceeded(students, "Successfully get students");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<StudentDTO>>.CreateFailed(ex, "An error occured when getting students");
         }
     }
 }
