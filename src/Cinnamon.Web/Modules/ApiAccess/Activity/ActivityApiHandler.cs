@@ -767,4 +767,25 @@ public class ActivityApiHandler : IActivityApiHandler
             return AppResult<UpdateCouponResult>.CreateFailed(ex, "An error occured when calling update coupon api");
         }
     }
+
+    public async Task<AppResult<RecommendedActivitiesResult>> RecommendedActivities(string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/RecommendedActivities")
+                .GetJsonAsync<RecommendedActivitiesResult>();
+
+            return AppResult<RecommendedActivitiesResult>.CreateSucceeded(result, "Successfully called get recommended activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<RecommendedActivitiesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<RecommendedActivitiesResult>.CreateFailed(ex, "An error occured when calling get recommended activities api");
+        }
+    }
 }
