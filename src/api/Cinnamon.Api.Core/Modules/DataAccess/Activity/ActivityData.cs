@@ -226,23 +226,23 @@ public class ActivityData: IActivityData
         }
     }
 
-    public async Task<AppResult<GetActivityResult>> RecommendedActivities(int primaryId, int count)
+    public async Task<AppResult<RecommendedActivitiesResult>> RecommendedActivities(int primaryId, int count)
     {
         try
         {
             var result = await flurlClient
                             .Request($"Activity/RecommendedActivities/{primaryId}/{count}")
-                            .GetJsonAsync<GetActivityResult>();
+                            .GetJsonAsync<RecommendedActivitiesResult>();
 
-            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting recommended activities api");
+            return AppResult<RecommendedActivitiesResult>.CreateSucceeded(result, "Successfully getting recommended activities api");
         }
         catch (FlurlHttpException ex)
         {
-            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+            return AppResult<RecommendedActivitiesResult>.CreateFailed(ex, ex.Message);
         }
         catch (Exception ex)
         {
-            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting recommended activities api");
+            return AppResult<RecommendedActivitiesResult>.CreateFailed(ex, "An error occured when getting recommended activities api");
         }
     }
 }

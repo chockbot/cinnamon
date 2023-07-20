@@ -143,7 +143,7 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
 
         while(results.Count != count)
         {
-            int random = (new Random()).Next(0, activityList.Count - 1);
+            int random = (new Random()).Next(0, activityList.Count);
             var activity = activityList[random];
             results.Add(activity);
             activityList.RemoveAt(random);
