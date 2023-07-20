@@ -318,7 +318,7 @@
                     </Items>
                     <Content>
                         <TabPanel Name="experiences">
-                            <Experiences Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
+                            <Experiences Token="@Token" Activities="Model.EnrolledActivities" Profile="Model.CustomerProfile"/>
                         </TabPanel>
                         <TabPanel Name="personal-info">
                             <PersonalInfo @bind-Model="Model" OnEditIdClick="() => NavigateToUploadId()" />
@@ -376,6 +376,7 @@
     public List<Favorite> favorites = new List<Favorite>();
 
     public string displayText = "d-flex";
+    private string Token { get; set; }
 
     private Task OnSelectedTabChanged(string name)
     {
@@ -395,6 +396,7 @@
             NavigationManager.NavigateTo("explore");
             return;
         }
+        Token = token;
 
         var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
         if((!result.Succeeded || result.Result == null) || (result.Succeeded && !result.Result.IsSuccess))

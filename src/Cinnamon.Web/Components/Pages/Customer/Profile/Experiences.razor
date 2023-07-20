@@ -7,7 +7,7 @@
     <Divider class="my-3" />
     <CustomerReview Profile="Profile" Activities="Activities" />
     <Divider class="my-3" />
-    <RecommendedExperience />
+    <RecommendedExperience Token="@Token" />
 </div>
 
 @code
@@ -16,4 +16,6 @@
     public IEnumerable<Models.Entities.Activity> Activities {get; set;}
     [Parameter]
     public Models.Entities.CustomerProfile Profile { get; set; }
+    [Parameter]
+    public string Token { get; set; }
 }

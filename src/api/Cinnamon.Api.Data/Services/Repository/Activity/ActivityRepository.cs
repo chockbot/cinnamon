@@ -1414,4 +1414,49 @@ public class ActivityRepository : IActivityRepository
 
         return AppResult<bool>.CreateSucceeded(isSuccess, "Successfully removed activity");
     }
+
+    public async Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count)
+    {
+        try
+        {
+            var result = await dataStore.Activity.GetRecommendedActivities(primaryActivityId, count);
+            if(!result.Succeeded || result.Result == null)
+            {
+                return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(new ApplicationException(result.Message), result.Message);
+            }
+
+            return AppResult<IEnumerable<ActivityDTO>>.CreateSucceeded(result.Result.Select(s =>
+            {
+                return new ActivityDTO
+                {
+                    Description = s.Description,
+                    ExperienceCategoryId = s.ExperienceCategoryId ?? 0,
+                    ExperienceTypeId = s.ExperienceTypeId,
+                    Handler = s.Handler,
+                    Id = s.Id,
+                    Images = s.Images.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
+                    {
+                        ActivityId = i.ActivityId,
+                        Id = i.Id,
+                        ImageLocation = i.ImageLocation,
+                        ImageName = i.ImageName,
+                        Order = i.Order
+                    }).ToList(),
+                    IsDeactivated = s.IsDeactivated,
+                    IsNew = s.IsNew,
+                    IsPublished = s.IsPublished,
+                    Price = s.Price,
+                    Remarks = s.Remarks,
+                    Status = s.Status == 0 ? ActivityStatus.InProgress : ActivityStatus.Submitted,
+                    SubCategoryId = s.SubCategoryId ?? 0,
+                    SubTitle = s.Subtitle,
+                    Title = s.Title
+                };
+            }), "Successfully get recommended activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ActivityDTO>>.CreateFailed(ex, "An error occured when getting recommended activities");
+        }
+    }
 }

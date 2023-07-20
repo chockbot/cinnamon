@@ -138,7 +138,8 @@ public static class ServiceExtenstion
         services.AddTransient<Services.ActivityService.Handlers.IUpdateCouponStatusHandler, Services.ActivityService.UpdateCouponStatusHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IValidateCouponCodeHandler, Services.ActivityService.ValidateCouponCodeHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IUpdateCouponHandler, Services.ActivityService.UpdateCouponHandler>();
-        
+        services.AddTransient<Services.ActivityService.Handlers.IRecommendedActivitiesHandler, Services.ActivityService.RecommendedActivitiesHandler>();
+
         services.AddTransient<Services.ActivityService.Handlers.ICreateFavoriteHandler, Services.ActivityService.CreateFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IRemoveFavoriteHandler, Services.ActivityService.RemoveFavoriteHandler>();
         services.AddTransient<Services.ActivityService.Handlers.IGetFavoritesByCustomerHandler, Services.ActivityService.GetFavoritesByCustomerHandler>();

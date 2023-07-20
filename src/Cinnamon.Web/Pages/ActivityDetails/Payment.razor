@@ -961,6 +961,11 @@
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
+                logger.LogError("Error Payment Page");
+                logger.LogError(submit.Message);
+                logger.LogError(submit.Error?.Description);
+                logger.LogError(submit.Result?.ErrorInfo.Message);
+                logger.LogError(submit.Result?.ErrorInfo.Description);
                 payErrorMessage = submit.Result?.ErrorInfo?.Message ?? $"An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
                 isLoading = false;
