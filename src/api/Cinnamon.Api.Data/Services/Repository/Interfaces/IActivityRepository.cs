@@ -41,4 +41,6 @@ public interface IActivityRepository
     Task<AppResult<bool>> UpdateActivityGuid();
 
     Task<AppResult<bool>> RemoveActivityAsync(int activityId);
+
+    Task<AppResult<IEnumerable<ActivityDTO>>> GetRecommendedActivities(int primaryActivityId, int count);
 }

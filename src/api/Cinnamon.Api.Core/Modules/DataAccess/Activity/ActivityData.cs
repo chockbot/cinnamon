@@ -225,4 +225,24 @@ public class ActivityData: IActivityData
             return AppResult<DeleteActivityResult>.CreateFailed(ex, "An error occured when deleting activity");
         }
     }
+
+    public async Task<AppResult<GetActivityResult>> RecommendedActivities(int primaryId, int count)
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request($"Activity/RecommendedActivities/{primaryId}/{count}")
+                            .GetJsonAsync<GetActivityResult>();
+
+            return AppResult<GetActivityResult>.CreateSucceeded(result, "Successfully getting recommended activities api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityResult>.CreateFailed(ex, "An error occured when getting recommended activities api");
+        }
+    }
 }

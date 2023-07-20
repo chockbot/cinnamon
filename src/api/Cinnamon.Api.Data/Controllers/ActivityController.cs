@@ -329,4 +329,25 @@ public class ActivityController : ControllerBase
             return new JsonResult(new DeleteActivityResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
+
+    [Route("RecommendedActivities/{primaryId}/{count}")]
+    [HttpGet]
+    [ProducesResponseType(typeof(RecommendedActivitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RecommendedActivities(int primaryId, int count)
+    {
+        try
+        {
+            var result = await activityRepository.GetRecommendedActivities(primaryId, count);
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new RecommendedActivitiesResult { Result = result.Result, IsSuccess = true });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
 }

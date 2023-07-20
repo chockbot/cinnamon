@@ -94,4 +94,61 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
             return AppResult<IEnumerable<Activity>>.CreateFailed(ex, "An error occured when finding entities");
         }
     }
+
+    public async Task<AppResult<IEnumerable<Activity>>> GetRecommendedActivities(int primaryActivityId, int count)
+    {
+        try
+        {
+            var activity = await applicationContext.Activities.FindAsync(primaryActivityId);
+            if (activity == null)
+            {
+                return AppResult<IEnumerable<Activity>>.CreateFailed(new ApplicationException("Invalid activity"), "Invalid activity");
+            }
+
+            // based first in sub category
+            var activitiesSubs = await applicationContext.Activities.Where(a => a.Id != primaryActivityId && 
+                                                                                a.SubCategoryId == activity.SubCategoryId && 
+                                                                                a.Status == 1 && a.IsPublished == true)
+                                    .Include(a => a.Images)
+                                    .ToListAsync();
+
+            if (activitiesSubs.Count >= count)
+            {
+                var randomActivities = GenerateRandomActivity(activitiesSubs, count);
+                return AppResult<IEnumerable<Activity>>.CreateSucceeded(randomActivities, "Successfully get recommended activities");
+            }
+
+            // bas in experience categories
+            var activitiesCats = await applicationContext.Activities.Where(a => a.Id != primaryActivityId && 
+                                                                                a.ExperienceCategoryId == activity.ExperienceCategoryId &&
+                                                                                a.Status == 1 && a.IsPublished == true )
+                                    .Include(a => a.Images)
+                                    .ToListAsync();
+
+            var activities = GenerateRandomActivity(activitiesCats, count);
+
+            return AppResult<IEnumerable<Activity>>.CreateSucceeded(activities, "Successfully get recommended activities");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<Activity>>.CreateFailed(ex, "An error occured when getting recommended activities");
+        }
+    }
+
+    private IEnumerable<Activity> GenerateRandomActivity(IEnumerable<Activity> activities, int count)
+    {
+        if(activities.Count() < count) return activities;
+        IList<Activity> results = new List<Activity>();
+        var activityList = activities.ToList();
+
+        while(results.Count != count)
+        {
+            int random = (new Random()).Next(0, activityList.Count - 1);
+            var activity = activityList[random];
+            results.Add(activity);
+            activityList.RemoveAt(random);
+        }
+
+        return results;
+    }
 }
