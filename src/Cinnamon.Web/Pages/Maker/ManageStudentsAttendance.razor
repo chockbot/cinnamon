@@ -364,8 +364,8 @@
         }
     private async void UpdateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
-    try
-    {
+        try
+        {
         await loadingIndicator.Show();
 
         studentAttendance.IsPresent = !studentAttendance.IsPresent;
@@ -414,22 +414,22 @@
         await OnInitializedAsync();
         StateHasChanged();
         await loadingIndicator.Hide();
-    }
-    catch (Exception ex)
-    {
-        IsShowErrorMessage = true;
-        ErrorMessage = "An error occured. Please try again later.";
-        await loadingIndicator.Hide();
-    }
+        }
+        catch (Exception ex)
+        {
+            IsShowErrorMessage = true;
+            ErrorMessage = "An error occured. Please try again later.";
+            await loadingIndicator.Hide();
+        }
     }
 
     private async void CreateAttendance(Students student, string token, DateTime presentDate)
     {
-    try
-    {
-        await loadingIndicator.Show();
-        if (student.NumberOfBacktracking != 0)
+        try
         {
+            await loadingIndicator.Show();
+            if (student.NumberOfBacktracking != 0)
+            {
             var create = await dashboardApiHandler.CreateStudentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.CreateStudentAttendanceArgs
                         {
                             AttendanceDate = presentDate,

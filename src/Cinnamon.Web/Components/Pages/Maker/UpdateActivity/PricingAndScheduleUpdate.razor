@@ -187,6 +187,28 @@
                                             DateTime frequency = DateTime.Now;
                                             switch (scheduleModel.SessionName)
                                             {
+                                                case "1 Day":
+                                                    frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
                                                 case "2 Weeks":
                                                     frequency = scheduleModel.StartDate.Value.AddDays(14);
                                                     switch (frequency.Day)
@@ -355,7 +377,7 @@
 
                                                 @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
                                                 {
-                                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
                                                         <Feedback>
                                                             <ValidationError />
                                                         </Feedback>
@@ -397,6 +419,28 @@
                                             DateTime frequency = DateTime.Now;
                                             switch (scheduleModel.SessionName)
                                             {
+                                                case "1 Day":
+                                                    frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                                    switch (frequency.Day)
+                                                    {
+                                                        case 1:
+                                                        case 21:
+                                                        case 31:
+                                                            ordinal = "st";
+                                                            break;
+                                                        case 2:
+                                                        case 22:
+                                                            ordinal = "nd";
+                                                            break;
+                                                        case 3:
+                                                        case 23:
+                                                            ordinal = "rd";
+                                                            break;
+                                                        default:
+                                                            ordinal = "th";
+                                                            break;
+                                                    }
+                                                    break;
                                                 case "2 Weeks":
                                                     frequency = scheduleModel.StartDate.Value.AddDays(14);
                                                     switch (frequency.Day)
@@ -679,6 +723,28 @@
                                 DateTime frequency = DateTime.Now;
                                 switch (scheduleModel.SessionName)
                                 {
+                                    case "1 Day":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
                                     case "2 Weeks":
                                         frequency = scheduleModel.StartDate.Value.AddDays(14);
                                         switch (frequency.Day)
@@ -847,11 +913,11 @@
 
                                     @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
                                     {
-                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </DateEdit>
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
                                     }
                                     else
                                     {
@@ -889,6 +955,28 @@
                                 DateTime frequency = DateTime.Now;
                                 switch (scheduleModel.SessionName)
                                 {
+                                    case "1 Day":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
                                     case "2 Weeks":
                                         frequency = scheduleModel.StartDate.Value.AddDays(14);
                                         switch (frequency.Day)
@@ -1172,6 +1260,28 @@
                                 DateTime frequency = DateTime.Now;
                                 switch (scheduleModel.SessionName)
                                 {
+                                    case "1 Day":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
                                     case "2 Weeks":
                                         frequency = scheduleModel.StartDate.Value.AddDays(14);
                                         switch (frequency.Day)
@@ -1340,11 +1450,11 @@
 
                                     @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
                                     {
-                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </DateEdit>
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                        <Feedback>
+                                            <ValidationError />
+                                        </Feedback>
+                                    </DateEdit>
                                     }
                                     else
                                     {
@@ -1382,6 +1492,28 @@
                                 DateTime frequency = DateTime.Now;
                                 switch (scheduleModel.SessionName)
                                 {
+                                    case "1 Day":
+                                        frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                        switch (frequency.Day)
+                                        {
+                                            case 1:
+                                            case 21:
+                                            case 31:
+                                                ordinal = "st";
+                                                break;
+                                            case 2:
+                                            case 22:
+                                                ordinal = "nd";
+                                                break;
+                                            case 3:
+                                            case 23:
+                                                ordinal = "rd";
+                                                break;
+                                            default:
+                                                ordinal = "th";
+                                                break;
+                                        }
+                                        break;
                                     case "2 Weeks":
                                         frequency = scheduleModel.StartDate.Value.AddDays(14);
                                         switch (frequency.Day)
@@ -1680,6 +1812,28 @@
                                         DateTime frequency = DateTime.Now;
                                         switch (scheduleModel.SessionName)
                                         {
+                                            case "1 Day":
+                                                frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
                                             case "2 Weeks":
                                                 frequency = scheduleModel.StartDate.Value.AddDays(14);
                                                 switch (frequency.Day)
@@ -1848,11 +2002,11 @@
 
                                             @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
                                             {
-                                                <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </DateEdit>
+                                                <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                                <Feedback>
+                                                    <ValidationError />
+                                                </Feedback>
+                                            </DateEdit>
                                             }
                                             else
                                             {
@@ -1890,6 +2044,28 @@
                                         DateTime frequency = DateTime.Now;
                                         switch (scheduleModel.SessionName)
                                         {
+                                            case "1 Day":
+                                                frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                                switch (frequency.Day)
+                                                {
+                                                    case 1:
+                                                    case 21:
+                                                    case 31:
+                                                        ordinal = "st";
+                                                        break;
+                                                    case 2:
+                                                    case 22:
+                                                        ordinal = "nd";
+                                                        break;
+                                                    case 3:
+                                                    case 23:
+                                                        ordinal = "rd";
+                                                        break;
+                                                    default:
+                                                        ordinal = "th";
+                                                        break;
+                                                }
+                                                break;
                                             case "2 Weeks":
                                                 frequency = scheduleModel.StartDate.Value.AddDays(14);
                                                 switch (frequency.Day)
@@ -2172,6 +2348,28 @@
                             DateTime frequency = DateTime.Now;
                             switch (scheduleModel.SessionName)
                             {
+                                case "1 Day":
+                                    frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
                                 case "2 Weeks":
                                     frequency = scheduleModel.StartDate.Value.AddDays(14);
                                     switch (frequency.Day)
@@ -2340,11 +2538,11 @@
 
                                 @if (scheduleModel.HasExpiration == 1 && (scheduleModel.StartDate != null || scheduleModel.StartDate != DateTime.MinValue))
                                 {
-                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
-                                        <Feedback>
-                                            <ValidationError />
-                                        </Feedback>
-                                    </DateEdit>
+                                    <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </DateEdit>
                                 }
                                 else
                                 {
@@ -2382,6 +2580,28 @@
                             DateTime frequency = DateTime.Now;
                             switch (scheduleModel.SessionName)
                             {
+                                case "1 Day":
+                                    frequency = scheduleModel.StartDate.Value.AddDays(1);
+                                    switch (frequency.Day)
+                                    {
+                                        case 1:
+                                        case 21:
+                                        case 31:
+                                            ordinal = "st";
+                                            break;
+                                        case 2:
+                                        case 22:
+                                            ordinal = "nd";
+                                            break;
+                                        case 3:
+                                        case 23:
+                                            ordinal = "rd";
+                                            break;
+                                        default:
+                                            ordinal = "th";
+                                            break;
+                                    }
+                                    break;
                                 case "2 Weeks":
                                     frequency = scheduleModel.StartDate.Value.AddDays(14);
                                     switch (frequency.Day)
