@@ -1,11 +1,13 @@
 ﻿@using System.Security.Claims
 @inherits LayoutComponentBase
+@using Cinnamon.Web.Models.Entities;
 @using Cinnamon.Web.Models.Layout;
 @using Cinnamon.Web.Modules.ApiAccess.Handlers
 @using Cinnamon.Web.Components;
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IAccountApiHandler accountApiHandler;
+@inject IChatApiHandler chatApiHandler;
 
 <Layout Sider class="dashboard-layout">
     <input type='checkbox' id='toggle' @bind="IsShowSidebar" />
@@ -45,9 +47,14 @@
                                 <img class="icon-home" src="images/Dashboard Icon/manage icon.png"> <span class="ms-1 d-sm-inline nav-text">Manage Students</span>
                             </a>
                         </li>
-                         <li class="nav-item">
+                        <li class="nav-item messages-item">
                             <a data-bs-toggle="collapse" class="nav-link align-middle item-link" @onclick="NavigateToMessages">
                                 <img class="icon-home" src="images/Dashboard Icon/email.svg"> <span class="ms-1 d-sm-inline nav-text">Messages</span>
+                                @if (hasNewMessages)
+                                {
+                                    <span class="has-new-message-badge">
+                                    </span>
+                                }
                             </a>
                         </li>
                         <li class="nav-item">
@@ -130,6 +137,10 @@
 
     private bool IsShowSidebar {get; set;} = false;
 
+    List<ChatRoom> chatRooms = new List<ChatRoom>();
+
+    private bool hasNewMessages = false;
+
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
@@ -143,9 +154,12 @@
                 // map only required field
                 Model.Profile = new Models.Entities.CustomerProfile
                     {
-                        IsMaker = result.Result.Result.IsMaker
+                        IsMaker = result.Result.Result.IsMaker,
+                        Id = result.Result.Result.Id
                     };
                 Model.IsAuthenticated = true;
+
+                await GetChatRoomsByUserId();
             }
         }
     }
@@ -241,4 +255,26 @@
         }
         return result;
     }
+
+    private async Task GetChatRoomsByUserId()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+
+        var result = await chatApiHandler.GetChatRoomsByUserId(new Framework.ApiCommand.ApiCore.ChatRoom.Request.GetChatRoomsByUserIdArgs
+            {
+                UserId = Model.Profile.Id
+            }, token);
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            chatRooms = result.Result.Result.Select(c => new ChatRoom
+                {
+                    HasNewMessage = c.HasNewMessage,
+                }).ToList();
+
+            hasNewMessages = chatRooms.Any(c => c.HasNewMessage);
+        }
+    }
+
 }
