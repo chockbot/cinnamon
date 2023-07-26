@@ -34,7 +34,7 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                                 "on c.\"OngoingActivityId\" = b.\"Id\" " +
                             "join public.\"StudentAttendances\" d " +
                                 "on c.\"Id\" = d.\"StudentId\" " +
-                            "where c.\"IsDisbursement\" = false and c.\"SessionsAttended\" >= c.\"NumberOfSessions\" " +
+                            "where c.\"IsDisbursement\" = false and a.\"Status\" = 1 and c.\"SessionsAttended\" >= c.\"NumberOfSessions\" " +
                                 "and d.\"IsPresent\" = true and a.\"IsInclusivePayment\" = false " +
                             ") " +
                             "select \"TransactionId\", \"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", \"ActivityId\", \"StudentId\", " +
