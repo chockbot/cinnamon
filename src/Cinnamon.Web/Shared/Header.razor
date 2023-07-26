@@ -194,7 +194,7 @@
     </main>
 </div>
 
-<ModalLogin @ref="signinModal" />
+<ModalLogin @ref="signinModal" ReturnUrl="@CurrentUrl" />
 
 
 @code 
@@ -214,6 +214,8 @@
     List<ChatRoom> chatRooms = new List<ChatRoom>();
 
     [Inject] HubConnection hubConnection { get; set; }
+
+    private string CurrentUrl  { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -268,6 +270,14 @@
         }
 
         NavigationManager.LocationChanged += LocationChanged;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if(firstRender)
+        {
+            CurrentUrl = $"/{NavigationManager.ToBaseRelativePath(NavigationManager.Uri)}";
+        }
     }
 
     private async Task SendChatStatus()
@@ -398,4 +408,6 @@
 
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 }
+
+
 
