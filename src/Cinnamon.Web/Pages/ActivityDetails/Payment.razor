@@ -231,7 +231,7 @@
                                         {
                                             <div class="d-flex justify-content-between py-1 price-per-head">
                                                 <div>
-                                                    Service Fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
+                                                    Service Fee - <span class="text-decoration-line-through">15%</span>
                                                 </div>
                                                 <div>
                                                     PHP @(GetConvinienceFee.ToString("#,##0.00"))
@@ -1041,7 +1041,7 @@
 
             if (SelectedAttendeesCount > 0 && !IsInclusivePricing)
             {
-                result = GetTotalPerHeadPrice * .05m;
+                result = GetTotalPerHeadPrice * 0; //.05m;
             }
 
             return result;
@@ -1056,7 +1056,7 @@
 
             if(SelectedAttendeesCount > 0 && !IsInclusivePricing)
             {
-                result = 50;
+                result = 39;
             }
 
             return result;
