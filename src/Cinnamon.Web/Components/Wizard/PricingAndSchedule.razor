@@ -90,7 +90,7 @@
                             </div>
                             <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
                                 <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
+                                    <input class="form-check-input set-session" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
                                 </div>
                             </div>
                             <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
@@ -141,7 +141,7 @@
 
                                     @if (scheduleModel.HasExpiration == 1)
                                     {
-                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                                        <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" data-class="start-date" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
@@ -367,7 +367,7 @@
                 </div>
                 <div class="col-lg-7 col-3 justify-content-start toggle-expiration">
                     <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
+                        <input class="form-check-input set-session" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsSetSession">
                     </div>
                 </div>
                 <div class="col-lg-12 col-md-12 col-sm-12 col-12 text-lg-start text-md-start text-sm-center mt-1">
@@ -419,7 +419,7 @@
 
                         @if (scheduleModel.HasExpiration == 1)
                         {
-                            <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
+                            <DateEdit Class="@RequiredCheck(scheduleModel.StartDate)" data-class="start-date" TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
