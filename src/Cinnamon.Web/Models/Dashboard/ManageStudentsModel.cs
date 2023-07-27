@@ -26,6 +26,10 @@ public class ManageStudentsModel
 
     public int selectedFilter;
 
+    public bool isDisplay = false;
+
+    public int searchBy;
+
     public TextEdit textEdit;
 
     public bool showErrorMessage = false;

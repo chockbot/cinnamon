@@ -120,7 +120,9 @@ public class DashboardController : ControllerBase
                             SessionsAttended = s.SessionsAttended,
                             Status = s.Status,
                             StudentNo = s.StudentNo,
-                            StudentId = s.StudentId
+                            StudentId = s.StudentId,
+                            ExpirationEndDate = s.ExpirationDateEnd,
+                            ExpirationStartDate = s.ExpirationDateStart
                         };
                     })
                 }
@@ -209,6 +211,8 @@ public class DashboardController : ControllerBase
                         Status = s.Status,
                         StudentNo = s.StudentNo,
                         StudentId =s.StudentId,
+                        ExpirationStartDate = s.ExpirationDateStart,
+                        ExpirationEndDate = s.ExpirationDateEnd,
                     };
                 })
             }

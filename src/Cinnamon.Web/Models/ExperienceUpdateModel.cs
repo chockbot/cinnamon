@@ -11,7 +11,7 @@ public class ExperienceUpdateModel
     public IEnumerable<Students> EnrolledStudents { get; set; }
     public IEnumerable<string> ActivityLevels { get; set; } = new List<string> { "Beginner", "Intermediate", "Advance" };
     public IEnumerable<string> SkillLevels { get; set; } = new List<string> { "No experience", "Little experience", "Expert" };
-    public IEnumerable<string> SessionPeriods { get; set; } = new List<string> { "1 Day", "2 Weeks", "3 Weeks", "1 Month", "2 Months", "3 Months" };
+    public IEnumerable<string> SessionPeriods { get; set; } = new List<string> {"2 Weeks", "3 Weeks", "1 Month", "2 Months", "3 Months" };
     public IList<int> DeletedScheduleIds {get; set;} = new List<int>();
     public string Token {get; set;} = string.Empty;
     public int OngoingStudents { get; set; } = 0;

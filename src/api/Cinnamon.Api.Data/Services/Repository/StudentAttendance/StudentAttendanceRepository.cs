@@ -114,7 +114,9 @@ public class StudentAttendanceRepository : IStudentAttendanceRepository
                         ScheduleId = student.ScheduleId,
                         SessionsAttended = student.SessionsAttended,
                         Status = student.Status,
-                        StudentNo = student.StudentNo
+                        StudentNo = student.StudentNo,
+                        ExpirationEndDate = student.ExpirationDateEnd,
+                        ExpirationStartDate = student.ExpirationDateStart
                     };
                 }
 
