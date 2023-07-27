@@ -9,6 +9,7 @@ public class CreateOngoingActivityArgs : IInteractor
     public int ScheduleId {get; set;}
     public int PurchaseOrderId {get; set;}
     public IEnumerable<Student> Students {get; set;}
+    public string SelectedPeriod { get; set; }
 
     public class Student 
     {

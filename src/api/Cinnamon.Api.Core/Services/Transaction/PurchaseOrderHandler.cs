@@ -217,7 +217,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     PaymentProviderFee = paymentProviderFee,
                     ServiceFee = serviceFee
                 },
-                IsInclusivePayment
+                IsInclusivePayment,
+                SelectedPeriod = args.SelectedPeriod
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 

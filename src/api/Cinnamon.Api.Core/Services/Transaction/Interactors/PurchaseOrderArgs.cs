@@ -13,6 +13,7 @@ public class PurchaseOrderArgs : IInteractor
     public IEnumerable<Enrollee> Students {get; set;}
     public CardDetails? CardInformation {get; set;}
     public bool IsCreditsApplied {get; set;}
+    public string SelectedPeriod { get; set; }
 
     public class Enrollee
     {

@@ -97,7 +97,8 @@ public class FinishTransactionHandler : IFinishTransactionHandler
                         FamilyMemberId = s.Id,
                         Name = s.Name
                     };
-                })
+                }),
+                SelectedPeriod = deserializedPayload.SelectedPeriod
             });
             if(!createOngoingActivityRes.Succeeded || createOngoingActivityRes.Result == null)
             {
@@ -192,6 +193,7 @@ public class FinishTransactionHandler : IFinishTransactionHandler
         public string PaymentMethod {get; set;}
         public string PaymentChannel {get; set;}
         public bool IsInclusivePayment {get; set;}
+        public string SelectedPeriod { get; set; }
     }
 
     class Student 
