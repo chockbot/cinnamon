@@ -294,7 +294,7 @@
                         </div>
                         @*Experience Schedule*@
                         <hr />
-                        <div class="col-12">
+                        <div class="mt-3 mt-sm-3 col-lg-8 col-md-8 col-sm-12 col-12">
                             <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
 
                             @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
@@ -302,13 +302,48 @@
                                 var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
                                 if (activeSchedule.Count > 0)
                                 {
-                                    <div class="d-flex flex-row gap-3 mb-2 p-2 overflow-auto">
+                                    <div class="d-block mb-2 p-2">
                                         @for (int x = 0; x < activeSchedule.Count; x++)
                                         {
-                                            @if (x <= 4)
+                                            @if (x <= 2)
                                             {
-                                                <div class="col-md-3 col-lg-3 col-sm-12 col-12">
-                                                    <CarouselItemSchedule ScheduleModel="@activeSchedule.ElementAt(x)" ActivityModel="activity"></CarouselItemSchedule>
+                                                <div class="schedule-detail w-100 rounded-5">
+                                                    <div class="schedule-header d-flex">
+                                                        <div class="schedule-title col-lg-10 clo-md-10 col-sm-10 col-10 justify-content-start">
+                                                            <p>@activeSchedule.ElementAt(x).Name</p>
+                                                        </div>
+                                                        <div class="form-check col-lg-2 col-md-2 col-sm-2 col-2 justify-content-center">
+                                                            <input class="form-check-input" type="checkbox" name="schedule-@x" id="schedule-@x">
+                                                            <label class="form-check-label" for="schedule-@x">
+                                                                Select
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="schedule-body">
+                                                        <div class="col-10 PES-details">
+                                                            <div class="PE-details d-flex">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
+                                                                    <p class="font-14">Price Details:</p>
+                                                                    <p class="font-16">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
+                                                                </div>
+                                                                @if (@activeSchedule.ElementAt(x).IsSetSession == true)
+                                                                {
+                                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration details">
+                                                                        <p class="font-14">Expiration:</p>
+                                                                        <p class="font-16">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                            <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
+                                                                <p class="font-14">Schedule:</p>
+                                                                <p class="font-16">@activeSchedule.ElementAt(x).DateTime</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-lg-2 col-md-2 col-2 justify-content-center schedule-price">
+                                                            <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             }
                                             else
@@ -508,6 +543,8 @@
     public int MakerOngoingStudennt { get; set; }
     public int MakerCompletedStudent { get; set; }
     private const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
+    public string changeColor = "none";
+    public bool IsChecked = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -605,7 +642,7 @@
                             Handler = result.Owner.Handler
                         } : null
                     };
-                    MakerActivity.Add(activity);
+                MakerActivity.Add(activity);
             }
 
             // Get experience types
@@ -877,5 +914,8 @@
             }, CustomerModel.Token);
         await GetFavorites();
 
+    }
+    private void CheckboxChanged(bool val)
+    {
     }
 }
