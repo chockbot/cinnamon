@@ -485,6 +485,49 @@
                     </ModalBody>
                 </ModalContent>
             </Modal>
+            <Modal @ref="ConfirmationModal" class="modal-purchase-confirmation">
+                <ModalContent>
+                    <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                        <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
+                        <button type="button" style="top: 12px; right: 20px;" class="btn-close position-absolute" @onclick="CloseConfirmationModal" />
+                    </ModalHeader>
+                    <ModalBody>
+                        <fieldset>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is1">
+                                            <input type="radio" @onchange='() => SelectPeriod("currentperiod")' value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is11">
+                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period</p>
+                                            <p class="font-14 color-grey-100">You have only <span class="color-red-100">@confirmationData.DaysLeft</span> days to use this.</p>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is1">
+                                            <input type="radio" @onchange='() => SelectPeriod("nextperiod")' value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is11">
+                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period</p>
+                                            <p class="font-14 color-grey-100">Next Period will start on <span class="color-green-100">@confirmationData.NextPeriod.ToString("MMMM dd, yyyy")</span></p>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
+                            <Button class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                                Proceed
+                            </Button>
+                            @if(confirmationData.IsShowError && !confirmationData.IsApplied)
+                            {
+                                <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
+                            }
+                        </fieldset>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Animate>
     </Div>
 }
@@ -529,6 +572,9 @@
 
     [Inject] HubConnection hubConnection { get; set; }
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    private Modal ConfirmationModal { get; set; }
+    private ConfirmationData confirmationData = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -828,6 +874,17 @@
                 HasExpiration = selectedSchedule.HasExpiration,
                 StartDate = selectedSchedule.StartDate
             };
+
+        if(Model.SelectedSchedule.HasExpiration == 1)
+        {
+            DateTime now = DateTime.Now;
+            DateTime dateEnd = CalculateDateEnd(Model.SelectedSchedule.SessionName, Model.SelectedSchedule.StartDate.Value);
+
+            confirmationData.DaysLeft = Math.Abs((now - dateEnd).Days);
+            confirmationData.NextPeriod = dateEnd.AddDays(1);
+            confirmationData.IsApplied = false;
+            confirmationData.IsShowError = false;
+        }
     }
 
     private void OnClickChange()
@@ -919,6 +976,12 @@
 
     private async Task OnPayConfirmedClicked()
     {
+        if(Model.SelectedSchedule.HasExpiration == 1 && !confirmationData.IsApplied)
+        {
+            await ConfirmationModal.Show();
+            return;
+        }
+
         if (string.IsNullOrEmpty(SelectedPaymentCode))
         {
             payErrorMessage = "Please select payment method";
@@ -956,7 +1019,8 @@
                         CVV = CardPaymentModel.CVV ?? string.Empty,
                         ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
                     } : null,
-                    IsCreditsApplied = Model.IsCreditApplied
+                    IsCreditsApplied = Model.IsCreditApplied,
+                    SelectedPeriod = confirmationData.SelectedPeriod
                 }, Model.Token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -1263,6 +1327,56 @@
         return Task.CompletedTask;
     }
 
+    private Task CloseConfirmationModal()
+    {
+        return ConfirmationModal.Close(CloseReason.UserClosing);
+    }
+
+    private Task SelectPeriod(string period)
+    {
+        if(period == "currentperiod" || period == "nextperiod")
+        {
+            confirmationData.SelectedPeriod = period;
+            confirmationData.IsApplied = true;
+        }
+        return Task.CompletedTask;
+    }
+
+    private DateTime CalculateDateEnd(string sessionName, DateTime dateStart)
+    {
+        DateTime dateEnd = DateTime.Now;
+        switch (sessionName)
+        {
+            case "2 Weeks":
+                dateEnd = dateStart.AddDays(14);
+                break;
+            case "3 Weeks":
+                dateEnd = dateStart.AddDays(21);
+                break;
+            case "1 Month":
+                dateEnd = dateStart.AddMonths(1);
+                break;
+            case "2 Months":
+                dateEnd = dateStart.AddMonths(2);
+                break;
+            case "3 Months":
+                dateEnd = dateStart.AddMonths(3);
+                break;
+        }
+
+        return dateEnd;
+    }
+
+    private Task ConfirmProceedClick()
+    {
+        if(!confirmationData.IsApplied){
+            confirmationData.IsShowError = true;
+        }else {
+            ConfirmationModal.Close(CloseReason.UserClosing);
+        }
+        return Task.CompletedTask;
+    }
+
     class PaymentOption
     {
         public string PaymentMethod { get; set; }
@@ -1283,5 +1397,16 @@
 
         public string ErrorTitle {get; set;}
         public string ErrorDescription { get; set; }
+    }
+
+    class ConfirmationData 
+    {
+        public string Message { get; set; }
+        public int DaysLeft { get; set; }
+        public DateTime NextPeriod { get; set; }
+        public bool IsApplied { get; set; }
+        public bool IsShowError { get; set; }
+
+        public string SelectedPeriod { get; set; }
     }
 }
