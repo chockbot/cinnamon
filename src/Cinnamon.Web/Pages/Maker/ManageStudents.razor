@@ -19,44 +19,45 @@
 <PageTitle>Student Management | CinnamonPH</PageTitle>
 <SeoMeta Title="Student Management" Subject="Student Management" Url="/maker/dashboard/managestudents" />
 
-@if(Model != null){
-    <section class="mt-5 maker-dashboard">
-    <div class="header">
+@if(Model != null)
+{
+<LoadingIndicator @ref=loadingIndicator>
+        <section class="mt-5 maker-dashboard">
+            <div class="header">
 
-        <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
+                <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
 
-        <div class="header-filters">
-            <Select TValue="int" class="dropdown-select-search" SelectedValue="@Model.searchBy" SelectedValueChanged="@((value) => OnSeachByValueChange(value))">
-            <SelectItem Value="0">Search By</SelectItem>
-                <SelectItem Value="1">Name</SelectItem>
-                <SelectItem Value="2">Ongoing</SelectItem>
-                <SelectItem Value="3">Completed</SelectItem>
-                
-            </Select>
-            @if(Model.isDisplay == true)
-            {
-                <TextEdit Placeholder="Search by Name" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
-            }
-            <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
-                <SelectItem Value="0">Select Experience</SelectItem>
-                @foreach (var item in Model.activities.OrderBy(a=> a.Title))
-                {
-                    <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
-                }
-            </Select>
-            @if (Model.selectedFilter != 0)
-            {
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
-                    View Schedule
-                </Button>
-            }
+                <div class="header-filters">
+                    <Select TValue="int" class="dropdown-select-search" SelectedValue="@Model.searchBy" SelectedValueChanged="@((value) => OnSeachByValueChange(value))">
+                        <SelectItem Value="0">Search By</SelectItem>
+                        <SelectItem Value="1">Name</SelectItem>
+                        <SelectItem Value="2">Ongoing</SelectItem>
+                        <SelectItem Value="3">Completed</SelectItem>
 
-        </div>
-    </div>
-    <div class="student-attendance-section">
-        <LoadingIndicator @ref=loadingIndicator>
-            <div class="table-list">
-                <Table @ref="tableStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                    </Select>
+                    @if (Model.isDisplay == true)
+                    {
+                        <TextEdit Placeholder="Search by Name" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                    }
+                    <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                        <SelectItem Value="0">Select Experience</SelectItem>
+                        @foreach (var item in Model.activities.OrderBy(a => a.Title))
+                        {
+                            <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
+                        }
+                    </Select>
+                    @if (Model.selectedFilter != 0)
+                    {
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
+                            View Schedule
+                        </Button>
+                    }
+
+                </div>
+            </div>
+            <div class="student-attendance-section">
+                <div class="table-list">
+                    <Table @ref="tableStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
                     <TableHeader>
                         <TableRow>
                             <TableHeaderCell class="name-header">
@@ -162,13 +163,11 @@
                             }
                         </TableBody>
                     </Table>
+                </div>
             </div>
-        </LoadingIndicator>
-        
-    </div>
-   
+        </section>
+    </LoadingIndicator>
     
-</section>
 <Modal @ref="modalRef">
     <ModalContent Centered Size="ModalSize.Small">
         <ModalHeader>
