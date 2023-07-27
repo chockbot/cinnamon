@@ -34,7 +34,7 @@ public class GetCurrentDateAttendanceHandler : IGetCurrentDateAttendanceHandler
                 ActivityId = args.ActivityId,
                 Date = DateTime.Now.Date,
                 ScheduleId = args.ScheduleId,
-                ForceCreate = true
+                ForceCreate = true,
             });
             if(!result.Succeeded || result.Result == null)
             {
@@ -59,7 +59,9 @@ public class GetCurrentDateAttendanceHandler : IGetCurrentDateAttendanceHandler
                         StudentNo = s.StudentNo,
                         AttendanceDate = s.AttendanceDate,
                         Id = s.Id,
-                        Remarks = s.Remarks
+                        Remarks = s.Remarks,
+                        ExpirationDateEnd = s.ExpirationDateEnd,
+                        ExpirationDateStart = s.ExpirationDateStart,
                     };
                 })
             }, "Successfully get current date student attendance");

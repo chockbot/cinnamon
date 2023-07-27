@@ -17,4 +17,6 @@ public class StudentDTO
     public DateTime ExpirationEndDate { get; set;}
     public bool IsDisbursement {get; set;}
     public bool HasReview { get; set; }
+
+    public int HasExpiration { get; set; }
 }
