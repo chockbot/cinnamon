@@ -497,28 +497,39 @@
                                 <Column ColumnSize="ColumnSize.Is12">
                                     <Row>
                                         <Column ColumnSize="ColumnSize.Is1">
-                                            <input type="radio" @onchange='() => SelectPeriod("currentperiod")' value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                            <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
+                                                checked='@(confirmationData.SelectedPeriod == "currentperiod")' 
+                                                value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
                                         </Column>
                                         <Column ColumnSize="ColumnSize.Is11">
-                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period</p>
-                                            <p class="font-14 color-grey-100">You have only <span class="color-red-100">@confirmationData.DaysLeft</span> days to use this.</p>
+                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
+                                            <p class="font-14 color-grey-100">You only have <span class="color-red-100">@confirmationData.DaysLeft</span> days to use this.</p>
                                         </Column>
                                     </Row>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is12">
                                     <Row>
                                         <Column ColumnSize="ColumnSize.Is1">
-                                            <input type="radio" @onchange='() => SelectPeriod("nextperiod")' value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                            <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
+                                                checked='@(confirmationData.SelectedPeriod == "nextperiod")'  
+                                                value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
                                         </Column>
                                         <Column ColumnSize="ColumnSize.Is11">
-                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period</p>
-                                            <p class="font-14 color-grey-100">Next Period will start on <span class="color-green-100">@confirmationData.NextPeriod.ToString("MMMM dd, yyyy")</span></p>
+                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
+                                            <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@confirmationData.NextPeriod.ToString("MMMM dd, yyyy")</span></p>
                                         </Column>
                                     </Row>
                                 </Column>
                             </Row>
-                            <Button class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
-                                Proceed
+                            <Button Loading="confirmationData.IsSubmitting" 
+                                Disabled="confirmationData.IsSubmitting || string.IsNullOrEmpty(confirmationData.SelectedPeriod)" 
+                                class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                                <LoadingTemplate>
+                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Proceed
+                                </ChildContent>
                             </Button>
                             @if(confirmationData.IsShowError && !confirmationData.IsApplied)
                             {
@@ -976,23 +987,45 @@
 
     private async Task OnPayConfirmedClicked()
     {
-        if(Model.SelectedSchedule.HasExpiration == 1 && !confirmationData.IsApplied)
+        if(!IsFieldsValid())
+        {
+            return;
+        }
+
+        if(Model.SelectedSchedule.HasExpiration == 1)
         {
             await ConfirmationModal.Show();
             return;
         }
 
+        await SubmitTransaction();
+    }
+
+    private bool IsFieldsValid()
+    {
         if (string.IsNullOrEmpty(SelectedPaymentCode))
         {
             payErrorMessage = "Please select payment method";
             isShowPayErrorMessage = true;
-            return;
+            return false;
         }
 
-        var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
-
-        if (SelectedAttendeesCount > 0)
+        if(SelectedAttendeesCount <= 0)
         {
+            payErrorMessage = "Please include family to register";
+            isShowPayErrorMessage = true;
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task SubmitTransaction()
+    {
+        try
+        {
+            var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
+
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
 
@@ -1030,7 +1063,7 @@
                 logger.LogError(submit.Error?.Description);
                 logger.LogError(submit.Result?.ErrorInfo.Message);
                 logger.LogError(submit.Result?.ErrorInfo.Description);
-                payErrorMessage = submit.Result?.ErrorInfo?.Message ?? $"An error occured. Please try again later.";
+                payErrorMessage = $"An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
                 isLoading = false;
             }
@@ -1038,7 +1071,6 @@
             {
                 isLoading = false;
                 var groupName = Guid.NewGuid().ToString();
-
                 var createChatRoomResult = await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
                 {
                     FromUserId = Model.Customer.Id,
@@ -1047,12 +1079,10 @@
                     GroupName = groupName,
                     ChatName = $"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group"
                 }, Model.Token);
-
                 if (createChatRoomResult.Succeeded && createChatRoomResult.Result.IsSuccess)
                 {
                     await hubConnection.SendAsync("AddToGroupAfterPayment", $"{createChatRoomResult.Result.Result.GroupName}|{createChatRoomResult.Result.Result.ChatRoomId}|{Model.Customer.Id}|{Model.Customer.FirstName}|{Model.Customer.LastName}|{Model.Customer.ProfilePath}|{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group");
                 }
-
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
@@ -1063,9 +1093,9 @@
                 }
             }
         }
-        else
+        catch (System.Exception)
         {
-            payErrorMessage = "Please include family to register";
+            payErrorMessage = $"An error occured. Please try again later.";
             isShowPayErrorMessage = true;
         }
     }
@@ -1329,6 +1359,7 @@
 
     private Task CloseConfirmationModal()
     {
+        confirmationData.SelectedPeriod = string.Empty;
         return ConfirmationModal.Close(CloseReason.UserClosing);
     }
 
@@ -1337,7 +1368,6 @@
         if(period == "currentperiod" || period == "nextperiod")
         {
             confirmationData.SelectedPeriod = period;
-            confirmationData.IsApplied = true;
         }
         return Task.CompletedTask;
     }
@@ -1367,14 +1397,19 @@
         return dateEnd;
     }
 
-    private Task ConfirmProceedClick()
+    private async Task ConfirmProceedClick()
     {
-        if(!confirmationData.IsApplied){
+        if(string.IsNullOrEmpty(confirmationData.SelectedPeriod))
+        {
             confirmationData.IsShowError = true;
-        }else {
-            ConfirmationModal.Close(CloseReason.UserClosing);
         }
-        return Task.CompletedTask;
+        else 
+        {
+            confirmationData.IsSubmitting = true;
+            await SubmitTransaction();
+            confirmationData.IsSubmitting = false;
+            await CloseConfirmationModal();
+        }
     }
 
     class PaymentOption
@@ -1408,5 +1443,6 @@
         public bool IsShowError { get; set; }
 
         public string SelectedPeriod { get; set; }
+        public bool IsSubmitting { get; set; }
     }
 }
