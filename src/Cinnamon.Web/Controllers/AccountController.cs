@@ -176,6 +176,11 @@ public class AccountController : Controller
                 return Json(new { success = false, message = "Please provide required fields" });
             }
 
+            if(model.Password.Trim().Length < 6)
+            {
+                return Json(new {success = false, message = "Password should be at least 6 characters long."});
+            }
+
             var registerResult = await accountApiHandler.Register(new Framework.ApiCommand.ApiCore.Account.Request.SubmitRegisterArgs {
                 Birthdate = model.Birthdate,
                 Email = model.Email,
