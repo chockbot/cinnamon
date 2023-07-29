@@ -51,37 +51,22 @@
                                     }
                                 </div>
                             </div>
-                            <div class="d-flex flex-row detail-sm mx-auto">
-                                <div id="carouselDetailGallery" class="carousel slide" data-bs-ride="carousel">
-                                    <div class="carousel-indicators">
-                                        <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                                        <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                                        <button type="button" data-bs-target="#carouselDetailGallery" data-bs-slide-to="2" aria-label="Slide 3"></button>
-                                    </div>
-                                    <div class="carousel-inner">
-                                        @if (activity.Images.Count > 0)
-                                        {
-                                            InitializeCarouselSwipe();
-                                            <div class="carousel-item active">
-                                                <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(0).ImageSrc" />
-                                            </div>
-                                            <div class="carousel-item">
-                                                <img class="img-fluid shadow rounded" src="@activity.Images.ElementAt(1).ImageSrc" />
-                                            </div>
-                                            <div class="carousel-item">
-                                                <img class="img-fluid shadow rounded" src="@activity.Images.ElementAt(2).ImageSrc" />
-                                            </div>
-                                        }
-                                    </div>
-                                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="prev">
-                                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Previous</span>
-                                    </button>
-                                    <button class="carousel-control-next" type="button" data-bs-target="#carouselDetailGallery" data-bs-slide="next">
-                                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                                        <span class="visually-hidden">Next</span>
-                                    </button>
+                            <div class="swiper swiper-details-mobile-images detail-sm">
+                                <div class="swiper-wrapper">
+                                    @if(activity.Images.Count > 0)
+                                    {
+                                        <div class="swiper-slide">
+                                            <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(0).ImageSrc" />
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(1).ImageSrc" />
+                                        </div>
+                                        <div class="swiper-slide">
+                                            <img class="img-fluid shadsow rounded" src="@activity.Images.ElementAt(2).ImageSrc" />
+                                        </div>
+                                    }
                                 </div>
+                                <div class="swiper-pagination"></div>
                             </div>
                         </div>
                         <div class="w-100 order-lg-first order-md-first order-sm-last">
@@ -787,6 +772,7 @@
             await InitializeCarouselSwipe();
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
         }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.activityDetails.init");
     }
     private async Task InitializeCarouselSwipe()
     {
