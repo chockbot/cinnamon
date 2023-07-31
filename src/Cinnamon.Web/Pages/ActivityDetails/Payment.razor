@@ -231,7 +231,7 @@
                                         {
                                             <div class="d-flex justify-content-between py-1 price-per-head">
                                                 <div>
-                                                    Service Fee - <span style="text-decoration: line-through;">15%</span> <b>5%</b>
+                                                    Service Fee - <span class="text-decoration-line-through">15%</span>
                                                 </div>
                                                 <div>
                                                     PHP @(GetConvinienceFee.ToString("#,##0.00"))
@@ -485,6 +485,60 @@
                     </ModalBody>
                 </ModalContent>
             </Modal>
+            <Modal @ref="ConfirmationModal" class="modal-purchase-confirmation">
+                <ModalContent>
+                    <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                        <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
+                        <button type="button" style="top: 12px; right: 20px;" class="btn-close position-absolute" @onclick="CloseConfirmationModal" />
+                    </ModalHeader>
+                    <ModalBody>
+                        <fieldset>
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is1">
+                                            <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
+                                                checked='@(confirmationData.SelectedPeriod == "currentperiod")' 
+                                                value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is11">
+                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
+                                            <p class="font-14 color-grey-100">You only have <span class="color-red-100">@confirmationData.DaysLeft</span> days to use this.</p>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is12">
+                                    <Row>
+                                        <Column ColumnSize="ColumnSize.Is1">
+                                            <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
+                                                checked='@(confirmationData.SelectedPeriod == "nextperiod")'  
+                                                value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is11">
+                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
+                                            <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@confirmationData.NextPeriod.ToString("MMMM dd, yyyy")</span></p>
+                                        </Column>
+                                    </Row>
+                                </Column>
+                            </Row>
+                            <Button Loading="confirmationData.IsSubmitting" 
+                                Disabled="confirmationData.IsSubmitting || string.IsNullOrEmpty(confirmationData.SelectedPeriod)" 
+                                class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                                <LoadingTemplate>
+                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                </LoadingTemplate>
+                                <ChildContent>
+                                    Proceed
+                                </ChildContent>
+                            </Button>
+                            @if(confirmationData.IsShowError && !confirmationData.IsApplied)
+                            {
+                                <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
+                            }
+                        </fieldset>
+                    </ModalBody>
+                </ModalContent>
+            </Modal>
         </Animate>
     </Div>
 }
@@ -529,6 +583,9 @@
 
     [Inject] HubConnection hubConnection { get; set; }
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
+
+    private Modal ConfirmationModal { get; set; }
+    private ConfirmationData confirmationData = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -828,6 +885,17 @@
                 HasExpiration = selectedSchedule.HasExpiration,
                 StartDate = selectedSchedule.StartDate
             };
+
+        if(Model.SelectedSchedule.HasExpiration == 1)
+        {
+            DateTime now = DateTime.Now;
+            DateTime dateEnd = CalculateDateEnd(Model.SelectedSchedule.SessionName, Model.SelectedSchedule.StartDate.Value);
+
+            confirmationData.DaysLeft = Math.Abs((now - dateEnd).Days);
+            confirmationData.NextPeriod = dateEnd.AddDays(1);
+            confirmationData.IsApplied = false;
+            confirmationData.IsShowError = false;
+        }
     }
 
     private void OnClickChange()
@@ -919,17 +987,45 @@
 
     private async Task OnPayConfirmedClicked()
     {
+        if(!IsFieldsValid())
+        {
+            return;
+        }
+
+        if(Model.SelectedSchedule.HasExpiration == 1)
+        {
+            await ConfirmationModal.Show();
+            return;
+        }
+
+        await SubmitTransaction();
+    }
+
+    private bool IsFieldsValid()
+    {
         if (string.IsNullOrEmpty(SelectedPaymentCode))
         {
             payErrorMessage = "Please select payment method";
             isShowPayErrorMessage = true;
-            return;
+            return false;
         }
 
-        var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
-
-        if (SelectedAttendeesCount > 0)
+        if(SelectedAttendeesCount <= 0)
         {
+            payErrorMessage = "Please include family to register";
+            isShowPayErrorMessage = true;
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task SubmitTransaction()
+    {
+        try
+        {
+            var selectedPaymentMethod = Payments.First(p => p.Code == SelectedPaymentCode);
+
             isLoading = true;
             payButtonStyle = "background-color: #6c757d !important;";
 
@@ -956,7 +1052,8 @@
                         CVV = CardPaymentModel.CVV ?? string.Empty,
                         ExpireMonthYear = CardPaymentModel.Expiration ?? string.Empty
                     } : null,
-                    IsCreditsApplied = Model.IsCreditApplied
+                    IsCreditsApplied = Model.IsCreditApplied,
+                    SelectedPeriod = confirmationData.SelectedPeriod
                 }, Model.Token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
@@ -966,7 +1063,7 @@
                 logger.LogError(submit.Error?.Description);
                 logger.LogError(submit.Result?.ErrorInfo.Message);
                 logger.LogError(submit.Result?.ErrorInfo.Description);
-                payErrorMessage = submit.Result?.ErrorInfo?.Message ?? $"An error occured. Please try again later.";
+                payErrorMessage = $"An error occured. Please try again later.";
                 isShowPayErrorMessage = true;
                 isLoading = false;
             }
@@ -974,7 +1071,6 @@
             {
                 isLoading = false;
                 var groupName = Guid.NewGuid().ToString();
-
                 var createChatRoomResult = await chatApiHandler.CreateChatRoom(new Framework.ApiCommand.ApiCore.ChatRoom.Request.CreateChatRoomArgs
                 {
                     FromUserId = Model.Customer.Id,
@@ -983,12 +1079,10 @@
                     GroupName = groupName,
                     ChatName = $"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group"
                 }, Model.Token);
-
                 if (createChatRoomResult.Succeeded && createChatRoomResult.Result.IsSuccess)
                 {
                     await hubConnection.SendAsync("AddToGroupAfterPayment", $"{createChatRoomResult.Result.Result.GroupName}|{createChatRoomResult.Result.Result.ChatRoomId}|{Model.Customer.Id}|{Model.Customer.FirstName}|{Model.Customer.LastName}|{Model.Customer.ProfilePath}|{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}'s Chat Group");
                 }
-
                 if (submit.Result.Result.Action == 1)
                 {
                     NavigationManager.NavigateTo(submit.Result.Result.Url);
@@ -999,9 +1093,9 @@
                 }
             }
         }
-        else
+        catch (System.Exception)
         {
-            payErrorMessage = "Please include family to register";
+            payErrorMessage = $"An error occured. Please try again later.";
             isShowPayErrorMessage = true;
         }
     }
@@ -1041,7 +1135,7 @@
 
             if (SelectedAttendeesCount > 0 && !IsInclusivePricing)
             {
-                result = GetTotalPerHeadPrice * .05m;
+                result = GetTotalPerHeadPrice * 0; //.05m;
             }
 
             return result;
@@ -1056,7 +1150,7 @@
 
             if(SelectedAttendeesCount > 0 && !IsInclusivePricing)
             {
-                result = 50;
+                result = 39;
             }
 
             return result;
@@ -1263,6 +1357,61 @@
         return Task.CompletedTask;
     }
 
+    private Task CloseConfirmationModal()
+    {
+        confirmationData.SelectedPeriod = string.Empty;
+        return ConfirmationModal.Close(CloseReason.UserClosing);
+    }
+
+    private Task SelectPeriod(string period)
+    {
+        if(period == "currentperiod" || period == "nextperiod")
+        {
+            confirmationData.SelectedPeriod = period;
+        }
+        return Task.CompletedTask;
+    }
+
+    private DateTime CalculateDateEnd(string sessionName, DateTime dateStart)
+    {
+        DateTime dateEnd = DateTime.Now;
+        switch (sessionName)
+        {
+            case "2 Weeks":
+                dateEnd = dateStart.AddDays(14);
+                break;
+            case "3 Weeks":
+                dateEnd = dateStart.AddDays(21);
+                break;
+            case "1 Month":
+                dateEnd = dateStart.AddMonths(1);
+                break;
+            case "2 Months":
+                dateEnd = dateStart.AddMonths(2);
+                break;
+            case "3 Months":
+                dateEnd = dateStart.AddMonths(3);
+                break;
+        }
+
+        return dateEnd;
+    }
+
+    private async Task ConfirmProceedClick()
+    {
+        if(string.IsNullOrEmpty(confirmationData.SelectedPeriod))
+        {
+            confirmationData.IsShowError = true;
+        }
+        else 
+        {
+            confirmationData.IsSubmitting = true;
+            await SubmitTransaction();
+            confirmationData.IsSubmitting = false;
+            await CloseConfirmationModal();
+        }
+    }
+
     class PaymentOption
     {
         public string PaymentMethod { get; set; }
@@ -1283,5 +1432,17 @@
 
         public string ErrorTitle {get; set;}
         public string ErrorDescription { get; set; }
+    }
+
+    class ConfirmationData 
+    {
+        public string Message { get; set; }
+        public int DaysLeft { get; set; }
+        public DateTime NextPeriod { get; set; }
+        public bool IsApplied { get; set; }
+        public bool IsShowError { get; set; }
+
+        public string SelectedPeriod { get; set; }
+        public bool IsSubmitting { get; set; }
     }
 }

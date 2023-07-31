@@ -116,9 +116,9 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
             }
 
             decimal subTotal = activitySchedule.Price * args.NumberOfHeads;
-            decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * .05m;
+            decimal paymentProviderFee = IsInclusivePayment ? 0 : subTotal * 0; //.05m;
             decimal discount = 0;
-            decimal serviceFee = IsInclusivePayment ? 0 : 50;
+            decimal serviceFee = IsInclusivePayment ? 0 : 39; //50;
             decimal overallTotal = subTotal + paymentProviderFee + serviceFee;
             decimal creditAmount = 0;
 
@@ -217,7 +217,8 @@ public class PurchaseOrderHandler : IPurchaseOrderHandler
                     PaymentProviderFee = paymentProviderFee,
                     ServiceFee = serviceFee
                 },
-                IsInclusivePayment
+                IsInclusivePayment,
+                SelectedPeriod = args.SelectedPeriod
             };
             var serializedPayload = jsonSerializationProvider.Serialize(payloadData);
 

@@ -96,33 +96,21 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             //Check if Schedule has Start Expiration Date
             DateTime endExpiration = DateTime.MinValue;
             DateTime startExpiration = DateTime.MinValue; 
-            if (schedule.HasExpiration == 1 && schedule.IsSetSession == true)
+            if (schedule.HasExpiration == 1 && schedule.IsSetSession == true && 
+                (args.SelectedPeriod == "currentperiod" || args.SelectedPeriod == "nextperiod"))
             {
-                startExpiration = schedule.StartDate ?? DateTime.MinValue;
-                switch (schedule.SessionName)
+                if(args.SelectedPeriod == "currentperiod")
                 {
-                    case "1 Day":
-                        endExpiration = startExpiration.AddDays(1);
-                        break;
-                    case "2 Weeks":
-                        endExpiration = startExpiration.AddDays(14);
-                        break;
-                    case "3 Weeks":
-                        endExpiration = startExpiration.AddDays(21);
-                        break;
-                    case "1 Month":
-                        endExpiration = startExpiration.AddMonths(1);
-                        break;
-                    case "2 Months":
-                        endExpiration = startExpiration.AddMonths(2);
-                        break;
-                    case "3 Months":
-                        endExpiration = startExpiration.AddMonths(3);
-                        break;
-                    default:
-                        break;
+                    startExpiration = schedule.StartDate ?? startExpiration;
+                    endExpiration = CalculateEndDate(schedule.SessionName, startExpiration);
+                }
+                else if (args.SelectedPeriod == "nextperiod")
+                {
+                    startExpiration = CalculateEndDate(schedule.SessionName, schedule.StartDate ?? startExpiration).AddDays(1);
+                    endExpiration = CalculateEndDate(schedule.SessionName, startExpiration);
                 }
             }
+
             //Get Number of Backtracking
             double quotient = (double)schedule.PerUnit2 / 2;
             int numberOfBackTracking = 0;
@@ -198,5 +186,31 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
         {
             return AppResult<bool>.CreateFailed(ex, "An error occured when validating students");
         }
+    }
+
+    private DateTime CalculateEndDate(string sessionName, DateTime dateStart)
+    {
+        DateTime dateEnd = DateTime.Now;
+        switch (sessionName)
+        {
+            case "2 Weeks":
+                dateEnd = dateStart.AddDays(14);
+                break;
+            case "3 Weeks":
+                dateEnd = dateStart.AddDays(21);
+                break;
+            case "1 Month":
+                dateEnd = dateStart.AddMonths(1);
+                break;
+            case "2 Months":
+                dateEnd = dateStart.AddMonths(2);
+                break;
+            case "3 Months":
+                dateEnd = dateStart.AddMonths(3);
+                break;
+            default:
+                break;
+        }
+        return dateEnd;
     }
 }
