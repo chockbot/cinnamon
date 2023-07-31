@@ -164,6 +164,7 @@ public class Activity
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
     public Cinnamon.Framework.Enums.Enums.ActivityStatus Status { get; set; }
+    public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public int ActivityStatus { get { return (int)Status; } }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();

@@ -3,7 +3,10 @@ using Cinnamon.Api.Data.Repository.Interfaces;
 using Cinnamon.Api.Data.Services.Repository.Interfaces;
 using Cinnamon.Framework.ApiCommand.ApiData.DTO.Schedule;
 using Cinnamon.Framework.Common;
+using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Reflection.Metadata.Ecma335;
 using Entities = Cinnamon.Api.Data.Repository.Entities;
 
 namespace Cinnamon.Api.Data.Services.Repository.Schedule
@@ -85,42 +88,70 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
         {
             try
             {
-                
                 // check activity id if existed
                 var activity = await _dataStore.Activity.GetByIdAsync(activityId);
-                if(!activity.Succeeded || activity.Result == null)
+                List<Entities.ActivitySchedule> dtoList = new List<Entities.ActivitySchedule>();
+                
+                if (!activity.Succeeded || activity.Result == null)
                 {
                     return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(
                         new ApplicationException("Can't find provided activity id"), "Can't find provided activity id");
                 }
-                
-                var entities = schedules.Select(s => {
-                    return new Entities.ActivitySchedule {
-                        ActivityId = activityId,
-                        DateTime = s.DateTime,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        PerUnit2 = s.PerUnit2,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        Order = s.Order,
-                        IsActiveSchedule = s.IsActiveSchedule,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName ?? string.Empty,
-                        HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate.SetKindUtc()
-                    };
-                });
 
-                var result = await _dataStore.ActivitySchedule.AddRange(entities);
-                if(!result.Succeeded || result.Result == null)
+                foreach (var schedule in schedules)
                 {
-                    return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(result.Message), "An error occured when creating multiple schedules");
-                }
+                    var entity = new Entities.ActivitySchedule
+                    {
+                        ActivityId       = activityId,
+                        DateTime         = schedule.DateTime,
+                        Name             = schedule.Name,
+                        PerUnit1         = schedule.PerUnit1,
+                        PerUnit2         = schedule.PerUnit2,
+                        Price            = schedule.Price,
+                        PriceUnit1       = schedule.PriceUnit1,
+                        PriceUnit2       = schedule.PriceUnit2,
+                        UnitPrice        = schedule.UnitPrice,
+                        Order            = schedule.Order,
+                        IsActiveSchedule = schedule.IsActiveSchedule,
+                        IsSetSession     = schedule.IsSetSession,
+                        SessionName      = schedule.SessionName ?? string.Empty,
+                        HasExpiration    = schedule.HasExpiration,
+                        StartDate        = schedule.StartDate.SetKindUtc(),
+                        ScheduleType     = (int)schedule.ScheduleType
+                    };
 
-                var dtos = result.Result.Select(s => {
+                    var result = await _dataStore.ActivitySchedule.Add(entity);
+
+                    if (!result.Succeeded || result.Result == null)
+                    {
+                        return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(result.Message), "An error occured when creating multiple schedules");
+                    }
+
+                    dtoList.Add(result.Result);
+
+                    if (schedule.ActivityScheduleTimes.Count() > 0)
+                    {
+                        var scheduleTimeEntity = schedule.ActivityScheduleTimes.Select(a =>
+                        {
+                            return new Entities.ActivityScheduleTime
+                            {
+                                ActivityScheduleId = result.Result.Id,
+                                DayOfWeek = a.DayOfWeek,
+                                StartTime = a.StartTime,
+                                EndTime = a.EndTime
+                            };
+                        });
+
+                        var scheduleTimeResult = await _dataStore.ActivityScheduleTime.AddRange(scheduleTimeEntity);
+
+                        if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                        {
+                            return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(result.Message), "An error occured when creating multiple schedules");
+                        }
+                    }
+                }
+                
+                var dtos = dtoList.Select(s => {
                     return new ScheduleDTO {
                         ActivityId = s.ActivityId,
                         DateTime = s.DateTime,
@@ -179,6 +210,53 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             catch (Exception ex)
             {
                 return AppResult<bool>.CreateFailed(ex, "An error occured in deleting many schedules");
+            }
+        }
+
+        public async Task<AppResult<ScheduleDTO>> GetActivityScheduleTimes(int activityScheduleId, int dayOfWeek, DateTime scheduleDate)
+        {
+            try
+            {
+                var result = new ScheduleDTO();
+
+                var activityScheduleResult = await _dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == activityScheduleId && a.DayOfWeek == dayOfWeek);
+
+                if (!activityScheduleResult.Succeeded || activityScheduleResult.Result == null)
+                {
+                    return AppResult<ScheduleDTO>.CreateFailed(
+                        new ApplicationException("Can't find activity schedule"), "Can't find activity schedule");
+                }
+
+                var activityScheduleTime = activityScheduleResult.Result;
+
+                var ongoingActivityResult = await _dataStore.OngoingActivityScheduleTime.FindAsync(a => activityScheduleTime.Select(s => s.Id).Contains(a.ActivityScheduleTimeId) && a.ScheduleDate == scheduleDate && !a.IsCompleted);
+
+                if (!ongoingActivityResult.Succeeded || ongoingActivityResult.Result == null)
+                {
+                    return AppResult<ScheduleDTO>.CreateFailed(
+                        new ApplicationException("Can't find activity schedule"), "Can't find activity schedule");
+                }
+
+                var ongoingActivitySchedule = ongoingActivityResult.Result;
+
+                foreach (var scheduleTime in activityScheduleTime)
+                {
+                    result.ActivityScheduleTimes.Add(new ActivityScheduleTimeDTO
+                    {
+                        ActivityScheduleTimeId = scheduleTime.Id,
+                        ActivityScheduleId = scheduleTime.ActivityScheduleId,
+                        DayOfWeek = scheduleTime.DayOfWeek,
+                        EndTime = scheduleTime.EndTime,
+                        StartTime = scheduleTime.StartTime,
+                        IsAvailable = ongoingActivitySchedule.Select(o => o.ActivityScheduleTimeId).Contains(scheduleTime.Id) ? false : true
+                    });
+                }
+
+                return AppResult<ScheduleDTO>.CreateSucceeded(result, "Successfully retrieved activity schedules");
+            }
+            catch (Exception ex)
+            {
+                return AppResult<ScheduleDTO>.CreateFailed(ex, "An error occured in find activity schedule");
             }
         }
 
@@ -259,6 +337,37 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             catch (Exception ex)
             {
                 return AppResult<ScheduleDTO>.CreateFailed(ex, ex.Message);
+            }
+        }
+
+        public async Task<AppResult<bool>> CreateOngoingActivitySchedule(DateTime scheduleDate, int activityScheduleTimeId, int purchaseOrderId, bool isCompleted)
+        {
+            try
+            {
+                var scheduleTimeResult = await _dataStore.ActivityScheduleTime.FindFirstAsync(s => s.Id == activityScheduleTimeId);
+                if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                {
+                    return AppResult<bool>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                }
+
+                var result = await _dataStore.OngoingActivityScheduleTime.Add(new Entities.OngoingActivityScheduleTime
+                {
+                    ScheduleDate = scheduleDate,
+                    ActivityScheduleTimeId = activityScheduleTimeId,
+                    PurchaseOrderId = purchaseOrderId,
+                    IsCompleted = isCompleted
+                });
+
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return AppResult<bool>.CreateFailed(result.Error.Exception, result.Message);
+                }
+
+                return AppResult<bool>.CreateSucceeded(result.Succeeded, result.Message);
+            }
+            catch (Exception ex)
+            {
+                return AppResult<bool>.CreateFailed(ex, ex.Message);
             }
         }
 

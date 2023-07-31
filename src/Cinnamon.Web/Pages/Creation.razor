@@ -545,7 +545,14 @@
                        IsSetSession = s.IsSetSession,
                        SessionName = s.SessionName ?? "N/A",
                        HasExpiration = s.HasExpiration,
-                       StartDate = s.StartDate ?? DateTime.MinValue
+                       StartDate = s.StartDate ?? DateTime.MinValue,
+                       ScheduleType = s.ScheduleType,
+                       ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime
+                       {
+                           DayOfWeek = s.DayOfWeek,
+                           StartTime = s.StartTime,
+                           EndTime = s.EndTime
+                       })
                    };
                }),
             }, Model.Token);

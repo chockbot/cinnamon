@@ -127,7 +127,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var schedules =  args.Schedules.Select(s => {
+                var schedules = args.Schedules.Select(s => {
                     return new ScheduleDTO {
                         ActivityId = args.ActivityId,
                         DateTime = s.DateTime,
@@ -143,7 +143,14 @@ namespace Cinnamon.Api.Data.Controllers
                         IsSetSession = s. IsSetSession,
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate,
+                        ScheduleType = s.ScheduleType,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new ActivityScheduleTimeDTO
+                        {
+                            DayOfWeek = s.DayOfWeek,
+                            EndTime = s.EndTime,
+                            StartTime = s.StartTime
+                        }).ToList()
                     };
                 });
 
@@ -219,6 +226,49 @@ namespace Cinnamon.Api.Data.Controllers
             catch (Exception ex)
             {
                 return new JsonResult(new DeleteManySchedulesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [HttpGet]
+        [Route("GetActivityScheduleTimes")]
+        [ProducesResponseType(typeof(GetActivityScheduleTimesResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetActivityScheduleTimes([FromQuery] GetActivityScheduleTimesArgs args)
+        {
+            try
+            {
+                var result = await _scheduleRepository.GetActivityScheduleTimes(args.ActivityScheduleId, args.DayOfWeek, args.ScheduleDate)
+                    ;
+                if (!result.Succeeded || result.Result == null)
+                {
+                    return new JsonResult(new GetActivityScheduleTimesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+                return new JsonResult(new GetActivityScheduleTimesResult { Result = result.Result, IsSuccess = true });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new GetActivityScheduleTimesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+            }
+        }
+
+        [Route("CreateOngoingActivitySchedule")]
+        [HttpPost]
+        [ProducesResponseType(typeof(CreateOngoingActivityScheduleResult), StatusCodes.Status202Accepted)]
+        public async Task<IActionResult> CreateOngoingActivitySchedule([FromBody] CreateOngoingActivityScheduleArgs args)
+        {
+            try
+            {
+                var result = await _scheduleRepository.CreateOngoingActivitySchedule(args.ScheduleDate, args.ActivityScheduleTimeId, args.PurchaseOrderId, args.IsCompleted);
+                if (!result.Succeeded || !result.Result)
+                {
+                    return new JsonResult(new CreateOngoingActivityScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+                }
+
+                return new JsonResult(new CreateOngoingActivityScheduleResult { IsSuccess = result.Succeeded, Result = result.Result });
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(new CreateOngoingActivityScheduleResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
             }
         }
     }

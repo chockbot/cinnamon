@@ -22,4 +22,6 @@ public class ActivitySchedule : BaseEntity
     public string SessionName { get; set; }
     public int HasExpiration { get; set; } = 0;
     public DateTime? StartDate { get; set; }
+    public int ScheduleType { get; set; }
+    public virtual IList<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
 }

@@ -26,7 +26,7 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel,
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, Enums.ActivityStatus status)
+        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, ActivityStatus status, Enums.ExperienceCreationType experienceCreationType)
     {
         try
         {
@@ -74,7 +74,8 @@ public class ActivityRepository : IActivityRepository
                 Handler = handler,
                 IsNew = true,
                 Guid = Guid.NewGuid().ToString(),
-                Status = (int)status
+                Status = (int)status,
+                ExperienceCreationTypeId = (int)experienceCreationType
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)

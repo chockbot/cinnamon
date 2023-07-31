@@ -1,5 +1,7 @@
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Activity.Response;
+using Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Request;
+using Cinnamon.Framework.ApiCommand.ApiCore.ExperienceCreationType.Response;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Request;
 using Cinnamon.Framework.ApiCommand.ApiCore.Favorite.Response;
 using Cinnamon.Framework.Common;
@@ -765,6 +767,71 @@ public class ActivityApiHandler : IActivityApiHandler
         catch (Exception ex)
         {
             return AppResult<UpdateCouponResult>.CreateFailed(ex, "An error occured when calling update coupon api");
+        }
+    }
+
+    public async Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+               .WithOAuthBearerToken(token)
+               .Request("Activity/ExperienceCreationTypes")
+               .GetJsonAsync<GetExperienceCreationTypeResult>();
+
+            return AppResult<GetExperienceCreationTypeResult>.CreateSucceeded(result, "Successfully getting experience creation types api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetExperienceCreationTypeResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetExperienceCreationTypeResult>.CreateFailed(ex, "An error occured when getting experience creation types api");
+        }
+    }
+
+    public async Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+               .WithOAuthBearerToken(token)
+               .Request("Activity/GetActivityScheduleTimes")
+               .GetJsonAsync<GetActivityScheduleTimesResult>();
+
+            return AppResult<GetActivityScheduleTimesResult>.CreateSucceeded(result, "Successfully getting activity schedule times api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetActivityScheduleTimesResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetActivityScheduleTimesResult>.CreateFailed(ex, "An error occured when getting activity schedule times api");
+        }
+    }
+
+    public async Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args, string token)
+    {
+        try
+        {
+            var result = await flurlClient
+                .WithOAuthBearerToken(token)
+                .Request("Activity/CreateOngoingActivitySchedule")
+                .PostJsonAsync(args)
+                .ReceiveJson<CreateOngoingActivityScheduleResult>();
+
+            return AppResult<CreateOngoingActivityScheduleResult>.CreateSucceeded(result, "Successfully called create ongoing activity schedule api");
+        }
+        catch (FlurlHttpException ex)
+        {
+            var error = await ex.GetResponseJsonAsync();
+            return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<CreateOngoingActivityScheduleResult>.CreateFailed(ex, "An error occured when calling create ongoing activity schedule api");
         }
     }
 }
