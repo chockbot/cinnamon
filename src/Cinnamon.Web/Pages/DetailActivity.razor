@@ -262,7 +262,7 @@
             </Animate>
         </Div>
         <Div>
-            <Row>
+            <Row HorizontalGutter="30">
                 <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
                     <div class="py-2">
                         @*Customer Details*@
@@ -347,7 +347,7 @@
                         }
                     </div>
 
-                    <hr>
+                    <hr class="my-0">
 
                     @*Activity Details*@
                     <div class="description-label">
@@ -399,19 +399,19 @@
                                                         <div class="PE-details d-flex">
                                                             <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
                                                                 <p class="font-14">Price Details:</p>
-                                                                <p class="font-16">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
+                                                                <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                             </div>
                                                             @if (@activeSchedule.ElementAt(x).IsSetSession == true)
                                                             {
                                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration details">
                                                                     <p class="font-14">Expiration:</p>
-                                                                    <p class="font-16">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                                    <p class="font-16-d">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
                                                                 </div>
                                                             }
                                                         </div>
                                                         <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
                                                             <p class="font-14">Schedule:</p>
-                                                            <p class="font-16">@activeSchedule.ElementAt(x).DateTime</p>
+                                                            <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
@@ -468,18 +468,18 @@
                                                 <div class="schedule-body">
                                                     <div class="col-12 price-details">
                                                         <p class="font-14">Price Details:</p>
-                                                        <p class="font-16">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
+                                                        <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                     </div>
                                                     @if (@activeSchedule.ElementAt(x).IsSetSession == true)
                                                     {
                                                         <div class="col-12 expiration-details">
                                                             <p class="font-14">Expiration:</p>
-                                                            <p class="font-16">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                            <p class="font-16-d">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
                                                         </div>
                                                     }
                                                     <div class="col-12 schedule-details">
                                                         <p class="font-14">Schedule:</p>
-                                                        <p class="font-16">@activeSchedule.ElementAt(x).DateTime</p>
+                                                        <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                     </div>
                                                     <div class="col-12 form-check ">
                                                         <input class="form-check-input" type="radio" name="schedule" id="schedule">
@@ -576,6 +576,64 @@
                     }
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                    <div>
+                        <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid">
+                            <div class="bg-white-100 px-3 py-4 border-radius-10">
+                                <p class="font-20 font-weight-700 color-black-200">3,500</p>
+                                <Select class="form-select font-16 border-color-grey-200 color-grey-100" TValue="int" Size="Size.Small">
+                                    <SelectItem Value="1">Cursive Letter (Beginner)</SelectItem>
+                                    <SelectItem Value="2">Chess Advance Openings</SelectItem>
+                                    <SelectItem Value="3">Chess for Kids</SelectItem>
+                                    <SelectItem Value="4">Chess for Adult</SelectItem>
+                                </Select>
+                                <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
+                                    <div class="w-100 p-2">1 Enrollee</div>
+                                    <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">-</div>
+                                    <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">+</div>
+                                </div>
+                                <Row class="color-grey-100 font-16 mt-4">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">₱ 3500 x 1 Head</p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ 3,500.00</p>
+                                    </Column>
+                                </Row>
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Service  fee - 15% 5%</p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ 250.00</p>
+                                    </Column>
+                                </Row>
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Handling  fee</p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ 50.00</p>
+                                    </Column>
+                                </Row>
+                                <Divider class="m-0 mt-2" />
+                                <Row class="font-16 mt-2 font-weight-700 color-black-100">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Handling  fee</p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ 50.00</p>
+                                    </Column>
+                                </Row>
+                                <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
+                                <div>
+                                    <Button Type="ButtonType.Button"  class="btn-primary font-20 w-100 border-radius-10" 
+                                        Border="Border.Is0">
+                                        Proceed
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </Column>
             </Row>
             <Div>
