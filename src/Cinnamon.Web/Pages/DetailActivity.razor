@@ -10,6 +10,7 @@
 @using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Models.Entities
 @using Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Components.Pages;
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IActivityApiHandler activityApiHandler
 @inject IAccountApiHandler accountApiHandler
@@ -19,23 +20,22 @@
 @using Microsoft.EntityFrameworkCore
 
 <PageTitle>@(activity == null ? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH" : $"Cinnamon Activity - {activity.Title} | CinnamonPH")</PageTitle>
-    <SeoMeta Title="@(activity?.Title ?? string.Empty)"
+<SeoMeta Title="@(activity?.Title ?? string.Empty)"
          Description="@(activity?.Description ?? string.Empty)"
          Subject="@(activity?.Title ?? string.Empty)"
          Url='@($"/explore/{Identifier}")'
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
 
-    @if (Model.Customer != null)
+@if (Model.Customer != null)
 {
-    <!-- Alert message container -->
-    <div id="alertContainer" class="alertContainer">
-        <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
-    </div>
-    <Div ElementId="#b-animate">
-        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-            <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
-                <div class="section-1 d-flex flex-column pb-2 col-lg-10 justify-content-center col-md-10 justify-content-center col-sm-12 justify-content-center col-12 justify-content-center">
+    <Container>
+        <div id="alertContainer" class="alertContainer">
+            <div id="alertMessage" class="alertMessage">Copied to clipboard!</div>
+        </div>
+        <Div ElementId="#b-header-animate">
+            <Animate Anchor="#b-header-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                <div>
                     @*Details Header Desktop*@
                     <div class="details-header">
                         @*Experience Title*@
@@ -259,13 +259,16 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="description-container py-2 d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12">
-                    <div class="flex-fill col-lg-12 col-md-12 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last d-flex flex-column">
+            </Animate>
+        </Div>
+        <Div>
+            <Row>
+                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                    <div class="py-2">
                         @*Customer Details*@
                         @if (customerDetail != null && customerDetail.IsMaker == true)
                         {
-                            <div class="col-8 d-flex flex-lg-row flex-md-row flex-sm-column flex-column border-bottom profile-container">
+                            <div class="col-8 d-flex flex-lg-row flex-md-row flex-sm-column flex-column profile-container w-100">
                                 @*Customer Profile*@
                                 <div class="d-flex">
                                     <div class="maker-pic">
@@ -342,304 +345,309 @@
                                 </div>
                             </div>
                         }
+                    </div>
 
-                        @*Activity Details*@
-                        <div class="col-lg-8 col-md-8 col-sm-12 col-12 d-flex flex-lg-row flex-md-row flex-sm-column border-bottom flex-column">
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 order-sm-last order-md-first order-lg-first order-last description-label">
-                                @if (String.IsNullOrEmpty(activity.Description))
-                                {
-                                    <label class="fw-bold mb-3 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
-                                    <p>
-                                        @activity.Description
-                                    </p>
-                                }
-                                else
-                                {
-                                    <p class="activity-details-text">
-                                        @(
-                                            (MarkupString)activity.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>")
-                                            )
-                                    </p>
-                                }
-                            </div>
-                        </div>
+                    <hr>
 
-                        @*Experience Schedule Desktop*@
-                        <div class="mt-3 col-lg-8 col-md-8 schedule-desktop">
-                            <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
-                            @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
+                    @*Activity Details*@
+                    <div class="description-label">
+                        @if (String.IsNullOrEmpty(activity.Description))
+                        {
+                            <label class="fw-bold mb-3 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
+                            <p>
+                                @activity.Description
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="activity-details-text">
+                                @(
+                                    (MarkupString)activity.Description.Replace(Environment.NewLine, "<br />").Replace("\r\n\r\n", "<br>")
+                                    )
+                            </p>
+                        }
+                    </div>
+
+                    @*Experience Schedule Desktop*@
+                    <div class="schedule-desktop">
+                        <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
+                        @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
+                        {
+                            var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
+                            if (activeSchedule.Count > 0)
                             {
-                                var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
-                                if (activeSchedule.Count > 0)
-                                {
-                                    <div class="d-block mb-2 p-2">
-                                        @for (int x = 0; x < activeSchedule.Count; x++)
+                                <div class="d-block mb-2">
+                                    @for (int x = 0; x < activeSchedule.Count; x++)
+                                    {
+                                        @if (x <= 2)
                                         {
-                                            @if (x <= 2)
-                                            {
-                                                <div class="schedule-detail w-100 rounded-5">
-                                                    <div class="schedule-header d-flex">
-                                                        <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-9 justify-content-start">
-                                                            <p>@activeSchedule.ElementAt(x).Name</p>
-                                                        </div>
-                                                        <div class="form-check col-lg-2 col-md-3 col-sm-3 col-3 justify-content-center">
-                                                            <input class="form-check-input" type="radio" name="schedule" id="schedule">
-                                                            <label class="form-check-label" for="schedule">
-                                                                Select
-                                                            </label>
-                                                        </div>
+                                            <div class="schedule-detail w-100 rounded-5">
+                                                <div class="schedule-header d-flex">
+                                                    <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-9 justify-content-start">
+                                                        <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
-                                                    <hr>
-                                                    <div class="schedule-body">
-                                                        <div class=" col-lg-10 col-md-9 col-sm-9 col-10 PES-details">
-                                                            <div class="PE-details d-flex">
-                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
-                                                                    <p class="font-14">Price Details:</p>
-                                                                    <p class="font-16">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
-                                                                </div>
-                                                                @if (@activeSchedule.ElementAt(x).IsSetSession == true)
-                                                                {
-                                                                    <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration details">
-                                                                        <p class="font-14">Expiration:</p>
-                                                                        <p class="font-16">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
-                                                                    </div>
-                                                                }
-                                                            </div>
-                                                            <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                                                                <p class="font-14">Schedule:</p>
-                                                                <p class="font-16">@activeSchedule.ElementAt(x).DateTime</p>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
-                                                            <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
-                                                        </div>
+                                                    <div class="form-check col-lg-2 col-md-3 col-sm-3 col-3 justify-content-center">
+                                                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                                                        <label class="form-check-label" for="schedule">
+                                                            Select
+                                                        </label>
                                                     </div>
                                                 </div>
-                                            }
-                                            else
-                                            {
-                                                break;
-                                            }
-                                        }
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
-                                        <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
-                                    </div>
-
-                                }
-                            }
-
-                            @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
-                            {
-                                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
-                                    Show more
-                                </button>
-                            }
-                        </div>
-                         @*Experience Schedule Mobile*@
-                        <div class="mt-3 col-12 schedule-mobile">
-                            <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
-                            @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
-                            {
-                                var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
-                                if (activeSchedule.Count > 0)
-                                {
-                                    <div class="d-block mb-2 p-2">
-                                        @for (int x = 0; x < activeSchedule.Count; x++)
-                                        {
-                                            @if (x <= 2)
-                                            {
-                                                <div class="schedule-detail w-100 rounded-5">
-                                                    <div class="schedule-header d-flex">
-                                                        <div class="schedule-title col-9 justify-content-start">
-                                                            <p>@activeSchedule.ElementAt(x).Name</p>
-                                                        </div>
-                                                        <div class="col-3 justify-content-center">
-                                                            <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
-                                                        </div>
-                                                    </div>
-                                                    <hr>
-                                                    <div class="schedule-body">
-                                                        <div class="col-12 price-details">
-                                                            <p class="font-14">Price Details:</p>
-                                                            <p class="font-16">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
-                                                        </div>
-                                                        @if (@activeSchedule.ElementAt(x).IsSetSession == true)
-                                                        {
-                                                            <div class="col-12 expiration-details">
-                                                                <p class="font-14">Expiration:</p>
-                                                                <p class="font-16">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                <hr>
+                                                <div class="schedule-body">
+                                                    <div class=" col-lg-10 col-md-9 col-sm-9 col-10 PES-details">
+                                                        <div class="PE-details d-flex">
+                                                            <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
+                                                                <p class="font-14">Price Details:</p>
+                                                                <p class="font-16">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                             </div>
-                                                        }
-                                                        <div class="col-12 schedule-details">
+                                                            @if (@activeSchedule.ElementAt(x).IsSetSession == true)
+                                                            {
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration details">
+                                                                    <p class="font-14">Expiration:</p>
+                                                                    <p class="font-16">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                                </div>
+                                                            }
+                                                        </div>
+                                                        <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
                                                             <p class="font-14">Schedule:</p>
                                                             <p class="font-16">@activeSchedule.ElementAt(x).DateTime</p>
                                                         </div>
-                                                        <div class="col-12 form-check ">
-                                                            <input class="form-check-input" type="radio" name="schedule" id="schedule">
-                                                            <label class="form-check-label" for="schedule">
-                                                                Select
-                                                            </label>
-                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
+                                                        <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
                                                     </div>
                                                 </div>
-                                            }
-                                            else
-                                            {
-                                                break;
-                                            }
+                                            </div>
                                         }
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
-                                        <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
-                                    </div>
-
-                                }
-                            }
-
-                            @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
-                            {
-                                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
-                                    Show more
-                                </button>
-                            }
-                        </div>
-                        @*Map Details*@
-                        <hr />
-                        <div class="d-flex flex-column align-items-start col-lg-6 col-md-6 col-sm-12 col-12 map-text">
-                            <label class="fw-bold mb-3 detail-label">Where you’ll be</label>
-                            @if (string.IsNullOrEmpty(activity.MapDetails))
-                            {
-                                @if (activity.ExperienceTypeId == 1)
-                                {
-                                    var address = !string.IsNullOrEmpty(activity.PinnedLocation) ? activity.PinnedLocation : activity.Address1 + "+" + activity.Subdivision + "+" + activity.BarangayName + "+" + activity.CityName + "+" + activity.RegionName;
-                                    var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + address;
-                                    <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
-                                    <span class="mt-3">
-                                        @(activity.Address1 + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName)
-                                    </span>
-                                }
-                                else
-                                {
-                                    <span class="mt-3">
-                                        @experience.Name
-                                    </span>
-                                }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                </div>
                             }
                             else
                             {
-                                @if (!activity.MapDetails.Contains("Online"))
-                                {
-                                    var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.MapDetails.Replace(" ", "+");
-                                    <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
-                                }
+                                <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
+                                    <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
+                                </div>
+                            }
+                        }
+                        @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
+                        {
+                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
+                                Show more
+                            </button>
+                        }
+                    </div>
+
+                    @*Experience Schedule Mobile*@
+                    <div class="schedule-mobile">
+                        <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
+                        @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
+                        {
+                            var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
+                            if (activeSchedule.Count > 0)
+                            {
+                                <div class="d-block mb-2">
+                                    @for (int x = 0; x < activeSchedule.Count; x++)
+                                    {
+                                        @if (x <= 2)
+                                        {
+                                            <div class="schedule-detail w-100 rounded-5">
+                                                <div class="schedule-header d-flex">
+                                                    <div class="schedule-title col-9 justify-content-start">
+                                                        <p>@activeSchedule.ElementAt(x).Name</p>
+                                                    </div>
+                                                    <div class="col-3 justify-content-center">
+                                                        <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="schedule-body">
+                                                    <div class="col-12 price-details">
+                                                        <p class="font-14">Price Details:</p>
+                                                        <p class="font-16">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
+                                                    </div>
+                                                    @if (@activeSchedule.ElementAt(x).IsSetSession == true)
+                                                    {
+                                                        <div class="col-12 expiration-details">
+                                                            <p class="font-14">Expiration:</p>
+                                                            <p class="font-16">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                        </div>
+                                                    }
+                                                    <div class="col-12 schedule-details">
+                                                        <p class="font-14">Schedule:</p>
+                                                        <p class="font-16">@activeSchedule.ElementAt(x).DateTime</p>
+                                                    </div>
+                                                    <div class="col-12 form-check ">
+                                                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                                                        <label class="form-check-label" for="schedule">
+                                                            Select
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                        else
+                                        {
+                                            break;
+                                        }
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
+                                    <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
+                                </div>
+                            }
+                        }
+                        @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
+                        {
+                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
+                                Show more
+                            </button>
+                        }
+                    </div>
+
+                    @*Map Details*@
+                    <hr />
+                    <div class="map-text">
+                        <p class="fw-bold mb-3 detail-label">Where you’ll be</p>
+                        @if (string.IsNullOrEmpty(activity.MapDetails))
+                        {
+                            @if (activity.ExperienceTypeId == 1)
+                            {
+                                var address = !string.IsNullOrEmpty(activity.PinnedLocation) ? activity.PinnedLocation : activity.Address1 + "+" + activity.Subdivision + "+" + activity.BarangayName + "+" + activity.CityName + "+" + activity.RegionName;
+                                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + address;
+                                <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
                                 <span class="mt-3">
-                                    @activity.MapDetails
+                                    @(activity.Address1 + ", " + activity.BarangayName + ", " + activity.CityName + ", " + activity.RegionName)
                                 </span>
                             }
+                            else
+                            {
+                                <span class="mt-3">
+                                    @experience.Name
+                                </span>
+                            }
+                        }
+                        else
+                        {
+                            @if (!activity.MapDetails.Contains("Online"))
+                            {
+                                var map = "https://www.google.com/maps/embed/v1/place?key=AIzaSyCbu3ZjWDneNd-_hIWPANGy7Wr5YjIltkg&q=" + activity.MapDetails.Replace(" ", "+");
+                                <iframe id="mapframe" frameborder="0" style="border:0" src="@map" allowfullscreen></iframe>
+                            }
+                            <span class="mt-3">
+                                @activity.MapDetails
+                            </span>
+                        }
+                    </div>
+                    @if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide) && activity.SpecificsYouWillProvide != NOTHING_PROVIDED)
+                    {
+                        <hr />
+                        <div class="specific-text" style="overflow-wrap:break-word;">
+                            <label class="fw-bold mb-3 detail-label">What's included</label>
+                            <p>
+                                @((MarkupString)activity.SpecificsYouWillProvide)
+                            </p>
                         </div>
-                        @if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide) && activity.SpecificsYouWillProvide != NOTHING_PROVIDED)
-                        {
-                            <hr />
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 specific-text" style="overflow-wrap:break-word;">
-                                <label class="fw-bold mb-3 detail-label">What's included</label>
-                                <p>
-                                    @((MarkupString)activity.SpecificsYouWillProvide)
-                                </p>
-                            </div>
-                        }
-                        @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && activity.CustomerBringWithThem != NOTHING_PROVIDED)
-                        {
-                            <hr />
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 bring-text" style="overflow-wrap:break-word;">
-                                <label class="fw-bold mb-3 detail-label">What you should bring</label>
-                                <p>@((MarkupString)activity.CustomerBringWithThem)</p>
-                            </div>
-                        }
-                        @if (!string.IsNullOrEmpty(activity.AdditionalRequirements) && activity.AdditionalRequirements != NOTHING_PROVIDED)
-                        {
-                            <hr />
-                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 additional-text" style="overflow-wrap:break-word;">
-                                <label class="fw-bold mb-3 detail-label">Additional Requirements</label>
-                                <p>
-                                    @activity.AdditionalRequirements
-                                </p>
-                            </div>
-                        }
-                        @if(activityReviews.Count != 0){
-                            <hr />
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="overflow-wrap:break-word;">
-                                <article class="experience-review-wrapper py-3">
-                                    <h3 class="title">Customer Feedbacks</h3>
-                                    @if (activityReviews.Count != 0)
+                    }
+                    @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && activity.CustomerBringWithThem != NOTHING_PROVIDED)
+                    {
+                        <hr />
+                        <div class="bring-text" style="overflow-wrap:break-word;">
+                            <label class="fw-bold mb-3 detail-label">What you should bring</label>
+                            <p>@((MarkupString)activity.CustomerBringWithThem)</p>
+                        </div>
+                    }
+                    @if (!string.IsNullOrEmpty(activity.AdditionalRequirements) && activity.AdditionalRequirements != NOTHING_PROVIDED)
+                    {
+                        <hr />
+                        <div class="additional-text" style="overflow-wrap:break-word;">
+                            <label class="fw-bold mb-3 detail-label">Additional Requirements</label>
+                            <p>
+                                @activity.AdditionalRequirements
+                            </p>
+                        </div>
+                    }
+                </Column>
+                <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                </Column>
+            </Row>
+            <Div>
+                @* activity reviews *@
+                @if(activityReviews.Count != 0)
+                {
+                    <hr />
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="overflow-wrap:break-word;">
+                        <article class="experience-review-wrapper py-3">
+                            <h3 class="title">Customer Feedbacks</h3>
+                            @if (activityReviews.Count != 0)
+                            {
+                                <div class="d-flex">
+                                    <div class="col-8 d-flex justify-content-start rating-section">
+                                        <div id="star-rating"></div>
+                                        <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
+                                    </div>
+                                    @if (activityReviews.Count > 3)
                                     {
-                                        <div class="d-flex">
-                                            <div class="col-8 d-flex justify-content-start rating-section">
-                                                <div id="star-rating"></div>
-                                                <p class="rating-value">(@AverageRating.ToString("0.0"))</p>
-                                            </div>
-                                            @if (activityReviews.Count > 3)
-                                            {
-                                                <div class="col-4 d-flex justify-content-end">
-                                                    <button class="see-more" @onclick="() => modRef.ShowModal()">See More</button>
-                                                </div>
-                                            }
+                                        <div class="col-4 d-flex justify-content-end">
+                                            <button class="see-more" @onclick="() => modRef.ShowModal()">See More</button>
                                         </div>
-                                        <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
-                                            <div class="review-wrapper">
-                                                @foreach (var item in top3Reviews)
-                                                {
-                                                    var profile = customerProfiles.Where(a => a.Id == item.CustomerId).FirstOrDefault();
-                                                    <div class="experience-box">
-                                                        <div class="top-content">
-                                                            <div class="experience-content">
-                                                                @*Get Activity Detail*@
-                                                                <div class="xp-body-item d-flex">
-                                                                    <div class="activity-img">
-                                                                        <img class="rounded-2 rounded-circle" src="@profile.ProfilePath" />
-                                                                    </div>
-                                                                    <div>
-                                                                        <p class="customer-name">@profile.FirstName @profile.LastName</p>
-                                                                        <Rating Color="Color.Primary" SelectedValue="@item.Rating" MaxValue="5" ReadOnly=true />
-                                                                    </div>
-                                                                </div>
-
-                                                                <div class="xp-body-item">
-                                                                    <p class="secondary-caption">@item.Review</p>
-                                                                </div>
+                                    }
+                                </div>
+                                <Div class="experience-reviews-container" Margin="Margin.Is3.FromTop">
+                                    <div class="review-wrapper">
+                                        @foreach (var item in top3Reviews)
+                                        {
+                                            var profile = customerProfiles.Where(a => a.Id == item.CustomerId).FirstOrDefault();
+                                            <div class="experience-box">
+                                                <div class="top-content">
+                                                    <div class="experience-content">
+                                                        @*Get Activity Detail*@
+                                                        <div class="xp-body-item d-flex">
+                                                            <div class="activity-img">
+                                                                <img class="rounded-2 rounded-circle" src="@profile.ProfilePath" />
+                                                            </div>
+                                                            <div>
+                                                                <p class="customer-name">@profile.FirstName @profile.LastName</p>
+                                                                <Rating Color="Color.Primary" SelectedValue="@item.Rating" MaxValue="5" ReadOnly=true />
                                                             </div>
                                                         </div>
+                                                        <div class="xp-body-item">
+                                                            <p class="secondary-caption">@item.Review</p>
+                                                        </div>
                                                     </div>
-                                                }
+                                                </div>
                                             </div>
-                                        </Div>
-                                    }
-                                    else
-                                    {
-                                        <p class="p-1" style="font-family:'Nunito';font-weight:bold">No reviews yet!</p>
-                                    }
-                                </article>
-
-                            </div>
-                        }
-                        <hr />
-                        <div class="end-container d-flex flex-column">
-                            <a href="/explore" style="text-decoration:none"><span class="landing-header color-primary fs-2">@Resources.App.appName</span></a>
-                            <span class="not-happy">
-                                Not happy with the experience? <br /> <a href="https://docs.google.com/forms/d/e/1FAIpQLSenakLuzzv2bTCy65a2WTy48E3wWAqs6B2reQVcSz3fkHOxkg/viewform" target="_blank">Contact us</a> and we'll solve the problem for you.
-                            </span>
-                        </div>
+                                        }
+                                    </div>
+                                </Div>
+                            }
+                            else
+                            {
+                                <p class="p-1" style="font-family:'Nunito';font-weight:bold">No reviews yet!</p>
+                            }
+                        </article>
                     </div>
+                }
+            </Div>
+            <Div>
+                <hr />
+                <div class="end-container d-flex flex-column">
+                    <a href="/explore" style="text-decoration:none"><span class="landing-header color-primary fs-2">@Resources.App.appName</span></a>
+                    <span class="not-happy">
+                        Not happy with the experience? <br /> <a href="https://docs.google.com/forms/d/e/1FAIpQLSenakLuzzv2bTCy65a2WTy48E3wWAqs6B2reQVcSz3fkHOxkg/viewform" target="_blank">Contact us</a> and we'll solve the problem for you.
+                    </span>
                 </div>
-            </div>
-        </Animate>
-    </Div>
+            </Div>
+        </Div>
+    </Container>
+    
     @* commented first for migration *@
     <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></SchedulesModal>
 
@@ -647,8 +655,6 @@
         CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>
 
     <ModalLogin @ref="signinModal" />
-    <!--Beta Alert-->
-    @*<BetaAlert></BetaAlert>*@
 }
 @code {
     IJSObjectReference module;
