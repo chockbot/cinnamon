@@ -9,12 +9,10 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" @onclick="()=>Close()"></button>
             </div>
             <div class="modal-body">
-                <div class="row col-lg-12 col-md-12 col-sm-12 d-flex flex-row flex-wrap justify-content-evenly">
+                <div class="row col-lg-12 col-md-12 col-sm-12 col-12 justify-content-center">
                     @foreach (var item in ScheduleModel.Where(s => s.IsActiveSchedule))
                     {
-                        <div class="col-md-4 mb-2">
-                            <CarouselItemSchedule ScheduleModel="item" ActivityModel="ActivityModel" OnChooseClick="OnScheduleChooseChanged" />
-                        </div>
+                        <CarouselItemSchedule ScheduleModel="item" ActivityModel="ActivityModel" OnChooseClick="OnScheduleChooseChanged" />
                     }
                 </div>
             </div>

@@ -1,115 +1,182 @@
-﻿.schedule-text {
-    color: #717171;
-    font-size: 16px;
+﻿* {
     font-family: 'Nunito';
-    margin-bottom: 0.7rem;
-}
-.schedule-name {
-    margin-bottom: 0.7rem;
-    font-family: 'Nunito';
-    color: #343D4C;
-    font-size: 20px;
-}
-.schedule-date {
-    margin-bottom: 0.7rem;
-    font-family: 'Nunito';
-    color: #717171;
-    font-size: 16px;
-}
-.card {
-    height: 100%;
-    border-radius: 8px;
-    background-color: #F3F6FC;
-    border: none;
-    font-size: 1rem;
-    font-family: 'Nunito';
-    color: #343D4C;
-}
-.card img {
-    align-content: center;
-    aspect-ratio: 1;
-    width: 2.5vw;
-    margin-bottom: 1vw;
 }
 
-.card .title {
-    font-family: 'Backline';
-    font-size: 1.3rem;
+.details-header-small {
+    display: none;
 }
 
-.card .description {
-    font-family: 'Nunito';
-    font-size: 1rem;
-    color: var(--black);
+.schedule-detail hr {
+    margin: 0.3rem;
 }
 
-.btn-primary {
-    color: #fff;
-    background-color: var(--primary);
-    border-color: var(--primary);
-    height: auto;
-    padding: 5px;
-    width: 80%;
-    font-size: 1.2vw;
-    font-family: 'Nunito-Bold';
-    border-width: 0px;
-    margin: 0 auto;
-    border-radius: 10px !important;
-    margin-bottom: 0.5rem;
+.schedule-detail {
+    border: 2px solid #D9D9D9;
+    margin-bottom: 1rem;
+    border-radius: 10px;
 }
 
-.btn-primary:hover {
-    color: #fff;
-    background-color: var(--primary);
-    border-color: var(--primary);
+.schedule-header {
+    padding: 5px 10px 0 10px;
 }
 
-.btn-primary:focus {
-    color: #fff;
-    background-color: var(--primary);
-    border-color: var(--primary);
-}
-
-
-@media screen and (max-width: 767px) {
-    .card .description {
-        font-size: 0.8rem;
-    }
-}
-
-@media screen and (min-width: 767px) {
-    .card .description {
-        font-size: 0.75rem;
-    }
-}
-
-@media screen and (min-width: 1000px) {
-    .card .description {
-        font-size: 1rem;
-    }
-}
-
-@media screen and (max-width: 767px) {
-    .btn-primary {
-        width: 60% !important;
-        font-size: 1rem;
-    }
-    .schedule-text {
-        font-size: 14px;
+    .schedule-header .form-check {
+        width: auto;
+        height: 3.5rem;
+        background: #FFFFFF;
+        border-radius: 10px;
+        padding: 10px 10px;
+        border: 1px solid #D9D9D9;
+        text-align: center;
+        margin-left: auto;
     }
 
-    .schedule-name {
+        .schedule-header .form-check .form-check-input {
+            float: none;
+            margin-left: 0px;
+            margin-top: 0.5rem;
+        }
+
+    .schedule-header .form-check-input:checked {
+        background-color: #34A853;
+    }
+
+    .schedule-header .form-check .form-check-label {
+        font-family: 'Nunito';
+        font-style: normal;
+        font-weight: 600;
         font-size: 16px;
+        margin-top: 0.3rem;
+        margin-left: 0.3rem;
+        color: var(--primary);
     }
 
-    .schedule-date {
-        font-size: 14px;
+    .schedule-header .schedule-title {
+        color: #343D4C;
+        font-family: Nunito;
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 0.5rem;
     }
+
+.schedule-body {
+    display: flex;
 }
 
-@media screen and (min-width: 767px) {
-    .btn-primary {
-        font-size: 1.3vw;
+    .schedule-body .schedule-price {
+        border-left: 1px solid #D9D9D9;
+        text-align: center;
     }
+
+.schedule-price p {
+    font-family: Nunito;
+    font-size: 24px;
+    font-weight: 700;
+    color: #344050;
+    top: 40%;
+    position: relative;
 }
 
+.font-14 {
+    font-family: Nunito;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 19px;
+    padding: 0;
+    color: #343D4C;
+    padding: 10px 10px 0px 10px;
+    margin: 0;
+}
+
+.font-16 {
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+    padding: 10px 10px 0px 10px;
+    margin: 0;
+}
+
+.PE-details {
+    margin-bottom: 1rem;
+}
+
+.S-details {
+    margin-bottom: 1rem;
+}
+.schedule-mobile {
+    display: none;
+}
+@media screen and (max-width: 768px) {
+
+    .schedule-desktop{
+        display: none !important;
+    }
+    .schedule-mobile {
+        display: block;
+    }
+        .schedule-mobile .schedule-header {
+            margin-bottom: 0rem;
+        }
+
+        .schedule-mobile .schedule-body {
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .schedule-mobile .schedule-header .schedule-title {
+            font-family: Nunito;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .schedule-mobile .schedule-header .font-18 {
+            margin-top: 0.5rem;
+            font-weight: 700;
+            font-family: Nunito;
+            font-size: 16px;
+        }
+
+        .schedule-mobile .schedule-body .form-check {
+            margin-top: 1rem;
+            width: 50%;
+            height: 3.5rem;
+            background: #FFFFFF;
+            border-radius: 10px;
+            padding: 10px 10px;
+            border: 1px solid #D9D9D9;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+            .schedule-mobile .schedule-body .form-check .form-check-input {
+                float: none;
+                margin-left: 0px;
+                margin-top: 0.5rem;
+            }
+
+        .schedule-mobile .schedule-body .form-check-input:checked {
+            background-color: #34A853;
+        }
+
+        .schedule-mobile .schedule-body .form-check .form-check-label {
+            font-family: 'Nunito';
+            font-style: normal;
+            font-weight: 600;
+            font-size: 16px;
+            margin-top: 0.3rem;
+            margin-left: 0.3rem;
+            color: var(--primary);
+        }
+
+}
+
+@media screen and (max-width:991px) and (min-width:768px){
+    .schedule-mobile{
+        display: none;
+    }
+    .schedule-header .schedule-title {
+        font-size: 18px;
+    }
+}

@@ -7,42 +7,84 @@
 @if(ActivityModel != null){
     @if(ScheduleModel.IsActiveSchedule == true)
     {
-        <div class="card shadow-sm p-3 mr-5 text-center d-flex flex-column justify-content-between">
-            <span class="fw-bold schedule-name">@ScheduleModel.Name</span>
-            @*<br />*@
-            <div class="schedule-date">
-                @ScheduleModel.DateTime
-            </div>
-            @* <br />*@
-            <div class="schedule-text">
-                ₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2
-            </div>
-            @if (ScheduleModel.IsSetSession == true)
-            {
-                @*<br />*@
-                <div class="schedule-text">
-                    Consume in - @ScheduleModel.SessionName
+        <div class="schedule-desktop">
+            <div class="schedule-detail w-100 rounded-5">
+                <div class="schedule-header d-flex">
+                    <div class="schedule-title col-lg-10 clo-md-9 justify-content-start">
+                        <p>@ScheduleModel.Name</p>
+                    </div>
+                    <div class="form-check col-lg-2 col-md-3 justify-content-center">
+                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                        <label class="form-check-label" for="schedule">
+                            Select
+                        </label>
+                    </div>
                 </div>
-            }
-            @*<br />*@
-            @if (AuthState.User.Identity.IsAuthenticated)
-            {
-                if (ButtonType == ScheduleButtonType.Choose)
-                {
-                    <button class="btn-primary rounded border-0 shadow-sm text-decoration-none" id="choose-redirect" @onclick="OnClickChoose">Choose</button>
-                }
-                else
-                {
-                    <button class="btn-primary shadow-sm border-0 rounded" @onclick="OnClickChange">
-                        Change
-                    </button>
-                }
-            }
-            else
-            {
-                <button class="btn-primary rounded border-0 shadow-sm" @onclick="() => modalLoginRef?.Show()">Choose</button>
-            }
+                <hr>
+                <div class="schedule-body">
+                    <div class=" col-lg-10 col-md-9 PES-details">
+                        <div class="PE-details d-flex">
+                            <div class="col-lg-6 col-md-6 price-details">
+                                <p class="font-14">Price Details:</p>
+                                <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
+                            </div>
+                            @if (ScheduleModel.IsSetSession == true)
+                            {
+                                <div class="col-lg-6 col-md-6 expiration details">
+                                    <p class="font-14">Expiration:</p>
+                                    <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
+                                </div>
+                            }
+                        </div>
+                        <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
+                            <p class="font-14">Schedule:</p>
+                            <p class="font-16">@ScheduleModel.DateTime</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
+                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
+                    </div>
+                </div>
+            </div>
         </div>
+        
+         <div class="schedule-mobile">
+            <div class="schedule-detail w-100 rounded-5">
+                <div class="schedule-header d-flex">
+                    <div class="schedule-title col-9 justify-content-start">
+                        <p>@ScheduleModel.Name</p>
+                    </div>
+                    <div class="col-3 justify-content-center">
+                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="schedule-body">
+                    <div class="col-12 price-details">
+                        <p class="font-14">Price Details:</p>
+                        <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
+                    </div>
+                    @if (ScheduleModel.IsSetSession == true)
+                    {
+                        <div class="col-12 expiration-details">
+                            <p class="font-14">Expiration:</p>
+                            <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
+                        </div>
+                    }
+                    <div class="col-12 schedule-details">
+                        <p class="font-14">Schedule:</p>
+                        <p class="font-16">@ScheduleModel.DateTime</p>
+                    </div>
+                    <div class="col-12 form-check ">
+                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                        <label class="form-check-label" for="schedule">
+                            Select
+                        </label>
+                    </div>
+                </div>
+            </div>
+         </div>
+        
     }
 }
 @if (!AuthState.User.Identity.IsAuthenticated)
