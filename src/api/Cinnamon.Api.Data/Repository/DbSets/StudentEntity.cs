@@ -21,12 +21,15 @@ public class StudentEntity : GenericEntity<Student>, IStudent
     {
         try
         {
+            var now = DateTime.Now;
+            var dateString = now.ToString("YYYY-MM-dd");
+
             string query = "with summary as ( " +
                             "select a.\"Id\" as \"TransactionId\", a.\"ActivityId\", a.\"UnitCount\", a.\"UnitPrice\", " +
                                 "c.\"Name\", c.\"Id\" as \"StudentId\", c.\"NumberOfSessions\", c.\"SessionsAttended\", " +
                                 "d.\"Date\", a.\"IsInclusivePayment\" as \"IsInclusivePayment\", " +
                                 "Row_Number() over (partition by a.\"Id\", c.\"Id\" order by a.\"Id\", c.\"Id\", d.\"Date\" desc) as \"RowCnt\", " +
-                                "a.\"PerUnitDisburseAmount\", a.\"TotalDisburseAmount\" " +
+                                "a.\"PerUnitDisburseAmount\", a.\"TotalDisburseAmount\", c.\"ExpirationDateEnd\" " +
                             "from public.\"PurchaseOrders\" a " +
                             "join public.\"OngoingActivities\" b " +
                                 "on a.\"Id\" = b.\"PurchaseOrderId\" " +
@@ -39,12 +42,14 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             ") " +
                             "select \"TransactionId\", \"IsInclusivePayment\", ac.\"CreatedBy\" as \"MakerId\", \"ActivityId\", \"StudentId\", " +
                             "\"UnitCount\", \"UnitPrice\", \"Name\", \"NumberOfSessions\", \"SessionsAttended\", " +
-                            "Date(\"Date\" + Interval '2 days') as \"EndDate\", Date(Current_Timestamp) as \"DateNow\", " +
-                            "\"PerUnitDisburseAmount\", \"TotalDisburseAmount\" " +
+                            "Date(\"Date\" + Interval '2 days') as \"EndDate\", Date('" + dateString +"') as \"DateNow\", " +
+                            "\"PerUnitDisburseAmount\", \"TotalDisburseAmount\", \"ExpirationDateEnd\" " +
                             "from summary sm " +
                             "join public.\"Activities\" ac " +
 	                            "on ac.\"Id\" = sm.\"ActivityId\" " +
-                            "where \"RowCnt\" = 1 and Date(\"Date\" + Interval '2 days') <= Date(Current_Timestamp) ";
+                            "where \"RowCnt\" = 1 and " +
+                                "( Date(\"Date\" + Interval '2 days') <= Date('" + dateString + "') or " +
+		                            "(\"ExpirationDateEnd\" != '-infinity') and Date(\"ExpirationDateEnd\") <= Date('" + dateString + "')) ) ";
 
             IList<DisburseStudentDTO> listResult = new List<DisburseStudentDTO>();
             
