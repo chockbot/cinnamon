@@ -1,56 +1,75 @@
 @namespace Cinnamon.Web.Components.Pages.Customer.Profile
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
 
 <article class="recommended-experience-wrapper py-3">
-    <h3 class="title">Recommended Experiences</h3>
-    <Div class="recommended-experiences-container recommendedSwiper" Margin="Margin.Is3.FromTop">
-        <div class="swiper-wrapper">
-            @*@for(int i =0; i < 6; i++)
-            {
-                <RecommendedExperienceItem />
-            }*@
-        </div>
+    <h3 class="title font-weight-700">Recommended Experiences</h3>
+    <Div class="recommended-experiences-container" Margin="Margin.Is3.FromTop">
+        @if(Activities != null)
+        {
+            <Row VerticalGutter="10">
+                @foreach(var activity in Activities)
+                {
+                    <Column ColumnSize="ColumnSize.Is6.Is3.OnDesktop">
+                        <Card Border="Border.Is0">
+                            <a href="/explore/@activity.Handler" class="text-decoration-none">
+                                <img src="@activity.Images.ElementAt(0).ImageSrc" class="image-header card-img">
+                            </a>
+                            <div class="mt-2">
+                                <p class="font-20 color-black-100 font-weight-700 mb-1">@activity.Title</p>
+                                <p class="font-16 font-weight-700">@activity.Price</p>
+                            </div>
+                        </Card>
+                    </Column>
+                }
+            </Row>
+        }
     </Div>
 </article>
 
-<style scoped>
-.recommended-experience-wrapper {
-    font-family: "Nunito";
-    overflow: hidden;
-}
-.recommended-experience-wrapper .title 
+@code 
 {
-    font-size: 24px;
-    font-weight: 700;
-    color: #343D4C;
+    [Parameter]
+    public string Token { get; set; }
+
+    private IList<Activity> Activities { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var recommendActivitiesRes = await activityApiHandler.RecommendedActivities(Token);
+            if(recommendActivitiesRes.Succeeded && recommendActivitiesRes.Result != null && recommendActivitiesRes.Result.IsSuccess)
+            {
+                Activities = recommendActivitiesRes.Result.Result.Select(a =>
+                {
+                    return new Activity
+                        {
+                            ActivityId = a.ActivityId,
+                            Title = a.Title,
+                            Description = a.Description,
+                            Price = a.Price,
+                            Handler = a.Handler,
+                            Images = a.Images.Select(i =>
+                            {
+                                return new ActivityImage
+                                {
+                                    ActivityId = a.ActivityId,
+                                    Id = i.Id,
+                                    ImageSrc = i.ImageSrc,
+                                    Name = i.Name,
+                                    Order = i.Order
+                                };
+                            }).ToList()
+                        };
+                }).ToList();
+            }
+        }
+        catch (Exception ex)
+        {
+            throw ex;
+        }
+    }
 }
-.card-recommended-item {
-  width: 100%;
-}
-.card-recommended-item .figure-container {
-  border-radius: 10px !important;
-}
-.card-recommended-item .name {
-    font-size: 16px;
-    font-weight: 600;
-}
-.card-recommended-item .address 
-{
-    font-size: 14px;
-    font-weight: 400;
-}
-.card-recommended-item .new-tag-icon 
-{
-    width: 15px;
-    height: auto;
-}
-.card-recommended-item .new-tag-label 
-{
-    font-size: 14px;
-    margin-left: 5px;
-}
-.card-recommended-item .new-badge 
-{
-    background-color: #F8F8F8;
-    border-radius: 14px;
-}
-</style>
+

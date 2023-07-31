@@ -52,6 +52,7 @@ public class ActivityController : ControllerBase
     private readonly IRemoveFavoriteHandler removeFavoriteHandler;
     private readonly IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler;
     private readonly ILogger _logger;
+    private readonly IRecommendedActivitiesHandler recommendedActivitiesHandler;
 
     public ActivityController(ICreateActivityHandler createActivityHandler, IGetExperienceTypesHandler getExperienceTypesHandler,
         IGetExperienceCategoriesHandler getExperienceCategoriesHandler, IGetSubCategoriesHandler getSubCategoriesHandler,
@@ -68,7 +69,8 @@ public class ActivityController : ControllerBase
         IProviderCreateCouponHandler providerCreateCouponHandler, IGetCouponsHandler getCouponsHandler,
         IUpdateCouponStatusHandler updateCouponStatusHandler, ICreateFavoriteHandler createFavoriteHandler, 
         IRemoveFavoriteHandler removeFavoriteHandler, IGetFavoritesByCustomerHandler getFavoritesByCustomerHandler,
-        IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler)
+        IValidateCouponCodeHandler validateCouponCodeHandler, IUpdateCouponHandler updateCouponHandler,
+        IRecommendedActivitiesHandler recommendedActivitiesHandler)
     {
         _logger = logger;
 
@@ -107,6 +109,7 @@ public class ActivityController : ControllerBase
         this.getFavoritesByCustomerHandler = getFavoritesByCustomerHandler;
         this.validateCouponCodeHandler = validateCouponCodeHandler;
         this.updateCouponHandler = updateCouponHandler;
+        this.recommendedActivitiesHandler = recommendedActivitiesHandler;
     }
 
     [Route("CreateActivity")]
@@ -2157,6 +2160,51 @@ public class ActivityController : ControllerBase
         catch (Exception ex)
         {
             return new JsonResult(new UpdateCouponResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
+        }
+    }
+
+    [Route("RecommendedActivities")]
+    [HttpGet]
+    [ProducesResponseType(typeof(RecommendedActivitiesResult), StatusCodes.Status200OK)]
+    public async Task<IActionResult> RecommendedActivities()
+    {
+        try
+        {
+            var result = await recommendedActivitiesHandler.ExecuteAsync(new Services.ActivityService.Interactors.RecommendedActivityArgs { Count = 4});
+
+            if (!result.Succeeded || result.Result == null)
+            {
+                return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = result.Message } });
+            }
+
+            return new JsonResult(new RecommendedActivitiesResult
+            {
+                IsSuccess = result.Succeeded,
+                Result = result.Result.RecommendedActivities.Select(a => {
+                    return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
+                    {
+                        ActivityId = a.Id,
+                        Handler = a.Handler,
+                        Description = a.Description,
+                        Title = a.Title,
+                        Price = a.Price,
+                        Images = a.Images.Select(i =>
+                        {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
+                            {
+                                Id = i.Id,
+                                ImageSrc = i.ImageSrc,
+                                Name = i.Name,
+                                Order = i.Order
+                            };
+                        })
+                    };
+                })
+            });
+        }
+        catch (Exception ex)
+        {
+            return new JsonResult(new RecommendedActivitiesResult { ErrorInfo = new ErrorInfo { Message = ex.Message } });
         }
     }
 }

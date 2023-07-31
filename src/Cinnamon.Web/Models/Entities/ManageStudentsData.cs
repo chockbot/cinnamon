@@ -13,4 +13,7 @@ public class ManageStudentsData
     public int NumberOfSessions { get; set;}
     public int SessionsAttended { get; set; }
     public string Status { get; set; }
+    public DateTime ExpirationDateStart { get; set; }
+    public DateTime ExpirationDateEnd { get; set; }
+    public int HasExpiration { get; set; }
 }
