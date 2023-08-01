@@ -30,8 +30,7 @@ public class SendVerifyEmailHelper
                     </div>
                     <p>Hi,</p>
                     <p>
-                        Great to have you in Cinnamon! For us to verify your email address, please
-                        click the button below
+                        Ready to sprinkle Cinnamon in your life! Verify your email address by clicking the button below.
                     </p>
                     <a
                         href='{link}'
