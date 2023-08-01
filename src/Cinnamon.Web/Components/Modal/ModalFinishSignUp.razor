@@ -13,7 +13,7 @@
             <div class="card-filter">
                 <Validations Mode="ValidationMode.Manual" @ref="viewModel.FormValidation" Model="viewModel">
                     <Validation>
-                        <Field>
+                        <Field class="mb-4">
                             <FieldLabel>First Name</FieldLabel>
                             <TextEdit Placeholder="First name" @bind-Text="viewModel.FirstName">
                                 <Feedback>
@@ -22,29 +22,27 @@
                             </TextEdit>
                         </Field>
                     </Validation>
-                    <p></p>
                     <Validation>
-                        <Field>
+                        <Field class="mb-4">
                             <FieldLabel>Last Name</FieldLabel>
-                            <TextEdit  Placeholder="your lastname" @bind-Text="viewModel.LastName">
+                            <TextEdit  Placeholder="Last name" @bind-Text="viewModel.LastName">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
                             </TextEdit>
                         </Field>
                     </Validation>
-                    <p class="sub-info">Be sure it's the same as what appears on your government ID.</p>
                     <Validation>
                         <Field>
-                            <FieldLabel>BirthDate</FieldLabel>
-                            <DatePicker @bind-Date=viewModel.Birthdate Placeholder="your birthday" TValue="DateTime">
+                            <FieldLabel>Birth Date</FieldLabel>
+                            <DatePicker DisplayFormat="MMMM-yyyy" @bind-Date=viewModel.Birthdate Placeholder="Your birthday" TValue="DateTime">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
                             </DatePicker>
                         </Field>
                     </Validation>
-                    <p class="sub-info">The minimum age to join is 18. Unlike Facebook, Cinnamon won't tell anybody else about your birthday.</p>
+                    <p class="sub-info">The minimum age to join is 13.</p>
                     <Validation>
                         <Field>
                             <FieldLabel>Email Address</FieldLabel>
@@ -57,24 +55,23 @@
                     </Validation>
                     <p class="sub-info">For email confirmations, and receipts.</p>
                     <Validation>
-                        <Field>
+                        <Field class="mb-4">
                             <FieldLabel>Mobile Number</FieldLabel>
-                            <TextEdit Placeholder="your phone number" @bind-Text="viewModel.PhoneNumber">
+                            <TextEdit @bind-Text="viewModel.PhoneNumber">
                                 <Feedback>
                                     <ValidationError />
                                 </Feedback>
                             </TextEdit>
                         </Field>
                     </Validation>
-                    <p></p>
                     <Validation>
-                        <Field>
+                        <Field class="mb-4">
                             <FieldLabel>Password</FieldLabel>
                             <div class="password-content">
                                 @* create two textedit for toggle show password for safari issue *@
                                 <div class='@(viewModel.IsRevealPassword ? "d-block" : "d-none")'>
                                     <TextEdit Role="TextRole.Text"
-                                        Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
+                                        Placeholder="Password should be at least 6 characters long" @bind-Text="viewModel.Password" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -82,7 +79,7 @@
                                 </div>
                                 <div class='@(!viewModel.IsRevealPassword ? "d-block" : "d-none")'>
                                     <TextEdit Role="TextRole.Password"
-                                        Placeholder="your password" @bind-Text="viewModel.Password" class="input-password">
+                                        Placeholder="Password should be at least 6 characters long" @bind-Text="viewModel.Password" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -93,15 +90,14 @@
                             </div>
                         </Field>
                     </Validation>
-                    <p></p>
                     <Validation>
-                        <Field>
+                        <Field class="mb-4">
                             <FieldLabel>Confirm Password</FieldLabel>
                             <div class="password-content">
                                 @* create two textedit for toggle show password for safari issue *@
                                 <div class='@(viewModel.IsRevealConfirmPassword ? "d-block" : "d-none")'>
                                     <TextEdit KeyDown="OnConfirmPasswordTextSubmit" Role="TextRole.Text"
-                                        Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
+                                        Placeholder="Retype your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>
@@ -109,7 +105,7 @@
                                 </div>
                                 <div class='@(!viewModel.IsRevealConfirmPassword ? "d-block" : "d-none")'>
                                     <TextEdit KeyDown="OnConfirmPasswordTextSubmit" Role="TextRole.Password"
-                                        Placeholder="your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
+                                        Placeholder="Retype your password" @bind-Text="viewModel.ConfirmPassword" class="input-password">
                                         <Feedback>
                                             <ValidationError />
                                         </Feedback>

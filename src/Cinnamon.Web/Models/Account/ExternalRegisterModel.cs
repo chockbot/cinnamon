@@ -16,10 +16,10 @@ public class ExternalRegisterModel
 
     public class RegisterModel 
     {
-        [Required]
+        [Required(ErrorMessage = "Required first name field.")]
         public string FirstName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Required last name field.")]
         public string LastName { get; set; }
 
         [Required]
@@ -30,11 +30,11 @@ public class ExternalRegisterModel
         [DateAgeRange(MinAge = 18, MaxAge = 120, ErrorMessage = "Please provide valid birthdate. Age must between 18 to 120 yrs old")]
         public DateTime Birthdate { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Required mobile number field.")]
         [RegularExpression("^(09|\\+639)\\d{9}$", ErrorMessage = "Please provide valid phone number.")]
         public string PhoneNumber { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Required password field")]
         public string Password { get; set; }
 
         public bool IsEmptyUsername {get; set;}
