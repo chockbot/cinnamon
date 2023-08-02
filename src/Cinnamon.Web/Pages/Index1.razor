@@ -2,6 +2,13 @@
 @page "/Index1"
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IAccountApiHandler accountApiHandler
+@inject IActivityApiHandler activityApiHandler
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims
+@using Cinnamon.Web.Models.Entities
+@using Cinnamon.Web.Models.Customer
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
 
@@ -21,6 +28,21 @@
 <div class="image-4">
     <img src="images/landing-page-images/ticket.png">
 </div>
+<div class="circle-1">
+    <img src="images/landing-page-images/circle.png">
+</div>
+<div class="circle-2">
+    <img src="images/landing-page-images/circle-2.png">
+</div>
+
+<div class="circle-1-md">
+    <img src="images/landing-page-images/circle-md.png">
+</div>
+
+<div class="circle-2-md">
+    <img src="images/landing-page-images/circle-2-md.png">
+</div>
+
 <div class="image-1-mobile">
     <img src="images/landing-page-images/camera-mobile.png">
 </div>
@@ -46,101 +68,192 @@
             <button id="button-addon3" type="button" class="btn btn-link" style="background-color:#ffa942;">Explore</button>
         </div>
     </div>
-    <div class="images-horizontal-lg">
-        <div class="img-coding col-lg-2">
-            <img src="images/landing-page-images/img-coding.png">
-            <p class="text-center">Coding</p>
-        </div>
-        <div class="img-cycling col-lg-4">
-            <img src="images/landing-page-images/img-cycling.png">
-            <p class="text-center">Cycling</p>
-        </div>
-        <div class="img-events col-lg-4">
-            <img src="images/landing-page-images/img-events.png">
-            <p class="text-center">Events</p>
-        </div>
-        <div class="img-fun col-lg-2">
-            <img src="images/landing-page-images/img-fun.png">
-            <p class="text-center">Fun Times</p>
-        </div>
-    </div>
-    <div class="images-horizontal-md">
-        <div class="img-coding-tablet col-md-2">
-            <img src="images/landing-page-images/img-coding-tablet.png">
-            <p class="text-center">Coding</p>
-        </div>
-        <div class="img-cycling-tablet col-md-4">
-            <img src="images/landing-page-images/img-cycling-tablet.png">
-            <p class="text-center">Cycling</p>
-        </div>
-        <div class="img-events-tablet col-md-4">
-            <img src="images/landing-page-images/img-events-tablet.png">
-            s<p class="text-center">Events</p>
-        </div>
-        <div class="img-fun-tablet col-md-2">
-            <img src="images/landing-page-images/img-fun-tablet.png">
-            <p class="text-center">Fun Times</p>
-        </div>
-    </div>
-    <div class="images-horizontal-sm">
-        <div class="img-coding-mobile col-sm-4 col-xs-4">
-            <img src="images/landing-page-images/img-coding-mobile.png" class="img-mobile">
-            <p class="text-center">Coding</p>
-        </div>
-        <div class="img-cycling-mobile col-sm-4 col-xs-4">
-            <img src="images/landing-page-images/img-cycling-mobile.png" class="img-mobile">
-            <p class="text-center">Cycling</p>
-        </div>
-        <div class="img-events-mobile col-sm-4 col-xs-4">
-            <img src="images/landing-page-images/img-events-mobile.png" class="img-mobile">
-            <p class="text-center">Events</p>
-        </div>
-    </div>
 
+    <div class="images-horizontal-lg" style="background:url(images/landing-page-images/img-horizontal-lg.png)">
+    </div>
+    <div class="images-horizontal-md" style="background:url(images/landing-page-images/img-horizontal-md.png)">
+    </div>
+    <div class="images-horizontal-sm" style="background:url(images/landing-page-images/img-horizontal-sm.png)">
+    </div>
+</div>
+
+<!--Backed By-->
+<div class="section-backed-by row text-center">
+    <div class="backed-by-text col-12 d-flex justify-content-center">
+        <img src="images/landing-page-images/backed-by.png">
+    </div>
 </div>
 
 <!--Section 2-->
 <div class="section-2 row">
-   <div class="container d-flex">
-       <div class="cinnamon-section d-block">
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="150" viewBox="0 0 1920 150" fill="none" class="svg-1">
-                <path d="M0 43.5248L106.667 29.2581C213.333 15.5248 426.667 -13.8086 640 7.92476C853.333 28.8581 1066.67 100.858 1280 114.591C1493.33 128.858 1706.67 86.1914 1813.33 64.8581L1920 43.5248V384.858H1813.33C1706.67 384.858 1493.33 384.858 1280 384.858C1066.67 384.858 853.333 384.858 640 384.858C426.667 384.858 213.333 384.858 106.667 384.858H0V43.5248Z" fill="#F3F6FC" />
-            </svg>
-            <div class="main-focus d-flex" style="background-color:#F3F6FC;max-width:100%">
-                <div class="cinnamon-details text-center col-lg-6">
-                    <div class="cinnamon-text-title">
-                        <p><span style="color:#FFA942;">Cinnamon</span> is an activity</p>
-                        <p>learning & events</p>
-                        <p>maketplace</p>
-                    </div>
-                    <div class="cinnamon-text-description">
-                        <p>Our main focus is to help everyone spend their time</p>
-                        <p>on meaningful fun experiences by connecting you to</p>
-                        <p> people who are passionate about sharing their skills</p>
-                        <p>and knowledge.</p>
-                    </div>
-                </div>
-                <div class="cinnamon-details text-center col-lg-6 ">
-                    <img src="images/landing-page-images/section-2-image.png" class="img-section-2">
-                </div>
-            </div>
-            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="250" viewBox="0 0 1920 250" fill="none" class="svg-2">
-                <path d="M1920 213.488L1840 227.755C1760 241.488 1600 270.822 1440 277.488C1280 284.155 1120 270.822 960 249.088C800 228.155 640 198.822 480 185.088C320 170.822 160 170.822 79.9999 170.822H-5.72205e-05V0.155041H79.9999C160 0.155041 320 0.155041 480 0.155041C640 0.155041 800 0.155041 960 0.155041C1120 0.155041 1280 0.155041 1440 0.155041C1600 0.155041 1760 0.155041 1840 0.155041H1920V213.488Z" fill="#F3F6FC" />
-            </svg>
-       </div>
-
-
-   </div>
+    <div class="section2-container-desktop" style="background:url(images/landing-page-images/section2-image-desktop.png);">
+    </div>
+    <div class="section2-container-tablet" style="background:url(images/landing-page-images/section2-image-tablet.png)">
+    </div>
+    <div class="section2-container-mobile">
+    </div>
 </div>
 
 <!--Section 3-->
-<div class="section-3 row">
-   
-</div>
+@if (activities.Count != 0)
+{
+    <div class="section-3 row">
+        <div class="featured-activities col-12 justify-content-center">
+            <p class="featured-text">Featured<span style="color:var(--primary);"> Activities</span></p>
+            <div class="container">
+                <div class="row d-flex justify-content-start">
+                    @foreach (var act in activities)
+                    {
+                        <div class="col-xl-3 col-lg-3 col-md-3 col-sm-6 col-6 d-flex flex-column align-items-center card-activity-body explore-activity-item" style="margin-bottom:30px">
+                            <Div ElementId="#b-animate">
+                                <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                                <div class="card activities-card">
+                                    @if (act.Images.Count > 0)
+                                        {
+                                            <div class="card-img img-fluid position-relative">
+                                                <a class="button carousel-card text-center" href="/explore/@(string.IsNullOrEmpty(act.Handler) ? act.ActivityId.ToString() : act.Handler)" target="_blank">
+                                                    <img src=@act.Images.ElementAt(0).ImageSrc alt="banner image" class="img-zoom-effect">
+                                                </a>
+                                                @if (act.OngoingStudents > 0)
+                                                {
+                                                    <CustomTooltip MarginLeft="-100">
+                                                        <TextContent>
+                                                            <div class="rounded-pill ongoing-section">
+                                                                <div class="active-badge" style="text-align:center">
+                                                                    <span class="pulse"></span>
+                                                                    <span class="active-tag-label">@act.OngoingStudents</span>
+                                                                </div>
+                                                            </div>
+                                                        </TextContent>
+                                                        <TooltipContent>
+                                                            <span class="color-grey-100">
+                                                                Ongoing Enrollees
+                                                            </span>
+                                                        </TooltipContent>
+                                                    </CustomTooltip>
+                                                }
+                                                @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                                {
+                                                    act.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == act.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
+                                                    if (act.IsFavorite != false)
+                                                    {
+                                                        <div class="favorite-section">
+                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() =>AddToFavorites(act)">
+                                                                <img src='@(act.IsFavorite ? "images/favorites/experience-heart-selected.svg" : "images/favorites/experience-heart-default.svg")' class="favorite-icon" />
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div class="favorite-section">
+                                                            <button type="button" class="favorite-icon-button border-0" @onclick="() =>CreateFavorite(act)">
+                                                                <img src="images/favorites/experience-heart-default.svg" class="favorite-icon" />
+                                                            </button>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <div class="favorite-section">
+                                                        <button type="button" class="favorite-icon-button border-0">
+                                                            <img src="@addToFavorites" class="favorite-icon" @onclick="() =>signinModal.Show()" />
+                                                        </button>
+                                                    </div>
+                                                }
+                                            </div>
+                                        }
+                                        <div class="card-container">
+                                            <div class="row text-start star-pulse-section">
+                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 star-section">
+                                                    @*<img src="images/dark-round-star.png" class="star-tag-badge" />*@
+                                                    <span>
+                                                        @if (act.IsNew)
+                                                        {
+                                                            <i> New Experience</i>
+                                                        }
+                                                        else
+                                                        {
+                                                        }
+                                                    </span>
+                                                </div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 pulse-section">
+                                                </div>
+                                            </div>
+                                            <div class="row text-start">
+                                                <div class="title-section">
+                                                    <div>
+                                                        <h4 class="card-title1 mb-0">@act.Title</h4>
+                                                        @if (@act.ExperienceTypeId == 1)
+                                                        {
+                                                            <p class="card-title2 mb-0 in-person">@act.CityName, @act.RegionName</p>
+                                                        }
+                                                        else
+                                                        {
+                                                            <p class="card-title2 mb-0 online">@(act.ExperienceTypeId == 1 ? "In-Person" : "Online")</p>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row price-badge-section">
+                                                <div class="col-xl-7 col-lg-8 col-md-8 col-sm-8 col-8 price-section"><p class="card-title3">@GetPriceLabel(act)</p></div>
+                                                <div class="col-xl-5 col-lg-4 col-md-4 col-sm-4 col-4 active-badge-section">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Animate>
+                            </Div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="align-items-center" style="text-align:center;">
+                <button type="button" class="btn btn-see-more border-0" id="btnExploreMore" @onclick="@(() => NavigateToExplorePage())">
+                        <span>See More</span>
+                </button>
+            </div>
+        </div>
+    </div>
+}
 
 <!--Section 4-->
 <div class="section-4 row">
-   
+    <div class="section4-container-desktop">
+    </div>
+    <div class="section4-container-tablet">
+    </div>
+    <div class="section4-container-mobile">
+    </div>
+</div>
+
+<!--Section 5-->
+<div class="section-5 row">
+    <div class="featured-activities col-12 justify-content-center">
+        <p class="featured-text">How it<span style="color:var(--primary);"> Works</span></p>
+        <div class="container">
+            <div class="row d-flex justify-content-start">
+                <div class="landing-text landing-lg">
+                    <div class="col-12 overview-cards row mx-auto">
+                        <div class="col-lg-4 col-md-4 overview-card">
+                            <OverviewCard ImageSource="images/search.png"
+                                          Title=@Resources.App.search
+                                          Text=@Resources.App.searchDescription />
+                        </div>
+                        <div class="col-lg-4 col-md-4 overview-card">
+                            <OverviewCard ImageSource="images/book.png"
+                                          Title=@Resources.App.book
+                                          Text=@Resources.App.bookDescription />
+                        </div>
+                        <div class="col-lg-4 col-md-4 overview-card">
+                            <OverviewCard ImageSource="images/attend.png"
+                                          Title=@Resources.App.attend
+                                          Text=@Resources.App.attendDescription />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <!--Footer-->
@@ -174,10 +287,231 @@
     </div>
 </div>
 
+<ModalLogin @ref="signinModal" />
+
 @code {
     int year = DateTime.Now.Year;
 
     IJSObjectReference module;
+
+    private ModalLogin signinModal;
+
+    public ClaimsPrincipal AuthState { get; set; }
+
+    public Profile CustomerModel = new Profile();
+
+    public List<Activity> activities = new List<Activity>();
+
+    public string addToFavorites = "images/favorites/experience-heart-default.svg";
+
+    protected override async Task OnInitializedAsync()
+    {
+        //get activities randomly
+        await FetchActivities();
+        // get user login
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        AuthState = user;
+
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                var args = result.Result.Result;
+                CustomerModel.Token = token;
+                CustomerModel.CustomerProfile = new CustomerProfile
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
+            }
+        }
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+            await GetFavorites();
+        }
+        else
+        {
+            await GetFavorites();
+        }
+    }
+
+    private async Task FetchActivities()
+    {
+        var ActivityListData = await activityApiHandler.GetAllActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetAllActivitiesArgs
+            {
+                IncludeActivityAddress = true,
+                IncludeActivityDescription = true,
+                IncludeActivityImages = true,
+                IncludeAtivitySchedules = true,
+                IncludeExperienceTypes = true,
+                IncludeExperienceCategories = true,
+                IncludeSubCategories = true,
+                IsActive = true,
+                PageIndex = 1,
+                CountPerPage = 4,
+                IncludeCustomer = true,
+                IncludeStudents = true,
+                IsDeactivated = false,
+                Status = Framework.Enums.Enums.ActivityStatus.Submitted,
+                IncludeReviews = true
+            });
+        if (ActivityListData.Succeeded && ActivityListData.Result != null && ActivityListData.Result.IsSuccess)
+        {
+            if (ActivityListData.Result.Result.Count() > 0)
+            {
+                activities = ActivityListData.Result.Result.Select(r =>
+                {
+                    return new Activity{
+                        ActivityId = r.ActivityId,
+                        ExperienceTypeId = r.ExperienceTypeId,
+                        ExperienceType = r.ExperienceType,
+                        ExperienceCategoryId = r.ExperienceCategoryId,
+                        SubCategoryId = r.SubCategoryId,
+                        ExperienceCategory = r.ExperienceCategory,
+                        SubCategory = r.SubCategory,
+                        Title = r.Title,
+                        Description = r.Description,
+                        Price = r.Price,
+                        ScheduleIndicator = r.ScheduleIndicator,
+                        Remarks = r.Remarks,
+                        IsPublished = r.IsPublished,
+                        Address1 = r.Address1,
+                        Address2 = r.Address2,
+                        District = r.District,
+                        City = r.City,
+                        CityName = r.CityName,
+                        Subdivision = r.Subdivision,
+                        Region = r.Region,
+                        RegionName = r.RegionName,
+                        Barangay = r.Barangay,
+                        BarangayName = r.BarangayName,
+                        PostalCode = r.PostalCode,
+                        SpecificsYouWillProvide = r.SpecificsYouWillProvide,
+                        CustomerBringWithThem = r.CustomerBringWithThem,
+                        AdditionalRequirements = r.AdditionalRequirements,
+                        ActivityLevel = r.ActivityLevel,
+                        SkillLevel = r.SkillLevel,
+                        MinimumAge = r.MinimumAge,
+                        CanAdultsJoin = r.CanAdultsJoin,
+                        CreatedBy = r.CreatedBy,
+                        Handler = r.Handler,
+                        IsNew = r.IsNew,
+                        OngoingStudents = r.OngoingStudents,
+                        CompletedStudents = r.CompletedStudents,
+                        NumberOfReviews = r.NumberOfReviews,
+                        AverageRating = r.AverageRating,
+                        ActivitySchedules = r.ActivitySchedules.Select(e =>
+                        {
+                        return new ActivitySchedule{
+                             Id = e.Id,
+                             Name = e.Name,
+                             PerUnit1 = e.PerUnit1,
+                             PerUnit2 = e.PerUnit2,
+                             Price = e.Price,
+                             PriceUnit1 = e.PriceUnit1,
+                             PriceUnit2 = e.PriceUnit2,
+                             UnitPrice = e.UnitPrice
+                        };
+                        }).ToList(),
+                        Images = r.Images.Select(i =>{
+                        return new ActivityImage{
+                             Id = i.Id,
+                             ImageSrc = i.ImageSrc,
+                             Name = i.Name
+                        };
+                        }).ToList(),
+                        Owner = new CustomerProfile
+                        {
+                            IsVerified = r.Owner.IsVerified
+                        }
+                    };
+                }).ToList();
+            }
+        }
+    }
+
+    private async Task GetFavorites()
+    {
+        if (CustomerModel.CustomerProfile != null)
+        {
+            var customerFavorites = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
+                {
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+            if (customerFavorites.Succeeded && customerFavorites.Result != null && customerFavorites.Result.IsSuccess)
+            {
+                CustomerModel.Favorites = customerFavorites.Result.Result.Select(i =>
+                {
+                    return new Favorite
+                        {
+                            ActivityId = i.ActivityId,
+                            CustomerId = i.CustomerId,
+                            IsFavorite = true
+                        };
+                }).ToList();
+            }
+        }
+    }
+
+    private async Task AddToFavorites(Activity activity)
+    {
+        activity.IsFavorite = !activity.IsFavorite;
+        if (activity.IsFavorite)
+        {
+            //Add to Favorites
+            var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        else
+        {
+            //Delete to Favorites
+            var createFavorite = await activityApiHandler.RemoveFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.RemoveFavoriteArgs
+                {
+                    ActivityId = activity.ActivityId,
+                    CustomerId = CustomerModel.CustomerProfile.Id
+                }, CustomerModel.Token);
+        }
+        await GetFavorites();
+    }
+
+    private async Task CreateFavorite(Activity activity)
+    {
+        //Add to Favorites
+        var createFavorite = await activityApiHandler.CreateFavorite(new Framework.ApiCommand.ApiCore.Favorite.Request.CreateFavoriteArgs
+            {
+                ActivityId = activity.ActivityId,
+                CustomerId = CustomerModel.CustomerProfile.Id
+            }, CustomerModel.Token);
+        await GetFavorites();
+    }
+
+    private string GetPriceLabel(Activity activity)
+    {
+        var schedules = activity.ActivitySchedules.OrderBy(s => s.Price).ToList();
+        if (schedules.Count > 1)
+        {
+            return $"₱ {(long)schedules[0].Price} - {(long)schedules[schedules.Count - 1].Price}";
+        }
+        if (schedules.Count == 1)
+        {
+            return $"₱ {(long)schedules[0].Price}";
+        }
+        return string.Empty;
+    }
 
     private void NavigateToExplorePage()
     {
@@ -187,13 +521,5 @@
     private void NavigateToOnboardingPage()
     {
         NavigationManager.NavigateTo("/Onboarding");
-    }
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
-        }
     }
 }
