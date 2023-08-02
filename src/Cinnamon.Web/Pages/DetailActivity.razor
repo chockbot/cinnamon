@@ -439,7 +439,7 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
+                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
                                 Show more
                             </button>
                         }
@@ -509,7 +509,7 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>ModalSched.Open()">
+                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
                                 Show more
                             </button>
                         }
@@ -716,7 +716,7 @@
     </Container>
     
     @* commented first for migration *@
-    <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></SchedulesModal>
+    <DetailsSchedulesModal @ref="DetailsModalSched" ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></DetailsSchedulesModal>
 
     <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating" 
         CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>
@@ -746,7 +746,7 @@
     public List<Reviews> activityReviews = new List<Reviews>();
     public List<Reviews> top3Reviews = new List<Reviews>();
     private IAnimation selectedAnimation = Animations.FadeIn;
-    private SchedulesModal ModalSched { get; set; }
+    private DetailsSchedulesModal DetailsModalSched { get; set; }
     public int SelectedValue { get; set; } = 0;
     public double AverageRating { get; set; } = 0;
     public int ReviewCount { get; set; } = 0;
