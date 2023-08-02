@@ -1369,3 +1369,57 @@ hr {
 .calculator-wrapper-container .l-width-5 {
   width: 5%;
 }
+
+.mobile-calculator-wrapper-container {
+  bottom: 0;
+  z-index: 50;
+  box-shadow: 0px 3px 16px 0px rgba(243, 246, 252, 0.87);
+}
+
+.mobile-calculator-wrapper-container .l-width-90 {
+  width: 90%;
+}
+
+.mobile-calculator-wrapper-container .l-width-5 {
+  width: 5%;
+}
+
+.calculator-backdrop {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.mobile-calculator-wrapper .calculator-inner-content {
+  transition: transform 0.3s;
+}
+
+.mobile-calculator-wrapper.deactive .calculator-backdrop {
+  display: none;
+}
+
+.mobile-calculator-wrapper.deactive .calculator-inner-content {
+  position: absolute;
+  transform: translate(0, 400px);
+}
+
+.mobile-calculator-wrapper {
+  display: none;
+}
+
+@media only screen and (max-width: 766px) {
+  .calculator-wrapper-container {
+    display: none;
+  }
+
+  .mobile-calculator-wrapper {
+    display: block;
+  }
+
+  .activity-details-page-footer {
+    margin-bottom: 5rem;
+  }
+}

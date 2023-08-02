@@ -456,6 +456,7 @@
                                 <div class="d-block mb-2">
                                     @for (int x = 0; x < activeSchedule.Count; x++)
                                     {
+                                        var schedule = activeSchedule.ElementAt(x);
                                         @if (x <= 2)
                                         {
                                             <div class="schedule-detail w-100 rounded-5">
@@ -485,7 +486,8 @@
                                                         <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                     </div>
                                                     <div class="col-12 form-check ">
-                                                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                                                        <input value="@schedule.Id" class="form-check-input" @onchange="() => SelectedScheduleId = schedule.Id" 
+                                                            type="radio" name="schedule" id="schedule">
                                                         <label class="form-check-label" for="schedule">
                                                             Select
                                                         </label>
@@ -703,7 +705,7 @@
                     </div>
                 }
             </Div>
-            <Div>
+            <Div class="activity-details-page-footer">
                 <hr />
                 <div class="end-container d-flex flex-column">
                     <a href="/explore" style="text-decoration:none"><span class="landing-header color-primary fs-2">@Resources.App.appName</span></a>
@@ -714,6 +716,84 @@
             </Div>
         </Div>
     </Container>
+    <div class='@(isOpenMobileCalculator ? "mobile-calculator-wrapper" : "mobile-calculator-wrapper deactive" )'>
+        <div class="calculator-backdrop" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator"></div>
+        <div class="mobile-calculator-wrapper-container border-radius-10 border-color-grey-200 border-1-solid 
+            position-fixed left-0 right-0 bg-white-100">
+            <div>
+                <div class="calculator-inner-content px-3 pt-4">
+                    <div class="border-1-solid border-radius-5 border-color-black-100">
+                        <div class="p-2 color-grey-100 font-16 d-flex border-bottom-1-solid border-color-black-100 d-flex justify-content-between align-items-center">
+                            <p class="m-0">@GetSelectedActivityName</p>
+                            <Button class="p-1 font-10 bg-orange-100 color-white-100">Change</Button>
+                        </div>
+                        <div class="prevent-select color-grey-100 font-16 d-flex">
+                            <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
+                            <div @onclick="SubtractEnrollee"
+                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer">-</div>
+                            <div @onclick="AddEnrollee"  
+                                class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer">+</div>
+                        </div>
+                    </div>
+                    <Row class="color-grey-100 font-16 mt-4">
+                        <Column ColumnSize="ColumnSize.Is7">
+                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is5">
+                            <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
+                        </Column>
+                    </Row>
+                    <Row class="color-grey-100 font-16 mt-2">
+                        <Column ColumnSize="ColumnSize.Is7">
+                            <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is5">
+                            <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                        </Column>
+                    </Row>
+                    <Row class="color-grey-100 font-16 mt-2">
+                        <Column ColumnSize="ColumnSize.Is7">
+                            <p class="m-0">Handling  fee</p>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is5">
+                            <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                        </Column>
+                    </Row>
+                    <Row class="font-16 mt-2 font-weight-700 color-black-100 mb-4">
+                        <Column ColumnSize="ColumnSize.Is7">
+                            <p class="m-0">Total Payment</p>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is5">
+                            <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
+                        </Column>
+                    </Row>
+                </div>
+                <Divider class="calculator-footer-divider m-0" />
+                <div class="p-3 d-flex justify-content-between align-items-center">
+                    <Button Type="ButtonType.Button" Clicked="ProceedToPayment" 
+                        class="btn-primary font-14 width-120 border-radius-10" 
+                        Border="Border.Is0">
+                        Proceed
+                    </Button>
+                    <div class="d-flex align-items-center">
+                        <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
+                        @if(isOpenMobileCalculator)
+                        {
+                            <img @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator" class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
+                        }
+                        else 
+                        {
+                            <img @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator" class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
+                        }
+                    </div>
+                    @if(isShowErrorMessage)
+                    {
+                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
     
     @* commented first for migration *@
     <SchedulesModal @ref="ModalSched" ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></SchedulesModal>
@@ -763,6 +843,7 @@
     private bool isShowErrorMessage;
     private string signInReturnUrl = string.Empty;
     private bool isAuthenticated = false;
+    private bool isOpenMobileCalculator = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -1219,6 +1300,20 @@
         else 
         {
             isShowErrorMessage = true;
+        }
+    }
+
+    private string GetSelectedActivityName
+    {
+        get
+        {
+            var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == SelectedScheduleId);
+            if(schedule != null)
+            {
+                return schedule.Name;
+            }
+
+            return "Please select activity schedule";            
         }
     }
 }
