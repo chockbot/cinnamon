@@ -379,6 +379,7 @@
                                 <div class="d-block mb-2">
                                     @for (int x = 0; x < activeSchedule.Count; x++)
                                     {
+                                        var schedule = activeSchedule.ElementAt(x);
                                         @if (x <= 2)
                                         {
                                             <div class="schedule-detail w-100 rounded-5">
@@ -387,7 +388,9 @@
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
                                                     <div class="form-check col-lg-2 col-md-3 col-sm-3 col-3 justify-content-center">
-                                                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                                                        <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input" 
+                                                            value="@schedule.Id" type="radio" name="schedule" id="schedule" 
+                                                            @onchange="() => SelectedScheduleId = schedule.Id">
                                                         <label class="form-check-label" for="schedule">
                                                             Select
                                                         </label>
@@ -578,32 +581,36 @@
                 <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
                     <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
                         <div class="bg-white-100 px-3 py-4 border-radius-10">
-                            <p class="font-20 font-weight-700 color-black-200">3,500</p>
-                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" TValue="int" Size="Size.Small">
-                                <SelectItem Value="1">Cursive Letter (Beginner)</SelectItem>
-                                <SelectItem Value="2">Chess Advance Openings</SelectItem>
-                                <SelectItem Value="3">Chess for Kids</SelectItem>
-                                <SelectItem Value="4">Chess for Adult</SelectItem>
+                            <p class="font-20 font-weight-700 color-black-200">@PricePerHead.ToString("#,##0.00")</p>
+                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
+                                TValue="int" Size="Size.Small" @bind-SelectedValue="SelectedScheduleId">
+                                <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
+                                @foreach(var item in activity.ActivitySchedules.Where(s => s.IsActiveSchedule))
+                                {
+                                    <SelectItem Value="@item.Id">@item.Name</SelectItem>
+                                }
                             </Select>
                             <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
-                                <div class="w-100 p-2">1 Enrollee</div>
-                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">-</div>
-                                <div class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">+</div>
+                                <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
+                                <div @onclick="SubtractEnrollee"
+                                        class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">-</div>
+                                <div @onclick="AddEnrollee"  
+                                    class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">+</div>
                             </div>
                             <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">₱ 3500 x 1 Head</p>
+                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ 3,500.00</p>
+                                    <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                                 </Column>
                             </Row>
                             <Row class="color-grey-100 font-16 mt-2">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Service  fee - 15% 5%</p>
+                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ 250.00</p>
+                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
                                 </Column>
                             </Row>
                             <Row class="color-grey-100 font-16 mt-2">
@@ -611,24 +618,28 @@
                                     <p class="m-0">Handling  fee</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ 50.00</p>
+                                    <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
                                 </Column>
                             </Row>
                             <Divider class="m-0 mt-2" />
                             <Row class="font-16 mt-2 font-weight-700 color-black-100">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Handling  fee</p>
+                                    <p class="m-0">Total Payment</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ 50.00</p>
+                                    <p class="text-end m-0">₱ @TotalPayment.ToString("#,##0.00")</p>
                                 </Column>
                             </Row>
                             <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
                             <div>
-                                <Button Type="ButtonType.Button"  class="btn-primary font-20 w-100 border-radius-10" 
+                                <Button Type="ButtonType.Button" Clicked="ProceedToPayment" class="btn-primary font-20 w-100 border-radius-10" 
                                     Border="Border.Is0">
                                     Proceed
                                 </Button>
+                                @if(isShowErrorMessage)
+                                {
+                                    <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                                }
                             </div>
                         </div>
                     </div>
@@ -710,7 +721,7 @@
     <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating" 
         CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>
 
-    <ModalLogin @ref="signinModal" />
+    <ModalLogin @ref="signinModal" ReturnUrl="@signInReturnUrl" />
 }
 @code {
     IJSObjectReference module;
@@ -747,10 +758,22 @@
     public string changeColor = "none";
     public bool IsChecked = false;
 
+    private int SelectedScheduleId { get; set; } = 0;
+    private int EnrolleeCount { get; set; } = 0;
+    private bool isShowErrorMessage;
+    private string signInReturnUrl = string.Empty;
+    private bool isAuthenticated = false;
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+            if(user != null && user.Identity != null)
+            {
+                isAuthenticated = user.Identity.IsAuthenticated;
+            }
+
             bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
             //Get Activity by Id
             var ActivityListData = isIdentifierInt ? await activityApiHandler.GetActivity(intResult, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
@@ -1118,5 +1141,84 @@
     }
     private void CheckboxChanged(bool val)
     {
+    }
+
+    private Task SubtractEnrollee()
+    {
+        if (EnrolleeCount > 0) EnrolleeCount--;
+        else EnrolleeCount = 0;
+        return Task.CompletedTask;
+    }
+
+    private Task AddEnrollee()
+    {
+        EnrolleeCount++;
+        return Task.CompletedTask;
+    }
+
+    private decimal PricePerHead
+    {
+        get
+        {
+            var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == SelectedScheduleId);
+            if (schedule == null) return 0;
+
+            return schedule.Price;
+        }
+    }
+
+    private decimal PriceSubTotal
+    {
+        get 
+        {
+            return PricePerHead * EnrolleeCount;
+        }
+    }
+
+
+    private decimal ServiceFee 
+    {
+        get 
+        {
+            return 0;
+        }
+    }
+
+    private decimal HandlingFee 
+    {
+        get 
+        {
+            if (PriceSubTotal <= 0) return 0;
+            return 39m;
+        }
+    }
+
+    private decimal TotalPayment 
+    {
+        get 
+        {
+            return PriceSubTotal + ServiceFee + HandlingFee;
+        }
+    }
+
+    private async Task ProceedToPayment()
+    {
+        if(SelectedScheduleId > 0)
+        {
+            var paymentUrl = $"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}";
+            if(isAuthenticated)
+            {
+                NavigationManager.NavigateTo(paymentUrl);
+            }
+            else 
+            {
+                signInReturnUrl = paymentUrl;
+                await signinModal.Show();
+            }
+        }
+        else 
+        {
+            isShowErrorMessage = true;
+        }
     }
 }
