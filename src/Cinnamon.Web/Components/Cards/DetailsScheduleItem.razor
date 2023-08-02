@@ -15,7 +15,8 @@
                         <p>@ScheduleModel.Name</p>
                     </div>
                     <div class="form-check col-lg-2 col-md-3 justify-content-center">
-                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)" 
+                            class="form-check-input" type="radio" name="schedule" id="schedule">
                         <label class="form-check-label" for="schedule">
                             Select
                         </label>
@@ -77,7 +78,8 @@
                         <p class="font-16">@ScheduleModel.DateTime</p>
                     </div>
                     <div class="col-12 form-check ">
-                        <input class="form-check-input" type="radio" name="schedule" id="schedule">
+                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)" 
+                            class="form-check-input" type="radio" name="schedule" id="schedule">
                         <label class="form-check-label" for="schedule">
                             Select
                         </label>
@@ -105,12 +107,14 @@
     public EventCallback<MouseEventArgs> OnClickChange { get; set; } = new EventCallback<MouseEventArgs>();
 
     [Parameter]
-    public EventCallback OnChooseClick { get; set; }
+    public EventCallback<int> OnChooseClick { get; set; }
 
     [Parameter]
     public EventCallback<MouseEventArgs> OnClickLogin { get; set; } = new EventCallback<MouseEventArgs>();
 
     public AuthenticationState AuthState { get; set; }
+
+    private int selectedScheduleId = 0;
 
     private ModalLogin? modalLoginRef;
 
@@ -124,7 +128,17 @@
         NavigationManager.NavigateTo($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}");
         if (OnChooseClick.HasDelegate)
         {
-            OnChooseClick.InvokeAsync();
+            OnChooseClick.InvokeAsync(selectedScheduleId);
         }
+    }
+
+    private Task OnSelectedChanged(int selectedId)
+    {
+        selectedScheduleId = selectedId;
+        if (OnChooseClick.HasDelegate)
+        {
+            OnChooseClick.InvokeAsync(selectedScheduleId);
+        }
+        return Task.CompletedTask;
     }
 }

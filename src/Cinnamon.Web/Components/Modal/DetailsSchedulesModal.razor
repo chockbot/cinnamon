@@ -31,6 +31,8 @@
     public IList<ActivitySchedule> ScheduleModel { get; set; }
     [Parameter]
     public Activity ActivityModel { get; set; }
+    [Parameter]
+    public EventCallback<int> OnChooseSelected { get; set; }
 
     public string ModalDisplay = "none;";
 
@@ -54,9 +56,12 @@
         StateHasChanged();
     }
 
-    public Task OnScheduleChooseChanged()
+    public Task OnScheduleChooseChanged(int selectedId)
     {
-        Close();
+        if(OnChooseSelected.HasDelegate)
+        {
+            OnChooseSelected.InvokeAsync(selectedId);
+        }
         return Task.CompletedTask;
     }
 }

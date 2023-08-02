@@ -595,9 +595,9 @@
                             <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
                                 <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
                                 <div @onclick="SubtractEnrollee"
-                                        class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">-</div>
+                                        class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">-</div>
                                 <div @onclick="AddEnrollee"  
-                                    class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer">+</div>
+                                    class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">+</div>
                             </div>
                             <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
@@ -725,14 +725,14 @@
                     <div class="border-1-solid border-radius-5 border-color-black-100">
                         <div class="p-2 color-grey-100 font-16 d-flex border-bottom-1-solid border-color-black-100 d-flex justify-content-between align-items-center">
                             <p class="m-0">@GetSelectedActivityName</p>
-                            <Button class="p-1 font-10 bg-orange-100 color-white-100">Change</Button>
+                            <Button Clicked="() => DetailsModalSched.Open()" class="p-1 font-10 bg-orange-100 color-white-100">Change</Button>
                         </div>
                         <div class="prevent-select color-grey-100 font-16 d-flex">
                             <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
                             <div @onclick="SubtractEnrollee"
-                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer">-</div>
+                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">-</div>
                             <div @onclick="AddEnrollee"  
-                                class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer">+</div>
+                                class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">+</div>
                         </div>
                     </div>
                     <Row class="color-grey-100 font-16 mt-4">
@@ -796,7 +796,8 @@
     </div>
     
     @* commented first for migration *@
-    <DetailsSchedulesModal @ref="DetailsModalSched" ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></DetailsSchedulesModal>
+    <DetailsSchedulesModal @ref="DetailsModalSched" OnChooseSelected="ModalSelectedChanged"
+        ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></DetailsSchedulesModal>
 
     <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating" 
         CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>
@@ -1315,5 +1316,11 @@
 
             return "Please select activity schedule";            
         }
+    }
+
+    private Task ModalSelectedChanged(int selectedId)
+    {
+        SelectedScheduleId = selectedId;
+        return Task.CompletedTask;
     }
 }
