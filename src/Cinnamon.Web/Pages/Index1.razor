@@ -251,6 +251,57 @@
                         </div>
                     </div>
                 </div>
+                <div class="landing-text landing-md">
+                    <div class="col-12 overview-cards row">
+                        <div class="col-md-4 overview-card">
+                            <OverviewCard ImageSource="images/search.png"
+                                          Title=@Resources.App.search
+                                          Text=@Resources.App.searchDescription />
+                        </div>
+                        <div class="col-md-4 overview-card">
+                            <OverviewCard ImageSource="images/book.png"
+                                          Title=@Resources.App.book
+                                          Text=@Resources.App.bookDescription />
+                        </div>
+                        <div class="col-md-4 overview-card">
+                            <OverviewCard ImageSource="images/attend.png"
+                                          Title=@Resources.App.attend
+                                          Text=@Resources.App.attendDescription />
+                        </div>
+                    </div>
+                </div>
+                <div class="landing-text landing-sm">
+                    <div id="carouselSection3" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                            <button type="button" data-bs-target="#carouselSection3" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                        </div>
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/search.png"
+                                                  Title=@Resources.App.search
+                                                  Text=@Resources.App.searchDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/book.png"
+                                                  Title=@Resources.App.book
+                                                  Text=@Resources.App.bookDescription />
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <div class="col-sm-12">
+                                    <OverviewCard ImageSource="images/attend.png"
+                                                  Title=@Resources.App.attend
+                                                  Text=@Resources.App.attendDescription />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -338,6 +389,7 @@
         if (firstRender)
         {
             await jsRuntime.InvokeVoidAsync("MyLib.Track", "Landing Page Loaded");
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.customer.onboarding.init");
             await GetFavorites();
         }
         else
