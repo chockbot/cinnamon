@@ -1,5 +1,6 @@
 ﻿@layout CreationLayout
 @page "/Creation"
+@page "/Creation/{creationType}"
 @using Cinnamon.Web.Components
 @using Cinnamon.Web.Components.Pages;
 @using Cinnamon.Web.Components.Pages.Creation;
@@ -261,7 +262,14 @@
                         </div>
 
                         <div class='tab @(currentIndex == 3 ? "show" : "")'>
-                            <PricingAndSchedule @ref="pricingAndScheduleComponent" Model="Model" />
+                            @if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
+                            {
+                                <PricingAndSchedule @ref="pricingAndScheduleComponent" Model="Model" />
+                            }
+                            else if (ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                            {
+                                <PricingAndScheduleAppointment @ref="pricingAndScheduleAppointmentComponent" Model="Model" />
+                            }
                         </div>
 
                         <div class='tab @(currentIndex == 4 ? "show" : "")'>
@@ -367,6 +375,7 @@
     private Location locationComponent { get; set; }
 
     private PricingAndSchedule pricingAndScheduleComponent { get; set; }
+    private PricingAndScheduleAppointment pricingAndScheduleAppointmentComponent { get; set; }
 
     private OptionalDetails optionalDetailsComponent { get; set; }
 
@@ -390,6 +399,10 @@
 
     public const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
 
+    [Parameter]
+    public string CreationType { get; set; }
+
+    public Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType = new Enums.ExperienceCreationType();
 
     protected override async Task OnInitializedAsync()
     {
@@ -436,6 +449,13 @@
         if ((!regions.Succeeded || regions.Result == null) || (regions.Succeeded && !regions.Result.IsSuccess))
         {
             // an error occured when getting sub categories to api
+            navigationManager.NavigateTo("explore");
+            return;
+        }
+
+        bool isSuccess = Enum.TryParse(CreationType, out ExperienceCreationType) && Enum.IsDefined(typeof(Framework.Enums.Enums.ExperienceCreationType), ExperienceCreationType);
+
+        if (!isSuccess)        {
             navigationManager.NavigateTo("explore");
             return;
         }
@@ -528,8 +548,23 @@
                 SpecificsYouWillProvide = ReplaceEmptyValue(Model.Activity.SpecificsYouWillProvide, NOTHING_PROVIDED),
                 PinnedLocation = ReplaceEmptyValue(Model.Activity.PinnedLocation, NOTHING_PROVIDED),
                 Status = Enums.ActivityStatus.InProgress,
+                ExperienceCreationType = ExperienceCreationType,
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
                {
+                   var scheduleTimes = new List<Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime>();
+                   foreach (var item in s.ScheduleTimes)
+                   {
+                       foreach (var scheduleTime in item.ActivityScheduleTimes)
+                       {
+                           scheduleTimes.Add(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime
+                           {
+                               DayOfWeek = scheduleTime.DayOfWeek,
+                               StartTime = scheduleTime.StartTime,
+                               EndTime = scheduleTime.EndTime
+                           });
+                       }
+                   }
+
                    return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
                    {
                        DateTime = s.DateTime,
@@ -547,12 +582,7 @@
                        HasExpiration = s.HasExpiration,
                        StartDate = s.StartDate ?? DateTime.MinValue,
                        ScheduleType = s.ScheduleType,
-                       ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime
-                       {
-                           DayOfWeek = s.DayOfWeek,
-                           StartTime = s.StartTime,
-                           EndTime = s.EndTime
-                       })
+                       //ActivityScheduleTimes = s.ScheduleTimes != null ? scheduleTimes : new List<Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime>()
                    };
                }),
             }, Model.Token);
@@ -597,14 +627,31 @@
                                                                         sortPrice.ElementAtOrDefault(0).PerUnit2.ToString(),
                                                                         sortPrice.ElementAtOrDefault(0).PriceUnit2);
 
-            var submit = await activityApiHandler.CreateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
+            var args = new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs
                 {
                     ActivityLevel = "Beginner",
                     ActivitySchedules = Model.Activity.ActivitySchedules.Select(s =>
                     {
+                        var scheduleTimes = new List<Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime>();
+                        if (s.ScheduleTimes != null)
+                        {
+                            foreach (var item in s.ScheduleTimes)
+                            {
+                                foreach (var scheduleTime in item.ActivityScheduleTimes)
+                                {
+                                    scheduleTimes.Add(new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.ActivityScheduleTime
+                                    {
+                                        DayOfWeek = scheduleTime.DayOfWeek,
+                                        StartTime = scheduleTime.StartTime,
+                                        EndTime = scheduleTime.EndTime
+                                    });
+                                }
+                            }
+                        }
+
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
                         {
-                            DateTime = s.DateTime,
+                            DateTime = s.DateTime ?? "N/A",
                             Name = s.Name,
                             PerUnit1 = s.PerUnit1,
                             PerUnit2 = s.PerUnit2,
@@ -617,7 +664,9 @@
                             IsSetSession = s.IsSetSession,
                             SessionName = s.SessionName ?? "N/A",
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate ?? DateTime.MinValue
+                            StartDate = s.StartDate ?? DateTime.MinValue,
+                            ScheduleType = Enums.ScheduleType.Internal,
+                            ActivityScheduleTimes = scheduleTimes
                         };
                     }),
                     AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -645,8 +694,11 @@
                     SubCategoryId = Model.Activity.SubCategoryId,
                     Title = Model.Activity.Title,
                     PinnedLocation = Model.Activity.PinnedLocation,
-                    Status = Enums.ActivityStatus.Submitted
-                }, Model.Token);
+                    Status = Enums.ActivityStatus.Submitted,
+                    ExperienceCreationType = ExperienceCreationType
+                };
+
+            var submit = await activityApiHandler.CreateActivity(args, Model.Token);
 
             if ((!submit.Succeeded || submit.Result == null) || (submit.Succeeded && !submit.Result.IsSuccess))
             {
@@ -691,11 +743,22 @@
                     currentIndex = index;
                     break;
                 case 3:
-                    if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                    if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
                     {
-                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                        return;
-                    };
+                        if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                        {
+                            await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                            return;
+                        };
+                    }
+                    else if (ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                    {
+                        if (Model.HasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
+                        {
+                            await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                            return;
+                        };
+                    }
 
                     isPricingAndScheduleComponentValid = true;
                     currentIndex = index;
@@ -752,15 +815,29 @@
             }
             else if (currentIndex == 3)
             {
-                if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
                 {
-                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                    return;
+                    if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                        return;
+                    }
+                    else
+                    {
+                        isPricingAndScheduleComponentValid = true;
+                    }
                 }
-                else
+                else if (ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
                 {
-                    isPricingAndScheduleComponentValid = true;
-
+                    if (Model.HasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                        return;
+                    }
+                    else
+                    {
+                        isPricingAndScheduleComponentValid = true;
+                    }
                 }
             }
             else if (currentIndex == 4)
@@ -817,15 +894,25 @@
         }
         else if (currentIndex == 3)
         {
-            if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+            if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
             {
-                await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                return;
+                if (Model.HasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                {
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                    return;
+                };
+            }
+            else if (ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+            {
+                if (Model.HasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
+                {
+                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                    return;
+                };
             }
             else
             {
                 isPricingAndScheduleComponentValid = true;
-
             }
         }
         else if (currentIndex == 4)
@@ -871,17 +958,27 @@
     {
         var result = new List<Models.Entities.ActivitySchedule>();
 
-        bool isSingle = activitySchedules.Count == 1;
-        foreach (var schedule in activitySchedules)
+        if (ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
         {
-            if (!(string.IsNullOrEmpty(schedule.Name) ||
-                string.IsNullOrEmpty(schedule.DateTime) ||
-                schedule.Price <= 0 ||
-                string.IsNullOrEmpty(schedule.UnitPrice) ||
-                schedule.PerUnit1 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit1) ||
-                schedule.PerUnit2 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit2))) 
+            bool isSingle = activitySchedules.Count == 1;
+            foreach (var schedule in activitySchedules)
+            {
+                if (!(string.IsNullOrEmpty(schedule.Name) ||
+                    string.IsNullOrEmpty(schedule.DateTime) ||
+                    schedule.Price <= 0 ||
+                    string.IsNullOrEmpty(schedule.UnitPrice) ||
+                    schedule.PerUnit1 <= 0 ||
+                    string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                    schedule.PerUnit2 <= 0 ||
+                    string.IsNullOrEmpty(schedule.PriceUnit2)))
+                {
+                    result.Add(schedule);
+                }
+            }
+        }
+        else if (ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            foreach (var schedule in activitySchedules)
             {
                 result.Add(schedule);
             }

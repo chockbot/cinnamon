@@ -1,0 +1,361 @@
+﻿@namespace Cinnamon.Web.Components.Pages.Maker.UpdateActivity
+@using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Globalization;
+@using System.Data.SqlTypes;
+@inject IActivityApiHandler activityApiHandler;
+
+<div id="error-message-container" class="mb-4" style="display:@ShowErrorMessage();">
+    <ul id="error-list" class="fw-bold">
+        <li>Fill in required field</li>
+    </ul>
+</div>
+
+@*<input type="hidden" @bind="Model.Activity.ActivitySchedules.ToList()" id="activity-schedule-list-create" />*@
+
+<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
+    @foreach (var scheduleModel in Model.Activity.ActivitySchedules)
+    {
+        <div class="form-group">
+            <div class="form-check form-switch">
+                <div class="row">
+                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
+                        <label for="title" class="pricing-title">Pricing & Schedule</label>
+                    </div>
+                    <hr>
+                    <div class="col-lg-4 col-8">
+                        <label for="title" class="form-control-label">Set Inactive/Active:</label>
+                    </div>
+                    <div class="col-lg-8 col-4">
+                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
+                    </div>
+                    <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <table class="field-heading-section">
+                <tr>
+                    <td>
+                        <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">4</label>
+                    </td>
+                    <td>
+                        <label for="title" class="form-control-label label-top-margin right-margin">Schedule Name</label>
+                    </td>
+                    <td>
+                        <img src="images/experience-creation/info-icon.svg" id="info-schedule" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-4.png" />
+                    </td>
+                </tr>
+            </table>
+            <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
+            <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
+        </div>
+        <div class="form-group">
+            <label for="title" class="form-control-label label-top-margin right-margin">Set your weekly hours</label>
+            <table class="tbl-schedule-times">
+                @foreach (var scheduleTime in scheduleModel.ScheduleTimes)
+                {
+                    <tr>
+                        <td style="width: 13%;vertical-align: top;padding-top: 25px;">
+                            <input class="form-check-input chk-enable-schedule-time" type="checkbox" @bind="scheduleTime.IsEnabled">
+                            <b>@dayOfWeekDictionary[scheduleTime.DayOfWeek]</b>
+                        </td>
+                        <td>
+                            @if (scheduleTime.IsEnabled)
+                            {
+                                @foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes)
+                                {
+                                    <div class="row schedule-time-row">
+                                        <div class="col-lg-3">
+                                            <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleStartTime(e, activityScheduleTime.ActivityScheduleTimeId)">
+                                                @foreach (var item in dateTimes)
+                                                {
+                                                    <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.StartTime)">@item.ToString("hh:mm tt")</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-1" style="width: 0%;padding: 0%;padding-top: 7px;">
+                                            <span> - </span>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleEndTime(e, activityScheduleTime.ActivityScheduleTimeId)">
+                                                @foreach (var item in dateTimes)
+                                                {
+                                                    <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.EndTime)">@item.ToString("hh:mm tt")</option>
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-2">
+                                            <button id="btnDeleteScheduleTime" type="button" class="btn border-0" @onclick="() => RemoveScheduleTime(activityScheduleTime.ActivityScheduleTimeId)"><i class="fa fa-trash"></i></button>
+                                        </div>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(activityScheduleTime.Message))
+                                    {
+                                        <span class="error-message">@activityScheduleTime.Message</span>
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                <label>Unavailable</label>
+                            }
+                        </td>
+                        <td style="vertical-align: top;">
+                            <button id="btnAddInterval" type="button" class="btn border-0" @onclick="() => AddScheduleTime(scheduleTime)"><i class="fa fa-plus"></i></button>
+                        </td>
+                    </tr>
+                }
+            </table>
+        </div>
+
+    }
+</div>
+
+@code {
+    [Parameter]
+    public Models.ExperienceUpdateModel Model { get; set; }
+
+    DateTime? selectedDate;
+
+    public string frequency { get; set; }
+
+    ExperienceCreationGuideModal experienceCreationGuideModal = new ExperienceCreationGuideModal();
+
+    List<ActivityScheduleTime> activityScheduleTimes = new List<ActivityScheduleTime>();
+    List<ScheduleTime> scheduleTimes = new List<ScheduleTime>();
+
+    Dictionary<int, string> dayOfWeekDictionary = new Dictionary<int, string>();
+
+    DateTime startTime = new DateTime(2000, 1, 1, 0, 0, 0);
+    DateTime endTime = new DateTime(2000, 1, 1, 23, 45, 0);
+    List<DateTime> dateTimes = new List<DateTime>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        dayOfWeekDictionary.Add(1, "MON");
+        dayOfWeekDictionary.Add(2, "TUE");
+        dayOfWeekDictionary.Add(3, "WED");
+        dayOfWeekDictionary.Add(4, "THU");
+        dayOfWeekDictionary.Add(5, "FRI");
+        dayOfWeekDictionary.Add(6, "SAT");
+        dayOfWeekDictionary.Add(7, "SUN");
+
+        while (startTime <= endTime)
+        {
+            dateTimes.Add(startTime);
+            startTime = startTime.Add(new TimeSpan(0, 15, 0));
+        }
+
+        await SetSchedule();
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Price");
+        }
+    }
+
+    private string ShowErrorMessage()
+    {
+        return Model.ExperienceHasError ? "block" : "none";
+    }
+
+    private string RequiredCheck(String? value)
+    {
+        if (Model.ExperienceHasError && String.IsNullOrEmpty(value))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+    private string RequiredCheck(DateTime? value)
+    {
+        if (Model.ExperienceHasError && !value.HasValue)
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(int? value)
+    {
+        if (Model.ExperienceHasError && (value == null || value.Value == 0))
+        {
+            return "invalid";
+        }
+        return "";
+    }
+
+    private string RequiredCheck(Decimal? value)
+    {
+        if (Model.ExperienceHasError && (value == null || value == 0))
+        {
+            return "invalid";
+        }
+
+        return "";
+    }
+
+    public bool IsAllFieldsValidated()
+    {
+        if (!IsAllSchedulesValid()) return false;
+        if (!AreAllSchedulesValid()) return false;
+        return true;
+    }
+
+    private bool IsAllSchedulesValid()
+    {
+        foreach (var schedule in Model.Activity.ActivitySchedules)
+        {
+            if (string.IsNullOrEmpty(schedule.Name))
+                return false;
+        }
+
+        return true;
+    }
+    private void CheckboxChanged(int val, ActivitySchedule schedule)
+    {
+        schedule.HasExpiration = val;
+    }
+    private async Task SetSchedule()
+    {
+        await SortAndAssign(Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleTimes);
+    }
+
+    private bool HasOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
+    {
+        return start1 < end2 && end1 > start2;
+    }
+
+    private async Task AddScheduleTime(ScheduleTime schedule)
+    {
+        var scheduleTime = scheduleTimes.FirstOrDefault(s => s.DayOfWeek == schedule.DayOfWeek);
+
+        if (scheduleTime.ActivityScheduleTimes.Any())
+        {
+            DateTime newStartTime = DateTime.ParseExact(scheduleTime.ActivityScheduleTimes.OrderByDescending(t => t.ActivityScheduleTimeId).FirstOrDefault().EndTime, "hh:mm tt", CultureInfo.InvariantCulture);
+
+            newStartTime = newStartTime.Add(new TimeSpan(1, 0, 0));
+
+            DateTime newEndTime = newStartTime.Add(new TimeSpan(1, 0, 0));
+
+
+            scheduleTime.ActivityScheduleTimes.Add(new ActivityScheduleTime
+                {
+                    ActivityScheduleTimeId = DateTime.Now.Ticks,
+                    DayOfWeek = scheduleTime.DayOfWeek,
+                    StartTime = newStartTime.ToString("hh:mm tt"),
+                    EndTime = newEndTime.ToString("hh:mm tt"),
+                });
+        }
+        else
+        {
+            scheduleTime.ActivityScheduleTimes.Add(new ActivityScheduleTime
+                {
+                    ActivityScheduleTimeId = DateTime.Now.Ticks,
+                    DayOfWeek = scheduleTime.DayOfWeek,
+                    StartTime = "09:00 AM",
+                    EndTime = "05:00 PM",
+                });
+        }
+
+        await SortAndAssign(scheduleTimes);
+        AreAllSchedulesValid();
+    }
+
+    private async Task RemoveScheduleTime(long activityScheduleTimeId)
+    {
+        foreach (var item in scheduleTimes)
+        {
+            item.ActivityScheduleTimes = item.ActivityScheduleTimes.Where(a => a.ActivityScheduleTimeId != activityScheduleTimeId).ToList();
+        }
+
+        await SortAndAssign(scheduleTimes);
+        AreAllSchedulesValid();
+    }
+
+    private async Task SortAndAssign(List<ScheduleTime> scheduleTimes)
+    {
+        scheduleTimes = scheduleTimes.OrderBy(a => a.Sort).ToList();
+
+        Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleTimes = scheduleTimes;
+    }
+
+    private bool AreAllSchedulesValid()
+    {
+        bool isValid = true;
+
+        foreach (var scheduleTime in scheduleTimes)
+        {
+            foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes)
+            {
+                DateTime activityScheduleStartTime = DateTime.ParseExact(activityScheduleTime.StartTime, "hh:mm tt", CultureInfo.InvariantCulture);
+                DateTime activityScheduleEndTime = DateTime.ParseExact(activityScheduleTime.EndTime, "hh:mm tt", CultureInfo.InvariantCulture);
+
+                if (activityScheduleStartTime > activityScheduleEndTime)
+                {
+                    isValid = false;
+                    activityScheduleTime.Message = "Choose an end time later than the start time.";
+                }
+                else
+                {
+                    var otherScheduleTimes = scheduleTime.ActivityScheduleTimes.Where(s => s.ActivityScheduleTimeId != activityScheduleTime.ActivityScheduleTimeId);
+
+                    foreach (var otherScheduleTime in otherScheduleTimes)
+                    {
+                        DateTime otherScheduleStartTime = DateTime.ParseExact(otherScheduleTime.StartTime, "hh:mm tt", CultureInfo.InvariantCulture);
+                        DateTime otherScheduleEndTime = DateTime.ParseExact(otherScheduleTime.EndTime, "hh:mm tt", CultureInfo.InvariantCulture);
+
+                        bool hasOverlap = HasOverlap(activityScheduleStartTime, activityScheduleEndTime, otherScheduleStartTime, otherScheduleEndTime);
+
+                        if (hasOverlap)
+                        {
+                            isValid = false;
+                            activityScheduleTime.Message = "Times overlap with another set of times.";
+                        }
+                        else
+                        {
+                            activityScheduleTime.Message = "";
+                        }
+                    }
+                }
+
+            }
+        }
+
+        return isValid;
+    }
+
+    private async Task SetScheduleStartTime(ChangeEventArgs e, long activityScheduleTimeId)
+    {
+        foreach (var item in scheduleTimes)
+        {
+            var timeDetail = item.ActivityScheduleTimes.FirstOrDefault(a => a.ActivityScheduleTimeId == activityScheduleTimeId);
+
+            if (timeDetail != null)
+            {
+                timeDetail.StartTime = e.Value.ToString();
+            }
+        }
+
+        AreAllSchedulesValid();
+    }
+    private async Task SetScheduleEndTime(ChangeEventArgs e, long activityScheduleTimeId)
+    {
+        foreach (var item in scheduleTimes)
+        {
+            var timeDetail = item.ActivityScheduleTimes.FirstOrDefault(a => a.ActivityScheduleTimeId == activityScheduleTimeId);
+
+            if (timeDetail != null)
+            {
+                timeDetail.EndTime = e.Value.ToString();
+            }
+        }
+
+        AreAllSchedulesValid();
+    }
+}

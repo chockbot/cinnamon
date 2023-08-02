@@ -95,6 +95,7 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                 SessionName = activity.SessionName,
                 PinnedLocation = activity.PinnedLocation,
                 Status = activity.Status,
+                ExperienceCreationType = activity.ExperienceCreationType,
                 ActivitySchedules = activity.ActivitySchedules != null ? activity.ActivitySchedules.Select(s => {
                     return new GetOwnedActivityResult.ActivitySchedule {
                         Id = s.Id,
@@ -111,7 +112,15 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new GetOwnedActivityResult.ActivityScheduleTime
+                        {
+                            ActivityScheduleId = act.ActivityScheduleId,
+                            ActivityScheduleTimeId = act.ActivityScheduleTimeId,
+                            DayOfWeek = act.DayOfWeek,
+                            EndTime = act.EndTime,
+                            StartTime = act.StartTime
+                        }).ToList()
                     };
                 }) : Enumerable.Empty<GetOwnedActivityResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {

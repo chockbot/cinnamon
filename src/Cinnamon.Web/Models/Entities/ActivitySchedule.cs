@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Data.SqlTypes;
+using System.Text.RegularExpressions;
 
 namespace Cinnamon.Web.Models.Entities;
 
@@ -85,16 +86,26 @@ public class ActivitySchedule
         return Regex.Replace(input, pattern, m => new string('*', m.Length));
     }
 
-    public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
+    public List<ScheduleTime> ScheduleTimes { get; set; }
+    public List<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
+}
 
+public class ScheduleTime
+{
+    public int DayOfWeek { get; set; }
+    public int Sort { get; set; }
+    public bool IsEnabled { get; set; }
+
+    public List<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
 }
 
 public class ActivityScheduleTime
 {
-    public int ActivityScheduleTimeId { get; set; }
+    public long ActivityScheduleTimeId { get; set; }
     public int ActivityScheduleId { get; set; }
     public int DayOfWeek { get; set; }
     public string StartTime { get; set; }
     public string EndTime { get; set; }
     public bool IsAvailable { get; set; }
+    public string Message { get; set; }
 }

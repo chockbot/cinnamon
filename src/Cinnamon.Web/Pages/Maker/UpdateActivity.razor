@@ -274,7 +274,14 @@
                         </div>
 
                         <div class='tab @(currentIndex == 3 ? "show" : "")'>
-                            <PricingAndScheduleUpdate @ref="pricingAndScheduleComponent" Model="Model" />
+                            @if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
+                            {
+                                <PricingAndScheduleUpdate @ref="pricingAndScheduleComponent" Model="Model" />
+                            }
+                            else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                            {
+                                <PricingAndScheduleAppointmentUpdate @ref="pricingAndScheduleAppointmentComponent" Model="Model" />
+                            }
                         </div>
 
                         <div class='tab @(currentIndex == 4 ? "show" : "")'>
@@ -371,6 +378,7 @@
     private LocationUpdate locationComponent { get; set; }
 
     private PricingAndScheduleUpdate pricingAndScheduleComponent { get; set; }
+    private PricingAndScheduleAppointmentUpdate pricingAndScheduleAppointmentComponent { get; set; }
 
     private OptionalDetailsUpdate optionalDetailsComponent { get; set; }
 
@@ -581,7 +589,15 @@
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new ActivityScheduleTime
+                        {
+                            ActivityScheduleId = act.ActivityScheduleId,
+                            ActivityScheduleTimeId = act.ActivityScheduleTimeId,
+                            DayOfWeek = act.DayOfWeek,
+                            EndTime = act.EndTime,
+                            StartTime = act.StartTime
+                        }).ToList()
                     };
                 }).ToList(),
                 AdditionalRequirements = activity.AdditionalRequirements,
@@ -620,6 +636,7 @@
                 Title = activity.Title,
                 PinnedLocation = activity.PinnedLocation,
                 Status = activity.Status,
+                ExperienceCreationType = activity.ExperienceCreationType
             },
             ExperienceTypes = experienceTypes.Result.Result.Select(e => {
                 return new Models.Entities.ExperienceType {
@@ -667,6 +684,26 @@
             EnrolledStudents = enrolledStudents,
             Token = token
         };
+
+        if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            List<ScheduleTime> scheduleTimes = new List<ScheduleTime>();
+
+            for (int i = 1; i <= 7; i++)
+            {
+                var activityScheduleTimes = Model.Activity.ActivitySchedules.FirstOrDefault().ActivityScheduleTimes.Where(a => a.DayOfWeek == i).ToList();
+
+                scheduleTimes.Add(new ScheduleTime
+                {
+                    DayOfWeek = i,
+                    Sort = i,
+                    IsEnabled = true,
+                    ActivityScheduleTimes = activityScheduleTimes
+                });
+            }
+
+            Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleTimes = scheduleTimes;
+        }
 
         obj = DotNetObjectReference.Create(this);
     }
@@ -981,11 +1018,22 @@
                     currentIndex = index;
                     break;
                 case 3:
-                    if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                    if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
                     {
-                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                        return;
-                    };
+                        if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                        {
+                            await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                            return;
+                        };
+                    }
+                    else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                    {
+                        if (Model.ExperienceHasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
+                        {
+                            await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                            return;
+                        };
+                    }
 
                     isPricingAndScheduleComponentValid = true;
                     currentIndex = index;
@@ -1042,16 +1090,31 @@
             }
             else if (currentIndex == 3)
             {
-                if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
                 {
-                    await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
-                    return;
+                    if (Model.ExperienceHasError = !pricingAndScheduleComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                        return;
+                    }
+                    else
+                    {
+                        isPricingAndScheduleComponentValid = true;
+                    }
                 }
-                else
+                else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
                 {
-                    isPricingAndScheduleComponentValid = true;
-
+                    if (Model.ExperienceHasError = !pricingAndScheduleAppointmentComponent.IsAllFieldsValidated())
+                    {
+                        await module.InvokeVoidAsync("scrollToRequiredField", ".pricing-schedule-section");
+                        return;
+                    }
+                    else
+                    {
+                        isPricingAndScheduleComponentValid = true;
+                    }
                 }
+               
             }
             else if (currentIndex == 4)
             {

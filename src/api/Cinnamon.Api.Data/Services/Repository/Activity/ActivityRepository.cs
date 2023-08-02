@@ -656,6 +656,7 @@ public class ActivityRepository : IActivityRepository
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
                 Status = (Enums.ActivityStatus)activity.Status,
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
             };
 
             // address fields
@@ -711,6 +712,27 @@ public class ActivityRepository : IActivityRepository
                         StartDate = s.StartDate
                     };
                 }).ToList();
+
+                if ((Enums.ExperienceCreationType)activity.ExperienceCreationTypeId == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                {
+                    if (activityDTO.Schedules.Count > 0)
+                    {
+                        var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == activityDTO.Schedules.FirstOrDefault().Id);
+                        if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                        {
+                            return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                        }
+
+                        activityDTO.Schedules.FirstOrDefault().ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
+                        {
+                            ActivityScheduleId = s.ActivityScheduleId,
+                            ActivityScheduleTimeId = s.Id,
+                            DayOfWeek = s.DayOfWeek,
+                            EndTime = s.EndTime,
+                            StartTime = s.StartTime
+                        }).ToList();
+                    }
+                }
             }
 
             // search tags

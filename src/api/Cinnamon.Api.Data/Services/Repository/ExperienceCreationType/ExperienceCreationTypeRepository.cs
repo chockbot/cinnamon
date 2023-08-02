@@ -26,6 +26,7 @@ namespace Cinnamon.Api.Data.Services.Repository.ExperienceCreationType
 
                 var experienceCreationTypes = result.Result.Select(r => new ExperienceCreationTypeDTO
                 {
+                    Id = r.Id,
                     Name = r.Name,
                     Description = r.Description,
                     ImagePath = r.ImagePath

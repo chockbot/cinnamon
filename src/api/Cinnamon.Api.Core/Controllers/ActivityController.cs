@@ -974,7 +974,15 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = act.ActivityScheduleId,
+                                ActivityScheduleTimeId = act.ActivityScheduleTimeId,
+                                DayOfWeek = act.DayOfWeek,
+                                EndTime = act.EndTime,
+                                StartTime = act.StartTime
+                            }).ToList()
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1015,6 +1023,7 @@ public class ActivityController : ControllerBase
                     Handler = activity.Handler,
                     PinnedLocation= activity.PinnedLocation,
                     Status = activity.Status,
+                    ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
@@ -2195,6 +2204,7 @@ public class ActivityController : ControllerBase
                 Result = result.Result.ExperienceCreationTypes.Select(e => {
                     return new Framework.ApiCommand.ApiCore.DTO.ExperienceCreationType.ExperienceCreationTypeDTO
                     {
+                        Id = e.Id,
                         Description = e.Description,
                         ImagePath = e.ImagePath,
                         IsActive = e.IsActive,

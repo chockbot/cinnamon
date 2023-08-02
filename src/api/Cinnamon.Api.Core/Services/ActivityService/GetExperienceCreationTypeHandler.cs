@@ -45,6 +45,7 @@ namespace Cinnamon.Api.Core.Services.ActivityService
                 {
                     ExperienceCreationTypes = creationTypes.Select(c => new GetExperienceCreationTypeResult.ExperienceCreationType
                     {
+                        Id = c.Id,
                         Description = c.Description,
                         ImagePath = c.ImagePath,
                         IsActive = c.IsActive,
