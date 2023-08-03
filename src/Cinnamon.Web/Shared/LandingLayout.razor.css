@@ -1,0 +1,161 @@
+﻿.btn-login {
+    border: 2px solid #FFA942;
+    width: 195px;
+    height: 51px;
+    border-radius: 40px;
+    float: right;
+    color: #FFA942;
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 700;
+    background-color: white;
+}
+.login-icon-sm {
+    display: none;
+}
+.page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow-x:hidden;
+}
+
+main {
+    flex: 1;
+    background: linear-gradient(216.76deg, rgba(255, 169, 66, 0.14) -58.37%, rgba(255, 255, 255, 0) 71.86%);
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+}
+
+.top-row {
+    background-color: none;
+    border-bottom: 1px solid #D9D9D9;
+    justify-content: flex-start;
+    aspect-ratio: 1600/74;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+    .top-row ::deep a {
+        white-space: nowrap;
+        margin-left: 1.5rem;
+    }
+
+    .top-row a:first-child {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+.app-name {
+    color: var(--primary);
+    font-family: 'Backline';
+    font-size: 3vw;
+    text-decoration: none;
+}
+.img-icon-login {
+    width: 24px; 
+    height: 24px;
+}
+@media (min-width: 641px) {
+    .page {
+        flex-direction: row;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh;
+        position: sticky;
+        top: 0;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    /*    .top-row:not(.auth){
+    display: none;
+}*/
+    .login-icon-sm {
+        display: block;
+    }
+    .login-button {
+        display: none;
+    }
+    .menu {
+        display: none;
+    }
+
+        .menu img {
+            margin-right: 0;
+            width: 20%;
+        }
+
+    .app-name {
+        font-size: 7vw;
+    }
+
+    .px-4 {
+        padding-right: 0.5rem !important;
+        padding-left: 0.8rem !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+        .top-row.auth {
+            justify-content: space-between;
+        }
+
+        .top-row a {
+            margin-left: 0;
+        }
+}
+
+@media screen and (min-width:768px) and (max-width:1024px) {
+    .btn-login {
+        width: 135px;
+        height: 40px;
+        font-family: Nunito;
+        font-size: 12px;
+        font-weight: 700;
+    }
+    .login-icon-sm {
+        display: none;
+    }
+    .app-name {
+        font-size: 3.5vw;
+    }
+    .top-row {
+        padding: 10px 0;
+    }
+
+    /*.top-row {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .px-4 {
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+
+    .top-row {
+        padding: 5px 0;
+    }
+
+        .top-row a {
+            margin-left: 0;
+        }
+
+    .top-row {
+        padding-left: 2rem !important;
+        padding-right: 1.5rem !important;
+    }*/
+}
+
+
+
+
