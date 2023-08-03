@@ -63,6 +63,17 @@ public class UpdateActivityArgs
         }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public IEnumerable<UpdateActivityScheduleTime> ActivityScheduleTimes { get; set; }
+    }
+
+    public class UpdateActivityScheduleTime
+    {
+        public Enums.Enums.ModelStatus ModelStatus { get; set; }
+        public int ActivityScheduleTimeId { get; set; }
+        public int ActivityScheduleId { get; set; }
+        public int DayOfWeek { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
     }
 
     public IFormFile? Image1 { get; set; }

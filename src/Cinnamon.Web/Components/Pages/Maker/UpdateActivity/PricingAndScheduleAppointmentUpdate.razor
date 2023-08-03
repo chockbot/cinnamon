@@ -66,7 +66,7 @@
                         <td>
                             @if (scheduleTime.IsEnabled)
                             {
-                                @foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes)
+                                @foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes.Where(s => s.ModelStatus == Framework.Enums.Enums.ModelStatus.Updated || s.ModelStatus == Framework.Enums.Enums.ModelStatus.Created))
                                 {
                                     <div class="row schedule-time-row">
                                         <div class="col-lg-3">
@@ -149,6 +149,8 @@
             startTime = startTime.Add(new TimeSpan(0, 15, 0));
         }
 
+        scheduleTimes = Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleTimes;
+
         await SetSchedule();
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -223,7 +225,7 @@
     }
     private async Task SetSchedule()
     {
-        await SortAndAssign(Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleTimes);
+        await SortAndAssign(scheduleTimes);
     }
 
     private bool HasOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
@@ -243,13 +245,14 @@
 
             DateTime newEndTime = newStartTime.Add(new TimeSpan(1, 0, 0));
 
-
             scheduleTime.ActivityScheduleTimes.Add(new ActivityScheduleTime
                 {
                     ActivityScheduleTimeId = DateTime.Now.Ticks,
                     DayOfWeek = scheduleTime.DayOfWeek,
                     StartTime = newStartTime.ToString("hh:mm tt"),
                     EndTime = newEndTime.ToString("hh:mm tt"),
+                    ModelStatus = Framework.Enums.Enums.ModelStatus.Created,
+                    IsNew = true
                 });
         }
         else
@@ -260,6 +263,8 @@
                     DayOfWeek = scheduleTime.DayOfWeek,
                     StartTime = "09:00 AM",
                     EndTime = "05:00 PM",
+                    ModelStatus = Framework.Enums.Enums.ModelStatus.Created,
+                    IsNew = true
                 });
         }
 
@@ -271,7 +276,10 @@
     {
         foreach (var item in scheduleTimes)
         {
-            item.ActivityScheduleTimes = item.ActivityScheduleTimes.Where(a => a.ActivityScheduleTimeId != activityScheduleTimeId).ToList();
+            if (item.ActivityScheduleTimes.Any(a => a.ActivityScheduleTimeId == activityScheduleTimeId))
+            {
+                item.ActivityScheduleTimes.FirstOrDefault(a => a.ActivityScheduleTimeId == activityScheduleTimeId).ModelStatus = Framework.Enums.Enums.ModelStatus.Deleted;
+            }
         }
 
         await SortAndAssign(scheduleTimes);
@@ -291,7 +299,7 @@
 
         foreach (var scheduleTime in scheduleTimes)
         {
-            foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes)
+            foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes.Where(s => s.ModelStatus != Framework.Enums.Enums.ModelStatus.Deleted))
             {
                 DateTime activityScheduleStartTime = DateTime.ParseExact(activityScheduleTime.StartTime, "hh:mm tt", CultureInfo.InvariantCulture);
                 DateTime activityScheduleEndTime = DateTime.ParseExact(activityScheduleTime.EndTime, "hh:mm tt", CultureInfo.InvariantCulture);
@@ -303,7 +311,7 @@
                 }
                 else
                 {
-                    var otherScheduleTimes = scheduleTime.ActivityScheduleTimes.Where(s => s.ActivityScheduleTimeId != activityScheduleTime.ActivityScheduleTimeId);
+                    var otherScheduleTimes = scheduleTime.ActivityScheduleTimes.Where(s => s.ActivityScheduleTimeId != activityScheduleTime.ActivityScheduleTimeId && s.ModelStatus != Framework.Enums.Enums.ModelStatus.Deleted);
 
                     foreach (var otherScheduleTime in otherScheduleTimes)
                     {

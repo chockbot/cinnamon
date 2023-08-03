@@ -27,5 +27,16 @@ public class UpdateManySchedulesArgs
         public string? SessionName { get; set; }
         public int? HasExpiration { get; set; } = 0;
         public DateTime? StartDate { get; set; }
-    }    
+        public IEnumerable<UpdateActivityScheduleTime> ActivityScheduleTimes { get; set; }
+    }
+
+    public class UpdateActivityScheduleTime
+    {
+        public int ActivityScheduleTimeId { get; set; }
+        public int ActivityScheduleId { get; set; }
+        public int DayOfWeek { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public Enums.Enums.ModelStatus ModelStatus { get; set; }
+    }
 }

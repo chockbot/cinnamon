@@ -296,7 +296,16 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime
+                            {
+                                DayOfWeek = a.DayOfWeek,
+                                EndTime = a.EndTime,
+                                StartTime = a.StartTime,
+                                ActivityScheduleId = a.ActivityScheduleId,
+                                ActivityScheduleTimeId = a.ActivityScheduleTimeId,
+                                ModelStatus = a.ModelStatus
+                            })
                         };
                     }) : null,
                 DeletedScheduleIds  = args.DeletedScheduleIds != null ? args.DeletedScheduleIds : Enumerable.Empty<int>()

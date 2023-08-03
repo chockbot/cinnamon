@@ -57,5 +57,16 @@ public class UpdateActivityArgs : IInteractor
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
+    }
+
+    public class ActivityScheduleTime
+    {
+        public int ActivityScheduleTimeId { get; set; }
+        public int ActivityScheduleId { get; set; }
+        public int DayOfWeek { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public Enums.ModelStatus ModelStatus { get; set; }
     }
 }

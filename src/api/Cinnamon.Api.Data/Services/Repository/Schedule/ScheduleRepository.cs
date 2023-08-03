@@ -401,7 +401,60 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 });
 
                 var updated = await _dataStore.ActivitySchedule.UpdateRange(scheduleToUpdate);
-                if(!updated.Succeeded || updated.Result == null)
+
+                if (args.FirstOrDefault().ActivityScheduleTimes.Any())
+                {
+                    var scheduleId = args.FirstOrDefault().Id;
+
+                    var createdScheduleTimes = args.FirstOrDefault().ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Created)
+                                               .Select(a => new Entities.ActivityScheduleTime
+                                               {
+                                                    ActivityScheduleId = scheduleId,
+                                                    DayOfWeek = a.DayOfWeek,
+                                                    StartTime = a.StartTime,
+                                                    EndTime = a.EndTime,
+                                               });
+
+                    var updatedScheduleTimes = args.FirstOrDefault().ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Updated)
+                                               .Select(a => new Entities.ActivityScheduleTime
+                                               {
+                                                   Id = a.ActivityScheduleTimeId,
+                                                   ActivityScheduleId = scheduleId,
+                                                   DayOfWeek = a.DayOfWeek,
+                                                   StartTime = a.StartTime,
+                                                   EndTime = a.EndTime,
+                                               });
+
+                    var deletedScheduleTimes = args.FirstOrDefault().ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Deleted)
+                                              .Select(a => new Entities.ActivityScheduleTime
+                                              {
+                                                  Id = a.ActivityScheduleTimeId,
+                                                  ActivityScheduleId = scheduleId,
+                                                  DayOfWeek = a.DayOfWeek,
+                                                  StartTime = a.StartTime,
+                                                  EndTime = a.EndTime,
+                                              });
+
+                    var scheduleTimeCreateResult = await _dataStore.ActivityScheduleTime.AddRange(createdScheduleTimes);
+                    var scheduleTimeUpdateResult = await _dataStore.ActivityScheduleTime.UpdateRange(updatedScheduleTimes);
+                    var scheduleTimeDeleteResult = await _dataStore.ActivityScheduleTime.RemoveRange(deletedScheduleTimes);
+
+                    if (!scheduleTimeCreateResult.Succeeded || scheduleTimeCreateResult.Result == null)
+                    {
+                        return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeCreateResult.Message), scheduleTimeCreateResult.Message);
+                    }
+
+                    if (!scheduleTimeUpdateResult.Succeeded || scheduleTimeUpdateResult.Result == null)
+                    {
+                        return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeUpdateResult.Message), scheduleTimeUpdateResult.Message);
+                    }
+
+                    if (!scheduleTimeDeleteResult.Succeeded || scheduleTimeDeleteResult.Result == null)
+                    {
+                        return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeDeleteResult.Message), scheduleTimeDeleteResult.Message);
+                    }
+                }
+                if (!updated.Succeeded || updated.Result == null)
                 {
                     return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(updated.Message), updated.Message);
                 }

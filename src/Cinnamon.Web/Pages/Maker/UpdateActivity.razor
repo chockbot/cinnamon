@@ -693,12 +693,19 @@
             {
                 var activityScheduleTimes = Model.Activity.ActivitySchedules.FirstOrDefault().ActivityScheduleTimes.Where(a => a.DayOfWeek == i).ToList();
 
+                foreach (var item in activityScheduleTimes)
+                {
+                    item.ModelStatus = ModelStatus.Updated;
+                    item.IsNew = false;
+                }
+
                 scheduleTimes.Add(new ScheduleTime
                 {
                     DayOfWeek = i,
                     Sort = i,
                     IsEnabled = true,
-                    ActivityScheduleTimes = activityScheduleTimes
+                    ActivityScheduleTimes = activityScheduleTimes,
+
                 });
             }
 
@@ -908,6 +915,29 @@
             var submit = await activityApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs {
                 ActivityLevel = Model.Activity.ActivityLevel,
                 ActivitySchedules = Model.Activity.ActivitySchedules.Select(s => {
+                    var scheduleTimes = new List<Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdateActivityScheduleTime>();
+                    if (s.ScheduleTimes != null)
+                    {
+                        foreach (var item in s.ScheduleTimes)
+                        {
+                            foreach (var scheduleTime in item.ActivityScheduleTimes)
+                            {
+                                if (!(scheduleTime.ModelStatus == ModelStatus.Deleted && scheduleTime.IsNew))
+                                {
+                                    scheduleTimes.Add(new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdateActivityScheduleTime
+                                    {
+                                        ActivityScheduleId = scheduleTime.ActivityScheduleId,
+                                        ActivityScheduleTimeId = (int)scheduleTime.ActivityScheduleTimeId,
+                                        DayOfWeek = scheduleTime.DayOfWeek,
+                                        EndTime = scheduleTime.EndTime,
+                                        StartTime = scheduleTime.StartTime,
+                                        ModelStatus = scheduleTime.ModelStatus
+                                    });
+                                }
+                            }
+                        }
+                    }
+
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule {
                         Id = s.Id,
                         DateTime = s.DateTime,
@@ -924,6 +954,7 @@
                         SessionName = s.SessionName ?? "N/A",
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate ?? DateTime.MinValue,
+                        ActivityScheduleTimes = scheduleTimes
                     };
                 }),
                 AdditionalRequirements = Model.Activity.AdditionalRequirements,
@@ -1152,18 +1183,27 @@
     {
         var result = new List<Models.Entities.ActivitySchedule>();
 
-        bool isSingle = activitySchedules.Count == 1;
-
-        foreach (var schedule in activitySchedules)
+        if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.GeneralExperience)
         {
-            if (!(string.IsNullOrEmpty(schedule.Name) ||
-                string.IsNullOrEmpty(schedule.DateTime) ||
-                schedule.Price <= 0 ||
-                string.IsNullOrEmpty(schedule.UnitPrice) ||
-                schedule.PerUnit1 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit1) ||
-                schedule.PerUnit2 <= 0 ||
-                string.IsNullOrEmpty(schedule.PriceUnit2)))
+            bool isSingle = activitySchedules.Count == 1;
+            foreach (var schedule in activitySchedules)
+            {
+                if (!(string.IsNullOrEmpty(schedule.Name) ||
+                    string.IsNullOrEmpty(schedule.DateTime) ||
+                    schedule.Price <= 0 ||
+                    string.IsNullOrEmpty(schedule.UnitPrice) ||
+                    schedule.PerUnit1 <= 0 ||
+                    string.IsNullOrEmpty(schedule.PriceUnit1) ||
+                    schedule.PerUnit2 <= 0 ||
+                    string.IsNullOrEmpty(schedule.PriceUnit2)))
+                {
+                    result.Add(schedule);
+                }
+            }
+        }
+        else if (Model.Activity.ExperienceCreationType == Enums.ExperienceCreationType.ExperienceViaAppointment)
+        {
+            foreach (var schedule in activitySchedules)
             {
                 result.Add(schedule);
             }

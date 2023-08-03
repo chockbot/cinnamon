@@ -262,7 +262,16 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 IsSetSession = s.IsSetSession,
                                 SessionName = s.SessionName ?? string.Empty,
                                 HasExpiration = s.HasExpiration,
-                                StartDate = s.StartDate
+                                StartDate = s.StartDate,
+                                ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Framework.ApiCommand.ApiData.Schedule.Request.UpdateManySchedulesArgs.UpdateActivityScheduleTime
+                                {
+                                    DayOfWeek = a.DayOfWeek,
+                                    EndTime   = a.EndTime,
+                                    StartTime = a.StartTime,
+                                    ActivityScheduleId = a.ActivityScheduleId,
+                                    ActivityScheduleTimeId = a.ActivityScheduleTimeId,
+                                    ModelStatus = a.ModelStatus
+                                })
                             };
                         })
                     });

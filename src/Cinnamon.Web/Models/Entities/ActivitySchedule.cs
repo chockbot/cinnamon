@@ -1,4 +1,6 @@
-﻿using System.Data.SqlTypes;
+﻿using Cinnamon.Framework.Enums;
+using System.Data.SqlTypes;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace Cinnamon.Web.Models.Entities;
@@ -107,5 +109,14 @@ public class ActivityScheduleTime
     public string StartTime { get; set; }
     public string EndTime { get; set; }
     public bool IsAvailable { get; set; }
+    public bool IsNew { get; set; }
     public string Message { get; set; }
+    public Framework.Enums.Enums.ModelStatus ModelStatus { get; set; }
+    public DateTime StartDateTime { 
+        
+        get {
+            DateTime newStartTime = DateTime.ParseExact(StartTime, "hh:mm tt", CultureInfo.InvariantCulture);
+            return newStartTime;
+        }
+    }
 }

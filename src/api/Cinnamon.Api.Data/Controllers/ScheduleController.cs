@@ -192,7 +192,16 @@ namespace Cinnamon.Api.Data.Controllers
                         IsSetSession = s.IsSetSession ?? false,
                         SessionName = s.SessionName ?? string.Empty,
                         HasExpiration = s.HasExpiration ?? 0,
-                        StartDate = s.StartDate 
+                        StartDate = s.StartDate,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new ActivityScheduleTimeDTO
+                        {
+                            DayOfWeek = a.DayOfWeek,
+                            EndTime = a.EndTime,
+                            StartTime = a.StartTime,
+                            ActivityScheduleId = a.ActivityScheduleId,
+                            ActivityScheduleTimeId = a.ActivityScheduleTimeId,
+                            ModelStatus = a.ModelStatus
+                        }).ToList()
                     };
                 }));
                 if (!result.Succeeded || result.Result == null)
