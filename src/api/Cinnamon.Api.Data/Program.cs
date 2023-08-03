@@ -27,7 +27,7 @@ var certCredential = new ClientSecretCredential(tenantId, clientId, clientSecret
 var client = new SecretClient(new Uri(keyVaultUri), certCredential);
 
 // setup from config file
-var dbConnectionString = "Server=192.168.254.109;Port=5432;Database=CINNAMON;User Id=postgres;Password=postgres;"; //client.GetSecret(builder.Configuration.GetSection("KeyVault:CinnamonDbConnectionString").Value).Value.Value;
+var dbConnectionString = client.GetSecret(builder.Configuration.GetSection("KeyVault:CinnamonDbConnectionString").Value).Value.Value;
 
 builder.Services.AddDbContext<ApplicationContext>(opts => opts.UseNpgsql(dbConnectionString), ServiceLifetime.Transient);
 
