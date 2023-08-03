@@ -29,7 +29,7 @@
     <Div ElementId="#b-animate" class="purchase-order-page">
         <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
 
-            <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
+            <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
                 <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
                     <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0">
                         <a class="text-decoration-none text-reset" href="/Explore/@Model.Activity.ActivityId"><img src="/images/previous.svg" style="width:20px;" /></a>
@@ -41,11 +41,6 @@
             <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
                 <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3 m-purchase-container">
                     <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
-                        <div class="col-lg-5 col-md-5 col-sm-12 col-12">
-                            <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
-                            <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange" ActivityModel="Model.Activity"></CarouselItemSchedule>
-                        </div>
-                        <hr />
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                             <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
                             <Column ColumnSize="ColumnSize.Is12.OnDesktop">
@@ -62,7 +57,51 @@
                             </Column>
                             <button class="btn-primary rounded border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
                         </div>
-                        <hr />
+                        <Divider />
+                        <div>
+                            <h5 class="font-20 m-font-18 font-weight-700 color-black-100">Activity Selected</h5>
+                            <div class="border-1-solid border-color-grey-200 border-radius-10 overflow-hidden">
+                                <div class="d-flex justify-content-between font-20 m-font-16 font-weight-700 color-black-100 bg-white-200 p-3 border-bottom-1-solid border-color-grey-200">
+                                    <p class="m-0">@Model.SelectedSchedule.Name</p>
+                                    <p class="m-0 m-margin-left-10">₱ @Model.SelectedSchedule.Price.ToString("#,##0.00")</p>
+                                </div>
+                                <div class="p-3">
+                                    <Row class="mt-3" VerticalGutter="10">
+                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                            <p class="mb-0 font-14 font-weight-700 color-black-100">Price Details:</p>
+                                            <p class="mb-0 font-16 color-grey-100">₱ @Model.SelectedSchedule.Price.ToString("#,##0") / @Model.SelectedSchedule.PerUnit1 
+                                                    @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                            <p class="mb-0 font-14 font-weight-700 color-black-100">Expiration:</p>
+                                            @if(Model.SelectedSchedule.HasExpiration == 1)
+                                            {
+                                                <p class="mb-0 font-16 color-grey-100">Consume in - @Model.SelectedSchedule.SessionName</p>
+                                            }
+                                            else 
+                                            {
+                                                <p class="mb-0 font-16 color-grey-100">N/A</p>
+                                            }
+                                        </Column>
+                                    </Row>
+                                    <Row VerticalGutter="10" class="mt-3 m-margin-top-10 align-items-center">
+                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                            <Div>
+                                                <p class="mb-0 font-14 font-weight-700 color-black-100">Schedule:</p>
+                                                <p class="mb-0 font-16 color-grey-100">@Model.SelectedSchedule.DateTime</p>
+                                            </Div>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="m-text-center">
+                                            <Button Type="ButtonType.Button" Clicked="OnClickChange" 
+                                                class="bg-orange-100 color-white-100 p-1 m-0 font-16 font-weight-700 hover-color-white">
+                                                Change
+                                            </Button>
+                                        </Column>
+                                    </Row>
+                                </div>
+                            </div>
+                        </div>
+                        <Divider />
                         <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
                             <h5 class="fw-bold font-20">Pay with</h5>
                             <div class="card-payment-method mt-3">
@@ -175,7 +214,7 @@
                                     </div>
                                 </fieldset>
                             </div>
-                            <hr />
+                            <Divider />
                             <div class="form-outline">
                                 <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Activity Provider’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                                 <br />
@@ -216,7 +255,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
+                                    <Divider />
                                     <div class="price-details">
                                         <span class="fw-bold price-title">Price Details</span>
                                         <div class="d-flex justify-content-between py-1 price-per-head">
@@ -313,7 +352,7 @@
                                                 PHP @(GetTotalCredit.ToString("#,##0.00"))
                                             </div>
                                         </div>
-                                        <hr>
+                                        <Divider />
                                         <div class="d-flex justify-content-between py-1 total-payments">
                                             <div>
                                                 TOTAL PAYMENT
@@ -323,7 +362,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
+                                    <Divider />
                                     <div class="d-flex align-items-center justify-content-center protected-footer">
                                         <CustomTooltip MarginLeft="-100">
                                             <TextContent>
