@@ -1,4 +1,5 @@
 ﻿@page "/explore"
+@page "/explore/experiences/{landingSearch}"
 @page "/confirm-email"
 @layout EmptyLayout
 @using Microsoft.AspNetCore.SignalR.Client;
@@ -670,6 +671,8 @@
 
 @code
 {
+    [Parameter]
+    public string landingSearch { get; set; }
     private WelcomeModal WelcomeModalRef { get; set; }
     private ReviewModal ReviewModalRef { get; set; }
     private ModalLogin signinModal;
@@ -718,8 +721,18 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await FetchPopularActivities();
-        await FetchActivities(false);
+       
+        if (string.IsNullOrEmpty(landingSearch))
+        {
+            await FetchPopularActivities();
+            await FetchActivities(false);
+        }
+        else
+        {
+            searchValue = landingSearch;
+            await Search();
+        }
+
         // get experience categories
         var experienceCategory = await activityApiHandler.GetExperienceCategories();
         if (experienceCategory.Succeeded && experienceCategory.Result != null && experienceCategory.Result.IsSuccess)
