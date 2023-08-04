@@ -87,15 +87,18 @@ public class VerifyCallbackHandler : IVerifyCallbackHandler
                 return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException("An error occured"), "An error occured");
             }
 
-            var finishResult = await finishTransactionHandler.ExecuteAsync(new TransactionService.Interactors.FinishTransactionArgs {
-                TransactionId = transactionId,
-            });
-            if(!finishResult.Succeeded || finishResult.Result == null)
+            if(status == 1)
             {
-                return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(finishResult.Message), finishResult.Message);
+                var finishResult = await finishTransactionHandler.ExecuteAsync(new TransactionService.Interactors.FinishTransactionArgs {
+                    TransactionId = transactionId,
+                });
+                if(!finishResult.Succeeded || finishResult.Result == null)
+                {
+                    return AppResult<VerifyCallbackResult>.CreateFailed(new ApplicationException(finishResult.Message), finishResult.Message);
+                }
             }
 
-            return AppResult<VerifyCallbackResult>.CreateSucceeded(new VerifyCallbackResult {}, "An error occured in VerifyCallbackHandler");
+            return AppResult<VerifyCallbackResult>.CreateSucceeded(new VerifyCallbackResult {}, "Success! Payment Callback Validated");
         }
         catch (Exception ex)
         {

@@ -38,6 +38,9 @@ public class AddActivityExpirationHandler: IAddActivityExpirationHandler
         {
             switch (args.SessionName)
             {
+                case "1 Day":
+                    args.ExpirationEndDate = args.ExpirationStartDate.AddDays(1);
+                    break;
                 case "2 Weeks":
                     args.ExpirationEndDate = args.ExpirationStartDate.AddDays(14);
                     break;

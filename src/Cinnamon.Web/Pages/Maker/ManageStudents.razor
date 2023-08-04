@@ -19,133 +19,155 @@
 <PageTitle>Student Management | CinnamonPH</PageTitle>
 <SeoMeta Title="Student Management" Subject="Student Management" Url="/maker/dashboard/managestudents" />
 
-@if(Model != null){
-    <section class="mt-5 maker-dashboard">
-    <div class="header">
+@if(Model != null)
+{
+<LoadingIndicator @ref=loadingIndicator>
+        <section class="mt-5 maker-dashboard">
+            <div class="header">
 
-        <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
+                <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Manage Students</h3>
 
-        <div class="header-filters">
-            <TextEdit Placeholder="Search" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
+                <div class="header-filters">
+                    <Select TValue="int" class="dropdown-select-search" SelectedValue="@Model.searchBy" SelectedValueChanged="@((value) => OnSeachByValueChange(value))">
+                        <SelectItem Value="0">Search By</SelectItem>
+                        <SelectItem Value="1">Name</SelectItem>
+                        <SelectItem Value="2">Ongoing</SelectItem>
+                        <SelectItem Value="3">Completed</SelectItem>
 
-            <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
-                <SelectItem Value="0">Select Experience</SelectItem>
-                @foreach (var item in Model.activities)
-                {
-                    <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
-                }
-            </Select>
-            @if (Model.selectedFilter != 0)
-            {
-                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
-                    View Schedule
-                </Button>
-            }
-
-        </div>
-    </div>
-    <div class="student-attendance-section">
-        <div class="table-list">
-            <Table @ref="tableStudents" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
-                <TableHeader>
-                    <TableRow>
-                        <TableHeaderCell class="name-header">
-                            <label class="sotring-column" @onclick="SortByName">
-                                Name
-                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
-                            </label>
-                        </TableHeaderCell>
-                        <TableHeaderCell class="sessions-attended-header col-lg-2 col-md2">
-                            <label class="sotring-column">
-                                Completion Date
-                            </label>
-                        </TableHeaderCell>
-                        <TableHeaderCell class="sessions-attended-header col-lg-2 col-md2">
-                            <label class="sotring-column">
-                                Sessions Attended
-                            </label>
-                        </TableHeaderCell>
-                        <TableHeaderCell>
-                            <label class="sotring-column" @onclick="SortByActivity">
-                                Experience
-                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
-                            </label>
-                        </TableHeaderCell>
-                        <TableHeaderCell Class="student-no-header col-lg-2 col-md2">
-                            <label class="sotring-column">
-                                Student No.
-                                <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
-                            </label>
-                        </TableHeaderCell>
-                        <TableHeaderCell class="attendance-header col-lg-2 col-md2">
-                            <label class="sotring-column">
-                                Attendance
-                            </label>
-                        </TableHeaderCell>
-                    </TableRow>
-                </TableHeader>
-                <TableBody>
-                    @foreach (var item in Model.FilteredStudents)
+                    </Select>
+                    @if (Model.isDisplay == true)
                     {
-                        <TableRow>
-                            <TableRowCell class="name-body">@item.Name</TableRowCell>
-                                <TableRowCell class="completion-date-body">
-                                    <center>
-                                        @if(item.SessionsAttended >= item.NumberOfSessions)
-                                        {
-                                            var result = studentAttendances.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
-                                            && s.ActivityId == item.ActivityId).LastOrDefault();
-                                            if (result != null)
-                                            {
-                                                @result.Date.ToString("MMMM dd, yyyy")
-                                                ;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            string ongoing = "Ongoing";
-                                            @ongoing
-                                        }
-                                    </center>
-                                   
-                                </TableRowCell>
-                            <TableRowCell class="progress-body">
-                                <center>
-                                    @if (item.SessionsAttended > item.NumberOfSessions)
-                                    {
-                                        <CircularProgress Id='@($"progress-{item.Id}")' Size="50" PieColor="red"
-                                                  Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
-                                            @($"{item.SessionsAttended}/{item.NumberOfSessions}")
-                                        </CircularProgress>
-                                    }
-                                    else
-                                    {
-                                        <CircularProgress Id='@($"progress-{item.Id}")' Size="50" PieColor="#4bb749"
-                                                  Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
-                                            @($"{item.SessionsAttended}/{item.NumberOfSessions}")
-                                        </CircularProgress>
-                                    }
-                                </center>
-                            </TableRowCell>
-                            <TableRowCell class="experience-body">@item.Title</TableRowCell>
-                            <TableRowCell class="student-no">
-                                @item.StudentNo
-                                &nbsp;<Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3" Clicked="() => ShowModal(item)">
-                                    <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" style="color:#343D4C99;line-height:20px" class="btn-edit" />
-                                </Button>
-                            </TableRowCell>
-                            <TableRowCell class="update">
-                                <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewAttendence(item)" class="btn-update">
-                                    Update
-                                </Button>
-                            </TableRowCell>
-                        </TableRow>
+                        <TextEdit Placeholder="Search by Name" TextChanged="@TextSearchChanged" class="search-bar"></TextEdit>
                     }
-                </TableBody>
-            </Table>
-        </div>
-    </div>
-</section>
+                    <Select TValue="int" class="dropdown-select" SelectedValue="@Model.selectedFilter" SelectedValueChanged="@((value) => OnFilterValueChanged(value))">
+                        <SelectItem Value="0">Select Experience</SelectItem>
+                        @foreach (var item in Model.activities.OrderBy(a => a.Title))
+                        {
+                            <SelectItem Value="@(item.ActivityId)">@item.Title</SelectItem>
+                        }
+                    </Select>
+                    @if (Model.selectedFilter != 0)
+                    {
+                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewSchedule()">
+                            View Schedule
+                        </Button>
+                    }
+
+                </div>
+            </div>
+            <div class="student-attendance-section">
+                <div class="table-list">
+                    <Table @ref="tableStudents" Shadow="Shadow.Default" Resizable ResizeMode="TableResizeMode.Columns" Hoverable>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHeaderCell class="name-header">
+                                <label class="sotring-column" @onclick="SortByName">
+                                    Name
+                                    <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell class="sessions-attended-header col-lg-2 col-md2">
+                                <label class="sotring-column">
+                                    Completion Date
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell class="sessions-attended-header col-lg-2 col-md2">
+                                <label class="sotring-column">
+                                    Sessions Attended
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell>
+                                <label class="sotring-column" @onclick="SortByActivity">
+                                    Experience
+                                    <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell Class="student-no-header col-lg-2 col-md2">
+                                <label class="sotring-column">
+                                    Student No.
+                                    <img src="images/Dashboard/sortingArrow.png" alt="sorting-arrow">
+                                </label>
+                            </TableHeaderCell>
+                            <TableHeaderCell class="attendance-header col-lg-2 col-md2">
+                                <label class="sotring-column">
+                                    Attendance
+                                </label>
+                            </TableHeaderCell>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        @foreach (var item in Model.FilteredStudents)
+                            {
+                                var schedule = Model.activitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault();
+                                <TableRow>
+                                    <TableRowCell class="name-body">@item.Name</TableRowCell>
+                                    <TableRowCell class="completion-date-body">
+                                        <center>
+                                            @if (item.SessionsAttended >= item.NumberOfSessions)
+                                            {
+                                                var result = studentAttendances.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
+                                                && s.ActivityId == item.ActivityId).LastOrDefault();
+                                                if (result != null)
+                                                {
+                                                    @result.Date.ToString("MMMM dd, yyyy")
+                                                    ;
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if ((item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 1) || (item.ExpirationDateEnd < DateTime.Now.Date && schedule.HasExpiration == 2) && item.ExpirationDateEnd != DateTime.MinValue)
+                                                {
+                                                    <p>@item.ExpirationDateEnd.ToString("MMMM dd, yyyy") <span class="expired-session">Expired</span></p>
+                                                }
+                                                else
+                                                {
+                                                    string ongoing = "Ongoing";
+                                                    @ongoing
+                                                }
+
+                                            }
+                                        </center>
+
+                                    </TableRowCell>
+                                    <TableRowCell class="progress-body">
+                                        <center>
+                                            @if (item.SessionsAttended > item.NumberOfSessions)
+                                            {
+                                                <CircularProgress Id='@($"progress-{item.Id}")' Size="50" PieColor="red"
+                                                      Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                                    @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                                </CircularProgress>
+                                            }
+                                            else
+                                            {
+                                                <CircularProgress Id='@($"progress-{item.Id}")' Size="50" PieColor="#4bb749"
+                                                      Percentage="GetSessionPercentage(item.NumberOfSessions, item.SessionsAttended)">
+                                                    @($"{item.SessionsAttended}/{item.NumberOfSessions}")
+                                                </CircularProgress>
+                                            }
+                                        </center>
+                                    </TableRowCell>
+                                    <TableRowCell class="experience-body">@item.Title</TableRowCell>
+                                    <TableRowCell class="student-no">
+                                        @item.StudentNo
+                                        &nbsp;<Button Border="Border.Is0" Padding="Padding.Is0" class="ms-3" Clicked="() => ShowModal(item)">
+                                            <Icon Name="IconName.Edit" IconStyle="IconStyle.Regular" style="color:#343D4C99;line-height:20px" class="btn-edit" />
+                                        </Button>
+                                    </TableRowCell>
+                                    <TableRowCell class="update">
+                                        <Button Color="Color.Primary" Border="Border.Is0" Clicked="() => ViewAttendence(item)" class="btn-update">
+                                            Update
+                                        </Button>
+                                    </TableRowCell>
+                                </TableRow>
+                            }
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
+        </section>
+    </LoadingIndicator>
+    
 <Modal @ref="modalRef">
     <ModalContent Centered Size="ModalSize.Small">
         <ModalHeader>
@@ -231,6 +253,7 @@
 @code {
 
     private ManageStudentsModel Model { get; set; } = new();
+    LoadingIndicator loadingIndicator;
     public Modal modalRef;
     public Modal modalRefViewSchedule;
     public Table tableStudents;
@@ -240,7 +263,6 @@
     private GetStudent students = new GetStudent();
     string token = string.Empty;
     private bool isLoading = false;
-
     protected override async Task OnInitializedAsync()
     {
         try
@@ -294,24 +316,61 @@
     {
         return modalRefViewSchedule.Hide();
     }
-    private async Task OnFilterValueChanged(int activityId)
+    private void OnFilterValueChanged(int activityId)
     {
+        loadingIndicator.Show();
         Model.selectedFilter = activityId;
         if (Model.selectedFilter == 0)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+            Model.FilteredStudents = Model.manageStudents.Where(p => p.ActivityId == activityId).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
 
             activitySchedules = Model.activitySchedules.Where(a => a.ActivityId == activityId).ToList();
         }
+        loadingIndicator.Hide();
+    }
+
+    private void OnSeachByValueChange(int selectedId)
+    {
+        loadingIndicator.Show();
+        Model.searchBy = selectedId;
+        switch (Model.searchBy)
+        {
+            case 0:
+                Model.isDisplay = false;
+                Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
+                break;
+            case 1:
+                Model.isDisplay = true;
+                Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
+                break;
+            case 2:
+                Model.isDisplay = false;
+                Model.FilteredStudents = Model.manageStudents.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue)).ToList();
+                break;
+            case 3:
+                Model.isDisplay = false;
+                Model.FilteredStudents = Model.manageStudents.Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.HasExpiration == 0) 
+                || (a.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                || (a.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue) 
+                || (a.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
+                || (a.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+                && a.ExpirationDateEnd != DateTime.MinValue).ToList();
+                break;
+            default:
+                Model.isDisplay = true;
+                break;
+        }
+        loadingIndicator.Hide();
     }
 
     private void TextSearchChanged(string search)
     {
-        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+        Model.FilteredStudents = Model.manageStudents.FindAll(s => s.Name.ToLower().Contains(search.ToLower())).
+        OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
     }
 
     private async void SaveChanges(int Id, int StudentNo)
@@ -351,8 +410,10 @@
             StateHasChanged();
         }
     }
+
     private async Task GetStudents()
     {
+        await loadingIndicator.Show();
         //Get Owned Activities
         var activityRes = await activityApiHandler.GetOwnedActivities(new Framework.ApiCommand.ApiCore.Activity.Request.GetOwnedActivitiesArgs
             {
@@ -387,7 +448,11 @@
                             PerUnit2 = activitySchedule.PerUnit2,
                             PriceUnit1 = activitySchedule.PriceUnit1,
                             PriceUnit2 = activitySchedule.PriceUnit2,
-                            Price = activitySchedule.Price
+                            Price = activitySchedule.Price,
+                            IsSetSession = activitySchedule.IsSetSession,
+                            SessionName = activitySchedule.SessionName,
+                            HasExpiration = activitySchedule.HasExpiration,
+                            StartDate = activitySchedule.StartDate
                         });
                 }
             }
@@ -411,7 +476,9 @@
                             ScheduleId = a.ScheduleId,
                             SessionsAttended = a.SessionsAttended,
                             Status = a.Status,
-                            StudentNo = a.StudentNo
+                            StudentNo = a.StudentNo,
+                            ExpirationDateEnd = a.ExpirationEndDate,
+                            ExpirationDateStart = a.ExpirationStartDate
                         };
                 }).ToList();
             }
@@ -432,11 +499,14 @@
                             Remarks = item.Remarks,
                             StudentNo = item.StudentNo,
                             Status = item.Status,
-                            ScheduleId = item.ScheduleId
+                            ScheduleId = item.ScheduleId,
+                            ExpirationDateEnd = item.ExpirationDateEnd,
+                            ExpirationDateStart = item.ExpirationDateStart,
+                            HasExpiration = Model.activitySchedules.Where(a => a.Id == item.ScheduleId).FirstOrDefault().HasExpiration
                         };
         //List DataGrid Content
         Model.manageStudents = query.ToList();
-        Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+        Model.FilteredStudents = Model.manageStudents.OrderBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(s => s.ExpirationDateStart).ToList();
         //Get Student Attendance
         foreach (var item in Model.FilteredStudents)
         {
@@ -462,34 +532,39 @@
                 studentAttendances.Add(studnetAttendance);
             }
         }
+        await loadingIndicator.Hide();
     }
 
     private void SortByName()
     {
+        loadingIndicator.Show();
         if (!Model.IsSortNameAsc.HasValue || Model.IsSortNameAsc.Value)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Name).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Name).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
             Model.IsSortNameAsc = false;
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Name).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Name).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
             Model.IsSortNameAsc = true;
         }
+        loadingIndicator.Hide();
     }
 
     private void SortByActivity()
     {
+        loadingIndicator.Show();
         if (!Model.IsSortExperienceAsc.HasValue || Model.IsSortExperienceAsc.Value)
         {
-            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Title).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderBy(s => s.Title).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
             Model.IsSortExperienceAsc = false;
         }
         else
         {
-            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Title).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ToList();
+            Model.FilteredStudents = Model.manageStudents.OrderByDescending(s => s.Title).ThenBy(a => a.SessionsAttended >= a.NumberOfSessions).ThenBy(x => x.ExpirationDateStart).ToList();
             Model.IsSortExperienceAsc = true;
         }
+        loadingIndicator.Hide();
     }
 
     private int GetSessionPercentage(double numberSessions, double sessionsAttended)
@@ -524,6 +599,7 @@
         StateHasChanged();
         return Task.CompletedTask;
     }
+
     public Task HideLoading()
     {
         isLoading = false;

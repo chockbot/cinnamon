@@ -137,7 +137,9 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
                             StudentNo = s.Student.StudentNo,
                             AttendanceDate = s.Date,
                             Id = s.Id,
-                            Remarks = s.Student.Remarks
+                            Remarks = s.Student.Remarks,
+                            ExpirationDateStart = s.Student.ExpirationStartDate,
+                            ExpirationDateEnd = s.Student.ExpirationEndDate
                         };
                     })
                 }, "Successfullt get student attendance");
@@ -161,7 +163,9 @@ public class GetStudentAttendanceHandler : IGetStudentAttendanceHandler
                             StudentNo = s.Student.StudentNo,
                             AttendanceDate = s.Date,
                             Id = s.Id,
-                            Remarks = s.Student.Remarks
+                            Remarks = s.Student.Remarks,
+                            ExpirationDateStart = s.Student.ExpirationStartDate,
+                            ExpirationDateEnd = s.Student.ExpirationEndDate
                     };
                 })
             }, "Successfullt get student attendance");
