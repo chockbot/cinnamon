@@ -63,12 +63,11 @@
         <p class="activities">Activities, learnings and events for you and your loved ones.</p>
     </div>
     <div class="input-group search-section">
-        <input type="search" aria-describedby="button-addon3" class="form-control bg-none border-0">
+        <input type="search" aria-describedby="button-addon3" class="form-control bg-none border-0" autocomplete="off" @bind-value="searchValue">
         <div class="input-group-append border-0">
-            <button id="button-addon3" type="button" class="btn btn-link" style="background-color:#ffa942;">Explore</button>
+            <button id="button-addon3" type="button" class="btn btn-link" style="background-color:#ffa942;" @onclick="() =>SearchToExplorePage()">Explore</button>
         </div>
     </div>
-
     <div class="images-horizontal-lg" style="background:url(images/landing-page-images/img-horizontal-lg.png)">
     </div>
     <div class="images-horizontal-md" style="background:url(images/landing-page-images/img-horizontal-md.png)">
@@ -80,15 +79,17 @@
 <!--Backed By-->
 <div class="section-backed-by row text-center">
     <div class="backed-by-text col-12 d-flex justify-content-center">
-        <img src="images/landing-page-images/backed-by.png">
+         <a href="https://www.facebook.com/cinnamonexperience" target="_blank">
+            <img src="images/landing-page-images/backed-by.png">
+         </a>
     </div>
 </div>
 
 <!--Section 2-->
 <div class="section-2 row">
-    <div class="section2-container-desktop" style="background:url(images/landing-page-images/section2-image-desktop.png);">
+    <div class="section2-container-desktop">
     </div>
-    <div class="section2-container-tablet" style="background:url(images/landing-page-images/section2-image-tablet.png)">
+    <div class="section2-container-tablet">
     </div>
     <div class="section2-container-mobile">
     </div>
@@ -208,7 +209,7 @@
                 </div>
             </div>
             <div class="align-items-center" style="text-align:center;">
-                <button type="button" class="btn btn-see-more border-0" id="btnExploreMore" @onclick="() =>signinModal.Show()">
+                <button type="button" class="btn btn-see-more border-0" id="btnExploreMore" @onclick="() =>NavigateToExplorePage()">
                         <span>See More</span>
                 </button>
             </div>
@@ -396,6 +397,8 @@
 
     public string addToFavorites = "images/favorites/experience-heart-default.svg";
 
+    public string searchValue = string.Empty;
+
     protected override async Task OnInitializedAsync()
     {
         //get activities randomly
@@ -425,6 +428,7 @@
             }
         }
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -608,7 +612,18 @@
 
     private void NavigateToExplorePage()
     {
-        NavigationManager.NavigateTo("explore");
+        NavigationManager.NavigateTo("/explore");
+    }
+    private void SearchToExplorePage()
+    {
+        if (string.IsNullOrEmpty(searchValue))
+        {
+            NavigationManager.NavigateTo("/explore");
+        }
+        else
+        {
+            NavigationManager.NavigateTo($"/explore/experiences/{searchValue}");
+        }
     }
 
     private void NavigateToOnboardingPage()
