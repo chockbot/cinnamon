@@ -150,7 +150,8 @@ namespace Cinnamon.Api.Data.Controllers
                         {
                             DayOfWeek = s.DayOfWeek,
                             EndTime = s.EndTime,
-                            StartTime = s.StartTime
+                            StartTime = s.StartTime,
+                            IsEnabled = s.IsEnabled,
                         }).ToList()
                     };
                 });
@@ -203,7 +204,8 @@ namespace Cinnamon.Api.Data.Controllers
                             StartTime = a.StartTime,
                             ActivityScheduleId = a.ActivityScheduleId,
                             ActivityScheduleTimeId = a.ActivityScheduleTimeId,
-                            ModelStatus = a.ModelStatus
+                            ModelStatus = a.ModelStatus,
+                            IsEnabled = a.IsEnabled
                         }).ToList()
                     };
                 }));

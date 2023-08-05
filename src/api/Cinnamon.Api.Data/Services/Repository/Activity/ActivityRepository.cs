@@ -733,7 +733,8 @@ public class ActivityRepository : IActivityRepository
                                 ActivityScheduleTimeId = s.Id,
                                 DayOfWeek = s.DayOfWeek,
                                 EndTime = s.EndTime,
-                                StartTime = s.StartTime
+                                StartTime = s.StartTime,
+                                IsEnabled = s.IsEnabled
                             }).ToList();
                         }
                     }

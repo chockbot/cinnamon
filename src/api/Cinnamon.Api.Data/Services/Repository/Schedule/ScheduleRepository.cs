@@ -139,7 +139,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                                 ActivityScheduleId = result.Result.Id,
                                 DayOfWeek = a.DayOfWeek,
                                 StartTime = a.StartTime,
-                                EndTime = a.EndTime
+                                EndTime = a.EndTime,
+                                IsEnabled = a.IsEnabled,
                             };
                         });
 
@@ -418,6 +419,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                                                        DayOfWeek = a.DayOfWeek,
                                                        StartTime = a.StartTime,
                                                        EndTime = a.EndTime,
+                                                       IsEnabled = a.IsEnabled
                                                    });
 
                         var updatedScheduleTimes = schedule.ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Updated)
@@ -428,6 +430,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                                                        DayOfWeek = a.DayOfWeek,
                                                        StartTime = a.StartTime,
                                                        EndTime = a.EndTime,
+                                                       IsEnabled = a.IsEnabled
                                                    });
 
                         var deletedScheduleTimes = schedule.ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Deleted)
@@ -438,6 +441,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                                                       DayOfWeek = a.DayOfWeek,
                                                       StartTime = a.StartTime,
                                                       EndTime = a.EndTime,
+                                                      IsEnabled = a.IsEnabled
                                                   });
 
                         var scheduleTimeCreateResult = await _dataStore.ActivityScheduleTime.AddRange(createdScheduleTimes);

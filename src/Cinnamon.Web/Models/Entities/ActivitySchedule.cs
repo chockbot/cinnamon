@@ -113,6 +113,8 @@ public class ActivityScheduleTime
     public bool IsAvailable { get; set; }
     public bool IsNew { get; set; }
     public string Message { get; set; }
+    public bool IsEnabled { get; set; }
+
     public Framework.Enums.Enums.ModelStatus ModelStatus { get; set; }
     public DateTime StartDateTime { 
         

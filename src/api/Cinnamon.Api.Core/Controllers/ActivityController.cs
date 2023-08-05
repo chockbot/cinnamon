@@ -150,6 +150,7 @@ public class ActivityController : ControllerBase
                             DayOfWeek = s.DayOfWeek,
                             EndTime = s.EndTime,
                             StartTime = s.StartTime,
+                            IsEnabled = s.IsEnabled
                         })
                     };
                 }),
@@ -307,7 +308,8 @@ public class ActivityController : ControllerBase
                                 StartTime = a.StartTime,
                                 ActivityScheduleId = a.ActivityScheduleId,
                                 ActivityScheduleTimeId = a.ActivityScheduleTimeId,
-                                ModelStatus = a.ModelStatus
+                                ModelStatus = a.ModelStatus,
+                                IsEnabled = a.IsEnabled
                             })
                         };
                     }) : null,
@@ -995,7 +997,8 @@ public class ActivityController : ControllerBase
                                 ActivityScheduleTimeId = act.ActivityScheduleTimeId,
                                 DayOfWeek = act.DayOfWeek,
                                 EndTime = act.EndTime,
-                                StartTime = act.StartTime
+                                StartTime = act.StartTime,
+                                IsEnabled = act.IsEnabled
                             }).ToList()
                         };
                     }),

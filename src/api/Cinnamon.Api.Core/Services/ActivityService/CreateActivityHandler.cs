@@ -152,7 +152,8 @@ public class CreateActivityHandler : ICreateActivityHandler
                         {
                             DayOfWeek = s.DayOfWeek,
                             EndTime = s.EndTime,
-                            StartTime = s.StartTime
+                            StartTime = s.StartTime,
+                            IsEnabled = s.IsEnabled
                         })
                     };
                 })

@@ -234,7 +234,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 {
                                     DayOfWeek = s.DayOfWeek,
                                     EndTime = s.EndTime,
-                                    StartTime = s.StartTime
+                                    StartTime = s.StartTime,
+                                    IsEnabled = s.IsEnabled
                                 })
                             };
                         })
@@ -280,7 +281,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                     StartTime = a.StartTime,
                                     ActivityScheduleId = a.ActivityScheduleId,
                                     ActivityScheduleTimeId = a.ActivityScheduleTimeId,
-                                    ModelStatus = a.ModelStatus
+                                    ModelStatus = a.ModelStatus,
+                                    IsEnabled = a.IsEnabled
                                 })
                             };
                         })

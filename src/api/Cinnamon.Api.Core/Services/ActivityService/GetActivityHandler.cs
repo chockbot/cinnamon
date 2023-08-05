@@ -117,6 +117,7 @@ public class GetActivityHandler : IGetActivityHandler
                             DayOfWeek = act.DayOfWeek,
                             EndTime = act.EndTime,
                             StartTime = act.StartTime,
+                            IsEnabled = act.IsEnabled,
                         }).ToList()
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),

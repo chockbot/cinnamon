@@ -599,6 +599,7 @@
                             DayOfWeek = act.DayOfWeek,
                             EndTime = act.EndTime,
                             StartTime = act.StartTime,
+                            IsEnabled = act.IsEnabled
                         }).ToList()
                     };
                 }).ToList(),
@@ -709,7 +710,7 @@
                             ActivityScheduleId = schedule.Id,
                             DayOfWeek = i,
                             Sort = i,
-                            IsEnabled = true,
+                            IsEnabled = activityScheduleTimes.FirstOrDefault().IsEnabled,
                             ActivityScheduleTimes = activityScheduleTimes,
                         });
                 }
@@ -937,7 +938,8 @@
                                         DayOfWeek = scheduleTime.DayOfWeek,
                                         EndTime = scheduleTime.EndTime,
                                         StartTime = scheduleTime.StartTime,
-                                        ModelStatus = scheduleTime.ModelStatus
+                                        ModelStatus = scheduleTime.ModelStatus,
+                                        IsEnabled = item.IsEnabled
                                     });
                                 }
                             }

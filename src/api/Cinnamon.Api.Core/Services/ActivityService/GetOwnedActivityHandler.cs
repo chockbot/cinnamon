@@ -121,7 +121,8 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                             ActivityScheduleTimeId = act.ActivityScheduleTimeId,
                             DayOfWeek = act.DayOfWeek,
                             EndTime = act.EndTime,
-                            StartTime = act.StartTime
+                            StartTime = act.StartTime,
+                            IsEnabled = act.IsEnabled,
                         }).ToList()
                     };
                 }) : Enumerable.Empty<GetOwnedActivityResult.ActivitySchedule>(),

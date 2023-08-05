@@ -6,6 +6,7 @@
         public int DayOfWeek { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public bool IsEnabled { get; set; }
         public virtual ActivitySchedule ActivitySchedule { get; set; }
         public virtual IList<OngoingActivityScheduleTime> OngoingActivityScheduleTimes { get; set; }
     }

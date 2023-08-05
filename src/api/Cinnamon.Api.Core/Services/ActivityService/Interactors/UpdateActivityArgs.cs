@@ -71,5 +71,6 @@ public class UpdateActivityArgs : IInteractor
         public string StartTime { get; set; }
         public string EndTime { get; set; }
         public Enums.ModelStatus ModelStatus { get; set; }
+        public bool IsEnabled { get; set; }
     }
 }
