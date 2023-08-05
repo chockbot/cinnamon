@@ -19,6 +19,8 @@ public class ActivityScheduleDTO
     public string SessionName { get; set; }
     public int HasExpiration { get; set; } = 0;
     public DateTime? StartDate { get; set; }
+    public Enums.Enums.ScheduleType ScheduleType { get; set; }
+    public Enums.Enums.PriceType PriceType { get; set; }
     public IList<ActivityScheduleTimeModelDTO> ActivityScheduleTimes { get; set; } = new List<ActivityScheduleTimeModelDTO>();
 }
 

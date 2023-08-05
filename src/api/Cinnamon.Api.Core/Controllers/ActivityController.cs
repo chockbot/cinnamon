@@ -144,6 +144,7 @@ public class ActivityController : ControllerBase
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate ?? DateTime.MinValue,
                         ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime
                         {
                             DayOfWeek = s.DayOfWeek,
@@ -297,6 +298,8 @@ public class ActivityController : ControllerBase
                             SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
                             StartDate = s.StartDate,
+                            PriceType = s.PriceType,
+                            ScheduleType = s.ScheduleType,
                             ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime
                             {
                                 DayOfWeek = a.DayOfWeek,
@@ -984,6 +987,8 @@ public class ActivityController : ControllerBase
                             SessionName = s.SessionName,
                             HasExpiration = s.HasExpiration,
                             StartDate = s.StartDate,
+                            PriceType = s.PriceType,
+                            ScheduleType = s.ScheduleType,
                             ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityScheduleTimeModelDTO
                             {
                                 ActivityScheduleId = act.ActivityScheduleId,

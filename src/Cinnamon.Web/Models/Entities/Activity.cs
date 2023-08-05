@@ -189,5 +189,24 @@ public class Activity
         string pattern = @"(\(?\d{3}\)?-? *\d{3}-? *-?\d{4})";
         return Regex.Replace(input, pattern, m => new string('*', m.Length));
     }
+
+    public List<PriceTypeModel> PriceTypeModels { get; set; } = new List<PriceTypeModel>()
+    {
+        new PriceTypeModel
+        {
+            Description = "Pay To Reserve",
+            PriceType = (int)Framework.Enums.Enums.PriceType.PayToReserve
+        },
+        new PriceTypeModel
+        {
+            Description = "Reserve Only",
+            PriceType = (int)Framework.Enums.Enums.PriceType.ReserveOnly
+        }
+    };
 }
 
+public class PriceTypeModel
+{
+    public string Description { get; set; }
+    public int PriceType { get; set; }
+}

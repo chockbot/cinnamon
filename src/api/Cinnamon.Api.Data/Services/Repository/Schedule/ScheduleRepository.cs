@@ -117,7 +117,8 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         SessionName      = schedule.SessionName ?? string.Empty,
                         HasExpiration    = schedule.HasExpiration,
                         StartDate        = schedule.StartDate.SetKindUtc(),
-                        ScheduleType     = (int)schedule.ScheduleType
+                        ScheduleType     = (int)schedule.ScheduleType,
+                        PriceType        = (int)schedule.PriceType,
                     };
 
                     var result = await _dataStore.ActivitySchedule.Add(entity);
@@ -397,63 +398,69 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate.SetKindUtc(),
+                        PriceType = (int)s.PriceType,
+                        ScheduleType = (int)s.ScheduleType,
                     };
                 });
 
                 var updated = await _dataStore.ActivitySchedule.UpdateRange(scheduleToUpdate);
 
-                if (args.FirstOrDefault().ActivityScheduleTimes.Any())
+                foreach (var schedule in args)
                 {
-                    var scheduleId = args.FirstOrDefault().Id;
-
-                    var createdScheduleTimes = args.FirstOrDefault().ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Created)
-                                               .Select(a => new Entities.ActivityScheduleTime
-                                               {
-                                                    ActivityScheduleId = scheduleId,
-                                                    DayOfWeek = a.DayOfWeek,
-                                                    StartTime = a.StartTime,
-                                                    EndTime = a.EndTime,
-                                               });
-
-                    var updatedScheduleTimes = args.FirstOrDefault().ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Updated)
-                                               .Select(a => new Entities.ActivityScheduleTime
-                                               {
-                                                   Id = a.ActivityScheduleTimeId,
-                                                   ActivityScheduleId = scheduleId,
-                                                   DayOfWeek = a.DayOfWeek,
-                                                   StartTime = a.StartTime,
-                                                   EndTime = a.EndTime,
-                                               });
-
-                    var deletedScheduleTimes = args.FirstOrDefault().ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Deleted)
-                                              .Select(a => new Entities.ActivityScheduleTime
-                                              {
-                                                  Id = a.ActivityScheduleTimeId,
-                                                  ActivityScheduleId = scheduleId,
-                                                  DayOfWeek = a.DayOfWeek,
-                                                  StartTime = a.StartTime,
-                                                  EndTime = a.EndTime,
-                                              });
-
-                    var scheduleTimeCreateResult = await _dataStore.ActivityScheduleTime.AddRange(createdScheduleTimes);
-                    var scheduleTimeUpdateResult = await _dataStore.ActivityScheduleTime.UpdateRange(updatedScheduleTimes);
-                    var scheduleTimeDeleteResult = await _dataStore.ActivityScheduleTime.RemoveRange(deletedScheduleTimes);
-
-                    if (!scheduleTimeCreateResult.Succeeded || scheduleTimeCreateResult.Result == null)
+                    if (schedule.ActivityScheduleTimes.Any())
                     {
-                        return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeCreateResult.Message), scheduleTimeCreateResult.Message);
-                    }
+                        var scheduleId = schedule.Id;
 
-                    if (!scheduleTimeUpdateResult.Succeeded || scheduleTimeUpdateResult.Result == null)
-                    {
-                        return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeUpdateResult.Message), scheduleTimeUpdateResult.Message);
-                    }
+                        var createdScheduleTimes = schedule.ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Created)
+                                                   .Select(a => new Entities.ActivityScheduleTime
+                                                   {
+                                                       ActivityScheduleId = scheduleId,
+                                                       DayOfWeek = a.DayOfWeek,
+                                                       StartTime = a.StartTime,
+                                                       EndTime = a.EndTime,
+                                                   });
 
-                    if (!scheduleTimeDeleteResult.Succeeded || scheduleTimeDeleteResult.Result == null)
-                    {
-                        return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeDeleteResult.Message), scheduleTimeDeleteResult.Message);
+                        var updatedScheduleTimes = schedule.ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Updated)
+                                                   .Select(a => new Entities.ActivityScheduleTime
+                                                   {
+                                                       Id = a.ActivityScheduleTimeId,
+                                                       ActivityScheduleId = scheduleId,
+                                                       DayOfWeek = a.DayOfWeek,
+                                                       StartTime = a.StartTime,
+                                                       EndTime = a.EndTime,
+                                                   });
+
+                        var deletedScheduleTimes = schedule.ActivityScheduleTimes.Where(a => a.ModelStatus == Framework.Enums.Enums.ModelStatus.Deleted)
+                                                  .Select(a => new Entities.ActivityScheduleTime
+                                                  {
+                                                      Id = a.ActivityScheduleTimeId,
+                                                      ActivityScheduleId = scheduleId,
+                                                      DayOfWeek = a.DayOfWeek,
+                                                      StartTime = a.StartTime,
+                                                      EndTime = a.EndTime,
+                                                  });
+
+                        var scheduleTimeCreateResult = await _dataStore.ActivityScheduleTime.AddRange(createdScheduleTimes);
+                        var scheduleTimeUpdateResult = await _dataStore.ActivityScheduleTime.UpdateRange(updatedScheduleTimes);
+                        var scheduleTimeDeleteResult = await _dataStore.ActivityScheduleTime.RemoveRange(deletedScheduleTimes);
+
+                        if (!scheduleTimeCreateResult.Succeeded || scheduleTimeCreateResult.Result == null)
+                        {
+                            return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeCreateResult.Message), scheduleTimeCreateResult.Message);
+                        }
+
+                        if (!scheduleTimeUpdateResult.Succeeded || scheduleTimeUpdateResult.Result == null)
+                        {
+                            return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeUpdateResult.Message), scheduleTimeUpdateResult.Message);
+                        }
+
+                        if (!scheduleTimeDeleteResult.Succeeded || scheduleTimeDeleteResult.Result == null)
+                        {
+                            return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(scheduleTimeDeleteResult.Message), scheduleTimeDeleteResult.Message);
+                        }
                     }
                 }
+              
                 if (!updated.Succeeded || updated.Result == null)
                 {
                     return AppResult<IEnumerable<ScheduleDTO>>.CreateFailed(new ApplicationException(updated.Message), updated.Message);

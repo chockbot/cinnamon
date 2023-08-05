@@ -55,6 +55,7 @@ public class CreateActivityArgs : IInteractor
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
         public Enums.ScheduleType ScheduleType { get; set; }
+        public Enums.PriceType PriceType { get; set; }
         public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
     }
 

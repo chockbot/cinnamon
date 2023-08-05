@@ -113,6 +113,8 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate,
+                        ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new GetOwnedActivityResult.ActivityScheduleTime
                         {
                             ActivityScheduleId = act.ActivityScheduleId,

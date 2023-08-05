@@ -145,6 +145,7 @@ namespace Cinnamon.Api.Data.Controllers
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate,
                         ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new ActivityScheduleTimeDTO
                         {
                             DayOfWeek = s.DayOfWeek,
@@ -193,6 +194,8 @@ namespace Cinnamon.Api.Data.Controllers
                         SessionName = s.SessionName ?? string.Empty,
                         HasExpiration = s.HasExpiration ?? 0,
                         StartDate = s.StartDate,
+                        ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new ActivityScheduleTimeDTO
                         {
                             DayOfWeek = a.DayOfWeek,

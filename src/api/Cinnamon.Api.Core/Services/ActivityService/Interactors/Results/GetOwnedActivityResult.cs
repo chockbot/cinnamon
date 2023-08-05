@@ -62,6 +62,8 @@ public class GetOwnedActivityResult
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public Enums.ScheduleType ScheduleType { get; set; }
+        public Enums.PriceType PriceType { get; set; }
         public IList<ActivityScheduleTime> ActivityScheduleTimes { get; set; } = new List<ActivityScheduleTime>();
     }
 

@@ -590,13 +590,15 @@
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate,
+                        PriceType = s.PriceType,
+                        ScheduleType = s.ScheduleType,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new ActivityScheduleTime
                         {
                             ActivityScheduleId = act.ActivityScheduleId,
                             ActivityScheduleTimeId = act.ActivityScheduleTimeId,
                             DayOfWeek = act.DayOfWeek,
                             EndTime = act.EndTime,
-                            StartTime = act.StartTime
+                            StartTime = act.StartTime,
                         }).ToList()
                     };
                 }).ToList(),
@@ -689,27 +691,31 @@
         {
             List<ScheduleTime> scheduleTimes = new List<ScheduleTime>();
 
-            for (int i = 1; i <= 7; i++)
-            {
-                var activityScheduleTimes = Model.Activity.ActivitySchedules.FirstOrDefault().ActivityScheduleTimes.Where(a => a.DayOfWeek == i).ToList();
+            foreach (var schedule in Model.Activity.ActivitySchedules)            {
+                scheduleTimes = new List<ScheduleTime>();
 
-                foreach (var item in activityScheduleTimes)
+                for (int i = 1; i <= 7; i++)
                 {
-                    item.ModelStatus = ModelStatus.Updated;
-                    item.IsNew = false;
+                    var activityScheduleTimes = schedule.ActivityScheduleTimes.Where(a => a.DayOfWeek == i).ToList();
+
+                    foreach (var item in activityScheduleTimes)
+                    {
+                        item.ModelStatus = ModelStatus.Updated;
+                        item.IsNew = false;
+                    }
+
+                    scheduleTimes.Add(new ScheduleTime
+                        {
+                            ActivityScheduleId = schedule.Id,
+                            DayOfWeek = i,
+                            Sort = i,
+                            IsEnabled = true,
+                            ActivityScheduleTimes = activityScheduleTimes,
+                        });
                 }
 
-                scheduleTimes.Add(new ScheduleTime
-                {
-                    DayOfWeek = i,
-                    Sort = i,
-                    IsEnabled = true,
-                    ActivityScheduleTimes = activityScheduleTimes,
-
-                });
+                schedule.ScheduleTimes = scheduleTimes;
             }
-
-            Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleTimes = scheduleTimes;
         }
 
         obj = DotNetObjectReference.Create(this);
@@ -940,7 +946,7 @@
 
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule {
                         Id = s.Id,
-                        DateTime = s.DateTime,
+                        DateTime = s.DateTime ?? "N/A",
                         Name = s.Name,
                         PerUnit1 = s.PerUnit1,
                         PerUnit2 = s.PerUnit2,
@@ -954,6 +960,8 @@
                         SessionName = s.SessionName ?? "N/A",
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate ?? DateTime.MinValue,
+                        PriceType = s.PriceType,
+                        ScheduleType = s.ScheduleType,
                         ActivityScheduleTimes = scheduleTimes
                     };
                 }),

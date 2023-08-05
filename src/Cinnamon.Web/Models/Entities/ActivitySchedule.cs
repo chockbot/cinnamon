@@ -66,6 +66,7 @@ public class ActivitySchedule
     public int HasExpiration { get; set; } = 0;
     public DateTime? StartDate { get; set; }
     public Cinnamon.Framework.Enums.Enums.ScheduleType ScheduleType { get; set; }
+    public Cinnamon.Framework.Enums.Enums.PriceType PriceType { get; set; }
     public long LongPrice { 
         get{
             return (long)Price;
@@ -94,6 +95,7 @@ public class ActivitySchedule
 
 public class ScheduleTime
 {
+    public int ActivityScheduleId { get; set; }
     public int DayOfWeek { get; set; }
     public int Sort { get; set; }
     public bool IsEnabled { get; set; }

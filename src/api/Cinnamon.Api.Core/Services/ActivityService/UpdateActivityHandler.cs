@@ -228,6 +228,14 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 SessionName = s.SessionName,
                                 HasExpiration = s.HasExpiration,
                                 StartDate = s.StartDate,
+                                ScheduleType = s.ScheduleType,
+                                PriceType = s.PriceType,
+                                ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime
+                                {
+                                    DayOfWeek = s.DayOfWeek,
+                                    EndTime = s.EndTime,
+                                    StartTime = s.StartTime
+                                })
                             };
                         })
                     });
@@ -263,6 +271,8 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 SessionName = s.SessionName ?? string.Empty,
                                 HasExpiration = s.HasExpiration,
                                 StartDate = s.StartDate,
+                                PriceType = s.PriceType,
+                                ScheduleType = s.ScheduleType,
                                 ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Framework.ApiCommand.ApiData.Schedule.Request.UpdateManySchedulesArgs.UpdateActivityScheduleTime
                                 {
                                     DayOfWeek = a.DayOfWeek,

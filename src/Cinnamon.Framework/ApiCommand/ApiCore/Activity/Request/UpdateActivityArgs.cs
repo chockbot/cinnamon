@@ -63,6 +63,9 @@ public class UpdateActivityArgs
         }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public Enums.Enums.ScheduleType ScheduleType { get; set; }
+        public Enums.Enums.PriceType PriceType { get; set; }
+
         public IEnumerable<UpdateActivityScheduleTime> ActivityScheduleTimes { get; set; }
     }
 

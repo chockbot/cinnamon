@@ -31,6 +31,7 @@ public class CreateManySchedulesArgs
         public int HasExpiration { get; set; } = 0;
         public DateTime? StartDate { get; set; }
         public Enums.Enums.ScheduleType ScheduleType { get; set; }
+        public Enums.Enums.PriceType PriceType { get; set; }
         public IEnumerable<ActivityScheduleTime> ActivityScheduleTimes { get; set; }
     }
 

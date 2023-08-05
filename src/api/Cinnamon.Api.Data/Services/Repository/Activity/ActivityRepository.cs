@@ -695,21 +695,23 @@ public class ActivityRepository : IActivityRepository
             {
                 activityDTO.Schedules = activity.Schedules.Select(s => {
                     return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
-                        DateTime = s.DateTime,
-                        Id = s.Id,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2,
-                        Order = s.Order,
+                        DateTime         = s.DateTime,
+                        Id               = s.Id,
+                        Name             = s.Name,
+                        PerUnit1         = s.PerUnit1,
+                        Price            = s.Price,
+                        PriceUnit1       = s.PriceUnit1,
+                        PriceUnit2       = s.PriceUnit2,
+                        UnitPrice        = s.UnitPrice,
+                        PerUnit2         = s.PerUnit2,
+                        Order            = s.Order,
                         IsActiveSchedule = s.IsActiveSchedule,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
-                        HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        IsSetSession     = s.IsSetSession,
+                        SessionName      = s.SessionName,
+                        HasExpiration    = s.HasExpiration,
+                        StartDate        = s.StartDate,
+                        PriceType        = (Enums.PriceType)s.PriceType,
+                        ScheduleType     = (Enums.ScheduleType)s.ScheduleType
                     };
                 }).ToList();
 
@@ -717,20 +719,23 @@ public class ActivityRepository : IActivityRepository
                 {
                     if (activityDTO.Schedules.Count > 0)
                     {
-                        var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == activityDTO.Schedules.FirstOrDefault().Id);
-                        if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                        foreach (var schedule in activityDTO.Schedules)
                         {
-                            return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
-                        }
+                            var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == schedule.Id);
+                            if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                            {
+                                return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                            }
 
-                        activityDTO.Schedules.FirstOrDefault().ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
-                        {
-                            ActivityScheduleId = s.ActivityScheduleId,
-                            ActivityScheduleTimeId = s.Id,
-                            DayOfWeek = s.DayOfWeek,
-                            EndTime = s.EndTime,
-                            StartTime = s.StartTime
-                        }).ToList();
+                            schedule.ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = s.ActivityScheduleId,
+                                ActivityScheduleTimeId = s.Id,
+                                DayOfWeek = s.DayOfWeek,
+                                EndTime = s.EndTime,
+                                StartTime = s.StartTime
+                            }).ToList();
+                        }
                     }
                 }
             }

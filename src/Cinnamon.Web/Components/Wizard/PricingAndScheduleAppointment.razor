@@ -17,101 +17,270 @@
 @*<input type="hidden" @bind="Model.Activity.ActivitySchedules.ToList()" id="activity-schedule-list-create" />*@
 
 <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
-    @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
-    {
-        <div class="form-group">
-            <div class="form-check form-switch">
-                <div class="row">
-                    <div class="col-lg-12 d-flex justify-content-center col-12 d-flex justify-content-center">
-                        <label for="title" class="pricing-title">Pricing & Schedule</label>
-                    </div>
-                    <hr>
-                    <div class="col-lg-4 col-8">
-                        <label for="title" class="form-control-label">Set Inactive/Active:</label>
-                    </div>
-                    <div class="col-lg-8 col-4">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" @bind="scheduleModel.IsActiveSchedule">
-                    </div>
-                    <small class="form-text text-muted sub-details">You can set this as INACTIVE to mark as hidden/deleted, this will not be displayed.</small>
-                </div>
-            </div>
-        </div>
-        <div class="form-group">
-            <table class="field-heading-section">
-                <tr>
-                    <td>
-                        <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">4</label>
-                    </td>
-                    <td>
-                        <label for="title" class="form-control-label label-top-margin right-margin">Schedule Name</label>
-                    </td>
-                    <td>
-                        <img src="images/experience-creation/info-icon.svg" id="info-schedule" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-4.png" />
-                    </td>
-                </tr>
-            </table>
-            <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
-            <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
-        </div>
-        <div class="form-group">
-            <label for="title" class="form-control-label label-top-margin right-margin">Set your weekly hours</label>
-            <table class="tbl-schedule-times">
-                @foreach (var scheduleTime in scheduleModel.ScheduleTimes)
-                {
-                    <tr>
-                        <td style="width: 13%;vertical-align: top;padding-top: 25px;">
-                            <input class="form-check-input chk-enable-schedule-time" type="checkbox" @bind="scheduleTime.IsEnabled">
-                            <b>@dayOfWeekDictionary[scheduleTime.DayOfWeek]</b>
-                        </td>
-                        <td>
-                            @if (scheduleTime.IsEnabled)
+    <div class="accordion" id="activitySchedules">
+        @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
+        {
+            var accordionId = $"panel-section{scheduleModel.Id}";
+            var accordionHeaderId = $"header-section{scheduleModel.Id}";
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="@accordionHeaderId">
+                    <div class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#@accordionId" aria-expanded="true" aria-controls="@accordionId">
+                        <span class="accordion-title">
+                            @if (string.IsNullOrEmpty(scheduleModel.Name))
                             {
-                                @foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes)
-                                {
-                                    <div class="row schedule-time-row">
-                                        <div class="col-lg-3">
-                                            <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleStartTime(e, activityScheduleTime.ActivityScheduleTimeId)">
-                                                @foreach (var item in dateTimes)
-                                                {
-                                                    <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.StartTime)">@item.ToString("hh:mm tt")</option>
-                                                }
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-1" style="width: 0%;padding: 0%;padding-top: 7px;">
-                                            <span> - </span>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleEndTime(e, activityScheduleTime.ActivityScheduleTimeId)">
-                                                @foreach (var item in dateTimes)
-                                                {
-                                                    <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.EndTime)">@item.ToString("hh:mm tt")</option>
-                                                }
-                                            </select>
-                                        </div>
-                                        <div class="col-lg-2">
-                                            <button id="btnDeleteScheduleTime" type="button" class="btn border-0" @onclick="() => RemoveScheduleTime(activityScheduleTime.ActivityScheduleTimeId)"><i class="fa fa-trash"></i></button>
-                                        </div>
-                                    </div>
-                                    @if (!string.IsNullOrEmpty(activityScheduleTime.Message))
-                                    {
-                                        <span class="error-message">@activityScheduleTime.Message</span>
-                                    }
-                                }
+                                <span>N/A</span>
                             }
                             else
                             {
-                                <label>Unavailable</label>
+                                <span>@scheduleModel.Name</span>
                             }
+                        </span>
+                        <div class="ms-auto">
+                            <span class="span-price">P @Math.Truncate(scheduleModel.Price)</span>
+                        </div>
+                    </div>
+                </h2>
+                <div id="@accordionId" class="accordion-collapse collapse" aria-labelledby="panel-section">
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="form-group">
+                                <table class="field-heading-section">
+                                    <tr>
+                                        <td>
+                                            <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">4</label>
+                                        </td>
+                                        <td>
+                                            <label for="title" class="form-control-label label-top-margin right-margin">Listing Name</label>
+                                        </td>
+                                        <td>
+                                            <img src="images/experience-creation/info-icon.svg" id="info-schedule" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-4.png" />
+                                        </td>
+                                    </tr>
+                                </table>
+                                <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
+                                <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col col-lg-4">
+                                        <label for="title" class="form-control-label label-top-margin">Price Type</label>
+                                        <select id="price-type" class="form-control" @onchange="(e) => SetPriceType(e, scheduleModel)">
+                                            <option value="">--Select Price Type--</option>
+                                            @foreach (var priceType in Model.Activity.PriceTypeModels)
+                                            {
+                                                <option value="@priceType.PriceType">@priceType.Description</option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col col-lg-4">
+                                        @if (scheduleModel.PriceType == Framework.Enums.Enums.PriceType.PayToReserve)
+                                        {
+                                            <label for="title" class="form-control-label label-top-margin">Amount</label>
+                                            <input type="text" id="amount" @bind="scheduleModel.Price" class="form-control" />
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-8 weekly-hours-section">
+                                        <label for="title" class="form-control-label label-top-margin right-margin">Set your weekly hours</label>
+                                        <div class="tbl-schedule-times-section">
+                                            @foreach (var scheduleTime in scheduleModel.ScheduleTimes)
+                                            {
+                                                <div class="row tbl-schedule-times">
+                                                    <div class="check-section col-lg-3">
+                                                        <input class="form-check-input chk-enable-schedule-time" type="checkbox" @bind="scheduleTime.IsEnabled">
+                                                        <b>@dayOfWeekDictionary[scheduleTime.DayOfWeek]</b>
+                                                    </div>
+                                                    <div class="schedule-times-section col-lg-7">
+                                                        @if (scheduleTime.IsEnabled)
+                                                        {
+                                                            @foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes)
+                                                            {
+                                                                <div class="row schedule-time-row">
+                                                                    <div class="col-lg-5">
+                                                                        <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleStartTime(e, activityScheduleTime.ActivityScheduleTimeId)">
+                                                                            @foreach (var item in dateTimes)
+                                                                            {
+                                                                                <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.StartTime)">@item.ToString("hh:mm tt")</option>
+                                                                            }
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="separator-section">
+                                                                        <span> - </span>
+                                                                    </div>
+                                                                    <div class="col-lg-5">
+                                                                        <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleEndTime(e, activityScheduleTime.ActivityScheduleTimeId)">
+                                                                            @foreach (var item in dateTimes)
+                                                                            {
+                                                                                <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.EndTime)">@item.ToString("hh:mm tt")</option>
+                                                                            }
+                                                                        </select>
+                                                                    </div>
+                                                                    <div class="col-lg-2">
+                                                                        <button id="btnDeleteScheduleTime" type="button" class="btn border-0" @onclick="() => RemoveScheduleTime(activityScheduleTime.ActivityScheduleTimeId)"><img src="images/experience-creation/delete.svg" /></button>
+                                                                    </div>
+                                                                </div>
+                                                                @if (!string.IsNullOrEmpty(activityScheduleTime.Message))
+                                                                {
+                                                                    <span class="error-message">@activityScheduleTime.Message</span>
+                                                                }
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <label>Unavailable</label>
+                                                        }
+                                                    </div>
+                                                    <div class="add-schedule-time-section col-lg-2">
+                                                        <div class="row">
+                                                            <div class="col-lg-1" style="margin-right: 15px;">
+                                                                <button id="btnAddInterval" type="button" class="btn border-0" @onclick="() => AddScheduleTime(scheduleTime)"><img src="images/experience-creation/add.svg" /> </button>
+                                                            </div>
+                                                            <div class="col-lg-1">
+                                                                <button id="btnCopyInterval" type="button" class="btn border-0"><img src="images/experience-creation/copy.svg" /></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 overrides-section">
+                                        <label for="title" class="form-control-label label-top-margin right-margin">Add date overrides</label>
+                                        <button id="btnAddOverride" type="button" class="btn">Add a date override</button>
+                                        <label class="small-details">Add dates when your availability changes from your weekly hours</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="pricing-schedule">
+        @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => a.IsNew))
+        {
+            <div class="form-group">
+                <table class="field-heading-section">
+                    <tr>
+                        <td>
+                            <label class="field-number-top-margin d-none d-sm-block d-md-block d-lg-block d-xl-block">4</label>
                         </td>
-                        <td style="vertical-align: top;">
-                            <button id="btnAddInterval" type="button" class="btn border-0" @onclick="() => AddScheduleTime(scheduleTime)"><i class="fa fa-plus"></i></button>
+                        <td>
+                            <label for="title" class="form-control-label label-top-margin right-margin">Listing Name</label>
+                        </td>
+                        <td>
+                            <img src="images/experience-creation/info-icon.svg" id="info-schedule" class="d-xl-none d-lg-none d-md-none d-sm-none d-block label-top-margin" alt="check-icon" data-image-url="images/experience-creation/creation-guide-step-4.png" />
                         </td>
                     </tr>
-                }
-            </table>
+                </table>
+                <input class="form-control @RequiredCheck(scheduleModel.Name)" id="schedule-name" required @bind="scheduleModel.Name" />
+                <small class="form-text text-muted sub-details">Example: Beginner lessons for 5-9 y/o</small>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col col-lg-4">
+                        <label for="title" class="form-control-label label-top-margin">Price Type</label>
+                        <select id="price-type" class="form-control" @onchange="(e) => SetPriceType(e, scheduleModel)">
+                            <option value="">--Select Price Type--</option>
+                            @foreach (var priceType in Model.Activity.PriceTypeModels)
+                            {
+                                <option value="@priceType.PriceType">@priceType.Description</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col col-lg-4">
+                        @if (scheduleModel.PriceType == Framework.Enums.Enums.PriceType.PayToReserve)
+                        {
+                            <label for="title" class="form-control-label label-top-margin">Amount</label>
+                            <input type="text" id="amount" @bind="scheduleModel.Price" class="form-control" />
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-8 weekly-hours-section">
+                        <label for="title" class="form-control-label label-top-margin right-margin">Set your weekly hours</label>
+                        <div class="tbl-schedule-times-section">
+                            @foreach (var scheduleTime in scheduleModel.ScheduleTimes)
+                            {
+                                <div class="row tbl-schedule-times">
+                                    <div class="check-section col-lg-3">
+                                        <input class="form-check-input chk-enable-schedule-time" type="checkbox" @bind="scheduleTime.IsEnabled">
+                                        <b>@dayOfWeekDictionary[scheduleTime.DayOfWeek]</b>
+                                    </div>
+                                    <div class="schedule-times-section col-lg-7">
+                                        @if (scheduleTime.IsEnabled)
+                                        {
+                                            @foreach (var activityScheduleTime in scheduleTime.ActivityScheduleTimes)
+                                            {
+                                                <div class="row schedule-time-row">
+                                                    <div class="col-lg-5">
+                                                        <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleStartTime(e, activityScheduleTime.ActivityScheduleTimeId)">
+                                                            @foreach (var item in dateTimes)
+                                                            {
+                                                                <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.StartTime)">@item.ToString("hh:mm tt")</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="separator-section">
+                                                        <span> - </span>
+                                                    </div>
+                                                    <div class="col-lg-5">
+                                                        <select class="ddl-schedule-time form-control" @onchange="(e) => SetScheduleEndTime(e, activityScheduleTime.ActivityScheduleTimeId)">
+                                                            @foreach (var item in dateTimes)
+                                                            {
+                                                                <option value="@item.ToString("hh:mm tt")" selected="@(item.ToString("hh:mm tt") == activityScheduleTime.EndTime)">@item.ToString("hh:mm tt")</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                    <div class="col-lg-2">
+                                                        <button id="btnDeleteScheduleTime" type="button" class="btn border-0" @onclick="() => RemoveScheduleTime(activityScheduleTime.ActivityScheduleTimeId)"><img src="images/experience-creation/delete.svg" /></button>
+                                                    </div>
+                                                </div>
+                                                @if (!string.IsNullOrEmpty(activityScheduleTime.Message))
+                                                {
+                                                    <span class="error-message">@activityScheduleTime.Message</span>
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <label>Unavailable</label>
+                                        }
+                                    </div>
+                                    <div class="add-schedule-time-section col-lg-2">
+                                        <div class="row">
+                                            <div class="col-lg-1" style="margin-right: 15px;">
+                                                <button id="btnAddInterval" type="button" class="btn border-0" @onclick="() => AddScheduleTime(scheduleTime)"><img src="images/experience-creation/add.svg" /> </button>
+                                            </div>
+                                            <div class="col-lg-1">
+                                                <button id="btnCopyInterval" type="button" class="btn border-0"><img src="images/experience-creation/copy.svg" /></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                    <div class="col-lg-4 overrides-section">
+                        <label for="title" class="form-control-label label-top-margin right-margin">Add date overrides</label>
+                        <button id="btnAddOverride" type="button" class="btn">Add a date override</button>
+                        <label class="small-details">Add dates when your availability changes from your weekly hours</label>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="form-group">
+            <button id="btnAddSchedule" type="button" class="btn btn-primary border-0" @onclick=AddSchedule>Add Listing</button>
         </div>
-
-    }
+    </div>
 </div>
 
 @code {
@@ -213,6 +382,14 @@
         {
             if (string.IsNullOrEmpty(schedule.Name))
                 return false;
+
+            if (schedule.PriceType == Framework.Enums.Enums.PriceType.PayToReserve)
+            {
+                if (schedule.Price == 0)
+                {
+                    return false;
+                }
+            }
         }
 
         return true;
@@ -244,6 +421,8 @@
         }
 
         Model.Activity.ActivitySchedules.Add(new ActivitySchedule { Id = maxId + 1, PerUnit1 = 1, PerUnit2 = 1, Order = order + 1, IsNew = true, SessionName = null });
+
+        scheduleTimes = new List<ScheduleTime>();
 
         for (int i = 1; i <= 7; i++)
         {
@@ -323,7 +502,7 @@
     {
         scheduleTimes = scheduleTimes.OrderBy(a => a.Sort).ToList();
 
-        Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleTimes = scheduleTimes;
+        Model.Activity.ActivitySchedules.OrderByDescending(a => a.Id).FirstOrDefault().ScheduleTimes = scheduleTimes;
     }
 
     private bool AreAllSchedulesValid()
@@ -385,6 +564,7 @@
 
         AreAllSchedulesValid();
     }
+
     private async Task SetScheduleEndTime(ChangeEventArgs e, long activityScheduleTimeId)
     {
         foreach (var item in scheduleTimes)
@@ -398,5 +578,10 @@
         }
 
         AreAllSchedulesValid();
+    }
+
+    private async Task SetPriceType(ChangeEventArgs e, ActivitySchedule activitySchedule)
+    {
+        activitySchedule.PriceType = (Framework.Enums.Enums.PriceType)int.Parse(e.Value.ToString());
     }
 }
