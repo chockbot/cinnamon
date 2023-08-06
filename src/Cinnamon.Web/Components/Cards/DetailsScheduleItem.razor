@@ -1,0 +1,144 @@
+﻿@namespace Cinnamon.Web.Components
+@using Cinnamon.Web.Enums;
+@using Models.Entities
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+@if (ActivityModel != null)
+{
+    @if (ScheduleModel.IsActiveSchedule == true)
+    {
+        <div class="schedule-desktop">
+            <div class="schedule-detail w-100 rounded-5">
+                <div class="schedule-header d-flex">
+                    <div class="schedule-title col-lg-10 clo-md-9 justify-content-start">
+                        <p>@ScheduleModel.Name</p>
+                    </div>
+                    <div class="form-check col-lg-2 col-md-3 justify-content-center">
+                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)" 
+                            class="form-check-input" type="radio" name="schedule" id="schedule">
+                        <label class="form-check-label" for="schedule">
+                            Select
+                        </label>
+                    </div>
+                </div>
+                <hr>
+                <div class="schedule-body">
+                    <div class=" col-lg-10 col-md-9 PES-details">
+                        <div class="PE-details d-flex">
+                            <div class="col-lg-6 col-md-6 price-details">
+                                <p class="font-14">Price Details:</p>
+                                <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
+                            </div>
+                            @if (ScheduleModel.IsSetSession == true)
+                            {
+                                <div class="col-lg-6 col-md-6 expiration details">
+                                    <p class="font-14">Expiration:</p>
+                                    <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
+                                </div>
+                            }
+                        </div>
+                        <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
+                            <p class="font-14">Schedule:</p>
+                            <p class="font-16">@ScheduleModel.DateTime</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
+                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="schedule-mobile">
+            <div class="schedule-detail w-100 rounded-5">
+                <div class="schedule-header d-flex">
+                    <div class="schedule-title col-9 justify-content-start">
+                        <p>@ScheduleModel.Name</p>
+                    </div>
+                    <div class="col-3 justify-content-center">
+                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="schedule-body">
+                    <div class="col-12 price-details">
+                        <p class="font-14">Price Details:</p>
+                        <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
+                    </div>
+                    @if (ScheduleModel.IsSetSession == true)
+                    {
+                        <div class="col-12 expiration-details">
+                            <p class="font-14">Expiration:</p>
+                            <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
+                        </div>
+                    }
+                    <div class="col-12 schedule-details">
+                        <p class="font-14">Schedule:</p>
+                        <p class="font-16">@ScheduleModel.DateTime</p>
+                    </div>
+                    <div class="col-12 form-check ">
+                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)" 
+                            class="form-check-input" type="radio" name="schedule" id="schedule">
+                        <label class="form-check-label" for="schedule">
+                            Select
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    }
+}
+@if (!AuthState.User.Identity.IsAuthenticated)
+{
+    <ModalLogin @ref="modalLoginRef" ReturnUrl="@($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}")"></ModalLogin>
+}
+
+@code {
+    [Parameter]
+    public ActivitySchedule ScheduleModel { get; set; }
+    [Parameter]
+    public Activity ActivityModel { get; set; }
+    [Parameter]
+    public ScheduleButtonType ButtonType { get; set; } = ScheduleButtonType.Choose;
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickChange { get; set; } = new EventCallback<MouseEventArgs>();
+
+    [Parameter]
+    public EventCallback<int> OnChooseClick { get; set; }
+
+    [Parameter]
+    public EventCallback<MouseEventArgs> OnClickLogin { get; set; } = new EventCallback<MouseEventArgs>();
+
+    public AuthenticationState AuthState { get; set; }
+
+    private int selectedScheduleId = 0;
+
+    private ModalLogin? modalLoginRef;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AuthState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    }
+
+    private void OnClickChoose()
+    {
+        NavigationManager.NavigateTo($"/Payment/{ActivityModel.Id}/{ScheduleModel.Id}");
+        if (OnChooseClick.HasDelegate)
+        {
+            OnChooseClick.InvokeAsync(selectedScheduleId);
+        }
+    }
+
+    private Task OnSelectedChanged(int selectedId)
+    {
+        selectedScheduleId = selectedId;
+        if (OnChooseClick.HasDelegate)
+        {
+            OnChooseClick.InvokeAsync(selectedScheduleId);
+        }
+        return Task.CompletedTask;
+    }
+}
