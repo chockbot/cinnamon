@@ -111,6 +111,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                 Handler = handlerName,
                 PinnedLocation = args.PinnedLocation,
                 Status = args.Status,
+                ExperienceCreationType = args.ExperienceCreationType
             });
 
             if(!activityRes.Succeeded || activityRes.Result == null)
@@ -145,6 +146,15 @@ public class CreateActivityHandler : ICreateActivityHandler
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate,
+                        ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime
+                        {
+                            DayOfWeek = s.DayOfWeek,
+                            EndTime = s.EndTime,
+                            StartTime = s.StartTime,
+                            IsEnabled = s.IsEnabled
+                        })
                     };
                 })
             });

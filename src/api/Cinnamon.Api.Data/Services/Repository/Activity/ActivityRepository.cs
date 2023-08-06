@@ -26,7 +26,7 @@ public class ActivityRepository : IActivityRepository
         string scheduleIndicator, string remarks, bool isPublished, string address1, string address2, string district, string city, string subdivision, string region, string barangay, string postalcode,
         string specificsYouWillProvide, string customerBringWithThem, string? additionalRequirements, string activityLevel, string skillLevel,
         int minimumAge, bool canAdultsJoin, string? searchtag1, string? searchtag2, string? searchtag3, string? searchtag4, string? searchtag5,
-        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, Enums.ActivityStatus status)
+        int experienceCategoryId, int subCategoryId, string handler, string pinnedLocation, ActivityStatus status, Enums.ExperienceCreationType experienceCreationType)
     {
         try
         {
@@ -74,7 +74,8 @@ public class ActivityRepository : IActivityRepository
                 Handler = handler,
                 IsNew = true,
                 Guid = Guid.NewGuid().ToString(),
-                Status = (int)status
+                Status = (int)status,
+                ExperienceCreationTypeId = (int)experienceCreationType
             };
             var createdActitivityRes = await dataStore.Activity.Add(ativity);
             if (!createdActitivityRes.Succeeded || createdActitivityRes.Result == null)
@@ -655,6 +656,7 @@ public class ActivityRepository : IActivityRepository
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
                 Status = (Enums.ActivityStatus)activity.Status,
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId,
             };
 
             // address fields
@@ -693,23 +695,50 @@ public class ActivityRepository : IActivityRepository
             {
                 activityDTO.Schedules = activity.Schedules.Select(s => {
                     return new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO {
-                        DateTime = s.DateTime,
-                        Id = s.Id,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        PerUnit2 = s.PerUnit2,
-                        Order = s.Order,
+                        DateTime         = s.DateTime,
+                        Id               = s.Id,
+                        Name             = s.Name,
+                        PerUnit1         = s.PerUnit1,
+                        Price            = s.Price,
+                        PriceUnit1       = s.PriceUnit1,
+                        PriceUnit2       = s.PriceUnit2,
+                        UnitPrice        = s.UnitPrice,
+                        PerUnit2         = s.PerUnit2,
+                        Order            = s.Order,
                         IsActiveSchedule = s.IsActiveSchedule,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
-                        HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        IsSetSession     = s.IsSetSession,
+                        SessionName      = s.SessionName,
+                        HasExpiration    = s.HasExpiration,
+                        StartDate        = s.StartDate,
+                        PriceType        = (Enums.PriceType)s.PriceType,
+                        ScheduleType     = (Enums.ScheduleType)s.ScheduleType
                     };
                 }).ToList();
+
+                if ((Enums.ExperienceCreationType)activity.ExperienceCreationTypeId == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                {
+                    if (activityDTO.Schedules.Count > 0)
+                    {
+                        foreach (var schedule in activityDTO.Schedules)
+                        {
+                            var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == schedule.Id);
+                            if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                            {
+                                return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                            }
+
+                            schedule.ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = s.ActivityScheduleId,
+                                ActivityScheduleTimeId = s.Id,
+                                DayOfWeek = s.DayOfWeek,
+                                EndTime = s.EndTime,
+                                StartTime = s.StartTime,
+                                IsEnabled = s.IsEnabled
+                            }).ToList();
+                        }
+                    }
+                }
             }
 
             // search tags
@@ -810,6 +839,7 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId
             };
 
             // address fields
@@ -865,6 +895,31 @@ public class ActivityRepository : IActivityRepository
                         StartDate = s.StartDate
                     };
                 }).ToList();
+
+                if ((Enums.ExperienceCreationType)activity.ExperienceCreationTypeId == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                {
+                    if (activityDTO.Schedules.Count > 0)
+                    {
+                        foreach (var schedule in activityDTO.Schedules)
+                        {
+                            var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == schedule.Id);
+                            if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                            {
+                                return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                            }
+
+                            schedule.ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = s.ActivityScheduleId,
+                                ActivityScheduleTimeId = s.Id,
+                                DayOfWeek = s.DayOfWeek,
+                                EndTime = s.EndTime,
+                                StartTime = s.StartTime,
+                                IsEnabled = s.IsEnabled
+                            }).ToList();
+                        }
+                    }
+                }
             }
 
             // search tags

@@ -40,6 +40,7 @@ public class GetActivityResult
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
     public Enums.ActivityStatus Status { get; set; }
+    public Enums.ExperienceCreationType ExperienceCreationType { get; set; }
 
     public IEnumerable<string> SearchTags {get; set;}
     public IEnumerable<ActivitySchedule> ActivitySchedules {get; set;}
@@ -64,6 +65,9 @@ public class GetActivityResult
         public string SessionName { get; set; }
         public int HasExpiration { get; set; }
         public DateTime? StartDate { get; set; }
+        public Enums.ScheduleType ScheduleType { get; set; }
+        public Enums.PriceType PriceType { get; set; }
+        public IList<ActivityScheduleTime> ActivityScheduleTimes { get; set; } = new List<ActivityScheduleTime>();
     }
 
     public class ActivityImage 
@@ -87,4 +91,16 @@ public class GetActivityResult
         public bool IsOG { get; set; }
         public bool IsOfficial { get; set; }
     }
+
+    public class ActivityScheduleTime
+    {
+        public int ActivityScheduleTimeId { get; set; }
+        public int ActivityScheduleId { get; set; }
+        public int DayOfWeek { get; set; }
+        public string StartTime { get; set; }
+        public string EndTime { get; set; }
+        public bool IsAvailable { get; set; }
+        public bool IsEnabled { get; set; }
+    }
+
 }

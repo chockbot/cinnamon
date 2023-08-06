@@ -85,6 +85,12 @@ public class DataStore : IDataStore
 
     public IChatConnection ChatConnection => new ChatConnectionEntity(applicationContext);
 
+    public IActivityScheduleTime ActivityScheduleTime => new ActivityScheduleTimeEntity(applicationContext);
+
+    public IExperienceCreationType ExperienceCreationType => new ExperienceCreationTypeEntity(applicationContext);
+
+    public IOngoingActivityScheduleTime OngoingActivityScheduleTime => new OngoingActivityScheduleTimeEntity(applicationContext);
+
     public async Task EnsureMigrate()
     {
         await applicationContext.Database.MigrateAsync();
@@ -568,6 +574,29 @@ public class DataStore : IDataStore
             });
         }
 
-        await applicationContext.SaveChangesAsync();
+        var experienceCreationType = await applicationContext.ExperienceCreationTypes.FirstOrDefaultAsync();
+        if (experienceCreationType == null)
+        {
+            applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
+            {
+                Name = "General Experiences",
+                ImagePath = "/images/experience-creation/general-experience.svg",
+                IsActive = true,
+            });
+            applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
+            {
+                Name = "Experience via Appointment",
+                ImagePath = "/images/experience-creation/appointment.svg",
+                IsActive = true,
+            });
+            applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
+            {
+                Name = "One Time Events",
+                ImagePath = "/images/experience-creation/one-time-event.svg",
+                IsActive = true,
+            });
+        }
+
+            await applicationContext.SaveChangesAsync();
     }
 }

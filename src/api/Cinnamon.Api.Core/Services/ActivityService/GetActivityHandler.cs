@@ -90,6 +90,7 @@ public class GetActivityHandler : IGetActivityHandler
                 Handler = activity.Handler,
                 PinnedLocation= activity.PinnedLocation,
                 Status = activity.Status,
+                ExperienceCreationType = activity.ExperienceCreationType,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityResult.ActivitySchedule {
                         Id = s.Id,
@@ -107,6 +108,17 @@ public class GetActivityHandler : IGetActivityHandler
                         SessionName = s.SessionName,
                         HasExpiration  = s.HasExpiration,
                         StartDate = s.StartDate,
+                        PriceType = s.PriceType,
+                        ScheduleType = s.ScheduleType,
+                        ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new GetActivityResult.ActivityScheduleTime
+                        {
+                            ActivityScheduleId = act.ActivityScheduleId,
+                            ActivityScheduleTimeId = act.ActivityScheduleTimeId,
+                            DayOfWeek = act.DayOfWeek,
+                            EndTime = act.EndTime,
+                            StartTime = act.StartTime,
+                            IsEnabled = act.IsEnabled,
+                        }).ToList()
                     };
                 }) : Enumerable.Empty<GetActivityResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {
