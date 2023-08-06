@@ -69,6 +69,9 @@ public class ApplicationContext : IdentityDbContext
 
     public DbSet<Coupon> Coupons {get; set;}
     public DbSet<ChatConnection> ChatConnections {get; set; }
+    public DbSet<ActivityScheduleTime> ActivityScheduleTimes {get; set; }
+    public DbSet<ExperienceCreationType> ExperienceCreationTypes {get; set; }
+    public DbSet<OngoingActivityScheduleTime> OngoingActivityScheduleTimes {get; set; }
 
     #endregion
 
@@ -230,6 +233,22 @@ public class ApplicationContext : IdentityDbContext
             .HasMany<Reviews>(a => a.Reviews)
             .WithOne(i => i.Activity)
             .HasForeignKey(i => i.ActivityId);
+
+        modelBuilder.Entity<Activity>()
+            .HasOne(c => c.ExperienceCreationType)
+            .WithOne(c => c.Activity)
+            .HasForeignKey<Activity>(c => c.ExperienceCreationTypeId);
+
+        modelBuilder.Entity<ActivitySchedule>()
+          .HasMany<ActivityScheduleTime>(a => a.ActivityScheduleTimes)
+          .WithOne(i => i.ActivitySchedule)
+          .HasForeignKey(i => i.ActivityScheduleId);
+
+        modelBuilder.Entity<ActivityScheduleTime>()
+         .HasMany<OngoingActivityScheduleTime>(a => a.OngoingActivityScheduleTimes)
+         .WithOne(i => i.ActivityScheduleTime)
+         .HasForeignKey(i => i.ActivityScheduleTimeId);
+
         // for coupons
         modelBuilder.Entity<Coupon>().HasOne(c => c.Activity).WithMany().IsRequired(false);
         modelBuilder.Entity<Coupon>().HasOne(c => c.Customer);

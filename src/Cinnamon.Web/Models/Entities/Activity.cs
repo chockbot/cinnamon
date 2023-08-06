@@ -164,6 +164,7 @@ public class Activity
     public string SessionName { get; set; }
     public string PinnedLocation { get; set; }
     public Cinnamon.Framework.Enums.Enums.ActivityStatus Status { get; set; }
+    public Cinnamon.Framework.Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
     public int ActivityStatus { get { return (int)Status; } }
     public IList<string> SearchTags {get; set;} = new List<string>();
     public IList<ActivitySchedule> ActivitySchedules {get; set;} = new List<ActivitySchedule>();
@@ -188,5 +189,24 @@ public class Activity
         string pattern = @"(\(?\d{3}\)?-? *\d{3}-? *-?\d{4})";
         return Regex.Replace(input, pattern, m => new string('*', m.Length));
     }
+
+    public List<PriceTypeModel> PriceTypeModels { get; set; } = new List<PriceTypeModel>()
+    {
+        new PriceTypeModel
+        {
+            Description = "Pay To Reserve",
+            PriceType = (int)Framework.Enums.Enums.PriceType.PayToReserve
+        },
+        new PriceTypeModel
+        {
+            Description = "Reserve Only",
+            PriceType = (int)Framework.Enums.Enums.PriceType.ReserveOnly
+        }
+    };
 }
 
+public class PriceTypeModel
+{
+    public string Description { get; set; }
+    public int PriceType { get; set; }
+}

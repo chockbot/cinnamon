@@ -15,5 +15,7 @@ namespace Cinnamon.Api.Core.Modules.DataAccess.Handlers
         Task<AppResult<CreateManySchedulesResult>> CreateManySchedules(CreateManySchedulesArgs args);
         Task<AppResult<UpdateManySchedulesResult>> UpdateManySchedules(UpdateManySchedulesArgs args);
         Task<AppResult<DeleteManySchedulesResult>> DeleteManySchedules(DeleteManySchedulesArgs args);
+        Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args);
+        Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args);
     }
 }

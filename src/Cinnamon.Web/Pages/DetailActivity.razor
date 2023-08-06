@@ -375,7 +375,7 @@
                                                     <div class="form-check col-lg-2 col-md-3 col-sm-3 col-3 justify-content-center">
                                                         <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input" 
                                                             value="@schedule.Id" type="radio" name="schedule" id="schedule" 
-                                                            @onchange="() => SelectedScheduleId = schedule.Id">
+                                                            @onchange="() => SelectSchedule(schedule.Id)">
                                                         <label class="form-check-label" for="schedule">
                                                             Select
                                                         </label>
@@ -383,7 +383,7 @@
                                                 </div>
                                                 <hr>
                                                 <div class="schedule-body">
-                                                    <div class=" col-lg-10 col-md-9 col-sm-9 col-10 PES-details">
+                                                    <div class="col-lg-10 col-md-9 col-sm-9 col-10 PES-details">
                                                         <div class="PE-details d-flex">
                                                             <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
                                                                 <p class="font-14">Price Details:</p>
@@ -405,6 +405,47 @@
                                                     <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
                                                         <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
                                                     </div>
+                                                </div>
+                                                <div class="calendar-section">
+                                                    @if (activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment && activeSchedule.ElementAt(x).IsSelected)
+                                                    {
+                                                        <div class="row">
+                                                             <div class="col-lg-5">
+                                                                <p class="font-14">Select Date & Time:</p>
+                                                                <DatePicker TValue="DateTime?" Inline DateChanged="(e) => DateHasChanged(e)" />
+                                                            </div>
+                                                            <div class="col-lg-5">
+                                                                <div class="row">
+                                                                    @foreach (var scheduleTime in activityScheduleTimes)
+                                                                    {
+                                                                        <div class="col-lg-6">
+                                                                            @if (scheduleTime.IsSelected)
+                                                                            {
+                                                                                <div class="row">
+                                                                                    <div class="col-lg-6">
+                                                                                        <button class="btn btn-cancel-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, false)">
+                                                                                            Cancel
+                                                                                        </button>
+                                                                                    </div>
+                                                                                    <div class="col-lg-6">
+                                                                                        <button class="btn book-schedule-time" @onclick="() => BookSchedule(scheduleTime.ActivityScheduleTimeId)">
+                                                                                            Book
+                                                                                        </button>
+                                                                                    </div>
+                                                                                </div>
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                <button class="btn btn-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, true)" disabled="@(scheduleTime.IsAvailable ? false : true)">
+                                                                                    @scheduleTime.StartTime
+                                                                                </button>
+                                                                            }
+                                                                        </div>
+                                                                    }
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    }
                                                 </div>
                                             </div>
                                         }
@@ -811,6 +852,7 @@
     public List<BadgeList> badges = new List<BadgeList>();
     public List<Reviews> activityReviews = new List<Reviews>();
     public List<Reviews> top3Reviews = new List<Reviews>();
+    public List<ActivityScheduleTime> activityScheduleTimes = new List<ActivityScheduleTime>();
     private IAnimation selectedAnimation = Animations.FadeIn;
     private DetailsSchedulesModal DetailsModalSched { get; set; }
     public int SelectedValue { get; set; } = 0;
@@ -830,6 +872,7 @@
     private string signInReturnUrl = string.Empty;
     private bool isAuthenticated = false;
     private bool isOpenMobileCalculator = false;
+    private DateTime SelectedDate;
 
     protected override async Task OnInitializedAsync()
     {
@@ -897,6 +940,7 @@
                         CreatedBy = result.CreatedBy,
                         MapDetails = result.MapDetails,
                         PinnedLocation = result.PinnedLocation,
+                        ExperienceCreationType = result.ExperienceCreationType,
                         ActivitySchedules = result.ActivitySchedules.Select(e =>
                         {
                             return new ActivitySchedule
@@ -914,7 +958,8 @@
                                 IsSetSession = e.IsSetSession,
                                 SessionName = e.SessionName,
                                 HasExpiration = e.HasExpiration,
-                                StartDate = e.StartDate
+                                StartDate = e.StartDate,
+                                PriceType = e.PriceType
                             };
                         }).ToList(),
                         Images = result.Images.Select(i =>
@@ -1308,5 +1353,79 @@
     {
         SelectedScheduleId = selectedId;
         return Task.CompletedTask;
+    }
+
+    private async Task DateHasChanged(DateTime? dateTime)
+    {
+        var result = await activityApiHandler.GetActivityScheduleTimes(new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityScheduleTimesArgs
+        {
+            ActivityScheduleId = SelectedScheduleId,
+            DayOfWeek = (int)dateTime.GetValueOrDefault().DayOfWeek,
+            ScheduleDate = dateTime.GetValueOrDefault()
+        });
+
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+        {
+            activityScheduleTimes = result.Result.Result.Select(a => new ActivityScheduleTime
+            {
+                ActivityScheduleTimeId = a.ActivityScheduleTimeId,
+                DayOfWeek = a.DayOfWeek,
+                StartTime = a.StartTime,
+                EndTime = a.EndTime,
+                IsAvailable = a.IsAvailable
+            }).ToList();
+        }
+
+        SelectedDate = dateTime.GetValueOrDefault();
+    }
+
+    private async Task SelectSchedule(int scheduleId)
+    {
+        SelectedScheduleId = scheduleId;     
+
+        foreach (var item in activity.ActivitySchedules)
+        {
+            item.IsSelected = false;
+        }
+
+        activity.ActivitySchedules.FirstOrDefault(a => a.Id == scheduleId).IsSelected = true;
+    }
+
+    private async Task ToggleScheduleTime(long scheduleTimeId, bool isSelected)
+    {
+        foreach (var item in activityScheduleTimes)
+        {
+            item.IsSelected = false;
+        }
+
+        activityScheduleTimes.FirstOrDefault(a => a.ActivityScheduleTimeId == scheduleTimeId).IsSelected = isSelected;
+    }
+
+    private async Task BookSchedule(long scheduleTimeId)
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+
+        if (isAuthenticated)
+        {
+            var result = await activityApiHandler.CreateOngoingActivitySchedule(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOngoingActivityScheduleArgs
+                {
+                    ActivityScheduleTimeId = (int)scheduleTimeId,
+                    PurchaseOrderId = 0,
+                    ScheduleDate = SelectedDate,
+                    IsCompleted = false,
+                    CreatedBy = CustomerModel.CustomerProfile.Id
+                }, token);
+
+            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
+            {
+                NavigationManager.NavigateTo($"/Explore/{Identifier}", true);
+            }
+        }
+        else
+        {
+            signInReturnUrl = $"/Explore/{Identifier}";
+            await signinModal.Show();
+        }
     }
 }

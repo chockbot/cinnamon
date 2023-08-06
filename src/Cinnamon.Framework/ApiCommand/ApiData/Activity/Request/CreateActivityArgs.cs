@@ -48,5 +48,6 @@ public class CreateActivityArgs
     [Required]
     public string Handler {get; set;}
     public Enums.Enums.ActivityStatus Status { get; set; }
+    public Enums.Enums.ExperienceCreationType ExperienceCreationType { get; set; }
 
 }
