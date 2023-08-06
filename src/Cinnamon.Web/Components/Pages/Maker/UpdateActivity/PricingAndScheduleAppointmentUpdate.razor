@@ -306,13 +306,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        dayOfWeekDictionary.Add(0, "SUN");
         dayOfWeekDictionary.Add(1, "MON");
         dayOfWeekDictionary.Add(2, "TUE");
         dayOfWeekDictionary.Add(3, "WED");
         dayOfWeekDictionary.Add(4, "THU");
         dayOfWeekDictionary.Add(5, "FRI");
         dayOfWeekDictionary.Add(6, "SAT");
-        dayOfWeekDictionary.Add(7, "SUN");
 
         while (startTime <= endTime)
         {
@@ -572,11 +572,11 @@
 
         int maxId = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.TempId) + 1;
         int order = Model.Activity.ActivitySchedules.Count == 0 ? 1 : Model.Activity.ActivitySchedules.Max(s => s.Order) + 1;
-        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1, Order = order, IsNew = true, IsActiveSchedule = false, SessionName = null });
+        Model.Activity.ActivitySchedules.Add(new Models.Entities.ActivitySchedule { TempId = maxId, PerUnit1 = 1, PerUnit2 = 1, Order = order, IsNew = true, IsActiveSchedule = true, SessionName = null });
 
         scheduleTimes = new List<ScheduleTime>();
 
-        for (int i = 1; i <= 7; i++)
+        for (int i = 0; i < 7; i++)
         {
             scheduleTimes.Add(new ScheduleTime
                 {

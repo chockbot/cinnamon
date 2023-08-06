@@ -791,13 +791,13 @@ public class ActivityApiHandler : IActivityApiHandler
         }
     }
 
-    public async Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args, string token)
+    public async Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args)
     {
         try
         {
             var result = await flurlClient
-               .WithOAuthBearerToken(token)
                .Request("Activity/GetActivityScheduleTimes")
+               .SetQueryParams(args)
                .GetJsonAsync<GetActivityScheduleTimesResult>();
 
             return AppResult<GetActivityScheduleTimesResult>.CreateSucceeded(result, "Successfully getting activity schedule times api");

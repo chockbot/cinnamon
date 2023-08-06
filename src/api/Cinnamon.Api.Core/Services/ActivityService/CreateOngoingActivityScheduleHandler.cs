@@ -35,7 +35,8 @@ namespace Cinnamon.Api.Core.Services.ActivityService
                     ActivityScheduleTimeId = args.ActivityScheduleTimeId,
                     IsCompleted = args.IsCompleted,
                     PurchaseOrderId = args.PurchaseOrderId,
-                    ScheduleDate = args.ScheduleDate
+                    ScheduleDate = args.ScheduleDate,
+                    CreatedBy = args.CreatedBy
                 });
 
                 if (!result.Succeeded || result.Result == null)

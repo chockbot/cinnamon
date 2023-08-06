@@ -1190,7 +1190,8 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName  = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            PriceType = s.PriceType,
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1231,6 +1232,7 @@ public class ActivityController : ControllerBase
                     Title = activity.Title,
                     Handler = activity.Handler,
                     PinnedLocation = activity.PinnedLocation,
+                    ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id,
@@ -1298,7 +1300,9 @@ public class ActivityController : ControllerBase
                             IsSetSession = s.IsSetSession,
                             SessionName  = s.SessionName,
                             HasExpiration = s.HasExpiration,
-                            StartDate = s.StartDate
+                            StartDate = s.StartDate,
+                            PriceType = s.PriceType,
+                            ScheduleType = s.ScheduleType
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,
@@ -1339,6 +1343,7 @@ public class ActivityController : ControllerBase
                     Title = activity.Title,
                     Handler = activity.Handler,
                     PinnedLocation = activity.PinnedLocation,
+                    ExperienceCreationType = activity.ExperienceCreationType,
                     Owner = activity.Owner != null ? new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.CustomerOwner {
                             Handler = activity.Owner.Handler,
                             Id  = activity.Owner.Id
@@ -2239,6 +2244,7 @@ public class ActivityController : ControllerBase
 
     [Route("GetActivityScheduleTimes")]
     [HttpGet]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(GetActivityScheduleTimesResult), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetActivityScheduleTimes([FromQuery] GetActivityScheduleTimesArgs args)
     {
@@ -2290,7 +2296,8 @@ public class ActivityController : ControllerBase
                 ActivityScheduleTimeId = args.ActivityScheduleTimeId,
                 IsCompleted = args.IsCompleted,
                 PurchaseOrderId = args.PurchaseOrderId,
-                ScheduleDate = args.ScheduleDate
+                ScheduleDate = args.ScheduleDate,
+                CreatedBy = args.CreatedBy
             });
 
             if (!result.Succeeded || result.Result == null)

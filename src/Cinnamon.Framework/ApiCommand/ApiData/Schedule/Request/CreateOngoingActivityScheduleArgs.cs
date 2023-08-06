@@ -12,5 +12,6 @@ namespace Cinnamon.Framework.ApiCommand.ApiData.Schedule.Request
         public int ActivityScheduleTimeId { get; set; }
         public int PurchaseOrderId { get; set; }
         public bool IsCompleted { get; set; }
+        public int CreatedBy { get; set; }
     }
 }

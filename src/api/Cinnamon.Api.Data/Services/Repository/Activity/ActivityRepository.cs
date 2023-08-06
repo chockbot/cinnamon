@@ -839,6 +839,7 @@ public class ActivityRepository : IActivityRepository
                 CreatedBy = activity.CreatedBy,
                 MapDetails = activity.MapDetails,
                 Handler = activity.Handler,
+                ExperienceCreationType = (Enums.ExperienceCreationType)activity.ExperienceCreationTypeId
             };
 
             // address fields
@@ -894,6 +895,31 @@ public class ActivityRepository : IActivityRepository
                         StartDate = s.StartDate
                     };
                 }).ToList();
+
+                if ((Enums.ExperienceCreationType)activity.ExperienceCreationTypeId == Enums.ExperienceCreationType.ExperienceViaAppointment)
+                {
+                    if (activityDTO.Schedules.Count > 0)
+                    {
+                        foreach (var schedule in activityDTO.Schedules)
+                        {
+                            var scheduleTimeResult = await dataStore.ActivityScheduleTime.FindAsync(a => a.ActivityScheduleId == schedule.Id);
+                            if (!scheduleTimeResult.Succeeded || scheduleTimeResult.Result == null)
+                            {
+                                return AppResult<ActivityDTO>.CreateFailed(scheduleTimeResult.Error.Exception, scheduleTimeResult.Message);
+                            }
+
+                            schedule.ActivityScheduleTimes = scheduleTimeResult.Result.Select(s => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleTimeModelDTO
+                            {
+                                ActivityScheduleId = s.ActivityScheduleId,
+                                ActivityScheduleTimeId = s.Id,
+                                DayOfWeek = s.DayOfWeek,
+                                EndTime = s.EndTime,
+                                StartTime = s.StartTime,
+                                IsEnabled = s.IsEnabled
+                            }).ToList();
+                        }
+                    }
+                }
             }
 
             // search tags

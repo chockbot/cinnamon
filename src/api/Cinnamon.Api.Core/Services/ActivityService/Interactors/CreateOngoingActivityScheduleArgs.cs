@@ -8,5 +8,6 @@ namespace Cinnamon.Api.Core.Services.ActivityService.Interactors
         public int ActivityScheduleTimeId { get; set; }
         public int PurchaseOrderId { get; set; }
         public bool IsCompleted { get; set; }
+        public int CreatedBy { get; set; }
     }
 }

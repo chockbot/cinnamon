@@ -67,6 +67,7 @@ public class ActivitySchedule
     public DateTime? StartDate { get; set; }
     public Cinnamon.Framework.Enums.Enums.ScheduleType ScheduleType { get; set; }
     public Cinnamon.Framework.Enums.Enums.PriceType PriceType { get; set; }
+    public bool IsSelected { get; set; }
     public long LongPrice { 
         get{
             return (long)Price;
@@ -114,6 +115,7 @@ public class ActivityScheduleTime
     public bool IsNew { get; set; }
     public string Message { get; set; }
     public bool IsEnabled { get; set; }
+    public bool IsSelected { get; set; }
 
     public Framework.Enums.Enums.ModelStatus ModelStatus { get; set; }
     public DateTime StartDateTime { 

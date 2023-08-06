@@ -45,6 +45,6 @@ public interface IActivityApiHandler
     Task<AppResult<ValidateCouponCodeResult>> ValidateCouponCode(ValidateCouponCodeArgs args, string token);
     Task<AppResult<UpdateCouponResult>> UpdateCoupon(UpdateCouponArgs args, string token);
     Task<AppResult<GetExperienceCreationTypeResult>> GetExperienceCreationTypes(GetExperienceCreationTypeArgs args, string token);
-    Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args, string token);
+    Task<AppResult<GetActivityScheduleTimesResult>> GetActivityScheduleTimes(GetActivityScheduleTimesArgs args);
     Task<AppResult<CreateOngoingActivityScheduleResult>> CreateOngoingActivitySchedule(CreateOngoingActivityScheduleArgs args, string token);
 }

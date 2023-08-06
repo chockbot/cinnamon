@@ -88,6 +88,7 @@ public class GetActivityByHandler : IGetActivityByHandler
                 CreatedBy = activity.CreatedBy,
                 MarDetails = activity.MapDetails,
                 PinnedLocation = activity.PinnedLocation,
+                ExperienceCreationType = activity.ExperienceCreationType,
                 ActivitySchedules = activity.Schedules != null ? activity.Schedules.Select(s => {
                     return new GetActivityByHandlerResult.ActivitySchedule {
                         Id = s.Id,
@@ -105,6 +106,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate,
+                        ScheduleType = s.ScheduleType,
+                        PriceType = s.PriceType
                     };
                 }) : Enumerable.Empty<GetActivityByHandlerResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {

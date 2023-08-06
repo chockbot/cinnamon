@@ -272,7 +272,7 @@ namespace Cinnamon.Api.Data.Controllers
         {
             try
             {
-                var result = await _scheduleRepository.CreateOngoingActivitySchedule(args.ScheduleDate, args.ActivityScheduleTimeId, args.PurchaseOrderId, args.IsCompleted);
+                var result = await _scheduleRepository.CreateOngoingActivitySchedule(args.ScheduleDate, args.ActivityScheduleTimeId, args.PurchaseOrderId, args.IsCompleted, args.CreatedBy);
                 if (!result.Succeeded || !result.Result)
                 {
                     return new JsonResult(new CreateOngoingActivityScheduleResult { ErrorInfo = new ErrorInfo { Message = result.Message } });

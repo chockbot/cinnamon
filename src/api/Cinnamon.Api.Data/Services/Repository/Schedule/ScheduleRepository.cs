@@ -231,7 +231,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
                 var activityScheduleTime = activityScheduleResult.Result;
 
-                var ongoingActivityResult = await _dataStore.OngoingActivityScheduleTime.FindAsync(a => activityScheduleTime.Select(s => s.Id).Contains(a.ActivityScheduleTimeId) && a.ScheduleDate == scheduleDate && !a.IsCompleted);
+                var ongoingActivityResult = await _dataStore.OngoingActivityScheduleTime.FindAsync(a => activityScheduleTime.Select(s => s.Id).Contains(a.ActivityScheduleTimeId) && a.ScheduleDate == scheduleDate.SetKindUtc() && !a.IsCompleted);
 
                 if (!ongoingActivityResult.Succeeded || ongoingActivityResult.Result == null)
                 {
@@ -342,7 +342,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
             }
         }
 
-        public async Task<AppResult<bool>> CreateOngoingActivitySchedule(DateTime scheduleDate, int activityScheduleTimeId, int purchaseOrderId, bool isCompleted)
+        public async Task<AppResult<bool>> CreateOngoingActivitySchedule(DateTime scheduleDate, int activityScheduleTimeId, int purchaseOrderId, bool isCompleted, int createdBy)
         {
             try
             {
@@ -354,10 +354,11 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
 
                 var result = await _dataStore.OngoingActivityScheduleTime.Add(new Entities.OngoingActivityScheduleTime
                 {
-                    ScheduleDate = scheduleDate,
+                    ScheduleDate = scheduleDate.SetKindUtc(),
                     ActivityScheduleTimeId = activityScheduleTimeId,
                     PurchaseOrderId = purchaseOrderId,
-                    IsCompleted = isCompleted
+                    IsCompleted = isCompleted,
+                    CreatedBy = createdBy
                 });
 
                 if (!result.Succeeded || result.Result == null)
