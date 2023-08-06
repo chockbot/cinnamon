@@ -582,18 +582,21 @@ public class DataStore : IDataStore
                 Name = "General Experiences",
                 ImagePath = "/images/experience-creation/general-experience.svg",
                 IsActive = true,
+                Description = "Great for creating experiences (e.g., Piano Lessons for kids, Swimming Class, etc.)"
             });
             applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
             {
                 Name = "Experience via Appointment",
                 ImagePath = "/images/experience-creation/appointment.svg",
                 IsActive = true,
+                Description = "If you want customers to book your experience by appointment"
             });
             applicationContext.ExperienceCreationTypes.Add(new Entities.ExperienceCreationType
             {
                 Name = "One Time Events",
                 ImagePath = "/images/experience-creation/one-time-event.svg",
                 IsActive = true,
+                Description = "Great for events like visiting a museum, an educational place, etc."
             });
         }
 
