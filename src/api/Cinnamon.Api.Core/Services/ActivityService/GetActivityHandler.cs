@@ -110,6 +110,7 @@ public class GetActivityHandler : IGetActivityHandler
                         StartDate = s.StartDate,
                         PriceType = s.PriceType,
                         ScheduleType = s.ScheduleType,
+                        SchedulingUrl = s.SchedulingUrl,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new GetActivityResult.ActivityScheduleTime
                         {
                             ActivityScheduleId = act.ActivityScheduleId,
