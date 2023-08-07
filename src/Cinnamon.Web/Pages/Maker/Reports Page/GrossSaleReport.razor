@@ -1,0 +1,37 @@
+﻿@page "/maker/dashboard/grosssale"
+@layout DashboardLayout
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@using Cinnamon.Web.Pages
+@using Cinnamon.Web.Components
+@using Cinnamon.Web.Components.Pages;
+@using Microsoft.AspNetCore.SignalR.Client;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@using System.Security.Claims;
+@using Cinnamon.Web.Models.Entities;
+@inject IChatApiHandler chatApiHandler;
+@inject IAccountApiHandler accountApiHandler
+
+<div class="header">
+    <button class="back-button" @onclick="@(() => NavigateToManageReports())"><img src="images/calender icon left.png"></button>
+    <p class="back-text">Reports</p>
+</div>
+<div class="page-title">
+    <h3 class="text-capitalize fw-bold header-title" style="color:#FFA942;">Gross Sales Reports </h3>
+    <h6 class="gross-sale-text">Track the sales of your activities. This helps you see your most profitable activities in Cinnamon.</h6>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+       
+    }
+    private void NavigateToManageReports()
+    {
+        NavigationManager.NavigateTo("/maker/dashboard/reports");
+    }
+}
