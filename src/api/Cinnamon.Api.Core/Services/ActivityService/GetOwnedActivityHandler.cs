@@ -115,6 +115,7 @@ public class GetOwnedActivityHandler : IGetOwnedActivityHandler
                         StartDate = s.StartDate,
                         ScheduleType = s.ScheduleType,
                         PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new GetOwnedActivityResult.ActivityScheduleTime
                         {
                             ActivityScheduleId = act.ActivityScheduleId,

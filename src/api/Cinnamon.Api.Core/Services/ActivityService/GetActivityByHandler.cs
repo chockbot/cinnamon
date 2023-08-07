@@ -107,7 +107,8 @@ public class GetActivityByHandler : IGetActivityByHandler
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate,
                         ScheduleType = s.ScheduleType,
-                        PriceType = s.PriceType
+                        PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl
                     };
                 }) : Enumerable.Empty<GetActivityByHandlerResult.ActivitySchedule>(),
                 Images = activity.Images != null ? activity.Images.OrderBy(i => i.Order).Select(i => {

@@ -21,6 +21,7 @@ public class ActivityScheduleDTO
     public DateTime? StartDate { get; set; }
     public Enums.Enums.ScheduleType ScheduleType { get; set; }
     public Enums.Enums.PriceType PriceType { get; set; }
+    public string SchedulingUrl { get; set; }
     public IList<ActivityScheduleTimeModelDTO> ActivityScheduleTimes { get; set; } = new List<ActivityScheduleTimeModelDTO>();
 }
 

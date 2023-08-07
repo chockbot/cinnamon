@@ -230,6 +230,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 StartDate = s.StartDate,
                                 ScheduleType = s.ScheduleType,
                                 PriceType = s.PriceType,
+                                SchedulingUrl = s.SchedulingUrl,
                                 ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime
                                 {
                                     DayOfWeek = s.DayOfWeek,
@@ -274,6 +275,7 @@ public class UpdateActivityHandler : IUpdateActivityHandler
                                 StartDate = s.StartDate,
                                 PriceType = s.PriceType,
                                 ScheduleType = s.ScheduleType,
+                                SchedulingUrl = s.SchedulingUrl,
                                 ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Framework.ApiCommand.ApiData.Schedule.Request.UpdateManySchedulesArgs.UpdateActivityScheduleTime
                                 {
                                     DayOfWeek = a.DayOfWeek,
