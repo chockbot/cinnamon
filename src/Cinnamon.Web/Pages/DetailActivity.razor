@@ -414,11 +414,93 @@
                                                                 <p class="font-14">Price Details:</p>
                                                                 <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                             </div>
-                                                            @if (@activeSchedule.ElementAt(x).IsSetSession == true)
+                                                            @if (schedule.IsSetSession == true && x <= 2)
                                                             {
-                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration details">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration-details">
                                                                     <p class="font-14">Expiration:</p>
-                                                                    <p class="font-16-d">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                                    <p class="font-16-d">Consume in - @schedule.SessionName</p>
+                                                                    <div class="cut-off-details">
+                                                                        @if (schedule.HasExpiration == 1 && (schedule.StartDate != null || schedule.StartDate != DateTime.MinValue))
+                                                                        {
+                                                                            string ordinal = "";
+                                                                            DateTime frequency = DateTime.Now;
+                                                                            int day = schedule.StartDate.Value.Day;
+                                                                            switch (schedule.SessionName)
+                                                                            {
+                                                                                case "2 Weeks":
+                                                                                    frequency = schedule.StartDate.Value.AddDays(14);
+                                                                                    break;
+                                                                                case "3 Weeks":
+                                                                                    frequency = schedule.StartDate.Value.AddDays(21);
+                                                                                    break;
+                                                                                case "1 Month":
+                                                                                    frequency = schedule.StartDate.Value.AddMonths(1);
+                                                                                    break;
+                                                                                case "2 Months":
+                                                                                    frequency = schedule.StartDate.Value.AddMonths(2);
+                                                                                    break;
+                                                                                case "3 Months":
+                                                                                    frequency = schedule.StartDate.Value.AddMonths(3);
+                                                                                    break;
+                                                                            }
+
+                                                                            switch (frequency.Day)
+                                                                            {
+                                                                                case 1:
+                                                                                case 21:
+                                                                                case 31:
+                                                                                    ordinal = "st";
+                                                                                    break;
+                                                                                case 2:
+                                                                                case 22:
+                                                                                    ordinal = "nd";
+                                                                                    break;
+                                                                                case 3:
+                                                                                case 23:
+                                                                                    ordinal = "rd";
+                                                                                    break;
+                                                                                default:
+                                                                                    ordinal = "th";
+                                                                                    break;
+                                                                            }
+                                                                            switch (schedule.SessionName)
+                                                                            {
+                                                                                case "2 Weeks":
+                                                                                case "3 Weeks":
+                                                                                    string tooltip1 = "The expiration period is "+schedule.SessionName+ " (calendar days) and will start on " +schedule.StartDate.Value.ToString("MMMM dd, yyyy")+".";
+                                                                                    <Tooltip Text="@tooltip1" Multiline>
+                                                                                        <small class="form-text sub-details">
+                                                                                        The expiration period is @schedule.SessionName (calendar days) and will start on @schedule.StartDate.Value.ToString("MMMM dd, yyyy").
+                                                                                        </small>
+                                                                                    </Tooltip>
+                                                                                    break;
+                                                                                case "1 Month":
+                                                                                    string tooltip2 = "The expiration period is " +schedule.SessionName + ", and the cutoff is every "+frequency.Day+ ordinal+"day of the month";
+                                                                                    <Tooltip Text="@tooltip2" Multiline>
+                                                                                        <small class="form-text sub-details">
+                                                                                            Cutoff is every @frequency.Day@ordinal day of the month...etc
+                                                                                        </small>
+                                                                                    </Tooltip>
+                                                                                    break;
+                                                                                case "2 Months":
+                                                                                    string tooltip3 = "The expiration period is " + schedule.SessionName + ", and the cutoff is every " + frequency.Day + ordinal + "day of the 3rd month";
+                                                                                    <Tooltip Text="@tooltip3" Multiline>
+                                                                                        <small class="form-text sub-details">
+                                                                                            Cutoff is every @frequency.Day@ordinal day of the 3rd month...etc
+                                                                                        </small>
+                                                                                    </Tooltip>
+                                                                                    break;
+                                                                                case "3 Months":
+                                                                                    string tooltip4 = "The expiration period is " + schedule.SessionName + ", and the cutoff is every "+frequency.Day+ ordinal+"day of the 4th month";
+                                                                                    <Tooltip Text="@tooltip4" Multiline>
+                                                                                        <small class="form-text sub-details">
+                                                                                            Cutoff is every @frequency.Day@ordinal day of the 4th month...etc
+                                                                                        </small>
+                                                                                    </Tooltip>
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    </div>
                                                                 </div>
                                                             }
                                                         </div>
@@ -484,11 +566,93 @@
                                                         <p class="font-14">Price Details:</p>
                                                         <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                     </div>
-                                                    @if (@activeSchedule.ElementAt(x).IsSetSession == true)
+                                                    @if (schedule.IsSetSession == true && x <= 2)
                                                     {
                                                         <div class="col-12 expiration-details">
                                                             <p class="font-14">Expiration:</p>
-                                                            <p class="font-16-d">Consume in - @activeSchedule.ElementAt(x).SessionName</p>
+                                                            <p class="font-16-d">Consume in - @schedule.SessionName</p>
+                                                            <div class="cut-off-details">
+                                                                @if (schedule.HasExpiration == 1 && schedule.StartDate != null)
+                                                                {
+                                                                    string ordinal = "";
+                                                                    DateTime frequency = DateTime.Now;
+                                                                    int day = schedule.StartDate.Value.Day;
+                                                                    switch (schedule.SessionName)
+                                                                    {
+                                                                        case "2 Weeks":
+                                                                            frequency = schedule.StartDate.Value.AddDays(14);
+                                                                            break;
+                                                                        case "3 Weeks":
+                                                                            frequency = schedule.StartDate.Value.AddDays(21);
+                                                                            break;
+                                                                        case "1 Month":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(1);
+                                                                            break;
+                                                                        case "2 Months":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(2);
+                                                                            break;
+                                                                        case "3 Months":
+                                                                            frequency = schedule.StartDate.Value.AddMonths(3);
+                                                                            break;
+                                                                    }
+
+                                                                    switch (frequency.Day)
+                                                                    {
+                                                                        case 1:
+                                                                        case 21:
+                                                                        case 31:
+                                                                            ordinal = "st";
+                                                                            break;
+                                                                        case 2:
+                                                                        case 22:
+                                                                            ordinal = "nd";
+                                                                            break;
+                                                                        case 3:
+                                                                        case 23:
+                                                                            ordinal = "rd";
+                                                                            break;
+                                                                        default:
+                                                                            ordinal = "th";
+                                                                            break;
+                                                                    }
+                                                                    switch (schedule.SessionName)
+                                                                    {
+                                                                        case "2 Weeks":
+                                                                        case "3 Weeks":
+                                                                            string tooltip1 = "The expiration period is " + schedule.SessionName + " (calendar days) and will start on " + schedule.StartDate.Value.ToString("MMMM dd, yyyy") + ".";
+                                                                            <Tooltip Text="@tooltip1" Multiline>
+                                                                            <small class="form-text sub-details">
+                                                                                The expiration period is @schedule.SessionName (calendar days) and will start on @schedule.StartDate.Value.ToString("MMMM dd, yyyy").
+                                                                            </small>
+                                                                        </Tooltip>
+                                                                            break;
+                                                                        case "1 Month":
+                                                                            string tooltip2 = "The expiration period is " + schedule.SessionName + ", and the cutoff is every " + frequency.Day + ordinal + "day of the month";
+                                                                            <Tooltip Text="@tooltip2" Multiline>
+                                                                            <small class="form-text sub-details">
+                                                                                Cutoff is every @frequency.Day@ordinal day of the month...etc
+                                                                            </small>
+                                                                        </Tooltip>
+                                                                            break;
+                                                                        case "2 Months":
+                                                                            string tooltip3 = "The expiration period is " + schedule.SessionName + ", and the cutoff is every " + frequency.Day + ordinal + "day of the 3rd month";
+                                                                            <Tooltip Text="@tooltip3" Multiline>
+                                                                            <small class="form-text sub-details">
+                                                                                Cutoff is every @frequency.Day@ordinal day of the 3rd month...etc
+                                                                            </small>
+                                                                        </Tooltip>
+                                                                            break;
+                                                                        case "3 Months":
+                                                                            string tooltip4 = "The expiration period is " + schedule.SessionName + ", and the cutoff is every " + frequency.Day + ordinal + "day of the 4th month";
+                                                                            <Tooltip Text="@tooltip4" Multiline>
+                                                                            <small class="form-text sub-details">
+                                                                                Cutoff is every @frequency.Day@ordinal day of the 4th month...etc
+                                                                            </small>
+                                                                        </Tooltip>
+                                                                            break;
+                                                                    }
+                                                                }
+                                                            </div>
                                                         </div>
                                                     }
                                                     <div class="col-12 schedule-details">
