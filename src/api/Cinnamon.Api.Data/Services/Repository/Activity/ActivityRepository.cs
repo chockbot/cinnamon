@@ -711,7 +711,8 @@ public class ActivityRepository : IActivityRepository
                         HasExpiration    = s.HasExpiration,
                         StartDate        = s.StartDate,
                         PriceType        = (Enums.PriceType)s.PriceType,
-                        ScheduleType     = (Enums.ScheduleType)s.ScheduleType
+                        ScheduleType     = (Enums.ScheduleType)s.ScheduleType,
+                        SchedulingUrl    = s.SchedulingUrl,
                     };
                 }).ToList();
 
@@ -892,7 +893,9 @@ public class ActivityRepository : IActivityRepository
                         IsSetSession = s.IsSetSession,
                         SessionName = s.SessionName,
                         HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate
+                        StartDate = s.StartDate,
+                        SchedulingUrl = s.SchedulingUrl,
+                        ScheduleType = (Enums.ScheduleType)s.ScheduleType
                     };
                 }).ToList();
 

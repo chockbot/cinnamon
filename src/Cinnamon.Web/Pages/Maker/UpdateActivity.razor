@@ -592,6 +592,7 @@
                         StartDate = s.StartDate,
                         PriceType = s.PriceType,
                         ScheduleType = s.ScheduleType,
+                        SchedulingUrl = s.SchedulingUrl,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new ActivityScheduleTime
                         {
                             ActivityScheduleId = act.ActivityScheduleId,
@@ -717,6 +718,9 @@
 
                 schedule.ScheduleTimes = scheduleTimes;
             }
+
+            Model.Activity.ScheduleType = Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleType;
+            Model.Activity.SchedulingUrl = Model.Activity.ActivitySchedules.FirstOrDefault().SchedulingUrl;
         }
 
         obj = DotNetObjectReference.Create(this);
@@ -949,7 +953,7 @@
                     return new Framework.ApiCommand.ApiCore.Activity.Request.UpdateActivityArgs.UpdatedSchedule {
                         Id = s.Id,
                         DateTime = s.DateTime ?? "N/A",
-                        Name = s.Name,
+                        Name = Model.Activity.ScheduleType == Enums.ScheduleType.Calendly ? "Calendly Appointment" : s.Name ?? "N/A",
                         PerUnit1 = s.PerUnit1,
                         PerUnit2 = s.PerUnit2,
                         Price = s.Price,
@@ -963,7 +967,8 @@
                         HasExpiration = s.HasExpiration,
                         StartDate = s.StartDate ?? DateTime.MinValue,
                         PriceType = s.PriceType,
-                        ScheduleType = s.ScheduleType,
+                        ScheduleType = Model.Activity.ScheduleType,
+                        SchedulingUrl = Model.Activity.SchedulingUrl,
                         ActivityScheduleTimes = scheduleTimes
                     };
                 }),

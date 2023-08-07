@@ -500,6 +500,8 @@
                 })
             };
 
+        Model.Activity.ExperienceCreationType = ExperienceCreationType;
+
         obj = DotNetObjectReference.Create(this);
     }
 
@@ -653,7 +655,7 @@
                         return new Framework.ApiCommand.ApiCore.Activity.Request.CreateActivityArgs.Schedule
                         {
                             DateTime = s.DateTime ?? "N/A",
-                            Name = s.Name,
+                            Name = Model.Activity.ScheduleType == Enums.ScheduleType.Calendly ? "Calendly Appointment" : s.Name ?? "N/A",
                             PerUnit1 = s.PerUnit1,
                             PerUnit2 = s.PerUnit2,
                             Price = s.Price,
@@ -666,8 +668,9 @@
                             SessionName = s.SessionName ?? "N/A",
                             HasExpiration = s.HasExpiration,
                             StartDate = s.StartDate ?? DateTime.MinValue,
-                            ScheduleType = Enums.ScheduleType.Internal,
+                            ScheduleType = Model.Activity.ScheduleType,
                             PriceType = s.PriceType,
+                            SchedulingUrl = Model.Activity.SchedulingUrl ?? "#",
                             ActivityScheduleTimes = scheduleTimes
                         };
                     }),

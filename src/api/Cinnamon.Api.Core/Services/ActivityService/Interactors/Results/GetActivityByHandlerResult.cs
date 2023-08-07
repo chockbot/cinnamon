@@ -64,6 +64,7 @@ public class GetActivityByHandlerResult
         public DateTime? StartDate { get; set; }
         public Enums.PriceType PriceType { get; set; }
         public Enums.ScheduleType ScheduleType { get; set; }
+        public string SchedulingUrl { get; set; }
     }
 
     public class ActivityImage 
