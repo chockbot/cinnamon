@@ -383,7 +383,7 @@
                                         @if (x <= 2)
                                         {
                                             <div class="schedule-detail w-100 rounded-5">
-                                                <div class="schedule-header d-flex">
+                                                <div class="schedule-header d-flex" style="background-color: @(SelectedScheduleId != schedule.Id ? changeColor : "#F3F6FC")">
                                                     <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-9 justify-content-start">
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
@@ -391,9 +391,19 @@
                                                         <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input" 
                                                             value="@schedule.Id" type="radio" name="schedule" id="schedule" 
                                                             @onchange="() => SelectedScheduleId = schedule.Id">
-                                                        <label class="form-check-label" for="schedule">
-                                                            Select
-                                                        </label>
+
+                                                             @if(SelectedScheduleId == schedule.Id)
+                                                             {
+                                                                <label class="form-check-label" for="schedule">
+                                                                    Selected
+                                                                </label>
+                                                             }
+                                                             else
+                                                             {
+                                                                 <label class="form-check-label" for="schedule">
+                                                                     Select
+                                                                 </label>
+                                                             }
                                                     </div>
                                                 </div>
                                                 <hr>
@@ -460,7 +470,7 @@
                                         @if (x <= 2)
                                         {
                                             <div class="schedule-detail w-100 rounded-5">
-                                                <div class="schedule-header d-flex">
+                                                <div class="schedule-header d-flex" style="background-color: @(selectedScheduleId != schedule.Id ? changeColor : "#F3F6FC")">
                                                     <div class="schedule-title col-9 justify-content-start">
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
@@ -485,12 +495,21 @@
                                                         <p class="font-14">Schedule:</p>
                                                         <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                     </div>
-                                                    <div class="col-12 form-check ">
-                                                        <input value="@schedule.Id" class="form-check-input" @onchange="() => SelectedScheduleId = schedule.Id" 
-                                                            type="radio" name="schedule" id="schedule">
-                                                        <label class="form-check-label" for="schedule">
-                                                            Select
-                                                        </label>
+                                                    <div class="col-12 form-check">
+                                                        <input checked="@(selectedScheduleId == schedule.Id)" value="@schedule.Id" class="form-check-input" @onchange="() => selectedScheduleId = schedule.Id"
+                                                               type="radio" name="schedule" id="schedule">
+                                                        @if (selectedScheduleId == schedule.Id)
+                                                        {
+                                                            <label class="form-check-label" for="schedule">
+                                                                Selected
+                                                            </label>
+                                                        }
+                                                        else
+                                                        {
+                                                            <label class="form-check-label" for="schedule">
+                                                                Select
+                                                            </label>
+                                                        }
                                                     </div>
                                                 </div>
                                             </div>
@@ -838,8 +857,10 @@
     private const string NOTHING_PROVIDED = "--NOTHING PROVIDED--";
     public string changeColor = "none";
     public bool IsChecked = false;
+    public string IsSelected = "Select";
 
     private int SelectedScheduleId { get; set; } = 0;
+    private int selectedScheduleId { get; set; } = 0;
     private int EnrolleeCount { get; set; } = 0;
     private bool isShowErrorMessage;
     private string signInReturnUrl = string.Empty;
