@@ -10,6 +10,14 @@ services:
       - ./src-data:/app
     networks:
       - dev
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 100M
+        reservations:
+          cpus: "0.25"
+          memory: 30M
 
   api-core:
     container_name: cinnamon_api_core_dev
@@ -24,6 +32,16 @@ services:
       - ./src-web:/web-app
     networks:
       - dev
+    depends_on:
+      - api-data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 100M
+        reservations:
+          cpus: "0.25"
+          memory: 30M
 
   app:
     container_name: cinnamon_app_dev
@@ -37,6 +55,16 @@ services:
       - ./src-web:/app
     networks:
       - dev
+    depends_on:
+      - api-core
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 100M
+        reservations:
+          cpus: "0.25"
+          memory: 30M
 
 networks:
   dev:
