@@ -47,7 +47,7 @@
                         {
                             <div class="xp-body-item">
                                 <p class="secondary-caption">
-                                    Expires on - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    Expires on - @item.ExpirationDateEnd.AddDays(1).ToString("MMMM dd, yyyy")
                                 </p>
                             </div>
                         }
@@ -103,7 +103,7 @@
                             else
                             {
                                 <p class="secondary-caption">
-                                    Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    Expired: @item.ExpirationDateEnd.AddDays(1).ToString("MMMM dd, yyyy")
                                 </p>
                             }
                         </div>
@@ -385,7 +385,7 @@
 
         if(ActivityItemType == ItemType.Ongoing)
         {
-            students = students.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd > DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue)).ToList();
+            students = students.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue)).ToList();
         }
         else
         {
