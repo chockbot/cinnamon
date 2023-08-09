@@ -16,128 +16,144 @@
 
 @if(Model != null)
 {
-    <section class="container order-banner">
-        <h1 class="order-banner-h1 text-center">
-            Thank you for choosing
-            <br class="d-none m-d-block">
-            <span class="text-capitalize cinnamon-banner-text">cinnamon</span>
-        </h1>
-        <div class="order-details font-16 color-grey-100">
-            <div class="text-center">
-                <h3 class="text-capitalize font-24 font-weight-700 my-4 color-black-100">payment confirmed!</h3>
-            </div>
-            <Divider class="m-0" />
-            <div class="ps-4">
-                <p class="text-capitalize my-3">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
-            </div>
-            <Divider class="m-0" />
-            <div class="ps-4">
-                <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">@Model.PurchaseOrder.ActivityName</p>
-                <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.Name</p>
-                <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.DateTime</p>
-                <p class="text-capitalize mt-2 mb-3">
-                    @Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2
+    <section class="container order-banner pb-5">
+        <Row class="align-items-center" VerticalGutter="20">
+            <Column ColumnSize="ColumnSize.Is12.Is7.OnDesktop">
+                <h1 class="order-banner-h1 text-center">
+                    Thank you for choosing
+                    <br>
+                    <span class="text-capitalize cinnamon-banner-text">cinnamon</span>
+                </h1>
+                <p class="font-14 mt-4 mb-0 color-grey-100 text-center info-p">
+                    Should you require assistance in cancellation or change in order, Kindly email us in support@cinnamon.ph
                 </p>
-            </div>
-            <Divider class="m-0" />
-            <div class="px-4">
-                <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">Purchase Details</p>
-                <table class="w-100">
-                    <tbody>
-                        <tr>
-                            <td>
-                                <p class="text-capitalize mb-0 mt-2">No. of Enrolees:</p>
-                            </td>
-                            <td class="text-end">
-                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.EnrolleeCount</p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p class="text-capitalize mb-0 mt-2">Payment Method: </p>
-                            </td>
-                            <td class="text-end">
-                                <p class="text-capitalize mb-0 mt-2">
-                                    <span class="text-uppercase text-decoration-underline">@Model.PurchaseOrder.PaymentMethod</span>
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p class="text-capitalize mb-0 mt-2">Amount: </p>
-                            </td>
-                            <td class="text-end">
-                                <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
-                            </td>
-                        </tr>
-                        @if(!IsInclusivePayment)
-                        {
-                            <tr>
-                                <td>
-                                    <p class="text-capitalize mb-0 mt-2">Service Fee: </p>
-                                </td>
-                                <td class="text-end">
-                                    <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.PaymentProviderFee.ToString("#,##0.00")</p>
-                                </td>
-                            </tr>
-                        }
-                        @if(!IsInclusivePayment)
-                        {
-                            <tr>
-                                <td>
-                                    <p class="text-capitalize mb-0 mt-2">Handling Fee: </p>
-                                </td>
-                                <td class="text-end">
-                                    <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.ServiceFee.ToString("#,##0.00")</p>
-                                </td>
-                            </tr>
-                        }
-                        @if(Model.PurchaseOrder.CouponAmount.HasValue)
-                        {
-                            <tr>
-                                <td>
-                                    <p class="text-capitalize mb-0 mt-2">Applied Discount: </p>
-                                </td>
-                                <td class="text-end">
-                                    <p class="text-capitalize mb-0 mt-2">
-                                        @(Model.PurchaseOrder.CouponAmount.Value > 0 ? "- " + Model.PurchaseOrder.CouponAmount.Value.ToString("#,##0.00") : "0.00")
-                                    </p>
-                                </td>
-                            </tr>
-                        }
-                        <tr>
-                            <td>
-                                <p class="text-capitalize mb-0 mt-2">Applied Credits: </p>
-                            </td>
-                            <td class="text-end">
-                                <p class="text-capitalize mb-0 mt-2">
-                                    @(Model.PurchaseOrder.AppliedCreditAmount > 0 ? "- " + Model.PurchaseOrder.AppliedCreditAmount.ToString("#,##0.00") : "0.00")
-                                </p>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">Total Purchase: </p>
-                            </td>
-                            <td class="text-end">
-                                <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
-                                    PHP @GetOverallTotal.ToString("#,##0.00")
-                                </p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <Divider class="m-0" />
-            <div class="ps-4">
-                <p class="text-capitalize mb-0 mt-2">Experience By: @Model.PurchaseOrder.ExperienceBy</p>
-                <p class="mb-0 mt-2">Email: @Model.PurchaseOrder.ExperienceByContactEmail</p>
-                <p class="text-capitalize mb-0 mt-2 mb-3">Contact No: @(string.IsNullOrEmpty(Model.PurchaseOrder.ExperienceByContactNo) ? "N/A" : Model.PurchaseOrder.ExperienceByContactNo)</p>
-            </div>
-        </div>
-        <div class="text-center mt-5 mb-5">
-            <PrimaryButton Width="fit-content" Text="Back to Home Page" OnClick='() => NavigationManager.NavigateTo("/explore")' />
-        </div> 
+                <div class="text-center btn-back-desktop">
+                    <Button class="btn-primary mt-4 px-5" Type="ButtonType.Link" Border="Border.Is0.RoundedPill" Clicked='() => NavigationManager.NavigateTo("/explore")'>
+                        Back to Home
+                    </Button>
+                </div>
+            </Column>
+            <Column ColumnSize="ColumnSize.Is12.Is5.OnDesktop">
+                <div class="order-details font-16 color-grey-100">
+                    <div class="text-center">
+                        <h3 class="text-capitalize font-24 font-weight-700 my-4 color-black-100">payment confirmed!</h3>
+                    </div>
+                    <Divider class="m-0" />
+                    <div class="ps-4">
+                        <p class="text-capitalize my-3">Date: @DateTime.Now.ToString("MM/dd/yyyy")</p>
+                    </div>
+                    <Divider class="m-0" />
+                    <div class="ps-4">
+                        <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">@Model.PurchaseOrder.ActivityName</p>
+                        <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.Name</p>
+                        <p class="text-capitalize mb-0 mt-2">@Model.SelectedSchedule.DateTime</p>
+                        <p class="text-capitalize mt-2 mb-3">
+                            @Model.SelectedSchedule.UnitPrice @((long)Model.SelectedSchedule.Price) / @Model.SelectedSchedule.PerUnit1 @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2
+                        </p>
+                    </div>
+                    <Divider class="m-0" />
+                    <div class="px-4">
+                        <p class="text-capitalize mb-0 mt-3 font-20 font-weight-700 color-black-100">Purchase Details</p>
+                        <table class="w-100">
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <p class="text-capitalize mb-0 mt-2">No. of Enrolees:</p>
+                                    </td>
+                                    <td class="text-end">
+                                        <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.EnrolleeCount</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="text-capitalize mb-0 mt-2">Payment Method: </p>
+                                    </td>
+                                    <td class="text-end">
+                                        <p class="text-capitalize mb-0 mt-2">
+                                            <span class="text-uppercase text-decoration-underline">@Model.PurchaseOrder.PaymentMethod</span>
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="text-capitalize mb-0 mt-2">Amount: </p>
+                                    </td>
+                                    <td class="text-end">
+                                        <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.Total.ToString("#,##0.00")</p>
+                                    </td>
+                                </tr>
+                                @if(!IsInclusivePayment)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p class="text-capitalize mb-0 mt-2">Service Fee: </p>
+                                        </td>
+                                        <td class="text-end">
+                                            <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.PaymentProviderFee.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                }
+                                @if(!IsInclusivePayment)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p class="text-capitalize mb-0 mt-2">Handling Fee: </p>
+                                        </td>
+                                        <td class="text-end">
+                                            <p class="text-capitalize mb-0 mt-2">@Model.PurchaseOrder.ServiceFee.ToString("#,##0.00")</p>
+                                        </td>
+                                    </tr>
+                                }
+                                @if(Model.PurchaseOrder.CouponAmount.HasValue)
+                                {
+                                    <tr>
+                                        <td>
+                                            <p class="text-capitalize mb-0 mt-2">Applied Discount: </p>
+                                        </td>
+                                        <td class="text-end">
+                                            <p class="text-capitalize mb-0 mt-2">
+                                                @(Model.PurchaseOrder.CouponAmount.Value > 0 ? "- " + Model.PurchaseOrder.CouponAmount.Value.ToString("#,##0.00") : "0.00")
+                                            </p>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <td>
+                                        <p class="text-capitalize mb-0 mt-2">Applied Credits: </p>
+                                    </td>
+                                    <td class="text-end">
+                                        <p class="text-capitalize mb-0 mt-2">
+                                            @(Model.PurchaseOrder.AppliedCreditAmount > 0 ? "- " + Model.PurchaseOrder.AppliedCreditAmount.ToString("#,##0.00") : "0.00")
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">Total Purchase: </p>
+                                    </td>
+                                    <td class="text-end">
+                                        <p class="text-capitalize mt-2 mb-3 font-weight-700 color-primary">
+                                            PHP @GetOverallTotal.ToString("#,##0.00")
+                                        </p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <Divider class="m-0" />
+                    <div class="ps-4">
+                        <p class="text-capitalize mb-0 mt-2">Experience By: @Model.PurchaseOrder.ExperienceBy</p>
+                        <p class="mb-0 mt-2">Email: @Model.PurchaseOrder.ExperienceByContactEmail</p>
+                        <p class="text-capitalize mb-0 mt-2 mb-3">Contact No: @(string.IsNullOrEmpty(Model.PurchaseOrder.ExperienceByContactNo) ? "N/A" : Model.PurchaseOrder.ExperienceByContactNo)</p>
+                    </div>
+                </div>
+                <div class="text-center btn-back-mobile">
+                    <Button class="btn-primary mt-3 px-5" Type="ButtonType.Link" Border="Border.Is0.RoundedPill" Clicked='() => NavigationManager.NavigateTo("/explore")'>
+                        Back to Home
+                    </Button>
+                </div>
+            </Column>
+        </Row>
     </section>
 }
 
