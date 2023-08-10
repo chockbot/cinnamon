@@ -821,28 +821,31 @@
                             </div>
                             <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
+                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount  @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
                                     <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                                 </Column>
                             </Row>
-                            <Row class="color-grey-100 font-16 mt-2">
-                                <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
-                                </Column>
-                            </Row>
-                            <Row class="color-grey-100 font-16 mt-2">
-                                <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Handling  fee</p>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
-                                </Column>
-                            </Row>
+                            @if(!IsInclusivePricing)
+                            {
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                    </Column>
+                                </Row>
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Handling  fee</p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                    </Column>
+                                </Row>
+                            }
                             <Divider class="m-0 mt-2" />
                             <Row class="font-16 mt-2 font-weight-700 color-black-100">
                                 <Column ColumnSize="ColumnSize.Is7">
@@ -961,28 +964,31 @@
                     </div>
                     <Row class="color-grey-100 font-16 mt-4">
                         <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
+                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
                         </Column>
                         <Column ColumnSize="ColumnSize.Is5">
                             <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                         </Column>
                     </Row>
-                    <Row class="color-grey-100 font-16 mt-2">
-                        <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is5">
-                            <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
-                        </Column>
-                    </Row>
-                    <Row class="color-grey-100 font-16 mt-2">
-                        <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">Handling  fee</p>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is5">
-                            <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
-                        </Column>
-                    </Row>
+                    @if(!IsInclusivePricing)
+                    {
+                        <Row class="color-grey-100 font-16 mt-2">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                            </Column>
+                        </Row>
+                        <Row class="color-grey-100 font-16 mt-2">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Handling  fee</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                    }
                     <Row class="font-16 mt-2 font-weight-700 color-black-100 mb-4">
                         <Column ColumnSize="ColumnSize.Is7">
                             <p class="m-0">Total Payment</p>
@@ -1067,12 +1073,14 @@
 
     private int SelectedScheduleId { get; set; } = 0;
     private int selectedScheduleId { get; set; } = 0;
-    private int EnrolleeCount { get; set; } = 0;
+    private int EnrolleeCount { get; set; } = 1;
     private bool isShowErrorMessage;
     private string signInReturnUrl = string.Empty;
     private bool isAuthenticated = false;
     private bool isOpenMobileCalculator = false;
     private DateTime SelectedDate;
+
+    private bool IsInclusivePricing { get; set; } = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -1181,6 +1189,12 @@
                         } : null
                     };
                 MakerActivity.Add(activity);
+
+                var inclusivePricingRes = await activityApiHandler.OwnerPricingInclusive(activity.Owner.Id);
+                if(inclusivePricingRes.Succeeded && inclusivePricingRes.Result != null && inclusivePricingRes.Result.IsSuccess)
+                {
+                    IsInclusivePricing = inclusivePricingRes.Result.Result.IsInclusivePricing;
+                }
             }
 
             // Get experience types
@@ -1498,6 +1512,7 @@
     {
         get
         {
+            if (IsInclusivePricing) return 0;
             return 0;
         }
     }
@@ -1507,6 +1522,7 @@
         get
         {
             if (PriceSubTotal <= 0) return 0;
+            if (IsInclusivePricing) return 0;
             return 39m;
         }
     }
@@ -1557,6 +1573,7 @@
     private Task ModalSelectedChanged(int selectedId)
     {
         SelectedScheduleId = selectedId;
+        DetailsModalSched.Close();
         return Task.CompletedTask;
     }
 
