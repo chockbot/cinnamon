@@ -601,7 +601,7 @@
                             </div>
                             <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
+                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount  @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
                                     <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
@@ -737,7 +737,7 @@
                     </div>
                     <Row class="color-grey-100 font-16 mt-4">
                         <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
+                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
                         </Column>
                         <Column ColumnSize="ColumnSize.Is5">
                             <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
