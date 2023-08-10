@@ -693,7 +693,7 @@
                                                         <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                     </div>
                                                     <div class="col-12 form-check">
-                                                        <input checked="@(selectedScheduleId == schedule.Id)" value="@schedule.Id" class="form-check-input" @onchange="() => selectedScheduleId = schedule.Id"
+                                                        <input checked="@(selectedScheduleId == schedule.Id)" value="@schedule.Id" class="form-check-input" @onchange="() => SelectSchedule(schedule.Id)"
                                                                type="radio" name="schedule" id="schedule">
                                                         @if (selectedScheduleId == schedule.Id)
                                                         {
