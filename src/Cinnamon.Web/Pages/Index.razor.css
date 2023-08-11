@@ -6,34 +6,166 @@ button:focus {
     outline: none !important;
     box-shadow: none !important;
 }
-.your-family-text {
-    height: 0;
+@font-face {
+    font-family: 'nunito-bold';
+    src: url('fonts/nunito-cufonfonts/nunito-bold.ttf') format('truetype');
 }
-.btn-see-more {
-    width: 50%;
-    background-color: #ffa942;
-    color: white;
+/*-------------HERO SECTION-----------*/
+.hero_section {
+    margin-top: 8rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+.hero_title {
+    color: #343D4C;
+    text-align: center;
+    font-family: 'nunito-bold';
+    font-size: 72px;
+    font-style: normal;
     font-weight: 900;
-    font-family: "Nunito";
-    padding: 15px 15px;
-    border-radius: 30px;
-    box-shadow: 5px 6px 6px 0px #D9D9D9;
+    line-height: normal;
+    max-width: 772px;
+    margin-bottom: 2vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
 }
-.featured-text {
+.hero_subtitle {
+    color: #717171;
     text-align: center;
     font-family: Nunito;
-    font-size: 42px;
-    font-weight: 900;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 100px;
+    padding-left: 2vw;
+    padding-right: 2vw;
 }
-.section-1 {
-    margin-top: 5%;
+.blob_1 {
+    padding-bottom: 100px;
+}
+.blob_2 {
+}
+.float_1 {
+    margin-bottom: 300px;
+}
+.float_2 {
+    margin-bottom: 180px;
+}
+/*-------------SEARCH SECTION-----------*/
+.search_section {
+    margin-top: -2vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding-bottom: 150px;
+}
+
+
+img.search_icon {
+    height: 1.5vw;
+    width: 1.5vw;
     position: relative;
+    left: 2.5vw;
 }
+
+
+.search_bar {
+    display: flex;
+    align-items: center;
+    gap: 0px;
+}
+
+
+.search {
+    width: 500px;
+    height: 65px;
+    border-radius: 10px 0px 0px 10px;
+    border: 1px solid #F3F6FC;
+    background: #FFF;
+    box-shadow: 2px 4px 6px 0px rgba(113, 113, 113, 0.20);
+    padding-left: 3.4vw;
+    padding-right: 1.5vw;
+    outline: none;
+    border: none;
+    color: #717171;
+    font-family: Nunito;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+
+/*::placeholder {*/ /* Chrome, Firefox, Opera, Safari 10.1+ */
+    /*color: #D9D9D9;
+    opacity: 1;*/ /* Firefox */
+/*}*/
+
+
+.explore_button {
+    height: 65px;
+    padding-left: 1.5vw;
+    padding-right: 1.5vw;
+    color: #FFF;
+    font-family: Nunito;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    border: 0px;
+    border-radius: 0px 10px 10px 0px;
+    background: #FFA942;
+    box-shadow: 2px 4px 6px 0px rgba(113, 113, 113, 0.20);
+}
+/*-------------CAROUSEL PICS-----------*/
+.carousel_pics_mobile {
+    display: none;
+}
+.carousel_pics_tablet {
+    display: none;
+}
+.carousel_pics {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    position: absolute;
+}
+.landing_page_pic {
+    color: #FFA942;
+    text-align: center;
+    font-family: Nunito;
+    font-size: 24px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+    .landing_page_pic img {
+        height: 235px;
+        border-radius: 40px;
+        background: url(<path-to-image>), lightgray 50% / cover no-repeat;
+        box-shadow: 5px 6px 6px 0px #D9D9D9;
+        transition: transform .9s ease;
+    }
+
+.carousel_pics_text {
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+/* [3] Finally, transforming the image when container gets hovered */
+.landing_page_pic:hover img {
+    transform: scale(1.1);
+}
+
+
 .section-backed-by {
-    margin-top: 10%;
+    margin-top: 30%;
 }
 .section-backed-by:hover {
-    margin-top: 10%;
+    margin-top: 30%;
     animation: bounce 1s linear;
 }
 @keyframes bounce{
@@ -622,6 +754,10 @@ input.form-control {
 
 /* Extra small devices (portrait phones, less than 576px) */
 @media (min-width: 0px) and (max-width: 575.98px) {
+    .hero_section {
+        margin-top: 5rem;
+    }
+
     .featured-text {
         text-align: center;
         font-family: Nunito;
@@ -1646,6 +1782,100 @@ input.form-control {
 }
 
 @media screen and (max-width: 767.98px){
+    @font-face {
+        font-family: 'nunito-bold';
+        src: url('fonts/nunito-cufonfonts/nunito-bold.ttf') format('truetype');
+    }
+    @font-face {
+        font-family: 'nunito-extrabold';
+        src: url('fonts/nunito-cufonfonts/nunito-extrabold.ttf') format('truetype');
+    }
+    .hero_section {
+        margin-top: 7rem;
+    }
+
+    .blob_1 {
+        display: none;
+    }
+
+    .blob_2 {
+        display: none;
+    }
+
+    .hero_title {
+        font-size: 35px;
+        font-family: 'nunito-extrabold';
+    }
+
+    .hero_subtitle {
+        font-size: 12px;
+        margin-bottom: 20px;
+    }
+    .search_section {
+        padding-bottom: 50px;
+    }
+    .search {
+        width: 100%;
+    }
+    .explore_button{
+        font-size: 18px;
+    }
+    .carousel_pics {
+        display: none;
+    }
+    .carousel_pics_tablet {
+        display: none;
+    }
+    img.search_icon {
+        display: none;
+    }
+    .float_1 {
+        display: none;
+    }
+    .float_2 {
+        display: none;
+    }
+    .float_3{
+        display: none;
+    }
+    .float_4 {
+        display: none;
+    }
+    /*-------------CAROUSEL PICS-----------*/
+    .carousel_pics_mobile {
+        display: flex;
+        gap: 40px;
+        justify-content: center;
+    }
+
+        .carousel_pics_mobile .landing_page_pic {
+            color: #FFA942;
+            text-align: center;
+            font-family: Nunito;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+
+            .carousel_pics_mobile .landing_page_pic img {
+                height: 100px;
+                width: 120%;
+                border-radius: 20px;
+                box-shadow: 5px 6px 6px 0px #D9D9D9;
+                transition: transform .9s ease;
+            }
+
+        .carousel_pics_mobile .carousel_pics_text {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+    /* [3] Finally, transforming the image when container gets hovered */
+        .carousel_pics_mobile .landing_page_pic:hover img {
+            transform: scale(1.1);
+        }
+
     .section6-container-desktop {
         display: none;
     }
@@ -1711,15 +1941,7 @@ input.form-control {
         padding: 2px;
         background-color: #ffa942;
     }
-    .landing-lg{
-        display: none;
-    }
-    .landing-md {
-        display: none;
-    }
-    .landing-sm {
-        display: block;
-    }
+
     .section4-container-desktop {
         display: none;
     }
@@ -1757,9 +1979,15 @@ input.form-control {
     }
     .circle-2-md {
         display: none;
-    }  
-    .section-backed-by img{
-       width: 60%;
+    }
+    .section-backed-by{
+        margin-top: 15%;
+    }
+    .section-backed-by:hover {
+        margin-top: 15%;
+    }
+    .section-backed-by img {
+        width: 60%;
     }
     .section2-container-desktop {
         display: none;
@@ -1777,62 +2005,6 @@ input.form-control {
         height: 570px;
         background-size: cover;
     }
-
-    .images-horizontal-lg {
-        display: none;
-    }
-
-    .images-horizontal-md {
-        display: none;
-    }
-
-    .images-horizontal-sm {
-        display: flex;
-        margin-top: 3rem;
-        padding: 0;
-        height: 125px;
-    }
-        .images-horizontal-sm:hover {
-            animation: zoom-in-zoom-out 2s ease infinite;
-        }
-        .images-horizontal-sm p {
-            font-family: Nunito;
-            font-size: 14px;
-            font-style: italic;
-            font-weight: 400;
-            margin-top: 0.5rem;
-            color: #FFA942;
-        }
-    .form-control {
-        height: 3rem;
-    }
-
-    .search-section {
-        height: 3rem;
-        width: 70%;
-        margin-top: 8rem;
-    }
-
-    #button-addon3 {
-        height: 3rem;
-        width: 5rem;
-        font-size: 14px;
-    }
-
-    .family {
-        font-size: 30px;
-        font-weight: bolder;
-        line-height: 0.2;
-    }
-
-    .activities {
-        font-size: 11px;
-        font-weight: 400;
-        margin: 0;
-        padding: 0;
-        line-height: 2;
-    }
-
     .footer {
         margin-top: 20px;
         margin-bottom: 50px;
@@ -1856,55 +2028,111 @@ input.form-control {
     }
 
     .image-1-mobile {
-        margin-top: 2%;
-        margin-left: 10%;
+        margin-top: -8%;
+        margin-left: 1%;
         position: absolute;
         display: block;
+        z-index: -1;
     }
 
     .image-2-mobile {
-        margin-top: 25%;
+        margin-top: 30%;
         margin-left: 0%;
         position: absolute;
         display: block;
+        z-index: -1;
     }
 
     .image-3-mobile {
-        margin-top: 3%;
-        margin-left: 80%;
+        margin-top: -5%;
+        margin-left: 90%;
         position: absolute;
         display: block;
+        z-index: -1;
     }
 
     .image-4-mobile {
-        margin-top: 25%;
-        margin-left: 95%;
+        margin-top: 28%;
+        margin-left: 94%;
         position: absolute;
         display: block;
-    }
-
-    .image-1 {
-        display: none;
-    }
-
-    .image-2 {
-        display: none;
-    }
-
-    .image-3 {
-        display: none;
-    }
-
-    .image-4 {
-        display: none;
-    }
-
-    .img-mobile {
-        max-width: 90%;
+        z-index: -1;
     }
 }
 
 @media screen and (min-width:768px) and (max-width:991px) {
+    .carousel_pics_mobile {
+        display: none;
+    }
+    .carousel_pics {
+        display: none;
+    }
+    /*-------------CAROUSEL PICS-----------*/
+    .carousel_pics_tablet {
+        display: flex;
+        gap: 60px;
+        justify-content: center;
+    }
+
+        .carousel_pics_tablet .landing_page_pic {
+            color: #FFA942;
+            text-align: center;
+            font-family: Nunito;
+            font-size: 18px;
+            font-style: normal;
+            font-weight: 400;
+            line-height: normal;
+        }
+
+            .carousel_pics_tablet .landing_page_pic img {
+                height: 140px;
+                width: 120%;
+                border-radius: 20px;
+                box-shadow: 5px 6px 6px 0px #D9D9D9;
+                transition: transform .9s ease;
+            }
+
+        .carousel_pics_tablet .carousel_pics_text {
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        /* [3] Finally, transforming the image when container gets hovered */
+        .carousel_pics_tablet .landing_page_pic:hover img {
+            transform: scale(1.1);
+        }
+    .hero_section{
+        margin-top:5rem;
+    }
+    .hero_subtitle {
+        margin-bottom: 50px;
+    }
+    .explore_button{
+        font-size: 18px;
+    }
+    img.search_icon {
+        display: none;
+    }
+    .blob_1 {
+        display: none;
+    }
+
+    .blob_2 {
+        display: none;
+    }
+
+    .explore_button {
+        font-size: 20px;
+    }
+    img.search_icon {
+        display: none;
+    }
+    .section-backed-by {
+        margin-top: 15%;
+    }
+    .section-backed-by:hover {
+        margin-top: 15%;
+    }
     .section6-container-tablet {
         background: url(images/landing-page-images/section6-image-tablet.png);
         background-repeat: no-repeat;
