@@ -11,7 +11,7 @@ public class ActivitySchedule : BaseEntity
     public decimal Price {get; set;}
     public string UnitPrice {get; set;} = "PHP";
     public int PerUnit1 { get; set; } = 1;
-    public string PriceUnit1 { get; set; } = "Head";
+    public string PriceUnit1 { get; set; } = "Enrollee";
     public int PerUnit2 { get; set; } = 1;
     public string PriceUnit2 { get; set; } = "Session";
     public int Order {get; set;}
