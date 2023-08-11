@@ -20,14 +20,14 @@
 @using Microsoft.EntityFrameworkCore
 
 <PageTitle>@(activity == null ? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH" : $"Cinnamon Activity - {activity.Title} | CinnamonPH")</PageTitle>
-<SeoMeta Title="@(activity?.Title ?? string.Empty)"
+    <SeoMeta Title="@(activity?.Title ?? string.Empty)"
          Description="@(activity?.Description ?? string.Empty)"
          Subject="@(activity?.Title ?? string.Empty)"
          Url='@($"/explore/{Identifier}")'
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
 
-@if (Model.Customer != null)
+    @if (Model.Customer != null)
 {
     <Container>
         <div id="alertContainer" class="alertContainer">
@@ -375,7 +375,7 @@
                                                     <div class="form-check col-lg-2 col-md-3 col-sm-3 col-3 justify-content-center">
                                                         <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input" 
                                                             value="@schedule.Id" type="radio" name="schedule" id="schedule" 
-                                                            @onchange="() => SelectedScheduleId = schedule.Id">
+                                                            @onchange="() => SelectSchedule(schedule.Id)">
 
                                                              @if(SelectedScheduleId == schedule.Id)
                                                              {
@@ -501,42 +501,49 @@
                                                 <div class="calendar-section">
                                                     @if (activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment && activeSchedule.ElementAt(x).IsSelected)
                                                     {
-                                                        <div class="row">
-                                                             <div class="col-lg-5">
-                                                                <p class="font-14">Select Date & Time:</p>
-                                                                <DatePicker TValue="DateTime?" Inline DateChanged="(e) => DateHasChanged(e)" />
-                                                            </div>
-                                                            <div class="col-lg-5">
-                                                                <div class="row">
-                                                                    @foreach (var scheduleTime in activityScheduleTimes)
-                                                                    {
-                                                                        <div class="col-lg-6">
-                                                                            @if (scheduleTime.IsSelected)
-                                                                            {
-                                                                                <div class="row">
-                                                                                    <div class="col-lg-6">
-                                                                                        <button class="btn btn-cancel-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, false)">
-                                                                                            Cancel
-                                                                                        </button>
+                                                        @if (activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Internal)
+                                                        {
+                                                            <div class="row">
+                                                                <div class="col-lg-5">
+                                                                    <p class="font-14">Select Date & Time:</p>
+                                                                    <DatePicker TValue="DateTime?" Inline DateChanged="(e) => DateHasChanged(e)" />
+                                                                </div>
+                                                                <div class="col-lg-5">
+                                                                    <div class="row">
+                                                                        @foreach (var scheduleTime in activityScheduleTimes)
+                                                                        {
+                                                                            <div class="col-lg-6">
+                                                                                @if (scheduleTime.IsSelected)
+                                                                                {
+                                                                                    <div class="row">
+                                                                                        <div class="col-lg-6">
+                                                                                            <button class="btn btn-cancel-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, false)">
+                                                                                                Cancel
+                                                                                            </button>
+                                                                                        </div>
+                                                                                        <div class="col-lg-6">
+                                                                                            <button class="btn book-schedule-time" @onclick="() => BookSchedule(scheduleTime.ActivityScheduleTimeId)">
+                                                                                                Book
+                                                                                            </button>
+                                                                                        </div>
                                                                                     </div>
-                                                                                    <div class="col-lg-6">
-                                                                                        <button class="btn book-schedule-time" @onclick="() => BookSchedule(scheduleTime.ActivityScheduleTimeId)">
-                                                                                            Book
-                                                                                        </button>
-                                                                                    </div>
-                                                                                </div>
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                <button class="btn btn-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, true)" disabled="@(scheduleTime.IsAvailable ? false : true)">
-                                                                                    @scheduleTime.StartTime
-                                                                                </button>
-                                                                            }
-                                                                        </div>
-                                                                    }
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    <button class="btn btn-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, true)" disabled="@(scheduleTime.IsAvailable ? false : true)">
+                                                                                        @scheduleTime.StartTime
+                                                                                    </button>
+                                                                                }
+                                                                            </div>
+                                                                        }
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
+                                                        }
+                                                        else
+                                                        {
+                                                            <a href="@activity.SchedulingUrl" target="_blank">Book via Calendly</a>
+                                                        }
                                                     }
                                                 </div>
                                             </div>
@@ -686,7 +693,7 @@
                                                         <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                     </div>
                                                     <div class="col-12 form-check">
-                                                        <input checked="@(selectedScheduleId == schedule.Id)" value="@schedule.Id" class="form-check-input" @onchange="() => selectedScheduleId = schedule.Id"
+                                                        <input checked="@(selectedScheduleId == schedule.Id)" value="@schedule.Id" class="form-check-input" @onchange="() => SelectSchedule(schedule.Id)"
                                                                type="radio" name="schedule" id="schedule">
                                                         @if (selectedScheduleId == schedule.Id)
                                                         {
@@ -793,10 +800,10 @@
                     <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
                         <div class="bg-white-100 px-3 py-4 border-radius-10">
                             <p class="font-20 font-weight-700 color-black-200">@PricePerHead.ToString("#,##0.00")</p>
-                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
+                            <Select class="form-select font-16 border-color-grey-200 color-grey-100"
                                 TValue="int" Size="Size.Small" @bind-SelectedValue="SelectedScheduleId">
                                 <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
-                                @foreach(var item in activity.ActivitySchedules.Where(s => s.IsActiveSchedule))
+                                @foreach (var item in activity.ActivitySchedules.Where(s => s.IsActiveSchedule))
                                 {
                                     <SelectItem Value="@item.Id">@item.Name</SelectItem>
                                 }
@@ -804,34 +811,41 @@
                             <div class="prevent-select color-grey-100 font-16 d-flex border-bottom-1-solid border-left-1-solid border-right-1-solid border-color-grey-200">
                                 <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
                                 <div @onclick="SubtractEnrollee"
-                                        class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">-</div>
-                                <div @onclick="AddEnrollee"  
-                                    class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">+</div>
+                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                    -
+                                </div>
+                                <div @onclick="AddEnrollee"
+                                 class="width-50 p-2 border-left-1-solid border-color-grey-200 text-center cursor-pointer color-orange-100">
+                                    +
+                                </div>
                             </div>
                             <Row class="color-grey-100 font-16 mt-4">
                                 <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
+                                    <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount  @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
                                 </Column>
                                 <Column ColumnSize="ColumnSize.Is5">
                                     <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                                 </Column>
                             </Row>
-                            <Row class="color-grey-100 font-16 mt-2">
-                                <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
-                                </Column>
-                            </Row>
-                            <Row class="color-grey-100 font-16 mt-2">
-                                <Column ColumnSize="ColumnSize.Is7">
-                                    <p class="m-0">Handling  fee</p>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is5">
-                                    <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
-                                </Column>
-                            </Row>
+                            @if(!IsInclusivePricing)
+                            {
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                                    </Column>
+                                </Row>
+                                <Row class="color-grey-100 font-16 mt-2">
+                                    <Column ColumnSize="ColumnSize.Is7">
+                                        <p class="m-0">Handling  fee</p>
+                                    </Column>
+                                    <Column ColumnSize="ColumnSize.Is5">
+                                        <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                                    </Column>
+                                </Row>
+                            }
                             <Divider class="m-0 mt-2" />
                             <Row class="font-16 mt-2 font-weight-700 color-black-100">
                                 <Column ColumnSize="ColumnSize.Is7">
@@ -843,11 +857,11 @@
                             </Row>
                             <p class="text-center font-12 color-grey-100 my-4">You won't be charged yet</p>
                             <div>
-                                <Button Type="ButtonType.Button" Clicked="ProceedToPayment" class="btn-primary font-20 w-100 border-radius-10" 
+                                <Button Type="ButtonType.Button" Clicked="ProceedToPayment" class="btn-primary font-20 w-100 border-radius-10"
                                     Border="Border.Is0">
                                     Proceed
                                 </Button>
-                                @if(isShowErrorMessage)
+                                @if (isShowErrorMessage)
                                 {
                                     <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
                                 }
@@ -858,7 +872,7 @@
             </Row>
             <Div>
                 @* activity reviews *@
-                @if(activityReviews.Count != 0)
+                @if (activityReviews.Count != 0)
                 {
                     <hr />
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="overflow-wrap:break-word;">
@@ -927,7 +941,7 @@
     </Container>
     <div class='@(isOpenMobileCalculator ? "mobile-calculator-wrapper" : "mobile-calculator-wrapper deactive" )'>
         <div class="calculator-backdrop" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator"></div>
-        <div class="mobile-calculator-wrapper-container border-radius-10 border-color-grey-200 border-1-solid 
+        <div class="mobile-calculator-wrapper-container border-radius-10 border-color-grey-200 border-1-solid
             position-fixed left-0 right-0 bg-white-100">
             <div>
                 <div class="calculator-inner-content px-3 pt-4">
@@ -939,35 +953,42 @@
                         <div class="prevent-select color-grey-100 font-16 d-flex">
                             <div class="w-100 p-2">@EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</div>
                             <div @onclick="SubtractEnrollee"
-                                    class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">-</div>
-                            <div @onclick="AddEnrollee"  
-                                class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">+</div>
+                             class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                -
+                            </div>
+                            <div @onclick="AddEnrollee"
+                             class="width-50 p-2 border-left-1-solid border-color-black-100 text-center cursor-pointer color-orange-100">
+                                +
+                            </div>
                         </div>
                     </div>
                     <Row class="color-grey-100 font-16 mt-4">
                         <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x 1 Head</p>
+                            <p class="m-0">₱ @PricePerHead.ToString("#,##0") x @EnrolleeCount @(EnrolleeCount > 1 ? "Enrollees" : "Enrollee")</p>
                         </Column>
                         <Column ColumnSize="ColumnSize.Is5">
                             <p class="text-end m-0">₱ @PriceSubTotal.ToString("#,##0.00")</p>
                         </Column>
                     </Row>
-                    <Row class="color-grey-100 font-16 mt-2">
-                        <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is5">
-                            <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
-                        </Column>
-                    </Row>
-                    <Row class="color-grey-100 font-16 mt-2">
-                        <Column ColumnSize="ColumnSize.Is7">
-                            <p class="m-0">Handling  fee</p>
-                        </Column>
-                        <Column ColumnSize="ColumnSize.Is5">
-                            <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
-                        </Column>
-                    </Row>
+                    @if(!IsInclusivePricing)
+                    {
+                        <Row class="color-grey-100 font-16 mt-2">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Service  fee - <span class="text-decoration-line-through">15%</span></p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @ServiceFee.ToString("#,##0,00")</p>
+                            </Column>
+                        </Row>
+                        <Row class="color-grey-100 font-16 mt-2">
+                            <Column ColumnSize="ColumnSize.Is7">
+                                <p class="m-0">Handling  fee</p>
+                            </Column>
+                            <Column ColumnSize="ColumnSize.Is5">
+                                <p class="text-end m-0">₱ @HandlingFee.ToString("#,##0.00")</p>
+                            </Column>
+                        </Row>
+                    }
                     <Row class="font-16 mt-2 font-weight-700 color-black-100 mb-4">
                         <Column ColumnSize="ColumnSize.Is7">
                             <p class="m-0">Total Payment</p>
@@ -979,23 +1000,23 @@
                 </div>
                 <Divider class="calculator-footer-divider m-0" />
                 <div class="p-3 d-flex justify-content-between align-items-center">
-                    <Button Type="ButtonType.Button" Clicked="ProceedToPayment" 
-                        class="btn-primary font-14 width-120 border-radius-10" 
+                    <Button Type="ButtonType.Button" Clicked="ProceedToPayment"
+                        class="btn-primary font-14 width-120 border-radius-10"
                         Border="Border.Is0">
                         Proceed
                     </Button>
                     <div class="d-flex align-items-center">
                         <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
-                        @if(isOpenMobileCalculator)
+                        @if (isOpenMobileCalculator)
                         {
                             <img @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator" class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
                         }
-                        else 
+                        else
                         {
                             <img @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator" class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
                         }
                     </div>
-                    @if(isShowErrorMessage)
+                    @if (isShowErrorMessage)
                     {
                         <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
                     }
@@ -1003,13 +1024,13 @@
             </div>
         </div>
     </div>
-    
+
     @* commented first for migration *@
     <DetailsSchedulesModal @ref="DetailsModalSched" OnChooseSelected="ModalSelectedChanged"
-        ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></DetailsSchedulesModal>
+                       ScheduleModel="activity.ActivitySchedules.Where(s => s.IsActiveSchedule).ToList()" ActivityModel="activity"></DetailsSchedulesModal>
 
-    <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating" 
-        CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity"/>
+    <MultipleReviewModal @ref="modRef" SelectedValue="SelectedValue" AverageRating="AverageRating"
+                     CustomerProfiles="customerProfiles" ReviewCount="ReviewCount" MakerActivity="activity" Activities="MakerActivity" />
 
     <ModalLogin @ref="signinModal" ReturnUrl="@signInReturnUrl" />
 }
@@ -1052,19 +1073,21 @@
 
     private int SelectedScheduleId { get; set; } = 0;
     private int selectedScheduleId { get; set; } = 0;
-    private int EnrolleeCount { get; set; } = 0;
+    private int EnrolleeCount { get; set; } = 1;
     private bool isShowErrorMessage;
     private string signInReturnUrl = string.Empty;
     private bool isAuthenticated = false;
     private bool isOpenMobileCalculator = false;
     private DateTime SelectedDate;
 
+    private bool IsInclusivePricing { get; set; } = false;
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-            if(user != null && user.Identity != null)
+            if (user != null && user.Identity != null)
             {
                 isAuthenticated = user.Identity.IsAuthenticated;
             }
@@ -1144,7 +1167,9 @@
                                 SessionName = e.SessionName,
                                 HasExpiration = e.HasExpiration,
                                 StartDate = e.StartDate,
-                                PriceType = e.PriceType
+                                PriceType = e.PriceType,
+                                SchedulingUrl = e.SchedulingUrl,
+                                ScheduleType = e.ScheduleType
                             };
                         }).ToList(),
                         Images = result.Images.Select(i =>
@@ -1164,6 +1189,12 @@
                         } : null
                     };
                 MakerActivity.Add(activity);
+
+                var inclusivePricingRes = await activityApiHandler.OwnerPricingInclusive(activity.Owner.Id);
+                if(inclusivePricingRes.Succeeded && inclusivePricingRes.Result != null && inclusivePricingRes.Result.IsSuccess)
+                {
+                    IsInclusivePricing = inclusivePricingRes.Result.Result.IsInclusivePricing;
+                }
             }
 
             // Get experience types
@@ -1305,7 +1336,7 @@
             }
 
             //Get Customer Details
-            foreach (var item in activityReviews.GroupBy(a=> a.CustomerId).Select(s=> s.First()).ToList())
+            foreach (var item in activityReviews.GroupBy(a => a.CustomerId).Select(s => s.First()).ToList())
             {
                 var profileResult = await accountApiHandler.GetCustomerById(item.CustomerId);
                 if (profileResult.Succeeded && profileResult.Result != null && profileResult.Result.IsSuccess)
@@ -1321,6 +1352,9 @@
                     customerProfiles.Add(reviweeProfile);
                 }
             }
+
+            Model.Activity.SchedulingUrl = Model.Activity.ActivitySchedules.FirstOrDefault().SchedulingUrl;
+            Model.Activity.ScheduleType = Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleType;
         }
         catch (Exception e)
         {
@@ -1467,33 +1501,35 @@
 
     private decimal PriceSubTotal
     {
-        get 
+        get
         {
             return PricePerHead * EnrolleeCount;
         }
     }
 
 
-    private decimal ServiceFee 
+    private decimal ServiceFee
     {
-        get 
+        get
         {
+            if (IsInclusivePricing) return 0;
             return 0;
         }
     }
 
-    private decimal HandlingFee 
+    private decimal HandlingFee
     {
-        get 
+        get
         {
             if (PriceSubTotal <= 0) return 0;
+            if (IsInclusivePricing) return 0;
             return 39m;
         }
     }
 
-    private decimal TotalPayment 
+    private decimal TotalPayment
     {
-        get 
+        get
         {
             return PriceSubTotal + ServiceFee + HandlingFee;
         }
@@ -1501,20 +1537,20 @@
 
     private async Task ProceedToPayment()
     {
-        if(SelectedScheduleId > 0)
+        if (SelectedScheduleId > 0)
         {
             var paymentUrl = $"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}";
-            if(isAuthenticated)
+            if (isAuthenticated)
             {
                 NavigationManager.NavigateTo(paymentUrl);
             }
-            else 
+            else
             {
                 signInReturnUrl = paymentUrl;
                 await signinModal.Show();
             }
         }
-        else 
+        else
         {
             isShowErrorMessage = true;
         }
@@ -1525,40 +1561,41 @@
         get
         {
             var schedule = activity.ActivitySchedules.FirstOrDefault(s => s.Id == SelectedScheduleId);
-            if(schedule != null)
+            if (schedule != null)
             {
                 return schedule.Name;
             }
 
-            return "Please select activity schedule";            
+            return "Please select activity schedule";
         }
     }
 
     private Task ModalSelectedChanged(int selectedId)
     {
         SelectedScheduleId = selectedId;
+        DetailsModalSched.Close();
         return Task.CompletedTask;
     }
 
     private async Task DateHasChanged(DateTime? dateTime)
     {
         var result = await activityApiHandler.GetActivityScheduleTimes(new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityScheduleTimesArgs
-        {
-            ActivityScheduleId = SelectedScheduleId,
-            DayOfWeek = (int)dateTime.GetValueOrDefault().DayOfWeek,
-            ScheduleDate = dateTime.GetValueOrDefault()
-        });
+            {
+                ActivityScheduleId = SelectedScheduleId,
+                DayOfWeek = (int)dateTime.GetValueOrDefault().DayOfWeek,
+                ScheduleDate = dateTime.GetValueOrDefault()
+            });
 
         if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
             activityScheduleTimes = result.Result.Result.Select(a => new ActivityScheduleTime
-            {
-                ActivityScheduleTimeId = a.ActivityScheduleTimeId,
-                DayOfWeek = a.DayOfWeek,
-                StartTime = a.StartTime,
-                EndTime = a.EndTime,
-                IsAvailable = a.IsAvailable
-            }).ToList();
+                {
+                    ActivityScheduleTimeId = a.ActivityScheduleTimeId,
+                    DayOfWeek = a.DayOfWeek,
+                    StartTime = a.StartTime,
+                    EndTime = a.EndTime,
+                    IsAvailable = a.IsAvailable
+                }).ToList();
         }
 
         SelectedDate = dateTime.GetValueOrDefault();
@@ -1566,7 +1603,7 @@
 
     private async Task SelectSchedule(int scheduleId)
     {
-        SelectedScheduleId = scheduleId;     
+        SelectedScheduleId = scheduleId;
 
         foreach (var item in activity.ActivitySchedules)
         {

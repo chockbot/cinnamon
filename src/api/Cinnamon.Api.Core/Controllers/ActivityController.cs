@@ -148,6 +148,7 @@ public class ActivityController : ControllerBase
                         StartDate = s.StartDate ?? DateTime.MinValue,
                         ScheduleType = s.ScheduleType,
                         PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Services.ActivityService.Interactors.CreateActivityArgs.ActivityScheduleTime
                         {
                             DayOfWeek = s.DayOfWeek,
@@ -304,6 +305,7 @@ public class ActivityController : ControllerBase
                             StartDate = s.StartDate,
                             PriceType = s.PriceType,
                             ScheduleType = s.ScheduleType,
+                            SchedulingUrl = s.SchedulingUrl,
                             ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new Services.ActivityService.Interactors.UpdateActivityArgs.ActivityScheduleTime
                             {
                                 DayOfWeek = a.DayOfWeek,
@@ -994,6 +996,7 @@ public class ActivityController : ControllerBase
                             StartDate = s.StartDate,
                             PriceType = s.PriceType,
                             ScheduleType = s.ScheduleType,
+                            SchedulingUrl = s.SchedulingUrl,
                             ActivityScheduleTimes = s.ActivityScheduleTimes.Select(act => new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityScheduleTimeModelDTO
                             {
                                 ActivityScheduleId = act.ActivityScheduleId,
@@ -1305,7 +1308,8 @@ public class ActivityController : ControllerBase
                             HasExpiration = s.HasExpiration,
                             StartDate = s.StartDate,
                             PriceType = s.PriceType,
-                            ScheduleType = s.ScheduleType
+                            ScheduleType = s.ScheduleType,
+                            SchedulingUrl = s.SchedulingUrl
                         };
                     }),
                     AdditionalRequirements = activity.AdditionalRequirements,

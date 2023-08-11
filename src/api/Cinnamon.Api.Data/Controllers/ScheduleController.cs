@@ -146,6 +146,7 @@ namespace Cinnamon.Api.Data.Controllers
                         StartDate = s.StartDate,
                         ScheduleType = s.ScheduleType,
                         PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new ActivityScheduleTimeDTO
                         {
                             DayOfWeek = s.DayOfWeek,
@@ -197,6 +198,7 @@ namespace Cinnamon.Api.Data.Controllers
                         StartDate = s.StartDate,
                         ScheduleType = s.ScheduleType,
                         PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(a => new ActivityScheduleTimeDTO
                         {
                             DayOfWeek = a.DayOfWeek,

@@ -14,9 +14,9 @@
     </ul>
 </div>
 
-@*<input type="hidden" @bind="Model.Activity.ActivitySchedules.ToList()" id="activity-schedule-list-create" />*@
-
-<div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
+@if (Model.Activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Internal)
+{
+    <div class="pricing-schedule-section col-lg-12 col-md-12 col-sm-12 col-12">
     <div class="accordion" id="activitySchedules">
         @foreach (var scheduleModel in Model.Activity.ActivitySchedules.Where(a => !a.IsNew))
         {
@@ -282,6 +282,11 @@
         </div>
     </div>
 </div>
+}
+else
+{
+    <label for="title" class="form-control-label label-top-margin right-margin">Schedule already set via Calendly with URL: @Model.Activity.SchedulingUrl</label>
+}
 
 @code {
     [Parameter]
@@ -371,9 +376,17 @@
 
     public bool IsAllFieldsValidated()
     {
-        if (!IsAllSchedulesValid()) return false;
-        if (!AreAllSchedulesValid()) return false;
-        return true;
+        if (Model.Activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Internal)
+        {
+            if (!IsAllSchedulesValid()) return false;
+            if (!AreAllSchedulesValid()) return false;
+
+            return true;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     private bool IsAllSchedulesValid()

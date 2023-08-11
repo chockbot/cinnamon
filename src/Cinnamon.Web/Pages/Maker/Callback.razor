@@ -1,0 +1,80 @@
+﻿@namespace Cinnamon.Web.Components.Pages.Maker.Callback
+@using Cinnamon.Web.Models;
+@inject IJSRuntime jsRuntime
+@using Blazorise.Components
+@using Cinnamon.Web.Models.Entities;
+@using Cinnamon.Web.Modules.ApiAccess.Handlers;
+@inject IActivityApiHandler activityApiHandler;
+@using Microsoft.AspNetCore.WebUtilities;
+@using System.Net.Http.Headers;
+@using Newtonsoft.Json;
+@inject Cinnamon.Web.Config.Config config;
+@inject NavigationManager NavigationManager;
+
+@code {
+    public string Code { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await jsRuntime.InvokeVoidAsync("MyLib.Track", "XP Overview Page");
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-title-editor", "#create-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.init", "#label-description-editor", "#create-activity-description", "Min", 20);
+
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.max", "#label-title-editor", "#create-activity-title", "Max", 15);
+            await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.maxMinWords.min", "#label-description-editor", "#create-activity-description", "Min", 20);
+
+            var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
+
+            if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("code", out var code))
+            {
+                Code = code;
+                await GetSchedulingUrl(code);
+            }
+        }
+    }
+
+    private async Task GetSchedulingUrl(string code)
+    {
+        var postData = new List<KeyValuePair<string, string>>
+        {
+        };
+
+        var tokenModel = new TokenModel();
+        var userModel = new UserModel();
+
+        HttpContent content = new FormUrlEncodedContent(postData);
+        content.Headers.ContentType = new MediaTypeHeaderValue("application/x-www-form-urlencoded");
+
+        using (var client = new HttpClient())
+        {
+            using (HttpResponseMessage response = await client.PostAsync($"{config.Authentication.Calendly.AuthUrl}oauth/token?grant_type=authorization_code&client_id={config.Authentication.Calendly.ClientId}&client_secret={config.Authentication.Calendly.ClientSecret}&code={code}&redirect_uri={config.Authentication.Calendly.RedirectUri}", content))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    tokenModel = JsonConvert.DeserializeObject<TokenModel>(response.Content.ReadAsStringAsync().Result);
+                }
+            }
+        }
+
+        using (var client = new HttpClient())
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, $"{config.Authentication.Calendly.ApiUrl}users/me");
+            request.Headers.Add("Authorization", $"Bearer {tokenModel.AccessToken}");
+            using (HttpResponseMessage response = await client.SendAsync(request))
+            {
+                if (response.IsSuccessStatusCode)
+                {
+                    userModel = JsonConvert.DeserializeObject<UserModel>(response.Content.ReadAsStringAsync().Result);
+
+                    //Model.Activity.SchedulingUrl = userModel.Resource.SchedulingUrl;
+                    //Model.Activity.ScheduleType = Framework.Enums.Enums.ScheduleType.Calendly;
+                }
+            }
+        }
+
+        StateHasChanged();
+    }
+}

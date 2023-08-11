@@ -148,6 +148,7 @@ public class CreateActivityHandler : ICreateActivityHandler
                         StartDate = s.StartDate,
                         ScheduleType = s.ScheduleType,
                         PriceType = s.PriceType,
+                        SchedulingUrl = s.SchedulingUrl,
                         ActivityScheduleTimes = s.ActivityScheduleTimes.Select(s => new Framework.ApiCommand.ApiData.Schedule.Request.CreateManySchedulesArgs.ActivityScheduleTime
                         {
                             DayOfWeek = s.DayOfWeek,

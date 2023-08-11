@@ -119,6 +119,7 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                         StartDate        = schedule.StartDate.SetKindUtc(),
                         ScheduleType     = (int)schedule.ScheduleType,
                         PriceType        = (int)schedule.PriceType,
+                        SchedulingUrl    = schedule.SchedulingUrl
                     };
 
                     var result = await _dataStore.ActivitySchedule.Add(entity);
@@ -384,24 +385,25 @@ namespace Cinnamon.Api.Data.Services.Repository.Schedule
                 }
                 var scheduleToUpdate = args.Select(s => {
                     return new Entities.ActivitySchedule {
-                        Id = s.Id,
-                        DateTime = s.DateTime,
-                        Name = s.Name,
-                        PerUnit1 = s.PerUnit1,
-                        PerUnit2 = s.PerUnit2,
-                        Price = s.Price,
-                        PriceUnit1 = s.PriceUnit1,
-                        PriceUnit2 = s.PriceUnit2,
-                        UnitPrice = s.UnitPrice,
-                        ActivityId = s.ActivityId,
-                        Order = s.Order,
+                        Id               = s.Id,
+                        DateTime         = s.DateTime,
+                        Name             = s.Name,
+                        PerUnit1         = s.PerUnit1,
+                        PerUnit2         = s.PerUnit2,
+                        Price            = s.Price,
+                        PriceUnit1       = s.PriceUnit1,
+                        PriceUnit2       = s.PriceUnit2,
+                        UnitPrice        = s.UnitPrice,
+                        ActivityId       = s.ActivityId,
+                        Order            = s.Order,
                         IsActiveSchedule = s.IsActiveSchedule,
-                        IsSetSession = s.IsSetSession,
-                        SessionName = s.SessionName,
-                        HasExpiration = s.HasExpiration,
-                        StartDate = s.StartDate.SetKindUtc(),
-                        PriceType = (int)s.PriceType,
-                        ScheduleType = (int)s.ScheduleType,
+                        IsSetSession     = s.IsSetSession,
+                        SessionName      = s.SessionName,
+                        HasExpiration    = s.HasExpiration,
+                        StartDate        = s.StartDate.SetKindUtc(),
+                        PriceType        = (int)s.PriceType,
+                        ScheduleType     = (int)s.ScheduleType,
+                        SchedulingUrl    = s.SchedulingUrl
                     };
                 });
 
