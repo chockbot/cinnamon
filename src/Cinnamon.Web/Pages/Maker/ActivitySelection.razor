@@ -10,8 +10,8 @@
 @attribute [Authorize]
 
 <div class="row activity-selection-section">
-    <div class="col-lg-6">
-        <div class="experience-title">
+    <div class="col-lg-6 col-md-12 col-sm-12">
+        <div class="experience-title-header">
             Choose type of experience
         </div>
         <div class="experience-briefing">
@@ -19,12 +19,12 @@
             Experience via Appointment are for experiences set by appointment. One Time Events are for events such as educational trip, museum trip, etc.
         </div>
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-6 col-md-12 justify-content-md-center col-sm-12 justify-content-sm-center">
         @foreach (var item in experienceCreationTypes)
         {
             <div class="experience-card" @onclick="() => NavigateToExperience(item.CreationType)">
                 <div class="row">
-                    <div class="col-lg-10">
+                    <div class="col-lg-10 col-md-9 justify-content-md-center col-sm-9 justify-content-sm-center col-xs-9 justify-content-sx-center col-9">
                         <div class="experience-title">
                             @item.Name
                         </div>
@@ -32,8 +32,8 @@
                             @item.Description
                         </div>
                     </div>
-                    <div class="col-lg-2">
-                        <img src="@item.ImagePath" />
+                    <div class="col-lg-2 col-md-3 justify-content-md-center col-sm-3 justify-content-sm-center col-xs-3 justify-content-xs-center col-3">
+                        <img class="img-icon" src="@item.ImagePath" />
                     </div>
                 </div>
             </div>
