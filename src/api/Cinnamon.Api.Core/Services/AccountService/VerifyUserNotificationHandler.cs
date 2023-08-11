@@ -67,18 +67,11 @@ namespace Cinnamon.Api.Core.Services.AccountService
                     }
                 }
 
-                logger.LogInformation("Success");
-                logger.LogInformation("Success");
-                logger.LogInformation("Notification send successfully");
-
                 return AppResult<VerifyUserNotificationResult>.CreateSucceeded(
                         new VerifyUserNotificationResult { }, "User Verification Request sent");
             }
             catch (Exception ex)
             {
-                logger.LogError("Error when sending notification email");
-                logger.LogError(ex.Message);
-                logger.LogError(ex, "Error");
                 return AppResult<VerifyUserNotificationResult>.CreateFailed(ex, "An error occured in VerifyUserNotificationHandler");
             }
         }
