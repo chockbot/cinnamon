@@ -16,12 +16,14 @@ namespace Cinnamon.Api.Core.Services.AccountService
     {
         private readonly ISendMailHandler sendMailHandler;
         private readonly ApplicationConfig applicationConfig;
+        private readonly ILogger logger;
 
-
-        public VerifyUserNotificationHandler(ISendMailHandler sendMailHandler, ApplicationConfig applicationConfig)
+        public VerifyUserNotificationHandler(ISendMailHandler sendMailHandler, ApplicationConfig applicationConfig,
+            ILogger<VerifyUserNotificationHandler> logger)
         {
             this.sendMailHandler = sendMailHandler;
             this.applicationConfig = applicationConfig;
+            this.logger = logger;
         }
         public AppResult<VerifyUserNotificationResult> Execute(VerifyUserNotificationArgs args)
         {
@@ -71,6 +73,9 @@ namespace Cinnamon.Api.Core.Services.AccountService
             }
             catch (Exception ex)
             {
+                logger.LogError("Error when sending notification email");
+                logger.LogError(ex.Message);
+                logger.LogError(ex, "Error");
                 return AppResult<VerifyUserNotificationResult>.CreateFailed(ex, "An error occured in VerifyUserNotificationHandler");
             }
         }
