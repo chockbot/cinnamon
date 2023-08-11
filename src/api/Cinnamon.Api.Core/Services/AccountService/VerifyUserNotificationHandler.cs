@@ -41,11 +41,10 @@ namespace Cinnamon.Api.Core.Services.AccountService
         {
             try
             {
-                var location = $"{System.Reflection.Assembly.GetExecutingAssembly().Location.Substring(0, System.Reflection.Assembly.GetExecutingAssembly().Location.LastIndexOf("\\") + 1)}Templates\\UserVerificationRequest.html";
-
+                var templateLocation = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "UserVerificationRequest.html");
                 var properties = typeof(VerifyUserNotificationArgs).GetProperties().ToDictionary(x => x, x => x.GetType().GetProperties());
 
-                using (StreamReader sr = File.OpenText(location))
+                using (StreamReader sr = new(templateLocation))
                 {
                     var emailBody = sr.ReadToEnd();
 
@@ -67,6 +66,10 @@ namespace Cinnamon.Api.Core.Services.AccountService
                             .CreateFailed(new ApplicationException(sendMailResponse.Error.Description), sendMailResponse.Message);
                     }
                 }
+
+                logger.LogInformation("Success");
+                logger.LogInformation("Success");
+                logger.LogInformation("Notification send successfully");
 
                 return AppResult<VerifyUserNotificationResult>.CreateSucceeded(
                         new VerifyUserNotificationResult { }, "User Verification Request sent");
