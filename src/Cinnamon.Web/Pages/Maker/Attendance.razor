@@ -20,7 +20,7 @@
 <PageTitle>Attendance Management | CinnamonPH</PageTitle>
 <SeoMeta Title="Attendance Management" Subject="Attendance Management" Url="/maker/dashboard/attendance" />
 
-<LoadingIndicator @ref="loadingIndicator">
+
 <section class="student-attendance mt-5 overflow-hidden">
     <h3 class="title">Check Attendance for Today - @Model.ServerDate.ToString("MMMM dd, yyyy")</h3>
         <div class="activities-schedule-section schedule-swiper">
@@ -84,7 +84,8 @@
             </Button>
             <TextEdit TextChanged="TextSearchChanged" class="search-text" Size="Size.Small" Placeholder="Search" Role="TextRole.Text" />
         </div>
-        <div class="table-list">
+        <LoadingIndicator @ref="loadingIndicator">
+            <div class="table-list">
             <Table Shadow="Shadow.Default">
                 <TableHeader>
                     <TableRow>
@@ -171,9 +172,9 @@
                 <p>Nothing follows</p>
             }
         </div>
+        </LoadingIndicator>
     </div>
 </section>
-</LoadingIndicator>
 <Alert Width="Width.Is100" Margin="Margin.Is2.FromTop" Color="Color.Danger" @bind-Visible="Model.IsShowErrorMessage" >
     <AlertMessage>
         @Model.ErrorMessage
@@ -336,8 +337,9 @@
 
     private async Task CheckUnCheckSchedule(AttendanceModel.Schedule schedule)
     {
+        var selectedSchedule = Model.Schedules.Where(a => a.IsSetSession).FirstOrDefault();
         schedule.IsSelected = !schedule.IsSelected;
-        if(schedule.IsSelected)
+        if(schedule.IsSelected && selectedSchedule != null)
         {
             var result = await dashboardApiHandler.GetCurrentAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.GetCurrentAttendanceArgs {
                 ActivityId = schedule.ActivityId,
@@ -345,7 +347,8 @@
             }, Model.Token);
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                Model.Attendances.AddRange(result.Result.Result.Select(s => {
+                Model.Attendances.AddRange(result.Result.Result.Where(s => s.ExpirationEndDate >= DateTime.Now.Date || s.ExpirationEndDate == DateTime.MinValue).Select(s =>
+                {
                     return new AttendanceModel.StudentAttendance {
                         ActivityName = schedule.ActivityTitle,
                         IsPresent = s.IsPresent,
@@ -354,7 +357,9 @@
                         ActivityId = schedule.ActivityId,
                         ScheduleId = schedule.ScheduleId,
                         NumberOfSessions = s.NumberOfSessions,
-                        SessionsAttended = s.SessionsAttended
+                        SessionsAttended = s.SessionsAttended,
+                        ExpirationDateEnd = s.ExpirationEndDate,
+                        ExpirationDateStart = s.ExpirationStartDate
                     };
                 }));
             }

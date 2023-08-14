@@ -22,5 +22,7 @@ public class GetStudentAttendanceResult
         public bool IsPresent {get; set;}
         public DateTime AttendanceDate {get; set;}
         public string Remarks {get; set;}
+        public DateTime ExpirationDateStart { get; set; }
+        public DateTime ExpirationDateEnd { get; set; }
     }
 }

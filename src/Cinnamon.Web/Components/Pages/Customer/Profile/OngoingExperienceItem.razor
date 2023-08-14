@@ -47,7 +47,7 @@
                         {
                             <div class="xp-body-item">
                                 <p class="secondary-caption">
-                                    Expires on - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                    Expires on - @item.ExpirationDateEnd.AddDays(1).ToString("MMMM dd, yyyy")
                                 </p>
                             </div>
                         }
@@ -55,6 +55,7 @@
                 }
                 else
                 {
+                    
                     var result = attendanceList.Where(s => s.StudentId == item.Id && s.ScheduleId == item.ScheduleId
                     && s.ActivityId == item.ActivityId).LastOrDefault();
 
@@ -65,28 +66,47 @@
                             case 0:
                                 <div class="xp-body-item">
                                     <p class="secondary-caption">
-                                        Completed @result.Date.ToString("MMMM dd, yyyy")
+                                        Completed: @result.Date.ToString("MMMM dd, yyyy")
                                     </p>
                                 </div>
                             break;
                             case 1:
-                                <div class="xp-body-item">
-                                    <p class="secondary-caption">
-                                        Completed @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                                    </p>
-                                </div>
-                            break;
                             case 2:
                                 <div class="xp-body-item">
-                                    <p class="secondary-caption">
-                                        Completed @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
-                                    </p>
+                                    @if(item.SessionsAttended >= item.NumberOfSessions)
+                                    {
+                                        <p class="secondary-caption">
+                                         Completed: @result.Date.ToString("MMMM dd, yyyy")
+                                        </p>
+                                    }
+                                    else
+                                    {
+                                        <p class="secondary-caption">
+                                            Expired: @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                        </p>
+                                    }
                                 </div>
                             break;
-
                             default:
-                            break;
-                        } 
+                                break;
+                        }
+                    }
+                    else
+                    {
+                        <div class="xp-body-item">
+                            @if (item.SessionsAttended >= item.NumberOfSessions)
+                            {
+                                <p class="secondary-caption">
+                                    Completed: @result.Date.ToString("MMMM dd, yyyy")
+                                </p>
+                            }
+                            else
+                            {
+                                <p class="secondary-caption">
+                                    Expired: @item.ExpirationDateEnd.AddDays(1).ToString("MMMM dd, yyyy")
+                                </p>
+                            }
+                        </div>
                     }
                 }
             </div>
@@ -245,11 +265,12 @@
 {
     [Parameter]
     public Activity Activity { get; set; }
+
     [Parameter]
     public CustomerProfile Profile { get; set; }
 
     public List<Students> students = new List<Students>();
-    public ActivitySchedule Schedule = new ActivitySchedule();
+    public List<ActivitySchedule> Schedules = new List<ActivitySchedule>();
     public Activity activity = new Activity();
     private List<StudentAttendance> studentAttendances = new List<StudentAttendance>();
     private List<StudentAttendance> attendanceList = new List<StudentAttendance>();
@@ -303,67 +324,78 @@
         }
         // Get All Ongoing Activities of the Customer
         var student = await ongoingApiHandler.GetAllStudentsById(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetAllStudentsByIdArgs
-                {
-                    CustomerId = Profile.Id
-                }, Token);
+                    {
+                        CustomerId = Profile.Id
+                    }, Token);
         if (student.Succeeded && student.Result != null && student.Result.IsSuccess)
         {
             students = student.Result.Result.OrderBy(a => a.ActivityId).Select(a =>
             {
                 return new Students
-                        {
-                            ActivityId = a.ActivityId,
-                            CustomerId = a.CustomerId,
-                            Id = a.Id,
-                            Name = a.Name,
-                            NumberOfSessions = a.NumberOfSessions,
-                            Remarks = a.Remarks,
-                            ScheduleId = a.ScheduleId,
-                            SessionsAttended = a.SessionsAttended,
-                            Status = a.Status,
-                            StudentNo = a.StudentNo,
-                            ExpirationDateStart = a.ExpirationStartDate,
-                            ExpirationDateEnd = a.ExpirationEndDate,
-                            HasReview = a.HasReview
-                        };
+                            {
+                                ActivityId = a.ActivityId,
+                                CustomerId = a.CustomerId,
+                                Id = a.Id,
+                                Name = a.Name,
+                                NumberOfSessions = a.NumberOfSessions,
+                                Remarks = a.Remarks,
+                                ScheduleId = a.ScheduleId,
+                                SessionsAttended = a.SessionsAttended,
+                                Status = a.Status,
+                                StudentNo = a.StudentNo,
+                                ExpirationDateStart = a.ExpirationStartDate,
+                                ExpirationDateEnd = a.ExpirationEndDate,
+                                HasReview = a.HasReview,
+                            };
             }).ToList();
         }
         // Get All Students Attendance
         foreach(var item in students)
         {
             var attendance = await ongoingApiHandler.GetStudentLastAttendance(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.GetStudentLastAttendanceArgs
-            {
-                Id = item.Id,
-                ActivityId = item.ActivityId,
-                ScheduleId = item.ScheduleId
-            }, token);
+                {
+                    Id = item.Id,
+                    ActivityId = item.ActivityId,
+                    ScheduleId = item.ScheduleId,
+                }, token);
 
             if (attendance.Succeeded && attendance.Result != null && attendance.Result.IsSuccess)
             {
                 var result = attendance.Result.Result;
                 studentAttendance = new StudentAttendance
-                {
-                    Id              = result.Id,
-                    Date            = result.Date,
-                    IsPresent       = result.IsPresent,
-                    StudentId       = result.StudentId,
-                    ScheduleId      = result.ScheduleId,
-                    ActivityId      = result.ActivityId
-                };
+                    {
+                        Id              = result.Id,
+                        Date            = result.Date,
+                        IsPresent       = result.IsPresent,
+                        StudentId       = result.StudentId,
+                        ScheduleId      = result.ScheduleId,
+                        ActivityId      = result.ActivityId,
+                    };
                 attendanceList.Add(studentAttendance);
             }
         }
-            students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
+
+        students = students.Where(a => a.ActivityId == Activity.ActivityId).ToList();
+        // Get Student Activity Schedules
+        foreach(var item in students)
+        {
+            var items = Activity.ActivitySchedules.Where(a => a.Id == item.ScheduleId).ToList();
+            Schedules.AddRange(items);
+        }
 
         if(ActivityItemType == ItemType.Ongoing)
         {
-            students = students.Where(s => s.SessionsAttended < s.NumberOfSessions).ToList();
+            students = students.Where(a => a.SessionsAttended < a.NumberOfSessions && (a.ExpirationDateEnd >= DateTime.Now.Date || a.ExpirationDateEnd == DateTime.MinValue)).ToList();
         }
-        else 
+        else
         {
-            students = students.Where(s => s.SessionsAttended >= s.NumberOfSessions).ToList();
+            students = students.Where(a => (a.SessionsAttended >= a.NumberOfSessions && Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 0) 
+            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions) 
+            || (Schedules.Where(s => s.Id == a.ScheduleId).FirstOrDefault().HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
+            && a.ExpirationDateEnd != DateTime.MinValue).ToList();
         }
-
         await CreateMonth();
     }
 
