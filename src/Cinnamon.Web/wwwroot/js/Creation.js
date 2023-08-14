@@ -91,6 +91,11 @@ export function scrollToRequiredField(container) {
         window.scrollTo(0, top);
     }, 200);
 }
+export function scrollToPricingandSchedule() {
+    $('html, body').animate({
+        scrollTop: $(".pricing-schedule").offset().top
+    }, 200); 
+}
 
 function replaceEmptyvalue(value, replacement) {
     return value ? value : replacement;
