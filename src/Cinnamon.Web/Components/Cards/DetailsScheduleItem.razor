@@ -15,11 +15,19 @@
                         <p>@ScheduleModel.Name</p>
                     </div>
                     <div class="form-check col-lg-2 col-md-3 justify-content-center">
-                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)" 
-                            class="form-check-input" type="radio" name="schedule" id="schedule">
+                        <input value="@ScheduleModel.Id" checked="@isSelected" @onchange="() => OnSelectedChanged(ScheduleModel.Id)"
+                               class="form-check-input" type="radio" name="schedule" id="schedule">
                         <label class="form-check-label" for="schedule">
-                            Select
+                            @if (isSelected)
+                            {
+                                <text>Selected</text>
+                            }
+                            else
+                            {
+                                <text>Select</text>
+                            }
                         </label>
+
                     </div>
                 </div>
                 <hr>
@@ -44,10 +52,10 @@
                                             switch (ScheduleModel.SessionName)
                                             {
                                                 case "2 Weeks":
-                                                    frequency = ScheduleModel.StartDate.Value.AddDays(14);
+                                                    frequency = ScheduleModel.StartDate.Value.AddDays(15);
                                                     break;
                                                 case "3 Weeks":
-                                                    frequency = ScheduleModel.StartDate.Value.AddDays(21);
+                                                    frequency = ScheduleModel.StartDate.Value.AddDays(22);
                                                     break;
                                                 case "1 Month":
                                                     frequency = ScheduleModel.StartDate.Value.AddMonths(1);
@@ -83,36 +91,25 @@
                                             {
                                                 case "2 Weeks":
                                                 case "3 Weeks":
-                                                    string tooltip1 = "The expiration period is " + ScheduleModel.SessionName + " (calendar days) and will start on " + ScheduleModel.StartDate.Value.ToString("MMMM dd, yyyy") + ".";
-                                                    <Tooltip Text="@tooltip1" Multiline>
                                                     <small class="form-text sub-details">
-                                                        The expiration period is @ScheduleModel.SessionName (calendar days) and will start on @ScheduleModel.StartDate.Value.ToString("MMMM dd, yyyy").
+                                                        The expiration period is @ScheduleModel.SessionName (calendar days) and will end every @frequency.Day@ordinal day.
                                                     </small>
-                                                </Tooltip>
                                                     break;
                                                 case "1 Month":
-                                                    string tooltip2 = "The expiration period is " + ScheduleModel.SessionName + ", and the cutoff is every " + @frequency.Day + @ordinal + "day of the month";
-                                                    <Tooltip Text="@tooltip2" Multiline>
                                                     <small class="form-text sub-details">
-                                                        Cutoff is every @frequency.Day@ordinal day of the month...etc
+                                                        The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the month.
                                                     </small>
-                                                </Tooltip>
                                                     break;
                                                 case "2 Months":
-                                                    string tooltip3 = "The expiration period is " + ScheduleModel.SessionName + ", and the cutoff is every " + @frequency.Day + @ordinal + "day of the 3rd month";
-                                                    <Tooltip Text="@tooltip3" Multiline>
                                                     <small class="form-text sub-details">
-                                                        Cutoff is every @frequency.Day@ordinal day of the 3rd month...etc
+                                                        The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 3rd month.
                                                     </small>
-                                                </Tooltip>
                                                     break;
                                                 case "3 Months":
-                                                    string tooltip4 = "The expiration period is " + ScheduleModel.SessionName + ", and the cutoff is every " + @frequency.Day + @ordinal + "day of the 4th month";
-                                                    <Tooltip Text="@tooltip4" Multiline>
+                                                   
                                                     <small class="form-text sub-details">
-                                                        Cutoff is every @frequency.Day@ordinal day of the 4th month...etc
+                                                        The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
                                                     </small>
-                                                </Tooltip>
                                                     break;
                                             }
                                         }
@@ -162,10 +159,10 @@
                                     switch (ScheduleModel.SessionName)
                                     {
                                         case "2 Weeks":
-                                            frequency = ScheduleModel.StartDate.Value.AddDays(14);
+                                            frequency = ScheduleModel.StartDate.Value.AddDays(15);
                                             break;
                                         case "3 Weeks":
-                                            frequency = ScheduleModel.StartDate.Value.AddDays(21);
+                                            frequency = ScheduleModel.StartDate.Value.AddDays(22);
                                             break;
                                         case "1 Month":
                                             frequency = ScheduleModel.StartDate.Value.AddMonths(1);
@@ -201,36 +198,24 @@
                                     {
                                         case "2 Weeks":
                                         case "3 Weeks":
-                                            string tooltip1 = "The expiration period is " + ScheduleModel.SessionName + " (calendar days) and will start on " + ScheduleModel.StartDate.Value.ToString("MMMM dd, yyyy") + ".";
-                                            <Tooltip Text="@tooltip1" Multiline>
                                             <small class="form-text sub-details">
-                                                The expiration period is @ScheduleModel.SessionName (calendar days) and will start on @ScheduleModel.StartDate.Value.ToString("MMMM dd, yyyy").
+                                                The expiration period is @ScheduleModel.SessionName (calendar days) and will end every @frequency.Day@ordinal day.
                                             </small>
-                                        </Tooltip>
                                             break;
                                         case "1 Month":
-                                            string tooltip2 = "The expiration period is " + ScheduleModel.SessionName + ", and the cutoff is every " + @frequency.Day + @ordinal + "day of the month";
-                                            <Tooltip Text="@tooltip2" Multiline>
                                             <small class="form-text sub-details">
-                                                Cutoff is every @frequency.Day@ordinal day of the month...etc
+                                                The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the month.
                                             </small>
-                                        </Tooltip>
                                             break;
                                         case "2 Months":
-                                            string tooltip3 = "The expiration period is " + ScheduleModel.SessionName + ", and the cutoff is every " + @frequency.Day + @ordinal + "day of the 3rd month";
-                                            <Tooltip Text="@tooltip3" Multiline>
                                             <small class="form-text sub-details">
-                                                Cutoff is every @frequency.Day@ordinal day of the 3rd month...etc
+                                                The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 3rd month.
                                             </small>
-                                        </Tooltip>
                                             break;
                                         case "3 Months":
-                                            string tooltip4 = "The expiration period is " + ScheduleModel.SessionName + ", and the cutoff is every " + @frequency.Day + @ordinal + "day of the 4th month";
-                                            <Tooltip Text="@tooltip4" Multiline>
                                             <small class="form-text sub-details">
-                                                Cutoff is every @frequency.Day@ordinal day of the 4th month...etc
+                                                The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
                                             </small>
-                                        </Tooltip>
                                             break;
                                     }
                                 }
@@ -280,6 +265,8 @@
 
     private int selectedScheduleId = 0;
 
+    public bool isSelected = false;
+
     private ModalLogin? modalLoginRef;
 
     protected override async Task OnInitializedAsync()
@@ -298,6 +285,7 @@
 
     private Task OnSelectedChanged(int selectedId)
     {
+        isSelected = !isSelected;
         selectedScheduleId = selectedId;
         if (OnChooseClick.HasDelegate)
         {
