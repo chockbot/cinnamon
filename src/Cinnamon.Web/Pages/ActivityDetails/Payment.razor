@@ -934,33 +934,8 @@
                 NavigationManager.NavigateTo("explore");
                 return;
             }
-            var period = DateNextPeriod.Period.Day;
-            var periodCount = 0;
 
-            switch (Model.SelectedSchedule.SessionName)
-            {
-                case "2 Weeks":
-                    period = DateNextPeriod.Period.Week;
-                    periodCount = 2;
-                    break;
-                case "3 Weeks":
-                    period = DateNextPeriod.Period.Week;
-                    periodCount = 3;
-                    break;
-                case "1 Month":
-                    period = DateNextPeriod.Period.Month;
-                    periodCount = 1;
-                    break;
-                case "2 Months":
-                    period = DateNextPeriod.Period.Month;
-                    periodCount = 2;
-                    break;
-                case "3 Months":
-                    period = DateNextPeriod.Period.Month;
-                    periodCount = 3;
-                    break;
-            }
-            var datePeriod = DateNextPeriod.CreateRecurring(Model.SelectedSchedule.StartDate.Value, period, periodCount);
+            var datePeriod = DateNextPeriod.CreateRecurring(Model.SelectedSchedule.StartDate.Value, Model.SelectedSchedule.SessionName);
             DateTime periodStart = datePeriod.PeriodStart;
             // to set the last time of the day
             DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
