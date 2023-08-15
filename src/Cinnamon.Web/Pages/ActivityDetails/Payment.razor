@@ -18,6 +18,7 @@
 @inject IDashboardApiHandler dashboardApiHandler
 @inject IChatApiHandler chatApiHandler
 @inject ILogger<Payment> logger
+@using Cinnamon.Framework.Helpers;
 
 @implements IDisposable
 
@@ -542,7 +543,7 @@
                                         </Column>
                                         <Column ColumnSize="ColumnSize.Is11">
                                             <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
-                                            <p class="font-14 color-grey-100">You only have <span class="color-red-100">@confirmationData.DaysLeft</span> days to use this.</p>
+                                            <p class="font-14 color-grey-100">You only have <span class="color-red-100">@confirmationData.DurationLeft</span> to use this.</p>
                                         </Column>
                                     </Row>
                                 </Column>
@@ -927,11 +928,52 @@
 
         if(Model.SelectedSchedule.HasExpiration == 1)
         {
-            DateTime now = DateTime.Now;
-            DateTime dateEnd = CalculateDateEnd(Model.SelectedSchedule.SessionName, Model.SelectedSchedule.StartDate.Value);
+            if(Model.SelectedSchedule.StartDate is null)
+            {
+                // don't have start date setted
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
+            var period = DateNextPeriod.Period.Day;
+            var periodCount = 0;
 
-            confirmationData.DaysLeft = Math.Abs((now - dateEnd).Days);
-            confirmationData.NextPeriod = dateEnd.AddDays(1);
+            switch (Model.SelectedSchedule.SessionName)
+            {
+                case "2 Weeks":
+                    period = DateNextPeriod.Period.Week;
+                    periodCount = 2;
+                    break;
+                case "3 Weeks":
+                    period = DateNextPeriod.Period.Week;
+                    periodCount = 3;
+                    break;
+                case "1 Month":
+                    period = DateNextPeriod.Period.Month;
+                    periodCount = 1;
+                    break;
+                case "2 Months":
+                    period = DateNextPeriod.Period.Month;
+                    periodCount = 2;
+                    break;
+                case "3 Months":
+                    period = DateNextPeriod.Period.Month;
+                    periodCount = 3;
+                    break;
+            }
+            var datePeriod = DateNextPeriod.CreateRecurring(Model.SelectedSchedule.StartDate.Value, period, periodCount);
+            DateTime periodStart = datePeriod.PeriodStart;
+            // to set the last time of the day
+            DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+            DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+            DateTime now = DateTime.Now;
+
+            int daysLeft = (periodEnd - now).Days;
+            int hours = (periodEnd - now).Hours;
+            string durationLeft = daysLeft > 0 ? $"{daysLeft} days" : (hours > 0 ? "today" : "0 days");
+
+            confirmationData.DaysLeft = Math.Abs((now - periodEnd).Days);
+            confirmationData.DurationLeft = durationLeft;
+            confirmationData.NextPeriod = nextPeriod;
             confirmationData.IsApplied = false;
             confirmationData.IsShowError = false;
         }
@@ -1411,31 +1453,6 @@
         return Task.CompletedTask;
     }
 
-    private DateTime CalculateDateEnd(string sessionName, DateTime dateStart)
-    {
-        DateTime dateEnd = DateTime.Now;
-        switch (sessionName)
-        {
-            case "2 Weeks":
-                dateEnd = dateStart.AddDays(14);
-                break;
-            case "3 Weeks":
-                dateEnd = dateStart.AddDays(21);
-                break;
-            case "1 Month":
-                dateEnd = dateStart.AddMonths(1);
-                break;
-            case "2 Months":
-                dateEnd = dateStart.AddMonths(2);
-                break;
-            case "3 Months":
-                dateEnd = dateStart.AddMonths(3);
-                break;
-        }
-
-        return dateEnd;
-    }
-
     private async Task ConfirmProceedClick()
     {
         if(string.IsNullOrEmpty(confirmationData.SelectedPeriod))
@@ -1477,6 +1494,7 @@
     {
         public string Message { get; set; }
         public int DaysLeft { get; set; }
+        public string DurationLeft { get; set; }
         public DateTime NextPeriod { get; set; }
         public bool IsApplied { get; set; }
         public bool IsShowError { get; set; }
