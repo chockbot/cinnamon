@@ -100,7 +100,41 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
                     }
                     var account = cachedPayoutAccounts[transaction.MakerId];
 
-                    var amountToDisburse = transaction.PerUnitDisburseAmount > 0 ? transaction.PerUnitDisburseAmount : 0;
+                    var amountToDisburse = transaction.PerUnitDisburseAmount;
+                    generatePayoutHelper.AddCustomerSummary(transaction.MakerId, amountToDisburse, transaction.TransactionId, 
+                        account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
+                }
+            }
+
+            // for expired experiences
+            var expiredXPTransactions = await studentData.GetStudentsToDisburse(new Framework.ApiCommand.ApiData.Student.Request.GetStudentsToDisburseArgs {
+                IsExpired = true
+            });
+            if(!expiredXPTransactions.Succeeded || expiredXPTransactions.Result == null || !expiredXPTransactions.Result.IsSuccess)
+            {
+                return AppResult<GeneratePayoutResult>.CreateFailed(new ApplicationException(expiredXPTransactions.Result?.ErrorInfo?.Message), expiredXPTransactions.Message);
+            }
+
+            // skip data have errors
+            int expiredXPTotalTransactions = expiredXPTransactions.Result.Result.Count();
+            for(int i = 0; i < expiredXPTotalTransactions; i++)
+            {
+                var transaction = expiredXPTransactions.Result.Result.ElementAt(i);
+                if(transaction != null)
+                {
+                    // get maker payout account and cache in memory
+                    if(!cachedPayoutAccounts.ContainsKey(transaction.MakerId))
+                    {
+                        var accountRes = await payoutAccountData.GetPayoutAccountByCustomerId(transaction.MakerId);
+                        if(!accountRes.Succeeded || accountRes.Result == null || !accountRes.Result.IsSuccess)
+                        {
+                            continue;
+                        }
+                        cachedPayoutAccounts.Add(transaction.MakerId, accountRes.Result.Result);
+                    }
+                    var account = cachedPayoutAccounts[transaction.MakerId];
+
+                    var amountToDisburse = transaction.PerUnitDisburseAmount;
                     generatePayoutHelper.AddCustomerSummary(transaction.MakerId, amountToDisburse, transaction.TransactionId, 
                         account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);
                 }
@@ -156,7 +190,7 @@ public class GeneratePayoutHandler : IGeneratePayoutHandler
 
                         // var totalAmount = transaction.UnitPrice - amountToDeduct;
                         var account = cachedPayoutAccounts[transaction.MakerId];
-                        var amountToDisburse = transaction.PerUnitDisburseAmount > 0 ? transaction.PerUnitDisburseAmount : 0;
+                        var amountToDisburse = transaction.PerUnitDisburseAmount;
                         
                         generatePayoutHelper.AddCustomerSummary(transaction.MakerId, amountToDisburse, transaction.TransactionId, 
                             account.BankChannel, account.AccountHolder, account.AccountNumber, transaction.StudentId);

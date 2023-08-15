@@ -193,7 +193,7 @@ public class StudentController : ControllerBase
     {
         try
         {
-            var result = await studentRepository.GetStudentsToDisburse(args.IsInclusive ?? false);
+            var result = await studentRepository.GetStudentsToDisburse(args.IsInclusive ?? false, args.IsExpired ?? false);
 
             if (!result.Succeeded || result.Result == null)
             {
