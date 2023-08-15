@@ -19,7 +19,7 @@ public interface IStudentRepository
     Task<AppResult<IEnumerable<StudentDTO>>> GetEnrolledStudent(int ActivityId);
     Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive);
     Task<AppResult<IEnumerable<StudentDTO>>> UpdateStudentsDisbursementStatus(IEnumerable<int> ids, bool isDisbursement);
-    Task<AppResult<IEnumerable<StudentDTO>>> GetCompletedStudentsById(int? customerId, int? count, int? skip);
+    Task<AppResult<IEnumerable<StudentDTO>>> GetCompletedStudentsById(int customerId, int? count, int? skip);
 
     Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentsById(int? customerId, int? count, int? skip);
 
