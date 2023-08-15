@@ -29,6 +29,12 @@
 <div class="image-4-mobile">
     <img src="images/landing-page-images/ticket-mobile.png">
 </div>
+<div class="circle-1-md">
+    <img src="images/landing-page-images/circle-md.png">
+</div>
+<div class="circle-2-md">
+    <img src="images/landing-page-images/circle-2-md.png">
+</div>
 <!--Section 1-->
 <div class="wrapper hero_section col-xl-12 col-lg-12 col-md-12 col-sm-12 col-xs-12 col-12">
     <img class="blob_1" alt="blob_1" src="images/landing-page-images/circle.png">
@@ -45,8 +51,10 @@
     <img class="float_3" alt="float_3" src="images/landing-page-images/laptop.png">
     <div class="search_bar">
         <img class="search_icon" alt="search_icon" src="images/landing-page-images/search-icon.png" style="">
-        <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind-value="searchValue">
-        <button class="explore_button" @onclick="() =>SearchToExplorePage()">Explore</button>
+        <input class="search" type="text" id="19d13aa1-90c0-4232-a7bc-62a772baa223" autocomplete="new-password" @bind="searchValue" placeholder="Search for an activity.." @oninput="OnChageInput">
+        <button class="explore_button" @onclick="() =>SearchToExplorePage()">
+            @buttonLabel
+        </button>
     </div>
     <img class="float_4" alt="float_4" src="images/landing-page-images/ticket.png">
 </div>
@@ -183,6 +191,7 @@
         </div>
 
         <img class="about_us_pic" alt="about_us_pic" src="images/landing-page-images/img-section2-desktop.png">
+        <img class="about_us_pic_tablet" alt="about_us_pic" src="images/landing-page-images/img-section2-tablet.png">
         <img class="about_us_pic_mobile" alt="about_us_pic" src="images/landing-page-images/img-section2-mobile.png">
     </div>
 
@@ -497,6 +506,8 @@
 
     public string searchValue = string.Empty;
 
+    public string buttonLabel = "Browse all";
+
     protected override async Task OnInitializedAsync()
     {
         //get activities randomly
@@ -727,5 +738,19 @@
     private void NavigateToOnboardingPage()
     {
         NavigationManager.NavigateTo("/Onboarding");
+    }
+    private Task OnChageInput(ChangeEventArgs e)
+    {
+        string text = e.Value.ToString();
+        if (string.IsNullOrEmpty(text))
+        {
+            buttonLabel = "Browse all";
+        }
+        else
+        {
+            buttonLabel = "Explore";
+        }
+
+        return Task.CompletedTask;
     }
 }

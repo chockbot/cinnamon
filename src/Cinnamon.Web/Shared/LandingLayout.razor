@@ -1,23 +1,32 @@
 ﻿@inherits LayoutComponentBase
 @using Cinnamon.Web.Components
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@using System.Security.Claims
 
 <PageTitle>Cinnamon</PageTitle>
 
 <div class="page app-name-section">
     <main>
         <div class="top-row px-4 d-flex">
-            <div class="app-name col-lg-3 col-md-2 col-sm-10 col-10">
+            <div class="app-name col-lg-3 col-md-2 col-sm-8 col-8">
                 <a href="/explore" class="app-name">@Resources.App.appName</a>
             </div>
             <div class="login-button col-lg-9 col-md-10 justify-content-end text-center">
-                <button class="btn-login" @onclick="() => signinModal.Show()">
+                <button class="btn-login" @onclick="() => signinModal.Show()" style="display:@isDisplay">
                     Login | Signup
                 </button>
+                <button class="btn-help" @onclick="() => NavigateToHelp()">
+                    <img src="images/help-icon.png" class="img-icon-login">
+                </button>
             </div>
-            <div class="login-icon-sm col-sm-2 col-2 justify-content-end text-center">
-                <a class="button" @onclick="() => signinModal.Show()">
+            <div class="login-icon-sm col-sm-4 justify-content-sm-end col-4 justify-content-end">
+                <a class="btn-login-mobile" @onclick="() => signinModal.Show()" style="display:@isDisplay">
                     <img src="images/LoginLogo.png" class="img-icon-login">
                 </a>
+                <button class="btn-help" @onclick="() => NavigateToHelp()">
+                    <img src="images/help-icon.png" class="img-icon-login">
+                </button>
             </div>
         </div>
         <article class="content">
@@ -29,4 +38,23 @@
 @code
 {
     private ModalLogin signinModal;
+
+    public ClaimsPrincipal AuthState { get; set; }
+
+    private string isDisplay = "block";
+
+    protected override async Task OnInitializedAsync()
+    {
+        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
+        var token = user.FindFirstValue("Token");
+        AuthState = user;
+        if (user != null && user.Identity.IsAuthenticated)
+        {
+            isDisplay = "none";
+        }
+    }
+        private void NavigateToHelp()
+    {
+        navigationManager.NavigateTo("/help");
+    }
 }
