@@ -100,32 +100,7 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
             if (schedule.HasExpiration == 1 && schedule.IsSetSession == true && 
                 (args.SelectedPeriod == "currentperiod" || args.SelectedPeriod == "nextperiod"))
             {
-                var period = DateNextPeriod.Period.Day;
-                var periodCount = 0;
-                switch (schedule.SessionName)
-                {
-                    case "2 Weeks":
-                        period = DateNextPeriod.Period.Week;
-                        periodCount = 2;
-                        break;
-                    case "3 Weeks":
-                        period = DateNextPeriod.Period.Week;
-                        periodCount = 3;
-                        break;
-                    case "1 Month":
-                        period = DateNextPeriod.Period.Month;
-                        periodCount = 1;
-                        break;
-                    case "2 Months":
-                        period = DateNextPeriod.Period.Month;
-                        periodCount = 2;
-                        break;
-                    case "3 Months":
-                        period = DateNextPeriod.Period.Month;
-                        periodCount = 3;
-                        break;
-                }
-                var datePeriod = DateNextPeriod.CreateRecurring(startExpiration, period, periodCount);
+                var datePeriod = DateNextPeriod.CreateRecurring(startExpiration, schedule.SessionName);
 
                 if(args.SelectedPeriod == "currentperiod")
                 {
