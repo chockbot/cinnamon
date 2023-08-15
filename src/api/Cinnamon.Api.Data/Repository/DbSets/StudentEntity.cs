@@ -183,8 +183,8 @@ public class StudentEntity : GenericEntity<Student>, IStudent
 			string query = "\tSELECT a.\"Id\", a.\"CustomerId\", a.\"ActivityId\", a.\"ScheduleId\", a.\"Name\", a.\"StudentNo\", a.\"NumberOfSessions\", a.\"SessionsAttended\", a.\"Remarks\", a.\"Status\", a.\"NumberOfBacktracking\", a.\"IsDisbursement\", a.\"HasReview\", a.\"ExpirationDateEnd\", a.\"ExpirationDateStart\",b.\"HasExpiration\" " +
 				"FROM public.\"Students\" as a LEFT JOIN public.\"ActivitySchedules\" as b ON b.\"Id\" = a.\"ScheduleId\" " +
 				"WHERE a.\"CustomerId\" =" +customerId+ "AND (a.\"HasReview\" <> true) AND " +
-				"(((b.\"HasExpiration\" = 1) AND (a.\"ExpirationDateEnd\" < CURRENT_DATE) AND (a.\"ExpirationDateStart\" != '-infinity'::timestamp)) " +
-				"OR ((b.\"HasExpiration\" = 2) AND (a.\"ExpirationDateEnd\" < CURRENT_DATE) AND (a.\"ExpirationDateStart\" != '-infinity'::timestamp)) " +
+				"(((b.\"HasExpiration\" = 1) AND (a.\"ExpirationDateEnd\" <= CURRENT_DATE) AND (a.\"ExpirationDateStart\" != '-infinity'::timestamp)) " +
+				"OR ((b.\"HasExpiration\" = 2) AND (a.\"ExpirationDateEnd\" <= CURRENT_DATE) AND (a.\"ExpirationDateStart\" != '-infinity'::timestamp)) " +
 				"OR ((b.\"HasExpiration\" = 1) AND (a.\"SessionsAttended\" >= a.\"NumberOfSessions\")) " +
 				"OR ((b.\"HasExpiration\" = 2) AND (a.\"SessionsAttended\" >= a.\"NumberOfSessions\")) " +
 				"OR ((b.\"HasExpiration\" = 0) AND (a.\"SessionsAttended\" >= a.\"NumberOfSessions\")));\r\n\t\t\t\t \r\n\t\t\t\t ";
