@@ -4,6 +4,7 @@ using Cinnamon.Api.Core.Services.OngoingActivityService.Handlers;
 using Cinnamon.Api.Core.Services.OngoingActivityService.Interactors;
 using Cinnamon.Api.Core.Services.OngoingActivityService.Interactors.Results;
 using Cinnamon.Framework.Common;
+using Cinnamon.Framework.Helpers;
 
 namespace Cinnamon.Api.Core.Services.OngoingActivityService;
 
@@ -95,19 +96,47 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
 
             //Check if Schedule has Start Expiration Date
             DateTime endExpiration = DateTime.MinValue;
-            DateTime startExpiration = DateTime.MinValue; 
+            DateTime startExpiration = schedule.StartDate ?? DateTime.MinValue; 
             if (schedule.HasExpiration == 1 && schedule.IsSetSession == true && 
                 (args.SelectedPeriod == "currentperiod" || args.SelectedPeriod == "nextperiod"))
             {
+                var period = DateNextPeriod.Period.Day;
+                var periodCount = 0;
+                switch (schedule.SessionName)
+                {
+                    case "2 Weeks":
+                        period = DateNextPeriod.Period.Week;
+                        periodCount = 2;
+                        break;
+                    case "3 Weeks":
+                        period = DateNextPeriod.Period.Week;
+                        periodCount = 3;
+                        break;
+                    case "1 Month":
+                        period = DateNextPeriod.Period.Month;
+                        periodCount = 1;
+                        break;
+                    case "2 Months":
+                        period = DateNextPeriod.Period.Month;
+                        periodCount = 2;
+                        break;
+                    case "3 Months":
+                        period = DateNextPeriod.Period.Month;
+                        periodCount = 3;
+                        break;
+                }
+                var datePeriod = DateNextPeriod.CreateRecurring(startExpiration, period, periodCount);
+
                 if(args.SelectedPeriod == "currentperiod")
                 {
-                    startExpiration = schedule.StartDate ?? startExpiration;
-                    endExpiration = CalculateEndDate(schedule.SessionName, startExpiration);
+                    startExpiration = datePeriod.PeriodStart.Date;
+                    endExpiration = datePeriod.PeriodEnd.AddDays(1).Date;
                 }
                 else if (args.SelectedPeriod == "nextperiod")
                 {
-                    startExpiration = CalculateEndDate(schedule.SessionName, schedule.StartDate ?? startExpiration).AddDays(1);
-                    endExpiration = CalculateEndDate(schedule.SessionName, startExpiration);
+                    datePeriod.NextPeriod();
+                    startExpiration = datePeriod.PeriodStart.Date;
+                    endExpiration = datePeriod.PeriodEnd.AddDays(1).Date;
                 }
             }
 
@@ -186,31 +215,5 @@ public class CreateOngoingActivityHandler : ICreateOngoingActivityHandler
         {
             return AppResult<bool>.CreateFailed(ex, "An error occured when validating students");
         }
-    }
-
-    private DateTime CalculateEndDate(string sessionName, DateTime dateStart)
-    {
-        DateTime dateEnd = DateTime.Now;
-        switch (sessionName)
-        {
-            case "2 Weeks":
-                dateEnd = dateStart.AddDays(14);
-                break;
-            case "3 Weeks":
-                dateEnd = dateStart.AddDays(21);
-                break;
-            case "1 Month":
-                dateEnd = dateStart.AddMonths(1);
-                break;
-            case "2 Months":
-                dateEnd = dateStart.AddMonths(2);
-                break;
-            case "3 Months":
-                dateEnd = dateStart.AddMonths(3);
-                break;
-            default:
-                break;
-        }
-        return dateEnd;
     }
 }
