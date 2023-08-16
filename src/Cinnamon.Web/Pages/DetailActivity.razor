@@ -495,12 +495,13 @@
                                                         <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
                                                     </div>
                                                 </div>
-                                                <div class="calendar-section">
-                                                    @if (activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment && activeSchedule.ElementAt(x).IsSelected)
-                                                    {
+                                                @if (activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment && activeSchedule.ElementAt(x).IsSelected)
+                                                {
+                                                     <div class="calendar-section">
                                                         @if (activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Internal)
                                                         {
-                                                            <div class="row">
+                                                           
+                                                                <div class="row">
                                                                 <div class="col-lg-5">
                                                                     <p class="font-14">Select Date & Time:</p>
                                                                     <DatePicker TValue="DateTime?" Inline DateChanged="(e) => DateHasChanged(e)" />
@@ -541,9 +542,11 @@
                                                         {
                                                             <a href="@activity.SchedulingUrl" target="_blank">Book via Calendly</a>
                                                         }
-                                                    }
+                                                    </Div>
+                                                }
                                                 </div>
-                                            </div>
+
+                                            
                                         }
                                         else
                                         {
