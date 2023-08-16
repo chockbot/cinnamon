@@ -10,10 +10,17 @@
 @using Cinnamon.Web.Modules.ApiAccess.Handlers;
 @inject IAccountApiHandler accountApiHandler;
 @inject Cinnamon.Web.Config.Config config;
+@layout EmptyLayout
 
 <PageTitle>Welcome to Cinnamon Onboarding | CinnamonPH</PageTitle>
 <SeoMeta Title="Welcome to Cinnamon Onboarding" Subject="Onboarding" Url="/onboarding" Keywords='new List<string>{"onboarding","new"}' />
 
+<div class="top-row px-4">
+    <!--App Name-->
+    <div class="app-name col-lg-3 col-md-3">
+        <a href="/explore" class="app-name">@Resources.App.appName</a>
+    </div>
+</div>
 
 <Container class="onboarding-wrapper">
     <div class="border-radius-40 box-shadow mt-4">
