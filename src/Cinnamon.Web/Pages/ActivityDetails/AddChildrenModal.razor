@@ -42,8 +42,8 @@
     public IList<FamilyMember> Model { get; set; }
 
     [Parameter]
-    public EventCallback<IList<FamilyMember>> SaveEditedFamilyMember { get; set; } 
-    
+    public EventCallback<OnSaveButtonEventArgs> SaveEditedFamilyMember { get; set; } 
+
     private IList<FamilyMember> localStateFamilyMembers = new List<FamilyMember>();
 
     public string ModalDisplay = "none;";
@@ -51,15 +51,21 @@
     public string ModalClass = "";
 
     public bool ShowBackdrop = false;
+    private bool isAutoSelectFlag = false;
 
-    private void OnSaveFamilyMember()
+    private Task OnSaveFamilyMember()
     {
-        SaveEditedFamilyMember.InvokeAsync(localStateFamilyMembers);
+        if(SaveEditedFamilyMember.HasDelegate)
+        {
+            SaveEditedFamilyMember.InvokeAsync(new OnSaveButtonEventArgs {FamilyMembers = localStateFamilyMembers, IsAutoSelect = isAutoSelectFlag});
+        }
+        return Task.CompletedTask;
     }
 
     private void OnDeleteFamily(FamilyMember member)
     {
         localStateFamilyMembers.Remove(member);
+
     }
 
     private void AddFamilyMember()
@@ -67,16 +73,31 @@
         localStateFamilyMembers.Add(new() { BirthMonth = "january", BirthYear = 1900, Gender = "male" });
     }
 
-    public void Open()
+    public void AddMemberField(int fieldCount, bool isAutoSelect = false)
+    {
+        while(fieldCount-- > 0)
+        {
+            AddFamilyMember();
+        }
+        StateHasChanged();
+        this.isAutoSelectFlag = isAutoSelect;
+    }
+
+    public async Task Open()
     {
         localStateFamilyMembers = Model;
-        ModalRef.Show();
+        await ModalRef.Show();
         StateHasChanged();
     }
 
-    public void Close()
+    public async Task Close()
     {
-        ModalRef.Close(CloseReason.UserClosing);
-        StateHasChanged();
+        await ModalRef.Close(CloseReason.None);
+    }
+
+    public class OnSaveButtonEventArgs
+    {
+        public IList<FamilyMember>? FamilyMembers {get; set;}
+        public bool IsAutoSelect { get; set; }
     }
 }
