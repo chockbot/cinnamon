@@ -346,11 +346,10 @@
                             </div>
                         }
                     </div>
-
-                    <hr class="my-0">
-
                     @*Activity Details*@
                     <div class="description-label">
+                         <hr />
+                        <p class="fw-bold mb-3 detail-label">About</p>
                         @if (String.IsNullOrEmpty(activity.Description))
                         {
                             <label class="fw-bold mb-3 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
@@ -367,9 +366,10 @@
                             </p>
                         }
                     </div>
-
+                    
                     @*Experience Schedule Desktop*@
                     <div class="schedule-desktop">
+                        <hr />
                         <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
                         @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
                         {
@@ -528,14 +528,17 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
-                                Show more
-                            </button>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
+                                    See More Schedule
+                                </button>
+                            </div> 
                         }
                     </div>
 
                     @*Experience Schedule Mobile*@
                     <div class="schedule-mobile">
+                        <hr />
                         <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
                         @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
                         {
@@ -688,10 +691,25 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
-                                Show more
-                            </button>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
+                                    See More Schedule
+                                </button>
+                            </div> 
                         }
+                    </div>
+
+                    @*Important Information*@
+                    <div class="important-information">
+                        <hr />
+                        <p class="fw-bold mb-3 detail-label">Faq</p>
+                        <p class="important-question">What will happen after I purchase?</p>
+                        <ol class="important-answer">
+                            <li>You will be added to a chat group with the activity provider to clarify /answer any of your questions. Go to the MENU and select MESSAGES to access chat.</li>
+                            <li>You can also be contacted by the activity provider, please make sure that your email and mobile number are correct.</li>
+                            <li>You can also contact your activity provider by using the email and mobile number that can be found in the payment confirmation email.</li>
+                            <li>Cinnamon secures your payment and will be credited to the activity provider/tutor once their session/s with you is complete.</li>
+                        </ol>
                     </div>
 
                     @*Map Details*@
@@ -831,7 +849,7 @@
                     <hr />
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="overflow-wrap:break-word;">
                         <article class="experience-review-wrapper py-3">
-                            <h3 class="title">Customer Feedbacks</h3>
+                            <p class="fw-bold mb-3 detail-label">Customer Feedbacks</p>
                             @if (activityReviews.Count != 0)
                             {
                                 <div class="d-flex">
@@ -851,7 +869,7 @@
                                         @foreach (var item in top3Reviews)
                                         {
                                             var profile = customerProfiles.Where(a => a.Id == item.CustomerId).FirstOrDefault();
-                                            <div class="experience-box">
+                                            <div class="experience-box d-flex col-4 justify-content-center">
                                                 <div class="top-content">
                                                     <div class="experience-content">
                                                         @*Get Activity Detail*@

@@ -21,6 +21,7 @@
     line-clamp: 2;
     -webkit-box-orient: vertical;
     color: #D13636;
+    margin-left: 2rem;
 }
 .schedule-detail {
     border: 2px solid #d9d9d9;
@@ -29,11 +30,18 @@
     box-shadow: 2px 4px 6px 0px #D9D9D980;
 }
 .schedule-header {
-  padding: 5px 10px 0 10px;
+    padding: 5px 10px 0px 10px;
 }
+    .schedule-header .schedule-title {
+        color: #343d4c;
+        font-family: Nunito;
+        font-size: 20px;
+        font-weight: 700;
+        margin-top: 0.5rem;
+    }
     .schedule-header .form-check {
         width: auto;
-        height: 3.5rem;
+        height: 3rem;
         background: #ffffff;
         border-radius: 10px;
         box-shadow: 2px 4px 6px 0px #D9D9D980;
@@ -45,7 +53,7 @@
     .schedule-header .form-check .form-check-input {
         float: none;
         margin-left: 0px;
-        margin-top: 0.5rem;
+        margin-top: 0.2rem;
     }
 .schedule-header .form-check-input:checked{
     background-color: #34a853;
@@ -56,20 +64,14 @@
   font-style: normal;
   font-weight: 600;
   font-size: 16px;
-  margin-top: 0.3rem;
+  margin-top: 0rem;
   margin-left: 0.3rem;
   color: var(--primary);
 }
-.schedule-header .schedule-title {
-  color: #343d4c;
-  font-family: Nunito;
-  font-size: 20px;
-  font-weight: 700;
-  margin-top: 0.5rem;
-}
 .schedule-body {
-  display: flex;
-  padding: 10px;
+    display: flex;
+    padding: 5px 10px 5px 10px;
+    box-shadow: 2px 4px 6px 0px #D9D9D980;
 }
 .schedule-body .schedule-price {
   border-left: 1px solid #d9d9d9;
@@ -219,10 +221,19 @@ button:focus {
 }
 
 .review-wrapper {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 50px;
+  display: flex;
+  gap: 10px;
   justify-items: center;
+}
+.experience-box {
+    display: flex;
+    flex-direction: column;
+    background: none;
+    border-radius: 10px;
+    padding: 14px;
+    width: 32.5%;
+    z-index: 1;
+    border: 1px solid #d9d9d9;
 }
 
 ::deep .rating .rating-item.rating-item-primary {
@@ -248,17 +259,18 @@ button:focus {
 }
 
 .see-more {
-  font-family: Nunito;
-  font-size: 20px;
-  font-weight: 700;
-  line-height: 28px;
-  color: #000000;
-  margin-right: 1rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-  background-color: white;
-  border: none;
-  text-decoration: underline;
+    font-family: Nunito;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 28px;
+    color: #343D4C;
+    margin-right: 1rem;
+    margin-top: 0.5rem;
+    cursor: pointer;
+    background-color: white;
+    border: none;
+    text-decoration: underline;
+    text-decoration-color: #343D4C;
 }
 .card {
   border: none;
@@ -268,16 +280,7 @@ button:focus {
   padding: 14px;
   border: 1px solid #d9d9d9;
 }
-.experience-box {
-  display: flex;
-  flex-direction: column;
-  background: none;
-  border-radius: 10px;
-  padding: 14px;
-  width: 480px;
-  z-index: 1;
-  border: 1px solid #d9d9d9;
-}
+
 
 .image-header {
   object-fit: cover;
@@ -363,11 +366,10 @@ button:focus {
   border-color: var(--primary);
   height: auto;
   padding: 5px;
-  width: 20%;
-  font-size: 1.2vw;
-  font-family: "Nunito-Bold";
+  width: 30%;
+  font-size: 22px;
+  font-family: nunito-bold;
   border-width: 0px;
-  margin: 0 auto;
   border-radius: 10px !important;
 }
 
@@ -416,8 +418,8 @@ button:focus {
 
 .detail-label {
   color: #343d4c;
-  font-family: Nunito;
-  font-size: 18px;
+  font-family: nunito;
+  font-size: 24px;
   font-weight: 500;
 }
 .activity-details-text {
@@ -861,9 +863,23 @@ hr {
   display: flex;
   gap: 5px;
 }
+.important-question {
+    font-family: nunito-bold;
+    font-size: 18px;
+    color: #343D4C;
+}
+.important-answer {
+    font-family: nunito;
+    color: #717171;
+    font-size: 18px;
+    text-align: justify;
+}
+.important-answer li{
+    margin-bottom: 1rem;
+}
 
 @media screen and (max-width: 768px) {
-  .btn-primary {
+    .btn-primary {
     width: 40% !important;
     font-size: 1rem;
   }
@@ -873,7 +889,7 @@ hr {
   }
 
   .review-wrapper {
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(1, 1fr);
     gap: 30px;
     justify-items: center;
@@ -891,12 +907,13 @@ hr {
     margin: 0;
   }
 
-  .see-more {
-    font-size: 16px;
-    line-height: 10px;
-    margin-top: 10px;
-    margin-right: 0;
-  }
+    .see-more {
+        font-size: 16px;
+        line-height: 10px;
+        margin-top: 10px;
+        margin-right: 0;
+        color: #343D4C;
+    }
 
   .card {
     width: 380px;
@@ -1223,6 +1240,9 @@ hr {
             width: 18px;
             height: 18px;
         }
+    .sub-details{
+        margin-left: 2rem;
+    }
 }
 
 @media screen and (max-width: 991px) and (min-width: 768px) {
@@ -1415,6 +1435,23 @@ hr {
   .favorite-text {
     display: none;
   }
+    .review-wrapper {
+        display: flex;
+        /*  grid-template-columns: repeat(3, 1fr);*/
+        gap: 10px;
+        justify-items: center;
+    }
+
+    .experience-box {
+        display: flex;
+        flex-direction: column;
+        background: none;
+        border-radius: 10px;
+        padding: 14px;
+        width: 32%;
+        z-index: 1;
+        border: 1px solid #d9d9d9;
+    }
 }
 
 @media (min-width: 1200px) {
