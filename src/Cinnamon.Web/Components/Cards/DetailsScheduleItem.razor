@@ -27,13 +27,19 @@
                     <div class=" col-lg-10 col-md-9 PES-details">
                         <div class="PE-details d-flex">
                             <div class="col-lg-6 col-md-6 price-details">
-                                <p class="font-14">Price Details:</p>
+                                <div class="d-flex price-details-title">
+                                    <img class="img-price" src="images/schedule-icons/price-icon.png" />
+                                    <p class="font-14">Price Details:</p>
+                                </div>
                                 <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
                             </div>
                             @if (ScheduleModel.IsSetSession == true)
                             {
                                 <div class="col-lg-6 col-md-6 expiration details">
-                                    <p class="font-14">Expiration:</p>
+                                    <div class="d-flex expiration-details-title">
+                                        <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                        <p class="font-14">Expiration:</p>
+                                    </div>
                                     <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
                                     <div class="cut-off-details">
                                         @if (ScheduleModel.HasExpiration == 1 && ScheduleModel.StartDate != null)
@@ -110,7 +116,10 @@
                             }
                         </div>
                         <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                            <p class="font-14">Schedule:</p>
+                            <div class="d-flex schedule-details-title">
+                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                <p class="font-14">Schedule:</p>
+                            </div>
                             <p class="font-16">@ScheduleModel.DateTime</p>
                         </div>
                     </div>
@@ -134,13 +143,19 @@
                 <hr>
                 <div class="schedule-body">
                     <div class="col-12 price-details">
-                        <p class="font-14">Price Details:</p>
+                        <div class="d-flex price-title-mobile">
+                            <img class="img-price" src="images/schedule-icons/price-icon.png" />
+                            <p class="font-14">Price Details:</p>
+                        </div>
                         <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
                     </div>
                     @if (ScheduleModel.IsSetSession == true)
                     {
                         <div class="col-12 expiration-details">
-                            <p class="font-14">Expiration:</p>
+                            <div class="d-flex expiration-title-mobile">
+                                <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                <p class="font-14">Expiration:</p>
+                            </div>
                             <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
                             <div class="cut-off-details">
                                 @if (ScheduleModel.HasExpiration == 1 && ScheduleModel.StartDate != null)
@@ -215,7 +230,10 @@
                         </div>
                     }
                     <div class="col-12 schedule-details">
-                        <p class="font-14">Schedule:</p>
+                        <div class="d-flex schedule-title-mobile">
+                            <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                            <p class="font-14">Schedule:</p>
+                        </div>
                         <p class="font-16">@ScheduleModel.DateTime</p>
                     </div>
                     <div class="col-12 form-check ">
