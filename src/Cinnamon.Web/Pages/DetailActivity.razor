@@ -331,11 +331,10 @@
                             </div>
                         }
                     </div>
-
-                    <hr class="my-0">
-
                     @*Activity Details*@
                     <div class="description-label">
+                         <hr />
+                        <p class="fw-bold mb-3 detail-label">About</p>
                         @if (String.IsNullOrEmpty(activity.Description))
                         {
                             <label class="fw-bold mb-3 detail-label" style="font-size:1.4rem">@Resources.App.detailDescription1</label>
@@ -352,9 +351,10 @@
                             </p>
                         }
                     </div>
-
+                    
                     @*Experience Schedule Desktop*@
                     <div class="schedule-desktop">
+                        <hr />
                         <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
                         @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
                         {
@@ -396,13 +396,19 @@
                                                     <div class="col-lg-10 col-md-9 col-sm-9 col-10 PES-details">
                                                         <div class="PE-details d-flex">
                                                             <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
-                                                                <p class="font-14">Price Details:</p>
+                                                                <div class="d-flex price-details-title">
+                                                                    <img class="img-price" src="images/schedule-icons/price-icon.png"/>
+                                                                    <p class="font-14">Price Details:</p>
+                                                                 </div>
                                                                 <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                             </div>
                                                             @if (schedule.IsSetSession == true && x <= 2)
                                                             {
                                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration-details">
-                                                                    <p class="font-14">Expiration:</p>
+                                                                    <div class="d-flex expiration-details-title">
+                                                                        <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                                                        <p class="font-14">Expiration:</p>
+                                                                    </div>
                                                                     <p class="font-16-d">Consume in - @schedule.SessionName</p>
                                                                     <div class="cut-off-details">
                                                                         @if (schedule.HasExpiration == 1 && schedule.StartDate != null)
@@ -478,7 +484,10 @@
                                                             }
                                                         </div>
                                                         <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                                                            <p class="font-14">Schedule:</p>
+                                                            <div class="d-flex schedule-details-title">
+                                                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                                                <p class="font-14">Schedule:</p>
+                                                            </div>
                                                             <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                         </div>
                                                     </div>
@@ -552,14 +561,17 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
-                                Show more
-                            </button>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
+                                    See More Schedule
+                                </button>
+                            </div> 
                         }
                     </div>
 
                     @*Experience Schedule Mobile*@
                     <div class="schedule-mobile">
+                        <hr />
                         <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
                         @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
                         {
@@ -577,20 +589,26 @@
                                                     <div class="schedule-title col-9 justify-content-start">
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
-                                                    <div class="col-3 justify-content-center">
+                                                    <div class="col-3 d-flex justify-content-end">
                                                         <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="schedule-body">
                                                     <div class="col-12 price-details">
-                                                        <p class="font-14">Price Details:</p>
+                                                        <div class="d-flex price-title-mobile">
+                                                            <img class="img-price" src="images/schedule-icons/price-icon.png" />
+                                                            <p class="font-14">Price Details:</p>
+                                                        </div>
                                                         <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                     </div>
                                                     @if (schedule.IsSetSession == true && x <= 2)
                                                     {
                                                         <div class="col-12 expiration-details">
-                                                            <p class="font-14">Expiration:</p>
+                                                            <div class="d-flex expiration-title-mobile">
+                                                                <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                                                <p class="font-14">Expiration:</p>
+                                                            </div>
                                                             <p class="font-16-d">Consume in - @schedule.SessionName</p>
                                                             <div class="cut-off-details">
                                                                 @if (schedule.HasExpiration == 1 && schedule.StartDate != null)
@@ -665,7 +683,10 @@
                                                         </div>
                                                     }
                                                     <div class="col-12 schedule-details">
-                                                        <p class="font-14">Schedule:</p>
+                                                        <div class="d-flex schedule-title-mobile">
+                                                            <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                                            <p class="font-14">Schedule:</p>
+                                                        </div>
                                                         <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                     </div>
                                                     <div class="col-12 form-check">
@@ -703,10 +724,25 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
-                                Show more
-                            </button>
+                            <div class="col-12 d-flex justify-content-end">
+                                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
+                                    See More Schedule
+                                </button>
+                            </div> 
                         }
+                    </div>
+
+                    @*Important Information*@
+                    <div class="important-information">
+                        <hr />
+                        <p class="fw-bold mb-3 detail-label">Faq</p>
+                        <p class="important-question">What will happen after I purchase?</p>
+                        <ol class="important-answer">
+                            <li>You will be added to a chat group with the activity provider to clarify /answer any of your questions. Go to the MENU and select MESSAGES to access chat.</li>
+                            <li>You can also be contacted by the activity provider, please make sure that your email and mobile number are correct.</li>
+                            <li>You can also contact your activity provider by using the email and mobile number that can be found in the payment confirmation email.</li>
+                            <li>Cinnamon secures your payment and will be credited to the activity provider/tutor once their session/s with you is complete.</li>
+                        </ol>
                     </div>
 
                     @*Map Details*@
@@ -853,7 +889,7 @@
                     <hr />
                     <div class="col-lg-12 col-md-12 col-sm-12 col-12" style="overflow-wrap:break-word;">
                         <article class="experience-review-wrapper py-3">
-                            <h3 class="title">Customer Feedbacks</h3>
+                            <p class="fw-bold mb-3 detail-label">Customer Feedbacks</p>
                             @if (activityReviews.Count != 0)
                             {
                                 <div class="d-flex">
@@ -873,7 +909,7 @@
                                         @foreach (var item in top3Reviews)
                                         {
                                             var profile = customerProfiles.Where(a => a.Id == item.CustomerId).FirstOrDefault();
-                                            <div class="experience-box">
+                                            <div class="experience-box d-flex col-4 justify-content-center">
                                                 <div class="top-content">
                                                     <div class="experience-content">
                                                         @*Get Activity Detail*@
