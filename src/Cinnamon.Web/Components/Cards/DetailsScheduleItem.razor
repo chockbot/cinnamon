@@ -3,6 +3,7 @@
 @using Models.Entities
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@using Cinnamon.Framework.Helpers
 
 @if (ActivityModel != null)
 {
@@ -50,10 +51,35 @@
                                             switch (ScheduleModel.SessionName)
                                             {
                                                 case "2 Weeks":
-                                                    frequency = ScheduleModel.StartDate.Value.AddDays(15);
+                                                    @if (frequency <= DateTime.Now.Date)
+                                                    {
+                                                        var datePeriod = DateNextPeriod.CreateRecurring(ScheduleModel.StartDate.Value, ScheduleModel.SessionName);
+                                                        DateTime periodStart = datePeriod.PeriodStart;
+                                                        // to set the last time of the day
+                                                        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                        frequency = nextPeriod;
+                                                    }
+                                                    else
+                                                    {
+                                                        frequency = ScheduleModel.StartDate.Value.AddDays(15);
+                                                    }
                                                     break;
                                                 case "3 Weeks":
                                                     frequency = ScheduleModel.StartDate.Value.AddDays(22);
+                                                    @if (frequency <= DateTime.Now.Date)
+                                                    {
+                                                        var datePeriod = DateNextPeriod.CreateRecurring(ScheduleModel.StartDate.Value, ScheduleModel.SessionName);
+                                                        DateTime periodStart = datePeriod.PeriodStart;
+                                                        // to set the last time of the day
+                                                        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                        frequency = nextPeriod;
+                                                    }
+                                                    else
+                                                    {
+                                                        frequency = ScheduleModel.StartDate.Value.AddDays(22);
+                                                    }
                                                     break;
                                                 case "1 Month":
                                                     frequency = ScheduleModel.StartDate.Value.AddMonths(1);
@@ -90,7 +116,7 @@
                                                 case "2 Weeks":
                                                 case "3 Weeks":
                                                     <small class="form-text sub-details">
-                                                        The expiration period is @ScheduleModel.SessionName (calendar days) and will end every @frequency.Day@ordinal day.
+                                                        The expiration period is @ScheduleModel.SessionName (calendar days) and will end on the @frequency.Day@ordinal day of the month.
                                                     </small>
                                                     break;
                                                 case "1 Month":
@@ -167,9 +193,35 @@
                                     {
                                         case "2 Weeks":
                                             frequency = ScheduleModel.StartDate.Value.AddDays(15);
+                                            @if (frequency <= DateTime.Now.Date)
+                                            {
+                                                var datePeriod = DateNextPeriod.CreateRecurring(ScheduleModel.StartDate.Value, ScheduleModel.SessionName);
+                                                DateTime periodStart = datePeriod.PeriodStart;
+                                                // to set the last time of the day
+                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                frequency = nextPeriod;
+                                            }
+                                            else
+                                            {
+                                                frequency = ScheduleModel.StartDate.Value.AddDays(15);
+                                            }
                                             break;
                                         case "3 Weeks":
                                             frequency = ScheduleModel.StartDate.Value.AddDays(22);
+                                            @if (frequency <= DateTime.Now.Date)
+                                            {
+                                                var datePeriod = DateNextPeriod.CreateRecurring(ScheduleModel.StartDate.Value, ScheduleModel.SessionName);
+                                                DateTime periodStart = datePeriod.PeriodStart;
+                                                // to set the last time of the day
+                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                frequency = nextPeriod;
+                                            }
+                                            else
+                                            {
+                                                frequency = ScheduleModel.StartDate.Value.AddDays(22);
+                                            }
                                             break;
                                         case "1 Month":
                                             frequency = ScheduleModel.StartDate.Value.AddMonths(1);
@@ -206,7 +258,7 @@
                                         case "2 Weeks":
                                         case "3 Weeks":
                                             <small class="form-text sub-details">
-                                                The expiration period is @ScheduleModel.SessionName (calendar days) and will end every @frequency.Day@ordinal day.
+                                                The expiration period is @ScheduleModel.SessionName (calendar days) and will end on the @frequency.Day@ordinal day of the month.
                                             </small>
                                             break;
                                         case "1 Month":

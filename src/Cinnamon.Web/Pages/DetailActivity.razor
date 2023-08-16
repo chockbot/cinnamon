@@ -18,6 +18,7 @@
 @inject IDashboardApiHandler dashboardApiHandler
 @inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
+@using Cinnamon.Framework.Helpers
 
 <PageTitle>@(activity == null ? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH" : $"Cinnamon Activity - {activity.Title} | CinnamonPH")</PageTitle>
     <SeoMeta Title="@(activity?.Title ?? string.Empty)"
@@ -248,7 +249,7 @@
         </Div>
         <Div>
             <Row HorizontalGutter="30">
-                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop">
+                <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop.Is8.OnTablet">
                     <div class="py-2">
                         @*Customer Details*@
                         @if (customerDetail != null && customerDetail.IsMaker == true)
@@ -420,9 +421,35 @@
                                                                             {
                                                                                 case "2 Weeks":
                                                                                     frequency = schedule.StartDate.Value.AddDays(15);
+                                                                                    @if (frequency <= DateTime.Now.Date)
+                                                                                    {
+                                                                                        var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
+                                                                                        DateTime periodStart = datePeriod.PeriodStart;
+                                                                                        // to set the last time of the day
+                                                                                        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                                                        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                                                        frequency = nextPeriod;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        frequency = schedule.StartDate.Value.AddDays(15);
+                                                                                    }
                                                                                     break;
                                                                                 case "3 Weeks":
                                                                                     frequency = schedule.StartDate.Value.AddDays(22);
+                                                                                    @if (frequency <= DateTime.Now.Date)
+                                                                                    {
+                                                                                        var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
+                                                                                        DateTime periodStart = datePeriod.PeriodStart;
+                                                                                        // to set the last time of the day
+                                                                                        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                                                        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                                                        frequency = nextPeriod;
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        frequency = schedule.StartDate.Value.AddDays(22);
+                                                                                    }
                                                                                     break;
                                                                                 case "1 Month":
                                                                                     frequency = schedule.StartDate.Value.AddMonths(1);
@@ -459,7 +486,7 @@
                                                                                 case "2 Weeks":
                                                                                 case "3 Weeks":
                                                                                     <small class="form-text sub-details">
-                                                                                        The expiration period is @schedule.SessionName (calendar days) and will end every @frequency.Day@ordinal day.
+                                                                                        The expiration period is @schedule.SessionName (calendar days) and will end on the @frequency.Day@ordinal day of the month.
                                                                                     </small>
                                                                                     break;
                                                                                 case "1 Month":
@@ -564,11 +591,11 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <div class="col-12 d-flex justify-content-end">
+                            <div class="d-flex col-md-12 justify-content-md-end col-12 justify-content-end">
                                 <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
                                     See More Schedule
                                 </button>
-                            </div> 
+                            </div>
                         }
                     </div>
 
@@ -623,9 +650,35 @@
                                                                     {
                                                                         case "2 Weeks":
                                                                             frequency = schedule.StartDate.Value.AddDays(15);
+                                                                            @if (frequency <= DateTime.Now.Date)
+                                                                            {
+                                                                                var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
+                                                                                DateTime periodStart = datePeriod.PeriodStart;
+                                                                                // to set the last time of the day
+                                                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                                                frequency = nextPeriod;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                frequency = schedule.StartDate.Value.AddDays(15);
+                                                                            }
                                                                             break;
                                                                         case "3 Weeks":
                                                                             frequency = schedule.StartDate.Value.AddDays(22);
+                                                                            @if (frequency <= DateTime.Now.Date)
+                                                                            {
+                                                                                var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
+                                                                                DateTime periodStart = datePeriod.PeriodStart;
+                                                                                // to set the last time of the day
+                                                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+                                                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+                                                                                frequency = nextPeriod;
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                frequency = schedule.StartDate.Value.AddDays(22);
+                                                                            }
                                                                             break;
                                                                         case "1 Month":
                                                                             frequency = schedule.StartDate.Value.AddMonths(1);
@@ -662,7 +715,7 @@
                                                                         case "2 Weeks":
                                                                         case "3 Weeks":
                                                                             <small class="form-text sub-details">
-                                                                                The expiration period is @schedule.SessionName (calendar days) and will end every @frequency.Day@ordinal day.
+                                                                                The expiration period is @schedule.SessionName (calendar days) and will end on the @frequency.Day@ordinal day of the month.
                                                                             </small>
                                                                             break;
                                                                         case "1 Month":
@@ -727,7 +780,7 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <div class="col-12 d-flex justify-content-end">
+                            <div class="d-flex col-md-12 justify-content-md-end col-12 justify-content-end">
                                 <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
                                     See More Schedule
                                 </button>
@@ -811,7 +864,7 @@
                         </div>
                     }
                 </Column>
-                <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop">
+                <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop.Is4.OnTablet">
                     <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
                         <div class="bg-white-100 px-3 py-4 border-radius-10">
                             <p class="font-20 font-weight-700 color-black-200">@PricePerHead.ToString("#,##0.00")</p>
