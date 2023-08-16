@@ -411,13 +411,19 @@
                                                     <div class=" col-lg-10 col-md-9 col-sm-9 col-10 PES-details">
                                                         <div class="PE-details d-flex">
                                                             <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
-                                                                <p class="font-14">Price Details:</p>
+                                                                <div class="d-flex price-details-title">
+                                                                    <img class="img-price" src="images/schedule-icons/price-icon.png"/>
+                                                                    <p class="font-14">Price Details:</p>
+                                                                 </div>
                                                                 <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                             </div>
                                                             @if (schedule.IsSetSession == true && x <= 2)
                                                             {
                                                                 <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration-details">
-                                                                    <p class="font-14">Expiration:</p>
+                                                                    <div class="d-flex expiration-details-title">
+                                                                        <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                                                        <p class="font-14">Expiration:</p>
+                                                                    </div>
                                                                     <p class="font-16-d">Consume in - @schedule.SessionName</p>
                                                                     <div class="cut-off-details">
                                                                         @if (schedule.HasExpiration == 1 && schedule.StartDate != null)
@@ -493,7 +499,10 @@
                                                             }
                                                         </div>
                                                         <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                                                            <p class="font-14">Schedule:</p>
+                                                            <div class="d-flex schedule-details-title">
+                                                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                                                <p class="font-14">Schedule:</p>
+                                                            </div>
                                                             <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                         </div>
                                                     </div>
@@ -544,20 +553,26 @@
                                                     <div class="schedule-title col-9 justify-content-start">
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
-                                                    <div class="col-3 justify-content-center">
+                                                    <div class="col-3 d-flex justify-content-end">
                                                         <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
                                                     </div>
                                                 </div>
                                                 <hr>
                                                 <div class="schedule-body">
                                                     <div class="col-12 price-details">
-                                                        <p class="font-14">Price Details:</p>
+                                                        <div class="d-flex price-title-mobile">
+                                                            <img class="img-price" src="images/schedule-icons/price-icon.png" />
+                                                            <p class="font-14">Price Details:</p>
+                                                        </div>
                                                         <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
                                                     </div>
                                                     @if (schedule.IsSetSession == true && x <= 2)
                                                     {
                                                         <div class="col-12 expiration-details">
-                                                            <p class="font-14">Expiration:</p>
+                                                            <div class="d-flex expiration-title-mobile">
+                                                                <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                                                <p class="font-14">Expiration:</p>
+                                                            </div>
                                                             <p class="font-16-d">Consume in - @schedule.SessionName</p>
                                                             <div class="cut-off-details">
                                                                 @if (schedule.HasExpiration == 1 && schedule.StartDate != null)
@@ -632,7 +647,10 @@
                                                         </div>
                                                     }
                                                     <div class="col-12 schedule-details">
-                                                        <p class="font-14">Schedule:</p>
+                                                        <div class="d-flex schedule-title-mobile">
+                                                            <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                                            <p class="font-14">Schedule:</p>
+                                                        </div>
                                                         <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                     </div>
                                                     <div class="col-12 form-check">

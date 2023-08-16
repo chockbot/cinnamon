@@ -2,7 +2,7 @@
   font-family: "Nunito";
 }
 .details-header-small {
-  display: none;
+    display: none;
 }
 .schedule-mobile {
   display: none;
@@ -26,20 +26,22 @@
     border: 2px solid #d9d9d9;
     margin-bottom: 1rem;
     border-radius: 10px;
+    box-shadow: 2px 4px 6px 0px #D9D9D980;
 }
 .schedule-header {
   padding: 5px 10px 0 10px;
 }
-.schedule-header .form-check {
-  width: auto;
-  height: 3.5rem;
-  background: #ffffff;
-  border-radius: 10px;
-  padding: 10px 10px;
-  border: 1px solid #d9d9d9;
-  text-align: center;
-  margin-left: auto;
-}
+    .schedule-header .form-check {
+        width: auto;
+        height: 3.5rem;
+        background: #ffffff;
+        border-radius: 10px;
+        box-shadow: 2px 4px 6px 0px #D9D9D980;
+        padding: 10px 10px;
+        border: 1px solid #d9d9d9;
+        text-align: center;
+        margin-left: auto;
+    }
     .schedule-header .form-check .form-check-input {
         float: none;
         margin-left: 0px;
@@ -67,6 +69,7 @@
 }
 .schedule-body {
   display: flex;
+  padding: 10px;
 }
 .schedule-body .schedule-price {
   border-left: 1px solid #d9d9d9;
@@ -80,6 +83,36 @@
   top: 40%;
   position: relative;
 }
+
+.price-details-title {
+    margin-left: 1rem;
+}
+
+    .price-details-title img {
+        margin-top: 10px;
+        width: 18px;
+        height: 18px;
+    }
+
+.expiration-details-title {
+    margin-left: 1rem;
+}
+
+    .expiration-details-title img {
+        margin-top: 10px;
+        width: 18px;
+        height: 18px;
+    }
+
+.schedule-details-title {
+    margin-left: 1rem;
+}
+
+    .schedule-details-title img {
+        margin-top: 10px;
+        width: 18px;
+        height: 18px;
+    }
 .font-14 {
   font-family: Nunito;
   font-size: 14px;
@@ -91,12 +124,13 @@
   margin: 0;
 }
 .font-16-d {
-  font-family: Nunito;
-  font-size: 16px;
-  font-weight: 400;
-  color: #717171;
-  padding: 10px 10px 0px 10px;
-  margin: 0;
+    font-family: Nunito;
+    font-size: 16px;
+    font-weight: 400;
+    color: #717171;
+    padding: 10px 10px 0px 10px;
+    margin: 0;
+    margin-left: 2rem;
 }
 .PE-details {
   margin-bottom: 0.5rem;
@@ -1111,6 +1145,7 @@ hr {
   }
   .schedule-mobile .schedule-body {
     display: block;
+    margin-top: 0.5rem;
     margin-bottom: 0.5rem;
   }
   .schedule-mobile .schedule-header .schedule-title {
@@ -1156,6 +1191,38 @@ hr {
     margin-left: 0.3rem;
     color: var(--primary);
   }
+    .schedule-mobile .schedule-body .price-details {
+        margin-top: 0.5rem;
+    }
+    .price-title-mobile {
+        margin-left: 1rem;
+    }
+
+        .price-title-mobile img {
+            margin-top: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+    .expiration-title-mobile {
+        margin-left: 1rem;
+    }
+
+        .expiration-title-mobile img {
+            margin-top: 10px;
+            width: 18px;
+            height: 18px;
+        }
+
+    .schedule-title-mobile {
+        margin-left: 1rem;
+    }
+
+        .schedule-title-mobile img {
+            margin-top: 10px;
+            width: 18px;
+            height: 18px;
+        }
 }
 
 @media screen and (max-width: 991px) and (min-width: 768px) {
