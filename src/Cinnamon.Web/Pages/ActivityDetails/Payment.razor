@@ -47,14 +47,21 @@
                         </div>
                         <hr />
                         <div class="col-lg-12 col-md-12 col-sm-12 col-12">
-                            <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                            @if(!isShowImportantMessage)
+                            {
+                                <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                            }
+                            else 
+                            {
+                                <h5 class="fw-bold text-danger" style="font-size:1.125rem;">Select who will attend*</h5>
+                            }
                             <Column ColumnSize="ColumnSize.Is12.OnDesktop">
                                 <Div class="details overflow-auto" Display="Display.Flex">
                                     <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
                                         @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
                                         {
                                             <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                                <Check TValue="bool" id="@item.Id" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> <label for="@item.Id">@item.Name</label>
+                                                <Check TValue="bool" id="@item.Id" Checked="item.IsSelected" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> <label for="@item.Id">@item.Name</label>
                                             </div>
                                         }
                                     </Column>
@@ -530,6 +537,14 @@
     [Inject] HubConnection hubConnection { get; set; }
     public bool IsConnected => hubConnection?.State == HubConnectionState.Connected;
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Enrollees { get; set; }
+
+    private int enrolleeCount = 0;
+
+    private bool isShowImportantMessage = false;
+
     protected override async Task OnInitializedAsync()
     {
         await FetchAccountDetails();
@@ -555,6 +570,16 @@
     protected override void OnParametersSet()
     {
         SelectedScheduleChanged();
+        int.TryParse(Enrollees, out enrolleeCount);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await Task.Delay(1000);
+            await PopulateEnrollee();
+        }
     }
 
     private async Task FetchAccountDetails()
@@ -835,12 +860,14 @@
         ModalSched.Open();
     }
 
-    private async Task SaveEditedFamilyMember(IList<FamilyMember> familyMembers)
+    private async Task SaveEditedFamilyMember(AddChildrenModal.OnSaveButtonEventArgs args)
     {
+        if (args.FamilyMembers == null) return;
+
         // add members
         var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs
             {
-                FamilyMembers = familyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
+                FamilyMembers = args.FamilyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
                                     .Select(m =>
                                     {
                                         return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
@@ -857,7 +884,7 @@
         // update members
         var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs
             {
-                FamilyMembers = familyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
+                FamilyMembers = args.FamilyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
                                     .Select(m =>
                                     {
                                         return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
@@ -871,7 +898,7 @@
                                     })
             }, Model.Token);
 
-        var deletedMembers = Model.Customer.FamilyMembers.Where(f => !familyMembers.Any(s => s.Id == f.Id));
+        var deletedMembers = Model.Customer.FamilyMembers.Where(f => !args.FamilyMembers.Any(s => s.Id == f.Id));
 
         var deletedResult = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs
             {
@@ -895,12 +922,12 @@
                         Gender = f.Gender,
                         Id = f.Id,
                         Name = f.Name,
-                        IsSelected = isSelected
+                        IsSelected = args.IsAutoSelect || isSelected
                     };
             }).ToList();
         }
 
-        AddChildrenModal.Close();
+        await AddChildrenModal.Close();
     }
 
     private int SelectedAttendeesCount
@@ -1251,6 +1278,7 @@
 
     private Task SelectedAttendeesChanged(FamilyMember attendee, bool isWillAttend)
     {
+        isShowImportantMessage = false;
         attendee.IsSelected = isWillAttend;
         ClearCouponDetails();
         StateHasChanged();
@@ -1261,6 +1289,47 @@
     {
         ClearCouponDetails();
         return Task.CompletedTask;
+    }
+
+    private async Task PopulateEnrollee()
+    {
+        if (enrolleeCount <= 0) return;
+
+        if(Model.Customer.FamilyMembers.Count == 0)
+        {
+            await AddChildrenModal.Open();
+            AddChildrenModal.AddMemberField(enrolleeCount, true);
+            return;
+        }
+
+        if(enrolleeCount == Model.Customer.FamilyMembers.Count)
+        {
+            foreach(var member in Model.Customer.FamilyMembers)
+            {
+                member.IsSelected = true;
+            }
+            StateHasChanged();
+            return;
+        }
+
+        if(enrolleeCount > Model.Customer.FamilyMembers.Count)
+        {
+            foreach(var member in Model.Customer.FamilyMembers)
+            {
+                member.IsSelected = true;
+            }
+            StateHasChanged();
+            await AddChildrenModal.Open();
+            AddChildrenModal.AddMemberField(enrolleeCount - Model.Customer.FamilyMembers.Count, true);
+            return;
+        }
+
+        if(enrolleeCount < Model.Customer.FamilyMembers.Count)
+        {
+            isShowImportantMessage = true;
+            StateHasChanged();
+            return;
+        }
     }
 
     class PaymentOption

@@ -854,6 +854,23 @@
 
     private bool IsInclusivePricing { get; set; } = false;
 
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "Enrollees")]
+    public string? EnrolleeQuery {get; set;}
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "Sid")]
+    public string? SidQuery { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        int.TryParse(EnrolleeQuery, out int enrolleeCnt);
+        int.TryParse(SidQuery, out int selectedScheduleId);
+
+        EnrolleeCount = enrolleeCnt > 0 ? enrolleeCnt : 1;
+        SelectedScheduleId = selectedScheduleId > 0 ? selectedScheduleId : 0;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         try
@@ -1303,14 +1320,13 @@
     {
         if(SelectedScheduleId > 0)
         {
-            var paymentUrl = $"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}";
             if(isAuthenticated)
             {
-                NavigationManager.NavigateTo(paymentUrl);
+                NavigationManager.NavigateTo($"/Payment/{activity.ActivityId}/{SelectedScheduleId}/?enrollees={EnrolleeCount}");
             }
             else 
             {
-                signInReturnUrl = paymentUrl;
+                signInReturnUrl = $"/Explore/{Identifier}/?enrollees={EnrolleeCount}&sid={SelectedScheduleId}";
                 await signinModal.Show();
             }
         }
