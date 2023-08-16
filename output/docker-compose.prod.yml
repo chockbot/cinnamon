@@ -24,6 +24,8 @@ services:
       - ./src-web:/web-app
     networks:
       - prod
+    depends_on:
+      - api-data
 
   app:
     container_name: cinnamon_app_prod
@@ -37,6 +39,8 @@ services:
       - ./src-web:/app
     networks:
       - prod
+    depends_on:
+      - api-core
 
 networks:
   prod:
