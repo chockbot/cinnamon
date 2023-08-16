@@ -15,16 +15,16 @@
   src: url("../fonts/inter-cufonfonts/Inter-Regular.otf");
 }
 @font-face {
-    font-family: 'nunito-black';
-    src: url('../fonts/nunito-cufonfonts/Nunito-Black.ttf') format('truetype');
+  font-family: "nunito-black";
+  src: url("../fonts/nunito-cufonfonts/Nunito-Black.ttf") format("truetype");
 }
 @font-face {
-    font-family: 'nunito-bold';
-    src: url('../fonts/nunito-cufonfonts/Nunito-Bold.ttf') format('truetype');
+  font-family: "nunito-bold";
+  src: url("../fonts/nunito-cufonfonts/Nunito-Bold.ttf") format("truetype");
 }
 @font-face {
-    font-family: 'nunito-extrabold';
-    src: url('../fonts/nunito-cufonfonts/Nunito-ExtraBold.ttf') format('truetype');
+  font-family: "nunito-extrabold";
+  src: url("../fonts/nunito-cufonfonts/Nunito-ExtraBold.ttf") format("truetype");
 }
 @import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
 
@@ -1670,6 +1670,17 @@ input::-ms-clear {
   }
 }
 
+/* onboarding page styling */
+.onboarding-wrapper .hide-desktop {
+  display: none;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .onboarding-wrapper .hide-desktop {
+    display: initial;
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;
@@ -1709,6 +1720,10 @@ input::-ms-clear {
   font-size: 16px !important;
 }
 
+.font-18 {
+  font-size: 18px;
+}
+
 .font-20 {
   font-size: 20px;
 }
@@ -1729,6 +1744,10 @@ input::-ms-clear {
   font-weight: 700;
 }
 
+.font-weight-900 {
+  font-weight: 900;
+}
+
 .font-family-nunito {
   font-family: "Nunito";
 }
@@ -1743,6 +1762,10 @@ input::-ms-clear {
 
 .color-grey-100 {
   color: #717171 !important;
+}
+
+.color-grey-400 {
+  color: #8896ab;
 }
 
 .color-black-000 {
@@ -1821,6 +1844,10 @@ input::-ms-clear {
   width: 70px;
 }
 
+.width-70-p {
+  width: 70%;
+}
+
 .width-230 {
   width: 230px;
 }
@@ -1839,6 +1866,14 @@ input::-ms-clear {
 
 .border-radius-10 {
   border-radius: 10px;
+}
+
+.border-radius-15 {
+  border-radius: 15px;
+}
+
+.border-radius-40 {
+  border-radius: 40px;
 }
 
 .border-0-solid {
@@ -1872,6 +1907,10 @@ input::-ms-clear {
 
 .border-color-grey-200 {
   border-color: #d9d9d9 !important;
+}
+
+.border-color-grey-300 {
+  border-color: #d5dae1 !important;
 }
 
 .border-color-black-100 {
@@ -1910,6 +1949,38 @@ input::-ms-clear {
 
 .right-0 {
   right: 0;
+}
+
+.border-shadow-100 {
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+}
+
+.padding-20 {
+  padding: 20px;
+}
+
+.padding-70 {
+  padding: 70px;
+}
+
+.margin-bottom-50 {
+  margin-bottom: 50px;
+}
+
+.margin-top-50 {
+  margin-top: 50px;
+}
+
+.max-width-100 {
+  max-width: 100%;
+}
+
+.z-index-10 {
+  z-index: 10;
+}
+
+.z-index-20 {
+  z-index: 20;
 }
 
 @media screen and (max-width: 767px) and (orientation: portrait) {
@@ -1962,16 +2033,32 @@ input::-ms-clear {
     margin-right: 10px !important;
   }
 
+  .m-font-14 {
+    font-size: 14px !important;
+  }
+
   .m-font-16 {
-    font-size: 16px;
+    font-size: 16px !important;
   }
 
   .m-font-18 {
-    font-size: 18px;
+    font-size: 18px !important;
+  }
+
+  .m-font-20 {
+    font-size: 20px;
+  }
+
+  .m-font-24 {
+    font-size: 24px !important;
   }
 
   .m-text-center {
     text-align: center !important;
+  }
+
+  .m-border-0-solid {
+    border-width: 0;
   }
 }
 
