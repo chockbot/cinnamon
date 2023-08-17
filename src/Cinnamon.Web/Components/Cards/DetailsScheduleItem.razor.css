@@ -9,6 +9,7 @@
 .schedule-detail hr {
     margin: 0rem;
 }
+
 .sub-details {
     font-family: Nunito;
     font-size: 12px;
@@ -33,6 +34,7 @@
 .schedule-header {
     padding: 5px 10px 0 10px;
 }
+
     .schedule-header .schedule-title {
         color: #343d4c;
         font-family: Nunito;
@@ -46,7 +48,6 @@
         height: 3rem;
         background: #ffffff;
         border-radius: 10px;
-        box-shadow: 2px 4px 6px 0px #D9D9D980;
         padding: 10px 10px;
         border: 1px solid #d9d9d9;
         text-align: center;
@@ -56,7 +57,7 @@
         .schedule-header .form-check .form-check-input {
             float: none;
             margin-left: 0px;
-            margin-top: 0.3rem;
+            margin-top: 0.2rem;
         }
 
     .schedule-header .form-check-input:checked {
@@ -68,7 +69,7 @@
         font-style: normal;
         font-weight: 600;
         font-size: 16px;
-        margin-top: 0.1rem;
+        margin-top: 0rem;
         margin-left: 0.3rem;
         color: var(--primary);
     }
@@ -145,6 +146,7 @@
 }
 
 .PE-details {
+    display: flex;
     margin-bottom: 0.5rem;
 }
 
@@ -152,109 +154,77 @@
     margin-bottom: 1rem;
 }
 
-.schedule-mobile {
-    display: none;
-}
-
 @media screen and (max-width: 768px) {
-
-    .schedule-desktop {
-        display: none !important;
-    }
-
-    .schedule-mobile {
-        display: block;
-    }
-
-    .schedule-mobile .schedule-header {
+    .schedule-header {
         margin-bottom: 0rem;
     }
 
-    .schedule-mobile .schedule-body {
+    .schedule-body {
         display: block;
+        margin-top: 0.5rem;
         margin-bottom: 0.5rem;
+        box-shadow: none;
+        padding: 0px;
     }
 
-    .schedule-mobile .schedule-header .schedule-title {
+    .schedule-header .schedule-title {
         font-family: Nunito;
         font-size: 16px;
         font-weight: 700;
     }
 
-    .schedule-mobile .schedule-header .font-18 {
+    .schedule-header .font-18 {
         margin-top: 0.5rem;
         font-weight: 700;
         font-family: Nunito;
         font-size: 16px;
     }
 
-    .schedule-mobile .schedule-body .form-check {
-        margin-top: 1rem;
-        width: 50%;
-        height: 3.5rem;
-        background: #FFFFFF;
+    .schedule-header .form-check {
+        margin-top: 0rem;
+        width: auto;
+        height: 2.8rem;
+        background: #ffffff;
         border-radius: 10px;
         padding: 10px 10px;
-        border: 1px solid #D9D9D9;
-        text-align: center;
-        margin-left: auto;
-        margin-right: auto;
+        border: 1px solid #d9d9d9;
+        text-align: start;
     }
 
-        .schedule-mobile .schedule-body .form-check .form-check-input {
-            float: none;
-            margin-left: 0px;
-            margin-top: 0.5rem;
-        }
-
-    .schedule-mobile .schedule-body .form-check-input:checked {
-        background-color: #34A853;
+    .schedule-body .form-check .form-check-input {
+        float: none;
+        margin-left: 0px;
     }
 
-    .schedule-mobile .schedule-body .form-check .form-check-label {
-        font-family: 'Nunito';
+    .schedule-body .form-check-input:checked {
+        background-color: #34a853;
+    }
+
+    .schedule-body .form-check .form-check-label {
+        font-family: "Nunito";
         font-style: normal;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
         margin-top: 0.3rem;
         margin-left: 0.3rem;
         color: var(--primary);
     }
-    .schedule-mobile .schedule-body .price-details {
-        margin-top: 0.5rem;
-    }
-    .price-title-mobile {
-        margin-left: 1rem;
+    .PE-details {
+        display: block;
     }
 
-        .price-title-mobile img {
-            margin-top: 10px;
-            width: 18px;
-            height: 18px;
-        }
-
-    .expiration-title-mobile {
-        margin-left: 1rem;
+    .schedule-price {
+        display: none;
     }
-
-        .expiration-title-mobile img {
-            margin-top: 10px;
-            width: 18px;
-            height: 18px;
-        }
-
-    .schedule-title-mobile {
-        margin-left: 1rem;
-    }
-
-        .schedule-title-mobile img {
-            margin-top: 10px;
-            width: 18px;
-            height: 18px;
-        }
-
     .sub-details {
         margin-left: 2rem;
+    }
+    .PE-details {
+        display: block;
+    }
+
+    .schedule-price {
+        display: none;
     }
 }
 
