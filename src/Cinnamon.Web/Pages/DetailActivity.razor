@@ -370,10 +370,10 @@
                                         {
                                             <div class="schedule-detail w-100 rounded-5">
                                                 <div class="schedule-header d-flex" style="background-color: @(SelectedScheduleId != schedule.Id ? changeColor : "#F3F6FC")">
-                                                    <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-9 justify-content-start">
+                                                    <div class="schedule-title col-lg-10 clo-md-9 col-sm-8 justify-content-start">
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
-                                                    <div class="form-check col-lg-2 col-md-3 col-sm-3 col-3 justify-content-center">
+                                                    <div class="form-check col-lg-2 col-md-3 col-sm-4 justify-content-center">
                                                         <input checked="@(SelectedScheduleId == schedule.Id)" class="form-check-input" 
                                                             value="@schedule.Id" type="radio" name="schedule" id="schedule" 
                                                             @onchange="() => SelectSchedule(schedule.Id)">
@@ -394,9 +394,15 @@
                                                 </div>
                                                 <hr>
                                                 <div class="schedule-body">
-                                                    <div class="col-lg-10 col-md-9 col-sm-9 col-10 PES-details">
-                                                        <div class="PE-details d-flex">
-                                                            <div class="col-lg-6 col-md-6 col-sm-12 col-6 price-details">
+                                                    <div class="col-lg-10 col-md-9 col-sm-12 PES-details">
+                                                        @if(x == 0)
+                                                        {
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-end">
+                                                                <p class="recommended">Highly Recommended!</p>
+                                                            </div>
+                                                        }
+                                                        <div class="PE-details">
+                                                            <div class="col-lg-6 col-md-6 col-sm-12 col-12 price-details">
                                                                 <div class="d-flex price-details-title">
                                                                     <img class="img-price" src="images/schedule-icons/price-icon.png"/>
                                                                     <p class="font-14">Price Details:</p>
@@ -405,7 +411,7 @@
                                                             </div>
                                                             @if (schedule.IsSetSession == true && x <= 2)
                                                             {
-                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-6 expiration-details">
+                                                                <div class="col-lg-6 col-md-6 col-sm-12 col-12 expiration-details">
                                                                     <div class="d-flex expiration-details-title">
                                                                         <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
                                                                         <p class="font-14">Expiration:</p>
@@ -599,195 +605,6 @@
                         }
                     </div>
 
-                    @*Experience Schedule Mobile*@
-                    <div class="schedule-mobile">
-                        <hr />
-                        <label class="fw-bold mb-3 detail-label">Schedule of @(activity.ActivitySchedules.Count > 1 ? "activities" : "activity")</label>
-                        @if (activity.ScheduleIndicator == "selection" || activity.ActivitySchedules.Count > 0)
-                        {
-                            var activeSchedule = activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).ToList();
-                            if (activeSchedule.Count > 0)
-                            {
-                                <div class="d-block mb-2">
-                                    @for (int x = 0; x < activeSchedule.Count; x++)
-                                    {
-                                        var schedule = activeSchedule.ElementAt(x);
-                                        @if (x <= 2)
-                                        {
-                                            <div class="schedule-detail w-100 rounded-5">
-                                                <div class="schedule-header d-flex" style="background-color: @(selectedScheduleId != schedule.Id ? changeColor : "#F3F6FC")">
-                                                    <div class="schedule-title col-8 justify-content-start">
-                                                        <p>@activeSchedule.ElementAt(x).Name</p>
-                                                    </div>
-                                                    <div class="col-4 d-flex justify-content-end">
-                                                        <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
-                                                    </div>
-                                                </div>
-                                                <hr>
-                                                <div class="schedule-body">
-                                                    <div class="col-12 price-details">
-                                                        <div class="d-flex price-title-mobile">
-                                                            <img class="img-price" src="images/schedule-icons/price-icon.png" />
-                                                            <p class="font-14">Price Details:</p>
-                                                        </div>
-                                                        <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
-                                                    </div>
-                                                    @if (schedule.IsSetSession == true && x <= 2)
-                                                    {
-                                                        <div class="col-12 expiration-details">
-                                                            <div class="d-flex expiration-title-mobile">
-                                                                <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
-                                                                <p class="font-14">Expiration:</p>
-                                                            </div>
-                                                            <p class="font-16-d">Consume in - @schedule.SessionName</p>
-                                                            <div class="cut-off-details">
-                                                                @if (schedule.HasExpiration == 1 && schedule.StartDate != null)
-                                                                {
-                                                                    string ordinal = "";
-                                                                    DateTime frequency = DateTime.Now;
-                                                                    int day = schedule.StartDate.Value.Day;
-                                                                    switch (schedule.SessionName)
-                                                                    {
-                                                                        case "2 Weeks":
-                                                                            frequency = schedule.StartDate.Value.AddDays(15);
-                                                                            @if (frequency <= DateTime.Now.Date)
-                                                                            {
-                                                                                var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
-                                                                                DateTime periodStart = datePeriod.PeriodStart;
-                                                                                // to set the last time of the day
-                                                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-                                                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
-                                                                                frequency = nextPeriod;
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                frequency = schedule.StartDate.Value.AddDays(15);
-                                                                            }
-                                                                            break;
-                                                                        case "3 Weeks":
-                                                                            frequency = schedule.StartDate.Value.AddDays(22);
-                                                                            @if (frequency <= DateTime.Now.Date)
-                                                                            {
-                                                                                var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
-                                                                                DateTime periodStart = datePeriod.PeriodStart;
-                                                                                // to set the last time of the day
-                                                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-                                                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
-                                                                                frequency = nextPeriod;
-                                                                            }
-                                                                            else
-                                                                            {
-                                                                                frequency = schedule.StartDate.Value.AddDays(22);
-                                                                            }
-                                                                            break;
-                                                                        case "1 Month":
-                                                                            frequency = schedule.StartDate.Value.AddMonths(1);
-                                                                            break;
-                                                                        case "2 Months":
-                                                                            frequency = schedule.StartDate.Value.AddMonths(2);
-                                                                            break;
-                                                                        case "3 Months":
-                                                                            frequency = schedule.StartDate.Value.AddMonths(3);
-                                                                            break;
-                                                                    }
-
-                                                                    switch (frequency.Day)
-                                                                    {
-                                                                        case 1:
-                                                                        case 21:
-                                                                        case 31:
-                                                                            ordinal = "st";
-                                                                            break;
-                                                                        case 2:
-                                                                        case 22:
-                                                                            ordinal = "nd";
-                                                                            break;
-                                                                        case 3:
-                                                                        case 23:
-                                                                            ordinal = "rd";
-                                                                            break;
-                                                                        default:
-                                                                            ordinal = "th";
-                                                                            break;
-                                                                    }
-                                                                    switch (schedule.SessionName)
-                                                                    {
-                                                                        case "2 Weeks":
-                                                                        case "3 Weeks":
-                                                                            <small class="form-text sub-details">
-                                                                                The expiration period is @schedule.SessionName (calendar days) and will end on the @frequency.Day@ordinal day of the month.
-                                                                            </small>
-                                                                            break;
-                                                                        case "1 Month":
-                                                                            <small class="form-text sub-details">
-                                                                                The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the month.
-                                                                            </small>
-                                                                            break;
-                                                                        case "2 Months":
-                                                                            <small class="form-text sub-details">
-                                                                                The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 3rd month.
-                                                                            </small>                                                                            
-                                                                            break;
-                                                                        case "3 Months":
-                                                                            <small class="form-text sub-details">
-                                                                                The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
-                                                                            </small>
-                                                                            break;
-                                                                    }
-                                                                }
-                                                            </div>
-                                                        </div>
-                                                    }
-                                                    <div class="col-12 schedule-details">
-                                                        <div class="d-flex schedule-title-mobile">
-                                                            <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
-                                                            <p class="font-14">Schedule:</p>
-                                                        </div>
-                                                        <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
-                                                    </div>
-                                                    <div class="col-12 form-check">
-                                                        <input checked="@(selectedScheduleId == schedule.Id)" value="@schedule.Id" class="form-check-input" @onchange="() => SelectSchedule(schedule.Id)"
-                                                               type="radio" name="schedule" id="schedule">
-                                                        @if (selectedScheduleId == schedule.Id)
-                                                        {
-                                                            <label class="form-check-label" for="schedule">
-                                                                Selected
-                                                            </label>
-                                                        }
-                                                        else
-                                                        {
-                                                            <label class="form-check-label" for="schedule">
-                                                                Select
-                                                            </label>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        }
-                                        else
-                                        {
-                                            break;
-                                        }
-                                    }
-                                </div>
-                            }
-                            else
-                            {
-                                <div class="d-flex flex-row gap-3 mb-2 overflow-auto">
-                                    <p>No schedule available yet, mark as favorite or come back soon for the next updated schedule!</p>
-                                </div>
-                            }
-                        }
-                        @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
-                        {
-                            <div class="d-flex col-md-12 justify-content-md-end col-12 justify-content-center">
-                                <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
-                                    See More Schedule
-                                </button>
-                            </div> 
-                        }
-                    </div>
-
                     @*Important Information*@
                     <div class="important-information">
                         <hr />
@@ -835,16 +652,6 @@
                             </span>
                         }
                     </div>
-                    @*@if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide) && activity.SpecificsYouWillProvide != NOTHING_PROVIDED || activity.SpecificsYouWillProvide != "<p><br></p>")
-                    {
-                        <hr />
-                        <div class="specific-text" style="overflow-wrap:break-word;">
-                            <label class="fw-bold mb-3 detail-label">What's included</label>
-                            <p>
-                                @((MarkupString)activity.SpecificsYouWillProvide)
-                            </p>
-                        </div>
-                    }*@
                     @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && !activity.CustomerBringWithThem.Contains("NOTHING"))
                     {
                         <hr />
@@ -853,16 +660,6 @@
                             <p>@((MarkupString)activity.CustomerBringWithThem)</p>
                         </div>
                     }
-                    @*@if (!string.IsNullOrEmpty(activity.AdditionalRequirements) && activity.AdditionalRequirements != NOTHING_PROVIDED)
-                    {
-                        <hr />
-                        <div class="additional-text" style="overflow-wrap:break-word;">
-                            <label class="fw-bold mb-3 detail-label">Additional Requirements</label>
-                            <p>
-                                @activity.AdditionalRequirements
-                            </p>
-                        </div>
-                    }*@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop.Is4.OnTablet">
                     <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
@@ -1140,7 +937,7 @@
     public string IsSelected = "Select";
 
     private int SelectedScheduleId { get; set; } = 0;
-    private int selectedScheduleId { get; set; } = 0;
+    //private int selectedScheduleId { get; set; } = 0;
     private int EnrolleeCount { get; set; } = 1;
     private bool isShowErrorMessage;
     private string signInReturnUrl = string.Empty;
