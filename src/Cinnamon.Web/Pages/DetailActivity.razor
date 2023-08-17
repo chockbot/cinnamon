@@ -616,10 +616,10 @@
                                         {
                                             <div class="schedule-detail w-100 rounded-5">
                                                 <div class="schedule-header d-flex" style="background-color: @(selectedScheduleId != schedule.Id ? changeColor : "#F3F6FC")">
-                                                    <div class="schedule-title col-9 justify-content-start">
+                                                    <div class="schedule-title col-8 justify-content-start">
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
-                                                    <div class="col-3 d-flex justify-content-end">
+                                                    <div class="col-4 d-flex justify-content-end">
                                                         <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
                                                     </div>
                                                 </div>
@@ -780,7 +780,7 @@
                         }
                         @if (activity.ActivitySchedules.Where(s => s.IsActiveSchedule == true).Count() >= 4)
                         {
-                            <div class="d-flex col-md-12 justify-content-md-end col-12 justify-content-end">
+                            <div class="d-flex col-md-12 justify-content-md-end col-12 justify-content-center">
                                 <button class="btn-primary shadow-sm border-0 p-2 rounded" @onclick="()=>DetailsModalSched.Open()">
                                     See More Schedule
                                 </button>
@@ -791,7 +791,7 @@
                     @*Important Information*@
                     <div class="important-information">
                         <hr />
-                        <p class="fw-bold mb-3 detail-label">Faq</p>
+                        <p class="fw-bold mb-3 detail-label">Important Information</p>
                         <p class="important-question">What will happen after I purchase?</p>
                         <ol class="important-answer">
                             <li>You will be added to a chat group with the activity provider to clarify /answer any of your questions. Go to the MENU and select MESSAGES to access chat.</li>
@@ -835,7 +835,7 @@
                             </span>
                         }
                     </div>
-                    @if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide) && activity.SpecificsYouWillProvide != NOTHING_PROVIDED)
+                    @*@if (!string.IsNullOrEmpty(activity.SpecificsYouWillProvide) && activity.SpecificsYouWillProvide != NOTHING_PROVIDED || activity.SpecificsYouWillProvide != "<p><br></p>")
                     {
                         <hr />
                         <div class="specific-text" style="overflow-wrap:break-word;">
@@ -844,16 +844,16 @@
                                 @((MarkupString)activity.SpecificsYouWillProvide)
                             </p>
                         </div>
-                    }
-                    @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && activity.CustomerBringWithThem != NOTHING_PROVIDED)
+                    }*@
+                    @if (!string.IsNullOrEmpty(activity.CustomerBringWithThem) && !activity.CustomerBringWithThem.Contains("NOTHING"))
                     {
                         <hr />
                         <div class="bring-text" style="overflow-wrap:break-word;">
-                            <label class="fw-bold mb-3 detail-label">What you should bring</label>
+                            <label class="fw-bold mb-3 detail-label">Requirements</label>
                             <p>@((MarkupString)activity.CustomerBringWithThem)</p>
                         </div>
                     }
-                    @if (!string.IsNullOrEmpty(activity.AdditionalRequirements) && activity.AdditionalRequirements != NOTHING_PROVIDED)
+                    @*@if (!string.IsNullOrEmpty(activity.AdditionalRequirements) && activity.AdditionalRequirements != NOTHING_PROVIDED)
                     {
                         <hr />
                         <div class="additional-text" style="overflow-wrap:break-word;">
@@ -862,13 +862,13 @@
                                 @activity.AdditionalRequirements
                             </p>
                         </div>
-                    }
+                    }*@
                 </Column>
                 <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop.Is4.OnTablet">
                     <div class="calculator-wrapper-container border-radius-10 bg-orange-100 pt-2 border-color-grey-200 border-1-solid position-sticky">
                         <div class="bg-white-100 px-3 py-4 border-radius-10">
-                            <p class="font-20 font-weight-700 color-black-200">@PricePerHead.ToString("#,##0.00")</p>
-                            <Select class="form-select font-16 border-color-grey-200 color-grey-100"
+                            <p class="font-20 font-weight-700 color-black-200">₱ @PricePerHead.ToString("#,##0.00") per enrollee</p>
+                            <Select class="form-select font-16 border-color-grey-200 color-grey-100" 
                                 TValue="int" Size="Size.Small" @bind-SelectedValue="SelectedScheduleId">
                                 <SelectItem Value="0" Disabled selected>Please Activity Schedule</SelectItem>
                                 @foreach (var item in activity.ActivitySchedules.Where(s => s.IsActiveSchedule))
@@ -1166,17 +1166,21 @@
         EnrolleeCount = enrolleeCnt > 0 ? enrolleeCnt : 1;
         SelectedScheduleId = selectedScheduleId > 0 ? selectedScheduleId : 0;
     }
+    private string Token { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            // get user login
             var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-            if (user != null && user.Identity != null)
+            Token = user.FindFirstValue("Token");
+            if(user != null && user.Identity != null)
             {
                 isAuthenticated = user.Identity.IsAuthenticated;
             }
-
+            await GetFavorites();
+            //Get Favorites 
             bool isIdentifierInt = int.TryParse(Identifier, out int intResult);
             //Get Activity by Id
             var ActivityListData = isIdentifierInt ? await activityApiHandler.GetActivity(intResult, new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityArgs
@@ -1447,11 +1451,11 @@
             throw e;
         }
     }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await GetFavorites();
             module = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/clipboard.js");
             moduleRating = await jsRuntime.InvokeAsync<IJSObjectReference>("import", "./js/StarRating.js");
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
@@ -1460,52 +1464,45 @@
         }
         else
         {
-            await GetFavorites();
             await InitializeCarouselSwipe();
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
         }
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.activityDetails.init");
     }
+
     private async Task InitializeCarouselSwipe()
     {
         await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.carouselSwipe.init");
     }
+
     private async Task CopyToClipboard()
     {
         await Task.Run(() => module.InvokeVoidAsync("copyToClipboard", NavigationManager.Uri));
     }
+
     private async Task GetFavorites()
     {
-        // get user login
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        var token = user.FindFirstValue("Token");
-
-        if (user != null && user.Identity.IsAuthenticated)
+        var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, Token);
+        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
         {
-            var result = await accountApiHandler.GetProfile(new Framework.ApiCommand.ApiCore.Account.Request.GetProfileArgs { }, token);
-            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                var args = result.Result.Result;
-                CustomerModel.Token = token;
-                CustomerModel.CustomerProfile = new CustomerProfile
-                    {
-                        Birthdate = args.Birthdate,
-                        Email = args.Email,
-                        FirstName = args.FirstName,
-                        LastName = args.LastName,
-                        Id = args.Id,
-                        IsMaker = args.IsMaker,
-                        IsVerified = args.IsVerified,
-                    };
-            }
+            var args = result.Result.Result;
+            CustomerModel.CustomerProfile = new CustomerProfile
+                {
+                    Birthdate = args.Birthdate,
+                    Email = args.Email,
+                    FirstName = args.FirstName,
+                    LastName = args.LastName,
+                    Id = args.Id,
+                    IsMaker = args.IsMaker,
+                    IsVerified = args.IsVerified,
+                };
         }
-
         if (CustomerModel.CustomerProfile != null)
         {
             var customerFavorites = await activityApiHandler.GetFavoritesByCustomer(new Framework.ApiCommand.ApiCore.Favorite.Request.GetFavoritesByCustomerArgs
                 {
                     CustomerId = CustomerModel.CustomerProfile.Id
-                }, CustomerModel.Token);
+                }, Token);
             if (customerFavorites.Succeeded && customerFavorites.Result != null && customerFavorites.Result.IsSuccess)
             {
                 CustomerModel.Favorites = customerFavorites.Result.Result.Select(i =>
@@ -1531,7 +1528,7 @@
                 {
                     ActivityId = activity.ActivityId,
                     CustomerId = CustomerModel.CustomerProfile.Id
-                }, CustomerModel.Token);
+                }, Token);
         }
         else
         {
@@ -1540,7 +1537,7 @@
                 {
                     ActivityId = activity.ActivityId,
                     CustomerId = CustomerModel.CustomerProfile.Id
-                }, CustomerModel.Token);
+                }, Token);
         }
         await GetFavorites();
     }
@@ -1552,12 +1549,9 @@
             {
                 ActivityId = activity.ActivityId,
                 CustomerId = CustomerModel.CustomerProfile.Id
-            }, CustomerModel.Token);
+            }, Token);
         await GetFavorites();
 
-    }
-    private void CheckboxChanged(bool val)
-    {
     }
 
     private Task SubtractEnrollee()
