@@ -61,6 +61,8 @@ public class ActivitySchedule
     public bool IsActiveSchedule { get; set; } = true;
     public bool IsSetSession { get; set; } = false;
 
+    public bool IsSelected { get; set; } = false;
+
     public string SessionName { get; set; } = string.Empty;
 
     public int HasExpiration { get; set; } = 0;
