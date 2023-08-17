@@ -1207,6 +1207,7 @@
             await InitializeCarouselSwipe();
             await Task.Run(() => moduleRating.InvokeVoidAsync("generateStarRating", AverageRating));
         }
+        await jsRuntime.InvokeVoidAsync("MyLib.Pages.activity.activityDetails.init");
     }
 
     private async Task InitializeCarouselSwipe()
