@@ -22,8 +22,8 @@
     </div>
 </div>
 
-<Container class="onboarding-wrapper">
-    <div class="border-radius-40 box-shadow mt-4">
+<Container class="onboarding-wrapper py-5">
+    <div class="border-radius-40 box-shadow">
         <Row>
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" 
                 class='@(currentPage != 0 ? "m-d-none" : "border-right-1-solid border-color-grey-100 m-border-0-solid")'>
@@ -77,91 +77,110 @@
                 </div>
             </Column>
             <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class='@(currentPage != 1 ? "m-d-none" : "")'>
-                @if(!isEmailSubmitted)
-                {
-                    <div class="position-relative text-center padding-70 h-100 m-padding-x-0">
-                        <img src="images/onboarding/cinnamon-icon.png" alt="cinnamon-icon">
-                        <p class="color-black-100 font-20 font-weight-700 mt-4">Create your <span class="color-orange-100">FREE</span> Cinnamon account!</p>
-                        <div>
-                            <Validations @ref="emailValidations" Model="formEmailValidator" Mode="ValidationMode.Manual">
-                                <Validation>
-                                    <Field class="text-start">
-                                        <FieldLabel class="font-16 color-black-100 font-weight-700">Email</FieldLabel>
-                                        <FieldBody>
-                                            <TextEdit class="border-radius-15 border-shadow-100 border-1-solid border-color-grey-300" 
-                                                    Placeholder="Enter your email address" Role="TextRole.Email" @bind-Text="formEmailValidator.Email">
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </TextEdit>
-                                        </FieldBody>
-                                    </Field>
-                                </Validation>
-                                <div class="mt-3">
-                                    <Button Clicked="SubmitEmail" Type="ButtonType.Button" Border="Border.Is0.RoundedPill" 
-                                        class="w-100 font-16 bg-orange-100 color-white-100 hover-color-white" 
-                                        Disabled="formEmailValidator.IsSubmitting" Loading="formEmailValidator.IsSubmitting">
-                                        <LoadingTemplate>
-                                            <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
-                                        </LoadingTemplate>
-                                        <ChildContent>
-                                            Continue
-                                        </ChildContent>
-                                    </Button>
-                                    @if(!string.IsNullOrEmpty(formEmailValidator.ErrorMessage))
-                                    {
-                                        <p class="font-14 text-danger">@formEmailValidator.ErrorMessage</p>
-                                    }
-                                </div>
-                            </Validations>
-                            <div class="d-flex align-items-center justify-content-between">
-                                <Divider style="width: 45%;" />
-                                <span class="font-12 color-grey-400">OR</span>
-                                <Divider style="width: 45%;" />
-                            </div>
-                            <div>
-                                <Button Clicked="GoogleSignInClick" Type="ButtonType.Link" 
-                                    class="border-radius-15 border-1-solid border-color-grey-300 border-shadow-100 w-100 p-2">
-                                    <label class="d-flex align-content-center justify-content-center cursor-pointer">
-                                        <img class="me-2" src="images/onboarding/google-outline.png" alt="google-icon">
-                                        <span class="font-16 color-grey-100">Sign in with Google</span>
-                                    </label>
-                                </Button>
-                            </div>
-                            <div class="mt-3">
-                                <Button Clicked="FacebookSignInClick" Type="ButtonType.Link" 
-                                    class="border-radius-15 border-1-solid border-color-grey-300 border-shadow-100 w-100 p-2">
-                                    <label class="d-flex align-content-center justify-content-center cursor-pointer">
-                                        <img class="me-2" src="images/onboarding/facebook-outline.png" alt="google-icon">
-                                        <span class="font-16 color-grey-100">Sign in with Facebook</span>
-                                    </label>
-                                </Button>
-                            </div>
-                            <p class="margin-top-50 font-14 color-grey-400 text-center">
-                                Already have an account? 
-                                <span @onclick="() => modalLogin.Show()" class="color-green-100 cursor-pointer">Log In</span>
-                            </p>
-                        </div>
-                        <img class="star-img floating-1" src="images/onboarding/star.png" alt="start">
-                        <img class="computer-img floating-2" src="images/onboarding/computer.png" alt="computer">
-                        <img class="ball-img floating-3" src="images/onboarding/ball.png" alt="ball">
-                    </div>
-                }
-                else 
+                @if(IsAuthenticated)
                 {
                     <div class="d-flex align-items-center position-relative text-center padding-70 h-100 m-padding-x-0">
                         <div>
                             <img src="images/onboarding/cinnamon-icon.png" alt="cinnamon-icon">
-                            <p class="color-black-100 font-20 font-weight-700 mt-4">Verification Email</p>
-                            <p class="font-16 color-black-100">We've sent an email to your inbox. Please check and click verify.
-                                <br>
-                                Haven't received a verification email? <span class="color-orange-100">Resend</span>
-                            </p>
+                            <p class="color-black-100 font-20 font-weight-700 mt-4">Let’s start your journey as an Activity Provider</p>
+                            <Button Clicked="NavigateToCreation" Type="ButtonType.Link" Border="Border.Is0.RoundedPill" 
+                                class="w-100 font-16 bg-orange-100 color-white-100 hover-color-white mt-3">
+                                Create an Activity
+                            </Button>
                             <img class="star-img floating-1" src="images/onboarding/star.png" alt="start">
                             <img class="computer-img floating-2" src="images/onboarding/computer.png" alt="computer">
                             <img class="ball-img floating-3" src="images/onboarding/ball.png" alt="ball">
                         </div>
                     </div>
+                }
+                else 
+                {
+                    @if(!isEmailSubmitted)
+                    {
+                        <div class="position-relative text-center padding-70 h-100 m-padding-x-0">
+                            <img src="images/onboarding/cinnamon-icon.png" alt="cinnamon-icon">
+                            <p class="color-black-100 font-20 font-weight-700 mt-4">Create your <span class="color-orange-100">FREE</span> Cinnamon account!</p>
+                            <div>
+                                <Validations @ref="emailValidations" Model="formEmailValidator" Mode="ValidationMode.Manual">
+                                    <Validation>
+                                        <Field class="text-start">
+                                            <FieldLabel class="font-16 color-black-100 font-weight-700">Email</FieldLabel>
+                                            <FieldBody>
+                                                <TextEdit class="border-radius-15 border-shadow-100 border-1-solid border-color-grey-300" 
+                                                        Placeholder="Enter your email address" Role="TextRole.Email" @bind-Text="formEmailValidator.Email">
+                                                    <Feedback>
+                                                        <ValidationError />
+                                                    </Feedback>
+                                                </TextEdit>
+                                            </FieldBody>
+                                        </Field>
+                                    </Validation>
+                                    <div class="mt-3">
+                                        <Button Clicked="SubmitEmail" Type="ButtonType.Button" Border="Border.Is0.RoundedPill" 
+                                            class="w-100 font-16 bg-orange-100 color-white-100 hover-color-white" 
+                                            Disabled="formEmailValidator.IsSubmitting" Loading="formEmailValidator.IsSubmitting">
+                                            <LoadingTemplate>
+                                                <i id="email-spinner-loading" class="fa fa-spinner fa-spin"></i> Please Wait
+                                            </LoadingTemplate>
+                                            <ChildContent>
+                                                Continue
+                                            </ChildContent>
+                                        </Button>
+                                        @if(!string.IsNullOrEmpty(formEmailValidator.ErrorMessage))
+                                        {
+                                            <p class="font-14 text-danger">@formEmailValidator.ErrorMessage</p>
+                                        }
+                                    </div>
+                                </Validations>
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <Divider style="width: 45%;" />
+                                    <span class="font-12 color-grey-400">OR</span>
+                                    <Divider style="width: 45%;" />
+                                </div>
+                                <div>
+                                    <Button Clicked="GoogleSignInClick" Type="ButtonType.Link" 
+                                        class="border-radius-15 border-1-solid border-color-grey-300 border-shadow-100 w-100 p-2">
+                                        <label class="d-flex align-content-center justify-content-center cursor-pointer">
+                                            <img class="me-2" src="images/onboarding/google-outline.png" alt="google-icon">
+                                            <span class="font-16 color-grey-100">Sign in with Google</span>
+                                        </label>
+                                    </Button>
+                                </div>
+                                <div class="mt-3">
+                                    <Button Clicked="FacebookSignInClick" Type="ButtonType.Link" 
+                                        class="border-radius-15 border-1-solid border-color-grey-300 border-shadow-100 w-100 p-2">
+                                        <label class="d-flex align-content-center justify-content-center cursor-pointer">
+                                            <img class="me-2" src="images/onboarding/facebook-outline.png" alt="google-icon">
+                                            <span class="font-16 color-grey-100">Sign in with Facebook</span>
+                                        </label>
+                                    </Button>
+                                </div>
+                                <p class="margin-top-50 font-14 color-grey-400 text-center">
+                                    Already have an account? 
+                                    <span @onclick="() => modalLogin.Show()" class="color-green-100 cursor-pointer">Log In</span>
+                                </p>
+                            </div>
+                            <img class="star-img floating-1" src="images/onboarding/star.png" alt="start">
+                            <img class="computer-img floating-2" src="images/onboarding/computer.png" alt="computer">
+                            <img class="ball-img floating-3" src="images/onboarding/ball.png" alt="ball">
+                        </div>
+                    }
+                    else 
+                    {
+                        <div class="d-flex align-items-center position-relative text-center padding-70 h-100 m-padding-x-0">
+                            <div>
+                                <img src="images/onboarding/cinnamon-icon.png" alt="cinnamon-icon">
+                                <p class="color-black-100 font-20 font-weight-700 mt-4">Verification Email</p>
+                                <p class="font-16 color-black-100">We've sent an email to your inbox. Please check and click verify.
+                                    <br>
+                                    Haven't received a verification email? <span class="color-orange-100">Resend</span>
+                                </p>
+                                <img class="star-img floating-1" src="images/onboarding/star.png" alt="start">
+                                <img class="computer-img floating-2" src="images/onboarding/computer.png" alt="computer">
+                                <img class="ball-img floating-3" src="images/onboarding/ball.png" alt="ball">
+                            </div>
+                        </div>
+                    }
                 }
             </Column>
         </Row>
@@ -183,7 +202,7 @@
     protected override async Task OnInitializedAsync()
     {
         var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        if(user != null)
+        if(user != null && user.Identity != null)
         {
             var token = user.FindFirstValue("Token");
             if(user.Identity.IsAuthenticated && !string.IsNullOrEmpty(token))
@@ -195,7 +214,7 @@
 
     private Task NavigateToCreation()
     {
-        NavigationManager.NavigateTo("Creation");
+        NavigationManager.NavigateTo("/creation");
         return Task.CompletedTask;
     }
 
