@@ -11,7 +11,7 @@
     {
         <div class="schedule-desktop">
             <div class="schedule-detail w-100 rounded-5">
-                <div class="schedule-header d-flex" style="background-color: @(!ScheduleModel.IsSelected ? changeColor : "#F3F6FC")">
+                <div class="schedule-header d-flex" style="background-color: @(!ScheduleModel.IsSelected ? changeColor : "#F3F6FC");border-top-left-radius:10px;border-top-right-radius:10px">
                     <div class="schedule-title col-lg-10 clo-md-9 justify-content-start">
                         <p>@ScheduleModel.Name</p>
                     </div>
@@ -42,6 +42,11 @@
                                     <p class="font-14">Price Details:</p>
                                 </div>
                                 <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
+                                <div class="d-flex schedule-details-title">
+                                    <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                    <p class="font-14">Schedule:</p>
+                                </div>
+                                <p class="font-16">@ScheduleModel.DateTime</p>
                             </div>
                             @if (ScheduleModel.IsSetSession == true)
                             {
@@ -150,13 +155,6 @@
                                 </div>
                             }
                         </div>
-                        <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                            <div class="d-flex schedule-details-title">
-                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
-                                <p class="font-14">Schedule:</p>
-                            </div>
-                            <p class="font-16">@ScheduleModel.DateTime</p>
-                        </div>
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-12 justify-content-center schedule-price">
                         <p class="font-18">₱ @ScheduleModel.LongPrice</p>
@@ -164,150 +162,6 @@
                 </div>
             </div>
         </div>
-
-        @* <div class="schedule-mobile">
-            <div class="schedule-detail w-100 rounded-5">
-                <div class="schedule-header d-flex">
-                    <div class="schedule-title col-8 justify-content-start">
-                        <p>@ScheduleModel.Name</p>
-                    </div>
-                    <div class="col-4 d-flex justify-content-end">
-                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="schedule-body">
-                    <div class="col-12 price-details">
-                        <div class="d-flex price-title-mobile">
-                            <img class="img-price" src="images/schedule-icons/price-icon.png" />
-                            <p class="font-14">Price Details:</p>
-                        </div>
-                        <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
-                    </div>
-                    @if (ScheduleModel.IsSetSession == true)
-                    {
-                        <div class="col-12 expiration-details">
-                            <div class="d-flex expiration-title-mobile">
-                                <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
-                                <p class="font-14">Expiration:</p>
-                            </div>
-                            <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
-                            <div class="cut-off-details">
-                                @if (ScheduleModel.HasExpiration == 1 && ScheduleModel.StartDate != null)
-                                {
-                                    string ordinal = "";
-                                    DateTime frequency = DateTime.Now;
-                                    int day = ScheduleModel.StartDate.Value.Day;
-                                    switch (ScheduleModel.SessionName)
-                                    {
-                                        case "2 Weeks":
-                                            frequency = ScheduleModel.StartDate.Value.AddDays(15);
-                                            @if (frequency <= DateTime.Now.Date)
-                                            {
-                                                var datePeriod = DateNextPeriod.CreateRecurring(ScheduleModel.StartDate.Value, ScheduleModel.SessionName);
-                                                DateTime periodStart = datePeriod.PeriodStart;
-                                                // to set the last time of the day
-                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
-                                                frequency = nextPeriod;
-                                            }
-                                            else
-                                            {
-                                                frequency = ScheduleModel.StartDate.Value.AddDays(15);
-                                            }
-                                            break;
-                                        case "3 Weeks":
-                                            frequency = ScheduleModel.StartDate.Value.AddDays(22);
-                                            @if (frequency <= DateTime.Now.Date)
-                                            {
-                                                var datePeriod = DateNextPeriod.CreateRecurring(ScheduleModel.StartDate.Value, ScheduleModel.SessionName);
-                                                DateTime periodStart = datePeriod.PeriodStart;
-                                                // to set the last time of the day
-                                                DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-                                                DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
-                                                frequency = nextPeriod;
-                                            }
-                                            else
-                                            {
-                                                frequency = ScheduleModel.StartDate.Value.AddDays(22);
-                                            }
-                                            break;
-                                        case "1 Month":
-                                            frequency = ScheduleModel.StartDate.Value.AddMonths(1);
-                                            break;
-                                        case "2 Months":
-                                            frequency = ScheduleModel.StartDate.Value.AddMonths(2);
-                                            break;
-                                        case "3 Months":
-                                            frequency = ScheduleModel.StartDate.Value.AddMonths(3);
-                                            break;
-                                    }
-
-                                    switch (frequency.Day)
-                                    {
-                                        case 1:
-                                        case 21:
-                                        case 31:
-                                            ordinal = "st";
-                                            break;
-                                        case 2:
-                                        case 22:
-                                            ordinal = "nd";
-                                            break;
-                                        case 3:
-                                        case 23:
-                                            ordinal = "rd";
-                                            break;
-                                        default:
-                                            ordinal = "th";
-                                            break;
-                                    }
-                                    switch (ScheduleModel.SessionName)
-                                    {
-                                        case "2 Weeks":
-                                        case "3 Weeks":
-                                            <small class="form-text sub-details">
-                                                The expiration period is @ScheduleModel.SessionName (calendar days) and will end on the @frequency.Day@ordinal day of the month.
-                                            </small>
-                                            break;
-                                        case "1 Month":
-                                            <small class="form-text sub-details">
-                                                The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the month.
-                                            </small>
-                                            break;
-                                        case "2 Months":
-                                            <small class="form-text sub-details">
-                                                The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 3rd month.
-                                            </small>
-                                            break;
-                                        case "3 Months":
-                                            <small class="form-text sub-details">
-                                                The expiration period is @ScheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
-                                            </small>
-                                            break;
-                                    }
-                                }
-                            </div>
-                        </div>
-                    }
-                    <div class="col-12 schedule-details">
-                        <div class="d-flex schedule-title-mobile">
-                            <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
-                            <p class="font-14">Schedule:</p>
-                        </div>
-                        <p class="font-16">@ScheduleModel.DateTime</p>
-                    </div>
-                    <div class="col-12 form-check ">
-                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)"
-                            class="form-check-input" type="radio" name="schedule" id="schedule">
-                        <label class="form-check-label" for="schedule">
-                            Select
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>*@
-
     }
 }
 @if (!AuthState.User.Identity.IsAuthenticated)

@@ -21,8 +21,8 @@
     padding: 0px 10px 0px 10px;
     overflow: hidden;
     display: -webkit-box;
-    -webkit-line-clamp: 5; /*number of lines to show */
-    line-clamp: 5;
+    -webkit-line-clamp: 10; /*number of lines to show */
+    line-clamp: 10;
     -webkit-box-orient: vertical;
     color: #D13636;
     margin-left: 2rem;
@@ -97,7 +97,12 @@
     top: 40%;
     position: relative;
 }
-
+.price-details p{
+    margin-bottom: 0.3rem;
+}
+.expiration-details p {
+    margin-bottom: 0.3rem;
+}
 .price-details-title {
     margin-left: 1rem;
 }
@@ -144,7 +149,7 @@
     font-size: 16px;
     font-weight: 400;
     color: #717171;
-    padding: 10px 10px 0px 10px;
+    padding-left: 10px;
     margin: 0;
     margin-left: 2rem;
 }
@@ -973,17 +978,30 @@ hr {
     }
 .recommended{
     color: #344050;
-    font-family: nunito-extrabold;
+    font-family: nunito;
     font-size: 10px;
+    font-weight: 900;
     background-color: #F3D052;
-    border-radius: 4px;
-    padding: 2px;
-    margin-right: 5px;
-    margin-bottom:0;
+    border-radius: 5px;
+    padding: 4px;
+    margin-right: 1rem;
+    margin-bottom: 0;
     text-transform: uppercase;
+}
+.recommended-mobile{
+    display: none;
+}
+.recommended-desktop {
+    display: flex;
 }
 
 @media screen and (max-width: 768px) {
+    .recommended-desktop {
+        display: none;
+    }
+    .recommended-mobile {
+        display: flex;
+    }
     .btn-primary {
         width: 50% !important;
         font-size: 16px;
@@ -1347,6 +1365,9 @@ hr {
 }
 
 @media screen and (min-width: 768px) and (max-width: 991.98px) {
+    .recommended-mobile {
+        display: none;
+    }
     .schedule-header .schedule-title {
         font-size: 18px;
     }
@@ -1563,6 +1584,9 @@ hr {
 }
 
 @media (min-width: 1200px) {
+    .recommended-mobile{
+        display: none;
+    }
     .details-header-small {
         display: none !important;
     }
