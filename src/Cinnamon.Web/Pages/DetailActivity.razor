@@ -1,4 +1,4 @@
-﻿@*Created By: R. Namoro
+﻿﻿@*Created By: R. Namoro
   Last Update: 07/28/2023*@
 
 @page "/Explore/{Identifier}"
@@ -528,55 +528,6 @@
                                                         <p class="font-18">₱ @activeSchedule.ElementAt(x).LongPrice</p>
                                                     </div>
                                                 </div>
-                                                @if (activity.ExperienceCreationType == Framework.Enums.Enums.ExperienceCreationType.ExperienceViaAppointment && activeSchedule.ElementAt(x).IsSelected)
-                                                {
-                                                     <div class="calendar-section">
-                                                        @if (activity.ScheduleType == Framework.Enums.Enums.ScheduleType.Internal)
-                                                        {
-                                                           
-                                                                <div class="row">
-                                                                <div class="col-lg-5">
-                                                                    <p class="font-14">Select Date & Time:</p>
-                                                                    <DatePicker TValue="DateTime?" Inline DateChanged="(e) => DateHasChanged(e)" />
-                                                                </div>
-                                                                <div class="col-lg-5">
-                                                                    <div class="row">
-                                                                        @foreach (var scheduleTime in activityScheduleTimes)
-                                                                        {
-                                                                            <div class="col-lg-6">
-                                                                                @if (scheduleTime.IsSelected)
-                                                                                {
-                                                                                    <div class="row">
-                                                                                        <div class="col-lg-6">
-                                                                                            <button class="btn btn-cancel-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, false)">
-                                                                                                Cancel
-                                                                                            </button>
-                                                                                        </div>
-                                                                                        <div class="col-lg-6">
-                                                                                            <button class="btn book-schedule-time" @onclick="() => BookSchedule(scheduleTime.ActivityScheduleTimeId)">
-                                                                                                Book
-                                                                                            </button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    <button class="btn btn-schedule-time" @onclick="() => ToggleScheduleTime(scheduleTime.ActivityScheduleTimeId, true)" disabled="@(scheduleTime.IsAvailable ? false : true)">
-                                                                                        @scheduleTime.StartTime
-                                                                                    </button>
-                                                                                }
-                                                                            </div>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        }
-                                                        else
-                                                        {
-                                                            <a href="@activity.SchedulingUrl" target="_blank">Book via Calendly</a>
-                                                        }
-                                                    </Div>
-                                                }
                                                 </div>
 
                                             
@@ -921,7 +872,6 @@
     public List<BadgeList> badges = new List<BadgeList>();
     public List<Reviews> activityReviews = new List<Reviews>();
     public List<Reviews> top3Reviews = new List<Reviews>();
-    public List<ActivityScheduleTime> activityScheduleTimes = new List<ActivityScheduleTime>();
     private IAnimation selectedAnimation = Animations.FadeIn;
     private DetailsSchedulesModal DetailsModalSched { get; set; }
     public int SelectedValue { get; set; } = 0;
@@ -1034,7 +984,6 @@
                         CreatedBy = result.CreatedBy,
                         MapDetails = result.MapDetails,
                         PinnedLocation = result.PinnedLocation,
-                        ExperienceCreationType = result.ExperienceCreationType,
                         ActivitySchedules = result.ActivitySchedules.Select(e =>
                         {
                             return new ActivitySchedule
@@ -1053,9 +1002,6 @@
                                 SessionName = e.SessionName,
                                 HasExpiration = e.HasExpiration,
                                 StartDate = e.StartDate,
-                                PriceType = e.PriceType,
-                                SchedulingUrl = e.SchedulingUrl,
-                                ScheduleType = e.ScheduleType
                             };
                         }).ToList(),
                         Images = result.Images.Select(i =>
@@ -1238,9 +1184,6 @@
                     customerProfiles.Add(reviweeProfile);
                 }
             }
-
-            Model.Activity.SchedulingUrl = Model.Activity.ActivitySchedules.FirstOrDefault().SchedulingUrl;
-            Model.Activity.ScheduleType = Model.Activity.ActivitySchedules.FirstOrDefault().ScheduleType;
         }
         catch (Exception e)
         {
@@ -1452,30 +1395,6 @@
         return Task.CompletedTask;
     }
 
-    private async Task DateHasChanged(DateTime? dateTime)
-    {
-        var result = await activityApiHandler.GetActivityScheduleTimes(new Framework.ApiCommand.ApiCore.Activity.Request.GetActivityScheduleTimesArgs
-            {
-                ActivityScheduleId = SelectedScheduleId,
-                DayOfWeek = (int)dateTime.GetValueOrDefault().DayOfWeek,
-                ScheduleDate = dateTime.GetValueOrDefault()
-            });
-
-        if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-        {
-            activityScheduleTimes = result.Result.Result.Select(a => new ActivityScheduleTime
-                {
-                    ActivityScheduleTimeId = a.ActivityScheduleTimeId,
-                    DayOfWeek = a.DayOfWeek,
-                    StartTime = a.StartTime,
-                    EndTime = a.EndTime,
-                    IsAvailable = a.IsAvailable
-                }).ToList();
-        }
-
-        SelectedDate = dateTime.GetValueOrDefault();
-    }
-
     private async Task SelectSchedule(int scheduleId)
     {
         SelectedScheduleId = scheduleId;
@@ -1486,43 +1405,5 @@
         }
 
         activity.ActivitySchedules.FirstOrDefault(a => a.Id == scheduleId).IsSelected = true;
-    }
-
-    private async Task ToggleScheduleTime(long scheduleTimeId, bool isSelected)
-    {
-        foreach (var item in activityScheduleTimes)
-        {
-            item.IsSelected = false;
-        }
-
-        activityScheduleTimes.FirstOrDefault(a => a.ActivityScheduleTimeId == scheduleTimeId).IsSelected = isSelected;
-    }
-
-    private async Task BookSchedule(long scheduleTimeId)
-    {
-        var user = (await AuthenticationStateProvider.GetAuthenticationStateAsync()).User;
-        var token = user.FindFirstValue("Token");
-
-        if (isAuthenticated)
-        {
-            var result = await activityApiHandler.CreateOngoingActivitySchedule(new Framework.ApiCommand.ApiCore.Activity.Request.CreateOngoingActivityScheduleArgs
-                {
-                    ActivityScheduleTimeId = (int)scheduleTimeId,
-                    PurchaseOrderId = 0,
-                    ScheduleDate = SelectedDate,
-                    IsCompleted = false,
-                    CreatedBy = CustomerModel.CustomerProfile.Id
-                }, token);
-
-            if (result.Succeeded && result.Result != null && result.Result.IsSuccess)
-            {
-                NavigationManager.NavigateTo($"/Explore/{Identifier}", true);
-            }
-        }
-        else
-        {
-            signInReturnUrl = $"/Explore/{Identifier}";
-            await signinModal.Show();
-        }
     }
 }

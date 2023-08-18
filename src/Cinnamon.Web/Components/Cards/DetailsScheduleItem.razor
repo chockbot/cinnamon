@@ -11,16 +11,25 @@
     {
         <div class="schedule-desktop">
             <div class="schedule-detail w-100 rounded-5">
-                <div class="schedule-header d-flex">
+                <div class="schedule-header d-flex" style="background-color: @(!ScheduleModel.IsSelected ? changeColor : "#F3F6FC")">
                     <div class="schedule-title col-lg-10 clo-md-9 justify-content-start">
                         <p>@ScheduleModel.Name</p>
                     </div>
                     <div class="form-check col-lg-2 col-md-3 justify-content-center">
-                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)"
-                               class="form-check-input" type="radio" name="schedule" id="schedule">
-                        <label class="form-check-label" for="schedule">
-                            Select
-                        </label>
+                        <input checked="@ScheduleModel.IsSelected" @onchange="() => OnSelectedChanged(ScheduleModel.Id)"
+                               class="form-check-input" type="radio" name="schedule">
+                        @if (ScheduleModel.IsSelected)
+                        {
+                            <label class="form-check-label" for="schedule">
+                                Selected
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="form-check-label" for="schedule">
+                                Select
+                            </label>
+                        }
                     </div>
                 </div>
                 <hr>
@@ -309,6 +318,10 @@
 @code {
     [Parameter]
     public ActivitySchedule ScheduleModel { get; set; }
+
+    [Parameter]
+    public IList<ActivitySchedule> SchedulesModel { get; set; }
+
     [Parameter]
     public Activity ActivityModel { get; set; }
     [Parameter]
@@ -326,6 +339,8 @@
     public AuthenticationState AuthState { get; set; }
 
     private int selectedScheduleId = 0;
+
+    private string changeColor = "none";
 
     private ModalLogin? modalLoginRef;
 
@@ -346,6 +361,13 @@
     private Task OnSelectedChanged(int selectedId)
     {
         selectedScheduleId = selectedId;
+
+        foreach (var item in SchedulesModel)
+        {
+            item.IsSelected = false;
+        }
+        SchedulesModel.FirstOrDefault(a => a.Id == selectedId).IsSelected = true;
+
         if (OnChooseClick.HasDelegate)
         {
             OnChooseClick.InvokeAsync(selectedScheduleId);

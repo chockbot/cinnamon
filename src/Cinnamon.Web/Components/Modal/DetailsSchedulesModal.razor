@@ -12,7 +12,7 @@
                 <div class="row col-lg-12 col-md-12 col-sm-12 col-12 justify-content-center">
                     @foreach (var item in ScheduleModel.Where(s => s.IsActiveSchedule))
                     {
-                        <DetailsScheduleItem ScheduleModel="item" ActivityModel="ActivityModel" OnChooseClick="OnScheduleChooseChanged" />
+                        <DetailsScheduleItem ScheduleModel="item" SchedulesModel="ScheduleModel" ActivityModel="ActivityModel" OnChooseClick="OnScheduleChooseChanged" />
                     }
                 </div>
             </div>
