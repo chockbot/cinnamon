@@ -12,7 +12,7 @@
         <div class="schedule-desktop">
             <div class="schedule-detail w-100 rounded-5">
                 <div class="schedule-header d-flex" style="background-color: @(!ScheduleModel.IsSelected ? changeColor : "#F3F6FC");border-top-left-radius:10px;border-top-right-radius:10px">
-                    <div class="schedule-title col-lg-10 clo-md-9 justify-content-start">
+                    <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-xs-9 col-9 justify-content-start">
                         <p>@ScheduleModel.Name</p>
                     </div>
                     <div class="form-check col-lg-2 col-md-3 justify-content-center">
@@ -31,6 +31,9 @@
                             </label>
                         }
                     </div>
+                    <div class="col-sm-3 col-xs-3 col-3 justify-content-center schedule-price-header">
+                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
+                    </div>
                 </div>
                 <hr>
                 <div class="schedule-body">
@@ -42,15 +45,10 @@
                                     <p class="font-14">Price Details:</p>
                                 </div>
                                 <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
-                                <div class="d-flex schedule-details-title">
-                                    <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
-                                    <p class="font-14">Schedule:</p>
-                                </div>
-                                <p class="font-16">@ScheduleModel.DateTime</p>
                             </div>
                             @if (ScheduleModel.IsSetSession == true)
                             {
-                                <div class="col-lg-6 col-md-6 expiration details">
+                                <div class="col-lg-6 col-md-6 expiration-details">
                                     <div class="d-flex expiration-details-title">
                                         <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
                                         <p class="font-14">Expiration:</p>
@@ -155,9 +153,32 @@
                                 </div>
                             }
                         </div>
+                        <div class="col-12 schedule-details">
+                            <div class="d-flex schedule-details-title">
+                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                <p class="font-14">Schedule:</p>
+                            </div>
+                            <p class="font-16">@ScheduleModel.DateTime</p>
+                        </div>
                     </div>
                     <div class="col-lg-2 col-md-3 col-sm-12 justify-content-center schedule-price">
                         <p class="font-18">₱ @ScheduleModel.LongPrice</p>
+                    </div>
+                    <div class="col-sm-12 col-xs-12 col-12 justify-content-center form-check-mobile">
+                        <input checked="@ScheduleModel.IsSelected" @onchange="() => OnSelectedChanged(ScheduleModel.Id)"
+                               class="form-check-input" type="radio" name="schedule-1">
+                        @if (ScheduleModel.IsSelected)
+                        {
+                            <label class="form-check-label" for="schedule-1">
+                                Selected
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="form-check-label" for="schedule-1">
+                                Select
+                            </label>
+                        }
                     </div>
                 </div>
             </div>

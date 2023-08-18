@@ -163,7 +163,6 @@
 
 .PE-details {
     display: flex;
-    margin-bottom: 0.5rem;
 }
 
 .S-details {
@@ -979,9 +978,9 @@ hr {
 
 .recommended {
     color: #344050;
-    font-family: nunito;
+    font-family: nunito-extrabold;
+    font-weight: 700;
     font-size: 10px;
-    font-weight: 900;
     background-color: #F3D052;
     border-radius: 5px;
     padding: 4px;
@@ -994,6 +993,14 @@ hr {
 }
 .recommended-desktop {
     display: flex;
+    margin-top: 0.5rem;
+}
+.schedule-price-header {
+    display: none;
+}
+
+.form-check-mobile {
+    display: none;
 }
 
 @media screen and (max-width: 768px) {
@@ -1316,35 +1323,75 @@ hr {
         font-size: 16px;
     }
 
-    .schedule-header .form-check {
-        margin-top: 0rem;
-        width: auto;
+    .form-check {
+        display: none;
+    }
+
+    .form-check-mobile {
+        display: flex;
+    }
+
+    .schedule-price-header {
+        display: flex;
+    }
+
+    .schedule-header {
+        margin-bottom: 0rem;
+    }
+
+    .schedule-body {
+        display: block;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        box-shadow: none;
+        padding: 0px;
+    }
+
+    .schedule-header .schedule-title {
+        font-family: Nunito;
+        font-size: 16px;
+        font-weight: 700;
+    }
+
+    .schedule-header .font-18 {
+        margin-top: 0.5rem;
+        font-weight: 700;
+        font-family: Nunito;
+        font-size: 16px;
+    }
+
+    .form-check-mobile {
+        margin-top: 1rem;
+        width: 30%;
         height: 2.8rem;
         background: #ffffff;
         border-radius: 10px;
         padding: 10px 10px;
         border: 1px solid #d9d9d9;
         text-align: start;
+        margin-right: auto;
+        margin-left: auto;
     }
 
-    .schedule-body .form-check .form-check-input {
-        float: none;
-        margin-left: 0px;
-    }
+        .form-check-mobile .form-check-input {
+            float: none;
+            margin-left: 0px;
+        }
 
-    .schedule-body .form-check-input:checked {
-        background-color: #34a853;
-    }
+            .form-check-mobile .form-check-input:checked {
+                background-color: #34a853;
+                margin-top: 0.2rem;
+            }
 
-    .schedule-body .form-check .form-check-label {
-        font-family: "Nunito";
-        font-style: normal;
-        font-weight: 600;
-        font-size: 14px;
-        margin-top: 0.3rem;
-        margin-left: 0.3rem;
-        color: var(--primary);
-    }
+        .form-check-mobile .form-check-label {
+            font-family: "Nunito";
+            font-style: normal;
+            font-weight: 600;
+            font-size: 14px;
+            margin-top: 0.1rem;
+            margin-left: 0.3rem;
+            color: var(--primary);
+        }
 
     .sub-details {
         margin-left: 2rem;
@@ -1364,6 +1411,13 @@ hr {
 }
 
 @media screen and (min-width: 768px) and (max-width: 991.98px) {
+    .schedule-mobile {
+        display: none;
+    }
+
+    .form-check-mobile {
+        display: none;
+    }
     .recommended-mobile {
         display: none;
     }
