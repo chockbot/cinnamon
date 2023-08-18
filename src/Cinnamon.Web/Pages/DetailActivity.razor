@@ -369,7 +369,7 @@
                                         @if (x <= 2)
                                         {
                                             <div class="schedule-detail w-100 rounded-5">
-                                                <div class="schedule-header d-flex" style="background-color: @(SelectedScheduleId != schedule.Id ? changeColor : "#F3F6FC")">
+                                                <div class="schedule-header d-flex" style="background-color: @(SelectedScheduleId != schedule.Id ? changeColor : "#F3F6FC");border-top-left-radius:10px;border-top-right-radius:10px">
                                                     <div class="schedule-title col-lg-10 clo-md-9 col-sm-8 justify-content-start">
                                                         <p>@activeSchedule.ElementAt(x).Name</p>
                                                     </div>
@@ -397,7 +397,7 @@
                                                     <div class="col-lg-10 col-md-9 col-sm-12 PES-details">
                                                         @if(x == 0)
                                                         {
-                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 d-flex justify-content-end">
+                                                            <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-mobile">
                                                                 <p class="recommended">Highly Recommended!</p>
                                                             </div>
                                                         }
@@ -408,6 +408,11 @@
                                                                     <p class="font-14">Price Details:</p>
                                                                  </div>
                                                                 <p class="font-16-d">₱ @activeSchedule.ElementAt(x).LongPrice / @activeSchedule.ElementAt(x).PerUnit1 @activeSchedule.ElementAt(x).PriceUnit1 / @activeSchedule.ElementAt(x).PerUnit2 @activeSchedule.ElementAt(x).PriceUnit2</p>
+                                                                <div class="d-flex schedule-details-title">
+                                                                    <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                                                    <p class="font-14">Schedule:</p>
+                                                                </div>
+                                                                <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
                                                             </div>
                                                             @if (schedule.IsSetSession == true && x <= 2)
                                                             {
@@ -517,11 +522,12 @@
                                                             }
                                                         </div>
                                                         <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                                                            <div class="d-flex schedule-details-title">
-                                                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
-                                                                <p class="font-14">Schedule:</p>
-                                                            </div>
-                                                            <p class="font-16-d">@activeSchedule.ElementAt(x).DateTime</p>
+                                                            @if (x == 0)
+                                                            {
+                                                                <div class="col-lg-12 col-md-12 col-sm-12 col-12 justify-content-end recommended-desktop">
+                                                                    <p class="recommended">Highly Recommended!</p>
+                                                                </div>
+                                                            }
                                                         </div>
                                                     </div>
                                                     <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
