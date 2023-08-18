@@ -19,6 +19,7 @@ public static class ServiceExtenstion
         services.AddTransient<Modules.NotificationDriver.Handler.IMakerEnrolledNotificationHandler, Modules.NotificationDriver.EmailNotification.MakerEnrolledNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IResetPasswordNotificationHandler, Modules.NotificationDriver.EmailNotification.ResetPasswordNotificationHandler>();
         services.AddTransient<Modules.NotificationDriver.Handler.IVerifyResetPasswordNotificationHandler, Modules.NotificationDriver.EmailNotification.VerifyResetPasswordNotificationHandler>();
+        services.AddTransient<Modules.NotificationDriver.Handler.IExpiringStudentNotificationHandler, Modules.NotificationDriver.EmailNotification.ExpiringStudentNotificationHandler>();
 
         // data access modules
         services.AddTransient<Modules.DataAccess.Handlers.ICustomerData, Modules.DataAccess.Customer.CustomerData>();
@@ -99,6 +100,7 @@ public static class ServiceExtenstion
         services.AddTransient<Services.AccountService.Handlers.IUpdateConnectionIdHandler, Services.AccountService.UpdateConnectionIdHandler>();
         services.AddTransient<Services.AccountService.Handlers.IGenerateCustomerHandler, Services.AccountService.GenerateCustomerHandler>();
         services.AddTransient<Services.AccountService.Handlers.IVerifyUserNotificationHandler, Services.AccountService.VerifyUserNotificationHandler>();
+        services.AddTransient<Services.AccountService.Handlers.IExpiringStudentsHandler, Services.AccountService.ExpiringStudentsHandler>();
 
         services.AddTransient<Services.AccountService.Handlers.IBlockedAccountHandler, Services.AccountService.BlockedAccountHandler>();
         services.AddTransient<Services.AccountService.Handlers.IIsAccountBlockedHandler, Services.AccountService.IsAccountBlockedHandler>();
