@@ -364,8 +364,8 @@
         }
     private async void UpdateAttendance(StudentAttendance studentAttendance, string token, DateTime presentDate)
     {
-        try
-        {
+    try
+    {
         await loadingIndicator.Show();
 
         studentAttendance.IsPresent = !studentAttendance.IsPresent;
@@ -407,6 +407,15 @@
                             SessionName = schedule.SessionName,
                             ExpirationStartDate = presentDate,
                             ExpirationEndDate = DateTime.UtcNow
+                        });
+            }
+            else if (studentAttendance.SessionsAttended == 0)
+            {
+                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            ExpirationStartDate = DateTime.MinValue,
+                            ExpirationEndDate = DateTime.MinValue
                         });
             }
         }
