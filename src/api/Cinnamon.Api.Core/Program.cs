@@ -130,6 +130,18 @@ builder.Services.AddQuartz(q => {
             .WithSimpleSchedule(x => x.WithIntervalInHours(applicationConfig.Sitemap.RunPerHour).RepeatForever())
         );
     }
+
+    if(applicationConfig.ExpiringActivityNotification.IsRunNotification)
+    {
+        var expiredNotificationKey = new JobKey("NotifyExpiringStudentJob");
+        q.AddJob<NotifyExpiringStudentJob>(opts => opts.WithIdentity(expiredNotificationKey));
+        q.AddTrigger(opts => opts
+            .ForJob(expiredNotificationKey)
+            .WithIdentity("NotifyExpiringStudentJob-trigger")
+            // .WithSimpleSchedule(x => x.WithIntervalInHours(1).RepeatForever())
+            .WithCronSchedule(applicationConfig.ExpiringActivityNotification.CronString)
+        );
+    }
 });
 builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 

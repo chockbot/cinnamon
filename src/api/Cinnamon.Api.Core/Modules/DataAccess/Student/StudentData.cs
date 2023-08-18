@@ -224,4 +224,24 @@ public class StudentData: IStudentData
             return AppResult<GetAllStudentsByIdResult>.CreateFailed(ex, "An error occured when getting all student attendance by id api");
         }
     }
+
+    public async Task<AppResult<GetExpiringStudentsResult>> GetExpiringStudents()
+    {
+        try
+        {
+            var result = await flurlClient
+                            .Request("Student/GetExpiringStudents")
+                            .GetJsonAsync<GetExpiringStudentsResult>();
+
+            return AppResult<GetExpiringStudentsResult>.CreateSucceeded(result, "Successfully getting get all expiring students");
+        }
+        catch (FlurlHttpException ex)
+        {
+            return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return AppResult<GetExpiringStudentsResult>.CreateFailed(ex, "An error occured when getting all expiring students");
+        }
+    }
 }

@@ -11,4 +11,5 @@ public class ApplicationConfig
     public Payment Payment {get; set;}
     public Activity Activity { get; set; }
     public Sitemap Sitemap {get; set;}
+    public ExpiringStudentNotification ExpiringActivityNotification { get; set; }
 }

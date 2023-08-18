@@ -309,4 +309,61 @@ public class StudentEntity : GenericEntity<Student>, IStudent
             return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(ex, "An error occured when trying to get students need to disburse");
         }
     }
+
+    public async Task<AppResult<IEnumerable<ExpiredStudentDTO>>> ExpiringStudents()
+    {
+        try
+        {
+            // expired in two days
+            var dateString = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd");
+
+            string query = "select distinct st.\"ExpirationDateStart\" \"DateStart\", st.\"ExpirationDateEnd\" \"DateEnd\",  " +
+                                "ct.\"FirstName\", ct.\"LastName\", ct.\"Email\", " +
+                                "ac.\"Title\", ac.\"Handler\", ss.\"Price\" " +
+                            "from public.\"Students\" st " +
+                            "join public.\"Customers\" ct " +
+                                "on ct.\"Id\" = st.\"CustomerId\" " +
+                            "join public.\"Activities\" ac " +
+                                "on ac.\"Id\" = st.\"ActivityId\" " +
+                            "join public.\"ActivitySchedules\" ss " +
+                                "on ss.\"Id\" = st.\"ScheduleId\" " +
+                            "where Date(st.\"ExpirationDateEnd\") = Date('" + dateString + "') ";
+            
+            IList<ExpiredStudentDTO> listResult = new List<ExpiredStudentDTO>();
+
+            using(var command = applicationContext.Database.GetDbConnection().CreateCommand())
+            {
+                command.CommandText = query;
+                command.CommandType = System.Data.CommandType.Text;
+
+                applicationContext.Database.OpenConnection();
+                
+                using(var dr = await command.ExecuteReaderAsync())
+                {
+                    if(dr.HasRows)
+                    {
+                        var dt = new DataTable();
+                        dt.Load(dr);
+
+                        listResult = dt.AsEnumerable().Select(item => new ExpiredStudentDTO {
+                            DateEnd = Convert.ToDateTime(item["DateEnd"]),
+                            DateStart = Convert.ToDateTime(item["DateStart"]),
+                            Email = item["Email"].ToString() ?? string.Empty,
+                            FirstName = item["FirstName"].ToString() ?? string.Empty,
+                            Handler = item["Handler"].ToString() ?? string.Empty,
+                            LastName = item["LastName"].ToString() ?? string.Empty,
+                            Price = Convert.ToDecimal(item["Price"]),
+                            Title = item["Title"].ToString() ?? string.Empty
+                        }).ToList();
+                    }
+                }
+            }
+
+            return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateSucceeded(listResult, "Successfully get expiring students");
+        }
+        catch (Exception ex)
+        {
+            return AppResult<IEnumerable<ExpiredStudentDTO>>.CreateFailed(ex, "An error occured when trying to get expiring students");            
+        }
+    }
 }
