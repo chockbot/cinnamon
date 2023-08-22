@@ -63,11 +63,11 @@ export function confirmation() {
 
             popEventListenerAdded = true;
         }
-       
+
 
         $("#regForm").on("mousedown", stopNavigate);
 
-        
+
     });
 
     function stopNavigate() {
@@ -89,6 +89,11 @@ export function scrollToRequiredField(container) {
         var field = document.getElementById(fieldId);
         var top = field.offsetTop - 120;
         window.scrollTo(0, top);
+    }, 200);
+}
+export function scrollToPricingandSchedule() {
+    $('html, body').animate({
+        scrollTop: $(".pricing-schedule").offset().top
     }, 200);
 }
 
