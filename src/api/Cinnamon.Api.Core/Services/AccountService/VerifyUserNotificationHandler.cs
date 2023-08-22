@@ -16,12 +16,14 @@ namespace Cinnamon.Api.Core.Services.AccountService
     {
         private readonly ISendMailHandler sendMailHandler;
         private readonly ApplicationConfig applicationConfig;
+        private readonly ILogger logger;
 
-
-        public VerifyUserNotificationHandler(ISendMailHandler sendMailHandler, ApplicationConfig applicationConfig)
+        public VerifyUserNotificationHandler(ISendMailHandler sendMailHandler, ApplicationConfig applicationConfig,
+            ILogger<VerifyUserNotificationHandler> logger)
         {
             this.sendMailHandler = sendMailHandler;
             this.applicationConfig = applicationConfig;
+            this.logger = logger;
         }
         public AppResult<VerifyUserNotificationResult> Execute(VerifyUserNotificationArgs args)
         {
@@ -39,11 +41,10 @@ namespace Cinnamon.Api.Core.Services.AccountService
         {
             try
             {
-                var location = $"{System.Reflection.Assembly.GetExecutingAssembly().Location.Substring(0, System.Reflection.Assembly.GetExecutingAssembly().Location.LastIndexOf("\\") + 1)}Templates\\UserVerificationRequest.html";
-
+                var templateLocation = Path.Combine(Directory.GetCurrentDirectory(), "Templates", "UserVerificationRequest.html");
                 var properties = typeof(VerifyUserNotificationArgs).GetProperties().ToDictionary(x => x, x => x.GetType().GetProperties());
 
-                using (StreamReader sr = File.OpenText(location))
+                using (StreamReader sr = new(templateLocation))
                 {
                     var emailBody = sr.ReadToEnd();
 

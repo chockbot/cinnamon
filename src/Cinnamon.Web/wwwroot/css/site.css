@@ -14,6 +14,18 @@
   font-family: "Inter";
   src: url("../fonts/inter-cufonfonts/Inter-Regular.otf");
 }
+@font-face {
+    font-family: 'nunito-black';
+    src: url('../fonts/nunito-cufonfonts/Nunito-Black.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'nunito-bold';
+    src: url('../fonts/nunito-cufonfonts/Nunito-Bold.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'nunito-extrabold';
+    src: url('../fonts/nunito-cufonfonts/Nunito-ExtraBold.ttf') format('truetype');
+}
 @import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
 
 :root {
@@ -1648,6 +1660,17 @@ input::-ms-clear {
   }
 }
 
+/* onboarding page styling */
+.onboarding-wrapper .hide-desktop {
+  display: none;
+}
+
+@media screen and (max-width: 767px) and (orientation: portrait) {
+  .onboarding-wrapper .hide-desktop {
+    display: initial;
+  }
+}
+
 /* general css */
 .checkbox-round {
   width: 1.1em;
@@ -1687,6 +1710,10 @@ input::-ms-clear {
   font-size: 16px !important;
 }
 
+.font-18 {
+  font-size: 18px;
+}
+
 .font-20 {
   font-size: 20px;
 }
@@ -1705,6 +1732,10 @@ input::-ms-clear {
 
 .font-weight-700 {
   font-weight: 700;
+}
+
+.font-weight-900 {
+  font-weight: 900;
 }
 
 .font-family-nunito {
@@ -1729,6 +1760,14 @@ input::-ms-clear {
 
 .color-black-100 {
   color: #343d4c;
+}
+
+.color-black-200 {
+  color: #344050;
+}
+
+.color-orange-100 {
+  color: #ffa942;
 }
 
 .color-green-100 {
@@ -1757,6 +1796,14 @@ input::-ms-clear {
 
 .bg-grey-300 {
   background-color: #f5f5f5 !important;
+}
+
+.bg-orange-100 {
+  background-color: #ffa942;
+}
+
+.color-grey-400 {
+  color: #8896ab;
 }
 
 .min-width-130 {
@@ -1801,8 +1848,25 @@ input::-ms-clear {
   border-bottom-style: solid;
 }
 
+.border-right-1-solid {
+  border-right-width: 1px;
+  border-right-style: solid;
+}
+
+.border-color-black-100 {
+  border-color: #343d4c;
+}
+
+.border-color-grey-100 {
+  border-color: #717171;
+}
+
 .border-color-grey-200 {
   border-color: #d9d9d9 !important;
+}
+
+.border-color-grey-300 {
+  border-color: #d5dae1 !important;
 }
 
 .cursor-pointer {
@@ -1819,6 +1883,46 @@ input::-ms-clear {
 
 .hover-color-grey-100:hover {
   color: #717171;
+}
+
+.width-70-p {
+  width: 70%;
+}
+
+.border-radius-40 {
+  border-radius: 40px;
+}
+
+.border-shadow-100 {
+  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
+}
+
+.padding-20 {
+  padding: 20px;
+}
+
+.padding-70 {
+  padding: 70px;
+}
+
+.margin-bottom-50 {
+  margin-bottom: 50px;
+}
+
+.margin-top-50 {
+  margin-top: 50px;
+}
+
+.max-width-100 {
+  max-width: 100%;
+}
+
+.z-index-10 {
+  z-index: 10;
+}
+
+.z-index-20 {
+  z-index: 20;
 }
 
 @media screen and (max-width: 767px) and (orientation: portrait) {
@@ -1870,6 +1974,10 @@ input::-ms-clear {
 }
 
 .purchase-order-page .modal-backdrop {
+  height: 100%;
+}
+
+.activity-details-page-wrapper .modal-backdrop {
   height: 100%;
 }
 
