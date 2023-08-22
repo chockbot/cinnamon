@@ -28,7 +28,7 @@
          Image="@(activity?.Images?[0]?.ImageSrc ?? string.Empty)"
          Keywords='new List<string>{activity?.ExperienceCategory ?? string.Empty}' />
 
-    @if (Model.Customer != null)
+@if (Model.Customer != null)
 {
     <Container>
         <div id="alertContainer" class="alertContainer">
@@ -79,7 +79,7 @@
                             </label>
                             <label class="col-lg-6 justify-content-lg-end col-md-4 justify-content-md-end mb-3 share-link">
                                 <label class="active-badge">
-                                    @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                    @if (CustomerModel.CustomerProfile != null)
                                     {
                                         activity.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == activity.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
                                         if (activity.IsFavorite != false)
@@ -186,7 +186,7 @@
                             </label>
                             <label class="col-6 justify-content-end mb-3 share-link-small">
                                 <label class="active-badge">
-                                    @if (CustomerModel.CustomerProfile != null && CustomerModel.Favorites != null)
+                                    @if (CustomerModel.CustomerProfile != null)
                                     {
                                         activity.IsFavorite = CustomerModel.Favorites.Any(a => a.ActivityId == activity.ActivityId && a.CustomerId == CustomerModel.CustomerProfile.Id);
                                         if (activity.IsFavorite != false)
@@ -495,7 +495,7 @@
                                                                                 case "2 Weeks":
                                                                                 case "3 Weeks":
                                                                                     <small class="form-text sub-details">
-                                                                                        The expiration period is @schedule.SessionName (calendar days) and will end on the @frequency.Day@ordinal day of the month.
+                                                                                        The expiration period is @schedule.SessionName (calendar days), and will end on the @frequency.Day@ordinal day of @frequency.ToString("MMMM").
                                                                                     </small>
                                                                                     break;
                                                                                 case "1 Month":
