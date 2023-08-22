@@ -145,13 +145,13 @@
                                     else
                                     {
                                         <Tooltip Text="Please select expiration period to be able to enter start date." TextColor="TextColor.Danger" Multiline>
-                                            <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
-                                                <Feedback>
-                                                    <ValidationError />
-                                                </Feedback>
-                                            </DateEdit>
-                                        </Tooltip>
-                                    }     
+                                        <DateEdit TValue="DateTime?" Placeholder="" @bind-Date="scheduleModel.StartDate" ReadOnly>
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </DateEdit>
+                                    </Tooltip>
+                                    }
                                 </div>
 
                                 <div class="form-check first-attendance d-flex">
@@ -243,7 +243,7 @@
                                                 The expiration period is @scheduleModel.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
                                             </small>
                                         </div>
-                                    break;
+                                        break;
                                 }
                             }
                         </div>
