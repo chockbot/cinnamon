@@ -47,7 +47,8 @@
                         {
                             <div class="xp-body-item">
                                 <p class="secondary-caption">
-                                    Expires on - @item.ExpirationDateEnd.ToString("MMMM dd, yyyy")
+                                   
+                                    Expires on - @item.ExpirationDateEnd.AddDays(-1).ToString("MMMM dd, yyyy")
                                 </p>
                             </div>
                         }
