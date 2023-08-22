@@ -63,11 +63,11 @@ export function confirmation() {
 
             popEventListenerAdded = true;
         }
-       
+
 
         $("#regForm").on("mousedown", stopNavigate);
 
-        
+
     });
 
     function stopNavigate() {
