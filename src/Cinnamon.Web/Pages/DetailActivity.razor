@@ -19,6 +19,7 @@
 @inject NavigationManager NavigationManager
 @using Microsoft.EntityFrameworkCore
 @using Cinnamon.Framework.Helpers
+@using Cinnamon.Web.Modules.Services
 
 <PageTitle>@(activity == null ? "Cinnamon Activities, learnings and events for you and your loved ones | CinnamonPH" : $"Cinnamon Activity - {activity.Title} | CinnamonPH")</PageTitle>
     <SeoMeta Title="@(activity?.Title ?? string.Empty)"
@@ -420,99 +421,22 @@
                                                                     </div>
                                                                     <p class="font-16-d">Consume in - @schedule.SessionName</p>
                                                                     <div class="cut-off-details">
-                                                                        @if (schedule.HasExpiration == 1 && schedule.StartDate != null)
+                                                                        @switch (schedule.HasExpiration)
                                                                         {
-                                                                            string ordinal = "";
-                                                                            DateTime frequency = DateTime.Now;
-                                                                            int day = schedule.StartDate.Value.Day;
-                                                                            switch (schedule.SessionName)
-                                                                            {
-                                                                                case "2 Weeks":
-                                                                                    frequency = schedule.StartDate.Value.AddDays(15);
-                                                                                    @if (frequency <= DateTime.Now.Date)
-                                                                                    {
-                                                                                        var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
-                                                                                        DateTime periodStart = datePeriod.PeriodStart;
-                                                                                        // to set the last time of the day
-                                                                                        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-                                                                                        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
-                                                                                        frequency = nextPeriod;
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        frequency = schedule.StartDate.Value.AddDays(15);
-                                                                                    }
-                                                                                    break;
-                                                                                case "3 Weeks":
-                                                                                    frequency = schedule.StartDate.Value.AddDays(22);
-                                                                                    @if (frequency <= DateTime.Now.Date)
-                                                                                    {
-                                                                                        var datePeriod = DateNextPeriod.CreateRecurring(schedule.StartDate.Value, schedule.SessionName);
-                                                                                        DateTime periodStart = datePeriod.PeriodStart;
-                                                                                        // to set the last time of the day
-                                                                                        DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
-                                                                                        DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
-                                                                                        frequency = nextPeriod;
-                                                                                    }
-                                                                                    else
-                                                                                    {
-                                                                                        frequency = schedule.StartDate.Value.AddDays(22);
-                                                                                    }
-                                                                                    break;
-                                                                                case "1 Month":
-                                                                                    frequency = schedule.StartDate.Value.AddMonths(1);
-                                                                                    break;
-                                                                                case "2 Months":
-                                                                                    frequency = schedule.StartDate.Value.AddMonths(2);
-                                                                                    break;
-                                                                                case "3 Months":
-                                                                                    frequency = schedule.StartDate.Value.AddMonths(3);
-                                                                                    break;
-                                                                            }
-
-                                                                            switch (frequency.Day)
-                                                                            {
-                                                                                case 1:
-                                                                                case 21:
-                                                                                case 31:
-                                                                                    ordinal = "st";
-                                                                                    break;
-                                                                                case 2:
-                                                                                case 22:
-                                                                                    ordinal = "nd";
-                                                                                    break;
-                                                                                case 3:
-                                                                                case 23:
-                                                                                    ordinal = "rd";
-                                                                                    break;
-                                                                                default:
-                                                                                    ordinal = "th";
-                                                                                    break;
-                                                                            }
-                                                                            switch (schedule.SessionName)
-                                                                            {
-                                                                                case "2 Weeks":
-                                                                                case "3 Weeks":
-                                                                                    <small class="form-text sub-details">
-                                                                                        The expiration period is @schedule.SessionName (calendar days), and will end on the @frequency.Day@ordinal day of @frequency.ToString("MMMM").
-                                                                                    </small>
-                                                                                    break;
-                                                                                case "1 Month":
-                                                                                    <small class="form-text sub-details">
-                                                                                        The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the month.
-                                                                                    </small>
-                                                                                    break;
-                                                                                case "2 Months":
-                                                                                    <small class="form-text sub-details">
-                                                                                        The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 3rd month.
-                                                                                    </small>
-                                                                                    break;
-                                                                                case "3 Months":
-                                                                                    <small class="form-text sub-details">
-                                                                                        The expiration period is @schedule.SessionName, and the cutoff is every @frequency.Day@ordinal day of the 4th month.
-                                                                                    </small>
-                                                                                    break;
-                                                                            }
+                                                                            case 1:
+                                                                                DateTime frequency = ExpirationData.CalculateFrequency(schedule);
+                                                                                string ordinal = ExpirationData.GetOrdinal(frequency.Day);
+                                                                                <small class="form-text sub-details">
+                                                                                    @ExpirationData.GetExpirationText(schedule.SessionName, frequency, ordinal)
+                                                                                </small>
+                                                                                break;
+                                                                            case 2:
+                                                                                <small class="form-text sub-details">
+                                                                                    Session/s must be consumed in @schedule.SessionName.ToLower(), starting from first attendance.
+                                                                                </small>
+                                                                                break;
+                                                                            default:
+                                                                                break;
                                                                         }
                                                                     </div>
                                                                 </div>
@@ -1428,4 +1352,5 @@
 
         activity.ActivitySchedules.FirstOrDefault(a => a.Id == scheduleId).IsSelected = true;
     }
+    
 }
