@@ -1,7 +1,9 @@
 ﻿* {
     font-family: "Nunito";
 }
-
+a{
+    text-decoration: none;
+}
 .details-header-small {
     display: none;
 }
@@ -56,12 +58,14 @@
         border: 1px solid #d9d9d9;
         text-align: center;
         margin-left: auto;
+        cursor: pointer;
     }
 
         .schedule-header .form-check .form-check-input {
             float: none;
             margin-left: 0px;
             margin-top: 0.2rem;
+            cursor: pointer;
         }
 
     .schedule-header .form-check-input:checked {
@@ -76,6 +80,7 @@
         margin-top: 0rem;
         margin-left: 0.3rem;
         color: var(--primary);
+        cursor: pointer;
     }
 
 .schedule-body {
@@ -394,7 +399,18 @@ button:focus {
     font-weight: 700;
     color: #343d4c;
 }
-
+.btn-show {
+    color: #fff;
+    background-color: #34A853;
+    border-color: #34A853;
+    height: auto;
+    padding: 5px;
+    width: 25%;
+    font-size: 16px;
+    font-family: nunito-bold;
+    border-width: 0px;
+    border-radius: 10px !important;
+}
 .btn-primary {
     color: #fff;
     background-color: var(--primary);
@@ -1003,12 +1019,16 @@ hr {
     display: none;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
     .recommended-desktop {
         display: none;
     }
     .recommended-mobile {
         display: flex;
+    }
+    .btn-show {
+        width: 50% !important;
+        font-size: 16px;
     }
     .btn-primary {
         width: 50% !important;
@@ -1438,7 +1458,18 @@ hr {
         height: 3rem;
         padding: 8px 8px;
     }
-
+    .btn-show {
+        color: #fff;
+        background-color: #34A853;
+        border-color: #34A853;
+        height: auto;
+        padding: 5px;
+        width: 50%;
+        font-size: 16px;
+        font-family: "Nunito-Bold";
+        border-width: 0px;
+        border-radius: 10px !important;
+    }
     .btn-primary {
         color: #fff;
         background-color: var(--primary);
