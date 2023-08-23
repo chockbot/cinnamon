@@ -50,7 +50,7 @@ export function confirmation() {
 
                             $("#regForm *").attr('readonly', 'readonly');
 
-                            setTimeout(redirectToExplore, 2000);
+                            setTimeout(redirectToDashboard, 2000);
                         }
 
                     } else {
