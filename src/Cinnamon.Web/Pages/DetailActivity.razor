@@ -782,21 +782,23 @@
                         Proceed
                     </Button>
                     <div class="d-flex align-items-center">
-                        <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
-                        @if(isOpenMobileCalculator)
-                        {
-                            <img @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator" class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
-                        }
-                        else 
-                        {
-                            <img @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator" class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
-                        }
+                        <div class="prevent-select text-end" style="width: 160px;" @onclick="() => isOpenMobileCalculator = !isOpenMobileCalculator">
+                            <span class="font-20 font-weight-700 color-black-100">₱ @TotalPayment.ToString("#,##0.00")</span>
+                            @if(isOpenMobileCalculator)
+                            {
+                                <img class="ms-2" src="images/icons/orange-arrow-up.png" alt="icon">
+                            }
+                            else 
+                            {
+                                <img class="ms-2" src="images/icons/orange-arrow-down.png" alt="icon">
+                            }
+                        </div>
                     </div>
-                    @if(isShowErrorMessage)
-                    {
-                        <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
-                    }
                 </div>
+                @if(isShowErrorMessage)
+                {
+                    <p class="text-danger font-12 mt-2 mb-0 text-center">Please select an activity schedule</p>
+                }
             </div>
         </div>
     </div>
