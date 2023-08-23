@@ -197,7 +197,8 @@
                         Code = r.Code,
                         Name = r.Name,
                         CityCode = r.CityCode
-                    });
+                    })
+                    .OrderBy(b => b.Name);
             }
         }
     }
