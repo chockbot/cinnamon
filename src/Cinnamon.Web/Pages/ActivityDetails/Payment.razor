@@ -19,6 +19,7 @@
 @inject IChatApiHandler chatApiHandler
 @inject ILogger<Payment> logger
 @using Cinnamon.Framework.Helpers;
+@using Cinnamon.Web.Modules.Services;
 
 @implements IDisposable
 
@@ -34,14 +35,14 @@
                     <img class="cursor-pointer" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateBack"/>
                     <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize">Confirm experience</h4>
                 </div>
-                <Row HorizontalGutter="30" class="mt-5">
+                <Row HorizontalGutter="50" class="mt-5">
                     <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop.Is8.OnTablet" class="m-order-2">
                         <div>
                             <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
                             <Div class="details" Display="Display.Flex" Flex="Flex.Wrap">
                                 @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
                                 {
-                                    <div class="card text-center px-2 py-1 m-1 d-flex flex-row align-items-center text-nowrap prevent-select cursor-pointer" 
+                                    <div class="card text-center px-3 py-2 m-1 d-flex flex-row align-items-center text-nowrap prevent-select cursor-pointer" 
                                         style="border-radius:8px;background-color:#EDF2F8;border:none;">
                                         <Check TValue="bool" id="@item.Id" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> 
                                         <label class="font-16" for="@item.Id">@item.Name</label>
@@ -81,9 +82,10 @@
                                                 </label>
                                                 <div class="ms-2">
                                                     <p class="mb-0 font-14 font-weight-700 color-black-100">Expiration:</p>
-                                                    @if(Model.SelectedSchedule.HasExpiration == 1)
+                                                    @if(Model.SelectedSchedule.IsSetSession)
                                                     {
                                                         <p class="mb-0 font-16 color-grey-100">Consume in - @Model.SelectedSchedule.SessionName</p>
+                                                        <p class="text-danger font-12 mb-0">@expiringMessage</p>
                                                     }
                                                     else 
                                                     {
@@ -934,7 +936,7 @@
                 StartDate = selectedSchedule.StartDate
             };
 
-        if(Model.SelectedSchedule.HasExpiration == 1)
+        if(Model.SelectedSchedule.IsSetSession)
         {
             if(Model.SelectedSchedule.StartDate is null)
             {
@@ -960,7 +962,14 @@
             confirmationData.IsApplied = false;
             confirmationData.IsShowError = false;
 
-            expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName} (calendar days), and will end on the ";
+            if(Model.SelectedSchedule.HasExpiration == 1)
+            {
+                expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName} (calendar days), and will end on the {periodEnd.Day}{ExpirationData.GetOrdinal(periodEnd.Day)} day of {periodEnd.ToString("MMMM")}.";
+            }
+            else if(Model.SelectedSchedule.HasExpiration == 2)
+            {
+                expiringMessage = $"Session/s must be consumed in {Model.SelectedSchedule.SessionName.ToLower()}, starting from first attendance.";
+            }
         }
     }
 
