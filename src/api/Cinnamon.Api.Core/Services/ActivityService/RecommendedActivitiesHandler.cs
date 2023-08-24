@@ -68,9 +68,15 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                 {
                     return new RecommendedActivityResult.Activity
                     {
-                        Description = a.Description,
-                        Handler = a.Handler,
-                        Id = a.Id,
+                        Description   = a.Description,
+                        Handler       = a.Handler,
+                        Id            = a.Id,
+                        Address1      = a.Address1,
+                        Address2      = a.Address2,
+                        City          = a.City,
+                        Subdivision   = a.Subdivision,
+                        Region        = a.Region,
+                        Barangay      = a.Barangay,
                         Images = a.Images.Select(i =>
                         {
                             return new RecommendedActivityResult.Activity.ActivityImage
@@ -82,7 +88,27 @@ public class RecommendedActivitiesHandler : IRecommendedActivitiesHandler
                             };
                         }),
                         Price = a.Price,
-                        Title = a.Title
+                        Title = a.Title,
+                        ActivitySchedules = a.Schedules != null ? a.Schedules.Select(s => {
+                            return new RecommendedActivityResult.Activity.ActivitySchedule
+                            {
+                                Id = s.Id,
+                                DateTime = s.DateTime,
+                                Name = s.Name,
+                                PerUnit1 = s.PerUnit1,
+                                PerUnit2 = s.PerUnit2,
+                                Price = s.Price,
+                                PriceUnit1 = s.PriceUnit1,
+                                PriceUnit2 = s.PriceUnit2,
+                                UnitPrice = s.UnitPrice,
+                                Order = s.Order,
+                                IsActiveSchedule = s.IsActiveSchedule,
+                                IsSetSession = s.IsSetSession,
+                                SessionName = s.SessionName,
+                                HasExpiration = s.HasExpiration,
+                                StartDate = s.StartDate,
+                            };
+                        }) : Enumerable.Empty<RecommendedActivityResult.Activity.ActivitySchedule>(),
                     };
                 })
             }, "Successfully get recommended activities");

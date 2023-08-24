@@ -110,6 +110,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                                                                 a.SubCategoryId == activity.SubCategoryId && 
                                                                                 a.Status == 1 && a.IsPublished == true)
                                     .Include(a => a.Images)
+                                    .Include(a => a.Schedules)
+                                    .Include(a => a.Address)
                                     .ToListAsync();
 
             if (activitiesSubs.Count >= count)
@@ -123,6 +125,8 @@ public class ActivityEntity : GenericEntity<Activity>, IActivity
                                                                                 a.ExperienceCategoryId == activity.ExperienceCategoryId &&
                                                                                 a.Status == 1 && a.IsPublished == true )
                                     .Include(a => a.Images)
+                                    .Include(a => a.Schedules)
+                                    .Include(a => a.Address)
                                     .ToListAsync();
 
             var activities = GenerateRandomActivity(activitiesCats, count);
