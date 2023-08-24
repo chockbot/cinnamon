@@ -443,16 +443,16 @@ public class ActivityRepository : IActivityRepository
                 // address fields
                 if (includeAddres && a.Address != null)
                 {
-                    activityDTO.Address1 = a.Address.Address1;
-                    activityDTO.Address2 = a.Address.Address2;
-                    activityDTO.City = a.Address.City;
-                    activityDTO.District = a.Address.District;
-                    activityDTO.Subdivision = a.Address.Subdivision;
-                    activityDTO.Region = a.Address.Region;
-                    activityDTO.Barangay = a.Address.Barangay;
-                    activityDTO.PostalCode = a.Address.PostalCode;
-                    activityDTO.CityName = a.Address.CityName;
-                    activityDTO.RegionName = a.Address.RegionName;
+                    activityDTO.Address1     = a.Address.Address1;
+                    activityDTO.Address2     = a.Address.Address2;
+                    activityDTO.City         = a.Address.City;
+                    activityDTO.District     = a.Address.District;
+                    activityDTO.Subdivision  = a.Address.Subdivision;
+                    activityDTO.Region       = a.Address.Region;
+                    activityDTO.Barangay     = a.Address.Barangay;
+                    activityDTO.PostalCode   = a.Address.PostalCode;
+                    activityDTO.CityName     = a.Address.CityName;
+                    activityDTO.RegionName   = a.Address.RegionName;
                     activityDTO.BarangayName = a.Address.BarangayName;
                 }
 
@@ -1487,28 +1487,54 @@ public class ActivityRepository : IActivityRepository
             {
                 return new ActivityDTO
                 {
-                    Description = s.Description,
+                    Description          = s.Description,
                     ExperienceCategoryId = s.ExperienceCategoryId ?? 0,
-                    ExperienceTypeId = s.ExperienceTypeId,
-                    Handler = s.Handler,
-                    Id = s.Id,
+                    ExperienceTypeId     = s.ExperienceTypeId,
+                    Handler              = s.Handler,
+                    Id                   = s.Id,
+                    Address1             = s.Address.Address1,
+                    Address2             = s.Address.Address2,
+                    City                 = s.Address.City,
+                    CityName             = s.Address.CityName,
+                    District             = s.Address.District,
+                    Subdivision          = s.Address.Subdivision,
+                    Region               = s.Address.Region,
+                    RegionName           = s.Address.RegionName,
                     Images = s.Images.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivityImage.ActivityImageDTO
                     {
-                        ActivityId = i.ActivityId,
-                        Id = i.Id,
+                        ActivityId    = i.ActivityId,
+                        Id            = i.Id,
                         ImageLocation = i.ImageLocation,
-                        ImageName = i.ImageName,
-                        Order = i.Order
+                        ImageName     = i.ImageName,
+                        Order         = i.Order
                     }).ToList(),
                     IsDeactivated = s.IsDeactivated,
-                    IsNew = s.IsNew,
-                    IsPublished = s.IsPublished,
-                    Price = s.Price,
-                    Remarks = s.Remarks,
-                    Status = s.Status == 0 ? ActivityStatus.InProgress : ActivityStatus.Submitted,
+                    IsNew         = s.IsNew,
+                    IsPublished   = s.IsPublished,
+                    Price         = s.Price,
+                    Remarks       = s.Remarks,
+                    Status        = s.Status == 0 ? ActivityStatus.InProgress : ActivityStatus.Submitted,
                     SubCategoryId = s.SubCategoryId ?? 0,
-                    SubTitle = s.Subtitle,
-                    Title = s.Title
+                    SubTitle      = s.Subtitle,
+                    Title         = s.Title,
+                    Schedules = s.Schedules.Select(i => new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
+                    {
+                        DateTime         = i.DateTime,
+                        Id               = i.Id,
+                        Name             = i.Name,
+                        PerUnit1         = i.PerUnit1,
+                        Price            = i.Price,
+                        PriceUnit1       = i.PriceUnit1,
+                        PriceUnit2       = i.PriceUnit2,
+                        UnitPrice        = i.UnitPrice,
+                        PerUnit2         = i.PerUnit2,
+                        Order            = i.Order,
+                        IsActiveSchedule = i.IsActiveSchedule,
+                        IsSetSession     = i.IsSetSession,
+                        SessionName      = i.SessionName,
+                        HasExpiration    = i.HasExpiration,
+                        StartDate        = i.StartDate,
+                    }).ToList(),
                 };
             }), "Successfully get recommended activities");
         }

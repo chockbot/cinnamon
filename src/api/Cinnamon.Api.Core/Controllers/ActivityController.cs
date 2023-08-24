@@ -2235,19 +2235,40 @@ public class ActivityController : ControllerBase
                 Result = result.Result.RecommendedActivities.Select(a => {
                     return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO
                     {
-                        ActivityId = a.Id,
-                        Handler = a.Handler,
+                        ActivityId  = a.Id,
+                        Handler     = a.Handler,
                         Description = a.Description,
-                        Title = a.Title,
-                        Price = a.Price,
+                        Title       = a.Title,
+                        Price       = a.Price,
+                        Address1    = a.Address1,
+                        Address2    = a.Address2,
+                        City        = a.City,
+                        Subdivision = a.Subdivision,
+                        Region      = a.Region,
+                        Barangay    = a.Barangay,
                         Images = a.Images.Select(i =>
                         {
                             return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivityImage
                             {
-                                Id = i.Id,
+                                Id       = i.Id,
                                 ImageSrc = i.ImageSrc,
-                                Name = i.Name,
-                                Order = i.Order
+                                Name     = i.Name,
+                                Order    = i.Order
+                            };
+                        }),
+                        ActivitySchedules = a.ActivitySchedules.Select(i =>
+                        {
+                            return new Framework.ApiCommand.ApiCore.DTO.Activity.ActivityDTO.ActivitySchedule
+                            {
+                                Id               = i.Id,
+                                DateTime         = i.DateTime,
+                                Name             = i.Name,
+                                PerUnit1         = i.PerUnit1,
+                                PerUnit2         = i.PerUnit2,
+                                Price            = i.Price,
+                                PriceUnit1       = i.PriceUnit1,
+                                PriceUnit2       = i.PriceUnit2,
+                                UnitPrice        = i.UnitPrice,
                             };
                         })
                     };
