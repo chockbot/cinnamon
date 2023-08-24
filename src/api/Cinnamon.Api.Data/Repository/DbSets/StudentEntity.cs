@@ -317,17 +317,55 @@ public class StudentEntity : GenericEntity<Student>, IStudent
             // expired in two days
             var dateString = DateTime.Now.AddDays(2).ToString("yyyy-MM-dd");
 
-            string query = "select distinct st.\"ExpirationDateStart\" \"DateStart\", st.\"ExpirationDateEnd\" \"DateEnd\",  " +
-                                "ct.\"FirstName\", ct.\"LastName\", ct.\"Email\", " +
-                                "ac.\"Title\", ac.\"Handler\", ss.\"Price\" " +
-                            "from public.\"Students\" st " +
-                            "join public.\"Customers\" ct " +
-                                "on ct.\"Id\" = st.\"CustomerId\" " +
-                            "join public.\"Activities\" ac " +
-                                "on ac.\"Id\" = st.\"ActivityId\" " +
-                            "join public.\"ActivitySchedules\" ss " +
-                                "on ss.\"Id\" = st.\"ScheduleId\" " +
-                            "where Date(st.\"ExpirationDateEnd\") = Date('" + dateString + "') ";
+            string query = "with uniqueRows as " +
+                            "( " +
+                                "select distinct ct.\"Id\" \"customerId\", st.\"ExpirationDateStart\" \"DateStart\", st.\"ExpirationDateEnd\" \"DateEnd\", " +
+                                            "ct.\"FirstName\", ct.\"LastName\", ct.\"Email\", " +
+                                            "ac.\"Title\", ac.\"Handler\", ss.\"Price\", ac.\"Price\" \"APrice\", " +
+                                            "ac.\"Id\", ac.\"ExperienceTypeId\", ss.\"Id\" \"scheduleId\" " +
+                                "from public.\"Students\" st " +
+                                "join public.\"Customers\" ct " +
+                                    "on ct.\"Id\" = st.\"CustomerId\" " +
+                                "join public.\"Activities\" ac " +
+                                    "on ac.\"Id\" = st.\"ActivityId\" " +
+                                "join public.\"ActivitySchedules\" ss " +
+                                    "on ss.\"Id\" = st.\"ScheduleId\" " +
+                                "where Date(st.\"ExpirationDateEnd\") = Date('" + dateString + "') " +
+                            "), " +
+                            "rowCnt as ( " +
+                                "select ur.*, ad.\"Address1\", " +
+                                    "case " +
+                                        "when ur.\"ExperienceTypeId\" = 1 then ad.\"Address1\" " +
+                                        "when ur.\"ExperienceTypeId\" = 2 then 'Online' " +
+                                        "else '' " +
+                                    "end as \"Address\", " +
+                                    "ai.\"ImageLocation\", " +
+                                    "Row_Number() over ( " +
+                                        "partition by ur.\"customerId\", ur.\"Id\", ur.\"scheduleId\", ur.\"DateEnd\" " +
+                                        "order by ur.\"customerId\", ur.\"Id\", ur.\"scheduleId\", ur.\"DateEnd\", ai.\"Order\" " +
+                                    ") as \"RowCnt\" " +
+                                "from uniqueRows ur " +
+                                "join public.\"ActivityAddress\" ad " +
+                                    "on ad.\"ActivityId\" = ur.\"Id\" " +
+                                "join public.\"ActivityImages\" ai " +
+                                    "on ai.\"ActivityId\" = ur.\"Id\" " +
+                            "), " +
+                            "withImages as ( " +
+                                "select rc.\"customerId\", rc.\"DateStart\", rc.\"DateEnd\", rc.\"FirstName\", rc.\"LastName\", " +
+                                    "rc.\"Email\", rc.\"Title\", rc.\"Handler\", rc.\"Price\", rc.\"APrice\", " +
+                                    "rc.\"Id\", rc.\"scheduleId\", rc.\"Address\", rc.\"ImageLocation\" " +
+                                "from rowCnt rc " +
+                                "where rc.\"RowCnt\" = 1 " +
+                            ") " +
+                            "select wi.*, " +
+                                "Coalesce(Trunc((Sum(rv.\"Rating\"::decimal) / Count(rv.\"Rating\")),1),0) \"Rating\", " +
+                                "Coalesce(Count(rv.\"Rating\"),0) \"Cnt\" " +
+                            "from withImages wi " +
+                            "left join public.\"Reviews\" rv " +
+                                "on rv.\"ActivityId\" = wi.\"Id\" " +
+                            "group by wi.\"customerId\", wi.\"DateStart\", wi.\"DateEnd\", wi.\"FirstName\", wi.\"LastName\", " +
+                                "wi.\"Email\", wi.\"Title\", wi.\"Handler\", wi.\"Price\", " +
+                                "wi.\"APrice\", wi.\"Id\", wi.\"scheduleId\", wi.\"Address\", wi.\"ImageLocation\" ";
             
             IList<ExpiredStudentDTO> listResult = new List<ExpiredStudentDTO>();
 
@@ -353,7 +391,12 @@ public class StudentEntity : GenericEntity<Student>, IStudent
                             Handler = item["Handler"].ToString() ?? string.Empty,
                             LastName = item["LastName"].ToString() ?? string.Empty,
                             Price = Convert.ToDecimal(item["Price"]),
-                            Title = item["Title"].ToString() ?? string.Empty
+                            Title = item["Title"].ToString() ?? string.Empty,
+                            Address = item["Address"].ToString() ?? string.Empty,
+                            APrice = item["APrice"].ToString() ?? string.Empty,
+                            Count = Convert.ToInt32(item["Cnt"]),
+                            ImageLocation = item["ImageLocation"].ToString() ?? string.Empty,
+                            Rating = Convert.ToDecimal(item["Rating"])
                         }).ToList();
                     }
                 }

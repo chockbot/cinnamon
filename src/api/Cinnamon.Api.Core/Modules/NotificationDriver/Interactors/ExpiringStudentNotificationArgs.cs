@@ -12,4 +12,9 @@ public class ExpiringStudentNotificationArgs : IInteractor
     public string ActivityTitle { get; set; }
     public decimal Amount { get;  set;}
     public string ActivityLink { get; set; }
+    public string ImageLocation { get; set; }
+    public string APrice { get; set; }
+    public string Address { get; set; }
+    public decimal Rating { get; set; }
+    public int Count { get; set; }
 }

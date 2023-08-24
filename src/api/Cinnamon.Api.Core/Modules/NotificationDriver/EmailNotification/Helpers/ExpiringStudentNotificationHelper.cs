@@ -3,7 +3,8 @@ namespace Cinnamon.Api.Core.Modules.NotificationDriver.EmailNotification.Helpers
 public class ExpiringStudentNotificationHelper 
 {
     public string GetTemplate(DateTime dateSend, string firstname, string lastname, string activityName,
-        DateTime expirationDate, decimal amount, string activityLink)
+        DateTime expirationDate, decimal amount, string activityLink, string activityAddress, string imageLocation,
+        string aPrice, decimal rating, int ratingCount)
     {
         return $@"
             <div
@@ -77,9 +78,40 @@ public class ExpiringStudentNotificationHelper
                     <p style='font-size: 16px; color: #343d4c; margin-bottom: 0'>
                     <b>Renew your activity here:</b>
                     </p>
-                    <ul style='color: #717171; word-wrap: break-word'>
-                    <li>Visit {activityLink}</li>
-                    </ul>
+                    <div
+                        style='
+                            width: 215px;
+                            margin-left: auto;
+                            margin-right: auto;
+                            color: #343d4c;
+                            margin-top: 30px;
+                        '
+                        >
+                        <a
+                            href='{activityLink}'
+                            style='color: #343d4c; text-decoration: none'
+                        >
+                            <img
+                            style='width: 100%; height: auto; border-radius: 10px'
+                            src='{imageLocation}'
+                            alt='image-icon'
+                            />
+                            <div>
+                            <div style='display: flex; align-items: center; margin-top: 5px'>
+                                <img
+                                src='https://cinnamon.ph/images/expolore-rating-star.png'
+                                alt='star'
+                                />
+                                <p style='margin: 0; margin-left: 5px'>{rating}({ratingCount})</p>
+                            </div>
+                            <p style='margin: 0; font-size: 16px; margin-top: 5px'>
+                                <b>{activityName}</b>
+                            </p>
+                            <p style='margin: 0; font-size: 14px'>{activityAddress}</p>
+                            <p style='margin: 0; font-size: 14px'>{aPrice}</p>
+                            </div>
+                        </a>
+                    </div>
                 </div>
                 <div
                     class='message-section'

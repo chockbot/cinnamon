@@ -59,7 +59,12 @@ public class ExpiringStudentsHandler : IExpiringStudentsHandler
                     Email = s.Email,
                     ExpiredDate = s.DateEnd,
                     FirstName = s.FirstName,
-                    LastName = s.LastName
+                    LastName = s.LastName,
+                    Address = s.Address,
+                    APrice = s.APrice,
+                    Count = s.Count,
+                    ImageLocation = s.ImageLocation,
+                    Rating = s.Rating
                 });
             });
 
