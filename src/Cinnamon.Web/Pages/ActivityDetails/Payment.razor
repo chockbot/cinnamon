@@ -907,6 +907,7 @@
         MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
     }
 
+    private string expiringMessage = string.Empty;
     private void SelectedScheduleChanged()
     {
         var selectedSchedule = Model.Activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
@@ -958,6 +959,8 @@
             confirmationData.NextPeriod = nextPeriod;
             confirmationData.IsApplied = false;
             confirmationData.IsShowError = false;
+
+            expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName} (calendar days), and will end on the ";
         }
     }
 
