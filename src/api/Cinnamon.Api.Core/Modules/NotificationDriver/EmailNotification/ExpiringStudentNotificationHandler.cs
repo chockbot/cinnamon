@@ -35,7 +35,8 @@ public class ExpiringStudentNotificationHandler : IExpiringStudentNotificationHa
         try
         {
             var emailBody = helper.GetTemplate(args.DateSend, args.FirstName, args.LastName, args.ActivityTitle,
-               args.ExpiredDate, args.Amount, args.ActivityLink);
+               args.ExpiredDate, args.Amount, args.ActivityLink, args.Address, args.ImageLocation, 
+               args.APrice, args.Rating, args.Count);
             
             var sendMailResponse = await sendMailHandler
                 .ExecuteAsync(new EmailDriver.Interactors.SendMailArgs {

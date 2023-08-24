@@ -10,4 +10,9 @@ public class ExpiredStudentDTO
     public string Title { get; set; }
     public string Handler { get; set; }
     public decimal Price { get; set; }
+    public string ImageLocation { get; set; }
+    public string Address { get; set; }
+    public string APrice { get; set; }
+    public decimal Rating { get; set; }
+    public int Count { get; set; }    
 }
