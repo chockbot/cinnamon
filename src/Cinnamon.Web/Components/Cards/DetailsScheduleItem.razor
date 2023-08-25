@@ -3,6 +3,8 @@
 @using Models.Entities
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@using Cinnamon.Web.Modules.Services
+@using Cinnamon.Framework.Helpers
 
 @if (ActivityModel != null)
 {
@@ -10,84 +12,99 @@
     {
         <div class="schedule-desktop">
             <div class="schedule-detail w-100 rounded-5">
-                <div class="schedule-header d-flex">
-                    <div class="schedule-title col-lg-10 clo-md-9 justify-content-start">
+                <div class="schedule-header d-flex" style="background-color: @(!ScheduleModel.IsSelected ? changeColor : "#F3F6FC");border-top-left-radius:10px;border-top-right-radius:10px">
+                    <div class="schedule-title col-lg-10 clo-md-9 col-sm-9 col-xs-9 col-9 justify-content-start">
                         <p>@ScheduleModel.Name</p>
                     </div>
-                    <div class="form-check col-lg-2 col-md-3 justify-content-center">
-                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)" 
-                            class="form-check-input" type="radio" name="schedule" id="schedule">
-                        <label class="form-check-label" for="schedule">
-                            Select
-                        </label>
+                    <a class="form-check col-lg-2 col-md-3 justify-content-center" @onclick="() => OnSelectedChanged(ScheduleModel.Id)">
+                        <input checked="@ScheduleModel.IsSelected" class="form-check-input" type="radio" name="@ScheduleModel.Id">
+                        @if (ScheduleModel.IsSelected)
+                        {
+                            <label class="form-check-label" for="@ScheduleModel.Id">
+                                Selected
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="form-check-label" for="@ScheduleModel.Id">
+                                Select
+                            </label>
+                        }
+                    </a>
+                    <div class="col-sm-3 col-xs-3 col-3 justify-content-center schedule-price-header">
+                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
                     </div>
                 </div>
                 <hr>
                 <div class="schedule-body">
                     <div class=" col-lg-10 col-md-9 PES-details">
-                        <div class="PE-details d-flex">
+                        <div class="PE-details">
                             <div class="col-lg-6 col-md-6 price-details">
-                                <p class="font-14">Price Details:</p>
+                                <div class="d-flex price-details-title">
+                                    <img class="img-price" src="images/schedule-icons/price-icon.png" />
+                                    <p class="font-14">Price Details:</p>
+                                </div>
                                 <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
                             </div>
                             @if (ScheduleModel.IsSetSession == true)
                             {
-                                <div class="col-lg-6 col-md-6 expiration details">
-                                    <p class="font-14">Expiration:</p>
+                                <div class="col-lg-6 col-md-6 expiration-details">
+                                    <div class="d-flex expiration-details-title">
+                                        <img class="img-expiration" src="images/schedule-icons/expiration-icon.png" />
+                                        <p class="font-14">Expiration:</p>
+                                    </div>
                                     <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
+                                    <div class="cut-off-details">
+                                        @switch (ScheduleModel.HasExpiration)
+                                        {
+                                            case 1:
+                                                DateTime frequency = ExpirationData.CalculateFrequency(ScheduleModel);
+                                                string ordinal = ExpirationData.GetOrdinal(frequency.Day);
+                                                <small class="form-text sub-details">
+                                                    @ExpirationData.GetExpirationText(ScheduleModel.SessionName, frequency, ordinal)
+                                                </small>
+                                                break;
+                                            case 2:
+                                                <small class="form-text sub-details">
+                                                    Session/s must be consumed in @ScheduleModel.SessionName.ToLower(), starting from first attendance.
+                                                </small>
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    </div>
                                 </div>
                             }
                         </div>
-                        <div class="S-details col-lg-12 col-md-12 col-sm-12 col-12">
-                            <p class="font-14">Schedule:</p>
+                        <div class="col-12 schedule-details">
+                            <div class="d-flex schedule-details-title">
+                                <img class="img-schedule" src="images/schedule-icons/calendar-icon.png" />
+                                <p class="font-14">Schedule:</p>
+                            </div>
                             <p class="font-16">@ScheduleModel.DateTime</p>
                         </div>
                     </div>
-                    <div class="col-lg-2 col-md-3 col-sm-3 col-2 justify-content-center schedule-price">
+                    <div class="col-lg-2 col-md-3 col-sm-12 justify-content-center schedule-price">
                         <p class="font-18">₱ @ScheduleModel.LongPrice</p>
                     </div>
+                    <a class="col-sm-12 col-xs-12 col-12 justify-content-center form-check-mobile" @onclick="() => OnSelectedChanged(ScheduleModel.Id)">
+                        <input checked="@ScheduleModel.IsSelected" class="form-check-input" type="radio" name="@ScheduleModel.Id-1">
+                        @if (ScheduleModel.IsSelected)
+                        {
+                            <label class="form-check-label" for="@ScheduleModel.Id-1">
+                                Selected
+                            </label>
+                        }
+                        else
+                        {
+                            <label class="form-check-label" for="@ScheduleModel.Id-1">
+                                Select
+                            </label>
+                        }
+                    </a>
                 </div>
             </div>
         </div>
-
-        <div class="schedule-mobile">
-            <div class="schedule-detail w-100 rounded-5">
-                <div class="schedule-header d-flex">
-                    <div class="schedule-title col-9 justify-content-start">
-                        <p>@ScheduleModel.Name</p>
-                    </div>
-                    <div class="col-3 justify-content-center">
-                        <p class="font-18">₱ @ScheduleModel.LongPrice</p>
-                    </div>
-                </div>
-                <hr>
-                <div class="schedule-body">
-                    <div class="col-12 price-details">
-                        <p class="font-14">Price Details:</p>
-                        <p class="font-16">₱ @ScheduleModel.LongPrice / @ScheduleModel.PerUnit1 @ScheduleModel.PriceUnit1 / @ScheduleModel.PerUnit2 @ScheduleModel.PriceUnit2</p>
-                    </div>
-                    @if (ScheduleModel.IsSetSession == true)
-                    {
-                        <div class="col-12 expiration-details">
-                            <p class="font-14">Expiration:</p>
-                            <p class="font-16">Consume in - @ScheduleModel.SessionName</p>
-                        </div>
-                    }
-                    <div class="col-12 schedule-details">
-                        <p class="font-14">Schedule:</p>
-                        <p class="font-16">@ScheduleModel.DateTime</p>
-                    </div>
-                    <div class="col-12 form-check ">
-                        <input value="@ScheduleModel.Id" @onchange="() => OnSelectedChanged(ScheduleModel.Id)" 
-                            class="form-check-input" type="radio" name="schedule" id="schedule">
-                        <label class="form-check-label" for="schedule">
-                            Select
-                        </label>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     }
 }
 @if (!AuthState.User.Identity.IsAuthenticated)
@@ -98,6 +115,10 @@
 @code {
     [Parameter]
     public ActivitySchedule ScheduleModel { get; set; }
+
+    [Parameter]
+    public IList<ActivitySchedule> SchedulesModel { get; set; }
+
     [Parameter]
     public Activity ActivityModel { get; set; }
     [Parameter]
@@ -115,6 +136,8 @@
     public AuthenticationState AuthState { get; set; }
 
     private int selectedScheduleId = 0;
+
+    private string changeColor = "none";
 
     private ModalLogin? modalLoginRef;
 
@@ -135,6 +158,13 @@
     private Task OnSelectedChanged(int selectedId)
     {
         selectedScheduleId = selectedId;
+
+        foreach (var item in SchedulesModel)
+        {
+            item.IsSelected = false;
+        }
+        SchedulesModel.FirstOrDefault(a => a.Id == selectedId).IsSelected = true;
+
         if (OnChooseClick.HasDelegate)
         {
             OnChooseClick.InvokeAsync(selectedScheduleId);

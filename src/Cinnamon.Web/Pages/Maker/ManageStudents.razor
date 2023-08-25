@@ -354,8 +354,8 @@
             case 3:
                 Model.isDisplay = false;
                 Model.FilteredStudents = Model.manageStudents.Where(a => (a.SessionsAttended >= a.NumberOfSessions && a.HasExpiration == 0) 
-                || (a.HasExpiration == 1 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
-                || (a.HasExpiration == 2 && a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue) 
+                || (a.HasExpiration == 1 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)
+                || (a.HasExpiration == 2 && a.ExpirationDateEnd <= DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue) 
                 || (a.HasExpiration == 1 && a.SessionsAttended >= a.NumberOfSessions)
                 || (a.HasExpiration == 2 && a.SessionsAttended >= a.NumberOfSessions)
                 && a.ExpirationDateEnd != DateTime.MinValue).ToList();

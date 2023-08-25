@@ -366,54 +366,65 @@
     {
         try
         {
-        await loadingIndicator.Show();
+            await loadingIndicator.Show();
 
-        studentAttendance.IsPresent = !studentAttendance.IsPresent;
-        if (studentAttendance.IsPresent)
-        {
-            studentAttendance.SessionsAttended += 1;
-        }
-        else
-        {
-            studentAttendance.SessionsAttended -= 1;
-        }
-        var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
-                        {
-                            Id = studentAttendance.Id,
-                            Date = studentAttendance.Date,
-                            IsPresent = studentAttendance.IsPresent
-                        }, token);
-
-        if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
-        {
-            var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
-                    {
-                        Id = studentAttendance.StudentId,
-                        SessionsAttended = studentAttendance.SessionsAttended,
-                    });
-        }
-        //Get Schedule Details
-        var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
-        //Set Session Expiration
-        if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
-        {
-            //Check if first attendance
-            if (studentAttendance.SessionsAttended == 1)
+            studentAttendance.IsPresent = !studentAttendance.IsPresent;
+            if (studentAttendance.IsPresent)
             {
-                await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                studentAttendance.SessionsAttended += 1;
+            }
+            else
+            {
+                studentAttendance.SessionsAttended -= 1;
+            }
+            var updated = await dashboardApiHandler.UpdateAttendance(new Framework.ApiCommand.ApiCore.Dashboard.Request.UpdateAttendanceArgs
+                            {
+                                Id = studentAttendance.Id,
+                                Date = studentAttendance.Date,
+                                IsPresent = studentAttendance.IsPresent
+                            }, token);
+
+            if (updated.Succeeded && updated.Result != null && updated.Result.IsSuccess)
+            {
+                var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
                         {
                             Id = studentAttendance.StudentId,
-                            ScheduleId = studentAttendance.ScheduleId,
-                            SessionName = schedule.SessionName,
-                            ExpirationStartDate = presentDate,
-                            ExpirationEndDate = DateTime.UtcNow
+                            SessionsAttended = studentAttendance.SessionsAttended,
                         });
             }
-        }
-        //Update Number of Backtracking
-        await OnInitializedAsync();
-        StateHasChanged();
-        await loadingIndicator.Hide();
+            //Get Schedule Details
+            var schedule = activitySchedules.Where(a => a.ScheduleId == studentAttendance.ScheduleId).FirstOrDefault();
+            //Set Session Expiration
+            if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
+            {
+                //Check if first attendance
+                switch (studentAttendance.SessionsAttended)
+                {
+                    case 0:
+                        var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                            {
+                                Id = studentAttendance.StudentId,
+                                ExpirationStartDate = DateTime.MinValue,
+                                ExpirationEndDate = DateTime.MinValue
+                            });
+                    break;
+                    case 1:
+                         await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                            {
+                                Id = studentAttendance.StudentId,
+                                ScheduleId = studentAttendance.ScheduleId,
+                                SessionName = schedule.SessionName,
+                                ExpirationStartDate = presentDate,
+                                ExpirationEndDate = DateTime.UtcNow
+                            });
+                         break;
+                    default:
+                        break;
+                }
+            }
+            await OnInitializedAsync();
+            StateHasChanged();
+            await loadingIndicator.Hide();
         }
         catch (Exception ex)
         {
