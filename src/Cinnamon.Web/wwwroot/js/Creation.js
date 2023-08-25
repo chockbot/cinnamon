@@ -94,7 +94,7 @@ export function scrollToRequiredField(container) {
 export function scrollToPricingandSchedule() {
     $('html, body').animate({
         scrollTop: $(".pricing-schedule").offset().top
-    }, 200);
+    }, 200); 
 }
 
 function replaceEmptyvalue(value, replacement) {

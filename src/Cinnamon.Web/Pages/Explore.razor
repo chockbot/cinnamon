@@ -32,8 +32,6 @@
 </SeoMeta>
 
 <input type="password" name="password_fake" id="password_fake" value="" style="display:none;" />
-@if (Model != null)
-{
     <!--Search-->
     <div class="top-row px-4">
         <!--App Name-->
@@ -665,7 +663,7 @@
             </div>
         </div>
     </div>
-}
+
 <div id="observerTarget"></div>
 
 <ModalLogin @ref="signinModal" />
@@ -726,7 +724,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-       
         if (string.IsNullOrEmpty(landingSearch))
         {
             await FetchPopularActivities();
@@ -941,9 +938,7 @@
             await GetFavorites();
             await InitializeSwiper();
             await InitializeCarouselSwipe();
-
         }
-
 
         var uri = NavigationManager.ToAbsoluteUri(NavigationManager.Uri);
         var userSuccess = QueryHelpers.ParseQuery(uri.Query).TryGetValue("userid", out var userId);
