@@ -15,16 +15,16 @@
   src: url("../fonts/inter-cufonfonts/Inter-Regular.otf");
 }
 @font-face {
-    font-family: 'nunito-black';
-    src: url('../fonts/nunito-cufonfonts/Nunito-Black.ttf') format('truetype');
+  font-family: "nunito-black";
+  src: url("../fonts/nunito-cufonfonts/Nunito-Black.ttf") format("truetype");
 }
 @font-face {
-    font-family: 'nunito-bold';
-    src: url('../fonts/nunito-cufonfonts/Nunito-Bold.ttf') format('truetype');
+  font-family: "nunito-bold";
+  src: url("../fonts/nunito-cufonfonts/Nunito-Bold.ttf") format("truetype");
 }
 @font-face {
-    font-family: 'nunito-extrabold';
-    src: url('../fonts/nunito-cufonfonts/Nunito-ExtraBold.ttf') format('truetype');
+  font-family: "nunito-extrabold";
+  src: url("../fonts/nunito-cufonfonts/Nunito-ExtraBold.ttf") format("truetype");
 }
 @import url("open-iconic/font/css/open-iconic-bootstrap.min.css");
 
@@ -735,7 +735,7 @@ input::-ms-clear {
 .booking-total-container .card {
   border: 1px solid #343d4c;
   border-radius: 8px;
-  box-shadow: 0 1px 3px 0px #343d4c;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
 }
 
 .booking-total-container .card .activity-img {
@@ -842,6 +842,13 @@ input::-ms-clear {
 
   .booking-total-container .service-fee .custom-tooltiptext {
     margin-left: 0 !important;
+  }
+
+  .booking-container-wrapper .m-order-1 {
+    order: 1;
+  }
+  .booking-container-wrapper .m-order-2 {
+    order: 2;
   }
 }
 
@@ -1660,6 +1667,16 @@ input::-ms-clear {
   }
 }
 
+.mobile-calculator-wrapper.deactive .calculator-footer-divider {
+  display: none !important;
+}
+
+@media only screen and (max-width: 766px) {
+  .activity-details-page-footer {
+    margin-bottom: 5rem;
+  }
+}
+
 /* onboarding page styling */
 .onboarding-wrapper .hide-desktop {
   display: none;
@@ -1754,6 +1771,10 @@ input::-ms-clear {
   color: #717171 !important;
 }
 
+.color-grey-400 {
+  color: #8896ab;
+}
+
 .color-black-000 {
   color: #000;
 }
@@ -1782,6 +1803,14 @@ input::-ms-clear {
   color: #d13636;
 }
 
+.bg-white-100 {
+  background-color: #fff;
+}
+
+.bg-white-200 {
+  background-color: #f3f6fc;
+}
+
 .bg-green-100 {
   background-color: #4bb749;
 }
@@ -1802,6 +1831,14 @@ input::-ms-clear {
   background-color: #ffa942;
 }
 
+.bg-white-100 {
+  background-color: #fff;
+}
+
+.bg-orange-100 {
+  background-color: #ffa942;
+}
+
 .color-grey-400 {
   color: #8896ab;
 }
@@ -1810,12 +1847,24 @@ input::-ms-clear {
   min-width: 130px;
 }
 
+.width-50 {
+  width: 50px;
+}
+
+.width-120 {
+  width: 120px;
+}
+
 .width-150 {
   width: 150px;
 }
 
 .width-70 {
   width: 70px;
+}
+
+.width-70-p {
+  width: 70%;
 }
 
 .width-230 {
@@ -1834,6 +1883,18 @@ input::-ms-clear {
   border-radius: 5px;
 }
 
+.border-radius-10 {
+  border-radius: 10px;
+}
+
+.border-radius-15 {
+  border-radius: 15px;
+}
+
+.border-radius-40 {
+  border-radius: 40px;
+}
+
 .border-0-solid {
   border-width: 0;
 }
@@ -1846,6 +1907,21 @@ input::-ms-clear {
 .border-bottom-1-solid {
   border-bottom-width: 1px;
   border-bottom-style: solid;
+}
+
+.border-top-1-solid {
+  border-top-width: 1px;
+  border-top-style: solid;
+}
+
+.border-left-1-solid {
+  border-left-width: 1px;
+  border-left-style: solid;
+}
+
+.border-right-1-solid {
+  border-right-width: 1px;
+  border-right-style: solid;
 }
 
 .border-right-1-solid {
@@ -1863,6 +1939,10 @@ input::-ms-clear {
 
 .border-color-grey-200 {
   border-color: #d9d9d9 !important;
+}
+
+.border-color-black-100 {
+  border-color: #343d4c;
 }
 
 .border-color-grey-300 {
@@ -1925,6 +2005,20 @@ input::-ms-clear {
   z-index: 20;
 }
 
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.left-0 {
+  left: 0;
+}
+
+.right-0 {
+  right: 0;
+}
+
 @media screen and (max-width: 767px) and (orientation: portrait) {
   .m-d-none {
     display: none;
@@ -1952,7 +2046,11 @@ input::-ms-clear {
   }
 
   .m-margin-top-10 {
-    margin-top: 10px;
+    margin-top: 10px !important;
+  }
+
+  .m-margin-top-20 {
+    margin-top: 20px !important;
   }
 
   .m-margin-top-75 {
@@ -1963,8 +2061,48 @@ input::-ms-clear {
     margin-left: 5px !important;
   }
 
+  .m-margin-left-10 {
+    margin-left: 10px !important;
+  }
+
   .m-margin-right-5 {
     margin-right: 5px !important;
+  }
+
+  .m-margin-right-10 {
+    margin-right: 10px !important;
+  }
+
+  .m-margin-botton-0 {
+    margin-bottom: 0 !important;
+  }
+
+  .m-font-14 {
+    font-size: 14px !important;
+  }
+
+  .m-font-16 {
+    font-size: 16px !important;
+  }
+
+  .m-font-18 {
+    font-size: 18px !important;
+  }
+
+  .m-font-20 {
+    font-size: 20px;
+  }
+
+  .m-font-24 {
+    font-size: 24px !important;
+  }
+
+  .m-text-center {
+    text-align: center !important;
+  }
+
+  .m-border-0-solid {
+    border-width: 0;
   }
 }
 

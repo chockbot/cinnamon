@@ -50,13 +50,15 @@ public class ActivitySchedule
     public decimal Price {get; set;}
     public string UnitPrice {get; set;} = "PHP";
     public int PerUnit1 {get; set;}
-    public string PriceUnit1 {get; set;} = "Head";
+    public string PriceUnit1 {get; set;} = "Enrollee";
     public int PerUnit2 {get; set;}
     public string PriceUnit2 {get; set;} = "Session";
     public int TempId {get; set;}
     public int Order {get; set;}
     public bool IsActiveSchedule { get; set; } = true;
     public bool IsSetSession { get; set; } = false;
+
+    public bool IsSelected { get; set; } = false;
 
     public string SessionName { get; set; } = string.Empty;
 

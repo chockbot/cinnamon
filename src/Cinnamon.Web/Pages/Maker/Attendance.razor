@@ -347,7 +347,7 @@
             }, Model.Token);
             if(result.Succeeded && result.Result != null && result.Result.IsSuccess)
             {
-                Model.Attendances.AddRange(result.Result.Result.Where(s => s.ExpirationEndDate > DateTime.Now.Date || s.ExpirationEndDate == DateTime.MinValue).Select(s =>
+                Model.Attendances.AddRange(result.Result.Result.Where(s => s.ExpirationEndDate >= DateTime.Now.Date || s.ExpirationEndDate == DateTime.MinValue).Select(s =>
                 {
                     return new AttendanceModel.StudentAttendance {
                         ActivityName = schedule.ActivityTitle,
@@ -451,16 +451,28 @@
         if (schedule != null && schedule.IsSetSession == true && schedule.HasExpiration == 2)
         {
             //Check if first attendance
-            if (studentAttendance.SessionsAttended == 1)
+            switch (studentAttendance.SessionsAttended)
             {
-                await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
-                    {
-                        Id = studentAttendance.StudentId,
-                        ScheduleId = studentAttendance.ScheduleId,
-                        SessionName = schedule.SessionName,
-                        ExpirationStartDate = DateTime.UtcNow,
-                        ExpirationEndDate = studentAttendance.ExpirationDateEnd
-                    });
+                case 0:
+                    var result = await ongoingApiHandler.UpdateActivity(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.UpdateOngoingActivityArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            ExpirationStartDate = DateTime.MinValue,
+                            ExpirationEndDate = DateTime.MinValue
+                        });
+                    break;
+                case 1:
+                    await ongoingApiHandler.AddActivityExpiration(new Framework.ApiCommand.ApiCore.OnGoingActivities.Request.AddActivityExpirationArgs
+                        {
+                            Id = studentAttendance.StudentId,
+                            ScheduleId = studentAttendance.ScheduleId,
+                            SessionName = schedule.SessionName,
+                            ExpirationStartDate = DateTime.UtcNow,
+                            ExpirationEndDate = studentAttendance.ExpirationDateEnd
+                        });
+                    break;
+                default:
+                    break;
             }
         }
     }
