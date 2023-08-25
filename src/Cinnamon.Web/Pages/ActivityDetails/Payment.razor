@@ -18,6 +18,8 @@
 @inject IDashboardApiHandler dashboardApiHandler
 @inject IChatApiHandler chatApiHandler
 @inject ILogger<Payment> logger
+@using Cinnamon.Framework.Helpers;
+@using Cinnamon.Web.Modules.Services;
 
 @implements IDisposable
 
@@ -26,44 +28,143 @@
 
 @if (IsFullyLoaded)
 {
-    <Div ElementId="#b-animate" class="purchase-order-page">
-        <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
-
-            <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3">
-                <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3">
-                    <div class="d-flex col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0">
-                        <a class="text-decoration-none text-reset" href="/Explore/@Model.Activity.ActivityId"><img src="/images/previous.svg" style="width:20px;" /></a>
-                        <h4 class="fw-bold px-3" style="1.9rem">Confirm experience</h4>
-                    </div>
+    <Container class="booking-container-wrapper pb-5">
+        <Div ElementId="#b-animate" class="purchase-order-page">
+            <Animate Anchor="#b-animate" Auto Animation="Animations.FadeIn" DelayMilliseconds="500">
+                <div class="d-flex align-items-center mt-3">
+                    <img class="cursor-pointer" src="/images/payment/back-icon.png" alt="icon" @onclick="NavigateBack"/>
+                    <h4 class="fw-bold px-3 mb-0 color-grey-100 font-24 text-capitalize">Confirm experience</h4>
                 </div>
-            </div>
-
-            <div class="d-flex flex-column align-items-center mt-3 px-sm-3 px-3 mb-5">
-                <div class="d-flex flex-lg-row flex-md-row flex-sm-column flex-column col-lg-10 col-md-10 col-sm-12 col-12 px-3 m-purchase-container">
-                    <div class="col-lg-8 col-md-8 col-sm-12 col-12 px-lg-5 px-md-5 px-sm-0 px-0 order-lg-first order-md-first order-sm-last order-last">
-                        <div class="col-lg-5 col-md-5 col-sm-12 col-12">
-                            <h5 class="fw-bold" style="font-size:1.5rem;">Activity selected</h5>
-                            <CarouselItemSchedule ScheduleModel="Model.SelectedSchedule" ButtonType="@ScheduleButtonType.Change" OnClickChange="OnClickChange" ActivityModel="Model.Activity"></CarouselItemSchedule>
-                        </div>
-                        <hr />
-                        <div class="col-lg-12 col-md-12 col-sm-12 col-12">
+                <Row HorizontalGutter="50" class="mt-5">
+                    <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop.Is8.OnTablet" class="m-order-2">
+                        <div>
                             <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
-                            <Column ColumnSize="ColumnSize.Is12.OnDesktop">
-                                <Div class="details overflow-auto" Display="Display.Flex">
-                                    <Column class="d-flex flex-row flex-lg-wrap flex-md-wrap flex-sm-nowrap flex-nowrap">
-                                        @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
-                                        {
-                                            <div class="card text-center p-3 m-1 d-flex flex-row align-items-center text-nowrap" style="border-radius:8px;background-color:#EDF2F8;border:none;">
-                                                <Check TValue="bool" id="@item.Id" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> <label for="@item.Id">@item.Name</label>
-                                            </div>
-                                        }
-                                    </Column>
-                                </Div>
-                            </Column>
-                            <button class="btn-primary rounded border-0 my-3 py-2 px-3" style="width:fit-content !important;" @onclick="()=>AddChildrenModal.Open()">Add</button>
+                            <Div class="details" Display="Display.Flex" Flex="Flex.Wrap">
+                                @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
+                                {
+                                    <div class="card text-center px-3 py-2 m-1 d-flex flex-row align-items-center text-nowrap prevent-select cursor-pointer" 
+                                        style="border-radius:8px;background-color:#EDF2F8;border:none;">
+                                        <Check TValue="bool" id="@item.Id" CheckedChanged="v => SelectedAttendeesChanged(item, v)" class="mx-2 checkbox-round" /> 
+                                        <label class="font-16" for="@item.Id">@item.Name</label>
+                                    </div>
+                                }
+                            </Div>
+                            <button class="border-radius-10 bg-orange-100 border-0 color-white-100 font-weight-700 hover-color-white mt-3 py-1 px-5 font-16" 
+                                @onclick="()=>AddChildrenModal.Open()">Add</button>
                         </div>
-                        <hr />
-                        <div class="payment-container col-lg-12 col-md-12 col-sm-12 col-12">
+                        <Divider class="my-4" />
+                        <div>
+                            <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Activity Selected</h5>
+                            <div class="drop-shadow-selected border-1-solid border-color-grey-200 border-radius-10 overflow-hidden mt-3">
+                                <div class="d-flex justify-content-between font-18 m-font-16 font-weight-700 color-black-100 bg-white-200 p-2 
+                                    border-bottom-1-solid border-color-grey-200">
+                                    <p class="m-0 text-capitalize">@Model.SelectedSchedule.Name</p>
+                                    <p class="m-0 m-margin-left-10">₱ @Model.SelectedSchedule.Price.ToString("#,##0.00")</p>
+                                </div>
+                                <div class="p-3">
+                                    <Row class="mt-3" VerticalGutter="10">
+                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                            <div class="d-flex w-100 align-items-start">
+                                                <label>
+                                                    <img src="images/payment/price-tag-icon.png" alt="price-tag">
+                                                </label>
+                                                <div class="ms-2">
+                                                    <p class="mb-0 font-14 font-weight-700 color-black-100">Price Details:</p>
+                                                    <p class="mb-0 font-16 color-grey-100">₱ @Model.SelectedSchedule.Price.ToString("#,##0") / @Model.SelectedSchedule.PerUnit1 
+                                                        @Model.SelectedSchedule.PriceUnit1 / @Model.SelectedSchedule.PerUnit2 @Model.SelectedSchedule.PriceUnit2</p>
+                                                </div>
+                                            </div>
+                                        </Column>
+                                        <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                            <div class="d-flex w-100 align-items-start">
+                                                <label>
+                                                    <img src="images/payment/expired-icon.png" alt="expiration">
+                                                </label>
+                                                <div class="ms-2">
+                                                    <p class="mb-0 font-14 font-weight-700 color-black-100">Expiration:</p>
+                                                    @if(Model.SelectedSchedule.IsSetSession)
+                                                    {
+                                                        <p class="mb-0 font-16 color-grey-100">Consume in - @Model.SelectedSchedule.SessionName</p>
+                                                        <p class="text-danger font-12 mb-0">@expiringMessage</p>
+                                                    }
+                                                    else 
+                                                    {
+                                                        <p class="mb-0 font-16 color-grey-100">N/A</p>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </Column>
+                                    </Row>
+                                    <div class="d-flex m-d-block mt-3 m-margin-top-10 align-items-center justify-content-between">
+                                        <div class="m-width-100">
+                                            <div class="d-flex w-100 align-items-start">
+                                                <label>
+                                                    <img src="images/payment/calendar-schedule-icon.png" alt="calendar">
+                                                </label>
+                                                <div class="ms-2">
+                                                    <p class="mb-0 font-14 font-weight-700 color-black-100">Schedule:</p>
+                                                    <p class="mb-0 font-16 color-grey-100">@Model.SelectedSchedule.DateTime</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="m-text-center m-width-100 m-margin-botton-0 m-margin-top-10" style="margin-bottom: -20px;">
+                                            <Button Type="ButtonType.Button" Clicked="OnClickChange" 
+                                                class="border-radius-10 bg-orange-100 color-white-100 py-1 px-4 m-0 font-16 font-weight-700 hover-color-white">
+                                                Change
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <Divider class="my-4" />
+                        <div>
+                            <h5 class="font-20 m-font-18 font-weight-700 color-black-100 mb-0">Important Information</h5>
+                            <p class="text-center mt-4">
+                                <span class="color-grey-100">
+                                    Your Booking is Protected by
+                                </span> 
+                                <span class="app-name">
+                                    @Resources.App.appName
+                                </span>
+                            </p>
+                            <Row class="mt-5 m-margin-top-20">
+                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop">
+                                    <div class="d-flex w-100 h-100 align-items-center">
+                                        <img class="mx-auto" src="images/payment/new-security-guranted.png" alt="icon">
+                                    </div>
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is12.Is6.OnDesktop" class="m-margin-top-20">
+                                    <p class="font-16 color-grey-100">The cinnamon platform guarantees: </p>
+                                    <ul class="font-12 color-grey-100 ">
+                                        <li>Money-back guarantee if you're not satisfied.</li>
+                                        <li>Anti-scam protection.</li>
+                                        <li>Secure payment.</li>
+                                        <li>Accidental support (for outdoor activities).* * To follow function</li>
+                                    </ul>
+                                </Column>
+                            </Row>
+                        </div>
+                        <div class="mt-3">
+                            <p class="font-16 font-weight-700 color-black-100">What will happen after I purchase?</p>
+                            <ol class="font-16 color-grey-100" style="padding-left: 15px;">
+                                <li class="mb-3">
+                                    You will be added to a chat group with the activity provider to clarify /answer any of your questions. 
+                                    Go to the MENU and select MESSAGES to access chat.
+                                </li>
+                                <li class="mb-3">
+                                    You can also be contacted by the activity provider, please make sure that your email and mobile number are correct.
+                                </li>
+                                <li class="mb-3">
+                                    You can also contact your activity provider by using the email and mobile number that can be found in the payment confirmation email.
+                                </li>
+                                <li class="mb-3">
+                                    Cinnamon secures your payment and will be credited to the activity provider/tutor once their session/s with you is complete. 
+                                </li>
+                            </ol>
+                        </div>
+                        <Divider class="my-4" />
+                        <div class="payment-container">
                             <h5 class="fw-bold font-20">Pay with</h5>
                             <div class="card-payment-method mt-3">
                                 <label class="font-16">Cards</label>
@@ -108,9 +209,9 @@
                                     <div class="d-flex align-items-center">
                                         <div class="col-1">
                                             <input type="radio"
-                                               checked='@(SelectedPaymentCode == "GCASH")'
-                                               @onchange='() => SelectedPaymentCode = "GCASH"'
-                                               id="ewallet-gcash" name="ewallet" value="GCASH" class="me-3 checkbox-round" />
+                                            checked='@(SelectedPaymentCode == "GCASH")'
+                                            @onchange='() => SelectedPaymentCode = "GCASH"'
+                                            id="ewallet-gcash" name="ewallet" value="GCASH" class="me-3 checkbox-round" />
                                         </div>
                                         <div class="col-2">
                                             <img class="ewallet-icon" src="images/payment/gcash.svg" alt="icon">
@@ -125,9 +226,9 @@
                                     <div class="d-flex align-items-center">
                                         <div class="col-1">
                                             <input type="radio"
-                                               checked='@(SelectedPaymentCode == "GRABPAY")'
-                                               @onchange='() => SelectedPaymentCode = "GRABPAY"'
-                                               class="me-3 checkbox-round" id="ewallet-grabpay" name="ewallet" value="GRABPAY" />
+                                            checked='@(SelectedPaymentCode == "GRABPAY")'
+                                            @onchange='() => SelectedPaymentCode = "GRABPAY"'
+                                            class="me-3 checkbox-round" id="ewallet-grabpay" name="ewallet" value="GRABPAY" />
                                         </div>
                                         <div class="col-2">
                                             <img class="ewallet-icon" src="images/payment/grabpay.svg" alt="icon">
@@ -142,9 +243,9 @@
                                     <div class="d-flex align-items-center">
                                         <div class="col-1">
                                             <input type="radio"
-                                               checked='@(SelectedPaymentCode == "SHOPEEPAY")'
-                                               @onchange='() => SelectedPaymentCode = "SHOPEEPAY"'
-                                               class="me-3 checkbox-round" id="ewallet-shopeepay" name="ewallet" value="SHOPEEPAY" />
+                                            checked='@(SelectedPaymentCode == "SHOPEEPAY")'
+                                            @onchange='() => SelectedPaymentCode = "SHOPEEPAY"'
+                                            class="me-3 checkbox-round" id="ewallet-shopeepay" name="ewallet" value="SHOPEEPAY" />
                                         </div>
                                         <div class="col-2">
                                             <img class="ewallet-icon" src="images/payment/shoppepay.svg" alt="icon">
@@ -159,9 +260,9 @@
                                     <div class="d-flex align-items-center">
                                         <div class="col-1">
                                             <input type="radio"
-                                               checked='@(SelectedPaymentCode == "PAYMAYA")'
-                                               @onchange='() => SelectedPaymentCode = "PAYMAYA"'
-                                               class="me-3 checkbox-round" id="ewallet-maya" name="ewallet" value="PAYMAYA" />
+                                            checked='@(SelectedPaymentCode == "PAYMAYA")'
+                                            @onchange='() => SelectedPaymentCode = "PAYMAYA"'
+                                            class="me-3 checkbox-round" id="ewallet-maya" name="ewallet" value="PAYMAYA" />
                                         </div>
                                         <div class="col-2">
                                             <img class="ewallet-icon" src="images/payment/maya.svg" alt="icon">
@@ -175,12 +276,12 @@
                                     </div>
                                 </fieldset>
                             </div>
-                            <hr />
+                            <Divider />
                             <div class="form-outline">
                                 <label class="form-label" style="font-size:0.8rem;"><small> By selecting the button below, I agree to the Activity Provider’s requirements and activity policies, Cinnamon's Rebooking and Refund Policy, I agree to pay the total amount shown.</small></label>
                                 <br />
                                 <br />
-                                <button class="btn-primary rounded border-0 py-2 px-3 m-width-100" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
+                                <button class="btn-primary rounded border-0 py-2 px-3 m-width-100 m-d-none" style="@payButtonStyle" @onclick="OnPayConfirmedClicked" disabled="@isLoading">
                                     @if (isLoading)
                                     {
                                         <i class="fa fa-spinner fa-spin"></i>
@@ -189,7 +290,6 @@
                                     else
                                     {
                                         <span>Pay and confirm</span>
-
                                     }
                                 </button>
                                 <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="isShowPayErrorMessage">
@@ -197,9 +297,9 @@
                                 </Alert>
                             </div>
                         </div>
-                    </div>
-                    <div class="booking-total-container col-lg-4 col-md-4 col-sm-12 col-12 order-lg-last order-md-last order-sm-first order-first">
-                        <div class="sticky-top mb-3" style="top:80px;">
+                    </Column>
+                    <Column ColumnSize="ColumnSize.Is12.Is4.OnDesktop.Is4.OnTablet" class="m-order-1">
+                        <div class="booking-total-container sticky-top mb-3" style="top:80px;">
                             <Card>
                                 <CardBody>
                                     <div class="d-flex" style="font-size:1.125rem">
@@ -216,7 +316,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
+                                    <Divider />
                                     <div class="price-details">
                                         <span class="fw-bold price-title">Price Details</span>
                                         <div class="d-flex justify-content-between py-1 price-per-head">
@@ -274,7 +374,7 @@
                                                 <Button Type="ButtonType.Button" Clicked="ValidateCouponCode"
                                                     class="btn-primary font-12" Border="Border.Is0" Loading="Coupon.IsValidating" Disabled="Coupon.IsValidating"
                                                     style="border-radius: 0; padding-top: 3px; padding-bottom: 3px; margin-left: 3px;">
-                                                     <LoadingTemplate>
+                                                    <LoadingTemplate>
                                                         <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
                                                     </LoadingTemplate>
                                                     <ChildContent>
@@ -313,234 +413,183 @@
                                                 PHP @(GetTotalCredit.ToString("#,##0.00"))
                                             </div>
                                         </div>
-                                        <hr>
+                                        <Divider />
                                         <div class="d-flex justify-content-between py-1 total-payments">
                                             <div>
                                                 TOTAL PAYMENT
                                             </div>
                                             <div>
-                                               PHP @(GetTotalPrice.ToString("#,##0.00"))
+                                            PHP @(GetTotalPrice.ToString("#,##0.00"))
                                             </div>
                                         </div>
                                     </div>
-                                    <hr />
-                                    <div class="d-flex align-items-center justify-content-center protected-footer">
-                                        <CustomTooltip MarginLeft="-100">
-                                            <TextContent>
-                                                <span class="color-grey-100">
-                                                    Your booking is protected by
-                                                </span>
-                                            </TextContent>
-                                            <TooltipContent>
-                                                <span class="color-grey-100">
-                                                    Your transaction is secured! Your purchase is supported by our Terms of Use.
-                                                    Any concerns about your purchase, you can reach us by sending an email to support@cinnamon.ph
-                                                </span>
-                                            </TooltipContent>
-                                        </CustomTooltip>
-                                        <div class="app-name">
-                                            @Resources.App.appName
-                                        </div>
-                                    </div>
                                 </CardBody>
                             </Card>
-                            <Card class="mt-3">
-                                <CardBody class="activity-owner">
-                                    <div class="w-100 d-flex">
-                                        <div class="image-src">
-                                            <img src="@GetActivityOwnerProfileSrc" alt="owner-profile">
-                                        </div>
-                                        <div class="m-2 maker-profile-details">
-                                            <p class="experience-by text-capitalize">Experience by</p>
-                                            <p class="owner text-capitalize">@($"{Model.Activity.Owner.FirstName} {Model.Activity.Owner.LastName}")</p>
-                                        </div>
-                                        <div class="verified-logo">
-                                            @if (Model.Activity.Owner.IsVerified == 2)
-                                            {
-                                                <Tooltip Multiline=true Text="For uploading and completing all identification requirements.">
-                                                    <img class="verified-logo" src="images/Badges/VERIFIED.svg" />
-                                                </Tooltip>
-                                            }
-                                            @if (Model.Activity.Owner.IsOG == true)
-                                            {
-                                                <Tooltip Multiline=true Text="For being part of the alpha and beta testing.">
-                                                    <img class="verified-logo" src="images/Badges/OG.svg" />
-                                                </Tooltip>
-                                            }
-                                            @if (Model.Activity.Owner.IsOfficial == true)
-                                            {
-                                                <Tooltip Multiline=true Text="Legitimate experience provider in the platform.">
-                                                    <img class="verified-logo" src="images/Badges/OFFICIAL PARTNER.svg" />
-                                                </Tooltip>
-                                            }
-                                            @if (MakerCompletedStudent >= 10)
-                                            {
-                                                var rare = badges.Where(r => r.Id == 1).FirstOrDefault();
-                                                <Tooltip Multiline=true Text="@rare.Description">
-                                                    <img class="verified-logo" src="@rare.ImgScr" />
-                                                </Tooltip>
-                                            }
-                                            @if (MakerCompletedStudent >= 25)
-                                            {
-                                                var epic = badges.Where(r => r.Id == 2).FirstOrDefault();
-                                                <Tooltip Multiline=true Text="@epic.Description">
-                                                    <img class="verified-logo" src="@epic.ImgScr" />
-                                                </Tooltip>
-                                            }
-                                            @if (MakerCompletedStudent >= 100)
-                                            {
-                                                var legendary = badges.Where(r => r.Id == 3).FirstOrDefault();
-                                                <Tooltip Multiline=true Text="@legendary.Description">
-                                                    <img class="verified-logo" src="@legendary.ImgScr" />
-                                                </Tooltip>
-                                            }
-                                        </div>
-                                    </div>
-                                </CardBody>
-                            </Card>
+                        </div>
+                    </Column>
+                </Row>
+            </Animate>
+        </Div>
+    </Container>
+
+    <div class='mobile-calculator-wrapper'>
+        <div class="mobile-calculator-wrapper-container border-radius-10 mobile-footer-shadow
+            position-fixed left-0 right-0 bg-white-100">
+            <div>
+                <div class="p-3 d-flex justify-content-between align-items-center">
+                    <Button Type="ButtonType.Button" Clicked="OnPayConfirmedClicked"
+                        class="btn-primary font-14 width-120 border-radius-10 px-4"
+                        Border="Border.Is0">
+                        Confirm and Pay
+                    </Button>
+                    <div class="d-flex align-items-center">
+                        <div class="prevent-select text-end" style="width: 160px;">
+                            <span class="font-20 font-weight-700 color-black-100">₱ @(GetTotalPrice.ToString("#,##0.00"))</span>
                         </div>
                     </div>
                 </div>
+                <Alert Color="Color.Danger" Margin="Margin.Is3.FromTop" Visible="isShowPayErrorMessage">
+                    <AlertDescription>@payErrorMessage</AlertDescription>
+                </Alert>
             </div>
+        </div>
+    </div>
 
-            <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember"
-                          Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
-            <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
-
-            <Modal @ref="CardModal">
-                <ModalContent Centered>
-                    <ModalHeader Border="Border.Is0">
-                        <p class="col-12 modal-title">Add Card Details</p>
-                        <button type="button" class="btn-close" @onclick='() => CardModal.Hide()' />
-                    </ModalHeader>
-                    <ModalBody Padding="Padding.Is0.FromTop">
-                        <Divider Margin="Margin.Is0.FromTop.Is2.FromBottom" />
-                        <div class="d-flex align-items-center justify-content-between">
-                            <div class="d-flex align-items-center">
-                                <img class="me-3" src="images/payment/visa-card.svg" alt="icon">
-                                <img src="images/payment/master-card.svg" alt="icon">
+    <AddChildrenModal @ref="AddChildrenModal" SaveEditedFamilyMember="SaveEditedFamilyMember"
+                Model="Model.Customer.FamilyMembers.Select(f => f).ToList()" />
+    <SchedulesModal @ref="ModalSched" ScheduleModel="Model.Activity.ActivitySchedules" ActivityModel="Model.Activity" />
+    <Modal @ref="CardModal">
+        <ModalContent Centered>
+            <ModalHeader Border="Border.Is0">
+                <p class="col-12 modal-title">Add Card Details</p>
+                <button type="button" class="btn-close" @onclick='() => CardModal.Hide()' />
+            </ModalHeader>
+            <ModalBody Padding="Padding.Is0.FromTop">
+                <Divider Margin="Margin.Is0.FromTop.Is2.FromBottom" />
+                <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center">
+                        <img class="me-3" src="images/payment/visa-card.svg" alt="icon">
+                        <img src="images/payment/master-card.svg" alt="icon">
+                    </div>
+                    <img src="images/payment/security-guranteed.png" alt="icon">
+                </div>
+                <div class="mt-2">
+                    <Validations @ref="PaymentCardValidation" Model="CardPaymentModel" Mode="ValidationMode.Manual">
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="font-16 color-grey-100">Card Number</FieldLabel>
+                                <TextEdit @bind-Text="CardPaymentModel.CardNumber">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <Validation>
+                            <Field class="mb-3">
+                                <FieldLabel class="font-16 color-grey-100">Name on Card</FieldLabel>
+                                <TextEdit @bind-Text="CardPaymentModel.CardHolder">
+                                    <Feedback>
+                                        <ValidationError />
+                                    </Feedback>
+                                </TextEdit>
+                            </Field>
+                        </Validation>
+                        <div class="row">
+                            <div class="col">
+                                <Validation>
+                                    <Field class="mb-3">
+                                        <FieldLabel class="font-16 color-grey-100">Expiration</FieldLabel>
+                                        <TextEdit @bind-Text="CardPaymentModel.Expiration" Placeholder="Ex. 03/28">
+                                            <Feedback>
+                                                <ValidationError />
+                                            </Feedback>
+                                        </TextEdit>
+                                    </Field>
+                                </Validation>
                             </div>
-                            <img src="images/payment/security-guranteed.png" alt="icon">
-                        </div>
-                        <div class="mt-2">
-                            <Validations @ref="PaymentCardValidation" Model="CardPaymentModel" Mode="ValidationMode.Manual">
+                            <div class="col">
                                 <Validation>
                                     <Field class="mb-3">
-                                        <FieldLabel class="font-16 color-grey-100">Card Number</FieldLabel>
-                                        <TextEdit @bind-Text="CardPaymentModel.CardNumber">
+                                        <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
+                                        <TextEdit @bind-Text="CardPaymentModel.CVV" Placeholder="123">
                                             <Feedback>
                                                 <ValidationError />
                                             </Feedback>
                                         </TextEdit>
                                     </Field>
                                 </Validation>
-                                <Validation>
-                                    <Field class="mb-3">
-                                        <FieldLabel class="font-16 color-grey-100">Name on Card</FieldLabel>
-                                        <TextEdit @bind-Text="CardPaymentModel.CardHolder">
-                                            <Feedback>
-                                                <ValidationError />
-                                            </Feedback>
-                                        </TextEdit>
-                                    </Field>
-                                </Validation>
-                                <div class="row">
-                                    <div class="col">
-                                        <Validation>
-                                            <Field class="mb-3">
-                                                <FieldLabel class="font-16 color-grey-100">Expiration</FieldLabel>
-                                                <TextEdit @bind-Text="CardPaymentModel.Expiration" Placeholder="Ex. 03/28">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                    </div>
-                                    <div class="col">
-                                        <Validation>
-                                            <Field class="mb-3">
-                                                <FieldLabel class="font-16 color-grey-100">CVV</FieldLabel>
-                                                <TextEdit @bind-Text="CardPaymentModel.CVV" Placeholder="123">
-                                                    <Feedback>
-                                                        <ValidationError />
-                                                    </Feedback>
-                                                </TextEdit>
-                                            </Field>
-                                        </Validation>
-                                    </div>
-                                </div>
-                                <div>
-                                    <Button Clicked="SelectCardPayment" class="btn-primary w-100 border-radius-5" Border="Border.Is0">
-                                        <LoadingTemplate>
-                                            <i class="fa fa-spinner fa-spin"></i> Please Wait
-                                        </LoadingTemplate>
-                                        <ChildContent>
-                                            Submit
-                                        </ChildContent>
-                                    </Button>
-                                </div>
-                            </Validations>
+                            </div>
                         </div>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-            <Modal @ref="ConfirmationModal" class="modal-purchase-confirmation">
-                <ModalContent>
-                    <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
-                        <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
-                        <button type="button" style="top: 12px; right: 20px;" class="btn-close position-absolute" @onclick="CloseConfirmationModal" />
-                    </ModalHeader>
-                    <ModalBody>
-                        <fieldset>
-                            <Row>
-                                <Column ColumnSize="ColumnSize.Is12">
-                                    <Row>
-                                        <Column ColumnSize="ColumnSize.Is1">
-                                            <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
-                                                checked='@(confirmationData.SelectedPeriod == "currentperiod")' 
-                                                value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
-                                        </Column>
-                                        <Column ColumnSize="ColumnSize.Is11">
-                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
-                                            <p class="font-14 color-grey-100">You only have <span class="color-red-100">@confirmationData.DaysLeft</span> days to use this.</p>
-                                        </Column>
-                                    </Row>
-                                </Column>
-                                <Column ColumnSize="ColumnSize.Is12">
-                                    <Row>
-                                        <Column ColumnSize="ColumnSize.Is1">
-                                            <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
-                                                checked='@(confirmationData.SelectedPeriod == "nextperiod")'  
-                                                value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
-                                        </Column>
-                                        <Column ColumnSize="ColumnSize.Is11">
-                                            <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
-                                            <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@confirmationData.NextPeriod.ToString("MMMM dd, yyyy")</span></p>
-                                        </Column>
-                                    </Row>
-                                </Column>
-                            </Row>
-                            <Button Loading="confirmationData.IsSubmitting" 
-                                Disabled="confirmationData.IsSubmitting || string.IsNullOrEmpty(confirmationData.SelectedPeriod)" 
-                                class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                        <div>
+                            <Button Clicked="SelectCardPayment" class="btn-primary w-100 border-radius-5" Border="Border.Is0">
                                 <LoadingTemplate>
-                                    <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                                    <i class="fa fa-spinner fa-spin"></i> Please Wait
                                 </LoadingTemplate>
                                 <ChildContent>
-                                    Proceed
+                                    Submit
                                 </ChildContent>
                             </Button>
-                            @if(confirmationData.IsShowError && !confirmationData.IsApplied)
-                            {
-                                <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
-                            }
-                        </fieldset>
-                    </ModalBody>
-                </ModalContent>
-            </Modal>
-        </Animate>
-    </Div>
+                        </div>
+                    </Validations>
+                </div>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+    <Modal @ref="ConfirmationModal" class="modal-purchase-confirmation">
+        <ModalContent>
+            <ModalHeader class="py-2 px-4 border-0-solid justify-content-center border-bottom-1-solid border-color-grey-200 position-relative">
+                <p class="font-16 m-0 font-weight-700">Select Period Date of Purchase</p>
+                <button type="button" style="top: 12px; right: 20px;" class="btn-close position-absolute" @onclick="CloseConfirmationModal" />
+            </ModalHeader>
+            <ModalBody>
+                <fieldset>
+                    <Row>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("currentperiod")'
+                                        checked='@(confirmationData.SelectedPeriod == "currentperiod")' 
+                                        value="currentperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">current</span> period.</p>
+                                    <p class="font-14 color-grey-100">You only have <span class="color-red-100">@confirmationData.DurationLeft</span> to use this.</p>
+                                </Column>
+                            </Row>
+                        </Column>
+                        <Column ColumnSize="ColumnSize.Is12">
+                            <Row>
+                                <Column ColumnSize="ColumnSize.Is1">
+                                    <input type="radio" @onchange='() => SelectPeriod("nextperiod")' 
+                                        checked='@(confirmationData.SelectedPeriod == "nextperiod")'  
+                                        value="nextperiod" name="select-confirmation" class="me-3 checkbox-round" />
+                                </Column>
+                                <Column ColumnSize="ColumnSize.Is11">
+                                    <p class="font-16 color-black-100 mb-1">Purchase for <span class="text-uppercase font-weight-700">next</span> period.</p>
+                                    <p class="font-14 color-grey-100">Next period will start on <span class="color-green-100">@confirmationData.NextPeriod.ToString("MMMM dd, yyyy")</span></p>
+                                </Column>
+                            </Row>
+                        </Column>
+                    </Row>
+                    <Button Loading="confirmationData.IsSubmitting" 
+                        Disabled="confirmationData.IsSubmitting || string.IsNullOrEmpty(confirmationData.SelectedPeriod)" 
+                        class="btn-primary w-100" Border="Border.Is0" Clicked="ConfirmProceedClick" >
+                        <LoadingTemplate>
+                            <i id="spinner-loading-upload" class="fa fa-spinner fa-spin"></i>
+                        </LoadingTemplate>
+                        <ChildContent>
+                            Proceed
+                        </ChildContent>
+                    </Button>
+                    @if(confirmationData.IsShowError && !confirmationData.IsApplied)
+                    {
+                        <p class="font-12 color-red-100 text-center mb-0 mt-2">Please select your confirmation above.</p>
+                    }
+                </fieldset>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
 }
 
 @code
@@ -860,6 +909,7 @@
         MakerCompletedStudent = activities.Sum(x => x.CompletedStudents);
     }
 
+    private string expiringMessage = string.Empty;
     private void SelectedScheduleChanged()
     {
         var selectedSchedule = Model.Activity.ActivitySchedules.FirstOrDefault(s => s.Id == ScheduleId);
@@ -886,15 +936,40 @@
                 StartDate = selectedSchedule.StartDate
             };
 
-        if(Model.SelectedSchedule.HasExpiration == 1)
+        if(Model.SelectedSchedule.IsSetSession)
         {
-            DateTime now = DateTime.Now;
-            DateTime dateEnd = CalculateDateEnd(Model.SelectedSchedule.SessionName, Model.SelectedSchedule.StartDate.Value);
+            if(Model.SelectedSchedule.StartDate is null)
+            {
+                // don't have start date setted
+                NavigationManager.NavigateTo("explore");
+                return;
+            }
 
-            confirmationData.DaysLeft = Math.Abs((now - dateEnd).Days);
-            confirmationData.NextPeriod = dateEnd.AddDays(1);
+            var datePeriod = DateNextPeriod.CreateRecurring(Model.SelectedSchedule.StartDate.Value, Model.SelectedSchedule.SessionName);
+            DateTime periodStart = datePeriod.PeriodStart;
+            // to set the last time of the day
+            DateTime periodEnd = datePeriod.PeriodEnd.AddDays(1).Date.AddSeconds(-1);
+            DateTime nextPeriod = datePeriod.NextPeriod().PeriodStart;
+            DateTime now = DateTime.Now;
+
+            int daysLeft = (periodEnd - now).Days;
+            int hours = (periodEnd - now).Hours;
+            string durationLeft = daysLeft > 0 ? $"{daysLeft} days" : (hours > 0 ? "today" : "0 days");
+
+            confirmationData.DaysLeft = Math.Abs((now - periodEnd).Days);
+            confirmationData.DurationLeft = durationLeft;
+            confirmationData.NextPeriod = nextPeriod;
             confirmationData.IsApplied = false;
             confirmationData.IsShowError = false;
+
+            if(Model.SelectedSchedule.HasExpiration == 1)
+            {
+                expiringMessage = $"The expiration period is {Model.SelectedSchedule.SessionName} (calendar days), and will end on the {periodEnd.Day}{ExpirationData.GetOrdinal(periodEnd.Day)} day of {periodEnd.ToString("MMMM")}.";
+            }
+            else if(Model.SelectedSchedule.HasExpiration == 2)
+            {
+                expiringMessage = $"Session/s must be consumed in {Model.SelectedSchedule.SessionName.ToLower()}, starting from first attendance.";
+            }
         }
     }
 
@@ -1372,31 +1447,6 @@
         return Task.CompletedTask;
     }
 
-    private DateTime CalculateDateEnd(string sessionName, DateTime dateStart)
-    {
-        DateTime dateEnd = DateTime.Now;
-        switch (sessionName)
-        {
-            case "2 Weeks":
-                dateEnd = dateStart.AddDays(14);
-                break;
-            case "3 Weeks":
-                dateEnd = dateStart.AddDays(21);
-                break;
-            case "1 Month":
-                dateEnd = dateStart.AddMonths(1);
-                break;
-            case "2 Months":
-                dateEnd = dateStart.AddMonths(2);
-                break;
-            case "3 Months":
-                dateEnd = dateStart.AddMonths(3);
-                break;
-        }
-
-        return dateEnd;
-    }
-
     private async Task ConfirmProceedClick()
     {
         if(string.IsNullOrEmpty(confirmationData.SelectedPeriod))
@@ -1410,6 +1460,12 @@
             confirmationData.IsSubmitting = false;
             await CloseConfirmationModal();
         }
+    }
+
+    private Task NavigateBack()
+    {
+        NavigationManager.NavigateTo($"/explore/{Model.Activity.ActivityId}");
+        return Task.CompletedTask;
     }
 
     class PaymentOption
@@ -1438,6 +1494,7 @@
     {
         public string Message { get; set; }
         public int DaysLeft { get; set; }
+        public string DurationLeft { get; set; }
         public DateTime NextPeriod { get; set; }
         public bool IsApplied { get; set; }
         public bool IsShowError { get; set; }
