@@ -38,7 +38,14 @@
                 <Row HorizontalGutter="50" class="mt-5">
                     <Column ColumnSize="ColumnSize.Is12.Is8.OnDesktop.Is8.OnTablet" class="m-order-2">
                         <div>
-                            <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                            @if(!isShowImportantMessage)
+                            {
+                                <h5 class="fw-bold" style="font-size:1.125rem;">Select who will attend</h5>
+                            }
+                            else 
+                            {
+                                <h5 class="fw-bold text-danger" style="font-size:1.125rem;">Select who will attend*</h5>
+                            }
                             <Div class="details" Display="Display.Flex" Flex="Flex.Wrap">
                                 @foreach (var item in Model.Customer.FamilyMembers.OrderBy(f => f.Id))
                                 {
@@ -636,6 +643,14 @@
     private Modal ConfirmationModal { get; set; }
     private ConfirmationData confirmationData = new();
 
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Enrollees { get; set; }
+
+    private int enrolleeCount = 0;
+
+    private bool isShowImportantMessage = false;
+
     protected override async Task OnInitializedAsync()
     {
         await FetchAccountDetails();
@@ -661,6 +676,16 @@
     protected override void OnParametersSet()
     {
         SelectedScheduleChanged();
+        int.TryParse(Enrollees, out enrolleeCount);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await Task.Delay(1000);
+            await PopulateEnrollee();
+        }
     }
 
     private async Task FetchAccountDetails()
@@ -978,12 +1003,14 @@
         ModalSched.Open();
     }
 
-    private async Task SaveEditedFamilyMember(IList<FamilyMember> familyMembers)
+    private async Task SaveEditedFamilyMember(AddChildrenModal.OnSaveButtonEventArgs args)
     {
+        if (args.FamilyMembers == null) return;
+
         // add members
         var added = await accountApiHandler.CreateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.CreateFamilyMemberArgs
             {
-                FamilyMembers = familyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
+                FamilyMembers = args.FamilyMembers.Where(m => m.Id == 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
                                     .Select(m =>
                                     {
                                         return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
@@ -1000,7 +1027,7 @@
         // update members
         var updated = await accountApiHandler.UpdateFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.UpdateFamilyMemberArgs
             {
-                FamilyMembers = familyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
+                FamilyMembers = args.FamilyMembers.Where(m => m.Id != 0 && !string.IsNullOrEmpty(m.Name?.Trim()))
                                     .Select(m =>
                                     {
                                         return new Framework.ApiCommand.ApiCore.DTO.FamilyMember.FamilyMemberDTO
@@ -1014,7 +1041,7 @@
                                     })
             }, Model.Token);
 
-        var deletedMembers = Model.Customer.FamilyMembers.Where(f => !familyMembers.Any(s => s.Id == f.Id));
+        var deletedMembers = Model.Customer.FamilyMembers.Where(f => !args.FamilyMembers.Any(s => s.Id == f.Id));
 
         var deletedResult = await accountApiHandler.DeleteFamilyMembers(new Framework.ApiCommand.ApiCore.Account.Request.DeleteFamilyMembersArgs
             {
@@ -1038,12 +1065,12 @@
                         Gender = f.Gender,
                         Id = f.Id,
                         Name = f.Name,
-                        IsSelected = isSelected
+                        IsSelected = args.IsAutoSelect || isSelected
                     };
             }).ToList();
         }
 
-        AddChildrenModal.Close();
+        await AddChildrenModal.Close();
     }
 
     private int SelectedAttendeesCount
@@ -1420,6 +1447,7 @@
 
     private Task SelectedAttendeesChanged(FamilyMember attendee, bool isWillAttend)
     {
+        isShowImportantMessage = false;
         attendee.IsSelected = isWillAttend;
         ClearCouponDetails();
         StateHasChanged();
@@ -1466,6 +1494,47 @@
     {
         NavigationManager.NavigateTo($"/explore/{Model.Activity.ActivityId}");
         return Task.CompletedTask;
+    }
+
+    private async Task PopulateEnrollee()
+    {
+        if (enrolleeCount <= 0) return;
+
+        if(Model.Customer.FamilyMembers.Count == 0)
+        {
+            await AddChildrenModal.Open();
+            AddChildrenModal.AddMemberField(enrolleeCount, true);
+            return;
+        }
+
+        if(enrolleeCount == Model.Customer.FamilyMembers.Count)
+        {
+            foreach(var member in Model.Customer.FamilyMembers)
+            {
+                member.IsSelected = true;
+            }
+            StateHasChanged();
+            return;
+        }
+
+        if(enrolleeCount > Model.Customer.FamilyMembers.Count)
+        {
+            foreach(var member in Model.Customer.FamilyMembers)
+            {
+                member.IsSelected = true;
+            }
+            StateHasChanged();
+            await AddChildrenModal.Open();
+            AddChildrenModal.AddMemberField(enrolleeCount - Model.Customer.FamilyMembers.Count, true);
+            return;
+        }
+
+        if(enrolleeCount < Model.Customer.FamilyMembers.Count)
+        {
+            isShowImportantMessage = true;
+            StateHasChanged();
+            return;
+        }
     }
 
     class PaymentOption
