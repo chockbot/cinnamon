@@ -12,6 +12,7 @@ public class MakerEnrolledNotificationHelper
         decimal discountAmount)
     {
         string imgSrc = "https://stcinnamondev.blob.core.windows.net/assets/cinnamon-logo.png";
+        string chatUrl = host.AppendPathSegment("Messages");
         string enrolleesString = string.Empty;
 
         foreach(var item in students)
@@ -87,6 +88,58 @@ public class MakerEnrolledNotificationHelper
                         src='{imgSrc}'
                         alt='logo'
                         />
+                    </div>
+                    <div
+                        class='cinnamon-chat'
+                        style='
+                        background-color: #ffb84c;
+                        padding-top: 35px;
+                        padding-left: 25px;
+                        padding-right: 25px;
+                        padding-bottom: 30px;
+                        margin-top: 3rem;
+                        border-radius: 40px;
+                        width: 88%;
+                        margin-left: auto;
+                        margin-right: auto;
+                        margin-bottom: 2rem;
+                        '
+                    >
+                        <p
+                        style='
+                            color: #0f173b;
+                            text-align: center;
+                            font-size: 24px;
+                            font-weight: 900;
+                        '
+                        >
+                        New enrollee/s joined!
+                        </p>
+                        <p
+                        style='
+                            color: #343d4c;
+                            font-size: 16px;
+                            text-align: justify;
+                            margin-bottom: 0;
+                        '
+                        >
+                        Hi {makerName}, there are new enrollees joining your experience. To
+                        further assist the enrollees, start your conversations now at your
+                        Cinnamon Chat Group by clicking the button below!
+                        </p>
+                        <div style='text-align: center; margin-top: 3rem'>
+                        <a
+                            style='
+                            background-color: #0f173b;
+                            color: #ffffff;
+                            padding: 15px 40px;
+                            border-radius: 20px;
+                            text-decoration: none;
+                            '
+                            href='{chatUrl}'
+                            ><b>Visit Chat Group</b></a
+                        >
+                        </div>
                     </div>
                     <div
                         class='purchased-customer'
