@@ -1,0 +1,82 @@
+@namespace Cinnamon.Web.Components
+
+<div class="image-cropper-wrapper">
+    <Modal @ref="modalRef" Closing="OnModalClosing">
+        <ModalContent>
+            <ModalHeader>@Title</ModalHeader>
+            <ModalBody>
+                <img id="img-cropper-src" src="" alt="image-to-crop">
+                <button @onclick="BtnClick">Submit Close</button>
+            </ModalBody>
+        </ModalContent>
+    </Modal>
+</div>
+
+@code 
+{
+    /**
+    * Will select the image source in ImageSrcSelector,
+    * FileInputSelector and ImageSource.
+    * Will default to ImageSource parameter.
+    * If ImageSource empty then will select between FileInputSelector and ImageSrcSelector
+    * If FileInputSelector data is null
+    * then will select the ImageSrcSelector.
+    * If FileInputIndex is provided the source will get the data to 
+    * FileInputSelector file index
+    **/
+
+    [Parameter]
+    public string? OuputInputSelector {get; set;}
+
+    [Parameter]
+    public string? Title {get; set;}
+
+    [Parameter]
+    public string? ImageSrcSelector {get; set;}
+
+    [Parameter]
+    public string? FileInputSelector {get; set;}
+
+    [Parameter]
+    public int? FileInputIndex {get; set;}
+
+    [Parameter]
+    public string? ImageSource {get; set;}
+
+    private Modal? modalRef;
+
+    private bool isCompleted = false;
+
+    public async Task CropImage()
+    {
+        isCompleted = false;
+        if(modalRef is not null)
+        {
+            await modalRef.Show();
+            await LoopAsync();
+            await modalRef.Close(CloseReason.UserClosing);
+        }
+    }
+
+    private Task LoopAsync()
+    {
+        return Task.Run(() => {
+            while(!isCompleted)
+            {
+            }
+            return Task.CompletedTask;
+        });
+    }
+
+    private Task BtnClick()
+    {
+        isCompleted = true;
+        return Task.CompletedTask;
+    }
+
+    private Task OnModalClosing(ModalClosingEventArgs e)
+    {
+        e.Cancel = !isCompleted;
+        return Task.CompletedTask;
+    }
+}

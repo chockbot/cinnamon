@@ -32,7 +32,7 @@
                 <li>Innocent, yet illuminating, snippets from the experience.</li>
                 <li>Top-notch picture quality, free from excessive effects like distortion, superimposition of text, and watermarks.</li>
             </ul>
-
+            <button @onclick="() => imageCropper.CropImage()">Show Cropper</button>
             <div class="photo-upload-section">
                 <label for="photo-upload" style="cursor: pointer;">
                     <Button Type="ButtonType.Button" style="pointer-events: none;" Border="Border.Is0" class="btn-primary">
@@ -131,6 +131,7 @@
             </div>
         </div>
     </div>
+    <ImageCropper @ref="imageCropper" Title="This is sample title" />
 </div>
 
 @code {
@@ -159,6 +160,8 @@
     private IList<ImageItem> imageItems = new List<ImageItem>();
 
     private bool isShowImageErrorMessage = false;
+
+    private ImageCropper? imageCropper;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
