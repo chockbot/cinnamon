@@ -94,7 +94,7 @@ export function scrollToRequiredField(container) {
 export function scrollToPricingandSchedule() {
     $('html, body').animate({
         scrollTop: $(".pricing-schedule").offset().top
-    }, 200); 
+    }, 200);
 }
 
 function replaceEmptyvalue(value, replacement) {
@@ -190,9 +190,9 @@ function createUpdateActivity() {
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].IsActiveSchedule", $(this).find('#flexSwitchCheckDefault').prop('checked'));
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].HasExpiration", hasExpiration);
             formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].IsSetSession", $(this).find('.set-session').prop('checked'));
-            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].SessionName", replaceEmptyvalue($(this).find('.session-period').val(),''));
-            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].StartDate", replaceEmptyvalue($(this).find('input[data-class="start-date"]').val(),''));
-            
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].SessionName", replaceEmptyvalue($(this).find('.session-period').val(), ''));
+            formDataUpdate.append("ActivitySchedules[" + scheduleCounter + "].StartDate", replaceEmptyvalue($(this).find('input[data-class="start-date"]').val(), ''));
+
             scheduleCounter++;
         });
 
