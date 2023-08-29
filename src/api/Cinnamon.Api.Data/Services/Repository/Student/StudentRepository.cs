@@ -369,11 +369,14 @@ public class StudentRepository: IStudentRepository
         }
     }
 
-    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive)
+    public async Task<AppResult<IEnumerable<DisburseStudentDTO>>> GetStudentsToDisburse(bool isInclusive, bool isExpired = false)
     {
         try
         {
-            var result = isInclusive ? await dataStore.Student.GetAllInclusiveStudentsToDisburse() : await dataStore.Student.GetAllStudentsToDisburse();
+            var result = isExpired ? await dataStore.Student.GetAllExpiredStudentsToDisburse() : 
+                ( 
+                    isInclusive ? await dataStore.Student.GetAllInclusiveStudentsToDisburse() : await dataStore.Student.GetAllStudentsToDisburse()
+                );
             if(!result.Succeeded || result.Result == null)
             {
                 return AppResult<IEnumerable<DisburseStudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
