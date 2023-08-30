@@ -421,7 +421,6 @@ public class StudentRepository: IStudentRepository
 	{
 		try
 		{
-			//Expression<Func<Entities.Student, bool>> filter = a => (a.CustomerId == customerId) && (a.SessionsAttended >= a.NumberOfSessions || (a.ExpirationDateEnd < DateTime.Now.Date && a.ExpirationDateStart != DateTime.MinValue)) && (a.HasReview == false);
 			var result = await dataStore.Student.GetCompletedStudentById(customerId);
 			if (!result.Succeeded || result.Result == null)
 			{
@@ -458,12 +457,11 @@ public class StudentRepository: IStudentRepository
 		}
 	}
 
-	public async Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentsById(int? customerId, int? count, int? skip)
+	public async Task<AppResult<IEnumerable<StudentDTO>>> GetAllStudentsById(int customerId, int? count, int? skip)
 	{
 		try
 		{
-			Expression<Func<Entities.Student, bool>> filter = a => (a.CustomerId == customerId);
-			var result = await dataStore.Student.FindAsync(filter, count, skip);
+			var result = await dataStore.Student.GetAllStudentById(customerId);
 			if (!result.Succeeded || result.Result == null)
 			{
 				return AppResult<IEnumerable<StudentDTO>>.CreateFailed(result.Error.Exception, result.Message);
@@ -476,16 +474,26 @@ public class StudentRepository: IStudentRepository
 					Id = s.Id,
 					Name = s.Name,
 					NumberOfSessions = s.NumberOfSessions,
-					NumberOfBackTracking = s.NumberOfBacktracking,
+					NumberOfBackTracking = s.NumberOfBackTracking,
 					Remarks = s.Remarks,
 					ScheduleId = s.ScheduleId,
 					SessionsAttended = s.SessionsAttended,
 					Status = s.Status,
-					StudentNo = s.StudentNo,
-					ExpirationStartDate = s.ExpirationDateStart,
-					ExpirationEndDate = s.ExpirationDateEnd,
-					IsDisbursement = s.IsDisbursement,
-					HasReview = s.HasReview,
+					ExpirationStartDate = s.ExpirationStartDate,
+					ExpirationEndDate = s.ExpirationEndDate,
+					activitySchedule = new Framework.ApiCommand.ApiData.DTO.ActivitySchedule.ActivityScheduleDTO
+					{
+						Id = s.activitySchedule.Id,
+						HasExpiration = s.activitySchedule.HasExpiration,
+						IsSetSession = s.activitySchedule.IsSetSession,	
+					},
+					studentAttendance = new Framework.ApiCommand.ApiData.DTO.StudentAttendance.StudentAttendanceDTO
+					{
+						Id = s.studentAttendance.Id,
+						Date = s.studentAttendance.Date,
+						IsPresent = s.studentAttendance.IsPresent,	
+						StudentId = s.studentAttendance.StudentId
+					}
 				};
 
 				return studentDto;

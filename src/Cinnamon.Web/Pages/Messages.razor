@@ -177,7 +177,8 @@
                         </div>
                         <div class="col-lg-10 col-md-10 col-sm-10 col-10 chatroom-name-section">
                             <div class="chatroom-name">
-                                @if (chatRoom.ChatType == Framework.Enums.Enums.ChatType.PrivateMessage)                                {
+                                @if (chatRoom.ChatType == Framework.Enums.Enums.ChatType.PrivateMessage)
+                                {
                                     @fullName
                                 }
                                 else
@@ -891,7 +892,8 @@
                 {
                     var chatMemberDetail = chatMembers.FirstOrDefault(c => c.FromUserId == Convert.ToInt32(splitted[2]));
 
-                    if (!string.IsNullOrEmpty(splitted[1]) && !chatMemberDetail.ConnectionIds.Contains(splitted[1]))                    {
+                    if (!string.IsNullOrEmpty(splitted[1]) && !chatMemberDetail.ConnectionIds.Contains(splitted[1]))
+                    {
                         chatMemberDetail.ConnectionIds.Add(splitted[1]);
                     }
                 }

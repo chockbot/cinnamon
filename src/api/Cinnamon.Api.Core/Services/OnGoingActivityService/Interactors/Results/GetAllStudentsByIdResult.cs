@@ -1,4 +1,7 @@
-﻿namespace Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors.Results;
+﻿using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Schedule;
+using Cinnamon.Framework.ApiCommand.ApiCore.DTO.Student;
+
+namespace Cinnamon.Api.Core.Services.OnGoingActivityService.Interactors.Results;
 
 public class GetAllStudentsByIdResult
 {
@@ -19,5 +22,7 @@ public class GetAllStudentsByIdResult
         public DateTime ExpirationStartDate { get; set; }
         public DateTime ExpirationEndDate { get; set; }
         public bool HasReview { get; set; }
+        public StudentAttendanceDTO studentAttendanceDTO { get; set; }
+        public ActivityScheduleDTO activityScheduleDTO { get; set; }
     }
 }

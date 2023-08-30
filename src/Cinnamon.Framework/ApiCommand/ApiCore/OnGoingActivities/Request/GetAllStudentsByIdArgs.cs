@@ -6,4 +6,6 @@ public class GetAllStudentsByIdArgs
 {
     [Required]
     public int CustomerId { get; set; }
+    public int? PageIndex { get; set; }
+    public int? CountPerPage { get; set; }
 }
